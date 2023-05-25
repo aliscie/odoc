@@ -76,6 +76,9 @@ const canisterDefinitions = Object.entries(canisters).reduce(
 );
 
 export default defineConfig({
+  build: {
+    outDir: "build",
+  },
   resolve: {
     alias: {
       // Here we tell Vite the "fake" modules that we want to define
