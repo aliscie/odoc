@@ -23,7 +23,8 @@
   "scripts": {
     "start": "vite serve",
     "build": "tsc && vite build",
-    "test": "craco test",
+    "serve": "vite preview",
+    "test": "vite test",
     "prebuild": "dfx generate",
     "deploy:local": "dfx deploy --network=local",
     "deploy:ic": "dfx deploy --network=ic",
@@ -48,7 +49,6 @@
     ]
   },
   "devDependencies": {
-    "@craco/craco": "^6.2.0",
     "@types/jest": "^26.0.15",
     "@types/node": "^14.0.0",
     "@types/react": "^17.0.0",
