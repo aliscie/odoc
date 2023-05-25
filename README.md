@@ -66,3 +66,11 @@ Or navigate to http://localhost:5173 after `yarn start` command
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
+
+## Get started
+1. $`sudo yarn add tsc -g`
+2. $`yarn install`
+3. $`yarn run build`
+4. `dfx start --backgroun --clean`
+   1. If you already have a dfx running run $`kill -INT $(lsof -t -i :4943)` then re-run `dfx start --backgroun --clean`
+5. $`dfx deploy`
