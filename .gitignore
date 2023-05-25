@@ -9,6 +9,8 @@
 # testing
 /coverage
 
+/target
+
 # production
 /build
 

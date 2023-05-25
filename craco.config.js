@@ -1,14 +1,18 @@
-const webpack = require('webpack');
-const path = require('path');
+const webpack = require("webpack");
+const path = require("path");
 
 let localCanisters, prodCanisters, canisters;
 
 let localEnv = true;
-let network = 'local';
+let network = "local";
 
 function initCanisterIds() {
   try {
-    localCanisters = require(path.resolve(".dfx", "local", "canister_ids.json"));
+    localCanisters = require(path.resolve(
+      ".dfx",
+      "local",
+      "canister_ids.json"
+    ));
   } catch (error) {
     console.log("No local canister_ids.json found. Continuing production");
   }
@@ -26,40 +30,42 @@ function initCanisterIds() {
     process.env[canister.toUpperCase() + "_CANISTER_ID"] =
       canisters[canister][network];
   }
-};
+}
 
 const isDevelopment = process.env.NODE_ENV !== "production" || localEnv;
 
 initCanisterIds();
 
-const asset_entry = path.join(
-  "src",
-  "assets",
-  "src",
-  "index.html"
-);
-
+const asset_entry = path.join("src", "assets", "src", "index.html");
 
 module.exports = {
-  mode : "development",
+  mode: "development",
   eslint: {
     enable: false,
   },
   css: {
-    loaderOptions: { /* Any css-loader configuration options: https://github.com/webpack-contrib/css-loader. */ },
-    loaderOptions: (cssLoaderOptions, { env, paths }) => { return cssLoaderOptions; }
+    loaderOptions: {
+      /* Any css-loader configuration options: https://github.com/webpack-contrib/css-loader. */
+    },
+    loaderOptions: (cssLoaderOptions, { env, paths }) => {
+      return cssLoaderOptions;
+    },
   },
   webpack: {
     alias: {},
     plugins: [
       new webpack.EnvironmentPlugin({
         DFX_NETWORK: network,
-        TEST_CANISTER_ID: canisters["test"],
+        BACKEND_CANISTER_ID: canisters["backend"],
         NODE_ENV: isDevelopment,
       }),
     ],
-    configure: { /* Any webpack configuration options: https://webpack.js.org/configuration */ },
-    configure: (webpackConfig, { env, paths }) => { return webpackConfig; }
+    configure: {
+      /* Any webpack configuration options: https://webpack.js.org/configuration */
+    },
+    configure: (webpackConfig, { env, paths }) => {
+      return webpackConfig;
+    },
   },
   devServer: {
     proxy: {
@@ -102,7 +108,7 @@ module.exports = {
             path: path.join(__dirname, "build"),
           },
         };
-      } 
+      },
     },
-  }
+  },
 };

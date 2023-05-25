@@ -1,17 +1,16 @@
 {
   "canisters": {
-    "test": {
-      "main": "src/test/main.mo",
-      "type": "motoko"
+    "backend": {
+      "candid": "src/backend/backend.did",
+      "package": "backend",
+      "type": "rust"
     },
-    "frontend" : {
-      "dependencies": ["test"],
+    "frontend": {
+      "dependencies": ["backend"],
       "frontend": {
-        "entrypoint": "build/index.html"
+        "entrypoint": "public/index.html"
       },
-      "source": [
-        "build"
-      ],
+      "source": ["src/assets", "build"],
       "type": "assets"
     }
   },
@@ -23,5 +22,3 @@
   },
   "version": 1
 }
-
- 
