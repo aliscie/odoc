@@ -6,11 +6,16 @@
       "type": "rust"
     },
     "frontend": {
-      "dependencies": ["backend"],
+      "dependencies": [
+        "backend"
+      ],
       "frontend": {
         "entrypoint": "public/index.html"
       },
-      "source": ["src/assets", "build"],
+      "source": [
+        "src/assets",
+        "build"
+      ],
       "type": "assets"
     }
   },
@@ -20,5 +25,6 @@
       "packtool": ""
     }
   },
-  "version": 1
+  "version": 1,
+  "dfx": "0.14.0"
 }

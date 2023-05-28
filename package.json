@@ -5,6 +5,7 @@
   "homepage": ".",
   "dependencies": {
     "@dfinity/agent": "^0.15.6",
+    "@dfinity/auth-client": "^0.15.6",
     "@dfinity/candid": "^0.15.6",
     "@dfinity/principal": "^0.15.6",
     "@testing-library/react": "^14.0.0",
@@ -12,6 +13,7 @@
     "esbuild-wasm": "^0.17.19",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tsc": "^2.0.4",
     "typescript": "^5.0.4"
   },
   "scripts": {
