@@ -39,7 +39,7 @@ const isDevelopment = process.env.NODE_ENV !== "production" || localEnv;
 
 initCanisterIds();
 
-const asset_entry = path.join("src", "assets", "src", "index.html");
+const asset_entry = path.join("frontend", "assets", "frontend", "index.html");
 
 // List of all aliases for canisters
 // This will allow us to: import { canisterName } from "canisters/canisterName"
