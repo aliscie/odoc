@@ -28,8 +28,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-/src/declarations/*
-/src/declarations/
+/frontend/declarations/*
+/frontend/declarations/
 
 # IDEs
 /.idea

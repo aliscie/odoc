@@ -1,7 +1,7 @@
 {
   "canisters": {
     "backend": {
-      "candid": "src/backend/backend.did",
+      "candid": "backend/backend.did",
       "package": "backend",
       "type": "rust"
     },
@@ -10,10 +10,10 @@
         "backend"
       ],
       "frontend": {
-        "entrypoint": "public/index.html"
+        "entrypoint": "frontend/public/index.html"
       },
       "source": [
-        "src/assets",
+        "frontend/assets",
         "build"
       ],
       "type": "assets"
