@@ -2,3 +2,4 @@ run_fe:
 	npm start
 run_be:
 	dfx deploy backend
+
