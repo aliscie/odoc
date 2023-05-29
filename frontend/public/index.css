@@ -2,10 +2,10 @@
     --color: black;
     --primary-color: #00a3ff;
     --secondary-color: #006ae6;
-    --background: linear-gradient(135deg, rgba(0, 42, 84, 0.8), rgba(0, 107, 230, 0.8));
+    --background: linear-gradient(135deg, rgba(10, 78, 147, 0.8), rgba(0, 230, 203, 0.8));
     --light-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 240, 0.8));
-    --main-background: #ffffff;
     --card-color: #ffffff;
+    --main-background: linear-gradient(44deg, rgb(12, 2, 44), rgba(12, 255, 219, 0.8));
 }
 
 .dark {
@@ -14,8 +14,10 @@
     --secondary-color: #006ae6;
     --background: linear-gradient(135deg, rgba(0, 42, 84, 0.8), rgba(0, 107, 230, 0.8));
     --light-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 240, 0.8));
-    --main-background: rgb(26, 26, 26);
+    --main-background: linear-gradient(44deg, rgba(12, 169, 146, 0.8), rgb(12, 2, 44));
     --card-color: #b2b2b2;
+
+
 }
 
 .card {
@@ -34,6 +36,7 @@ body {
     background: var(--main-background);
     transition: 0.4s;
 }
+
 
 .code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
