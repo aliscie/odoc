@@ -4,6 +4,9 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "@babel/core": "^7.22.1",
+    "@babel/preset-env": "^7.22.2",
+    "@babel/preset-react": "^7.22.3",
     "@dfinity/agent": "^0.15.6",
     "@dfinity/auth-client": "^0.15.6",
     "@dfinity/candid": "^0.15.6",
@@ -28,7 +31,7 @@
     "start": "vite serve",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "test": "vite test",
+    "test": "jest",
     "prebuild": "dfx generate",
     "deploy:local": "dfx deploy --network=local",
     "deploy:ic": "dfx deploy --network=ic",
@@ -61,6 +64,7 @@
     "@types/redux": "^3.6.0",
     "@types/redux-thunk": "^2.1.0",
     "autoprefixer": "^10.4.14",
+    "jest": "^29.5.0",
     "postcss": "^8.4.23",
     "vite": "^4.3.8",
     "vite-plugin-environment": "^1.1.3"
