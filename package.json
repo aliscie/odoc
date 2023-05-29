@@ -16,6 +16,7 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.13.2",
     "@testing-library/react": "^14.0.0",
+    "autodox-text-editor": "^0.1.12",
     "esbuild": "^0.17.19",
     "esbuild-wasm": "^0.17.19",
     "flowbite": "^1.6.5",
