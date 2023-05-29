@@ -18,7 +18,7 @@ const NavBar = (props: any) => {
 
     return (
         <div>
-            <div id="mySidenav" className="sidenav card">
+            <div id="mySidenav" className="sidenav card bg-blur">
                 <a href="#" className="closebtn" onClick={closeNav}>&times;</a>
                 <a href="#">About</a>
                 <a href="#">Services</a>

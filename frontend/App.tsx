@@ -33,6 +33,7 @@ function App() {
                     </a>
 
                     <a className="btn"><Link to="/">Home</Link></a>
+                    <a className="btn"><Link to="/Whitepaper">Whitepaper</Link></a>
                     <a className="btn"><Link to="/books">Books</Link></a>
                     <a href="#" className="btn" onClick={toggleDarkMode}>
                         mode
