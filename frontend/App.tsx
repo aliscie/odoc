@@ -16,28 +16,6 @@ import GavelRoundedIcon from "@mui/icons-material/GavelRounded";
 import EditNoteRoundedIcon from "@mui/icons-material/EditNoteRounded";
 import BasicMenu from "./components/genral/basic_menu";
 import LogoutIcon from '@mui/icons-material/Logout';
-import Editor from "autodox-text-editor";
-
-function EditorRenderer(props: RendererProps) {
-    const {tag, content, attributes = {}, children} = props;
-    let Tag = tag || "span";
-    switch (tag) {
-        case "quote":
-            return <div>quote {children}</div>;
-        default:
-            return (<Tag
-                style={{margin: 0}}
-                {...props}
-                placeholder={"enter somthing..."}
-                {...attributes}>{children}</Tag>)
-    }
-}
-
-const my_dummies = [
-    {tag: 'h3', children: [{id: 'p2', content: 'hello world'}], id: 'p3'},
-    {tag: 'h3', children: [{id: 'p2', content: 'hello world'}], id: 'p3'},
-    {tag: 'h3', children: [{id: 'p2', content: 'hello world'}], id: 'p3'}
-]
 
 function App() {
     const [message, setMessage] = React.useState("");
@@ -92,13 +70,9 @@ function App() {
                 </TopNavBar>
 
                 <NavBar>
-                    {message}
+                    {/*{message}*/}
 
-                    {/*https://github.com/aliscie/text-editor*/}
-                    <Editor
-                        element_render={EditorRenderer}
-                        data={my_dummies}
-                    />
+
 
                     <Pages/>
 
