@@ -10,6 +10,14 @@
     --background-image: url("../assets/background.png");
 }
 
+hr {
+    color: var(--color) !important;
+}
+
+.mySidenav {
+    color: var(--color);
+}
+
 .dark {
     --background-color: #333;
     --color: #d9d9d9;

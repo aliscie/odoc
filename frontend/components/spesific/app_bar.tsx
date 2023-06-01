@@ -23,15 +23,16 @@ export function NavAppBar() {
 
         <TopNavBar>
             <Button
+                color={"inherit"}
                 onClick={() => dispatch(toggle())}
             >
                 {isNavOpen ? <MenuOpenIcon/> : <MenuIcon/>}
             </Button>
 
-            <Button><Link to="/">Home</Link></Button>
-            <Button><Link to="/Whitepaper">Whitepaper</Link></Button>
-            <Button><Link to="/books">Books</Link></Button>
-            <Button onClick={() => dispatch(toggleDarkMode())}>
+            <Button color={"inherit"}><Link to="/">Home</Link></Button>
+            <Button color={"inherit"}><Link to="/Whitepaper">Whitepaper</Link></Button>
+            <Button color={"inherit"}><Link to="/books">Books</Link></Button>
+            <Button color={"inherit"} onClick={() => dispatch(toggleDarkMode())}>
                 {isDarkMode ? <LightModeIcon/> : <DarkModeIcon/>}
             </Button>
             {isLoggedIn ? <BasicMenu options={[
@@ -41,7 +42,7 @@ export function NavAppBar() {
             ]}>
                 <Avatar style={{display: "inline"}} alt="Remy Sharp"
                         src="https://avatars.githubusercontent.com/u/58806996?v=4"/>
-            </BasicMenu> : <Button onClick={() => dispatch(reduxLogin())}> login</Button>}
+            </BasicMenu> : <Button color={"inherit"} onClick={() => dispatch(reduxLogin())}> login</Button>}
         </TopNavBar>
     )
 

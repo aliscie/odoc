@@ -8,7 +8,7 @@
     width: 100%;
     overflow: hidden;
     transition: 0.5s;
-    z-index: 1;
+    z-index: 2;
     /*height: 30px;*/
 }
 
@@ -18,22 +18,10 @@
 
 .topnav a {
     float: left;
-    color: #f2f2f2;
+    color: var(--color);
     text-align: center;
-    margin-top: 4px;
-    margin-bottom: 4px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-left: 5px;
     text-decoration: none;
     font-size: 17px;
-}
-
-.topnav a:hover {
-    background-color: #ddd;
-    color: black;
 }
 
 .topnav a.active {

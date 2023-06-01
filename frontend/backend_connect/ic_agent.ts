@@ -2,8 +2,8 @@ import {AuthClient} from "@dfinity/auth-client";
 import {Actor, HttpAgent} from "@dfinity/agent";
 import {idlFactory} from "../declarations/backend";
 
-const {ic} = window;
-const {plug} = ic;
+// const {ic} = window;
+// const {plug} = ic;
 
 let backendActor, loading = false
 
@@ -46,25 +46,25 @@ export const get_actor = async () => {
     loading = true
 
     if (!backendActor) {
-        if (import.meta.env.VITE_USE_WALLET) {
-            try {
-                if (!(await is_logged())) {
-                    await plug.requestConnect({
-                        whitelist: [import.meta.env.VITE_BACKEND_CANISTER_ID],
-                        host: import.meta.env.VITE_DFX_NETWORK === "ic" ? 'https://mainnet.dfinity.network' : 'http://localhost:8510',
-                        timeout: 50000,
-                        onConnectionUpdate: () => {
-                            console.log('sessionData: ', plug.sessionManager.sessionData)
-                        },
-                    });
-                }
-            } catch (e) {
-                console.log(e)
-                return
-            }
-
-            backendActor = await plug.createActor({canisterId, interfaceFactory: idlFactory, agent: plug.agent});
-        } else {
+        // if (import.meta.env.VITE_USE_WALLET) {
+        //     try {
+        //         if (!(await is_logged())) {
+        //             await plug.requestConnect({
+        //                 whitelist: [import.meta.env.VITE_BACKEND_CANISTER_ID],
+        //                 host: import.meta.env.VITE_DFX_NETWORK === "ic" ? 'https://mainnet.dfinity.network' : 'http://localhost:8510',
+        //                 timeout: 50000,
+        //                 onConnectionUpdate: () => {
+        //                     console.log('sessionData: ', plug.sessionManager.sessionData)
+        //                 },
+        //             });
+        //         }
+        //     } catch (e) {
+        //         console.log(e)
+        //         return
+        //     }
+        //
+        //     backendActor = await plug.createActor({canisterId, interfaceFactory: idlFactory, agent: plug.agent});
+        // } else {
             const authClient = await AuthClient.create();
             const identity = await authClient.getIdentity();
             backendActor = createActor(canisterId, {
@@ -73,7 +73,7 @@ export const get_actor = async () => {
                     host: window.location.href,
                 }
             });
-        }
+        // }
     }
 
     loading = false
