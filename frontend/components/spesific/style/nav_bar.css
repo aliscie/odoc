@@ -35,8 +35,6 @@
 
 #main {
   margin-top: 60px;
-  transition: margin-left .5s;
-  padding: 16px;
 }
 
 /*@media screen and (max-height: 450px) {*/
