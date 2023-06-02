@@ -19,6 +19,10 @@ import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact
 import LocalActivityIcon from '@mui/icons-material/LocalActivity';
 import AbcIcon from '@mui/icons-material/Abc';
 import CasesIcon from '@mui/icons-material/Cases';
+import {useDispatch, useSelector} from "react-redux";
+import {toggleSearchTool} from "../../redux/main";
+import OpenWithIcon from '@mui/icons-material/OpenWith';
+import {Autocomplete} from '@mui/material';
 
 type ToggleButtonProps = {
     value: boolean;
@@ -27,84 +31,44 @@ type ToggleButtonProps = {
     tooltipText: string;
 };
 
-const ToggleButtonWithTooltip: React.FC<ToggleButtonProps> = ({
-                                                                  icon,
-                                                                  tooltipText,
-                                                              }) => {
-    const [selected, setSelected] = React.useState(false);
+
+const options = [
+    'A',
+    'Search in the current place content',
+    'Search the files names',
+    '*',
+    '..',
+];
+
+const MultiSelect = () => {
+    const [selectedOptions, setSelectedOptions] = React.useState([]);
+
+    const handleSelect = (_, value) => {
+        setSelectedOptions(value);
+    };
 
     return (
-        <ToggleButton
-            color="primary"
-            value={"check"}
-            onChange={() => {
-                setSelected(!selected);
-            }} selected={selected}
-
-            aria-label={tooltipText}>
-            <Tooltip title={tooltipText} placement="top">
-                {icon}
-            </Tooltip>
-        </ToggleButton>
+        <Autocomplete
+            style={{display: "inline-block"}}
+            multiple
+            options={options}
+            value={selectedOptions}
+            onChange={handleSelect}
+            renderInput={(params) => (
+                <TextField
+                    {...params}
+                    label={<div>filter <SearchIcon/></div>}
+                />
+            )}
+        />
     );
 };
 
-function Filters() {
-    const [filters, setFilters]: any = React.useState<string[]>([]);
-
-    const handleFilterToggle = (filter: string) => {
-        if (filters.includes(filter)) {
-            setFilters((prevFilters) => prevFilters.filter((f) => f !== filter));
-        } else {
-            setFilters((prevFilters) => [...prevFilters, filter]);
-        }
-    };
-
-
-    return (<ToggleButtonGroup value={filters} onChange={handleFilterToggle} aria-label="Filter Toggle">
-        <ToggleButtonWithTooltip
-            icon={<CasesIcon/>}
-            tooltipText="Case Sensitive Search"
-        />
-        <ToggleButtonWithTooltip
-            icon={<AbcIcon/>}
-            tooltipText="Regular Expression Search"
-        />
-        <ToggleButtonWithTooltip
-            value={filters.includes('searchFileNames')}
-            onChange={() => handleFilterToggle('searchFileNames')}
-            icon={<FolderCopyIcon/>}
-            tooltipText="Search File Names"
-        />
-        <ToggleButtonWithTooltip
-            value={filters.includes('searchFileContents')}
-            onChange={() => handleFilterToggle('searchFileContents')}
-            icon={<ContentPasteSearchIcon/>}
-            tooltipText="Search File Contents"
-        />
-        <ToggleButtonWithTooltip
-            value={filters.includes('globalSearch')}
-            onChange={() => handleFilterToggle('globalSearch')}
-            icon={<PublicIcon/>}
-            tooltipText="Global Search"
-        />
-        <ToggleButtonWithTooltip
-            value={filters.includes('localSearch')}
-            onChange={() => handleFilterToggle('localSearch')}
-            icon={<LocalActivityIcon/>}
-            tooltipText="Local Search"
-        />
-        <ToggleButtonWithTooltip
-            value={filters.includes('socialMediaSearch')}
-            onChange={() => handleFilterToggle('socialMediaSearch')}
-            icon={<ConnectWithoutContactIcon/>}
-            tooltipText="Social Media Search"
-        />
-    </ToggleButtonGroup>)
-}
 
 export default function SearchPopper() {
-    const [open, setOpen] = React.useState(false);
+    const open = useSelector((state: any) => state.searchTool);
+
+    const dispatch = useDispatch();
     const [searchText, setSearchText] = React.useState('');
     const [width, setWidth] = React.useState(250);
 
@@ -113,7 +77,7 @@ export default function SearchPopper() {
     const handleShortcutKeyPress = React.useCallback(
         (event: KeyboardEvent) => {
             if (event.key === 'f' && (event.metaKey || event.ctrlKey)) {
-                setOpen(true);
+                dispatch(toggleSearchTool())
                 event.preventDefault();
             }
         },
@@ -121,7 +85,7 @@ export default function SearchPopper() {
     );
 
     const handleClose = () => {
-        setOpen(false);
+        dispatch(toggleSearchTool())
     };
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,7 +99,6 @@ export default function SearchPopper() {
 
     React.useEffect(() => {
         window.addEventListener('keydown', handleShortcutKeyPress);
-
         return () => {
             window.removeEventListener('keydown', handleShortcutKeyPress);
         };
@@ -150,16 +113,18 @@ export default function SearchPopper() {
                             top: "0px", left: "0px", transform: "translate(50%, 200%)",
                         }}
                     >
-                        <div className="handle">
-                            <Filters/>
-                            <IconButton size="small" color="primary">
-                                <SearchIcon/>
-                            </IconButton>
+                        <IconButton className="handle"><OpenWithIcon/></IconButton>
+
+                        <div>
+                            <MultiSelect/>
+
                             <TextField
                                 size="small"
                                 variant="outlined"
                                 value={searchText}
                                 onChange={handleSearchChange}
+                                id={'search_field'}
+                                autoFocus={true}
                                 placeholder="Enter text"
                                 sx={{minWidth: "50px"}} // Adjust the width of the search field here
                             />

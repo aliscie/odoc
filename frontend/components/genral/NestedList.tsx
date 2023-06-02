@@ -8,6 +8,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Typography from '@mui/material/Typography';
 import {ListSubheader} from "@mui/material";
+import {Link} from "react-router-dom";
 
 interface NestedDataItem {
     content: string;
@@ -23,26 +24,30 @@ interface ItemProps {
     isChild?: boolean;
 }
 
-const Item: React.FC<ItemProps> = ({item, index, openItems, handleClick, isChild}) => {
+const Item: React.FC<ItemProps> = ({item, index, openItems, handleClick, isChild, path = null}) => {
     const isOpen = openItems.includes(index);
     const hasChildren = !!item.children;
 
     const handleItemClick = () => {
         handleClick(index);
     };
-
+    path = path ? path : item.content
+    path = path.replace(/\s+/g, '-').toLowerCase()
     return (
         <React.Fragment key={index}>
-            <ListItemButton onClick={handleItemClick} sx={{pl: isChild ? 2 : 0}}>
-                {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
-                <ListItemText primary={item.content}/>
-                {hasChildren && (isOpen ? <ExpandLess/> : <ExpandMore/>)}
-            </ListItemButton>
+            <Link to={path}>
+                <ListItemButton onClick={handleItemClick} sx={{pl: isChild ? 2 : 0}}>
+                    {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
+                    <ListItemText primary={item.content}/>
+                    {hasChildren && (isOpen ? <ExpandLess/> : <ExpandMore/>)}
+                </ListItemButton>
+            </Link>
             {hasChildren && (
                 <Collapse in={isOpen} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         {item.children.map((child, childIndex) => (
                             <Item
+                                path={path + "/" + child.content}
                                 key={childIndex}
                                 item={child}
                                 index={index + childIndex + 1}
@@ -78,7 +83,8 @@ const NestedList: React.FC<NestedListProps> = ({title, data}) => {
         <div>
             <List
                 subheader={
-                    <ListSubheader style={{background: "none", color: "white"}} component="p" id="nested-list-subheader">
+                    <ListSubheader style={{background: "none", color: "white"}} component="p"
+                                   id="nested-list-subheader">
                         {title}
                     </ListSubheader>
                 }
