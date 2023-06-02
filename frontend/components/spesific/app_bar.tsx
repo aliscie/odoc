@@ -2,16 +2,22 @@ import BasicMenu from "../genral/basic_menu";
 import GavelRoundedIcon from "@mui/icons-material/GavelRounded";
 import EditNoteRoundedIcon from "@mui/icons-material/EditNoteRounded";
 import LogoutIcon from "@mui/icons-material/Logout";
-import {reduxLogin, reduxLogout, toggle, toggleDarkMode} from "../../redux/main";
+import {reduxLogin, reduxLogout, toggle, toggleDarkMode, toggleSearchTool} from "../../redux/main";
 import {Avatar, Button, Typography} from "@mui/material";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import MenuIcon from "@mui/icons-material/Menu";
-import {Link} from "react-router-dom";
+import {Link, Route, Routes} from "react-router-dom";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import TopNavBar from "../genral/top_nav_bar";
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
+import SearchIcon from "@mui/icons-material/Search";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import Tooltip from "@mui/material/Tooltip";
+import {BreadPage} from "../genral/breadcrumbs";
+import CopyButton from "../genral/copy_link";
 
 export function NavAppBar() {
 
@@ -19,6 +25,8 @@ export function NavAppBar() {
     const isNavOpen = useSelector((state: any) => state.isNavOpen);
     const isDarkMode = useSelector((state: any) => state.isDarkMode);
     const isLoggedIn = useSelector((state: any) => state.isLoggedIn);
+    const searchTool = useSelector((state: any) => state.searchTool);
+
     return (
 
         <TopNavBar>
@@ -29,9 +37,21 @@ export function NavAppBar() {
                 {isNavOpen ? <MenuOpenIcon/> : <MenuIcon/>}
             </Button>
 
-            <Button color={"inherit"}><Link to="/">Home</Link></Button>
-            <Button color={"inherit"}><Link to="/Whitepaper">Whitepaper</Link></Button>
-            <Button color={"inherit"}><Link to="/books">Books</Link></Button>
+
+            <Routes>
+                <Route path="*" element={<BreadPage/>}/>
+            </Routes>
+            <CopyButton/>
+
+            <Tooltip title={'You can press "Command+F"'} placement="top">
+                <IconButton
+                    onClick={() => dispatch(toggleSearchTool())}
+                    size="small" color="primary">
+                    {searchTool ? <CloseIcon/> : <SearchIcon/>}
+                </IconButton>
+            </Tooltip>
+
+
             <Button color={"inherit"} onClick={() => dispatch(toggleDarkMode())}>
                 {isDarkMode ? <LightModeIcon/> : <DarkModeIcon/>}
             </Button>

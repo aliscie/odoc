@@ -6,6 +6,9 @@ import CustomizedMenus from "../genral/drop_down";
 import GavelRoundedIcon from '@mui/icons-material/GavelRounded';
 import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import {Button, Divider} from "@mui/material";
+import {Link} from "react-router-dom";
+import RouterBreadcrumbs from "../genral/breadcrumbs";
+import CopyButton from "../genral/copy_link";
 
 const NavBar = (props: any) => {
 
@@ -16,20 +19,25 @@ const NavBar = (props: any) => {
             <div
                 style={{width: isNavOpen ? "250px" : 0}}
                 id="mySidenav" className="sidenav card bg-blur">
-                <Button color={"inherit"} style={{width: "100%"}}>Discover</Button>
-                <Divider/>
+                <Link to="/Discover"><Button>Discover</Button></Link>
+                <Link to="/blog"><Button>Blog</Button></Link>
+                <Link to="/about_us"><Button>About us</Button></Link>
                 <NestedList
                     // title={"private"}
                     data={[
-                        {content: "file one"},
-                        {content: "file tow"},
+                        {content: "file_one"},
+                        {content: "file_tow"},
                         {
-                            content: "another file",
+                            content: "first",
                             children: [{
-                                content: "file inside the other file",
+                                content: "second",
+                                children: [{
+                                    content: "last",
+                                }]
                             }]
                         },
                     ]}/>
+
                 <Divider/>
                 <CustomizedMenus style={{width: "100%"}} options={[
                     {content: "contract page", icon: <GavelRoundedIcon/>},

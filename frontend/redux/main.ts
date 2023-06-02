@@ -27,6 +27,11 @@ export function reducer(state = initialState, action: any) {
                 ...state,
                 isLoggedIn: true,
             };
+        case 'SEARCH_TOOL':
+            return {
+                ...state,
+                searchTool: !state.searchTool,
+            };
         default:
             return state;
     }
@@ -36,8 +41,10 @@ export function reducer(state = initialState, action: any) {
 const initialState = {
     count: 0,
     isNavOpen: false,
+    searchTool: false,
     isDarkMode: true,
     isLoggedIn: await is_logged(),
+
 };
 export const TOGGLE_NAV = 'TOGGLE_NAV';
 export const TOGGLE_DARK = 'TOGGLE_DARK';
@@ -47,6 +54,11 @@ export const LOGIN = 'LOGIN';
 export const toggle = () => ({
     type: TOGGLE_NAV,
 });
+
+export const toggleSearchTool = () => ({
+    type: 'SEARCH_TOOL',
+});
+
 
 export const toggleDarkMode = () => ({
     type: TOGGLE_DARK,

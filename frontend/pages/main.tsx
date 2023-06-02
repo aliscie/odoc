@@ -7,9 +7,9 @@ import NFTComparisonTable from "./types_of_nfts";
 
 function Pages() {
     return <Routes>
-        <Route path="/" element={<LandingPage/>}/>
-        <Route path="/Whitepaper" element={<SimplePaper/>}/>
-        <Route path="/books" element={<NFTComparisonTable/>}/>
+        <Route path="/about_us" element={<LandingPage/>}/>
+        <Route path="/Discover" element={<SimplePaper/>}/>
+        <Route path="/Blog" element={<NFTComparisonTable/>}/>
 
     </Routes>
 
