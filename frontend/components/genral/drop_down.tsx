@@ -26,7 +26,6 @@ const BasicMenu: React.FC<BasicMenuProps> = ({style, options, children}) => {
     return (
         <div>
             <Button
-                color={"inherit"}
                 style={style}
                 id="basic-button"
                 aria-controls={open ? 'basic-menu' : undefined}

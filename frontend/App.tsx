@@ -6,6 +6,8 @@ import Pages from "./pages/main";
 import {BrowserRouter} from "react-router-dom";
 import {NavAppBar} from "./components/spesific/app_bar";
 import SearchPopper from "./components/genral/search_popper";
+import ModeThemeProvider from "./components/genral/theme_provider";
+
 
 function App() {
     const [message, setMessage] = React.useState("");
@@ -23,18 +25,18 @@ function App() {
         doGreet();
     }, []);
 
-    console.log("world  == connect is correct", message);
     return (
         <BrowserRouter>
+            <ModeThemeProvider>
 
-            <div>
-                <NavAppBar/>
-                <NavBar>
-                    <SearchPopper/>
-                    <Pages/>
-
-                </NavBar>
-            </div>
+                <div>
+                    <NavAppBar/>
+                    <NavBar>
+                        <SearchPopper/>
+                        <Pages/>
+                    </NavBar>
+                </div>
+            </ModeThemeProvider>
         </BrowserRouter>
     )
         ;

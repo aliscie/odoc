@@ -8,28 +8,10 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import {Resizable} from 'react-resizable';
-import Paper from '@mui/material/Paper';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Tooltip from '@mui/material/Tooltip';
-import FolderCopyIcon from '@mui/icons-material/FolderCopy';
-import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
-import PublicIcon from '@mui/icons-material/Public';
-import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
-import LocalActivityIcon from '@mui/icons-material/LocalActivity';
-import AbcIcon from '@mui/icons-material/Abc';
-import CasesIcon from '@mui/icons-material/Cases';
 import {useDispatch, useSelector} from "react-redux";
 import {toggleSearchTool} from "../../redux/main";
 import OpenWithIcon from '@mui/icons-material/OpenWith';
 import {Autocomplete} from '@mui/material';
-
-type ToggleButtonProps = {
-    value: boolean;
-    onChange: (value: boolean) => void;
-    icon: React.ReactNode;
-    tooltipText: string;
-};
 
 
 const options = [
@@ -57,7 +39,7 @@ const MultiSelect = () => {
             renderInput={(params) => (
                 <TextField
                     {...params}
-                    label={<div>filter <SearchIcon/></div>}
+                    label={<SearchIcon/>}
                 />
             )}
         />
@@ -105,15 +87,35 @@ export default function SearchPopper() {
     }, [handleShortcutKeyPress]);
 
     return (
-        <Draggable handle=".handle">
+        <Draggable handle=".handle"
+                   onDrag={(e: any) => {
+                       // get the height and width from rect
+                       // let h = e.
+                       const topEdge = window.innerHeight - 40
+                       const rightEdge = window.innerWidth - 300
+                       const leftEdge = 40;
+                       if (e.clientX > rightEdge) {
+                           e.style.x = rightEdge
+                       } else if (e.clientX < leftEdge) {
+                           e.style.x = leftEdge
+                       }
+                       if (e.clientY < 55) {
+                           e.style.y = 55
+                       } else if (e.clientY > topEdge) {
+                           e.style.y = topEdge
+                       }
+                   }}
+        >
             <Popper open={open} anchorEl={anchorRef.current} placement="bottom-start">
                 <Resizable width={width} height={30} onResize={handleResize}>
-                    <Paper
+                    <div
+                        className={"card"}
                         style={{
                             top: "0px", left: "0px", transform: "translate(50%, 200%)",
                         }}
                     >
-                        <IconButton className="handle"><OpenWithIcon/></IconButton>
+                        <IconButton
+                            className="handle"><OpenWithIcon/></IconButton>
 
                         <div>
                             <MultiSelect/>
@@ -138,7 +140,7 @@ export default function SearchPopper() {
                                 <CloseIcon/>
                             </IconButton>
                         </div>
-                    </Paper>
+                    </div>
                 </Resizable>
             </Popper>
         </Draggable>
