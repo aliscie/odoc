@@ -1,5 +1,6 @@
 :root {
     --color: black;
+    --hover-color: #327b98;
     --primary-color: #00a3ff;
     --secondary-color: #006ae6;
     --background-color: white;
@@ -12,6 +13,7 @@
 
 hr {
     color: var(--color) !important;
+
 }
 
 .mySidenav {
@@ -19,6 +21,7 @@ hr {
 }
 
 .dark {
+    --hover-color: #3b8cb0;
     --background-color: #333;
     --color: #d9d9d9;
     --primary-color: #00a3ff;
@@ -31,11 +34,13 @@ hr {
 }
 
 .card {
-    background: var(--background);
+    color: var(--color);
+    background: rgba(183, 0, 255, 0.06);
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    color: var(--card-color) !important;
 }
+
+
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;

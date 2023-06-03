@@ -12,6 +12,10 @@
     /*height: 30px;*/
 }
 
+.topnav button {
+    color: inherit;
+}
+
 .navbar div {
     display: inline;
 }

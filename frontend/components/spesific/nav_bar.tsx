@@ -7,8 +7,6 @@ import GavelRoundedIcon from '@mui/icons-material/GavelRounded';
 import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import {Button, Divider} from "@mui/material";
 import {Link} from "react-router-dom";
-import RouterBreadcrumbs from "../genral/breadcrumbs";
-import CopyButton from "../genral/copy_link";
 
 const NavBar = (props: any) => {
 

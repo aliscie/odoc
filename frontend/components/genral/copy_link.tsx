@@ -13,7 +13,7 @@ const CopyButton = () => {
     };
 
     return (
-        <IconButton color={"inherit"} onClick={copyLink}>
+        <IconButton onClick={copyLink}>
             <LinkIcon/>
         </IconButton>
     );

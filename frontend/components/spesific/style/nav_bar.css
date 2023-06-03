@@ -1,5 +1,6 @@
 
 .sidenav {
+    color: var(--color);
     height: 100%;
     width: 0;
     position: fixed;
@@ -24,15 +25,15 @@
 }
 
 .sidenav a {
+    color: var(--color);
     text-decoration: none;
     font-size: 25px;
-    color: #818181;
     /*display: block;*/
     transition: 0.3s;
 }
 
 .sidenav a:hover {
-    color: #f1f1f1;
+    color: var(--hover-color);
 }
 
 .sidenav .closebtn {
