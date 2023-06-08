@@ -1,3 +1,27 @@
+type UserCreateResult = variant {
+  Ok : record { canister_id: principal };
+  Err: text;
+};
+
+type CanisterSettings = record {
+  controllers: opt vec principal;
+  compute_allocation: opt nat;
+  memory_allocation: opt nat;
+  freezing_threshold: opt nat;
+};
+
+type CreateCanisterArgs = record {
+  cycles: nat64;
+  settings: CanisterSettings;
+};
+
+type CreateCanisterArgs128 = record {
+  cycles: nat;
+  settings: CanisterSettings;
+};
+
 service : {
-    "greet": (text) -> (text) query;
+    // Managing canister
+    user_create_canister: (CreateCanisterArgs) -> (UserCreateResult);
+    user_create_canister128: (CreateCanisterArgs128) -> (UserCreateResult);
 }
