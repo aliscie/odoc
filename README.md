@@ -1,22 +1,15 @@
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
-<a href="https://circleci.com/gh/badges/shields/tree/master">
-<img src="https://img.shields.io/circleci/project/github/badges/shields/master" alt="build status"></a>
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-<!-- PROJECT LOGO -->
-<br />
-<p align="center">
-  
-  <h3 align="center">ReactJS Typescript Rust Boilerplate + Authentication</h3>
-  <br />
-  <strong>Node version: v16.14.0 </strong>
-  <strong>Updated for dfx 0.14.0 and @dfinity packages: 0.14.0 </strong>
-
-</p>
-
-## About The Project
-
-Boilerplate ReactJS/Typescript with authentication to a local II
+# Developers recommended practices
+When you participate in autodox please follow these instructions carefully
+1. Pluginzation: Keep each part of your code in a separate place and don't disturbed the main functionalities
+   1. Examples
+      1. Put styles and dark mode logic only in css files and don't use tsx components
+      2. Notice I put the text editor in a separated package and separated repository
+      3. If you have a code that handle tests or generating candid it is better to be operated in a different repository as well
+   2. Benefits:
+      1. Developers can easily focus on the central code instead of being disrupted by the secondary issues
+      2. Each developer can work on specific repository
+      3. Community and all develops can be easily introduced to the main code because it has smaller size and also each person can be easily introduced to any eternal repo without being distributed by other repos
+      4. Unlike mono-repo the main code will have smaller size and make it easier to focus, that is way I am anti mono-repo
 
 <!-- GETTING STARTED -->
 
