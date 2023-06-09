@@ -86,10 +86,11 @@ export default function SimplePaper() {
         >
             <Box sx={{alignItems: 'flex-start'}}>
                 {/*// https://github.com/aliscie/text-editor*/}
-                {/*<Editor*/}
-                {/*    // element_render={EditorRenderer}*/}
-                {/*    data={my_dummies}*/}
-                {/*/>*/}
+                <h1> hello editor </h1>
+                <Editor
+                    // element_render={EditorRenderer}
+                    data={my_dummies}
+                />
             </Box>
         </Box>
     );
