@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import {Resizable} from 'react-resizable';
 import {useDispatch, useSelector} from "react-redux";
-import {toggleSearchTool} from "../../redux/main";
+import {handleSsearch, toggleSearchTool} from "../../redux/main";
 import OpenWithIcon from '@mui/icons-material/OpenWith';
 import {Autocomplete, Tooltip} from '@mui/material';
 import AbcIcon from '@mui/icons-material/Abc';
@@ -65,7 +65,8 @@ export default function SearchPopper() {
     const open = useSelector((state: any) => state.searchTool);
 
     const dispatch = useDispatch();
-    const [searchText, setSearchText] = React.useState('');
+    let searchText = useSelector((state: any) => state.searchValue);
+    console.log(searchText)
     const [width, setWidth] = React.useState(250);
 
     const anchorRef = React.useRef<HTMLDivElement | null>(null);
@@ -85,7 +86,8 @@ export default function SearchPopper() {
     };
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchText(event.target.value);
+        dispatch(handleSsearch(event.target.value))
+
     };
 
     const handleResize = (event: any, {size}: any) => {
