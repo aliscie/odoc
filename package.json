@@ -21,7 +21,7 @@
     "@mui/styles": "^5.13.2",
     "@testing-library/react": "^14.0.0",
     "@types/react-dom": "^18.2.4",
-    "dox-editor": "^0.1.3",
+    "dox-editor": "^0.2.8",
     "esbuild": "^0.17.19",
     "esbuild-wasm": "^0.17.19",
     "flowbite": "^1.6.5",

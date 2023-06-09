@@ -1,6 +1,6 @@
 import {AuthClient} from "@dfinity/auth-client";
 import {Actor, HttpAgent} from "@dfinity/agent";
-import {idlFactory} from "../declarations/backend";
+import {idlFactory} from "../../src/declarations/backend";
 
 // const {ic} = window;
 // const {plug} = ic;
