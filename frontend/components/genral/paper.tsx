@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
+import {useSelector} from "react-redux";
 import Editor from "dox-editor";
 
 // function EditorRenderer(props: RendererProps) {
@@ -69,29 +70,15 @@ const my_dummies = [
 //
 // ]
 export default function SimplePaper() {
-
-
+    let searchText = useSelector((state: any) => state.searchValue);
+    console.log("paper", searchText)
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'top',
-                minHeight: '100vh',
-                p: 4,
-                // marginLeft: 10,
-                // marginRight: 10,
-                backgroundColor: 'var(--background-color)',
-            }}
-        >
-            <Box sx={{alignItems: 'flex-start'}}>
-                {/*// https://github.com/aliscie/text-editor*/}
-                <h1> hello editor </h1>
-                <Editor
-                    // element_render={EditorRenderer}
-                    data={my_dummies}
-                />
-            </Box>
-        </Box>
+        <span>
+            <Editor
+                search={searchText}
+                // element_render={EditorRenderer}
+                data={my_dummies}
+            />
+        </span>
     );
 }

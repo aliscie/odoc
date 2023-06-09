@@ -16,6 +16,11 @@ export function reducer(state = initialState, action: any) {
                 ...state,
                 isDarkMode: !state.isDarkMode,
             };
+        case 'SEARCH':
+            return {
+                ...state,
+                searchValue: action.searchValue,
+            };
 
         case 'LOGOUT':
             return {
@@ -43,16 +48,23 @@ const initialState = {
     isNavOpen: false,
     searchTool: false,
     isDarkMode: true,
+    searchValue: String,
     isLoggedIn: await is_logged(),
 
 };
 export const TOGGLE_NAV = 'TOGGLE_NAV';
+export const SEARCH = 'SEARCH';
 export const TOGGLE_DARK = 'TOGGLE_DARK';
 export const LOGOUT = 'LOGOUT';
 export const LOGIN = 'LOGIN';
 
 export const toggle = () => ({
     type: TOGGLE_NAV,
+});
+
+export const handleSsearch = (searchValue: String) => ({
+    type: SEARCH,
+    searchValue: searchValue,
 });
 
 export const toggleSearchTool = () => ({
