@@ -11,15 +11,29 @@ import {Resizable} from 'react-resizable';
 import {useDispatch, useSelector} from "react-redux";
 import {toggleSearchTool} from "../../redux/main";
 import OpenWithIcon from '@mui/icons-material/OpenWith';
-import {Autocomplete} from '@mui/material';
+import {Autocomplete, Tooltip} from '@mui/material';
+import AbcIcon from '@mui/icons-material/Abc';
+import FindInPageIcon from '@mui/icons-material/FindInPage';
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
+import AcUnitIcon from '@mui/icons-material/AcUnit';
 
+function OptionItem(props: any) {
+    return (
+        <Tooltip {...props} title={props.title}>
+            <IconButton color={"inherit"}>
+                {props.icon}
+            </IconButton>
+        </Tooltip>
+    );
+}
 
 const options = [
-    'A',
-    'Search in the current place content',
-    'Search the files names',
-    '*',
-    '..',
+    <OptionItem title={"Case sensitive"} icon={<AbcIcon/>}/>,
+    <OptionItem title={"Search in current file"} icon={<FindInPageIcon/>}/>,
+    <OptionItem title={"Search in the Discover"} icon={<TravelExploreIcon/>}/>,
+    <OptionItem title={"Search with AI"} icon={<AutoFixHighIcon/>}/>,
+    <OptionItem title={"Search using regular expression"} icon={<AcUnitIcon/>}/>,
 ];
 
 const MultiSelect = () => {

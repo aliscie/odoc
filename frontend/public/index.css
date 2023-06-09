@@ -3,7 +3,7 @@
     --hover-color: #327b98;
     --primary-color: #00a3ff;
     --secondary-color: #006ae6;
-    --background-color: white;
+    --background-color: #d7d7d7;
     --background: linear-gradient(135deg, rgba(10, 78, 147, 0.8), rgba(0, 230, 203, 0.8));
     --light-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 240, 0.8));
     --card-color: #ffffff;
@@ -49,8 +49,8 @@ body {
 
     color: var(--color);
     transition: 0.4s;
-    /*background: var(--background-color);*/
-    background-image: var(--background-image);
+    background: var(--background-color);
+    /*background-image: var(--background-image);*/
     background-size: 100% auto;
     background-repeat: no-repeat;
     background-attachment: fixed;

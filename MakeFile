@@ -3,3 +3,6 @@ run_fe:
 run_be:
 	dfx deploy backend
 
+start:
+	chmod +x ./scripts/start.sh
+	./scripts/start.sh
