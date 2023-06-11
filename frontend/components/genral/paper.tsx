@@ -18,7 +18,7 @@ import Editor from "dox-editor";
 //     }
 // }
 
-const my_dummies = [
+export const my_dummies = [
     {type: "h1", children: [{text: "My heading is here."}]},
     {
         type: 'paragraph',
