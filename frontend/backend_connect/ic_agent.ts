@@ -1,6 +1,6 @@
 import {AuthClient} from "@dfinity/auth-client";
 import {Actor, HttpAgent} from "@dfinity/agent";
-import {idlFactory} from "../../backend/src/declarations/backend";
+import {idlFactory} from "../../declarations/backend";
 
 // const {ic} = window;
 // const {plug} = ic;
@@ -8,8 +8,7 @@ import {idlFactory} from "../../backend/src/declarations/backend";
 let backendActor, loading = false
 
 // CANISTER_ID is replaced by webpack based on node environment
-export const canisterId = "bkyz2-fmaaa-aaaaa-qaaaq-cai" // TODO fix this instead of manually setting the canister id, // import.meta.env.VITE_BACKEND_CANISTER_ID;
-console.log('canisterId: ', canisterId)
+export const canisterId = import.meta.env.VITE_BACKEND_CANISTER_ID;
 
 export const createActor = (canisterId, options = {}) => {
     const agent = options.agent || new HttpAgent({...options.agentOptions});
@@ -38,7 +37,6 @@ export const createActor = (canisterId, options = {}) => {
     });
 };
 
-export const backend = createActor(canisterId);
 
 export const get_actor = async () => {
     await new Promise(resolve => !loading && resolve());
@@ -65,14 +63,14 @@ export const get_actor = async () => {
         //
         //     backendActor = await plug.createActor({canisterId, interfaceFactory: idlFactory, agent: plug.agent});
         // } else {
-            const authClient = await AuthClient.create();
-            const identity = await authClient.getIdentity();
-            backendActor = createActor(canisterId, {
-                agentOptions: {
-                    identity,
-                    host: window.location.href,
-                }
-            });
+        const authClient = await AuthClient.create();
+        const identity = await authClient.getIdentity();
+        backendActor = createActor(canisterId, {
+            agentOptions: {
+                identity,
+                host: window.location.href,
+            }
+        });
         // }
     }
 
@@ -81,13 +79,14 @@ export const get_actor = async () => {
 }
 
 export async function identify() {
+    let port = import.meta.env.VITE_DFX_PORT;
     const authClient = await AuthClient.create();
     if (await authClient.isAuthenticated()) {
         return authClient.getIdentity();
     }
     let identityProvider = "https://identity.ic0.app/#authorize";
     if (import.meta.env.VITE_DFX_NETWORK != "ic") {
-        identityProvider = `http://${import.meta.env.VITE_IDENTITY_PROVIDER_ID}.localhost:8510/#authorize`
+        identityProvider = `http://${import.meta.env.VITE_IDENTITY_PROVIDER_ID}.localhost:${port}/#authorize`
     }
     return await authClient.login({
         identityProvider,
@@ -105,7 +104,8 @@ export async function is_logged() {
 export async function logout() {
     const authClient = await AuthClient.create();
     await authClient.logout()
+    window.location.reload()
 }
 
 
-
+export const backend = await get_actor();

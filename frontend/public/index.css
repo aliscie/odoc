@@ -1,3 +1,4 @@
+
 :root {
     --color: black;
     --hover-color: #327b98;
@@ -39,7 +40,6 @@ hr {
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 
 
 body {
