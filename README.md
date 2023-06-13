@@ -9,8 +9,9 @@
 
 <h1 align="center">Odoc</h1>
 <h3 align="center">SAVES YOUR TIME</h3>
-![wallpaper copy](https://github.com/aliscie/odoc/assets/58806996/1761ad44-1bc4-4b60-9c12-395ecf5df086)
-![logo](https://github.com/aliscie/odoc/assets/58806996/48c3508a-fa3d-4056-b6f3-bdac3dc22517)
+<img style="psotion: absolute; left: 50%; width: 20%" src="https://github.com/aliscie/odoc/assets/58806996/18152f36-91cf-499d-a8f9-4505e55e290f"/>
+<hr/>
+<img style="width: 100%; margin:0; padding:0"  src="https://github.com/aliscie/odoc/assets/58806996/1761ad44-1bc4-4b60-9c12-395ecf5df086"/>
 
 
 Odoc
