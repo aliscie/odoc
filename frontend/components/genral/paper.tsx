@@ -75,6 +75,7 @@ export default function SimplePaper() {
     return (
         <span>
             <Editor
+                searchOptions={"gi"}
                 search={searchText}
                 // element_render={EditorRenderer}
                 data={my_dummies}

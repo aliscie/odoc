@@ -16,9 +16,9 @@ function App() {
     async function doGreet() {
         setMessage("calling the backend....");
         let actor = await get_actor();
-        const greeting = await actor.greet("world connection is correct");
-        console.log("greeting", greeting)
-        setMessage(greeting);
+        // const greeting = await actor.greet("world connection is correct");
+        // console.log("greeting", greeting)
+        // setMessage(greeting);
     }
 
 

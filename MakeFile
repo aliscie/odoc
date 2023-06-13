@@ -6,3 +6,6 @@ run_be:
 start:
 	chmod +x ./scripts/start.sh
 	./scripts/start.sh
+
+kill:
+	kill -INT $(lsof -t -i :4943)

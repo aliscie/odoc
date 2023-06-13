@@ -35,8 +35,7 @@ const NavBar = (props: any) => {
                             }]
                         },
                     ]}/>
-
-                <Divider/>
+                <hr/>
                 <CustomizedMenus style={{width: "100%"}} options={[
                     {content: "contract page", icon: <GavelRoundedIcon/>},
                     {content: "note page", icon: <EditNoteRoundedIcon/>}

@@ -1,11 +1,12 @@
 import React from 'react';
 import './styles/LandingPage.css';
 import Card from "../components/genral/card";
+import CustomizedAccordions from "../components/genral/acordoin";
 
 const data = [
     {
         title: "freelance contracts",
-        content: "At Autodox, we are driven to address the struggles faced by freelancers worldwide, including those in war-affected regions like Iraq or even Russia nowadays, and individuals burdened by high commissions and taxes in countries like India. Our mission is to decentralize freelance contracts, making them transparent and liberating through the power of smart contracts. We envision a platform that provides unparalleled freedom and trust for freelancers."
+        content: "At ODOC, we are driven to address the struggles faced by freelancers worldwide, including those in war-affected regions like Iraq or even Russia nowadays, and individuals burdened by high commissions and taxes in countries like India. Our mission is to decentralize freelance contracts, making them transparent and liberating through the power of smart contracts. We envision a platform that provides unparalleled freedom and trust for freelancers."
     },
     {
         title: "Profile trust score",
@@ -21,7 +22,7 @@ const data = [
     },
     {
         title: "Plugins",
-        content: "Plugins or extensions are customizations that you can add to your AUTODOX application. For example, you can add a grammar correction plugin like Grammarly or a machine learning plugin that helps you abbreviate your text."
+        content: "Plugins or extensions are customizations that you can add to your ODOC application. For example, you can add a grammar correction plugin like Grammarly or a machine learning plugin that helps you abbreviate your text."
     },
 
     {
@@ -40,14 +41,31 @@ const data = [
         title: "Desktop version",
         content: "If you need only the web2 features like taking notes you can use the desktop version without transactions features."
     },
+    {
+        title: "Minorities protection",
+        content: "Instead of the SNS-voting system we will use SNS-migration system where users can migrate or stay on the old canister. If the old canisters has no active users, it will be automatically deleted."
+    },
 
 ];
+let roadMap = [
+    {
+        title: "User profile",
+        content: "As the user login they can click on avatar and select profile to see their data and history and balance and notification settings"
+    },
+    {title: "Profile history and trust score", content: "contract."},
+    {title: "User contracts", content: "contract."},
+    {title: "Pages", content: "contract."},
+    {title: "Tables and views", content: "contract."},
+    {title: "Formulas", content: "contract."},
+    {title: "Each user can have their own canister.", content: "contract."},
+    {title: "Plugins", content: "contract."},
+]
 
 const LandingPage: React.FC = () => {
     return (
         <div className="landing-page">
             <header>
-                <h1>Welcome to AUTODOX</h1>
+                <h1>Welcome to ODOC</h1>
                 <p>Empowering Freelancers with Transparent and Liberating Smart Contracts on the Blockchain. Also, it is
                     all in one where you can manage your tasks, notes, documentation, and agreements/contracts. </p>
             </header>
@@ -59,18 +77,15 @@ const LandingPage: React.FC = () => {
                 ))}
 
             </section>
+            <hr/>
             <section className="roadmap">
                 <h2>Roadmap</h2>
                 <ul>
-                    <li>Step 1: Research</li>
-                    <li>Step 2: Design</li>
-                    <li>Step 3: Development</li>
-                    <li>Step 4: Testing</li>
-                    <li>Step 5: Launch</li>
+                    <CustomizedAccordions data={roadMap}/>
                 </ul>
             </section>
             <footer>
-                <p>© 2023 Autodox. All rights reserved.</p>
+                <p>© 2023 ODOC. All rights reserved.</p>
             </footer>
         </div>
     );

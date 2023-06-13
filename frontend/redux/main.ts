@@ -77,15 +77,12 @@ export const toggleDarkMode = () => ({
 });
 
 
-export const reduxLogout = () => ({
-    type: LOGOUT,
-});
 
 export const reduxLogin = () => ({
     type: LOGIN,
 });
 
-export const logout = () => ({
+export const reduxLogout = () => ({
     type: LOGOUT,
 });
 
