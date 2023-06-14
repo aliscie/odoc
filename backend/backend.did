@@ -1,9 +1,15 @@
-type FileNode = record { id : nat64; name : text; children : vec nat64 };
+type FileNode = record {
+  id : nat64;
+  name : text;
+  children : vec nat64;
+  parent : opt nat64;
+};
 type RegisterUser = record { name : text; description : text };
 type Result = variant { Ok : User; Err : text };
 type User = record { name : text; description : text };
 service : {
   create_new_file : (text, opt nat64) -> (FileNode);
-  get_all_files : () -> (opt vec FileNode) query;
+  get_all_files : () -> (opt vec record { nat64; FileNode }) query;
+  get_file : (nat64) -> (opt FileNode) query;
   register : (RegisterUser) -> (Result);
 }

@@ -13,6 +13,7 @@ static COUNTER: AtomicU64 = AtomicU64::new(0);
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct FileNode {
     pub id: u64,
+    pub parent: Option<u64>,
     pub name: String,
     // pub date: String, // TODO date created
     #[serde(default)]
@@ -24,6 +25,7 @@ impl FileNode {
         let id = COUNTER.fetch_add(1, Ordering::Relaxed);
         let file = FileNode {
             id,
+            parent,
             name: name.clone(),
             children: Vec::new(),
         };
@@ -70,14 +72,14 @@ impl FileNode {
         })
     }
 
-    pub fn get_all_files() -> Option<Vec<FileNode>> {
+    pub fn get_all_files() -> Option<HashMap<u64, FileNode>> {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();
 
             let user_files = files_store.borrow();
             let user_files_map = user_files.get(&principal_id)?;
 
-            let all_files: Vec<FileNode> = user_files_map.values().cloned().collect();
+            let all_files: HashMap<u64, FileNode> = user_files_map.clone();
             Some(all_files)
         })
     }

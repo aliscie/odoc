@@ -3,6 +3,7 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Nat64,
     'name' : IDL.Text,
     'children' : IDL.Vec(IDL.Nat64),
+    'parent' : IDL.Opt(IDL.Nat64),
   });
   const RegisterUser = IDL.Record({
     'name' : IDL.Text,
@@ -16,7 +17,12 @@ export const idlFactory = ({ IDL }) => {
         [FileNode],
         [],
       ),
-    'get_all_files' : IDL.Func([], [IDL.Opt(IDL.Vec(FileNode))], ['query']),
+    'get_all_files' : IDL.Func(
+        [],
+        [IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Nat64, FileNode)))],
+        ['query'],
+      ),
+    'get_file' : IDL.Func([IDL.Nat64], [IDL.Opt(FileNode)], ['query']),
     'register' : IDL.Func([RegisterUser], [Result], []),
   });
 };
