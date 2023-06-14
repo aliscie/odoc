@@ -8,9 +8,9 @@ import {idlFactory} from "../../declarations/backend";
 let backendActor, loading = false
 
 // CANISTER_ID is replaced by webpack based on node environment
-export const canisterId = import.meta.env.VITE_BACKEND_CANISTER_ID;
+const canisterId = import.meta.env.VITE_BACKEND_CANISTER_ID;
 
-export const createActor = (canisterId, options = {}) => {
+const createActor = (canisterId, options = {}) => {
     const agent = options.agent || new HttpAgent({...options.agentOptions});
 
     if (options.agent && options.agentOptions) {
@@ -108,4 +108,4 @@ export async function logout() {
 }
 
 
-export const backend = await get_actor();
+export const actor = await get_actor();

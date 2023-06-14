@@ -6,6 +6,8 @@ import MenuItem from '@mui/material/MenuItem';
 interface MenuOption {
     content: string;
     icon?: React.ReactNode;
+    handleClick?: (e?: any) => void;
+
 }
 
 interface BasicMenuProps {
@@ -45,7 +47,10 @@ const BasicMenu: React.FC<BasicMenuProps> = ({style, options, children}) => {
                 }}
             >
                 {options.map((option, index) => (
-                    <MenuItem key={index} onClick={handleClose}>
+                    <MenuItem key={index} onClick={async (e: any) => {
+                        option.handleClick && await option.handleClick(e);
+                        handleClose()
+                    }}>
                         {option.icon && option.icon}
                         {option.content}
                     </MenuItem>

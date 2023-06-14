@@ -1,6 +1,5 @@
 import React, {useEffect} from "react";
 import "./App.css";
-import {get_actor} from "./backend_connect/ic_agent";
 import NavBar from "./components/spesific/nav_bar";
 import Pages from "./pages/main";
 import {BrowserRouter} from "react-router-dom";
@@ -15,7 +14,7 @@ function App() {
 
     async function doGreet() {
         setMessage("calling the backend....");
-        let actor = await get_actor();
+        // let actor = await get_actor();
         // const greeting = await actor.greet("world connection is correct");
         // console.log("greeting", greeting)
         // setMessage(greeting);

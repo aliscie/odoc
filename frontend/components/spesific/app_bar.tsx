@@ -2,7 +2,7 @@ import BasicMenu from "../genral/basic_menu";
 import GavelRoundedIcon from "@mui/icons-material/GavelRounded";
 import EditNoteRoundedIcon from "@mui/icons-material/EditNoteRounded";
 import LogoutIcon from "@mui/icons-material/Logout";
-import {reduxLogin, reduxLogout, toggle, toggleDarkMode, toggleSearchTool} from "../../redux/main";
+import {reduxLogin, toggle, toggleDarkMode, toggleSearchTool} from "../../redux/main";
 import {Avatar, Button} from "@mui/material";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -18,9 +18,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Tooltip from "@mui/material/Tooltip";
 import {BreadPage} from "../genral/breadcrumbs";
 import CopyButton from "../genral/copy_link";
-import {backend, get_actor, identify, logout} from "../../backend_connect/ic_agent";
-import {connection} from "../../backend_connect/connect";
-
+import {agent} from "../../backend_connect/main";
 
 export function NavAppBar() {
 
@@ -33,8 +31,8 @@ export function NavAppBar() {
 
     async function loginProfile() {
         if (isLoggedIn) {
-            let user = await backend.register({name: "Ali", description: "descr"});
-            console.log(user)
+            // let user = await backend.register({name: "Ali", description: "descr"});
+            // console.log(user)
             dispatch(reduxLogin())
         }
     }
@@ -50,12 +48,12 @@ export function NavAppBar() {
     async function handleLogin() {
         let login_item = document.getElementById("login_item");
         login_item.classList.add("loader")
-        await identify();
+        await agent.identify()
         login_item.classList.remove("loading")
     }
 
     async function handleLogout() {
-        await logout()
+        await agent.logout()
         // dispatch(reduxLogout())
     }
 

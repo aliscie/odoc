@@ -1,6 +1,6 @@
 // Define the reducer function
 import {createStore} from "redux";
-import {is_logged} from "../backend_connect/ic_agent";
+import {agent} from "../backend_connect/main";
 
 export function reducer(state = initialState, action: any) {
     switch (action.type) {
@@ -49,7 +49,7 @@ const initialState = {
     searchTool: false,
     isDarkMode: true,
     searchValue: String,
-    isLoggedIn: await is_logged(),
+    isLoggedIn: await agent.is_logged(),
 
 };
 export const TOGGLE_NAV = 'TOGGLE_NAV';
@@ -75,7 +75,6 @@ export const toggleSearchTool = () => ({
 export const toggleDarkMode = () => ({
     type: TOGGLE_DARK,
 });
-
 
 
 export const reduxLogin = () => ({
