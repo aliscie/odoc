@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import {Resizable} from 'react-resizable';
 import {useDispatch, useSelector} from "react-redux";
-import {handleSsearch, toggleSearchTool} from "../../redux/main";
+import {handleRedux} from "../../redux/main";
 import OpenWithIcon from '@mui/icons-material/OpenWith';
 import {Autocomplete, Tooltip} from '@mui/material';
 import AbcIcon from '@mui/icons-material/Abc';
@@ -62,11 +62,9 @@ const MultiSelect = () => {
 
 
 export default function SearchPopper() {
-    const open = useSelector((state: any) => state.searchTool);
 
     const dispatch = useDispatch();
-    let searchText = useSelector((state: any) => state.searchValue);
-    console.log(searchText)
+    const {searchValue, searchTool} = useSelector((state: any) => state.uiReducer);
     const [width, setWidth] = React.useState(250);
 
     const anchorRef = React.useRef<HTMLDivElement | null>(null);
@@ -74,7 +72,7 @@ export default function SearchPopper() {
     const handleShortcutKeyPress = React.useCallback(
         (event: KeyboardEvent) => {
             if (event.key === 'f' && (event.metaKey || event.ctrlKey)) {
-                dispatch(toggleSearchTool())
+                dispatch(handleRedux("SEARCH_TOOL"))
                 event.preventDefault();
             }
         },
@@ -82,11 +80,11 @@ export default function SearchPopper() {
     );
 
     const handleClose = () => {
-        dispatch(toggleSearchTool())
+        dispatch(handleRedux("SEARCH_TOOL"))
     };
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(handleSsearch(event.target.value))
+        dispatch(handleRedux("SEARCH", {searchValue: event.target.value}))
 
     };
 
@@ -122,7 +120,7 @@ export default function SearchPopper() {
                        }
                    }}
         >
-            <Popper open={open} anchorEl={anchorRef.current} placement="bottom-start">
+            <Popper open={searchTool} anchorEl={anchorRef.current} placement="bottom-start">
                 <Resizable width={width} height={30} onResize={handleResize}>
                     <div
                         className={"card"}
@@ -139,7 +137,7 @@ export default function SearchPopper() {
                             <TextField
                                 size="small"
                                 variant="outlined"
-                                value={searchText}
+                                value={searchValue}
                                 onChange={handleSearchChange}
                                 id={'search_field'}
                                 autoFocus={true}

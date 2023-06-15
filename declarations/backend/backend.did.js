@@ -17,6 +17,7 @@ export const idlFactory = ({ IDL }) => {
         [FileNode],
         [],
       ),
+    'delete_file' : IDL.Func([IDL.Nat64], [IDL.Opt(FileNode)], []),
     'get_all_files' : IDL.Func(
         [],
         [IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Nat64, FileNode)))],

@@ -13,6 +13,7 @@ export type Result = { 'Ok' : User } |
 export interface User { 'name' : string, 'description' : string }
 export interface _SERVICE {
   'create_new_file' : ActorMethod<[string, [] | [bigint]], FileNode>,
+  'delete_file' : ActorMethod<[bigint], [] | [FileNode]>,
   'get_all_files' : ActorMethod<[], [] | [Array<[bigint, FileNode]>]>,
   'get_file' : ActorMethod<[bigint], [] | [FileNode]>,
   'register' : ActorMethod<[RegisterUser], Result>,

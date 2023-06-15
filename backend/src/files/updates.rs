@@ -17,3 +17,10 @@ fn create_new_file(name: String, parent: Option<u64>) -> FileNode {
     // });
     FileNode::new(name, parent)
 }
+
+
+#[update]
+#[candid_method(update)]
+fn delete_file(id: u64) -> Option<FileNode> {
+    FileNode::delete_file(id)
+}

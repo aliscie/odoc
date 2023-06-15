@@ -35,3 +35,16 @@ export async function create_file(name: string, parent?: Nat) { // In the UI, th
     }
 }
 
+
+export async function delete_file(file_id: any) {
+    switch (PLATFORM) {
+        case "WEB":
+            return await actor.delete_file(file_id);
+        case "DESKTOP":
+            return null;
+        case "MOBILE":
+            return null;
+    }
+}
+
+
