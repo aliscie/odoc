@@ -28,9 +28,11 @@ type IdStore = BTreeMap<String, Principal>;
 type ProfileStore = BTreeMap<Principal, User>;
 type FilesStore = BTreeMap<Principal, HashMap<u64, FileNode>>;
 
+// TODO User canister storage for dynamic user canister
+// type ProfileStore = User;
+// type FilesStore = BTreeMap<HashMap<u64, FileNode>>;
 
 thread_local! {
-
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
     static ID_STORE: RefCell<IdStore> = RefCell::default();
     static USER_FILES: RefCell<FilesStore> = RefCell::default();

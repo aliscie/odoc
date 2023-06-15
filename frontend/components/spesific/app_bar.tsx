@@ -2,7 +2,7 @@ import BasicMenu from "../genral/basic_menu";
 import GavelRoundedIcon from "@mui/icons-material/GavelRounded";
 import EditNoteRoundedIcon from "@mui/icons-material/EditNoteRounded";
 import LogoutIcon from "@mui/icons-material/Logout";
-import {reduxLogin, toggle, toggleDarkMode, toggleSearchTool} from "../../redux/main";
+import {handleRedux} from "../../redux/main";
 import {Avatar, Button} from "@mui/material";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -24,16 +24,13 @@ export function NavAppBar() {
 
 
     const dispatch = useDispatch();
-    const isNavOpen = useSelector((state: any) => state.isNavOpen);
-    const isDarkMode = useSelector((state: any) => state.isDarkMode);
-    const isLoggedIn = useSelector((state: any) => state.isLoggedIn);
-    const searchTool = useSelector((state: any) => state.searchTool);
+    const {isNavOpen, isDarkMode, isLoggedIn, searchTool} = useSelector((state: any) => state.uiReducer);
 
     async function loginProfile() {
         if (isLoggedIn) {
             // let user = await backend.register({name: "Ali", description: "descr"});
             // console.log(user)
-            dispatch(reduxLogin())
+            dispatch(handleRedux("LOGIN"))
         }
     }
 
@@ -54,14 +51,14 @@ export function NavAppBar() {
 
     async function handleLogout() {
         await agent.logout()
-        // dispatch(reduxLogout())
+        // dispatch(handleRedux("LOGOUT"))
     }
 
     return (
 
         <TopNavBar>
             <Button
-                onClick={() => dispatch(toggle())}
+                onClick={() => dispatch(handleRedux("TOGGLE_NAV"))}
             >
                 {isNavOpen ? <MenuOpenIcon/> : <MenuIcon/>}
             </Button>
@@ -72,14 +69,14 @@ export function NavAppBar() {
             </Routes>
             <CopyButton/>
 
-            <Button onClick={() => dispatch(toggleDarkMode())}>
+            <Button onClick={() => dispatch(handleRedux("TOGGLE_DARK"))}>
                 {isDarkMode ? <LightModeIcon/> : <DarkModeIcon/>}
             </Button>
 
 
             <Tooltip title={'You can press "Command+F"'} placement="top">
                 <IconButton
-                    onClick={() => dispatch(toggleSearchTool())}
+                    onClick={() => dispatch(handleRedux("SEARCH_TOOL"))}
                     size="small" color="primary">
                     {searchTool ? <CloseIcon/> : <SearchIcon/>}
                 </IconButton>

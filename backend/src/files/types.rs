@@ -83,4 +83,73 @@ impl FileNode {
             Some(all_files)
         })
     }
+    pub fn delete_file(file_id: u64) -> Option<FileNode> {
+        USER_FILES.with(|files_store| {
+            let principal_id = ic_cdk::api::caller();
+
+            let mut user_files = files_store.borrow_mut();
+            let user_files_map = user_files.get_mut(&principal_id)?;
+
+            let deleted_file = user_files_map.remove(&file_id)?;
+
+            // Remove the file ID from its parent's children list
+            if let Some(parent_id) = deleted_file.parent {
+                if let Some(parent_file) = user_files_map.get_mut(&parent_id) {
+                    parent_file.children.retain(|&child_id| child_id != file_id);
+                }
+            }
+
+            Some(deleted_file)
+        })
+    }
+
+    pub fn move_file(file_id: u64, new_parent: Option<u64>) -> Option<()> {
+        USER_FILES.with(|files_store| {
+            let principal_id = ic_cdk::api::caller();
+
+            let mut user_files = files_store.borrow_mut();
+            let user_files_map = user_files.get_mut(&principal_id)?;
+
+            if let Some(file) = user_files_map.get_mut(&file_id) {
+                let old_parent = file.parent;
+
+                // Remove the file ID from its old parent's children list
+                if let Some(old_parent_id) = old_parent {
+                    if let Some(old_parent_file) = user_files_map.get_mut(&old_parent_id) {
+                        old_parent_file.children.retain(|&child_id| child_id != file_id);
+                    }
+                }
+
+                // Update the file's parent
+                file.parent = new_parent;
+
+                // Add the file ID to its new parent's children list
+                if let Some(new_parent_id) = new_parent {
+                    if let Some(new_parent_file) = user_files_map.get_mut(&new_parent_id) {
+                        new_parent_file.children.push(file_id);
+                    }
+                }
+
+                Some(())
+            } else {
+                None
+            }
+        })
+    }
+
+    pub fn rename_file(file_id: u64, new_name: String) -> bool {
+        USER_FILES.with(|files_store| {
+            let principal_id = ic_cdk::api::caller();
+
+            let mut user_files = files_store.borrow_mut();
+            let user_files_map = user_files.get_mut(&principal_id).unwrap();
+
+            if let Some(file) = user_files_map.get_mut(&file_id) {
+                file.name = new_name;
+                true
+            } else {
+                false
+            }
+        })
+    }
 }

@@ -70,13 +70,12 @@ export const my_dummies = [
 //
 // ]
 export default function SimplePaper() {
-    let searchText = useSelector((state: any) => state.searchValue);
-    console.log("paper", searchText)
+    let {searchValue} = useSelector((state: any) => state.uiReducer);
     return (
         <span>
             <Editor
                 searchOptions={"gi"}
-                search={searchText}
+                search={searchValue}
                 // element_render={EditorRenderer}
                 data={my_dummies}
             />

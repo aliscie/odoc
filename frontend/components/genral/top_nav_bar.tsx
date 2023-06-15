@@ -4,7 +4,7 @@ import {useSelector} from "react-redux";
 import {Toolbar, Typography} from "@mui/material";
 
 const TopNavBar = (props: any) => {
-    const isNavOpen = useSelector((state: any) => state.isNavOpen);
+    const {isNavOpen} = useSelector((state: any) => state.uiReducer)
     return (
         <span id={"topnav"} className={"topnav card bg-blur"}>
         <Toolbar style={{marginLeft: isNavOpen ? "250px" : 0}} id={"topnav"} className={"topnav card bg-blur"}>
