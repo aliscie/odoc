@@ -9,12 +9,11 @@ import List from "@mui/material/List";
 import {NestedDataItem} from "./nest_list";
 import ContextMenu from "../../genral/context_menu";
 import DeleteIcon from '@mui/icons-material/Delete';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
-import {delete_file} from "../../../backend_connect/connect";
-import {backend} from "../../../backend_connect/main";
 import {useDispatch} from "react-redux";
 import {handleRedux} from "../../../redux/main";
 import {Input} from "@mui/material";
+import {backend} from "../../../backend_connect/main";
+import DeleteFile from "../../actions/delete_file";
 
 interface ItemProps {
     data: Record<number, NestedDataItem>; // Use Record<number, NestedDataItem> instead of any
@@ -36,13 +35,7 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
 
     path = path ? path : item.name;
     path = path.replace(/\s+/g, '-').toLowerCase();
-    const dispatch = useDispatch();
 
-
-    async function handleDeleteFile(e: any) {
-        let res = await backend.delete_file(BigInt(item.id))
-        dispatch(handleRedux("REMOVE", {id: item.id}))
-    }
 
     const ref = React.useRef(null);
 
@@ -66,7 +59,7 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
             onClick: handleRenameFile,
             icon: <Input onChange={onChange} ref={ref} autoFocus={true} placeholder={item.name}/>
         },
-        {content: "delete", onClick: handleDeleteFile, icon: <DeleteIcon size={"small"}/>},
+        {content: <DeleteFile item={item}/>, icon: <DeleteIcon size={"small"}/>},
     ]
 
     return (

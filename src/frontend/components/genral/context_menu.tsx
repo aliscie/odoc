@@ -25,9 +25,11 @@ export default function ContextMenu(props: any) {
         );
     };
 
-    const handleClose = () => {
-        setContextMenu(null);
+    const handleClose = (is_prevent) => {
+        console.log(is_prevent)
+        !is_prevent && setContextMenu(null);
     };
+
     return (
         <div onContextMenu={handleContextMenu} style={{cursor: 'context-menu'}}>
             {props.children}
@@ -42,11 +44,8 @@ export default function ContextMenu(props: any) {
                 }
             >
                 {props.options.map((item: any) =>
-                    <MenuItem onClick={async (e: any) => {
-                        item.onClick(e)
-                        {
-                            !item.preventClose && handleClose()
-                        }
+                    <MenuItem onMouseUp={() => {
+                        handleClose(item.preventClose)
                     }}>
                         {item.icon && <ListItemIcon>
                             {item.icon}

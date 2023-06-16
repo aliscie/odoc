@@ -86,3 +86,9 @@ body {
 .btn:active {
     background: var(--secondary-color);
 }
+
+
+.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+}

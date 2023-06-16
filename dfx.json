@@ -1,8 +1,13 @@
 {
   "canisters": {
-    "backend": {
-      "candid": "src/backend/backend.did",
-      "package": "backend",
+    "central_canister": {
+      "candid": "src/central_canister/central_canister.did",
+      "package": "central_canister",
+      "type": "rust"
+    },
+    "user_canister": {
+      "candid": "src/user_canister/user_canister.did",
+      "package": "user_canister",
       "type": "rust"
     },
     "internet_identity": {
@@ -17,7 +22,7 @@
     },
     "frontend": {
       "dependencies": [
-        "backend"
+        "user_canister"
       ],
       "frontend": {
         "entrypoint": "src/frontend/public/index.html"

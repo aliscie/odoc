@@ -4,7 +4,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
 interface MenuOption {
-    content: string;
+    content: any;
     icon?: React.ReactNode;
     handleClick?: (e?: any) => void;
 
