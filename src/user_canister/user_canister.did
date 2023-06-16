@@ -14,4 +14,5 @@ service : {
   get_all_files : () -> (opt vec record { nat64; FileNode }) query;
   get_file : (nat64) -> (opt FileNode) query;
   register : (RegisterUser) -> (Result);
+  rename_file : (nat64, text) -> (bool);
 }

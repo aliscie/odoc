@@ -3,6 +3,7 @@ import {handleRedux} from "../../redux/main";
 import React from "react";
 import {useDispatch} from "react-redux";
 import {useSnackbar} from "notistack";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const DeleteFile = (props: any) => {
     const dispatch = useDispatch();
@@ -19,6 +20,6 @@ const DeleteFile = (props: any) => {
         enqueueSnackbar(`${props.item.name} is deleted`, {variant: "success"});
     }
 
-    return (<span onClick={handleDeleteFile}>delete</span>)
+    return (<span onClick={handleDeleteFile}> <DeleteIcon size={"small"}/> Delete</span>)
 }
 export default DeleteFile

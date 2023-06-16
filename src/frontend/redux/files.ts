@@ -1,6 +1,6 @@
 import {backend} from "../backend_connect/main";
 
-export type FilesActions = "ADD" | "REMOVE" | "UPDATE" | "GET" | "GET_ALL";
+export type FilesActions = "ADD" | "REMOVE" | "UPDATE" | "GET" | "GET_ALL" | "UPDATE";
 
 async function get_files() {
     let files = await backend.get_files();
@@ -25,6 +25,12 @@ export function filesReducer(state = initialState, action: any) {
                 ...state,
                 files: {...state.files, [action.data.id]: action.data},
             };
+        case 'UPDATE':
+            console.log("before", action)
+            return {
+                ...state,
+                files: {...state.files, [action.id]: action.file},
+            }
         case 'REMOVE':
             let file_id = action.id;
             let files = {...state.files};

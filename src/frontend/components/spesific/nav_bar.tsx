@@ -28,7 +28,7 @@ const NavBar = (props: any) => {
                 <hr/>
                 <CustomizedMenus style={{width: "100%"}} options={[
                     {content: "contract page", icon: <GavelRoundedIcon/>},
-                    {content: <CreateNote/>, icon: <EditNoteRoundedIcon/>}
+                    {content: <CreateNote/>, preventClose: true}
                 ]}>
                     Create
                 </CustomizedMenus>

@@ -47,4 +47,17 @@ export async function delete_file(file_id: any) {
     }
 }
 
+export async function rename_file(id: any, name: any) {
+    console.log({id, name})
+    switch (PLATFORM) {
+        case "WEB":
+            return await actor.rename_file(id, name);
+        case "DESKTOP":
+            return null;
+        case "MOBILE":
+            return null;
+    }
+}
+
+
 

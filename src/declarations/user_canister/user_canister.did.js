@@ -26,6 +26,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_file' : IDL.Func([IDL.Nat64], [IDL.Opt(FileNode)], ['query']),
     'register' : IDL.Func([RegisterUser], [Result], []),
+    'rename_file' : IDL.Func([IDL.Nat64, IDL.Text], [IDL.Bool], []),
   });
 };
 export const init = ({ IDL }) => { return []; };
