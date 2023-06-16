@@ -27,10 +27,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-/frontend/declarations/*
-/frontend/declarations/
-
 # IDEs
 /.idea
 /.code

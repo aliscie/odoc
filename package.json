@@ -45,7 +45,7 @@
     "prebuild": "dfx generate",
     "deploy:local": "dfx deploy --network=local",
     "deploy:ic": "dfx deploy --network=ic",
-    "generate": "dfx generate backend"
+    "generate": "dfx generate src/backend"
   },
   "eslintConfig": {
     "extends": [

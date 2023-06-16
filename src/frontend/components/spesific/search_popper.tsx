@@ -101,26 +101,34 @@ export default function SearchPopper() {
     }, [handleShortcutKeyPress]);
 
     return (
-        <Draggable handle=".handle"
-                   onDrag={(e: any) => {
-                       // get the height and width from rect
-                       // let h = e.
-                       const topEdge = window.innerHeight - 40
-                       const rightEdge = window.innerWidth - 300
-                       const leftEdge = 40;
-                       if (e.clientX > rightEdge) {
-                           e.style.x = rightEdge
-                       } else if (e.clientX < leftEdge) {
-                           e.style.x = leftEdge
-                       }
-                       if (e.clientY < 55) {
-                           e.style.y = 55
-                       } else if (e.clientY > topEdge) {
-                           e.style.y = topEdge
-                       }
-                   }}
+        <Draggable
+
+
+            handle=".handle"
+            onDrag={(e: any) => {
+                // get the height and width from rect
+                // let h = e.
+                const topEdge = window.innerHeight - 40
+                const rightEdge = window.innerWidth - 300
+                const leftEdge = 40;
+                if (e.clientX > rightEdge) {
+                    e.style.x = rightEdge
+                } else if (e.clientX < leftEdge) {
+                    e.style.x = leftEdge
+                }
+                if (e.clientY < 55) {
+                    e.style.y = 55
+                } else if (e.clientY > topEdge) {
+                    e.style.y = topEdge
+                }
+            }}
         >
-            <Popper open={searchTool} anchorEl={anchorRef.current} placement="bottom-start">
+            <Popper
+                // sx={{background: "var(--background-color)"}}
+                style={{zIndex: 2, color:"var(--text-color)",
+                // TODO why this shows additional rectangle background: "var(--background-color)"
+                }}
+                open={searchTool} anchorEl={anchorRef.current} placement="bottom-start">
                 <Resizable width={width} height={30} onResize={handleResize}>
                     <div
                         className={"card"}

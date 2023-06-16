@@ -1,8 +1,19 @@
 import {backend} from "../backend_connect/main";
 
 export type FilesActions = "ADD" | "REMOVE" | "UPDATE" | "GET" | "GET_ALL";
+
+async function get_files() {
+    let files = await backend.get_files();
+    console.log();
+    if (files.length == 0) {
+        return {}
+    }
+    ;
+    return files[0].reduce((acc, file) => (acc[file[1].id] = file[1], acc), {})
+}
+
 const initialState = {
-    files: (await backend.get_files())[0].reduce((acc, file) => (acc[file[1].id] = file[1], acc), {}),
+    files: await get_files(),
 
 };
 

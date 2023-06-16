@@ -15,7 +15,7 @@ pub struct FileNode {
     pub id: u64,
     pub parent: Option<u64>,
     pub name: String,
-    // pub date: String, // TODO date created
+    pub content: u64,
     #[serde(default)]
     pub children: Vec<u64>,
 }
@@ -27,6 +27,7 @@ impl FileNode {
             id,
             parent,
             name: name.clone(),
+            content: 0,
             children: Vec::new(),
         };
 
@@ -92,6 +93,11 @@ impl FileNode {
 
             let deleted_file = user_files_map.remove(&file_id)?;
 
+            // Recursively delete children files
+            for child in deleted_file.children.clone() {
+                FileNode::delete_children_recursive(&child, user_files_map);
+            }
+
             // Remove the file ID from its parent's children list
             if let Some(parent_id) = deleted_file.parent {
                 if let Some(parent_file) = user_files_map.get_mut(&parent_id) {
@@ -103,6 +109,13 @@ impl FileNode {
         })
     }
 
+    fn delete_children_recursive(file_id: &u64, files_map: &mut HashMap<u64, FileNode>) {
+        if let Some(file) = files_map.remove(file_id) {
+            for child_id in file.children {
+                FileNode::delete_children_recursive(&child_id, files_map);
+            }
+        }
+    }
     pub fn move_file(file_id: u64, new_parent: Option<u64>) -> Option<()> {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();
@@ -110,7 +123,7 @@ impl FileNode {
             let mut user_files = files_store.borrow_mut();
             let user_files_map = user_files.get_mut(&principal_id)?;
 
-            if let Some(file) = user_files_map.get_mut(&file_id) {
+            if let Some(file) = user_files_map.clone().get_mut(&file_id) {
                 let old_parent = file.parent;
 
                 // Remove the file ID from its old parent's children list

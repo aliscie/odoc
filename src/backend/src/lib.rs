@@ -18,24 +18,29 @@ use files::FileNode;
 use user::*;
 use user::*;
 
+use crate::files_content::ContentNode;
 use crate::user::User;
 
 mod user;
 mod media;
 mod files;
+mod files_content;
 
+type FileId = u64;
+type ContentId = u64;
+type ContentTree = HashMap<ContentId, ContentNode>;
+
+// Stores types
 type IdStore = BTreeMap<String, Principal>;
 type ProfileStore = BTreeMap<Principal, User>;
-type FilesStore = BTreeMap<Principal, HashMap<u64, FileNode>>;
-
-// TODO User canister storage for dynamic user canister
-// type ProfileStore = User;
-// type FilesStore = BTreeMap<HashMap<u64, FileNode>>;
+type FilesStore = BTreeMap<Principal, HashMap<FileId, FileNode>>;
+type ContentStore = BTreeMap<Principal, HashMap<FileId, ContentTree>>;
 
 thread_local! {
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
     static ID_STORE: RefCell<IdStore> = RefCell::default();
     static USER_FILES: RefCell<FilesStore> = RefCell::default();
+    // static FILE_CONTENTS: RefCell<FilesStore> = RefCell::default();
 }
 
 #[cfg(test)]

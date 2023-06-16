@@ -4,7 +4,7 @@ import NavBar from "./components/spesific/nav_bar";
 import Pages from "./pages/main";
 import {BrowserRouter} from "react-router-dom";
 import {NavAppBar} from "./components/spesific/app_bar";
-import SearchPopper from "./components/genral/search_popper";
+import SearchPopper from "./components/spesific/search_popper";
 import ModeThemeProvider from "./components/genral/theme_provider";
 
 
@@ -28,11 +28,11 @@ function App() {
     return (
         <BrowserRouter>
             <ModeThemeProvider>
-
+                <SearchPopper/>
                 <div>
                     <NavAppBar/>
                     <NavBar>
-                        <SearchPopper/>
+
                         <Pages/>
                     </NavBar>
                 </div>
