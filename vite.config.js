@@ -10,21 +10,21 @@ let localEnv = true;
 let network = "local";
 
 function initCanisterIds() {
-  try {
-    localCanisters = require(path.resolve(
-      ".dfx",
-      "local",
-      "canister_ids.json"
-    ));
-  } catch (error) {
-    console.log("No local canister_ids.json found. Continuing production");
-  }
-  try {
-    prodCanisters = require(path.resolve("canister_ids.json"));
-    localEnv = false;
-  } catch (error) {
-    console.log("No production canister_ids.json found. Continuing with local");
-  }
+    try {
+        localCanisters = require(path.resolve(
+            ".dfx",
+            "local",
+            "canister_ids.json"
+        ));
+    } catch (error) {
+        console.log("No local canister_ids.json found. Continuing production");
+    }
+    try {
+        prodCanisters = require(path.resolve("canister_ids.json"));
+        localEnv = false;
+    } catch (error) {
+        console.log("No production canister_ids.json found. Continuing with local");
+    }
 
     network = process.env.NODE_ENV === "production" && !localEnv ? "ic" : "local";
 
@@ -39,7 +39,7 @@ const isDevelopment = process.env.NODE_ENV !== "production" || localEnv;
 
 initCanisterIds();
 
-const asset_entry = path.join("frontend", "assets", "frontend", "index.html");
+const asset_entry = path.join("src", "frontend", "assets", "frontend", "index.html");
 
 // List of all aliases for canisters
 // This will allow us to: import { canisterName } from "canisters/canisterName"
