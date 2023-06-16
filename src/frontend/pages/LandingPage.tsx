@@ -18,7 +18,7 @@ const data = [
     },
     {
         title: "Formula and tables",
-        content: "Similar to Microsoft Excel, you will have a spreadsheet where you can store your data and implement formulas. Also, with plugins, you can implement custom formulas like a Google translator. Last but not least, you can use these spreadsheets as a backend for your services. In other words, the components will act as a frontend that interacts with this spreadsheet."
+        content: "Similar to Microsoft Excel, you will have a spreadsheet where you can store your data and implement formulas. Also, with plugins, you can implement custom formulas like a Google translator. Last but not least, you can use these spreadsheets as a user_canister for your services. In other words, the components will act as a frontend that interacts with this spreadsheet."
     },
     {
         title: "Plugins",

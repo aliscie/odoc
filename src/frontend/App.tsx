@@ -6,6 +6,7 @@ import {BrowserRouter} from "react-router-dom";
 import {NavAppBar} from "./components/spesific/app_bar";
 import SearchPopper from "./components/spesific/search_popper";
 import ModeThemeProvider from "./components/genral/theme_provider";
+import {SnackbarProvider} from "notistack";
 
 
 function App() {
@@ -28,15 +29,20 @@ function App() {
     return (
         <BrowserRouter>
             <ModeThemeProvider>
-                <SearchPopper/>
-                <div>
-                    <NavAppBar/>
-                    <NavBar>
 
-                        <Pages/>
-                    </NavBar>
-                </div>
+
+                <SearchPopper/>
+                <SnackbarProvider maxSnack={3}>
+                    <div>
+                        <NavAppBar/>
+                        <NavBar>
+
+                            <Pages/>
+                        </NavBar>
+                    </div>
+                </SnackbarProvider>
             </ModeThemeProvider>
+
         </BrowserRouter>
     )
         ;

@@ -1,5 +1,5 @@
 .loader {
-    display: block;
+    display: inline-block;
     position: relative;
     height: 12px;
     width: 200px;

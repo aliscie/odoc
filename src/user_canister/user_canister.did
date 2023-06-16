@@ -1,5 +1,6 @@
 type FileNode = record {
   id : nat64;
+  content : nat64;
   name : text;
   children : vec nat64;
   parent : opt nat64;

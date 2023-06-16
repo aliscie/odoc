@@ -26,6 +26,7 @@
     "esbuild-wasm": "^0.17.19",
     "flowbite": "^1.6.5",
     "flowbite-react": "^0.4.6",
+    "notistack": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-draggable": "^4.4.5",
@@ -45,7 +46,7 @@
     "prebuild": "dfx generate",
     "deploy:local": "dfx deploy --network=local",
     "deploy:ic": "dfx deploy --network=ic",
-    "generate": "dfx generate src/backend"
+    "generate": "dfx generate src/user_canister"
   },
   "eslintConfig": {
     "extends": [

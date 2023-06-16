@@ -1,14 +1,9 @@
 import {AuthClient} from "@dfinity/auth-client";
 import {Actor, HttpAgent} from "@dfinity/agent";
 import {idlFactory} from "../../declarations/backend";
-
-// const {ic} = window;
-// const {plug} = ic;
+import {canisterId} from "./handle_vars";
 
 let backendActor, loading = false
-
-// CANISTER_ID is replaced by webpack based on node environment
-const canisterId = import.meta.env.VITE_BACKEND_CANISTER_ID;
 
 const createActor = (canisterId, options = {}) => {
     const agent = options.agent || new HttpAgent({...options.agentOptions});
@@ -37,6 +32,9 @@ const createActor = (canisterId, options = {}) => {
     });
 };
 
+// get center canister actor
+
+
 
 export const get_actor = async () => {
     await new Promise(resolve => !loading && resolve());
@@ -44,25 +42,6 @@ export const get_actor = async () => {
     loading = true
 
     if (!backendActor) {
-        // if (import.meta.env.VITE_USE_WALLET) {
-        //     try {
-        //         if (!(await is_logged())) {
-        //             await plug.requestConnect({
-        //                 whitelist: [import.meta.env.VITE_BACKEND_CANISTER_ID],
-        //                 host: import.meta.env.VITE_DFX_NETWORK === "ic" ? 'https://mainnet.dfinity.network' : 'http://localhost:8510',
-        //                 timeout: 50000,
-        //                 onConnectionUpdate: () => {
-        //                     console.log('sessionData: ', plug.sessionManager.sessionData)
-        //                 },
-        //             });
-        //         }
-        //     } catch (e) {
-        //         console.log(e)
-        //         return
-        //     }
-        //
-        //     backendActor = await plug.createActor({canisterId, interfaceFactory: idlFactory, agent: plug.agent});
-        // } else {
         const authClient = await AuthClient.create();
         const identity = await authClient.getIdentity();
         backendActor = createActor(canisterId, {
