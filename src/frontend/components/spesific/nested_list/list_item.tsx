@@ -14,6 +14,7 @@ import {handleRedux} from "../../../redux/main";
 import {Input} from "@mui/material";
 import {backend} from "../../../backend_connect/main";
 import DeleteFile from "../../actions/delete_file";
+import RenameFile from "../../actions/rename_file";
 
 interface ItemProps {
     data: Record<number, NestedDataItem>; // Use Record<number, NestedDataItem> instead of any
@@ -37,29 +38,17 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
     path = path.replace(/\s+/g, '-').toLowerCase();
 
 
-    const ref = React.useRef(null);
 
-    async function handleRenameFile(e: any) {
-        ref.current.focus()
-        // select all text
-        // document.execCommand('selectAll', false, null);
-        console.log(ref.current.value)
-    }
 
-    async function onChange(e: any) {
-        ref.current.focus()
-        ref.current.value = e.target.value
-        console.log(ref.current.value)
-    }
+
+
 
     let options = [
         {
-            content: "save",
+            content: <RenameFile item={item}/>,
             preventClose: true,
-            onClick: handleRenameFile,
-            icon: <Input onChange={onChange} ref={ref} autoFocus={true} placeholder={item.name}/>
         },
-        {content: <DeleteFile item={item}/>, icon: <DeleteIcon size={"small"}/>},
+        {content: <DeleteFile item={item}/>},
     ]
 
     return (

@@ -18,4 +18,5 @@ export interface _SERVICE {
   'get_all_files' : ActorMethod<[], [] | [Array<[bigint, FileNode]>]>,
   'get_file' : ActorMethod<[bigint], [] | [FileNode]>,
   'register' : ActorMethod<[RegisterUser], Result>,
+  'rename_file' : ActorMethod<[bigint, string], boolean>,
 }

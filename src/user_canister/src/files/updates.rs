@@ -24,3 +24,10 @@ fn create_new_file(name: String, parent: Option<u64>) -> FileNode {
 fn delete_file(id: u64) -> Option<FileNode> {
     FileNode::delete_file(id)
 }
+
+
+#[update]
+#[candid_method(update)]
+fn rename_file(id: u64, name: String) -> bool {
+    FileNode::rename_file(id, name)
+}

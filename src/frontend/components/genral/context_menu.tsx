@@ -2,7 +2,6 @@ import * as React from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import {ListItemIcon} from "@mui/material";
-import {ContentCut} from "@mui/icons-material";
 
 export default function ContextMenu(props: any) {
     const [contextMenu, setContextMenu] = React.useState<{
@@ -25,9 +24,8 @@ export default function ContextMenu(props: any) {
         );
     };
 
-    const handleClose = (is_prevent) => {
-        console.log(is_prevent)
-        !is_prevent && setContextMenu(null);
+    const handleClose = () => {
+        setContextMenu(null);
     };
 
     return (
@@ -45,7 +43,7 @@ export default function ContextMenu(props: any) {
             >
                 {props.options.map((item: any) =>
                     <MenuItem onMouseUp={() => {
-                        handleClose(item.preventClose)
+                        !item.preventClose && handleClose()
                     }}>
                         {item.icon && <ListItemIcon>
                             {item.icon}

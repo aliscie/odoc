@@ -7,6 +7,7 @@ interface MenuOption {
     content: any;
     icon?: React.ReactNode;
     handleClick?: (e?: any) => void;
+    preventClose?: boolean;
 
 }
 
@@ -46,10 +47,10 @@ const BasicMenu: React.FC<BasicMenuProps> = ({style, options, children}) => {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                {options.map((option, index) => (
+                {options.map((option, index, preventClose) => (
                     <MenuItem key={index} onClick={async (e: any) => {
                         option.handleClick && await option.handleClick(e);
-                        handleClose()
+                        !preventClose && handleClose()
                     }}>
                         {option.icon && option.icon}
                         {option.content}
