@@ -27,11 +27,11 @@ export function BreadPage() {
                 const to = `/${pathnames.slice(0, index + 1).join('/')}`;
                 return last ? (
                     <Typography sx={{color: "var(--color)"}} key={to}>
-                        {pathnames[index]}
+                        {pathnames[index].replaceAll("_", " ")}
                     </Typography>
                 ) : (
                     <LinkRouter underline="hover" color="inherit" to={to} key={to}>
-                        {pathnames[index]}
+                        {pathnames[index].replaceAll("_", " ")}
                     </LinkRouter>
                 );
             })}

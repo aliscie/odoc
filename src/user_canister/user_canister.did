@@ -1,3 +1,24 @@
+type Column = record {
+  _type : ColumnTypes;
+  filters : vec Filter;
+  permissions : vec ColumnPermission;
+  name : text;
+  formula : opt text;
+};
+type ColumnPermission = record {
+  _type : PermissionType;
+  granted_to : vec principal;
+};
+type ColumnTypes = variant { Tag; Date; File; Text; Person; Category; Number };
+type ContentData = variant { Comment : text; Image : vec nat64; Table : Table };
+type ContentNode = record {
+  id : nat64;
+  _type : text;
+  data : opt ContentData;
+  "text" : text;
+  children : vec nat64;
+  parent : opt nat64;
+};
 type FileNode = record {
   id : nat64;
   content : nat64;
@@ -5,14 +26,30 @@ type FileNode = record {
   children : vec nat64;
   parent : opt nat64;
 };
+type Filter = record {
+  name : text;
+  operations : vec Operation;
+  formula : opt text;
+};
+type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
+type PermissionType = variant { CanRead; CanUpdate };
 type RegisterUser = record { name : text; description : text };
-type Result = variant { Ok : User; Err : text };
+type Result = variant { Ok : text; Err : text };
+type Result_1 = variant { Ok : User; Err : text };
+type Row = record { data : vec record { text; text } };
+type Table = record { rows : vec Row; columns : vec Column };
 type User = record { name : text; description : text };
 service : {
+  content_updates : (nat64, opt nat64, text) -> (Result);
   create_new_file : (text, opt nat64) -> (FileNode);
   delete_file : (nat64) -> (opt FileNode);
+  get_all_contracts : () -> (text) query;
   get_all_files : () -> (opt vec record { nat64; FileNode }) query;
+  get_all_files_content : () -> (
+      vec record { nat64; vec record { nat64; ContentNode } },
+    ) query;
   get_file : (nat64) -> (opt FileNode) query;
-  register : (RegisterUser) -> (Result);
+  get_file_content : (nat64) -> (opt vec record { nat64; ContentNode }) query;
+  register : (RegisterUser) -> (Result_1);
   rename_file : (nat64, text) -> (bool);
 }

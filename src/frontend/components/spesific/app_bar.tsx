@@ -91,6 +91,7 @@ export function NavAppBar() {
                         src="https://avatars.githubusercontent.com/u/58806996?v=4"/>
             </BasicMenu> : <Button onClick={handleLogin}> login</Button>}
                 </span>
+            {/*TODO make action component for this <Button>Save</Button>*/}
         </TopNavBar>
     )
 

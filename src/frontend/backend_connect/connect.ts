@@ -59,5 +59,16 @@ export async function rename_file(id: any, name: any) {
     }
 }
 
+export async function get_all_files_content() {
+    switch (PLATFORM) {
+        case "WEB":
+            return await actor.get_all_files_content();
+        case "DESKTOP":
+            return null;
+        case "MOBILE":
+            return null;
+    }
+}
+
 
 

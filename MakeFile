@@ -8,4 +8,4 @@ start:
 	./scripts/start.sh
 
 kill:
-	kill -INT $(lsof -t -i :4943)
+	kill -INT $(lsof -t -i :45068)
