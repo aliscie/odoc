@@ -15,6 +15,7 @@ use ic_cdk_macros::*;
 
 use files::*;
 use files::FileNode;
+use storage_schema::*;
 use user::*;
 use user::*;
 
@@ -25,22 +26,15 @@ mod user;
 mod media;
 mod files;
 mod files_content;
-
-type FileId = u64;
-type ContentId = u64;
-type ContentTree = HashMap<ContentId, ContentNode>;
-
-// Stores types
-type IdStore = BTreeMap<String, Principal>;
-type ProfileStore = BTreeMap<Principal, User>;
-type FilesStore = BTreeMap<Principal, HashMap<FileId, FileNode>>;
-type ContentStore = BTreeMap<Principal, HashMap<FileId, ContentTree>>;
+mod agreement_contract;
+mod storage_schema;
+mod tables;
 
 thread_local! {
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
     static ID_STORE: RefCell<IdStore> = RefCell::default();
     static USER_FILES: RefCell<FilesStore> = RefCell::default();
-    // static FILE_CONTENTS: RefCell<FilesStore> = RefCell::default();
+    static FILE_CONTENTS: RefCell<FileContentsStore> = RefCell::default();
 }
 
 #[cfg(test)]

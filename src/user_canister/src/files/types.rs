@@ -6,6 +6,7 @@ use candid::{CandidType, Deserialize};
 
 use crate::{USER_FILES};
 use std::sync::atomic::{AtomicU64, Ordering};
+use crate::files_content::ContentNode;
 
 static COUNTER: AtomicU64 = AtomicU64::new(0);
 
@@ -46,7 +47,6 @@ impl FileNode {
                 }
             }
         });
-
         file
     }
 
@@ -62,17 +62,16 @@ impl FileNode {
     // }
 
 
-    pub fn get_file(file_id: u64) -> Self {
+    pub fn get_file(file_id: u64) -> Option<Self> {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();
 
             let user_files = files_store.borrow();
-            let user_files_map = user_files.get(&principal_id).unwrap();
-
-            user_files_map.get(&file_id).unwrap().clone()
+            let user_files_map = user_files.get(&principal_id)?;
+            // let user_files_map = user_files.get(&principal_id).unwrap();
+            user_files_map.get(&file_id).cloned()
         })
     }
-
     pub fn get_all_files() -> Option<HashMap<u64, FileNode>> {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();

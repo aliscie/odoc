@@ -26,22 +26,20 @@ interface ItemProps {
 }
 
 const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handleClick, path = null, pl = 1}) => {
+    const dispatch = useDispatch();
+
     const html_file_id = `file${item.id}`;
     const isOpen = openItems.includes(index);
     const hasChildren = item.children.length > 0;
 
     const handleItemClick = () => {
         handleClick(index);
+        dispatch(handleRedux("CURRENT_FILE", {id: item.id, name: item.name}));
     };
 
     path = path ? path : item.name;
-    path = path.replace(/\s+/g, '-').toLowerCase();
-
-
-
-
-
-
+    path = path.replace(/\s+/g, '_').toLowerCase();
+    path = path.replaceAll(".", "")
 
     let options = [
         {
