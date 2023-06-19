@@ -1,3 +1,4 @@
+# Please note the name changed from AUTODOX to ODOC just sound better.
 ## old version of Odoc can be found [here](https://github.com/aliscie/Odoc-old)
 ## TO get started
   1. `dfx start --background --clean`
