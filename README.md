@@ -1,5 +1,5 @@
 # Please note the name changed from AUTODOX to ODOC just sound better.
-## old version of Odoc can be found [here](https://github.com/aliscie/Odoc-old)
+## old version of Autodox can be found [here](https://github.com/aliscie/autodox-old)
 ## TO get started
   1. `dfx start --background --clean`
   2. `dfx deploy backend`
