@@ -32,35 +32,6 @@ pub struct ContentNode {
 }
 
 impl ContentNode {
-    // pub fn new(file_id: u64, parent_id: Option<u64>, node_type: String, text: String, data: Option<ContentData>) -> Self {
-    //     let content_id = COUNTER.fetch_add(1, Ordering::Relaxed);
-    //     let caller_principal = ic_cdk::api::caller();
-    //     // Create the new content node
-    //     let new_node = ContentNode {
-    //         id: content_id,
-    //         parent: parent_id,
-    //         _type: node_type,
-    //         text,
-    //         data,
-    //         children: Vec::new(),
-    //     };
-    //
-    //     FILE_CONTENTS.with(|contents| {
-    //         let mut content_tree = contents.borrow_mut();
-    //         // Get the content tree for the caller's principal
-    //         let file_contents = content_tree.entry(caller_principal).or_insert_with(HashMap::new);
-    //
-    //         // Get the content tree for the file ID within the caller's content tree
-    //         let file_content_tree = file_contents.entry(file_id).or_insert_with(ContentTree::new);
-    //
-    //
-    //         // Store the new node in the content tree
-    //         file_content_tree.insert(content_id, new_node.clone());
-    //     });
-    //
-    //     return new_node;
-    // }
-
     pub fn get_file_content(file_id: u64) -> Option<ContentTree> {
         FILE_CONTENTS.with(|file_contents| {
             let file_contents = file_contents.borrow();
@@ -95,9 +66,9 @@ impl ContentNode {
         let mut new_node = ContentNode {
             id: 0, // The actual ID will be assigned later
             parent: content_parent_id,
-            _type: String::new(), // Set the appropriate type
+            _type: node_type, // Set the appropriate type
             text,
-            data: None, // Set the appropriate data
+            data, // Set the appropriate data
             children: Vec::new(),
         };
 
@@ -136,5 +107,35 @@ impl ContentNode {
         });
 
         Some(new_node)
+    }
+
+    pub fn update_file_contents(file_id: u64, content_nodes: ContentTree) {
+        FILE_CONTENTS.with(|file_contents| {
+            let mut contents = file_contents.borrow_mut();
+
+            let caller_principal = ic_cdk::api::caller();
+            let file_contents_map = contents.entry(caller_principal).or_insert_with(HashMap::new);
+            let file_content_tree: &mut ContentTree = file_contents_map.entry(file_id).or_insert_with(ContentTree::new);
+            file_content_tree.extend(content_nodes);
+
+            // for content_node in content_nodes {
+            //     if let Some(existing_node) = file_content_tree.get_mut(&content_node.id) {
+            //         *existing_node = content_node;
+            //     } else {
+            //         file_content_tree.insert(content_node.id, content_node);
+            //     }
+            // }
+        });
+    }
+
+    pub fn delete_file_content(file_id: u64) {
+        FILE_CONTENTS.with(|file_contents| {
+            let mut contents = file_contents.borrow_mut();
+
+            let caller_principal = ic_cdk::api::caller();
+            if let Some(file_contents_map) = contents.get_mut(&caller_principal) {
+                file_contents_map.remove(&file_id);
+            }
+        });
     }
 }

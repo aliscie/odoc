@@ -39,6 +39,8 @@ thread_local! {
 
 #[cfg(test)]
 mod tests {
+    use candid::Principal;
+
     use std::borrow::Cow;
     use std::env;
     use std::fs::{create_dir_all, write};
@@ -48,8 +50,23 @@ mod tests {
     use ic_cdk::export::candid::{
         candid_method, CandidType, check_prog, Deserialize, export_service, IDLProg, TypeEnv,
     };
+    use serde::de::Unexpected::Str;
 
     use super::*;
+
+
+
+    // #[test]
+    // fn test_create() {
+    //     // Create a mock caller instance
+    //     let mock_caller = MockCaller;
+    //
+    //     // Set the mock caller as the current caller
+    //     ic_cdk::api::set_caller(Box::new(mock_caller));
+    //
+    //     let file = FileNode::new(String::from("hi"), None);
+    //     println!("----------------new file id is  {:#?}", "file.id");
+    // }
 
     #[test]
     fn save_candid_2() {

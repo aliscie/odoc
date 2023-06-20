@@ -1,113 +1,65 @@
-import {useSelector} from "react-redux";
-import Editor from "dox-editor";
+import {useDispatch, useSelector} from "react-redux";
 import * as React from "react";
+import Editor from "odoc-editor";
+import {EditorRenderer} from "../components/genral/editor_demo";
+import {handleRedux} from "../redux/main";
+import {logger} from "../dev_utils/log_data";
 
-interface Node {
-    id: number;
-    _type: string;
-    text: string;
-    children: Node[];
-}
-
-interface DataMap {
-    [id: number]: { id: number; _type: string; text: string; children: number[] };
-}
-
-export function convertDataStructure(data: any): Node[] {
-    const roots: Node[] = [];
-    const visited: Set<number> = new Set();
-
-    for (const nodeId in data) {
-        const node = data[nodeId];
-        if (!visited.has(node.id)) {
-            let item = buildTree(node.value, data, visited);
-            // remove field text
-            delete item.text;
-            roots.push(item);
-        }
-    }
-
-    return roots;
-}
-
-function buildTree(
-    node: { id: number; _type: string; text: string; children: number[] },
-    data: DataMap,
-    visited: Set<number>
-): any {
-    visited.add(node.id);
-
-    let children: any[] = [];
-    if (node.children.length > 0) {
-        for (const childId of node.children) {
-            const child = data[childId];
-            if (!visited.has(child.id)) {
-                children.push(buildTree(child.value, data, visited));
-            }
-        }
-    }
-    if (children.length > 0 && node.text.length > 0) {
-        // children.push({text: node.text, type: "", id: node.id});
-        children = [...children, {text: node.text, id: node.id}];
-        return {
-            id: Number(node.id),
-            type: node._type,
-            children,
-        };
-    }
-
-    if (children.length > 0) {
-
-        return {
-            id: Number(node.id),
-            type: node._type,
-            text: node.text,
-            children,
-        };
-    }
-
-    return {
-        id: Number(node.id),
-        type: node._type,
-        text: node.text,
-    };
-}
-
-
-
+let test_data = [
+    {
+        id: 9,
+        type: "h1",
+        children: [{id: 10, text: "title ."}],
+    },
+    {
+        id: 10,
+        type: "new",
+        children: [{id: 10, type: "", text: "child is here."}],
+    },
+];
 
 function FileContentPage(props: any) {
     let {searchValue} = useSelector((state: any) => state.uiReducer);
-    const {current_file, files_content} = useSelector((state: any) => state.filesReducer);
-    // const [state, setState] = React.useState<any>(dummy);
+    const {current_file, files_content} = useSelector(
+        (state: any) => state.filesReducer
+    );
+    const dispatch = useDispatch();
 
-    console.log(current_file.id != null, {current_file, files_content})
+    function onChange(changes: any) {
+        dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: changes}));
+        dispatch(handleRedux("FILES_CHANGED"));
+    }
+
+    const editorKey = current_file.name || ""; // Provide a key based on current_file.name
+
     if (current_file.id != null) {
         let content = files_content[current_file.id];
-        // let proceeded_content = convertDataStructure(content);
-        // stringify proceeded_content
-        // console.log(JSON.stringify(proceeded_content))
-        // setState(proceeded_content);
-        console.log({content})
-        // stringify content
-        console.log(JSON.stringify(content))
-        return (<span style={{margin: '3px', marginLeft: "20%", marginRight: "10%"}}>
-            {current_file.name && <>
+        console.log({content});
+        logger(content)
+        return (
+            <span style={{margin: "3px", marginLeft: "20%", marginRight: "10%"}}>
+        {current_file.name && (
+            <>
                 <h1 contentEditable={true}>{current_file.name}</h1>
                 <Editor
+                    key={editorKey} // Add key prop to trigger re-render
+                    onChange={onChange}
+                    renderElement={EditorRenderer}
                     searchOptions={"gi"}
                     search={searchValue}
-                    // element_render={EditorRenderer}
-                    data={content}
+                    data={content || []}
                 />
-            </>}
-        </span>);
+            </>
+        )}
+      </span>
+        );
     }
-    return <span>
-        404
-        dummy
+    return (
+        <span>
+      404
+      dummy
     </span>
-
+    );
 }
 
 export default FileContentPage;

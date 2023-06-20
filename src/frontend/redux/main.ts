@@ -15,6 +15,5 @@ const store = createStore(combineReducers({
     uiReducer,
     filesReducer
 }));
-console.log({state: store.getState()});
 
 export default store;

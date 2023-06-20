@@ -19,6 +19,7 @@ import Tooltip from "@mui/material/Tooltip";
 import {BreadPage} from "../genral/breadcrumbs";
 import CopyButton from "../genral/copy_link";
 import {agent} from "../../backend_connect/main";
+import ContentSave from "../actions/contents_save";
 
 export function NavAppBar() {
 
@@ -35,18 +36,12 @@ export function NavAppBar() {
     }
 
     useEffect(() => {
-        let login_item = document.getElementById("login_item");
-        login_item.classList.add("loader")
         loginProfile()
-        login_item.classList.remove("loader")
 
     }, [])
 
     async function handleLogin() {
-        let login_item = document.getElementById("login_item");
-        login_item.classList.add("loader")
         await agent.identify()
-        login_item.classList.remove("loading")
     }
 
     async function handleLogout() {
@@ -81,7 +76,6 @@ export function NavAppBar() {
                     {searchTool ? <CloseIcon/> : <SearchIcon/>}
                 </IconButton>
             </Tooltip>
-            <span id={"login_item"}>
             {isLoggedIn ? <BasicMenu options={[
                 {content: "profile", icon: <GavelRoundedIcon/>},
                 {content: "settings", icon: <EditNoteRoundedIcon/>},
@@ -90,8 +84,7 @@ export function NavAppBar() {
                 <Avatar style={{display: "inline"}} alt="Remy Sharp"
                         src="https://avatars.githubusercontent.com/u/58806996?v=4"/>
             </BasicMenu> : <Button onClick={handleLogin}> login</Button>}
-                </span>
-            {/*TODO make action component for this <Button>Save</Button>*/}
+            <ContentSave/>
         </TopNavBar>
     )
 

@@ -28,7 +28,6 @@ export function uiReducer(state = initialState, action: any) {
                 isDarkMode: !state.isDarkMode,
             };
         case 'SEARCH':
-            console.log(state, action.searchValue);
             return {
                 ...state,
                 searchValue: action.searchValue,
@@ -45,10 +44,6 @@ export function uiReducer(state = initialState, action: any) {
                 isLoggedIn: true,
             };
         case 'SEARCH_TOOL':
-            console.log({
-                ...state,
-                searchTool: !state.searchTool,
-            });
             return {
                 ...state,
                 searchTool: !state.searchTool,

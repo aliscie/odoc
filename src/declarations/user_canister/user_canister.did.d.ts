@@ -3,9 +3,9 @@ import type { ActorMethod } from '@dfinity/agent';
 
 export interface Column {
   '_type' : ColumnTypes,
+  'field' : string,
   'filters' : Array<Filter>,
   'permissions' : Array<ColumnPermission>,
-  'name' : string,
   'formula' : [] | [string],
 }
 export interface ColumnPermission {
@@ -53,11 +53,14 @@ export type Result = { 'Ok' : string } |
   { 'Err' : string };
 export type Result_1 = { 'Ok' : User } |
   { 'Err' : string };
-export interface Row { 'data' : Array<[string, string]> }
-export interface Table { 'rows' : Array<Row>, 'columns' : Array<Column> }
+export interface Table {
+  'rows' : Array<Array<[string, string]>>,
+  'columns' : Array<Column>,
+}
 export interface User { 'name' : string, 'description' : string }
 export interface _SERVICE {
   'content_updates' : ActorMethod<[bigint, [] | [bigint], string], Result>,
+  'create_agreement' : ActorMethod<[string], [] | [ContentNode]>,
   'create_new_file' : ActorMethod<[string, [] | [bigint]], FileNode>,
   'delete_file' : ActorMethod<[bigint], [] | [FileNode]>,
   'get_all_contracts' : ActorMethod<[], string>,
@@ -70,6 +73,10 @@ export interface _SERVICE {
   'get_file_content' : ActorMethod<
     [bigint],
     [] | [Array<[bigint, ContentNode]>]
+  >,
+  'multi_files_content_updates' : ActorMethod<
+    [Array<Array<[bigint, Array<[bigint, ContentNode]>]>>],
+    Result
   >,
   'register' : ActorMethod<[RegisterUser], Result_1>,
   'rename_file' : ActorMethod<[bigint, string], boolean>,
