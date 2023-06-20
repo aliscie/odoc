@@ -1,7 +1,25 @@
 import {backend} from "../backend_connect/main";
-import {convertDataStructure} from "../pages/file_content_page";
+import {convertDataStructure} from "../data_processing/file_content_processing";
 
-export type FilesActions = "ADD" | "REMOVE" | "UPDATE" | "GET" | "GET_ALL" | "UPDATE" | "CURRENT_FILE";
+export type FilesActions =
+    "ADD"
+    | "REMOVE"
+    | "UPDATE"
+    | "GET"
+    | "GET_ALL"
+    | "UPDATE"
+    | "CURRENT_FILE"
+    | "UPDATE_CONTENT"
+    | "FILES_SAVED"
+    | "FILES_CHANGED";
+
+const initialState = {
+    files: await get_files(),
+    files_content: await getFilesContents(),
+    current_file: {id: null, name: null},
+    is_files_saved: true,
+};
+
 
 async function getFilesContents() {
     let data = {};
@@ -16,9 +34,7 @@ async function getFilesContents() {
         data[file[0]] = content;
     });
     for (let [key, value] of Object.entries(data)) {
-        // console.log({key, value});
         data[key] = convertDataStructure(value);
-        // console.log({p});
     }
 
     return data
@@ -27,7 +43,6 @@ async function getFilesContents() {
 
 async function get_files() {
     let files = await backend.get_files();
-    console.log();
     if (files.length == 0) {
         return {}
     }
@@ -35,14 +50,8 @@ async function get_files() {
     return files[0].reduce((acc, file) => (acc[file[1].id] = file[1], acc), {})
 }
 
-const initialState = {
-    files: await get_files(),
-    files_content: await getFilesContents(),
-    current_file: {id: null, name: null},
-};
 
-
-export function filesReducer(state = initialState, action: { type: FilesActions, id?: any, file?: any, name: any }) {
+export function filesReducer(state = initialState, action: { type: FilesActions, id?: any, file?: any, name: any, content?: any }) {
     switch (action.type) {
         case 'ADD':
             return {
@@ -50,7 +59,6 @@ export function filesReducer(state = initialState, action: { type: FilesActions,
                 files: {...state.files, [action.data.id]: action.data},
             };
         case 'UPDATE':
-            console.log("before", action)
             return {
                 ...state,
                 files: {...state.files, [action.id]: action.file},
@@ -67,6 +75,22 @@ export function filesReducer(state = initialState, action: { type: FilesActions,
             return {
                 ...state,
                 current_file: {id: action.id, name: action.name},
+            }
+        case 'UPDATE_CONTENT':
+            state.files_content[action.id] = action.content;
+            return {
+                ...state,
+            }
+        case 'FILES_SAVED':
+            state.files_content[action.id] = action.content;
+            return {
+                ...state,
+                is_files_saved: true
+            }
+        case 'FILES_CHANGED':
+            return {
+                ...state,
+                is_files_saved: false
             }
         default:
             return state;

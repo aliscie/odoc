@@ -4,7 +4,6 @@ type Platform = "WEB" | "DESKTOP" | "MOBILE";
 
 let PLATFORM: Platform = (process.env.PLATFORM as Platform) || "WEB";
 
-console.log({PLATFORM});
 
 export async function get_files() {
     switch (PLATFORM) {
@@ -48,7 +47,6 @@ export async function delete_file(file_id: any) {
 }
 
 export async function rename_file(id: any, name: any) {
-    console.log({id, name})
     switch (PLATFORM) {
         case "WEB":
             return await actor.rename_file(id, name);
@@ -62,13 +60,38 @@ export async function rename_file(id: any, name: any) {
 export async function get_all_files_content() {
     switch (PLATFORM) {
         case "WEB":
-            return await actor.get_all_files_content();
+            let res = await actor.get_all_files_content();
+            console.log({res})
+            return res
         case "DESKTOP":
             return null;
         case "MOBILE":
             return null;
     }
 }
+
+export async function multi_update(updates: any) {
+    switch (PLATFORM) {
+        case "WEB":
+            return await actor.multi_files_content_updates(updates);
+        case "DESKTOP":
+            return null;
+        case "MOBILE":
+            return null;
+    }
+}
+
+export async function create_agreement(name: string) {
+    switch (PLATFORM) {
+        case "WEB":
+            return await actor.create_agreement(name);
+        case "DESKTOP":
+            return null;
+        case "MOBILE":
+            return null;
+    }
+}
+
 
 
 

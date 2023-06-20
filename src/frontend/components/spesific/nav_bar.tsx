@@ -8,6 +8,7 @@ import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import {Button} from "@mui/material";
 import {Link} from "react-router-dom";
 import CreateNote from "../actions/create_note";
+import CreateAgreement from "../actions/create_agreement";
 
 const NavBar = (props: any) => {
     const {isNavOpen} = useSelector((state: any) => state.uiReducer);
@@ -20,6 +21,7 @@ const NavBar = (props: any) => {
                 style={{width: isNavOpen ? "250px" : 0}}
                 id="mySidenav" className="sidenav card bg-blur">
                 <Link to="/Discover"><Button>Discover</Button></Link>
+                <Link to="/editor_demo"><Button>Editor demo</Button></Link>
                 <Link to="/blog"><Button>Blog</Button></Link>
                 <Link to="/about_us"><Button>About us</Button></Link>
                 <NestedList
@@ -27,7 +29,7 @@ const NavBar = (props: any) => {
                     data={files}/>
                 <hr/>
                 <CustomizedMenus style={{width: "100%"}} options={[
-                    {content: "contract page", icon: <GavelRoundedIcon/>},
+                    {content: <CreateAgreement/>, icon: <GavelRoundedIcon/>},
                     {content: <CreateNote/>, preventClose: true}
                 ]}>
                     Create

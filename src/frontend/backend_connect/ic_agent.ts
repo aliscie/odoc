@@ -38,7 +38,6 @@ const createActor = (canisterId, options = {}) => {
 
 export const get_actor = async () => {
     await new Promise(resolve => !loading && resolve());
-    console.log('get_actor')
     loading = true
 
     if (!backendActor) {

@@ -1,13 +1,5 @@
 export const idlFactory = ({ IDL }) => {
   const Result = IDL.Variant({ 'Ok' : IDL.Text, 'Err' : IDL.Text });
-  const FileNode = IDL.Record({
-    'id' : IDL.Nat64,
-    'content' : IDL.Nat64,
-    'name' : IDL.Text,
-    'children' : IDL.Vec(IDL.Nat64),
-    'parent' : IDL.Opt(IDL.Nat64),
-  });
-  const Row = IDL.Record({ 'data' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)) });
   const ColumnTypes = IDL.Variant({
     'Tag' : IDL.Null,
     'Date' : IDL.Null,
@@ -38,13 +30,13 @@ export const idlFactory = ({ IDL }) => {
   });
   const Column = IDL.Record({
     '_type' : ColumnTypes,
+    'field' : IDL.Text,
     'filters' : IDL.Vec(Filter),
     'permissions' : IDL.Vec(ColumnPermission),
-    'name' : IDL.Text,
     'formula' : IDL.Opt(IDL.Text),
   });
   const Table = IDL.Record({
-    'rows' : IDL.Vec(Row),
+    'rows' : IDL.Vec(IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))),
     'columns' : IDL.Vec(Column),
   });
   const ContentData = IDL.Variant({
@@ -60,6 +52,13 @@ export const idlFactory = ({ IDL }) => {
     'children' : IDL.Vec(IDL.Nat64),
     'parent' : IDL.Opt(IDL.Nat64),
   });
+  const FileNode = IDL.Record({
+    'id' : IDL.Nat64,
+    'content' : IDL.Nat64,
+    'name' : IDL.Text,
+    'children' : IDL.Vec(IDL.Nat64),
+    'parent' : IDL.Opt(IDL.Nat64),
+  });
   const RegisterUser = IDL.Record({
     'name' : IDL.Text,
     'description' : IDL.Text,
@@ -72,6 +71,7 @@ export const idlFactory = ({ IDL }) => {
         [Result],
         [],
       ),
+    'create_agreement' : IDL.Func([IDL.Text], [IDL.Opt(ContentNode)], []),
     'create_new_file' : IDL.Func(
         [IDL.Text, IDL.Opt(IDL.Nat64)],
         [FileNode],
@@ -98,6 +98,17 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Nat64],
         [IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Nat64, ContentNode)))],
         ['query'],
+      ),
+    'multi_files_content_updates' : IDL.Func(
+        [
+          IDL.Vec(
+            IDL.Vec(
+              IDL.Tuple(IDL.Nat64, IDL.Vec(IDL.Tuple(IDL.Nat64, ContentNode)))
+            )
+          ),
+        ],
+        [Result],
+        [],
       ),
     'register' : IDL.Func([RegisterUser], [Result_1], []),
     'rename_file' : IDL.Func([IDL.Nat64, IDL.Text], [IDL.Bool], []),

@@ -36,7 +36,6 @@ const Item: React.FC<ItemProps> = ({data, item, index, openItems, handleClick, i
 
     path = path ? path : item.name;
     path = path.replace(/\s+/g, '-').toLowerCase();
-    console.log(path)
     return (
         <React.Fragment key={item.id}>
             <Link to={path}>

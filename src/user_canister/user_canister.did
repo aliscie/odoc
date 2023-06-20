@@ -1,8 +1,8 @@
 type Column = record {
   _type : ColumnTypes;
+  field : text;
   filters : vec Filter;
   permissions : vec ColumnPermission;
-  name : text;
   formula : opt text;
 };
 type ColumnPermission = record {
@@ -36,11 +36,14 @@ type PermissionType = variant { CanRead; CanUpdate };
 type RegisterUser = record { name : text; description : text };
 type Result = variant { Ok : text; Err : text };
 type Result_1 = variant { Ok : User; Err : text };
-type Row = record { data : vec record { text; text } };
-type Table = record { rows : vec Row; columns : vec Column };
+type Table = record {
+  rows : vec vec record { text; text };
+  columns : vec Column;
+};
 type User = record { name : text; description : text };
 service : {
   content_updates : (nat64, opt nat64, text) -> (Result);
+  create_agreement : (text) -> (opt ContentNode);
   create_new_file : (text, opt nat64) -> (FileNode);
   delete_file : (nat64) -> (opt FileNode);
   get_all_contracts : () -> (text) query;
@@ -50,6 +53,9 @@ service : {
     ) query;
   get_file : (nat64) -> (opt FileNode) query;
   get_file_content : (nat64) -> (opt vec record { nat64; ContentNode }) query;
+  multi_files_content_updates : (
+      vec vec record { nat64; vec record { nat64; ContentNode } },
+    ) -> (Result);
   register : (RegisterUser) -> (Result_1);
   rename_file : (nat64, text) -> (bool);
 }

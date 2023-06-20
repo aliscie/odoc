@@ -2,7 +2,6 @@ import * as React from 'react';
 import Draggable from 'react-draggable';
 import Popper from '@mui/material/Popper';
 import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import CloseIcon from '@mui/icons-material/Close';
@@ -11,14 +10,15 @@ import {Resizable} from 'react-resizable';
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import OpenWithIcon from '@mui/icons-material/OpenWith';
-import {Autocomplete, Tooltip} from '@mui/material';
+import {Tooltip} from '@mui/material';
 import AbcIcon from '@mui/icons-material/Abc';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
+import MultiSelect from "../genral/multi_select";
 
-function OptionItem(props: any) {
+export function OptionItem(props: any) {
     return (
         <Tooltip {...props} title={props.title}>
             <IconButton color={"inherit"}>
@@ -35,30 +35,6 @@ const options = [
     <OptionItem title={"Search with AI"} icon={<AutoFixHighIcon/>}/>,
     <OptionItem title={"Search using regular expression"} icon={<AcUnitIcon/>}/>,
 ];
-
-const MultiSelect = () => {
-    const [selectedOptions, setSelectedOptions] = React.useState([]);
-
-    const handleSelect = (_, value) => {
-        setSelectedOptions(value);
-    };
-
-    return (
-        <Autocomplete
-            style={{display: "inline-block"}}
-            multiple
-            options={options}
-            value={selectedOptions}
-            onChange={handleSelect}
-            renderInput={(params) => (
-                <TextField
-                    {...params}
-                    label={<SearchIcon/>}
-                />
-            )}
-        />
-    );
-};
 
 
 export default function SearchPopper() {
@@ -125,8 +101,9 @@ export default function SearchPopper() {
         >
             <Popper
                 // sx={{background: "var(--background-color)"}}
-                style={{zIndex: 2, color:"var(--text-color)",
-                // TODO why this shows additional rectangle background: "var(--background-color)"
+                style={{
+                    zIndex: 2, color: "var(--text-color)",
+                    // TODO why this shows additional rectangle background: "var(--background-color)"
                 }}
                 open={searchTool} anchorEl={anchorRef.current} placement="bottom-start">
                 <Resizable width={width} height={30} onResize={handleResize}>
@@ -140,7 +117,7 @@ export default function SearchPopper() {
                             className="handle"><OpenWithIcon/></IconButton>
 
                         <div>
-                            <MultiSelect/>
+                            <MultiSelect options={options}/>
 
                             <TextField
                                 size="small"

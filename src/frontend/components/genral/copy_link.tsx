@@ -3,7 +3,13 @@ import {useState} from 'react';
 import IconButton from "@mui/material/IconButton";
 import LinkIcon from "@mui/icons-material/Link";
 import {Tooltip} from "@mui/material";
+import ContextMenu from "./context_menu";
+import MultiSelect from "./multi_select";
 
+const OptionsCom = () => {
+    let options = ["Update", "View", "Comment"];
+    return <MultiSelect options={options}/>
+}
 const CopyButton = () => {
     let [title, setTitle] = useState(<span>Copy link.</span>)
     const copyLink = () => {
@@ -14,13 +20,24 @@ const CopyButton = () => {
             setTitle(<span>Copy link.</span>)
         }, 2000)
     };
-    // TODO right click for sharing and options live public private etc.
+
+
+    let options = [
+        {preventClose: true, content: <span>People with the link can<OptionsCom/></span>},
+        {content: "private",},
+        {content: "Who can see",},
+        {content: "Who can update",},
+        {content: "Who can comment",},
+    ]
+
     return (
-        <Tooltip arrow title={title} placement="bottom">
-            <IconButton onClick={copyLink}>
-                <LinkIcon/>
-            </IconButton>
-        </Tooltip>
+        <ContextMenu options={options}>
+            <Tooltip arrow title={title} placement="bottom">
+                <IconButton onClick={copyLink}>
+                    <LinkIcon/>
+                </IconButton>
+            </Tooltip>
+        </ContextMenu>
     );
 };
 
