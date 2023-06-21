@@ -1,24 +1,8 @@
 import * as React from 'react';
 import {useSelector} from "react-redux";
 import Editor from "odoc-editor"
-import SpreadSheet from "../spread_sheet/spread_sheet";
+import {EditorRenderer} from "../editor_components/editor_renderer";
 
-export function EditorRenderer(props: any) {
-
-    const {element, attributes = {}, children} = props;
-    let Tag = element.type || "p"
-    console.log('----------', {Tag, props, data: element.data})
-    switch (Tag) {
-        case "table":
-            return <SpreadSheet {...props.element} />;
-        default:
-            return (<Tag
-                style={{margin: 0}}
-                {...props}
-                placeholder={"enter somthing..."}
-                {...attributes}>{children}</Tag>)
-    }
-}
 
 export const initialValue = [
     {type: "h1", children: [{text: "My heading is here."}]},

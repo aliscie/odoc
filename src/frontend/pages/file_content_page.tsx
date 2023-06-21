@@ -1,9 +1,9 @@
 import {useDispatch, useSelector} from "react-redux";
 import * as React from "react";
 import Editor from "odoc-editor";
-import {EditorRenderer} from "../components/genral/editor_demo";
 import {handleRedux} from "../redux/main";
 import {logger} from "../dev_utils/log_data";
+import {EditorRenderer} from "../components/editor_components/editor_renderer";
 
 let test_data = [
     {
@@ -42,6 +42,7 @@ function FileContentPage(props: any) {
             <>
                 <h1 contentEditable={true}>{current_file.name}</h1>
                 <Editor
+                    mentionOptions={["Ali", "Aman", "James"]}
                     key={editorKey} // Add key prop to trigger re-render
                     onChange={onChange}
                     renderElement={EditorRenderer}

@@ -1,5 +1,5 @@
 import {backend} from "../backend_connect/main";
-import {convertDataStructure} from "../data_processing/file_content_processing";
+import {convertDataStructure} from "../data_normalization/file_content_processing";
 
 export type FilesActions =
     "ADD"

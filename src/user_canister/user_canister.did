@@ -3,6 +3,7 @@ type Column = record {
   field : text;
   filters : vec Filter;
   permissions : vec ColumnPermission;
+  editable : bool;
   formula : opt text;
 };
 type ColumnPermission = record {

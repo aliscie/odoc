@@ -6,6 +6,7 @@ export interface Column {
   'field' : string,
   'filters' : Array<Filter>,
   'permissions' : Array<ColumnPermission>,
+  'editable' : boolean,
   'formula' : [] | [string],
 }
 export interface ColumnPermission {

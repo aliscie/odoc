@@ -33,6 +33,7 @@ export const idlFactory = ({ IDL }) => {
     'field' : IDL.Text,
     'filters' : IDL.Vec(Filter),
     'permissions' : IDL.Vec(ColumnPermission),
+    'editable' : IDL.Bool,
     'formula' : IDL.Opt(IDL.Text),
   });
   const Table = IDL.Record({

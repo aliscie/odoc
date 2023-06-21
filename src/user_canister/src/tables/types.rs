@@ -49,6 +49,7 @@ pub struct ColumnPermission {
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct Column {
+    pub(crate) editable: bool,
     pub(crate) field: String,
     pub(crate) _type: ColumnTypes,
     pub(crate) formula: Option<String>,
