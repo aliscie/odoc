@@ -3,8 +3,6 @@ import "./style/nav_bar.css"
 import {useSelector} from "react-redux";
 import NestedList from "./nested_list/nest_list"
 import CustomizedMenus from "../genral/drop_down";
-import GavelRoundedIcon from '@mui/icons-material/GavelRounded';
-import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import {Button} from "@mui/material";
 import {Link} from "react-router-dom";
 import CreateNote from "../actions/create_note";
@@ -29,7 +27,7 @@ const NavBar = (props: any) => {
                     data={files}/>
                 <hr/>
                 <CustomizedMenus style={{width: "100%"}} options={[
-                    {content: <CreateAgreement/>, icon: <GavelRoundedIcon/>},
+                    {content: <CreateAgreement/>},
                     {content: <CreateNote/>, preventClose: true}
                 ]}>
                     Create

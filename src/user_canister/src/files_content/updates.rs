@@ -37,5 +37,3 @@ fn multi_files_content_updates(updates: Vec<HashMap<FileId, ContentTree>>) -> Re
     Ok("Files content updated successfully".to_string())
 }
 
-
-

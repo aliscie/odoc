@@ -3,8 +3,8 @@ import {handleRedux} from "../../redux/main";
 import React from "react";
 import {useDispatch} from "react-redux";
 import {useSnackbar} from "notistack";
-import EditNoteRoundedIcon from "@mui/icons-material/EditNoteRounded";
 import {Input, Tooltip} from "@mui/material";
+import GavelRoundedIcon from "@mui/icons-material/GavelRounded";
 
 const CreateAgreement = () => {
     const dispatch = useDispatch();
@@ -41,7 +41,7 @@ const CreateAgreement = () => {
             <Input id={"create_file_name_field"} style={{display: isTyping ? "block" : "none"}}
                    onKeyDown={onKeyDown}/>
         </Tooltip>
-        <span style={{display: isTyping ? "none" : "block"}} onClick={onClick}> <EditNoteRoundedIcon/>Note page</span>
+        <span style={{display: isTyping ? "none" : "block"}} onClick={onClick}> <GavelRoundedIcon/>Agreement page</span>
     </span>)
 }
 export default CreateAgreement
