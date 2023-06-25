@@ -1,11 +1,13 @@
 
 :root {
     --color: black;
+    --secondary-text-color: #525252;
     --hover-color: #327b98;
     --primary-color: #00a3ff;
     --secondary-color: #006ae6;
     --background-color: #d7d7d7;
     --primary-background-color: #c2c2c2;
+    --secondary-background-color: #8ebfd7;
     --background: linear-gradient(135deg, rgba(10, 78, 147, 0.8), rgba(0, 230, 203, 0.8));
     --light-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 240, 0.8));
     --card-color: #ffffff;
@@ -24,12 +26,14 @@ hr {
 
 .dark {
     --hover-color: #3b8cb0;
+    --color: #d9d9d9;
+    --secondary-text-color: #939393;
     --primary-background-color: #545454;
     --background-color: #333;
-    --color: #d9d9d9;
     --primary-color: #00a3ff;
     --secondary-color: #006ae6;
     --background: linear-gradient(135deg, rgba(0, 42, 84, 0.8), rgba(0, 107, 230, 0.8));
+    --secondary-background-color: #638698;
     --light-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 240, 0.8));
     --main-background: conic-gradient(#30d5c8, yellow, #00ced1, #000080, blue, magenta, #30D5C8);
     --card-color: #b2b2b2;

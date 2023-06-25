@@ -41,7 +41,7 @@ const NestedList: React.FC<NestedListProps> = ({title, data}) => {
                 aria-labelledby="nested-list-subheader"
             >
                 {Object.values(data).map((item, index) => (
-                    item.parent.length == 0 && <ItemComponent
+                    item.parent && item.parent.length == 0 && <ItemComponent
                         key={item.id}
                         data={data}
                         item={item}

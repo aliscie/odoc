@@ -2,6 +2,7 @@ import {AuthClient} from "@dfinity/auth-client";
 import {Actor, HttpAgent} from "@dfinity/agent";
 import {canisterId} from "./handle_vars";
 import {idlFactory} from "../../declarations/user_canister";
+import {agent} from "./main";
 
 let backendActor, loading = false
 
@@ -35,7 +36,6 @@ const createActor = (canisterId, options = {}) => {
 // get center canister actor
 
 
-
 export const get_actor = async () => {
     await new Promise(resolve => !loading && resolve());
     loading = true
@@ -56,16 +56,22 @@ export const get_actor = async () => {
     return backendActor;
 }
 
+function get_identity_url() {
+    let identityProvider = "https://identity.ic0.app/#authorize";
+    if (import.meta.env.VITE_DFX_NETWORK != "ic") {
+        let port = import.meta.env.VITE_DFX_PORT;
+        identityProvider = `http://${import.meta.env.VITE_IDENTITY_PROVIDER_ID}.localhost:${port}/#authorize`
+    }
+    return identityProvider
+}
+
 export async function identify() {
-    let port = import.meta.env.VITE_DFX_PORT;
+
     const authClient = await AuthClient.create();
     if (await authClient.isAuthenticated()) {
         return authClient.getIdentity();
     }
-    let identityProvider = "https://identity.ic0.app/#authorize";
-    if (import.meta.env.VITE_DFX_NETWORK != "ic") {
-        identityProvider = `http://${import.meta.env.VITE_IDENTITY_PROVIDER_ID}.localhost:${port}/#authorize`
-    }
+    let identityProvider = get_identity_url();
     return await authClient.login({
         identityProvider,
         onSuccess: () => {
@@ -77,6 +83,7 @@ export async function identify() {
 export async function is_logged() {
     const authClient = await AuthClient.create();
     return await authClient.isAuthenticated()
+
 }
 
 export async function logout() {

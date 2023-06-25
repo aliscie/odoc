@@ -2,7 +2,6 @@ import {useDispatch, useSelector} from "react-redux";
 import * as React from "react";
 import Editor from "odoc-editor";
 import {handleRedux} from "../redux/main";
-import {logger} from "../dev_utils/log_data";
 import {EditorRenderer} from "../components/editor_components/editor_renderer";
 
 let test_data = [
@@ -19,10 +18,18 @@ let test_data = [
 ];
 
 function FileContentPage(props: any) {
+    const {friends} = useSelector((state: any) => state.filesReducer);
     let {searchValue} = useSelector((state: any) => state.uiReducer);
     const {current_file, files_content} = useSelector(
         (state: any) => state.filesReducer
     );
+    let all_friends = []
+    if (friends) {
+        let friend_requests = friends[0] && friends[0].friend_requests || []
+        let confirmed_friends = friends[0] && friends[0].friends || []
+        all_friends = [...friend_requests.map((i: any) => i.name), ...confirmed_friends.map((i: any) => i.name)]
+    }
+
     const dispatch = useDispatch();
 
     function onChange(changes: any) {
@@ -34,15 +41,15 @@ function FileContentPage(props: any) {
 
     if (current_file.id != null) {
         let content = files_content[current_file.id];
-        console.log({content});
-        logger(content)
+        // console.log({content});
+        // logger(content)
         return (
             <span style={{margin: "3px", marginLeft: "20%", marginRight: "10%"}}>
         {current_file.name && (
             <>
                 <h1 contentEditable={true}>{current_file.name}</h1>
                 <Editor
-                    mentionOptions={["Ali", "Aman", "James"]}
+                    mentionOptions={all_friends}
                     key={editorKey} // Add key prop to trigger re-render
                     onChange={onChange}
                     renderElement={EditorRenderer}

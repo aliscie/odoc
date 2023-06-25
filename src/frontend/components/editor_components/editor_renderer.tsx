@@ -1,5 +1,3 @@
-import {Chip} from "@mui/material";
-import FaceIcon from "@mui/icons-material/Face";
 import SpreadSheet from "../spread_sheet/spread_sheet";
 import * as React from "react";
 import MentionComponent from "./mention_component";
@@ -11,7 +9,7 @@ export function EditorRenderer(props: any) {
     console.log('----------', {Tag, props, data: element.data})
     switch (Tag) {
         case "mention":
-            console.log({e: props.element.character});
+            // console.log({e: props.element.character.name});
             return <MentionComponent {...props}/>
         case "table":
             return <SpreadSheet {...props.element} />;

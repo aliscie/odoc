@@ -1,5 +1,6 @@
 use ic_cdk_macros::update;
 use candid::candid_method;
+use ic_cdk::caller;
 use crate::{ID_STORE, PROFILE_STORE};
 use crate::user::{RegisterUser, User};
 
@@ -19,5 +20,5 @@ fn register(profile: RegisterUser) -> Result<User, String> {
     }
 
     User::new(profile.clone());
-    Ok(User { name: profile.name, description: profile.description })
+    Ok(User { id: caller().to_text(), name: profile.name, description: profile.description })
 }

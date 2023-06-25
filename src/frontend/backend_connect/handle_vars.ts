@@ -19,5 +19,5 @@ const getCenterCanisterActor = async () => {
 // let user_canister_id = await central_canister_actor.get_user_canister()
 // console.log({res})
 // TODO canisterId = user_canister_id.ik
-export const canisterId = import.meta.env.VITE_BACKEND_CANISTER_ID;
+export const canisterId = import.meta.env.VITE_USER_CANISTER_CANISTER_ID;
 

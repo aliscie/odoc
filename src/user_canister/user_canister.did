@@ -32,18 +32,29 @@ type Filter = record {
   operations : vec Operation;
   formula : opt text;
 };
+type Friend = record { friend_requests : vec User; friends : vec User };
+type InitialData = record {
+  FilesContents : opt vec record { nat64; vec record { nat64; ContentNode } };
+  Files : opt vec record { nat64; FileNode };
+  Friends : opt Friend;
+  Profile : User;
+  DiscoverUsers : vec record { text; User };
+};
 type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
 type PermissionType = variant { CanRead; CanUpdate };
 type RegisterUser = record { name : text; description : text };
-type Result = variant { Ok : text; Err : text };
-type Result_1 = variant { Ok : User; Err : text };
+type Result = variant { Ok : User; Err : text };
+type Result_1 = variant { Ok : text; Err : text };
+type Result_2 = variant { Ok : InitialData; Err : text };
 type Table = record {
   rows : vec vec record { text; text };
   columns : vec Column;
 };
-type User = record { name : text; description : text };
+type User = record { id : text; name : text; description : text };
 service : {
-  content_updates : (nat64, opt nat64, text) -> (Result);
+  accept_friend_request : (text) -> (Result);
+  cancel_friend_request : (text) -> (Result);
+  content_updates : (nat64, opt nat64, text) -> (Result_1);
   create_agreement : (text) -> (opt ContentNode);
   create_new_file : (text, opt nat64) -> (FileNode);
   delete_file : (nat64) -> (opt FileNode);
@@ -52,11 +63,15 @@ service : {
   get_all_files_content : () -> (
       vec record { nat64; vec record { nat64; ContentNode } },
     ) query;
+  get_all_users : () -> (vec record { text; User }) query;
   get_file : (nat64) -> (opt FileNode) query;
   get_file_content : (nat64) -> (opt vec record { nat64; ContentNode }) query;
+  get_initial_data : () -> (Result_2) query;
   multi_files_content_updates : (
       vec vec record { nat64; vec record { nat64; ContentNode } },
-    ) -> (Result);
-  register : (RegisterUser) -> (Result_1);
+    ) -> (Result_1);
+  register : (RegisterUser) -> (Result);
   rename_file : (nat64, text) -> (bool);
+  send_friend_request : (text) -> (Result);
+  unfriend : (text) -> (Result);
 }

@@ -5,6 +5,7 @@ import {useDispatch} from "react-redux";
 import {useSnackbar} from "notistack";
 import {Input, Tooltip} from "@mui/material";
 import GavelRoundedIcon from "@mui/icons-material/GavelRounded";
+import {normalize_files_contents} from "../../data_processing/normalize/normalize_contents";
 
 const CreateAgreement = () => {
     const dispatch = useDispatch();
@@ -17,6 +18,7 @@ const CreateAgreement = () => {
             className={"loader"}/></span>, {variant: "info"});
         let res = await backend.create_agreement(e.target.value)
         e.target.classList.remove("disabled")
+        // console.log({res: normalize_files_contents(res)})
         dispatch(handleRedux("ADD", {data: res}))
         closeSnackbar(loading)
         enqueueSnackbar('New file is created!', {variant: "success"});

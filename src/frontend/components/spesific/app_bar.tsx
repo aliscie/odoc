@@ -1,12 +1,10 @@
 import BasicMenu from "../genral/basic_menu";
-import GavelRoundedIcon from "@mui/icons-material/GavelRounded";
-import EditNoteRoundedIcon from "@mui/icons-material/EditNoteRounded";
 import LogoutIcon from "@mui/icons-material/Logout";
 import {handleRedux} from "../../redux/main";
 import {Avatar, Button} from "@mui/material";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import MenuIcon from "@mui/icons-material/Menu";
-import {Route, Routes} from "react-router-dom";
+import {Link, Route, Routes} from "react-router-dom";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import TopNavBar from "../genral/top_nav_bar";
@@ -20,6 +18,8 @@ import {BreadPage} from "../genral/breadcrumbs";
 import CopyButton from "../genral/copy_link";
 import {agent} from "../../backend_connect/main";
 import ContentSave from "../actions/contents_save";
+import Person2Icon from '@mui/icons-material/Person2';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 export function NavAppBar() {
 
@@ -77,14 +77,14 @@ export function NavAppBar() {
                 </IconButton>
             </Tooltip>
             {isLoggedIn ? <BasicMenu options={[
-                {content: "profile", icon: <GavelRoundedIcon/>},
-                {content: "settings", icon: <EditNoteRoundedIcon/>},
-                {content: "logout", icon: <LogoutIcon/>, onClick: handleLogout}
+                {content: "Profile", to: "Profile", icon: <Person2Icon/>},
+                {content: "Settings", icon: <SettingsIcon/>},
+                {content: "Logout", icon: <LogoutIcon/>, onClick: handleLogout}
             ]}>
                 <Avatar style={{display: "inline"}} alt="Remy Sharp"
                         src="https://avatars.githubusercontent.com/u/58806996?v=4"/>
             </BasicMenu> : <Button onClick={handleLogin}> login</Button>}
-            <ContentSave/>
+            {isLoggedIn && <ContentSave/>}
         </TopNavBar>
     )
 
