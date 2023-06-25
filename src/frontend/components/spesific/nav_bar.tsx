@@ -9,10 +9,8 @@ import CreateNote from "../actions/create_note";
 import CreateAgreement from "../actions/create_agreement";
 
 const NavBar = (props: any) => {
-    const {isNavOpen} = useSelector((state: any) => state.uiReducer);
+    const {isNavOpen, isLoggedIn} = useSelector((state: any) => state.uiReducer);
     const {files} = useSelector((state: any) => state.filesReducer);
-
-
     return (
         <div>
             <div
@@ -22,16 +20,20 @@ const NavBar = (props: any) => {
                 <Link to="/editor_demo"><Button>Editor demo</Button></Link>
                 <Link to="/blog"><Button>Blog</Button></Link>
                 <Link to="/about_us"><Button>About us</Button></Link>
-                <NestedList
-                    // title={"private"}
-                    data={files}/>
-                <hr/>
-                <CustomizedMenus style={{width: "100%"}} options={[
-                    {content: <CreateAgreement/>},
-                    {content: <CreateNote/>, preventClose: true}
-                ]}>
-                    Create
-                </CustomizedMenus>
+
+                {isLoggedIn && <>
+                    <NestedList
+                        // title={"private"}
+                        data={files}/>
+                    <hr/>
+
+                    <CustomizedMenus style={{width: "100%"}} options={[
+                        {content: <CreateAgreement/>},
+                        {content: <CreateNote/>, preventClose: true}
+                    ]}>
+                        Create
+                    </CustomizedMenus>
+                </>}
             </div>
 
             <div id="main" style={{marginLeft: isNavOpen ? "250px" : 0}}>

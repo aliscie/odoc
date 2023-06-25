@@ -15,7 +15,10 @@ use ic_cdk_macros::*;
 
 use files::*;
 use files::FileNode;
+use friends::*;
+use queries::*;
 use storage_schema::*;
+use updates::*;
 use user::*;
 use user::*;
 
@@ -29,23 +32,26 @@ mod files_content;
 mod agreement_contract;
 mod storage_schema;
 mod tables;
+mod queries;
+mod updates;
+mod friends;
 
 thread_local! {
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
     static ID_STORE: RefCell<IdStore> = RefCell::default();
     static USER_FILES: RefCell<FilesStore> = RefCell::default();
     static FILE_CONTENTS: RefCell<FileContentsStore> = RefCell::default();
+    static FRIENDS_STORE: RefCell<FriendsStore> = RefCell::default();
 }
 
 #[cfg(test)]
 mod tests {
-    use candid::Principal;
-
     use std::borrow::Cow;
     use std::env;
     use std::fs::{create_dir_all, write};
     use std::path::PathBuf;
 
+    use candid::Principal;
     use ic_cdk::{api, update};
     use ic_cdk::export::candid::{
         candid_method, CandidType, check_prog, Deserialize, export_service, IDLProg, TypeEnv,
@@ -54,9 +60,7 @@ mod tests {
 
     use super::*;
 
-
-
-    // #[test]
+// #[test]
     // fn test_create() {
     //     // Create a mock caller instance
     //     let mock_caller = MockCaller;

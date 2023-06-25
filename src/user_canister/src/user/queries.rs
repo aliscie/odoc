@@ -1,6 +1,9 @@
-use candid::candid_method;
-use ic_cdk_macros::query;
+use std::collections::HashMap;
+
+use candid::{candid_method, Principal};
 use ic_cdk::api::call::ManualReply;
+use ic_cdk_macros::query;
+
 use crate::{ID_STORE, PROFILE_STORE};
 use crate::user::User;
 
@@ -49,3 +52,18 @@ use crate::user::User;
 //         ManualReply::one(None::<Profile>)
 //     })
 // }
+
+// get all users
+
+#[candid_method(query)]
+#[query]
+fn get_all_users() -> HashMap<String, User> {
+    PROFILE_STORE.with(|profile_store| {
+        profile_store
+            .borrow()
+            .iter()
+            .map(|(principal, user)| (principal.clone(), user.clone()))
+            .map(|(principal, user)| (principal.to_string(), user))
+            .collect()
+    })
+}

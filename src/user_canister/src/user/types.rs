@@ -1,14 +1,13 @@
-use ic_cdk::{
-    api::call::ManualReply,
-    export::{
-        candid::{CandidType, Deserialize},
-        Principal,
-    },
-};
+use ic_cdk::{api::call::ManualReply, caller, export::{
+    candid::{CandidType, Deserialize},
+    Principal,
+}};
+
 use crate::{ID_STORE, PROFILE_STORE};
 
-#[derive(Clone, Debug, Default, CandidType, Deserialize)]
+#[derive(Eq, Ord, PartialOrd, PartialEq, Clone, Debug, Default, CandidType, Deserialize)]
 pub struct User {
+    pub id: String,
     pub name: String,
     pub description: String,
     // pub keywords: Vec<String>,
@@ -23,7 +22,7 @@ pub struct RegisterUser {
 
 impl User {
     pub fn new(profile: RegisterUser) -> Self {
-        let user = User { name: profile.name.clone(), description: profile.description.clone() };
+        let user = User { id: caller().to_text(), name: profile.name.clone(), description: profile.description.clone() };
         let principal_id = ic_cdk::api::caller();
 
         ID_STORE.with(|id_store| {
@@ -37,18 +36,55 @@ impl User {
 
         user
     }
+
+    // Get a user from their principal
+    pub fn get_user_from_principal(principal_str: String) -> Option<User> {
+        let principal = Principal::from_text(principal_str).ok()?;
+        PROFILE_STORE.with(|profile_store| {
+            let store = profile_store.borrow();
+            store.get(&principal).cloned()
+        })
+    }
+
     pub fn user_id() -> Principal {
         ic_cdk::api::id()
     }
     pub fn user_profile() -> Option<Self> {
         let principal_id = ic_cdk::api::caller();
-        PROFILE_STORE.with(|profile_store| {
+
+        // if caller is anonymous return None
+        if principal_id.to_text() == *"2vxsx-fae" {
+            return None;
+        }
+
+        // get and if it is not exist then create user profile
+        let user: Option<User> = PROFILE_STORE.with(|profile_store| {
             profile_store
                 .borrow()
                 .get(&principal_id)
                 .cloned()
-        })
+        });
+        // if user.is_none() {
+        //     let user = User::new(RegisterUser {
+        //         name: "Anonymous".to_string(),
+        //         description: "Anonymous".to_string(),
+        //     });
+        //     return Some(user);
+        // }
+        user
     }
+
+    pub fn update_profile(profile: RegisterUser) -> Self {
+        let principal_id = ic_cdk::api::caller();
+        let user = User { id: caller().to_text(), name: profile.name.clone(), description: profile.description.clone() };
+
+        PROFILE_STORE.with(|profile_store| {
+            profile_store.borrow_mut().insert(principal_id, user.clone());
+        });
+
+        user
+    }
+
     pub fn user_is_registered() -> bool {
         let principal_id = ic_cdk::api::caller();
         let user: Option<User> = PROFILE_STORE.with(|profile_store| {

@@ -9,7 +9,7 @@ interface DataMap {
     [id: number]: { id: number; _type: string; text: string; children: number[] };
 }
 
-export function convertDataStructure(data: any): Node[] {
+function convertDataStructure(data: any): Node[] {
 
     const roots: Node[] = [];
     const visited: Set<number> = new Set();
@@ -67,4 +67,26 @@ function buildTree(
         res["children"] = [{text: ""}];
     }
     return res
+}
+
+
+export function normalize_files_contents(content: any) {
+    if (!content[0]) {
+        return []
+    }
+    let data = {};
+    // let files = await backend.get_all_files_content()
+    content[0].map((content_item) => {
+        let content = {};
+        content_item[1].map((item) => {
+            let x = {id: item[0], value: item[1]};
+            content[item[0]] = x;
+        })
+        data[content_item[0]] = content;
+    });
+    for (let [key, value] of Object.entries(data)) {
+        data[key] = convertDataStructure(value);
+    }
+
+    return data
 }

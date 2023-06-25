@@ -7,6 +7,7 @@ import {NavAppBar} from "./components/spesific/app_bar";
 import SearchPopper from "./components/spesific/search_popper";
 import ModeThemeProvider from "./components/genral/theme_provider";
 import {SnackbarProvider} from "notistack";
+import RegistrationForm from "./components/spesific/registeration_form";
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
 
                 <SearchPopper/>
                 <SnackbarProvider maxSnack={3}>
+                    <RegistrationForm/>
                     <div>
                         <NavAppBar/>
                         <NavBar>

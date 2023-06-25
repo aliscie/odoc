@@ -1,8 +1,9 @@
 import {combineReducers, createStore} from "redux";
 import {MainActions, uiReducer} from "./uil";
 import {FilesActions, filesReducer} from "./files";
+import {FriendsActions} from "./friends";
 
-type ReduxTypes = MainActions | FilesActions;
+type ReduxTypes = MainActions | FilesActions | FriendsActions;
 export const handleRedux = (type: ReduxTypes, data?: any) => ({
     type,
     ...data
@@ -13,7 +14,8 @@ export const handleRedux = (type: ReduxTypes, data?: any) => ({
 
 const store = createStore(combineReducers({
     uiReducer,
-    filesReducer
+    filesReducer,
+    // friendsReducer
 }));
 
 export default store;

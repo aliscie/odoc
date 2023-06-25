@@ -93,5 +93,17 @@ export async function create_agreement(name: string) {
 }
 
 
+export async function get_initial_data() {
+    switch (PLATFORM) {
+        case "WEB":
+            return await actor.get_initial_data();
+        case "DESKTOP":
+            return null;
+        case "MOBILE":
+            return null;
+    }
+}
+
+
 
 

@@ -3,8 +3,9 @@ import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import {backend} from "../../backend_connect/main";
-import {convertAllDataBack} from "../../data_normalization/convert_data_to_oringal";
+import {convertAllDataBack} from "../../data_processing/denormalize/denormalize_files";
 import {logger} from "../../dev_utils/log_data";
+import {actor} from "../../backend_connect/ic_agent";
 
 function ContentSave(props: any) {
     const dispatch = useDispatch();
@@ -61,7 +62,7 @@ function ContentSave(props: any) {
         // let process_files_content = {"0": [{"id": 0, "type": "", "children": [{"id": 1, "type": "", "text": "child is here. "}]}]}
         // Uncaught (in promise) Error: Invalid vec vec record {nat64; vec record {nat64; record {id:nat64; _type:text; data:opt variant {Comment:text; Image:vec nat64; Table:record {rows:vec record {data:vec record {text; text}}; columns:vec record {_type:variant {Tag; Date; File; Text; Person; Category; Number}; filters:vec record {name:text; operations:vec variant {Equal; Contains; Bigger; BiggerOrEqual}; formula:opt text}; permissions:vec record {_type:variant {CanRead; CanUpdate}; granted_to:vec principal}; name:text; formula:opt text}}}; text:text; children:vec nat64; parent:opt nat64}}} argument:
         // index 0 -> Invalid vec record {nat64; vec record {nat64; record {id:nat64; _type:text; data:opt variant {Comment:text; Image:vec nat64; Table:record {rows:vec record {data:vec record {text; text}}; columns:vec record {_type:variant {Tag; Date; File; Text; Person; Category; Number}; filters:vec record {name:text; operations:vec variant {Equal; Contains; Bigger; BiggerOrEqual}; formula:opt text}; permissions:vec record {_type:variant {CanRead; CanUpdate}; granted_to:vec principal}; name:text; formula:opt text}}}; text:text; children:vec nat64; parent:opt nat64}}} argument: {"0":{"undefined":{"children":[]}}}
-        let res = await backend.multi_update(process_files_content);
+        let res = await actor.multi_files_content_updates(process_files_content);
         logger(res)
         dispatch(handleRedux("FILES_SAVED"));
 

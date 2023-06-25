@@ -1,5 +1,8 @@
-import {backend} from "../backend_connect/main";
-import {convertDataStructure} from "../data_normalization/file_content_processing";
+import {normalize_files_contents} from "../data_processing/normalize/normalize_contents";
+import {agent, backend} from "../backend_connect/main";
+import {normalize_files} from "../data_processing/normalize/normalize_files";
+import {AuthClient} from "@dfinity/auth-client";
+import {FriendsActions} from "./friends";
 
 export type FilesActions =
     "ADD"
@@ -11,47 +14,49 @@ export type FilesActions =
     | "CURRENT_FILE"
     | "UPDATE_CONTENT"
     | "FILES_SAVED"
-    | "FILES_CHANGED";
+    | "FILES_CHANGED" | FriendsActions;
 
-const initialState = {
-    files: await get_files(),
-    files_content: await getFilesContents(),
+export var initialState = {
     current_file: {id: null, name: null},
     is_files_saved: true,
+    files: {},
+    files_content: {},
+    friends: [{friends: [], friend_requests: []}],
 };
 
 
-async function getFilesContents() {
-    let data = {};
-    let files = await backend.get_all_files_content()
-    files.map((file) => {
-        let content = {};
-
-        file[1].map((item) => {
-            let x = {id: item[0], value: item[1]};
-            content[item[0]] = x;
-        })
-        data[file[0]] = content;
-    });
-    for (let [key, value] of Object.entries(data)) {
-        data[key] = convertDataStructure(value);
+async function get_initial_data() {
+    let isLoggedIn = await agent.is_logged() // TODO avoid repetition `isLoggedIn` is already used in ui.ts
+    let data = await backend.get_initial_data();
+    if (data.Err == "Anonymous user." && isLoggedIn) {
+        initialState["Anonymous"] = true;
+        // let register = await actor.register({name: "new", description: "new"});
+        // console.log({register})
     }
+    data = await backend.get_initial_data();
+    console.log({data});
 
-    return data
+    const authClient = await AuthClient.create();
+    const userPrincipal = authClient.getIdentity().getPrincipal().toString();
+
+    if (data.Ok) {
+        initialState["files"] = normalize_files(data.Ok.Files);
+        initialState["files_content"] = normalize_files_contents(data.Ok.FilesContents);
+        initialState["profile"] = data.Ok.Profile;
+        initialState["users"] = data.Ok.DiscoverUsers;
+        initialState["id"] = userPrincipal;
+        initialState["friends"] = data.Ok.Friends;
+    }
 }
 
 
-async function get_files() {
-    let files = await backend.get_files();
-    if (files.length == 0) {
-        return {}
-    }
-    ;
-    return files[0].reduce((acc, file) => (acc[file[1].id] = file[1], acc), {})
-}
+await get_initial_data()
 
 
-export function filesReducer(state = initialState, action: { type: FilesActions, id?: any, file?: any, name: any, content?: any }) {
+export function filesReducer(state = initialState, action: { data: any, type: FilesActions, id?: any, file?: any, name: any, content?: any }) {
+    let friends = {...state.friends[0]};
+    let friend_id = action.id;
+
     switch (action.type) {
         case 'ADD':
             return {
@@ -92,6 +97,37 @@ export function filesReducer(state = initialState, action: { type: FilesActions,
                 ...state,
                 is_files_saved: false
             }
+        case 'ADD_FRIEND':
+            friends.friends.push(action.friend);
+            return {
+                ...state,
+                friends: [friends],
+            };
+
+        case 'REMOVE_FRIEND':
+            friends.friends = friends.friends.filter((friend) => friend.id !== friend_id);
+            friends.friends = friends.friends.length > 0 ? friends.friends : [];
+            return {
+                ...state,
+                friends: [friends],
+            };
+
+
+        case 'ADD_FRIEND_REQUEST':
+            friends.friend_requests.push(action.friend);
+            return {
+                ...state,
+                friends: [friends],
+            };
+
+        case 'REMOVE_FRIEND_REQUEST':
+            friends.friend_requests = friends.friend_requests.filter((request) => request.id !== friend_id);
+            friends.friend_requests = friends.friend_requests.length > 0 ? friends.friend_requests : [];
+            return {
+                ...state,
+                friends: [friends],
+            };
+
         default:
             return state;
     }
