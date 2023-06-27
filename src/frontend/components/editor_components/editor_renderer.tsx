@@ -1,6 +1,7 @@
-import SpreadSheet from "../spread_sheet/spread_sheet";
+import SpreadSheet from "../contracts/spread_sheet";
 import * as React from "react";
 import MentionComponent from "./mention_component";
+import PaymentContract from "../contracts/payment_contract";
 
 export function EditorRenderer(props: any) {
 
@@ -12,6 +13,12 @@ export function EditorRenderer(props: any) {
             // console.log({e: props.element.character.name});
             return <MentionComponent {...props}/>
         case "table":
+            return <SpreadSheet {...props.element} />;
+        case "payment_contract":
+            return <PaymentContract {...props.element} />;
+        case "accumulate_contract":
+            return <SpreadSheet {...props.element} />;
+        case "custom_contract":
             return <SpreadSheet {...props.element} />;
         default:
             return (<Tag

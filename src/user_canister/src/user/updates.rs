@@ -15,10 +15,26 @@ fn register(profile: RegisterUser) -> Result<User, String> {
         return Ok(user);
     }
 
-    if User::user_name_is_duplicate(profile.name.clone()) {
+    if User::user_name_is_duplicate(profile.clone().name.unwrap().clone()) {
         return Err("Name already exists please try another name.".to_string());
     }
 
-    User::new(profile.clone());
-    Ok(User { id: caller().to_text(), name: profile.name, description: profile.description })
+    let user = User::new(profile.clone());
+    Ok(user)
+}
+
+
+#[update]
+#[candid_method(update)]
+fn update_user_profile(updates: RegisterUser) -> Result<User, String> {
+    if User::user_is_anonymous() {
+        return Err("Anonymous users are not allowed to register.".to_string());
+    }
+
+    if User::user_name_is_duplicate(updates.name.clone().unwrap().clone()) {
+        return Err("Name already exists please try another name.".to_string());
+    }
+
+    let user = User::update_profile(updates.clone());
+    Ok(user)
 }

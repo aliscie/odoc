@@ -13,6 +13,7 @@ use ic_cdk::export::candid::{
 };
 use ic_cdk_macros::*;
 
+pub use contracts::*;
 use files::*;
 use files::FileNode;
 use friends::*;
@@ -29,7 +30,8 @@ mod user;
 mod media;
 mod files;
 mod files_content;
-mod agreement_contract;
+mod contracts;
+
 mod storage_schema;
 mod tables;
 mod queries;
@@ -42,6 +44,7 @@ thread_local! {
     static USER_FILES: RefCell<FilesStore> = RefCell::default();
     static FILE_CONTENTS: RefCell<FileContentsStore> = RefCell::default();
     static FRIENDS_STORE: RefCell<FriendsStore> = RefCell::default();
+    static CONTRACTS_STORE: RefCell<ContractStore> = RefCell::default();
 }
 
 #[cfg(test)]

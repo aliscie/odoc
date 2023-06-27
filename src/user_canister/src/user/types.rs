@@ -5,30 +5,32 @@ use ic_cdk::{api::call::ManualReply, caller, export::{
 
 use crate::{ID_STORE, PROFILE_STORE};
 
-#[derive(Eq, Ord, PartialOrd, PartialEq, Clone, Debug, Default, CandidType, Deserialize)]
+#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, Default, CandidType, Deserialize)]
 pub struct User {
     pub id: String,
     pub name: String,
     pub description: String,
+    pub photo: Vec<u8>,
     // pub keywords: Vec<String>,
 }
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
 pub struct RegisterUser {
-    pub name: String,
-    pub description: String,
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub photo: Option<Vec<u8>>,
     // pub keywords: Vec<String>,
 }
 
 impl User {
     pub fn new(profile: RegisterUser) -> Self {
-        let user = User { id: caller().to_text(), name: profile.name.clone(), description: profile.description.clone() };
+        let user = User { id: caller().to_text(), name: profile.clone().name.unwrap().clone(), description: profile.description.unwrap().clone(), photo: profile.photo.unwrap() };
         let principal_id = ic_cdk::api::caller();
 
         ID_STORE.with(|id_store| {
             id_store
                 .borrow_mut()
-                .insert(profile.name.clone(), principal_id);
+                .insert(profile.name.unwrap().clone(), principal_id);
         });
         PROFILE_STORE.with(|profile_store| {
             profile_store.borrow_mut().insert(principal_id, user.clone());
@@ -75,13 +77,22 @@ impl User {
     }
 
     pub fn update_profile(profile: RegisterUser) -> Self {
-        let principal_id = ic_cdk::api::caller();
-        let user = User { id: caller().to_text(), name: profile.name.clone(), description: profile.description.clone() };
+        let mut user = User::user_profile().unwrap();
+        if let Some(name) = profile.name {
+            user.name = name;
+        }
+
+        if let Some(description) = profile.description {
+            user.description = description;
+        }
+
+        if let Some(photo) = profile.photo {
+            user.photo = photo;
+        }
 
         PROFILE_STORE.with(|profile_store| {
-            profile_store.borrow_mut().insert(principal_id, user.clone());
+            profile_store.borrow_mut().insert(caller(), user.clone());
         });
-
         user
     }
 

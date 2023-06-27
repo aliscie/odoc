@@ -20,12 +20,15 @@ import {agent} from "../../backend_connect/main";
 import ContentSave from "../actions/contents_save";
 import Person2Icon from '@mui/icons-material/Person2';
 import SettingsIcon from '@mui/icons-material/Settings';
+import {convertToBlobLink} from "../../data_processing/image_to_vec";
 
 export function NavAppBar() {
 
 
     const dispatch = useDispatch();
     const {isNavOpen, isDarkMode, isLoggedIn, searchTool} = useSelector((state: any) => state.uiReducer);
+    const {profile} = useSelector((state: any) => state.filesReducer);
+    console.log({profile})
 
     async function loginProfile() {
         if (isLoggedIn) {
@@ -49,6 +52,8 @@ export function NavAppBar() {
         // dispatch(handleRedux("LOGOUT"))
     }
 
+    let image_link = profile ? convertToBlobLink(profile.photo) : "";
+    console.log({image_link})
     return (
 
         <TopNavBar>
@@ -82,7 +87,7 @@ export function NavAppBar() {
                 {content: "Logout", icon: <LogoutIcon/>, onClick: handleLogout}
             ]}>
                 <Avatar style={{display: "inline"}} alt="Remy Sharp"
-                        src="https://avatars.githubusercontent.com/u/58806996?v=4"/>
+                        src={image_link}/>
             </BasicMenu> : <Button onClick={handleLogin}> login</Button>}
             {isLoggedIn && <ContentSave/>}
         </TopNavBar>

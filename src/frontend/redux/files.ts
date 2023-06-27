@@ -3,6 +3,7 @@ import {agent, backend} from "../backend_connect/main";
 import {normalize_files} from "../data_processing/normalize/normalize_files";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
+import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 
 export type FilesActions =
     "ADD"
@@ -14,7 +15,7 @@ export type FilesActions =
     | "CURRENT_FILE"
     | "UPDATE_CONTENT"
     | "FILES_SAVED"
-    | "FILES_CHANGED" | FriendsActions;
+    | "FILES_CHANGED" | "ADD_CONTENT" | FriendsActions;
 
 export var initialState = {
     current_file: {id: null, name: null},
@@ -30,11 +31,9 @@ async function get_initial_data() {
     let data = await backend.get_initial_data();
     if (data.Err == "Anonymous user." && isLoggedIn) {
         initialState["Anonymous"] = true;
-        // let register = await actor.register({name: "new", description: "new"});
-        // console.log({register})
+        return false;
     }
     data = await backend.get_initial_data();
-    console.log({data});
 
     const authClient = await AuthClient.create();
     const userPrincipal = authClient.getIdentity().getPrincipal().toString();
@@ -42,10 +41,12 @@ async function get_initial_data() {
     if (data.Ok) {
         initialState["files"] = normalize_files(data.Ok.Files);
         initialState["files_content"] = normalize_files_contents(data.Ok.FilesContents);
+        initialState["contracts"] = normalize_contracts(data.Ok.Contracts);
         initialState["profile"] = data.Ok.Profile;
         initialState["users"] = data.Ok.DiscoverUsers;
         initialState["id"] = userPrincipal;
         initialState["friends"] = data.Ok.Friends;
+
     }
 }
 
@@ -58,6 +59,14 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
     let friend_id = action.id;
 
     switch (action.type) {
+        case 'ADD_CONTENT':
+            let files_content = state.files_content
+            files_content[action.id] = action.content;
+            return {
+                ...state,
+                files_content: files_content,
+            };
+
         case 'ADD':
             return {
                 ...state,

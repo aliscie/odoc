@@ -4,7 +4,7 @@ import {TextField} from "@mui/material";
 import {actor} from "../../backend_connect/ic_agent";
 import {useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
-import {handleUpload} from "../../data_processing/image_to_vec";
+import {convertToBytes} from "../../data_processing/image_to_vec";
 
 const inputs = [
     {id: "username", label: "Username", type: "text", required: true},
@@ -18,31 +18,30 @@ const inputs = [
 function RegistrationForm() {
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const {Anonymous} = useSelector((state: any) => state.filesReducer);
-    const [formValues, setFormValues] = React.useState({});
+    const [formValues, setFormValues]: any = React.useState({});
     let [open, setOpen] = React.useState(Anonymous == true);
-    // let [src, setSrc] = React.useState("");
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const {id, value} = event.target;
         setFormValues((prevValues) => ({...prevValues, [id]: value}));
     };
-
-    function handleUploadPhoto(e: any) {
-        const file = e.target.files[0];
-        console.log({file})
-        const blobLink = handleUpload(file);
-        const imgElement = document.getElementById('photo-preview');
-        imgElement.src = blobLink;
+    var photo = [];
+    async function handleUploadPhoto(e: any) {
+        let image = e.target.files[0];
+        let imageByteData = await convertToBytes(image);
+        photo = imageByteData
     }
 
     const handleRegister = async () => {
-
         setOpen(false)
+
         let loader_message = <span>Creating agreement... <span className={"loader"}/></span>;
         let loading = enqueueSnackbar(loader_message, {variant: "info"});
-        // console.log({formValues})
-        let register = await actor.register({name: formValues.username, description: formValues.bio});
-        // console.log({register})
+        let register = await actor.register({
+            name: [formValues.username],
+            description: [formValues.bio],
+            photo: [photo]
+        });
         closeSnackbar(loading)
 
         if (register.Ok) {
@@ -74,7 +73,7 @@ function RegistrationForm() {
                                 fullWidth
                                 variant="standard"
                                 value={formValues[input.id] || ""}
-                                onChange={input.type == 'file' ? handleUploadPhoto : handleChange}
+                                onChange={input.type === 'file' ? handleUploadPhoto : handleChange}
                                 InputProps={{
                                     style: {color: 'var(--color)'},
                                 }}

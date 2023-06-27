@@ -8,27 +8,23 @@ import {useDispatch, useSelector} from "react-redux";
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import {Button} from "@mui/material";
+import {TextField} from "@mui/material";
 import {actor} from "../backend_connect/ic_agent";
 import {handleRedux} from "../redux/main";
+import {LoadingButton} from "../components/genral/load_buttton";
+import {useSnackbar} from "notistack";
 
-function LoadingButton(props: any) {
-    let [loading, setLoading] = React.useState(false);
-    return <>
-        {
-            loading ? <span className="loader"/> : <Button
-                disabled={loading}
-                onClick={async () => {
-                    setLoading(true)
-                    props.onClick && await props.onClick()
-                    setLoading(false)
-                }}
-            >{props.name}</Button>
-        }</>
+export function convertToBlobLink(imageData) {
+    const imageContent = new Uint8Array(imageData);
+    const image = URL.createObjectURL(
+        new Blob([imageContent.buffer], {type: "image/png"})
+    );
+    return image;
 }
 
-
 function Friends(props: any) {
+    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+
     const dispatch = useDispatch();
     if (!props.friends[0]) {
         return <></>
@@ -40,26 +36,30 @@ function Friends(props: any) {
         let res = await actor.accept_friend_request(id)
         dispatch(handleRedux("ADD_FRIEND", {id: id, friend: res.Ok}))
         dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
-
     }
 
     async function handleUnfriend(id: string) {
         let res = await actor.unfriend(id)
-        console.log({res})
+        if (res.Ok) {
+            enqueueSnackbar("Unfriended successfully", {variant: "success"});
+        } else {
+            enqueueSnackbar(res.Err, {variant: "error"});
+        }
         dispatch(handleRedux("REMOVE_FRIEND", {id: id}))
     }
 
-
     async function handleReject(id: string) {
         let res = await actor.cancel_friend_request(id)
-        console.log({res})
+        if (res.Ok) {
+            enqueueSnackbar("Unfriended successfully", {variant: "success"});
+        } else {
+            enqueueSnackbar(res.Err, {variant: "error"});
+        }
         dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
     }
 
     return (
-        <List dense sx={{bgcolor: 'var(--background)', color: "var(--color)"}}
-            // sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper'}}
-        >
+        <List dense sx={{bgcolor: 'var(--background)', color: "var(--color)"}}>
             <Divider textAlign="left">Friends</Divider>
 
             {friend_requests && friend_requests.map((value) => {
@@ -78,10 +78,10 @@ function Friends(props: any) {
                     >
                         <ListItemButton>
                             <ListItemAvatar>
-                                <Avatar
-                                    alt={`Avatar n°${value + 1}`}
-                                    src={`/static/images/avatar/${value + 1}.jpg`}
-                                />
+                                {/*<Avatar*/}
+                                {/*    alt={`Avatar n°${value + 1}`}*/}
+                                {/*    src={`/static/images/avatar/${value + 1}.jpg`}*/}
+                                {/*/>*/}
                             </ListItemAvatar>
                             <ListItemText id={labelId} primary={value.name}/>
                         </ListItemButton>
@@ -101,10 +101,10 @@ function Friends(props: any) {
                     >
                         <ListItemButton>
                             <ListItemAvatar>
-                                <Avatar
-                                    alt={`Avatar n°${value + 1}`}
-                                    src={`/static/images/avatar/${value + 1}.jpg`}
-                                />
+                                {/*<Avatar*/}
+                                {/*    alt={`Avatar n°${value + 1}`}*/}
+                                {/*    src={`/static/images/avatar/${value + 1}.jpg`}*/}
+                                {/*/>*/}
                             </ListItemAvatar>
                             <ListItemText id={labelId} primary={value.name}/>
                         </ListItemButton>
@@ -115,39 +115,80 @@ function Friends(props: any) {
     );
 }
 
-function ProfileItem(props: any) {
-    return (<>
-            <ListItem>
-                <ListItemText
-                    primary={<span style={{color: 'var(--text-color)'}}>{props.title}</span>}
-                    secondary={<span contentEditable={props.editable != false}
-                                     style={{color: 'var(--secondary-text-color)'}}>{props.value}</span>}
-                />
-                {props.children}
-            </ListItem>
-            {props.divider !== false && <Divider/>}
-        </>
-    );
-}
-
 export default function ProfileComponent() {
+    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const {profile, friends} = useSelector((state: any) => state.filesReducer);
+    // const dispatch = useDispatch();
+    const [profileData, setProfileData] = React.useState(profile || {});
 
-    console.log({friends})
+    const handleSaveChanges = async () => {
+
+        const res = await actor.update_user_profile({
+            name: [profileData.name],
+            description: [profileData.description],
+            photo: [profileData.photo],
+        });
+
+        console.log({profileData, res});
+        if (res.Ok) {
+            enqueueSnackbar("Profile updated successfully", {variant: "success"});
+        } else {
+            enqueueSnackbar(res.Err, {variant: "error"});
+        }
+    };
+
+    const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        // const reader = new FileReader();
+        // reader.onload = (event) => {
+        //     setProfileData({...profileData, photo: event.target.result});
+        // };
+        // reader.readAsDataURL(file);
+    };
+
     return (
-        <Box sx={{bgcolor: 'var(--background)', color: "var(--color)", width: "80%"}}>
-            {profile && <List>
-                <ProfileItem title={'name'} value={profile.name}/>
-                <ProfileItem title={'description'} value={profile.description}/>
-                <ProfileItem title={'birthdate'} value={profile.description}/>
-                <ProfileItem editable={false} title={'ICP'} value={"0"}><Button>Deposit</Button></ProfileItem>
-                <ProfileItem editable={false} divider={false} title={'USDT'}
-                             value={"0"}><Button>Deposit</Button></ProfileItem>
-                <Button>Confirm</Button>
-            </List>}
-
-
-            {friends && <Friends friends={friends}/>}
+        <Box sx={{bgcolor: 'var(--background)', color: 'var(--color)', width: '80%'}}>
+            {profile && (
+                <List>
+                    <ListItem>
+                        <ListItemAvatar>
+                            <Avatar
+                                alt="Profile Photo"
+                                src={convertToBlobLink(profileData.photo)}
+                                sx={{width: 128, height: 128, marginRight: 1}}
+                            />
+                        </ListItemAvatar>
+                        <input type="file" accept="image/*" onChange={handlePhotoChange}/>
+                    </ListItem>
+                    {Object.entries(profileData).map(([key, value]) => {
+                        if (key === 'photo') {
+                            return null; // Skip rendering the photo field again
+                        }
+                        return (
+                            <ListItem key={key}>
+                                <TextField
+                                    disabled={key === 'id'}
+                                    label={key.charAt(0).toUpperCase() + key.slice(1)}
+                                    value={value}
+                                    onChange={(e) => setProfileData({...profileData, [key]: e.target.value})}
+                                    fullWidth
+                                    variant="standard"
+                                    InputLabelProps={{
+                                        style: {color: 'var(--secondary-text-color)'},
+                                    }}
+                                    InputProps={{
+                                        style: {color: "var(--color)"},
+                                    }}
+                                />
+                            </ListItem>
+                        );
+                    })}
+                    <ListItem>
+                        <LoadingButton onClick={handleSaveChanges} name={"Save changes"}/>
+                    </ListItem>
+                </List>
+            )}
+            {friends[0] && <Friends friends={friends}/>}
         </Box>
     );
 }

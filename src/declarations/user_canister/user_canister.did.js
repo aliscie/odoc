@@ -3,9 +3,23 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Text,
     'name' : IDL.Text,
     'description' : IDL.Text,
+    'photo' : IDL.Vec(IDL.Nat8),
   });
   const Result = IDL.Variant({ 'Ok' : User, 'Err' : IDL.Text });
   const Result_1 = IDL.Variant({ 'Ok' : IDL.Text, 'Err' : IDL.Text });
+  const FileNode = IDL.Record({
+    'id' : IDL.Nat64,
+    'content' : IDL.Nat64,
+    'name' : IDL.Text,
+    'children' : IDL.Vec(IDL.Nat64),
+    'parent' : IDL.Opt(IDL.Nat64),
+  });
+  const Result_2 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Text });
+  const Contract = IDL.Variant({ 'PaymentContract' : IDL.Nat64 });
+  const Row = IDL.Variant({
+    'Contract' : Contract,
+    'NormalCell' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+  });
   const ColumnTypes = IDL.Variant({
     'Tag' : IDL.Null,
     'Date' : IDL.Null,
@@ -34,16 +48,29 @@ export const idlFactory = ({ IDL }) => {
     '_type' : PermissionType,
     'granted_to' : IDL.Vec(IDL.Principal),
   });
+  const Trigger = IDL.Variant({ 'Timer' : IDL.Null, 'Update' : IDL.Null });
+  const Execute = IDL.Variant({
+    'TransferNft' : IDL.Null,
+    'TransferToken' : IDL.Null,
+    'TransferUsdt' : IDL.Null,
+  });
+  const Formula = IDL.Record({
+    'trigger_target' : IDL.Text,
+    'trigger' : Trigger,
+    'operation' : Operation,
+    'execute' : Execute,
+  });
   const Column = IDL.Record({
     '_type' : ColumnTypes,
     'field' : IDL.Text,
     'filters' : IDL.Vec(Filter),
     'permissions' : IDL.Vec(ColumnPermission),
+    'dataValidator' : IDL.Opt(IDL.Text),
     'editable' : IDL.Bool,
-    'formula' : IDL.Opt(IDL.Text),
+    'formula' : IDL.Opt(Formula),
   });
   const Table = IDL.Record({
-    'rows' : IDL.Vec(IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))),
+    'rows' : IDL.Vec(Row),
     'columns' : IDL.Vec(Column),
   });
   const ContentData = IDL.Variant({
@@ -59,13 +86,15 @@ export const idlFactory = ({ IDL }) => {
     'children' : IDL.Vec(IDL.Nat64),
     'parent' : IDL.Opt(IDL.Nat64),
   });
-  const FileNode = IDL.Record({
-    'id' : IDL.Nat64,
-    'content' : IDL.Nat64,
-    'name' : IDL.Text,
-    'children' : IDL.Vec(IDL.Nat64),
-    'parent' : IDL.Opt(IDL.Nat64),
+  const Payment = IDL.Record({
+    'contract_id' : IDL.Nat64,
+    'sender' : User,
+    'released' : IDL.Bool,
+    'confirmed' : IDL.Bool,
+    'amount' : IDL.Nat64,
+    'receiver' : User,
   });
+  const StoredContract = IDL.Variant({ 'PaymentContract' : Payment });
   const Friend = IDL.Record({
     'friend_requests' : IDL.Vec(User),
     'friends' : IDL.Vec(User),
@@ -74,15 +103,17 @@ export const idlFactory = ({ IDL }) => {
     'FilesContents' : IDL.Opt(
       IDL.Vec(IDL.Tuple(IDL.Nat64, IDL.Vec(IDL.Tuple(IDL.Nat64, ContentNode))))
     ),
+    'Contracts' : IDL.Vec(IDL.Tuple(IDL.Nat64, StoredContract)),
     'Files' : IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Nat64, FileNode))),
     'Friends' : IDL.Opt(Friend),
     'Profile' : User,
     'DiscoverUsers' : IDL.Vec(IDL.Tuple(IDL.Text, User)),
   });
-  const Result_2 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
+  const Result_3 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
   const RegisterUser = IDL.Record({
-    'name' : IDL.Text,
-    'description' : IDL.Text,
+    'name' : IDL.Opt(IDL.Text),
+    'description' : IDL.Opt(IDL.Text),
+    'photo' : IDL.Opt(IDL.Vec(IDL.Nat8)),
   });
   return IDL.Service({
     'accept_friend_request' : IDL.Func([IDL.Text], [Result], []),
@@ -92,14 +123,13 @@ export const idlFactory = ({ IDL }) => {
         [Result_1],
         [],
       ),
-    'create_agreement' : IDL.Func([IDL.Text], [IDL.Opt(ContentNode)], []),
     'create_new_file' : IDL.Func(
         [IDL.Text, IDL.Opt(IDL.Nat64)],
         [FileNode],
         [],
       ),
+    'create_payment_contract' : IDL.Func([IDL.Text], [Result_2], []),
     'delete_file' : IDL.Func([IDL.Nat64], [IDL.Opt(FileNode)], []),
-    'get_all_contracts' : IDL.Func([], [IDL.Text], ['query']),
     'get_all_files' : IDL.Func(
         [],
         [IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Nat64, FileNode)))],
@@ -125,7 +155,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Nat64, ContentNode)))],
         ['query'],
       ),
-    'get_initial_data' : IDL.Func([], [Result_2], ['query']),
+    'get_initial_data' : IDL.Func([], [Result_3], ['query']),
     'multi_files_content_updates' : IDL.Func(
         [
           IDL.Vec(
@@ -141,6 +171,7 @@ export const idlFactory = ({ IDL }) => {
     'rename_file' : IDL.Func([IDL.Nat64, IDL.Text], [IDL.Bool], []),
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
+    'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
   });
 };
 export const init = ({ IDL }) => { return []; };
