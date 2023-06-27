@@ -84,7 +84,7 @@ export async function multi_update(updates: any) {
 export async function create_agreement(name: string) {
     switch (PLATFORM) {
         case "WEB":
-            return await actor.create_agreement(name);
+            return await actor.create_payment_contract(name);
         case "DESKTOP":
             return null;
         case "MOBILE":

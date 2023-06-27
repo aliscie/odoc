@@ -48,7 +48,7 @@ function buildTree(
         res["children"] = [...children, {text: node.text, id: node.id}];
     }
 
-
+    console.log({children, node})
     if (children.length > 0) {
         res["children"] = children;
 
@@ -62,7 +62,7 @@ function buildTree(
     if (node.data.length > 0) {
         res["data"] = node.data;
     }
-    if (node.data.length > 0 && node.children.length <= 0) {
+    if (node.data.length > 0 && node.children.length <= 0 && (!res["text"] || node.text.length == 0 || res["text"].length == 0)) {
         res["data"] = node.data;
         res["children"] = [{text: ""}];
     }

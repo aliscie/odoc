@@ -1,38 +1,12 @@
-export function handleUpload(file) {
-    // Perform any necessary validation or checks on the uploaded file
-    // For example, check file type, size, etc.
-
-    // Convert the uploaded file to imageBytes
-    const imageBytes = convertToImageBytes(file);
-
-    // Convert the imageBytes to a bulb and get the blob link
-    const blobLink = convertToBlobLink(imageBytes);
-    console.log({imageBytes, blobLink})
-
-    // Return the blob link
-    return blobLink;
+export function convertToBlobLink(imageData) {
+    const imageContent = new Uint8Array(imageData);
+    const image = URL.createObjectURL(
+        new Blob([imageContent.buffer], {type: "image/png"})
+    );
+    return image;
 }
 
-
-export function convertToImageBytes(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-
-        reader.onloadend = () => {
-            const imageBytes = new Uint8Array(reader.result);
-            resolve(imageBytes);
-        };
-
-        reader.onerror = () => {
-            reject(new Error('Failed to convert file to imageBytes.'));
-        };
-
-        reader.readAsArrayBuffer(file);
-    });
-}
-
-export function convertToBlobLink(imageBytes) {
-    const imageBlob = new Blob([imageBytes], {type: 'image/png'});
-    const blobUrl = URL.createObjectURL(imageBlob);
-    return blobUrl;
+export async function convertToBytes(image) {
+    const imageArray = await image.arrayBuffer();
+    return [...new Uint8Array(imageArray)];
 }

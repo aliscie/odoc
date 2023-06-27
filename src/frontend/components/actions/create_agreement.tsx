@@ -1,49 +1,30 @@
-import {backend} from "../../backend_connect/main";
 import {handleRedux} from "../../redux/main";
 import React from "react";
 import {useDispatch} from "react-redux";
 import {useSnackbar} from "notistack";
-import {Input, Tooltip} from "@mui/material";
-import GavelRoundedIcon from "@mui/icons-material/GavelRounded";
-import {normalize_files_contents} from "../../data_processing/normalize/normalize_contents";
+import InputOption from "../genral/input_option";
+import {actor} from "../../backend_connect/ic_agent";
+import {file_data} from "../../data_processing/data_samples";
 
-const CreateAgreement = () => {
+const PaymentContract = () => {
     const dispatch = useDispatch();
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    const [isTyping, setIsTyping] = React.useState(false)
 
-    const handleCreateFile = async (e: any) => {
-        e.target.classList.add("disabled")
+    const handleCreateFile = async (value: string) => {
         let loading = enqueueSnackbar(<span>Creating agreement... <span
             className={"loader"}/></span>, {variant: "info"});
-        let res = await backend.create_agreement(e.target.value)
-        e.target.classList.remove("disabled")
-        // console.log({res: normalize_files_contents(res)})
-        dispatch(handleRedux("ADD", {data: res}))
+        // let file_data = await backend.create_agreement(value)
+        var res = await actor.create_payment_contract(value)
+        let payment_contract_content = file_data[1]
+        // file_data = file_data[0]
+        console.log({payment_contract_content, file_data})
+        // file_data.id = randomString();
+        dispatch(handleRedux("ADD", {data: file_data}))
+        dispatch(handleRedux("ADD_CONTENT", {id: file_data.id, content: payment_contract_content}))
         closeSnackbar(loading)
         enqueueSnackbar('New file is created!', {variant: "success"});
     };
-    const onClick = async () => {
-        setIsTyping(true)
-        let create_file_name_field = document.getElementById("create_file_name_field");
-        setTimeout(() => {
-            create_file_name_field.focus()
-        }, 10)
-    }
 
-    const onKeyDown = async (e: any) => {
-        if (e.key === 'Enter') {
-            setIsTyping(false)
-            await handleCreateFile(e)
-        }
-    }
-
-    return (<span>
-        <Tooltip arrow placement="top" title="Set the name of the new file then hit enter.">
-            <Input id={"create_file_name_field"} style={{display: isTyping ? "block" : "none"}}
-                   onKeyDown={onKeyDown}/>
-        </Tooltip>
-        <span style={{display: isTyping ? "none" : "block"}} onClick={onClick}> <GavelRoundedIcon/>Agreement page</span>
-    </span>)
+    return (<InputOption title={"payment contract"} tooltip={"hit enter to create"} onEnter={handleCreateFile}/>)
 }
-export default CreateAgreement
+export default PaymentContract

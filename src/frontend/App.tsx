@@ -11,21 +11,21 @@ import RegistrationForm from "./components/spesific/registeration_form";
 
 
 function App() {
-    const [message, setMessage] = React.useState("");
-    const [islogin, setLogin] = React.useState(false);
+    // const [message, setMessage] = React.useState("");
+    // const [islogin, setLogin] = React.useState(false);
 
-    async function doGreet() {
-        setMessage("calling the backend....");
+    // async function doGreet() {
+        // setMessage("calling the backend....");
         // let actor = await get_actor();
         // const greeting = await actor.greet("world connection is correct");
         // console.log("greeting", greeting)
         // setMessage(greeting);
-    }
+    // }
 
 
-    useEffect(() => {
-        doGreet();
-    }, []);
+    // useEffect(() => {
+    //     doGreet();
+    // }, []);
 
     return (
         <BrowserRouter>

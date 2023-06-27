@@ -3,8 +3,9 @@ type Column = record {
   field : text;
   filters : vec Filter;
   permissions : vec ColumnPermission;
+  dataValidator : opt text;
   editable : bool;
-  formula : opt text;
+  formula : opt Formula;
 };
 type ColumnPermission = record {
   _type : PermissionType;
@@ -20,6 +21,8 @@ type ContentNode = record {
   children : vec nat64;
   parent : opt nat64;
 };
+type Contract = variant { PaymentContract : nat64 };
+type Execute = variant { TransferNft; TransferToken; TransferUsdt };
 type FileNode = record {
   id : nat64;
   content : nat64;
@@ -32,33 +35,60 @@ type Filter = record {
   operations : vec Operation;
   formula : opt text;
 };
+type Formula = record {
+  trigger_target : text;
+  trigger : Trigger;
+  operation : Operation;
+  execute : Execute;
+};
 type Friend = record { friend_requests : vec User; friends : vec User };
 type InitialData = record {
   FilesContents : opt vec record { nat64; vec record { nat64; ContentNode } };
+  Contracts : vec record { nat64; StoredContract };
   Files : opt vec record { nat64; FileNode };
   Friends : opt Friend;
   Profile : User;
   DiscoverUsers : vec record { text; User };
 };
 type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
+type Payment = record {
+  contract_id : nat64;
+  sender : User;
+  released : bool;
+  confirmed : bool;
+  amount : nat64;
+  receiver : User;
+};
 type PermissionType = variant { CanRead; CanUpdate };
-type RegisterUser = record { name : text; description : text };
+type RegisterUser = record {
+  name : opt text;
+  description : opt text;
+  photo : opt vec nat8;
+};
 type Result = variant { Ok : User; Err : text };
 type Result_1 = variant { Ok : text; Err : text };
-type Result_2 = variant { Ok : InitialData; Err : text };
-type Table = record {
-  rows : vec vec record { text; text };
-  columns : vec Column;
+type Result_2 = variant { Ok; Err : text };
+type Result_3 = variant { Ok : InitialData; Err : text };
+type Row = variant {
+  Contract : Contract;
+  NormalCell : vec record { text; text };
 };
-type User = record { id : text; name : text; description : text };
+type StoredContract = variant { PaymentContract : Payment };
+type Table = record { rows : vec Row; columns : vec Column };
+type Trigger = variant { Timer; Update };
+type User = record {
+  id : text;
+  name : text;
+  description : text;
+  photo : vec nat8;
+};
 service : {
   accept_friend_request : (text) -> (Result);
   cancel_friend_request : (text) -> (Result);
   content_updates : (nat64, opt nat64, text) -> (Result_1);
-  create_agreement : (text) -> (opt ContentNode);
   create_new_file : (text, opt nat64) -> (FileNode);
+  create_payment_contract : (text) -> (Result_2);
   delete_file : (nat64) -> (opt FileNode);
-  get_all_contracts : () -> (text) query;
   get_all_files : () -> (opt vec record { nat64; FileNode }) query;
   get_all_files_content : () -> (
       vec record { nat64; vec record { nat64; ContentNode } },
@@ -66,7 +96,7 @@ service : {
   get_all_users : () -> (vec record { text; User }) query;
   get_file : (nat64) -> (opt FileNode) query;
   get_file_content : (nat64) -> (opt vec record { nat64; ContentNode }) query;
-  get_initial_data : () -> (Result_2) query;
+  get_initial_data : () -> (Result_3) query;
   multi_files_content_updates : (
       vec vec record { nat64; vec record { nat64; ContentNode } },
     ) -> (Result_1);
@@ -74,4 +104,6 @@ service : {
   rename_file : (nat64, text) -> (bool);
   send_friend_request : (text) -> (Result);
   unfriend : (text) -> (Result);
+  update_user_profile : (RegisterUser) -> (Result);
+  x : () -> (text) query;
 }

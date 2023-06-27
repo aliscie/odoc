@@ -10,11 +10,12 @@ use ic_cdk::{
 };
 use ic_cdk_macros::query;
 
-use crate::{FRIENDS_STORE, ID_STORE, PROFILE_STORE};
+use crate::{CONTRACTS_STORE, FRIENDS_STORE, ID_STORE, PROFILE_STORE, StoredContract};
+use crate::contracts::Contract;
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
 use crate::friends::Friend;
-use crate::storage_schema::{ContentId, ContentTree, FileId, FriendsStore};
+use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId, FriendsStore};
 use crate::user::User;
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
@@ -24,6 +25,7 @@ pub struct InitialData {
     Files: Option<HashMap<ContentId, FileNode>>,
     Friends: Option<Friend>,
     DiscoverUsers: HashMap<String, User>,
+    Contracts: HashMap<ContractId, StoredContract>,
 }
 
 #[query]
@@ -46,9 +48,12 @@ fn get_initial_data() -> Result<InitialData, String> {
             .collect()
     });
 
-    // TODO DiscoverPosts should be shorter then 100 posts
-    // TODo we should have another function called load_more_posts
-    // Note don't return all users this is just for testing.
+    let contracts: HashMap<ContractId, StoredContract> = Contract::get_all_contracts().unwrap_or(HashMap::new());
+
+    // TODO Pagination
+    //   DiscoverPosts should be shorter then 100 posts
+    //   We should have another function called load_more_posts
+    //   Note don't return all users this is just for testing.
 
     let initial_data = InitialData {
         Profile: profile.unwrap(),
@@ -56,8 +61,7 @@ fn get_initial_data() -> Result<InitialData, String> {
         Files: files,
         Friends: Friend::get_friends_of_caller(),
         DiscoverUsers: users,
-        // DiscoverPosts: posts,
-        // DiscoverPlugins: plugins,
+        Contracts: contracts,
     };
 
     Ok(initial_data)

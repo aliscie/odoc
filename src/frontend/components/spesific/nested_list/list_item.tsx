@@ -38,8 +38,8 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
     };
 
     path = path ? path : item.name;
-    path = path.replace(/\s+/g, '_').toLowerCase();
-    path = path.replaceAll(".", "")
+    path = path && path.replace(/\s+/g, '_').toLowerCase();
+    path = path && path.replaceAll(".", "")
 
     let options = [
         {

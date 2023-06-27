@@ -3,6 +3,7 @@ import * as React from "react";
 import Editor from "odoc-editor";
 import {handleRedux} from "../redux/main";
 import {EditorRenderer} from "../components/editor_components/editor_renderer";
+import {logger} from "../dev_utils/log_data";
 
 let test_data = [
     {
@@ -38,11 +39,9 @@ function FileContentPage(props: any) {
     }
 
     const editorKey = current_file.name || ""; // Provide a key based on current_file.name
-
+    // console.log({contracts, files_content, current_file});
     if (current_file.id != null) {
         let content = files_content[current_file.id];
-        // console.log({content});
-        // logger(content)
         return (
             <span style={{margin: "3px", marginLeft: "20%", marginRight: "10%"}}>
         {current_file.name && (

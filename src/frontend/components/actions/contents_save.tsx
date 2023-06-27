@@ -1,15 +1,13 @@
 import {Button, Tooltip} from "@mui/material";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
-import {backend} from "../../backend_connect/main";
-import {convertAllDataBack} from "../../data_processing/denormalize/denormalize_files";
 import {logger} from "../../dev_utils/log_data";
 import {actor} from "../../backend_connect/ic_agent";
+import WarningIcon from '@mui/icons-material/Warning';
 
 function ContentSave(props: any) {
     const dispatch = useDispatch();
-
     let {is_files_saved, files_content} = useSelector((state: any) => state.filesReducer);
 
     // console.log({files_content})
@@ -63,18 +61,19 @@ function ContentSave(props: any) {
         // Uncaught (in promise) Error: Invalid vec vec record {nat64; vec record {nat64; record {id:nat64; _type:text; data:opt variant {Comment:text; Image:vec nat64; Table:record {rows:vec record {data:vec record {text; text}}; columns:vec record {_type:variant {Tag; Date; File; Text; Person; Category; Number}; filters:vec record {name:text; operations:vec variant {Equal; Contains; Bigger; BiggerOrEqual}; formula:opt text}; permissions:vec record {_type:variant {CanRead; CanUpdate}; granted_to:vec principal}; name:text; formula:opt text}}}; text:text; children:vec nat64; parent:opt nat64}}} argument:
         // index 0 -> Invalid vec record {nat64; vec record {nat64; record {id:nat64; _type:text; data:opt variant {Comment:text; Image:vec nat64; Table:record {rows:vec record {data:vec record {text; text}}; columns:vec record {_type:variant {Tag; Date; File; Text; Person; Category; Number}; filters:vec record {name:text; operations:vec variant {Equal; Contains; Bigger; BiggerOrEqual}; formula:opt text}; permissions:vec record {_type:variant {CanRead; CanUpdate}; granted_to:vec principal}; name:text; formula:opt text}}}; text:text; children:vec nat64; parent:opt nat64}}} argument: {"0":{"undefined":{"children":[]}}}
         let res = await actor.multi_files_content_updates(process_files_content);
-        logger(res)
+        // logger(res)
         dispatch(handleRedux("FILES_SAVED"));
 
     }
 
+
     let tip_for_saved = "Your changes saved to the blockchain.";
-    let tip_for_changed = "You need to save";
-    return <Tooltip title={is_files_saved ? tip_for_saved : tip_for_changed}>
+    let tip_for_changed = <span>You need to save</span>;
+    return <Tooltip arrow leaveDelay={200} title={is_files_saved ? tip_for_saved : tip_for_changed}>
         <Button
             disabled={is_files_saved}
             onClick={handleClick}
-        >Save
+        > {!is_files_saved && <WarningIcon size={"small"} color={"warning"}/>}Save
         </Button>
     </Tooltip>
 }

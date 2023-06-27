@@ -8,7 +8,7 @@ use crate::{USER_FILES};
 use std::sync::atomic::{AtomicU64, Ordering};
 use crate::files_content::ContentNode;
 
-static COUNTER: AtomicU64 = AtomicU64::new(0);
+pub static COUNTER: AtomicU64 = AtomicU64::new(0);
 
 // #[derive(Debug, Serialize, Deserialize)]
 #[derive(Clone, Debug, Deserialize, CandidType)]

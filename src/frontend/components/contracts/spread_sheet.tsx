@@ -3,7 +3,6 @@ import {DataGrid, gridPageCountSelector, gridPageSelector, useGridApiContext, us
 import {useDemoData} from '@mui/x-data-grid-generator';
 import {styled, Theme} from '@mui/material/styles';
 import Pagination from '@mui/material/Pagination';
-import PaginationItem from '@mui/material/PaginationItem';
 import {process_row} from "../../data_processing/normalize/normalize_tables";
 
 function customCheckbox(theme: Theme) {
@@ -48,7 +47,7 @@ function customCheckbox(theme: Theme) {
     };
 }
 
-const StyledDataGrid = styled(DataGrid)(({theme}) => ({
+export const StyledDataGrid = styled(DataGrid)(({theme}) => ({
     border: 0,
     color: "var(--color)",
     fontFamily: [
@@ -125,18 +124,16 @@ export default function SpreadSheet(props: any) {
     let rows = process_row(table.rows)
 
     return (
-        <div style={{height: 400, width: '100%'}}>
-            <StyledDataGrid
-                // checkboxSelection
-                // paginationModel={paginationModel}
-                // onPaginationModelChange={setPaginationModel}
-                // pageSizeOptions={[PAGE_SIZE]}
-                // slots={{
-                //     pagination: CustomPagination,
-                // }}
-                rows={rows}
-                columns={table.columns}
-            />
-        </div>
+        <StyledDataGrid
+            // checkboxSelection
+            // paginationModel={paginationModel}
+            // onPaginationModelChange={setPaginationModel}
+            // pageSizeOptions={[PAGE_SIZE]}
+            // slots={{
+            //     pagination: CustomPagination,
+            // }}
+            rows={rows}
+            columns={table.columns}
+        />
     );
 }
