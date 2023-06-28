@@ -26,7 +26,6 @@ pub struct Payment {
 
 impl Payment {
     pub fn new(receiver: Principal, sender: Principal, amount: u64) -> Self {
-
         let payment = Payment {
             contract_id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
             receiver,
@@ -55,6 +54,28 @@ impl Payment {
         });
 
         payment
+    }
+    pub fn update_or_create(payment: Payment) -> Result<(), String> {
+        CONTRACTS_STORE.with(|contracts_store| {
+            let mut caller_contracts = contracts_store.borrow_mut();
+            let caller_contract = caller_contracts
+                .entry(caller())
+                .or_insert_with(HashMap::new);
+
+            let contract = caller_contract
+                .entry(payment.clone().contract_id)
+                .or_insert_with(|| StoredContract::PaymentContract(payment.clone()));
+
+            if let StoredContract::PaymentContract(existing_payment) = contract {
+                if existing_payment.confirmed {
+                    return Err("Payment contract is confirmed and cannot be updated".to_string());
+                }
+                *existing_payment = payment;
+                return Ok(());
+            }
+
+            Err("Somthing went wrong.".to_string())
+        })
     }
 
     pub fn update(payment: Payment) -> Result<(), String> {

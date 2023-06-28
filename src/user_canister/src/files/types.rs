@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 use std::fs::File;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use candid::{CandidType, Deserialize};
 
-use crate::{USER_FILES};
-use std::sync::atomic::{AtomicU64, Ordering};
+use crate::USER_FILES;
 use crate::files_content::ContentNode;
 use crate::storage_schema::{ContentId, FileId};
 
@@ -62,7 +62,40 @@ impl FileNode {
     //     })
     // }
 
+    pub fn update_or_create(file_id: FileId, name: String, parent: Option<FileId>) -> Self {
+        USER_FILES.with(
+            |files_store| {
+                let principal_id = ic_cdk::api::caller();
 
+                let mut user_files = files_store.borrow_mut();
+                // Check if the user principal is already in the file store
+                let user_files_map = user_files.entry(principal_id.clone()).or_insert_with(HashMap::new);
+
+                if let Some(file) = user_files_map.get_mut(&file_id) {
+                    file.name = name.clone();
+                    file.parent = parent.clone();
+                    return file.clone();
+                }
+
+                let file = FileNode {
+                    id: file_id.clone(),
+                    parent: parent.clone(),
+                    name: name.clone(),
+                    content: 0.to_string(),
+                    children: Vec::new(),
+                };
+
+                user_files_map.insert(file_id.clone(), file.clone());
+
+                if let Some(parent_id) = parent.clone() {
+                    if let Some(parent_file) = user_files_map.get_mut(&parent_id) {
+                        parent_file.children.push(file_id.clone());
+                    }
+                }
+                file
+            }
+        )
+    }
     pub fn get_file(file_id: FileId) -> Option<Self> {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();

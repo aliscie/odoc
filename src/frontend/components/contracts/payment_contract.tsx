@@ -12,6 +12,8 @@ import FreeSoloCreateOption from "../genral/auto_complete";
 import {useDispatch, useSelector} from "react-redux";
 import {contract_sample, randomString} from "../../data_processing/data_samples";
 import {handleRedux} from "../../redux/main";
+import {useSnackbar} from "notistack";
+import {logger} from "../../dev_utils/log_data";
 
 function ReleaseButton({released, onClick}: { released: boolean, onClick: () => void }) {
     const [open, setOpen] = React.useState(false);
@@ -141,7 +143,7 @@ export default function PaymentContract(props: any) {
             if (item.id == props.id) {
                 item.children.map((child) => {
                     if (child.data && child.id == table_content.id) {
-                        child.data[0].Table.rows = [...child.data[0].Table.rows, newRow];
+                        child.data[0].Table.rows.push(newRow)
                     }
                 })
             }
@@ -160,29 +162,49 @@ export default function PaymentContract(props: any) {
         };
         setColumns([...columns, newColumn]);
     };
+    const {enqueueSnackbar, closeSnackbar, snackbarUtils} = useSnackbar();
+
     const processRowUpdate = React.useCallback(
         (newRow: GridRowModel, oldRow: GridRowModel) => {
             console.log('Updated row:', newRow);
             console.log('Old row:', oldRow);
             const index = table_content.data[0].Table.rows.findIndex((row) => row.id === oldRow.id);
-            content.map((item: any) => {
-                if (item.id == props.id) {
-                    item.children.map((child) => {
-                        if (child.data && child.id == table_content.id) {
-                            child.data[0].Table.rows[index] = newRow
-                        }
-                    })
-                }
-            })
-            dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: content}));
+
+            // let id = randomString();
+            // let contract = contract_sample;
+            // contract.contract_id = id;
+            // const Denormalized_newRow = {"Contract": {"PaymentContract": id}}
+            // content.map((item: any) => {
+            //     if (item.id == props.id) {
+            //         item.children.map((child) => {
+            //             if (child.data && child.id == table_content.id) {
+            //                 if (index === -1) {
+            //                     child.data[0].Table.rows = [newRow]
+            //                 } else {
+            //                     child.data[0].Table.rows[index] = newRow
+            //                 }
+            //
+            //             }
+            //         })
+            //     }
+            // })
+            // logger(contents)
+            // dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: content}));
             let id = oldRow.id;
+
+            var receiver = all_friends.filter((friend: any) => friend.name === newRow.username)[0]
+            if (!receiver) {
+                enqueueSnackbar("Please select a receiver", {variant: "error"});
+                return Promise.resolve();
+            }
+
             let contract = {
                 "contract_id": id,
                 "sender": "",
                 "released": newRow.released,
                 "confirmed": newRow.confirmed,
                 "amount": newRow.amount,
-                "receiver": all_friends.filter((friend: any) => friend.name === newRow.username)[0].id,
+                "receiver": receiver.id,
             }
 
             dispatch(handleRedux("UPDATE_CONTRACT", {id, contract}));

@@ -1,5 +1,5 @@
 interface ContentNode {
-    id: number;
+    id: string;
     _type: string;
     text: string;
     children: ContentNode[];
@@ -33,8 +33,8 @@ export function convertDataBack(nodes: any): any {
     // const node = nodes[key];
     // const nodeId = node.id;
     const newAny = {
-        id: Number(nodes.id),
-        parent: nodes.parent ? BigInt(Number(nodes.parent)) : [],
+        id: nodes.id,
+        parent: nodes.parent ? nodes.parent : [],
         _type: nodes.type || "",
         text: nodes.text || "",
         children: traverse(nodes.children) || [],
