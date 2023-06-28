@@ -6,16 +6,17 @@ use ic_cdk_macros::update;
 use crate::{USER_FILES};
 use crate::files::FileNode;
 use crate::files_content::{ContentData, ContentNode};
+use crate::storage_schema::FileId;
 use crate::tables::Table;
 use crate::user::{RegisterUser, User};
 
 #[update]
 #[candid_method(update)]
-fn create_new_file(name: String, parent: Option<u64>) -> FileNode {
+fn create_new_file(name: String, parent: Option<FileId>) -> FileNode {
     let file = FileNode::new(name.clone(), parent);
 
-    let content_node = ContentNode::new(file.id, None, String::from(""), String::from(""), None);
-    let child_content_node = ContentNode::new(file.id, Some(content_node.clone().unwrap().id), String::from("h1"), String::from("child is here."), None);
+    let content_node = ContentNode::new(file.clone().id, None, String::from(""), String::from(""), None);
+    let child_content_node = ContentNode::new(file.clone().id, Some(content_node.clone().unwrap().id), String::from("h1"), String::from("child is here."), None);
 
     USER_FILES.with(|files_store| {
         let principal_id = ic_cdk::api::caller();
@@ -35,13 +36,13 @@ fn create_new_file(name: String, parent: Option<u64>) -> FileNode {
 
 #[update]
 #[candid_method(update)]
-fn delete_file(id: u64) -> Option<FileNode> {
+fn delete_file(id: FileId) -> Option<FileNode> {
     FileNode::delete_file(id)
 }
 
 
 #[update]
 #[candid_method(update)]
-fn rename_file(id: u64, name: String) -> bool {
+fn rename_file(id: FileId, name: String) -> bool {
     FileNode::rename_file(id, name)
 }

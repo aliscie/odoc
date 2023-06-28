@@ -25,23 +25,23 @@ export type ContentData = { 'Comment' : string } |
   { 'Image' : BigUint64Array | bigint[] } |
   { 'Table' : Table };
 export interface ContentNode {
-  'id' : bigint,
+  'id' : string,
   '_type' : string,
   'data' : [] | [ContentData],
   'text' : string,
-  'children' : BigUint64Array | bigint[],
-  'parent' : [] | [bigint],
+  'children' : Array<string>,
+  'parent' : [] | [string],
 }
-export type Contract = { 'PaymentContract' : bigint };
+export type Contract = { 'PaymentContract' : string };
 export type Execute = { 'TransferNft' : null } |
   { 'TransferToken' : null } |
   { 'TransferUsdt' : null };
 export interface FileNode {
-  'id' : bigint,
-  'content' : bigint,
+  'id' : string,
+  'content' : string,
   'name' : string,
-  'children' : BigUint64Array | bigint[],
-  'parent' : [] | [bigint],
+  'children' : Array<string>,
+  'parent' : [] | [string],
 }
 export interface Filter {
   'name' : string,
@@ -59,9 +59,9 @@ export interface Friend {
   'friends' : Array<User>,
 }
 export interface InitialData {
-  'FilesContents' : [] | [Array<[bigint, Array<[bigint, ContentNode]>]>],
-  'Contracts' : Array<[bigint, StoredContract]>,
-  'Files' : [] | [Array<[bigint, FileNode]>],
+  'FilesContents' : [] | [Array<[string, Array<[string, ContentNode]>]>],
+  'Contracts' : Array<[string, StoredContract]>,
+  'Files' : [] | [Array<[string, FileNode]>],
   'Friends' : [] | [Friend],
   'Profile' : User,
   'DiscoverUsers' : Array<[string, User]>,
@@ -71,12 +71,12 @@ export type Operation = { 'Equal' : null } |
   { 'Bigger' : null } |
   { 'BiggerOrEqual' : null };
 export interface Payment {
-  'contract_id' : bigint,
-  'sender' : User,
+  'contract_id' : string,
+  'sender' : Principal,
   'released' : boolean,
   'confirmed' : boolean,
   'amount' : bigint,
-  'receiver' : User,
+  'receiver' : Principal,
 }
 export type PermissionType = { 'CanRead' : null } |
   { 'CanUpdate' : null };
@@ -108,28 +108,28 @@ export interface User {
 export interface _SERVICE {
   'accept_friend_request' : ActorMethod<[string], Result>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
-  'content_updates' : ActorMethod<[bigint, [] | [bigint], string], Result_1>,
-  'create_new_file' : ActorMethod<[string, [] | [bigint]], FileNode>,
+  'content_updates' : ActorMethod<[string, [] | [string], string], Result_1>,
+  'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
   'create_payment_contract' : ActorMethod<[string], Result_2>,
-  'delete_file' : ActorMethod<[bigint], [] | [FileNode]>,
-  'get_all_files' : ActorMethod<[], [] | [Array<[bigint, FileNode]>]>,
+  'delete_file' : ActorMethod<[string], [] | [FileNode]>,
+  'get_all_files' : ActorMethod<[], [] | [Array<[string, FileNode]>]>,
   'get_all_files_content' : ActorMethod<
     [],
-    Array<[bigint, Array<[bigint, ContentNode]>]>
+    Array<[string, Array<[string, ContentNode]>]>
   >,
   'get_all_users' : ActorMethod<[], Array<[string, User]>>,
-  'get_file' : ActorMethod<[bigint], [] | [FileNode]>,
+  'get_file' : ActorMethod<[string], [] | [FileNode]>,
   'get_file_content' : ActorMethod<
-    [bigint],
-    [] | [Array<[bigint, ContentNode]>]
+    [string],
+    [] | [Array<[string, ContentNode]>]
   >,
   'get_initial_data' : ActorMethod<[], Result_3>,
   'multi_files_content_updates' : ActorMethod<
-    [Array<Array<[bigint, Array<[bigint, ContentNode]>]>>],
+    [Array<Array<[string, Array<[string, ContentNode]>]>>],
     Result_1
   >,
   'register' : ActorMethod<[RegisterUser], Result>,
-  'rename_file' : ActorMethod<[bigint, string], boolean>,
+  'rename_file' : ActorMethod<[string, string], boolean>,
   'send_friend_request' : ActorMethod<[string], Result>,
   'unfriend' : ActorMethod<[string], Result>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,

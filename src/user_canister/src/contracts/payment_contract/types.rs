@@ -9,14 +9,15 @@ use ic_cdk::{api::call::ManualReply, caller, export::{
 use crate::{CONTRACTS_STORE, FILE_CONTENTS, StoredContract};
 use crate::contracts::Contract;
 use crate::files::COUNTER;
+use crate::storage_schema::ContractId;
 use crate::tables::Table;
 use crate::user::User;
 
-#[derive(PartialEq, Eq, PartialOrd, Clone, Debug, Default, CandidType, Deserialize)]
+#[derive(PartialEq, Eq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
 pub struct Payment {
-    contract_id: u64,
-    pub(crate) receiver: User,
-    pub(crate) sender: User,
+    contract_id: ContractId,
+    pub(crate) receiver: Principal,
+    pub(crate) sender: Principal,
     pub(crate) amount: u64,
     pub(crate) released: bool,
     pub(crate) confirmed: bool,
@@ -24,9 +25,10 @@ pub struct Payment {
 
 
 impl Payment {
-    pub fn new(receiver: User, sender: User, amount: u64) -> Self {
+    pub fn new(receiver: Principal, sender: Principal, amount: u64) -> Self {
+
         let payment = Payment {
-            contract_id: COUNTER.fetch_add(1, Ordering::SeqCst),
+            contract_id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
             receiver,
             sender,
             amount,
@@ -34,6 +36,7 @@ impl Payment {
             confirmed: false,
         };
 
+        // Update the contract storage with the new payment
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contract = caller_contracts
@@ -41,7 +44,7 @@ impl Payment {
                 .or_insert_with(HashMap::new);
 
             let contract = caller_contract
-                .entry(payment.contract_id)
+                .entry(payment.clone().contract_id)
                 .or_insert_with(|| StoredContract::PaymentContract(payment.clone()));
 
             if let StoredContract::PaymentContract(existing_payment) = contract {
@@ -61,7 +64,7 @@ impl Payment {
                 .get_mut(&caller())
                 .ok_or("Caller has no contracts")?;
             let contract = caller_contract
-                .get_mut(&payment.get_contract_id())
+                .get_mut(&payment.contract_id) // Use payment.contract_id as the key
                 .ok_or("Contract not found")?;
 
             if let StoredContract::PaymentContract(existing_payment) = contract {
@@ -83,7 +86,8 @@ impl Payment {
             .map(|payment| Self::update(payment))
             .collect()
     }
-    pub fn get_contract_id(&self) -> u64 {
-        self.contract_id
+
+    pub fn get_contract_id(&self) -> ContractId {
+        self.contract_id.clone() // Return a reference to the contract_id
     }
 }

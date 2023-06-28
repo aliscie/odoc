@@ -79,10 +79,10 @@ export default function PaymentContract(props: any) {
     let init_rows = table_content.data[0].Table.rows
     let normalized_row = init_rows.map((row: any) => {
         let contract = contracts[row.Contract.PaymentContract]
-        console.log("payment_contract.tsx", {contract});
+        let receiver = all_friends.filter((friend: any) => friend.id === contract.receiver.toString())[0]
         return {
             id: row.Contract.PaymentContract,
-            username: contract.receiver.name,
+            username: receiver && receiver.name,
             amount: contract.amount,
             released: contract.released,
         }
@@ -178,21 +178,11 @@ export default function PaymentContract(props: any) {
             let id = oldRow.id;
             let contract = {
                 "contract_id": id,
-                "sender": {
-                    "id": "",
-                    "name": "",
-                    "description": "",
-                    "photo": {}
-                },
+                "sender": "",
                 "released": newRow.released,
                 "confirmed": newRow.confirmed,
                 "amount": newRow.amount,
-                "receiver": {
-                    "id": "",
-                    "name": newRow.username,
-                    "description": "",
-                    "photo": {}
-                }
+                "receiver": all_friends.filter((friend: any) => friend.name === newRow.username)[0].id,
             }
 
             dispatch(handleRedux("UPDATE_CONTRACT", {id, contract}));

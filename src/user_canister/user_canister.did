@@ -14,21 +14,21 @@ type ColumnPermission = record {
 type ColumnTypes = variant { Tag; Date; File; Text; Person; Category; Number };
 type ContentData = variant { Comment : text; Image : vec nat64; Table : Table };
 type ContentNode = record {
-  id : nat64;
+  id : text;
   _type : text;
   data : opt ContentData;
   "text" : text;
-  children : vec nat64;
-  parent : opt nat64;
+  children : vec text;
+  parent : opt text;
 };
-type Contract = variant { PaymentContract : nat64 };
+type Contract = variant { PaymentContract : text };
 type Execute = variant { TransferNft; TransferToken; TransferUsdt };
 type FileNode = record {
-  id : nat64;
-  content : nat64;
+  id : text;
+  content : text;
   name : text;
-  children : vec nat64;
-  parent : opt nat64;
+  children : vec text;
+  parent : opt text;
 };
 type Filter = record {
   name : text;
@@ -43,21 +43,21 @@ type Formula = record {
 };
 type Friend = record { friend_requests : vec User; friends : vec User };
 type InitialData = record {
-  FilesContents : opt vec record { nat64; vec record { nat64; ContentNode } };
-  Contracts : vec record { nat64; StoredContract };
-  Files : opt vec record { nat64; FileNode };
+  FilesContents : opt vec record { text; vec record { text; ContentNode } };
+  Contracts : vec record { text; StoredContract };
+  Files : opt vec record { text; FileNode };
   Friends : opt Friend;
   Profile : User;
   DiscoverUsers : vec record { text; User };
 };
 type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
 type Payment = record {
-  contract_id : nat64;
-  sender : User;
+  contract_id : text;
+  sender : principal;
   released : bool;
   confirmed : bool;
   amount : nat64;
-  receiver : User;
+  receiver : principal;
 };
 type PermissionType = variant { CanRead; CanUpdate };
 type RegisterUser = record {
@@ -85,25 +85,24 @@ type User = record {
 service : {
   accept_friend_request : (text) -> (Result);
   cancel_friend_request : (text) -> (Result);
-  content_updates : (nat64, opt nat64, text) -> (Result_1);
-  create_new_file : (text, opt nat64) -> (FileNode);
+  content_updates : (text, opt text, text) -> (Result_1);
+  create_new_file : (text, opt text) -> (FileNode);
   create_payment_contract : (text) -> (Result_2);
-  delete_file : (nat64) -> (opt FileNode);
-  get_all_files : () -> (opt vec record { nat64; FileNode }) query;
+  delete_file : (text) -> (opt FileNode);
+  get_all_files : () -> (opt vec record { text; FileNode }) query;
   get_all_files_content : () -> (
-      vec record { nat64; vec record { nat64; ContentNode } },
+      vec record { text; vec record { text; ContentNode } },
     ) query;
   get_all_users : () -> (vec record { text; User }) query;
-  get_file : (nat64) -> (opt FileNode) query;
-  get_file_content : (nat64) -> (opt vec record { nat64; ContentNode }) query;
+  get_file : (text) -> (opt FileNode) query;
+  get_file_content : (text) -> (opt vec record { text; ContentNode }) query;
   get_initial_data : () -> (Result_3) query;
   multi_files_content_updates : (
-      vec vec record { nat64; vec record { nat64; ContentNode } },
+      vec vec record { text; vec record { text; ContentNode } },
     ) -> (Result_1);
   register : (RegisterUser) -> (Result);
-  rename_file : (nat64, text) -> (bool);
+  rename_file : (text, text) -> (bool);
   send_friend_request : (text) -> (Result);
   unfriend : (text) -> (Result);
   update_user_profile : (RegisterUser) -> (Result);
-  x : () -> (text) query;
 }

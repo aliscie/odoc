@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::sync::atomic::Ordering;
 
-use candid::candid_method;
+use candid::{candid_method, Principal};
 use ic_cdk::caller;
 use ic_cdk_macros::update;
 use serde::__private::de::Content;
@@ -24,8 +24,8 @@ fn create_payment_contract(file_name: String) -> Result<(), String> {
     if user.is_none() {
         return Err("User not registered".to_string());
     }
+    let user: Principal = user.unwrap().id.parse().unwrap();
 
-    let user = user.unwrap();
     let payment1 = Payment::new(user.clone(), user.clone(), 100);
     let payment2 = Payment::new(user.clone(), user.clone(), 200);
     let payment3 = Payment::new(user.clone(), user.clone(), 150);
@@ -36,9 +36,9 @@ fn create_payment_contract(file_name: String) -> Result<(), String> {
     table.rows = vec![row1, row2, row3];
 
     let file_node = FileNode::new(file_name, None);
-    let content_node = ContentNode::new(file_node.id, None, "payment_contract".to_string(), "".to_string(), None);
+    let content_node = ContentNode::new(file_node.clone().id, None, "payment_contract".to_string(), "".to_string(), None);
     let table_content = ContentNode::new(
-        file_node.id,
+        file_node.clone().id,
         Some(content_node.clone().unwrap().id),
         "".to_string(),
         "".to_string(),

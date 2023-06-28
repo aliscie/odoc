@@ -61,21 +61,11 @@ export let contracts_sample = {
 }
 export let contract_sample = {
     "contract_id": "18",
-    "sender": {
-        "id": "",
-        "name": "",
-        "description": "",
-        "photo": {}
-    },
+    "sender": "",
     "released": false,
     "confirmed": false,
     "amount": "",
-    "receiver": {
-        "id": "",
-        "name": "",
-        "description": "",
-        "photo": {}
-    }
+    "receiver": ""
 }
 export let contract_id_sample = {"Contract": {"PaymentContract": "18"}}
 

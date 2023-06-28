@@ -6,17 +6,17 @@ use crate::FILE_CONTENTS;
 
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
-use crate::storage_schema::{ContentTree, FileId};
+use crate::storage_schema::{ContentId, ContentTree, FileId};
 
 #[update]
 #[candid_method(update)]
-fn content_updates(file_id: u64, content_parent_id: Option<u64>, new_text: String) -> Result<String, String> {
-    if FileNode::get_file(file_id).is_none() {
+fn content_updates(file_id: FileId, content_parent_id: Option<ContentId>, new_text: String) -> Result<String, String> {
+    if FileNode::get_file(file_id.clone()).is_none() {
         return Err("No such file with this id.".to_string());
     }
-    let parent_id: u64 = match content_parent_id {
+    let parent_id: ContentId = match content_parent_id {
         Some(id) => id,
-        None => ContentNode::new(file_id, None, String::from(""), String::from(""), None).unwrap().id
+        None => ContentNode::new(file_id.clone(), None, String::from(""), String::from(""), None).unwrap().id
     };
     let updated_content = ContentNode::new(file_id, Some(parent_id), String::from(""), new_text, None);
     Ok(format!("Content created successfully. Content ID: {}", updated_content.unwrap().id))
