@@ -1,53 +1,17 @@
 import * as React from 'react';
-import {GridColDef, GridValueGetterParams} from '@mui/x-data-grid';
+import {
+    GridColDef,
+    GridRenderEditCellParams,
+    GridRowModel,
+    GridValueGetterParams,
+    useGridApiContext
+} from '@mui/x-data-grid';
 import {Button, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import {StyledDataGrid} from "./spread_sheet";
 import FreeSoloCreateOption from "../genral/auto_complete";
-import {useSelector} from "react-redux";
-
-const usernames = [
-    'John',
-    'Jane',
-    'Alice',
-    'Bob',
-    'Charlie',
-    // Add more usernames here
-];
-
-
-const init_columns: GridColDef[] = [
-    {
-        field: 'username',
-        headerName: 'Username',
-        width: 250,
-        editable: false,
-        renderCell: (params: GridValueGetterParams) => (
-            <FreeSoloCreateOption options={usernames} value={params.row.username}/>
-        ),
-    },
-    {field: 'amount', headerName: 'Amount', width: 150, editable: true},
-    {
-        field: 'release',
-        headerName: 'Release',
-        width: 300,
-        editable: false,
-        renderCell: (params: GridValueGetterParams) => (
-            <>
-                <ReleaseButton
-                    released={params.row.released}
-                    onClick={() => handleRelease(params.row.id)}
-                />
-                <Button>Cancel</Button>
-            </>
-        ),
-    },
-];
-
-// const init_rows = [
-//     {id: 1, username: 'John', amount: 100, released: false},
-//     {id: 2, username: 'Jane', amount: 200, released: true},
-//     {id: 3, username: 'Alice', amount: 150, released: false},
-// ];
+import {useDispatch, useSelector} from "react-redux";
+import {contract_sample, randomString} from "../../data_processing/data_samples";
+import {handleRedux} from "../../redux/main";
 
 function ReleaseButton({released, onClick}: { released: boolean, onClick: () => void }) {
     const [open, setOpen] = React.useState(false);
@@ -95,10 +59,6 @@ function ReleaseButton({released, onClick}: { released: boolean, onClick: () => 
     );
 }
 
-function handleUsernameChange(id: number, value: string | null) {
-    // Update the 'username' property of the corresponding row
-    // Set the state or dispatch an action to update the data
-}
 
 function handleRelease(id: number) {
     // Perform release logic here
@@ -108,14 +68,18 @@ function handleRelease(id: number) {
 
 
 export default function PaymentContract(props: any) {
-    const {contracts} = useSelector((state: any) => state.filesReducer);
-    console.log({contracts, props});
+    // const [gridData, setGridData] = useState([]);
+    const dispatch = useDispatch();
 
+    const {files_content, current_file, contracts, all_friends} = useSelector((state: any) => state.filesReducer);
+    let content = files_content[current_file.id];
 
-    let init_rows = props.children[0].data[0].Table.rows
+    // ToDo  `props.data[0]` instead of `props.children[0].data[0]`
+    let table_content = props.children[0]
+    let init_rows = table_content.data[0].Table.rows
     let normalized_row = init_rows.map((row: any) => {
         let contract = contracts[row.Contract.PaymentContract]
-        console.log({contract});
+        console.log("payment_contract.tsx", {contract});
         return {
             id: row.Contract.PaymentContract,
             username: contract.receiver.name,
@@ -123,47 +87,154 @@ export default function PaymentContract(props: any) {
             released: contract.released,
         }
     });
-    let [rows, setRows] = React.useState(normalized_row)
-    let [columns, setColumns] = React.useState(init_columns)
-    // ToDo this should be instead // let t_rows = props.data
 
-    // const handleAddRow = () => {
-    //     const newRow = {id: rows.length + 1, username: '', amount: 0, released: false};
-    //     setRows([...rows, newRow]);
-    // };
-    //
-    // const handleAddColumn = () => {
-    //     const newColumn: GridColDef = {
-    //         field: `column${columns.length + 1}`,
-    //         headerName: `Column ${columns.length + 1}`,
-    //         width: 150,
-    //         editable: true,
-    //     };
-    //     setColumns([...columns, newColumn]);
-    // };
+    function CustomEditComponent(props: GridRenderEditCellParams) {
+        props.value = props.row.username;
+        const {id, value, field} = props;
+        const apiRef = useGridApiContext();
+
+        const handleValueChange = (event: any) => {
+            apiRef.current.setEditCellValue({id, field, value: event.name});
+        };
+        return <FreeSoloCreateOption onChange={handleValueChange} options={all_friends} value={value}/>
+    }
+
+    const init_columns: GridColDef[] = [
+        {
+            field: 'username',
+            headerName: 'Username',
+            width: 250,
+            editable: true,
+            // renderCell: (params: GridValueGetterParams) => (
+            //     <FreeSoloCreateOption options={all_friends} value={params.row.username}/>
+            // ),
+            renderEditCell: CustomEditComponent,
+        },
+        {field: 'amount', headerName: 'Amount', width: 150, editable: true},
+        {
+            field: 'release',
+            headerName: 'Release',
+            width: 300,
+            editable: false,
+            renderCell: (params: GridValueGetterParams) => (
+                <>
+                    <ReleaseButton
+                        released={params.row.released}
+                        onClick={() => handleRelease(params.row.id)}
+                    />
+                    <Button>Cancel</Button>
+                </>
+            ),
+        },
+    ];
+
+
+    let [columns, setColumns] = React.useState(init_columns)
+
+    const handleAddRow = () => {
+        // const newRow = {id: randomString(), username: '', amount: 0, released: false};
+        let id = randomString();
+        let contract = contract_sample;
+        contract.contract_id = id;
+        const newRow = {"Contract": {"PaymentContract": id}}
+        content.map((item: any) => {
+            if (item.id == props.id) {
+                item.children.map((child) => {
+                    if (child.data && child.id == table_content.id) {
+                        child.data[0].Table.rows = [...child.data[0].Table.rows, newRow];
+                    }
+                })
+            }
+        })
+        dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: content}));
+        dispatch(handleRedux("ADD_CONTRACT", {id, contract}));
+        // setRows([...rows, newRow]);
+    };
+
+    const handleAddColumn = () => {
+        const newColumn: GridColDef = {
+            field: `column${columns.length + 1}`,
+            headerName: `Column ${columns.length + 1}`,
+            width: 150,
+            editable: true,
+        };
+        setColumns([...columns, newColumn]);
+    };
+    const processRowUpdate = React.useCallback(
+        (newRow: GridRowModel, oldRow: GridRowModel) => {
+            console.log('Updated row:', newRow);
+            console.log('Old row:', oldRow);
+            const index = table_content.data[0].Table.rows.findIndex((row) => row.id === oldRow.id);
+            content.map((item: any) => {
+                if (item.id == props.id) {
+                    item.children.map((child) => {
+                        if (child.data && child.id == table_content.id) {
+                            child.data[0].Table.rows[index] = newRow
+                        }
+                    })
+                }
+            })
+            dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: content}));
+            let id = oldRow.id;
+            let contract = {
+                "contract_id": id,
+                "sender": {
+                    "id": "",
+                    "name": "",
+                    "description": "",
+                    "photo": {}
+                },
+                "released": newRow.released,
+                "confirmed": newRow.confirmed,
+                "amount": newRow.amount,
+                "receiver": {
+                    "id": "",
+                    "name": newRow.username,
+                    "description": "",
+                    "photo": {}
+                }
+            }
+
+            dispatch(handleRedux("UPDATE_CONTRACT", {id, contract}));
+            return Promise.resolve(newRow);
+        },
+        []
+    );
+
+    const handleProcessRowUpdateError = React.useCallback(
+        (params: any) => {
+            console.log('An error occurred while updating the row with params:', params);
+            return Promise.resolve();
+        }
+        , []
+    );
 
     return (
         <div contentEditable={false}
-            // style={{height: 300, width: '100%'}}
+             style={{maxHeight: "25%", maxWidth: '100%'}}
         >
             <StyledDataGrid
-                rows={rows}
+                rows={normalized_row}
                 columns={columns}
                 disableColumnMenu
                 disableColumnSelector
                 hideFooterPagination
-                // components={{
-                //     Toolbar: () => (
-                //         <>
-                //             <Button onClick={handleAddRow} variant="outlined" color="primary">
-                //                 Add Row
-                //             </Button>
-                //             <Button onClick={handleAddColumn} variant="outlined" color="primary">
-                //                 Add Column
-                //             </Button>
-                //         </>
-                //     ),
-                // }}
+                components={{
+                    Toolbar: () => (
+                        <span style={{display: 'flex'}}>
+                            <Button size={"small"} onClick={handleAddRow} variant="text" color="primary">
+                                Add Row
+                            </Button>
+                            <Button size={"small"} onClick={handleAddColumn} variant="text" color="primary">
+                                Add Column
+                            </Button>
+                        </span>
+                    ),
+                }}
+                editMode="row"
+                processRowUpdate={processRowUpdate}
+                onProcessRowUpdateError={handleProcessRowUpdateError}
+
             />
 
 

@@ -61,7 +61,6 @@ export async function get_all_files_content() {
     switch (PLATFORM) {
         case "WEB":
             let res = await actor.get_all_files_content();
-            console.log({res})
             return res
         case "DESKTOP":
             return null;

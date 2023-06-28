@@ -15,7 +15,12 @@ export type FilesActions =
     | "CURRENT_FILE"
     | "UPDATE_CONTENT"
     | "FILES_SAVED"
-    | "FILES_CHANGED" | "ADD_CONTENT" | FriendsActions;
+    | "FILES_CHANGED"
+    | "ADD_CONTENT"
+    | "UPDATE_FILE_TITLE"
+    | "ADD_CONTRACT"
+    | "UPDATE_CONTRACT"
+    | FriendsActions;
 
 export var initialState = {
     current_file: {id: null, name: null},
@@ -37,6 +42,12 @@ async function get_initial_data() {
 
     const authClient = await AuthClient.create();
     const userPrincipal = authClient.getIdentity().getPrincipal().toString();
+    let all_friends = []
+    if (data.Ok && data.Ok.Friends) {
+        let friend_requests = data.Ok.Friends[0] && data.Ok.Friends[0].friend_requests || []
+        let confirmed_friends = data.Ok.Friends[0] && data.Ok.Friends[0].friends || []
+        all_friends = [...friend_requests.map((i: any) => i), ...confirmed_friends.map((i: any) => i)]
+    }
 
     if (data.Ok) {
         initialState["files"] = normalize_files(data.Ok.Files);
@@ -46,6 +57,7 @@ async function get_initial_data() {
         initialState["users"] = data.Ok.DiscoverUsers;
         initialState["id"] = userPrincipal;
         initialState["friends"] = data.Ok.Friends;
+        initialState["all_friends"] = all_friends;
 
     }
 }
@@ -95,6 +107,18 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             return {
                 ...state,
             }
+        case 'ADD_CONTRACT':
+            state.contracts[action.id] = action.contract;
+            return {
+                ...state,
+            }
+
+        case 'UPDATE_CONTRACT':
+            state.contracts[action.id] = action.contract;
+            return {
+                ...state,
+            }
+
         case 'FILES_SAVED':
             state.files_content[action.id] = action.content;
             return {
@@ -112,6 +136,13 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 ...state,
                 friends: [friends],
             };
+
+        case 'UPDATE_FILE_TITLE':
+            state.files[action.id].name = action.title;
+            return {
+                ...state,
+            }
+
 
         case 'REMOVE_FRIEND':
             friends.friends = friends.friends.filter((friend) => friend.id !== friend_id);
@@ -136,6 +167,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 ...state,
                 friends: [friends],
             };
+
 
         default:
             return state;
