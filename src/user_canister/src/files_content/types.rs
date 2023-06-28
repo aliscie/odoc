@@ -8,7 +8,7 @@ use ic_cdk::caller;
 
 use crate::{FILE_CONTENTS, USER_FILES};
 use crate::contracts::Contract;
-use crate::storage_schema::{ContentTree, FileId};
+use crate::storage_schema::{ContentId, ContentTree, FileId};
 use crate::tables::Table;
 
 static COUNTER: AtomicU64 = AtomicU64::new(0);
@@ -23,17 +23,17 @@ pub enum ContentData {
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct ContentNode {
-    pub id: u64,
-    pub parent: Option<u64>,
+    pub id: ContentId,
+    pub parent: Option<ContentId>,
     pub _type: String,
     pub text: String,
     pub data: Option<ContentData>,
     #[serde(default)]
-    pub children: Vec<u64>,
+    pub children: Vec<ContentId>,
 }
 
 impl ContentNode {
-    pub fn get_file_content(file_id: u64) -> Option<ContentTree> {
+    pub fn get_file_content(file_id: FileId) -> Option<ContentTree> {
         FILE_CONTENTS.with(|file_contents| {
             let file_contents = file_contents.borrow();
 
@@ -62,11 +62,11 @@ impl ContentNode {
             }
         })
     }
-    pub fn new(file_id: u64, content_parent_id: Option<u64>, node_type: String, text: String, data: Option<ContentData>) -> Option<ContentNode> {
+    pub fn new(file_id: FileId, content_parent_id: Option<ContentId>, node_type: String, text: String, data: Option<ContentData>) -> Option<ContentNode> {
         let caller_principal = ic_cdk::api::caller();
         let mut new_node = ContentNode {
-            id: 0, // The actual ID will be assigned later
-            parent: content_parent_id,
+            id: 0.to_string(), // The actual ID will be assigned later
+            parent: content_parent_id.clone(),
             _type: node_type, // Set the appropriate type
             text,
             data, // Set the appropriate data
@@ -95,14 +95,14 @@ impl ContentNode {
             let file_contents = content_tree.entry(caller_principal).or_insert_with(HashMap::new);
             let file_content_tree = file_contents.entry(file_id).or_insert_with(ContentTree::new);
 
-            let content_id = COUNTER.fetch_add(1, Ordering::Relaxed);
-            new_node.id = content_id;
+            let content_id: ContentId = COUNTER.fetch_add(1, Ordering::Relaxed).to_string();
+            new_node.id = content_id.clone();
 
-            file_content_tree.insert(content_id, new_node.clone());
+            file_content_tree.insert(content_id.clone(), new_node.clone());
 
             if let Some(parent_id) = content_parent_id {
                 if let Some(parent_node) = file_content_tree.get_mut(&parent_id) {
-                    parent_node.children.push(content_id);
+                    parent_node.children.push(content_id.clone());
                 }
             }
         });
@@ -110,7 +110,7 @@ impl ContentNode {
         Some(new_node)
     }
 
-    pub fn update_file_contents(file_id: u64, content_nodes: ContentTree) {
+    pub fn update_file_contents(file_id: FileId, content_nodes: ContentTree) {
         FILE_CONTENTS.with(|file_contents| {
             let mut contents = file_contents.borrow_mut();
 
@@ -129,7 +129,7 @@ impl ContentNode {
         });
     }
 
-    pub fn delete_file_content(file_id: u64) {
+    pub fn delete_file_content(file_id: FileId) {
         FILE_CONTENTS.with(|file_contents| {
             let mut contents = file_contents.borrow_mut();
 

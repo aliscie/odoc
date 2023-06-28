@@ -28,12 +28,12 @@ function FileContentPage(props: any) {
     const editorKey = current_file.name || ""; // Provide a key based on current_file.name
     let handleTitleKeyDown = (e: any) => {
         setTitle(e.target.innerText);
-        if (e.keyCode === 13) {
+        if (e.key === "Enter") {
             e.preventDefault();
-            return;
+            e.target.blur();
         }
 
-    }
+    };
 
     useEffect(() => {
         let timeout = setTimeout(() => {
@@ -53,7 +53,7 @@ function FileContentPage(props: any) {
                 {current_file.name && (
                     <>
                         <Button onClick={handleSave} style={{width: "100%"}} contentEditable={false}>Save</Button>
-                        <h1 onKeyUp={handleTitleKeyDown} contentEditable={true}>{current_file.name}</h1>
+                        <h1 onKeyDown={handleTitleKeyDown} contentEditable={true}>{current_file.name}</h1>
                         <Editor
                             mentionOptions={all_friends.map((i) => i.name)}
                             key={editorKey} // Add key prop to trigger re-render

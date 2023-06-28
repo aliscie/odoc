@@ -9,10 +9,10 @@ use crate::friends::Friend;
 use crate::StoredContract;
 use crate::user::User;
 
-pub type FileId = u64;
-pub type ContentId = u64;
+pub type FileId = String; // <--- it was u64 and now itis String
+pub type ContentId = String; // <--- it was u64 and now itis String
 pub type ContentTree = HashMap<ContentId, ContentNode>;
-pub type ContractId = u64;
+pub type ContractId = String; // <--- it was u64 and now itis String
 
 
 // Stores types
