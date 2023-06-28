@@ -28,7 +28,6 @@ export function NavAppBar() {
     const dispatch = useDispatch();
     const {isNavOpen, isDarkMode, isLoggedIn, searchTool} = useSelector((state: any) => state.uiReducer);
     const {profile} = useSelector((state: any) => state.filesReducer);
-    console.log({profile})
 
     async function loginProfile() {
         if (isLoggedIn) {
@@ -53,7 +52,6 @@ export function NavAppBar() {
     }
 
     let image_link = profile ? convertToBlobLink(profile.photo) : "";
-    console.log({image_link})
     return (
 
         <TopNavBar>

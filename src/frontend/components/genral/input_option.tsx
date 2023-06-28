@@ -15,7 +15,7 @@ const InputOption = (props: any) => {
         setIsTyping(true)
         setTimeout(() => {
             ref.current.focus()
-            console.log({ref: ref.current})
+            // console.log({ref: ref.current})
         }, 20)
     }
 

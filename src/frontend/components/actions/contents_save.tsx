@@ -1,22 +1,15 @@
 import {Button, Tooltip} from "@mui/material";
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
-import {logger} from "../../dev_utils/log_data";
 import {actor} from "../../backend_connect/ic_agent";
 import WarningIcon from '@mui/icons-material/Warning';
 
 function ContentSave(props: any) {
     const dispatch = useDispatch();
-    let {is_files_saved, files_content} = useSelector((state: any) => state.filesReducer);
+    let {is_files_saved} = useSelector((state: any) => state.filesReducer);
 
-    // console.log({files_content})
     async function handleClick() {
-        console.log("------- click")
-        // logger(files_content)
-        // let process_files_content = convertAllDataBack(files_content);
-        // console.log("------- process_files_content")
-        // logger(process_files_content)
 
         let process_files_content = [
             {

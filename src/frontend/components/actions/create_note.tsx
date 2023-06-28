@@ -14,8 +14,6 @@ const CreateNote = () => {
         let loading = enqueueSnackbar(<span>Creating note page... <span
             className={"loader"}/></span>, {variant: "info"});
         let res = await backend.create_file(value)
-        console.log({res})
-
         dispatch(handleRedux("ADD", {data: res}))
         dispatch(handleRedux("ADD_CONTENT", {id: res.id, content: note_page_content}))
         closeSnackbar(loading)

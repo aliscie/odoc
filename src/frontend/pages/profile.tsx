@@ -129,7 +129,7 @@ export default function ProfileComponent() {
             photo: [profileData.photo],
         });
 
-        console.log({profileData, res});
+        // console.log({profileData, res});
         if (res.Ok) {
             enqueueSnackbar("Profile updated successfully", {variant: "success"});
         } else {

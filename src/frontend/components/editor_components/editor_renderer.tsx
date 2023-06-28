@@ -7,10 +7,9 @@ export function EditorRenderer(props: any) {
 
     const {element, attributes = {}, children} = props;
     let Tag = element.type || "p"
-    console.log('----------', {Tag, props, data: element.data})
+    // console.log('----------', {Tag, props, data: element.data})
     switch (Tag) {
         case "mention":
-            // console.log({e: props.element.character.name});
             return <MentionComponent {...props}/>
         case "table":
             return <SpreadSheet {...props.element} />;
