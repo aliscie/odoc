@@ -102,6 +102,13 @@ service : {
     ) -> (Result_1);
   register : (RegisterUser) -> (Result);
   rename_file : (text, text) -> (bool);
+  save_payment_contract : (
+      text,
+      text,
+      opt text,
+      vec record { text; ContentNode },
+      vec StoredContract,
+    ) -> (Result_2);
   send_friend_request : (text) -> (Result);
   unfriend : (text) -> (Result);
   update_user_profile : (RegisterUser) -> (Result);

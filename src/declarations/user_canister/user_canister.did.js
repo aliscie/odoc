@@ -165,6 +165,17 @@ export const idlFactory = ({ IDL }) => {
       ),
     'register' : IDL.Func([RegisterUser], [Result], []),
     'rename_file' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
+    'save_payment_contract' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Opt(IDL.Text),
+          IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)),
+          IDL.Vec(StoredContract),
+        ],
+        [Result_2],
+        [],
+      ),
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),

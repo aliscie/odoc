@@ -13,7 +13,7 @@ const DeleteFile = (props: any) => {
         e.target.classList.add("disabled")
         let loading = enqueueSnackbar(<span>Deleting {props.item.name}... <span
             className={"loader"}/></span>, {variant: "info"});
-        let res = await backend.delete_file(BigInt(props.item.id))
+        let res = await backend.delete_file(props.item.id)
         dispatch(handleRedux("REMOVE", {id: props.item.id}))
         e.target.classList.remove("disabled")
         closeSnackbar(loading)
