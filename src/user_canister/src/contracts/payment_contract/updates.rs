@@ -29,11 +29,15 @@ fn create_payment_contract(file_name: String) -> Result<(), String> {
     let payment1 = Payment::new(user.clone(), user.clone(), 100);
     let payment2 = Payment::new(user.clone(), user.clone(), 200);
     let payment3 = Payment::new(user.clone(), user.clone(), 150);
-    let row1 = Row::Contract(Contract::PaymentContract(payment1.get_contract_id()));
-    let row2 = Row::Contract(Contract::PaymentContract(payment2.get_contract_id()));
-    let row3 = Row::Contract(Contract::PaymentContract(payment3.get_contract_id()));
+    let mut row1 = Row::new_payment(payment1);
+    let mut row2 = Row::new_payment(payment2);
+    let mut row3 = Row::new_payment(payment3);
     let mut table = Table::new();
-    table.rows = vec![row1, row2, row3];
+    row1.cells = Some(HashMap::from_iter(vec![("task".to_string(), "signup task".to_string())]));
+    row2.cells = Some(HashMap::from_iter(vec![("task".to_string(), "login task".to_string())]));
+    row3.cells = Some(HashMap::from_iter(vec![("task".to_string(), "dark mode".to_string())]));
+    table.rows = vec![row1.clone(), row2.clone(), row3.clone()];
+    table.columns = vec![Column::new("task".to_string(), ColumnTypes::Text)];
 
     let file_node = FileNode::new(file_name, None);
     let content_node = ContentNode::new(file_node.clone().id, None, "payment_contract".to_string(), "".to_string(), None);

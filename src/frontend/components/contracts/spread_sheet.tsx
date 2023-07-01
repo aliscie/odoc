@@ -79,9 +79,7 @@ export const StyledDataGrid = styled(DataGrid)(({theme}) => ({
     '& .MuiDataGrid-cell': {
         color: "var(--text-color)",
     },
-    // '& .MuiPaginationItem-root': {
-    //     borderRadius: 0,
-    // },
+
     // ...customCheckbox(theme),
 }));
 

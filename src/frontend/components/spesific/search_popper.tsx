@@ -47,7 +47,7 @@ export default function SearchPopper() {
 
     const handleShortcutKeyPress = React.useCallback(
         (event: KeyboardEvent) => {
-            if (event.key === 'f' && (event.metaKey || event.ctrlKey)) {
+            if (event.key === 'f' && (event.metaKey || event.ctrlKey) && (!event.shiftKey)) {
                 dispatch(handleRedux("SEARCH_TOOL"))
                 event.preventDefault();
             }

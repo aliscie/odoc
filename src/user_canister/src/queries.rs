@@ -1,16 +1,13 @@
 use std::collections::HashMap;
 
 use candid::candid_method;
-use ic_cdk::{
-    api::call::ManualReply,
-    export::{
-        candid::{CandidType, Deserialize},
-        Principal,
-    },
-};
+use ic_cdk::{api::call::ManualReply, caller, export::{
+    candid::{CandidType, Deserialize},
+    Principal,
+}};
 use ic_cdk_macros::query;
 
-use crate::{CONTRACTS_STORE, FRIENDS_STORE, ID_STORE, PROFILE_STORE, StoredContract};
+use crate::{CONTRACTS_STORE, FRIENDS_STORE, ID_STORE, Payment, PROFILE_STORE, StoredContract};
 use crate::contracts::Contract;
 use crate::files::FileNode;
 use crate::files_content::ContentNode;

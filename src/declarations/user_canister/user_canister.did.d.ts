@@ -93,8 +93,11 @@ export type Result_2 = { 'Ok' : null } |
   { 'Err' : string };
 export type Result_3 = { 'Ok' : InitialData } |
   { 'Err' : string };
-export type Row = { 'Contract' : Contract } |
-  { 'NormalCell' : Array<[string, string]> };
+export interface Row {
+  'contract' : [] | [Contract],
+  'cells' : [] | [Array<[string, string]>],
+  'requests' : [] | [Contract],
+}
 export type StoredContract = { 'PaymentContract' : Payment };
 export interface Table { 'rows' : Array<Row>, 'columns' : Array<Column> }
 export type Trigger = { 'Timer' : null } |

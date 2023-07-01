@@ -10,6 +10,7 @@
     --secondary-background-color: #8ebfd7;
     --background: linear-gradient(135deg, rgba(10, 78, 147, 0.8), rgba(0, 230, 203, 0.8));
     --light-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 240, 0.8));
+    --money-color: green;
     --card-color: #ffffff;
     --main-background: radial-gradient(circle at center bottom, #000000, #042dc7 40%, #40e0d0);
     --background-image: url("../assets/background.png");
@@ -28,6 +29,7 @@ hr {
     --hover-color: #3b8cb0;
     --color: #d9d9d9;
     --secondary-text-color: #939393;
+    --money-color: lightgreen;
     --primary-background-color: #545454;
     --background-color: #333;
     --primary-color: #00a3ff;

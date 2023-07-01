@@ -1,3 +1,5 @@
+import {logger} from "../../dev_utils/log_data";
+
 interface Node {
     id: number;
     _type: string;
@@ -10,7 +12,6 @@ interface DataMap {
 }
 
 function convertDataStructure(data: any): Node[] {
-
     const roots: Node[] = [];
     const visited: Set<number> = new Set();
 
@@ -37,8 +38,9 @@ function buildTree(
     let children: any[] = [];
     if (node.children.length > 0) {
         for (const childId of node.children) {
+            console.log({data, childId})
             const child = data[childId];
-            if (!visited.has(child.id)) {
+            if (child && !visited.has(child.id)) { // <------- error can't read property of unified `id`
                 children.push(buildTree(child.value, data, visited));
             }
         }
