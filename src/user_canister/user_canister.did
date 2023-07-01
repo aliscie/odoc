@@ -69,9 +69,10 @@ type Result = variant { Ok : User; Err : text };
 type Result_1 = variant { Ok : text; Err : text };
 type Result_2 = variant { Ok; Err : text };
 type Result_3 = variant { Ok : InitialData; Err : text };
-type Row = variant {
-  Contract : Contract;
-  NormalCell : vec record { text; text };
+type Row = record {
+  contract : opt Contract;
+  cells : opt vec record { text; text };
+  requests : opt Contract;
 };
 type StoredContract = variant { PaymentContract : Payment };
 type Table = record { rows : vec Row; columns : vec Column };

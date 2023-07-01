@@ -5,7 +5,7 @@ import EditorDemo from "../components/genral/editor_demo";
 import NFTComparisonTable from "./types_of_nfts";
 import FileContentPage from "./file_content_page";
 import ShareFilePage from "./share_file_page";
-import ProfileComponent from "./profile";
+import ProfileComponent from "./profile/profile";
 import Discover from "./discover_page";
 
 

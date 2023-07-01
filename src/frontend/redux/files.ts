@@ -4,6 +4,7 @@ import {normalize_files} from "../data_processing/normalize/normalize_files";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
+import {logger} from "../dev_utils/log_data";
 
 export type FilesActions =
     "ADD"
@@ -48,7 +49,6 @@ async function get_initial_data() {
         let confirmed_friends = data.Ok.Friends[0] && data.Ok.Friends[0].friends || []
         all_friends = [...friend_requests.map((i: any) => i), ...confirmed_friends.map((i: any) => i)]
     }
-
     if (data.Ok) {
         initialState["files"] = normalize_files(data.Ok.Files);
         initialState["files_content"] = normalize_files_contents(data.Ok.FilesContents);

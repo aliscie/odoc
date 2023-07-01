@@ -8,11 +8,13 @@ import {useDispatch, useSelector} from "react-redux";
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import {TextField} from "@mui/material";
-import {actor} from "../backend_connect/ic_agent";
-import {handleRedux} from "../redux/main";
-import {LoadingButton} from "../components/genral/load_buttton";
+import {Button, Rating, TextField, Tooltip, Typography} from "@mui/material";
+import {actor} from "../../backend_connect/ic_agent";
+import {handleRedux} from "../../redux/main";
+import {LoadingButton} from "../../components/genral/load_buttton";
 import {useSnackbar} from "notistack";
+import Friends from "./friends";
+import TransactionsHistory from "./transactions_history";
 
 export function convertToBlobLink(imageData) {
     const imageContent = new Uint8Array(imageData);
@@ -22,98 +24,6 @@ export function convertToBlobLink(imageData) {
     return image;
 }
 
-function Friends(props: any) {
-    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-
-    const dispatch = useDispatch();
-    if (!props.friends[0]) {
-        return <></>
-    }
-    let friend_requests = props.friends[0].friend_requests || [];
-    let friends = props.friends[0].friends || [];
-
-    async function handleCLickConfirm(id: string) {
-        let res = await actor.accept_friend_request(id)
-        dispatch(handleRedux("ADD_FRIEND", {id: id, friend: res.Ok}))
-        dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
-    }
-
-    async function handleUnfriend(id: string) {
-        let res = await actor.unfriend(id)
-        if (res.Ok) {
-            enqueueSnackbar("Unfriended successfully", {variant: "success"});
-        } else {
-            enqueueSnackbar(res.Err, {variant: "error"});
-        }
-        dispatch(handleRedux("REMOVE_FRIEND", {id: id}))
-    }
-
-    async function handleReject(id: string) {
-        let res = await actor.cancel_friend_request(id)
-        if (res.Ok) {
-            enqueueSnackbar("Unfriended successfully", {variant: "success"});
-        } else {
-            enqueueSnackbar(res.Err, {variant: "error"});
-        }
-        dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
-    }
-
-    return (
-        <List dense sx={{bgcolor: 'var(--background)', color: "var(--color)"}}>
-            <Divider textAlign="left">Friends</Divider>
-
-            {friend_requests && friend_requests.map((value) => {
-                const labelId = `checkbox-list-secondary-label-${value.name}`;
-                return (
-                    <ListItem
-                        key={value.name}
-                        secondaryAction={
-                            <>
-                                <LoadingButton onClick={async () => await handleReject(value.id)} name={"Reject"}/>
-                                <LoadingButton onClick={async () => await handleCLickConfirm(value.id)}
-                                               name={"Confirm"}/>
-                            </>
-                        }
-                        disablePadding
-                    >
-                        <ListItemButton>
-                            <ListItemAvatar>
-                                {/*<Avatar*/}
-                                {/*    alt={`Avatar n°${value + 1}`}*/}
-                                {/*    src={`/static/images/avatar/${value + 1}.jpg`}*/}
-                                {/*/>*/}
-                            </ListItemAvatar>
-                            <ListItemText id={labelId} primary={value.name}/>
-                        </ListItemButton>
-                    </ListItem>
-                );
-            })}
-
-            {friends && friends.map((value) => {
-                const labelId = `checkbox-list-secondary-label-${value.name}`;
-                return (
-                    <ListItem
-                        key={value.name}
-                        secondaryAction={
-                            <LoadingButton onClick={async () => await handleUnfriend(value.id)} name={"Unfriend"}/>
-                        }
-                        disablePadding
-                    >
-                        <ListItemButton>
-                            <ListItemAvatar>
-                                {/*<Avatar*/}
-                                {/*    alt={`Avatar n°${value + 1}`}*/}
-                                {/*    src={`/static/images/avatar/${value + 1}.jpg`}*/}
-                                {/*/>*/}
-                            </ListItemAvatar>
-                            <ListItemText id={labelId} primary={value.name}/>
-                        </ListItemButton>
-                    </ListItem>
-                );
-            })}
-        </List>
-    );
-}
 
 export default function ProfileComponent() {
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
@@ -160,6 +70,19 @@ export default function ProfileComponent() {
                         </ListItemAvatar>
                         <input type="file" accept="image/*" onChange={handlePhotoChange}/>
                     </ListItem>
+                    <ListItem>
+                        <Tooltip arrow title={"Your trust score"}>
+                            <Rating readOnly name="half-rating" defaultValue={2.5} precision={0.5}/>
+                        </Tooltip>
+                    </ListItem>
+
+                    <ListItem style={{display: "flex"}}>
+                        <Typography style={{color: "var(--money-color)"}}>
+                            1000 ICPs
+                        </Typography>
+                        <Button>Deposit</Button>
+                    </ListItem>
+
                     {Object.entries(profileData).map(([key, value]) => {
                         if (key === 'photo') {
                             return null; // Skip rendering the photo field again
@@ -189,6 +112,7 @@ export default function ProfileComponent() {
                 </List>
             )}
             {friends[0] && <Friends friends={friends}/>}
+            <TransactionsHistory friends={friends}/>
         </Box>
     );
 }

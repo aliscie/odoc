@@ -15,7 +15,7 @@ use crate::user::User;
 
 #[derive(PartialEq, Eq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
 pub struct Payment {
-    contract_id: ContractId,
+    pub(crate) contract_id: ContractId,
     pub(crate) receiver: Principal,
     pub(crate) sender: Principal,
     pub(crate) amount: u64,

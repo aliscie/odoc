@@ -7,7 +7,7 @@ use candid::{CandidType, Deserialize, Principal};
 
 use crate::contracts::Contract;
 use crate::storage_schema::ContractId;
-use crate::USER_FILES;
+use crate::{Payment, USER_FILES};
 
 static COUNTER: AtomicU64 = AtomicU64::new(0);
 
@@ -82,6 +82,20 @@ pub struct Column {
     pub(crate) permissions: Vec<ColumnPermission>,
 }
 
+impl Column {
+    pub fn new(field: String, _type: ColumnTypes) -> Self {
+        Column {
+            editable: true,
+            field,
+            _type,
+            formula: None,
+            dataValidator: None,
+            filters: Vec::new(),
+            permissions: Vec::new(),
+        }
+    }
+}
+
 type ColumnName = String;
 type TableCellValue = String;
 
@@ -101,9 +115,25 @@ impl Table {
 }
 
 #[derive(Eq, PartialEq, Clone, Debug, CandidType, Deserialize)]
-pub enum Row {
-    Contract(Contract),
-    NormalCell(HashMap<ColumnName, TableCellValue>), // TODO this is for norma cells, for example you can add more colulmns for a note, or adtional data like users age, lastname etc.
-    // Request(HashMap<ColumnName, TableCellValue>), // TODO people can request, change, or add contract and this request will show in form of a comment on the table.
+pub struct Row {
+    contract: Option<Contract>,
+    pub(crate) cells: Option<HashMap<ColumnName, TableCellValue>>,
+    pub(crate) requests: Option<Contract>,
 }
+
+
+impl Row {
+    pub fn new_payment(payment: Payment) -> Self {
+        Row {
+            contract: Option::from(Contract::PaymentContract(payment.get_contract_id())),
+            cells: None,
+            requests: None,
+        }
+    }
+}
+// pub enum Row {
+//     Contract(Contract),
+//     NormalCell(HashMap<ColumnName, TableCellValue>), // TODO this is for norma cells, for example you can add more colulmns for a note, or adtional data like users age, lastname etc.
+//     // Request(HashMap<ColumnName, TableCellValue>), // TODO people can request, change, or add contract and this request will show in form of a comment on the table.
+// }
 

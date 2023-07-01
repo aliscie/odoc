@@ -6,5 +6,6 @@ function replacer(key: string, value: any) {
 }
 
 export function logger(data: any) {
+    console.log("---------------logger---------------");
     console.log(JSON.stringify(data, replacer));
 }

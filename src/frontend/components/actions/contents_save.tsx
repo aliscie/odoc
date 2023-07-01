@@ -64,9 +64,13 @@ function ContentSave(props: any) {
     let tip_for_changed = <span>You need to save</span>;
     return <Tooltip arrow leaveDelay={200} title={is_files_saved ? tip_for_saved : tip_for_changed}>
         <Button
+            color="primary"
+            variant={!is_files_saved ? "contained" : "text"}
             disabled={is_files_saved}
             onClick={handleClick}
-        > {!is_files_saved && <WarningIcon size={"small"} color={"warning"}/>}Save
+        >
+            {/*{!is_files_saved && <WarningIcon size={"small"} color={"warning"}/>}*/}
+            Save
         </Button>
     </Tooltip>
 }

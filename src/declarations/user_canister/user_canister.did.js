@@ -16,9 +16,10 @@ export const idlFactory = ({ IDL }) => {
   });
   const Result_2 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Text });
   const Contract = IDL.Variant({ 'PaymentContract' : IDL.Text });
-  const Row = IDL.Variant({
-    'Contract' : Contract,
-    'NormalCell' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+  const Row = IDL.Record({
+    'contract' : IDL.Opt(Contract),
+    'cells' : IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))),
+    'requests' : IDL.Opt(Contract),
   });
   const ColumnTypes = IDL.Variant({
     'Tag' : IDL.Null,
