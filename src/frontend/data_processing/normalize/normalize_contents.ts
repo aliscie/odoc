@@ -1,92 +1,71 @@
+import {ContentNode} from "../../../declarations/user_canister/user_canister.did";
+
 interface Node {
-    id: number;
+    id: String;
     _type: string;
     text: string;
-    children: Node[];
+    children: string[];
+    data: any[];
+    parent: number[];
 }
 
-interface DataMap {
-    [id: number]: { id: number; _type: string; text: string; children: number[] };
+interface SlateNode {
+    id: String;
+    type?: string;
+    text?: string;
+    children?: SlateNode[];
+    data?: any[];
+    parent?: number[];
 }
 
-function convertDataStructure(data: any): Node[] {
-    const roots: Node[] = [];
-    const visited: Set<number> = new Set();
 
-    for (const nodeId in data) {
-        const node = data[nodeId];
-        if (!visited.has(node.id)) {
-            let item = buildTree(node.value, data, visited);
-            // remove field text
-            delete item.text;
-            roots.push(item);
-        }
-    }
 
-    return roots;
-}
+function nesting(content_node: [string, ContentNode], alL_contents: Array<[string, ContentNode]>, visited: any[] = []) {
 
-function buildTree(
-    node: { id: number; _type: string; text: string; children: number[], data: any },
-    data: DataMap,
-    visited: Set<number>
-): any {
-    visited.add(node.id);
+    let children = content_node[1].children.map((child_id: string) => {
+        let child: [string, ContentNode] = alL_contents.find((node: [string, ContentNode]) => node[0] === child_id)
+        visited.push(child[0])
+        return nesting(child, alL_contents, visited)
+    })
 
-    let children: any[] = [];
-    if (node.children.length > 0) {
-        for (const childId of node.children) {
-            console.log({data, childId})
-            const child = data[childId];
-            if (child && !visited.has(child.id)) { // <------- error can't read property of unified `id`
-                children.push(buildTree(child.value, data, visited));
-            }
-        }
-    }
-    let res = {id: Number(node.id)}
-    if (children.length > 0 && node.text.length > 0) {
-        res["children"] = [...children, {text: node.text, id: node.id}];
-    }
-
+    let item = {
+        id: content_node[0],
+        type: content_node[1]._type,
+        data: content_node[1].data,
+        // text: content_node[1].text,
+        // children
+    };
     if (children.length > 0) {
-        res["children"] = children;
-
+        item['children'] = children
     } else {
-        res["text"] = node.text;
+        item['text'] = content_node[1].text
     }
 
-    if (node._type.length > 0) {
-        res["type"] = node._type;
-    }
-    if (node.data.length > 0) {
-        res["data"] = node.data;
-    }
-    if (node.data.length > 0 && node.children.length <= 0 && (!res["text"] || node.text.length == 0 || res["text"].length == 0)) {
-        res["data"] = node.data;
-        res["children"] = [{text: ""}];
-    }
-    return res
+    visited.push(content_node[0])
+    return item
+
 }
 
-
-export function normalize_files_contents(content: any) {
-
+export function normalize_files_contents(content: Array<Array<[string, Array<[string, ContentNode]>]>>) {
     if (!content[0]) {
         return []
     }
-    let data = {};
-    // let files = await backend.get_all_files_content()
-    content[0].map((content_item) => {
-        let content = {};
-        content_item[1].map((item) => {
-            let x = {id: item[0], value: item[1]};
-            content[item[0]] = x;
+    let data = {}
+    // Array<Array<[string, Array<[string, ContentNode]>]>>
+    content.map((node: Array<[string, Array<[string, ContentNode]>]>) => {
+        let file_id: string = node[0][0];
+        let file_content: Array<[string, ContentNode]> = node[0][1];
+        let nested_file_content: Array<SlateNode> = [];
+        let visited = [];
+        file_content.map((node: [string, ContentNode]) => {
+            if (!visited.includes(node[0]) && !node[1].parent[0]) {
+                visited.push(node[0])
+                let slate_node: SlateNode = nesting(node, file_content, visited)
+                nested_file_content.push(slate_node)
+            }
         })
-        data[content_item[0]] = content;
-    });
-    for (let [key, value] of Object.entries(data)) {
-        data[key] = convertDataStructure(value);
-    }
+        data[file_id] = nested_file_content
 
+    })
     return data
 }

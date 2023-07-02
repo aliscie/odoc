@@ -129,10 +129,19 @@ impl ContentNode {
         });
     }
 
-    pub fn delete_file_content(file_id: FileId) {
+    pub fn delete_file_contents(file_id: FileId) {
         FILE_CONTENTS.with(|file_contents| {
             let mut contents = file_contents.borrow_mut();
 
+            let caller_principal = ic_cdk::api::caller();
+            if let Some(file_contents_map) = contents.get_mut(&caller_principal) {
+                file_contents_map.remove(&file_id.clone());
+            }
+        });
+    }
+    pub fn delete_file_content(file_id: FileId) {
+        FILE_CONTENTS.with(|file_contents| {
+            let mut contents = file_contents.borrow_mut();
             let caller_principal = ic_cdk::api::caller();
             if let Some(file_contents_map) = contents.get_mut(&caller_principal) {
                 file_contents_map.remove(&file_id);

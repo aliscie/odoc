@@ -6,6 +6,7 @@ import {handleRedux} from "../redux/main";
 import {EditorRenderer} from "../components/editor_components/editor_renderer";
 import {payment_contract} from "../data_processing/data_samples";
 import {table} from "../components/genral/editor_demo";
+import {logger} from "../dev_utils/log_data";
 
 
 function FileContentPage(props: any) {
