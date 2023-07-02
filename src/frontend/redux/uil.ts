@@ -1,6 +1,4 @@
 import {agent} from "../backend_connect/main";
-import {AuthClient} from "@dfinity/auth-client";
-import {actor} from "../backend_connect/ic_agent";
 
 export type MainActions = "TOGGLE_NAV" | "SEARCH" | "TOGGLE_DARK" | "LOGOUT" | "LOGIN" | "SEARCH_TOOL";
 const initialState = {

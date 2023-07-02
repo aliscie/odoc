@@ -153,30 +153,21 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_initial_data' : IDL.Func([], [Result_3], ['query']),
-    'multi_files_content_updates' : IDL.Func(
+    'multi_updates' : IDL.Func(
         [
+          IDL.Vec(FileNode),
           IDL.Vec(
             IDL.Vec(
               IDL.Tuple(IDL.Text, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)))
             )
           ),
+          IDL.Vec(StoredContract),
         ],
         [Result_1],
         [],
       ),
     'register' : IDL.Func([RegisterUser], [Result], []),
     'rename_file' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
-    'save_payment_contract' : IDL.Func(
-        [
-          IDL.Text,
-          IDL.Text,
-          IDL.Opt(IDL.Text),
-          IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)),
-          IDL.Vec(StoredContract),
-        ],
-        [Result_2],
-        [],
-      ),
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),

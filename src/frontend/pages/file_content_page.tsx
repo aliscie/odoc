@@ -4,18 +4,12 @@ import {useEffect} from "react";
 import Editor from "odoc-editor";
 import {handleRedux} from "../redux/main";
 import {EditorRenderer} from "../components/editor_components/editor_renderer";
-import {Button} from "@mui/material";
-import {actor} from "../backend_connect/ic_agent";
-import {useSnackbar} from "notistack";
-import {useTotalDept} from "../components/contracts/payment_contract/use_total_dept";
 import {payment_contract} from "../data_processing/data_samples";
 import {table} from "../components/genral/editor_demo";
-import denormalize_file_contents from "../data_processing/denormalize/denormalize_file_contents";
-import {logger} from "../dev_utils/log_data";
 
 
 function FileContentPage(props: any) {
-    let {revoke_message} = useTotalDept();
+
     const {all_friends} = useSelector((state: any) => state.filesReducer);
 
     let {searchValue} = useSelector((state: any) => state.uiReducer);
@@ -32,14 +26,18 @@ function FileContentPage(props: any) {
 
     function onChange(changes: any) {
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: changes}));
-        dispatch(handleRedux("FILES_CHANGED"));
+        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: changes}));
+        // dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: changes}));
+        // if (file_name || file_parent) {
+        //      dispatch(handleRedux("FILE_CHANGES", {id: current_file.id, changes: current_file}));
+        // }
+
         console.log("changes", changes);
     }
 
     const editorKey = current_file.name || ""; // Provide a key based on current_file.name
     let handleTitleKeyDown = (e: any) => {
         setTitle(e.target.innerText);
-
     };
     let preventEnter = (e: any) => {
         if (e.key === "Enter") {
@@ -51,22 +49,24 @@ function FileContentPage(props: any) {
 
     useEffect(() => {
         let timeout = setTimeout(() => {
-            console.log("UPDATE_FILE_TITLE")
             dispatch(handleRedux("UPDATE_FILE_TITLE", {id: current_file.id, title: title}));
+            dispatch(handleRedux("FILE_CHANGES", {id: current_file.id, changes: current_file}));
         }, 250);
         return () => clearTimeout(timeout);
     }, [title])
-    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    let handleSave = async () => {
 
-        let loading = enqueueSnackbar(<span>saving... <span className={"loader"}/></span>, {});
-        let content_tree = denormalize_file_contents(files_content[current_file.id])
-
-        let res = await actor.save_payment_contract(current_file.id, title || current_file.name, [], content_tree, [])
-        closeSnackbar(loading);
-        enqueueSnackbar(`Your file is saved`, {variant: "success"});
-
-    }
+    // let {revoke_message} = useTotalDept();
+    // const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+    // let handleSave = async () => {
+    //
+    //     let loading = enqueueSnackbar(<span>saving... <span className={"loader"}/></span>, {});
+    //     let content_tree = denormalize_file_contents(files_content[current_file.id])
+    //
+    //     let res = await actor.save_payment_contract(current_file.id, title || current_file.name, [], content_tree, [])
+    //     closeSnackbar(loading);
+    //     enqueueSnackbar(`Your file is saved`, {variant: "success"});
+    //
+    // }
 
     function handleOnInsertComponent(e: any, component: any) {
         if (component.type == "payment_contract") {
@@ -82,7 +82,7 @@ function FileContentPage(props: any) {
 
                 {current_file.name && (
                     <>
-                        <Button onClick={handleSave} style={{width: "100%"}} contentEditable={false}>Save</Button>
+                        {/*<Button onClick={handleSave} style={{width: "100%"}} contentEditable={false}>Save</Button>*/}
                         <h1
                             onKeyDown={preventEnter}
                             onKeyUp={handleTitleKeyDown}

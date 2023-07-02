@@ -55,6 +55,67 @@ impl Payment {
 
         payment
     }
+
+    pub fn update_payment_contracts(contracts: Vec<StoredContract>) -> Result<(), String> {
+        CONTRACTS_STORE.with(|contracts_store| {
+            let mut caller_contracts = contracts_store.borrow_mut();
+            let caller_contract = caller_contracts.entry(caller()).or_insert_with(HashMap::new);
+
+            // Calculate the sum of total non-released amounts
+            let mut total_amount: u64 = 0;
+            for contract in caller_contract.values() {
+                if let StoredContract::PaymentContract(payment) = contract {
+                    if !payment.released {
+                        total_amount += payment.amount;
+                    }
+                }
+            }
+
+            // Check if the total amount exceeds 1000
+            if total_amount > 1000 {
+                return Err("Total non-released amount exceeds 1000".to_string());
+            }
+
+            // Update the payment contracts
+            for contract in contracts {
+                if let StoredContract::PaymentContract(payment) = contract {
+                    if payment.confirmed {
+                        return Err("Payment contract is confirmed and cannot be updated".to_string());
+                    }
+
+                    // Check if updating the contract will exceed the limit
+                    if total_amount + payment.amount > 1000 {
+                        return Err("Updating the contract would exceed the total limit of 1000".to_string());
+                    }
+
+                    total_amount += payment.amount;
+
+                    let existing_payment = caller_contract
+                        .entry(payment.contract_id.clone())
+                        .or_insert_with(|| StoredContract::PaymentContract(payment.clone()));
+
+                    if let StoredContract::PaymentContract(existing_payment) = existing_payment {
+                        *existing_payment = payment;
+                    } else {
+                        panic!("Invalid contract type");
+                    }
+                }
+            }
+
+            Ok(())
+        })
+    }
+
+
+    pub fn is_updatable(self) -> Result<(), String> {
+        if self.confirmed {
+            return Err("Payment contract is confirmed and cannot be updated".to_string());
+        } else if self.released {
+            return Err("Payment contract is already realised".to_string());
+        }
+        Ok(())
+    }
+
     pub fn update_or_create(payment: Payment) -> Result<(), String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();

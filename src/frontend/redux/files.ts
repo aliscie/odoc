@@ -21,6 +21,10 @@ export type FilesActions =
     | "UPDATE_FILE_TITLE"
     | "ADD_CONTRACT"
     | "UPDATE_CONTRACT"
+    | "FILE_CHANGES"
+    | "CONTENT_CHANGES"
+    | "CONTRACT_CHANGES"
+    | "RESOLVE_CHANGES"
     | FriendsActions;
 
 export var initialState = {
@@ -29,6 +33,7 @@ export var initialState = {
     files: {},
     files_content: {},
     friends: [{friends: [], friend_requests: []}],
+    changes: {files: {}, contents: {}, contracts: {}},
 };
 
 
@@ -66,7 +71,7 @@ async function get_initial_data() {
 await get_initial_data()
 
 
-export function filesReducer(state = initialState, action: { data: any, type: FilesActions, id?: any, file?: any, name: any, content?: any }) {
+export function filesReducer(state = initialState, action: { data: any, type: FilesActions, id?: any, file?: any, name: any, content?: any, changes: any }) {
     let friends = {...state.friends[0]};
     let friend_id = action.id;
 
@@ -125,10 +130,31 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 ...state,
                 is_files_saved: true
             }
-        case 'FILES_CHANGED':
+        // case 'FILES_CHANGED':
+        //     return {
+        //         ...state,
+        //         is_files_saved: false
+        //     }
+        case 'FILE_CHANGES':
+            state.changes.files[action.id] = action.changes;
             return {
                 ...state,
-                is_files_saved: false
+            }
+
+        case 'CONTENT_CHANGES':
+            state.changes.contents[action.id] = action.changes;
+            return {
+                ...state,
+            }
+        case 'CONTRACT_CHANGES':
+            state.changes.contents[action.id] = action.changes;
+            return {
+                ...state,
+            }
+        case 'RESOLVE_CHANGES':
+            state.changes = {files: {}, contents: {}, contracts: {}}
+            return {
+                ...state,
             }
         case 'ADD_FRIEND':
             friends.friends.push(action.friend);

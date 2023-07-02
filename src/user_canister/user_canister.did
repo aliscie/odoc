@@ -98,18 +98,13 @@ service : {
   get_file : (text) -> (opt FileNode) query;
   get_file_content : (text) -> (opt vec record { text; ContentNode }) query;
   get_initial_data : () -> (Result_3) query;
-  multi_files_content_updates : (
+  multi_updates : (
+      vec FileNode,
       vec vec record { text; vec record { text; ContentNode } },
+      vec StoredContract,
     ) -> (Result_1);
   register : (RegisterUser) -> (Result);
   rename_file : (text, text) -> (bool);
-  save_payment_contract : (
-      text,
-      text,
-      opt text,
-      vec record { text; ContentNode },
-      vec StoredContract,
-    ) -> (Result_2);
   send_friend_request : (text) -> (Result);
   unfriend : (text) -> (Result);
   update_user_profile : (RegisterUser) -> (Result);
