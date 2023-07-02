@@ -15,9 +15,9 @@ function ContentSave(props: any) {
     let is_files_saved = Object.keys(changes.contents).length === 0 | Object.keys(changes.contents).length === 0 | Object.keys(changes.contents).length === 0
 
     async function handleClick() {
-        // console.log({changes})
-        // logger(changes)
+
         let denormalized_content = denormalize_file_contents(changes.contents)
+
 
         let loading = enqueueSnackbar(<span>Creating note page... <span className={"loader"}/></span>,);
 

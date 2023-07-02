@@ -37,6 +37,7 @@ fn create_new_file(name: String, parent: Option<FileId>) -> FileNode {
 #[update]
 #[candid_method(update)]
 fn delete_file(id: FileId) -> Option<FileNode> {
+    ContentNode::delete_file_contents(id.clone());
     FileNode::delete_file(id)
 }
 

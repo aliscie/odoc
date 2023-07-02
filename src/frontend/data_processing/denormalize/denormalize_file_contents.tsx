@@ -3,18 +3,23 @@ import {ContentNode} from "../../../declarations/user_canister/user_canister.did
 
 function de_nesting(nested: any[], data = []) {
     nested.forEach((item) => {
-        let children: any[] = item.children ? item.children.map((child) => String(child.id)) : [];
+
+        let id = item.id || randomString();
+        let children: ContentNode[] = item.children ? item.children.map((child) => {
+            let id = String(child.id || randomString());
+            return {id, parent: [String(id)], ...child}
+        }) : [];
         let obj: ContentNode = {
-            id: String(item.id) || "",
+            id: String(id),
             _type: item.type || "",
             data: item.data || [],
             text: item.text || "",
             parent: item.parent || [],
-            children: children,
+            children: children.map((child) => String(child.id)),
         };
-        data.push([obj.id, obj]);
-        if (item.children) {
-            de_nesting(item.children, data)
+        data.push([String(id), obj]);
+        if (children) {
+            de_nesting(children, data)
         }
     })
     return data;
