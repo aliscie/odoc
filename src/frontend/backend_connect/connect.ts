@@ -69,16 +69,6 @@ export async function get_all_files_content() {
     }
 }
 
-export async function multi_update(updates: any) {
-    switch (PLATFORM) {
-        case "WEB":
-            return await actor.multi_files_content_updates(updates);
-        case "DESKTOP":
-            return null;
-        case "MOBILE":
-            return null;
-    }
-}
 
 export async function create_agreement(name: string) {
     switch (PLATFORM) {

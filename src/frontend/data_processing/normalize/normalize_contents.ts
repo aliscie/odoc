@@ -1,5 +1,3 @@
-import {logger} from "../../dev_utils/log_data";
-
 interface Node {
     id: number;
     _type: string;
@@ -72,6 +70,7 @@ function buildTree(
 
 
 export function normalize_files_contents(content: any) {
+
     if (!content[0]) {
         return []
     }

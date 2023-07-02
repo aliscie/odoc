@@ -52,38 +52,39 @@ fn create_payment_contract(file_name: String) -> Result<(), String> {
     Ok(())
 }
 
-#[update]
-#[candid_method(update)]
-fn save_payment_contract(file_id: FileId, file_name: String, parent_file: Option<FileId>, content_tree: ContentTree, contracts: Vec<StoredContract>) -> Result<(), String> {
-    let user = User::user_profile();
-    if user.is_none() {
-        return Err("User not registered".to_string());
-    }
-    let user: Principal = user.unwrap().id.parse().unwrap();
-    let file = FileNode::update_or_create(file_id.clone(), file_name, parent_file);
-    let content_tree = ContentNode::update_file_contents(file_id.clone(), content_tree);
-    let mut message: String = "".to_string();
-
-    for contract in contracts {
-        match contract.clone() {
-            StoredContract::PaymentContract(payment) => {
-                let p: Result<(), String> = Payment::update_or_create(payment.clone());
-                if p.is_err() {
-                    let error_message: String = p.err().unwrap();
-                    message.push_str(
-                        format!("Payment contract with id : {} is not saved, because {}", payment.get_contract_id(), error_message).as_str()
-                    );
-                }
-                message.push_str(format!("Payment contract with id : {} is saved", payment.get_contract_id()).as_str());
-            }
-            _ => {
-                message.push_str("on of contract has invalid type");
-            }
-        }
-    }
-    if message.len() > 0 {
-        return Err(message);
-    }
-
-    return Ok(());
-}
+//
+// #[update]
+// #[candid_method(update)]
+// fn save_payment_contract(file_id: FileId, file_name: String, parent_file: Option<FileId>, content_tree: ContentTree, contracts: Vec<StoredContract>) -> Result<(), String> {
+//     let user = User::user_profile();
+//     if user.is_none() {
+//         return Err("User not registered".to_string());
+//     }
+//     let user: Principal = user.unwrap().id.parse().unwrap();
+//     let file = FileNode::update_or_create(file_id.clone(), file_name, parent_file);
+//     let content_tree = ContentNode::update_file_contents(file_id.clone(), content_tree);
+//     let mut message: String = "".to_string();
+//
+//     for contract in contracts {
+//         match contract.clone() {
+//             StoredContract::PaymentContract(payment) => {
+//                 let p: Result<(), String> = Payment::update_or_create(payment.clone());
+//                 if p.is_err() {
+//                     let error_message: String = p.err().unwrap();
+//                     message.push_str(
+//                         format!("Payment contract with id : {} is not saved, because {}", payment.get_contract_id(), error_message).as_str()
+//                     );
+//                 }
+//                 message.push_str(format!("Payment contract with id : {} is saved", payment.get_contract_id()).as_str());
+//             }
+//             _ => {
+//                 message.push_str("on of contract has invalid type");
+//             }
+//         }
+//     }
+//     if message.len() > 0 {
+//         return Err(message);
+//     }
+//
+//     return Ok(());
+// }

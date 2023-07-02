@@ -127,22 +127,16 @@ export interface _SERVICE {
     [] | [Array<[string, ContentNode]>]
   >,
   'get_initial_data' : ActorMethod<[], Result_3>,
-  'multi_files_content_updates' : ActorMethod<
-    [Array<Array<[string, Array<[string, ContentNode]>]>>],
+  'multi_updates' : ActorMethod<
+    [
+      Array<FileNode>,
+      Array<Array<[string, Array<[string, ContentNode]>]>>,
+      Array<StoredContract>,
+    ],
     Result_1
   >,
   'register' : ActorMethod<[RegisterUser], Result>,
   'rename_file' : ActorMethod<[string, string], boolean>,
-  'save_payment_contract' : ActorMethod<
-    [
-      string,
-      string,
-      [] | [string],
-      Array<[string, ContentNode]>,
-      Array<StoredContract>,
-    ],
-    Result_2
-  >,
   'send_friend_request' : ActorMethod<[string], Result>,
   'unfriend' : ActorMethod<[string], Result>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,

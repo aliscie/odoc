@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 
 use candid::candid_method;
+use ic_cdk::caller;
 use ic_cdk_macros::update;
-use crate::FILE_CONTENTS;
+use crate::{CONTRACTS_STORE, FILE_CONTENTS, Payment, StoredContract};
 
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
@@ -23,17 +24,38 @@ fn content_updates(file_id: FileId, content_parent_id: Option<ContentId>, new_te
 }
 
 
+
+
 #[update]
 #[candid_method(update)]
-fn multi_files_content_updates(updates: Vec<HashMap<FileId, ContentTree>>) -> Result<String, String> {
-    // Iterate over each update
+fn multi_updates(
+    files: Vec<FileNode>,
+    updates: Vec<HashMap<FileId, ContentTree>>,
+    contracts: Vec<StoredContract>,
+) -> Result<String, String> {
+    // Update file names and parents
+    for file in files {
+        let file_id = file.id.clone();
+        if let Some(mut updated_file) = FileNode::get_file(file_id.clone()) {
+            if let Some(parent_id) = file.parent {
+                updated_file.parent = Some(parent_id);
+            }
+            if !file.name.is_empty() {
+                updated_file.name = file.name;
+            }
+            FileNode::update_or_create(file_id, updated_file.name, updated_file.parent);
+        }
+    }
+
+    // Update FILE_CONTENTS
     for update in updates {
-        // Iterate over each file and its corresponding content tree in the update
         for (file_id, content_tree) in update {
-            // Update the file contents
             ContentNode::update_file_contents(file_id, content_tree);
         }
     }
-    Ok("Files content updated successfully".to_string())
-}
 
+    // Update payment contracts
+    Payment::update_payment_contracts(contracts)?;
+
+    Ok("Updates applied successfully".to_string())
+}

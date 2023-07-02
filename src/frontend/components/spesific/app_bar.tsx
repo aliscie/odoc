@@ -17,7 +17,7 @@ import Tooltip from "@mui/material/Tooltip";
 import {BreadPage} from "../genral/breadcrumbs";
 import CopyButton from "../genral/copy_link";
 import {agent} from "../../backend_connect/main";
-import ContentSave from "../actions/contents_save";
+import ContentSave from "../actions/multi_save";
 import Person2Icon from '@mui/icons-material/Person2';
 import SettingsIcon from '@mui/icons-material/Settings';
 import {convertToBlobLink} from "../../data_processing/image_to_vec";

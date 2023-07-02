@@ -133,6 +133,7 @@ export default function PaymentContract(props: any) {
 
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
         dispatch(handleRedux("ADD_CONTRACT", {id, contract}));
+        dispatch(handleRedux("CONTRACT_CHANGES", {id, contract}));
         // let newRows = [...rows, newRow];
 
 
@@ -147,6 +148,7 @@ export default function PaymentContract(props: any) {
             editable: true,
         };
         setColumns([...columns, newColumn]);
+        // TODO // dispatch(handleRedux("CONTENT_CHANGES", {id:current_file, new_content}));
     };
     const handleDeleteColumn = (column_name: any) => {
         console.log("delete column", {column_name})
@@ -183,6 +185,7 @@ export default function PaymentContract(props: any) {
             }
 
             dispatch(handleRedux("UPDATE_CONTRACT", {id, contract}));
+            dispatch(handleRedux("CONTRACT_CHANGES", {id, contract}));
             revoke_message();
             return Promise.resolve(newRow);
         },
