@@ -32,7 +32,6 @@ const RenameFile = (props: any) => {
             <input onKeyDown={onKeyDown} ref={ref} autoFocus={true} placeholder={props.item.name}/>
        </Tooltip>
             <Button onClick={saveName}>Save</Button>
-
     </span>)
 }
 export default RenameFile

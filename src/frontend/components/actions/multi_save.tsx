@@ -5,27 +5,23 @@ import {handleRedux} from "../../redux/main";
 import {actor} from "../../backend_connect/ic_agent";
 import {useSnackbar} from "notistack";
 import {ContentNode, FileNode, StoredContract} from "../../../declarations/user_canister/user_canister.did";
-import {logger} from "../../dev_utils/log_data";
 import denormalize_file_contents from "../../data_processing/denormalize/denormalize_file_contents";
+import denormalize_payment_contract from "../../data_processing/denormalize/denormalize_contracts";
 
-function ContentSave(props: any) {
+function MultiSaveButton(props: any) {
     const dispatch = useDispatch();
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     let {changes} = useSelector((state: any) => state.filesReducer);
-    let is_files_saved = Object.keys(changes.contents).length === 0 | Object.keys(changes.contents).length === 0 | Object.keys(changes.contents).length === 0
+    let is_files_saved = Object.keys(changes.contents).length === 0 && Object.keys(changes.files).length === 0 && Object.keys(changes.contracts).length === 0;
 
     async function handleClick() {
 
-        let denormalized_content = denormalize_file_contents(changes.contents)
 
+        let denormalized_content: Array<Array<[string, Array<[string, ContentNode]>]>> = denormalize_file_contents(changes.contents)
+        let contracts: Array<StoredContract> = denormalize_payment_contract(changes.contracts);
 
         let loading = enqueueSnackbar(<span>Creating note page... <span className={"loader"}/></span>,);
-
-        // here reconstruct files,content_tree and contracts
-        let files: Array<FileNode> = []
-        let contents: Array<Array<[string, Array<[string, ContentNode]>]>> = []
-        let contracts: Array<StoredContract> = []
-
+        let files: Array<FileNode> = Object.values(changes.files);
         let res = await actor.multi_updates(files, denormalized_content, contracts);
         closeSnackbar(loading)
         if (res.Err) {
@@ -35,7 +31,6 @@ function ContentSave(props: any) {
             dispatch(handleRedux("RESOLVE_CHANGES"));
         }
         console.log({res})
-
 
     }
 
@@ -48,11 +43,8 @@ function ContentSave(props: any) {
             variant={!is_files_saved ? "contained" : "text"}
             disabled={is_files_saved}
             onClick={handleClick}
-        >
-            {/*{!is_files_saved && <WarningIcon size={"small"} color={"warning"}/>}*/}
-            Save
-        </Button>
+        >Save</Button>
     </Tooltip>
 }
 
-export default ContentSave;
+export default MultiSaveButton;

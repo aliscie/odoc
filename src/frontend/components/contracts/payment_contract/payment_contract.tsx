@@ -11,6 +11,7 @@ import {useTotalDept} from "./use_total_dept";
 import ReleaseButton from "./release_button";
 import CustomEditComponent from "./render_reciver_column";
 import {logger} from "../../../dev_utils/log_data";
+import {Principal} from "@dfinity/principal";
 
 
 function handleRelease(id: number) {
@@ -25,7 +26,13 @@ export default function PaymentContract(props: any) {
 
     const dispatch = useDispatch();
 
-    const {files_content, current_file, contracts, all_friends} = useSelector((state: any) => state.filesReducer);
+    const {
+        profile,
+        files_content,
+        current_file,
+        contracts,
+        all_friends
+    } = useSelector((state: any) => state.filesReducer);
     let content = files_content[current_file.id];
 
     // ToDo  `props.data[0]` instead of `props.children[0].data[0]`
@@ -92,9 +99,16 @@ export default function PaymentContract(props: any) {
 
 
         let id = randomString();
-        let contract = contract_sample;
-        contract.contract_id = id;
-        let newRow = {"contract": [{"PaymentContract": id}], "cells": [], "requests": []}
+        let contract = {
+            "contract_id": id,
+            "sender": Principal.fromText(profile.id),
+            "receiver": Principal.fromText("2vxsx-fae"),
+            "released": false,
+            "confirmed": false,
+            "amount": BigInt(0),
+
+        };
+        let newRow = {id, "contract": [{"PaymentContract": id}], "cells": [], "requests": []}
 
 
         let cells = init_rows[0] && init_rows[0].cells[0]
@@ -118,7 +132,7 @@ export default function PaymentContract(props: any) {
                     if (child.data && child.id === table_content.id) {
                         let newData = child.data.map((data) => {
                             let newTable = {...data.Table};
-                            newTable.rows = [...newTable.rows, {id: newTable.rows.length + 1, ...newRow}];
+                            newTable.rows = [...newTable.rows, {...newRow}];
                             setRows(newTable.rows);
                             return {...data, Table: newTable};
                         });
@@ -132,10 +146,10 @@ export default function PaymentContract(props: any) {
         });
 
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-        dispatch(handleRedux("ADD_CONTRACT", {id, contract}));
-        dispatch(handleRedux("CONTRACT_CHANGES", {id, contract}));
+        dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
+        dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
+        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
         // let newRows = [...rows, newRow];
-
 
         // setRows([...rows, newRow]);
     };
@@ -177,15 +191,15 @@ export default function PaymentContract(props: any) {
 
             let contract = {
                 "contract_id": id,
-                "sender": "",
+                "sender": Principal.fromText(profile.id),
                 "released": newRow.released,
-                "confirmed": newRow.confirmed,
-                "amount": newRow.amount,
-                "receiver": receiver.id,
+                "confirmed": newRow.confirmed || false,
+                "amount": BigInt(newRow.amount),
+                "receiver": Principal.fromText(receiver.id),
             }
-
+            console.log({update_contract: contract})
             dispatch(handleRedux("UPDATE_CONTRACT", {id, contract}));
-            dispatch(handleRedux("CONTRACT_CHANGES", {id, contract}));
+            dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
             revoke_message();
             return Promise.resolve(newRow);
         },

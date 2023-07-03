@@ -2,15 +2,9 @@ import React from 'react';
 import "./style/nav_bar.css"
 import {useSelector} from "react-redux";
 import NestedList from "./nested_list/nest_list"
-import CustomizedMenus from "../genral/drop_down";
 import {Button} from "@mui/material";
 import {Link} from "react-router-dom";
-import CreateNote from "../actions/create_note";
-import EditNoteIcon from '@mui/icons-material/EditNote';
-import PaymentContract from "../actions/create_agreement";
-import FunctionsIcon from '@mui/icons-material/Functions';
-import PaidIcon from '@mui/icons-material/Paid';
-import ShowChartIcon from '@mui/icons-material/ShowChart';
+import CreateFile from "../actions/create_file";
 
 const NavBar = (props: any) => {
     const {isNavOpen, isLoggedIn} = useSelector((state: any) => state.uiReducer);
@@ -30,15 +24,7 @@ const NavBar = (props: any) => {
                         // title={"private"}
                         data={files}/>
                     <hr/>
-
-                    <CustomizedMenus style={{width: "100%"}} options={[
-                        {content: <CreateNote/>, preventClose: true, icon: <EditNoteIcon/>},
-                        {content: <PaymentContract/>, icon: <PaidIcon/>},
-                        {content: "Accumulative contract", icon: <ShowChartIcon/>},
-                        {content: "Custom contract", icon: <FunctionsIcon/>},
-                    ]}>
-                        Create
-                    </CustomizedMenus>
+                    <CreateFile/>
                 </>}
             </div>
 

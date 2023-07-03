@@ -26,7 +26,7 @@ impl Friend {
         self.friend_requests.push(user.clone());
         FRIENDS_STORE.with(|friends_store| {
             let mut store = friends_store.borrow_mut();
-            store.entry(user.id.parse().unwrap()).or_default().friend_requests.push(User::get_user_from_principal(caller().to_text()).unwrap());
+            store.entry(user.id.parse().unwrap()).or_default().friend_requests.push(User::get_user_from_text_principal(caller().to_text()).unwrap());
         });
     }
 

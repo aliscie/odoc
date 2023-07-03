@@ -94,6 +94,7 @@ export type Result_2 = { 'Ok' : null } |
 export type Result_3 = { 'Ok' : InitialData } |
   { 'Err' : string };
 export interface Row {
+  'id' : string,
   'contract' : [] | [Contract],
   'cells' : [] | [Array<[string, string]>],
   'requests' : [] | [Contract],

@@ -2,7 +2,7 @@ import * as React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import Editor from "odoc-editor"
 import {EditorRenderer} from "../editor_components/editor_renderer";
-import {file_data, payment_contract, payment_contract_content} from "../../data_processing/data_samples";
+import {file_data, payment_contract, file_content_sample} from "../../data_processing/data_samples";
 import {handleRedux} from "../../redux/main";
 
 
@@ -108,7 +108,7 @@ export default function EditorDemo() {
     function handleOnInsertComponent(e: any, component: any) {
         console.log("handleOnInsertComponent", e, component)
         if (component.type == "payment_component") {
-            dispatch(handleRedux("ADD_CONTENT", {id: file_data.id, content: payment_contract_content}))
+            dispatch(handleRedux("ADD_CONTENT", {id: file_data.id, content: file_content_sample}))
         }
 
     }

@@ -25,10 +25,12 @@ function de_nesting(nested: any[], data = []) {
     return data;
 }
 
-function denormalize_file_contents(content: any[], data: any[] = []) {
+function denormalize_file_contents(content: any[], data: Array<Array<[string, Array<[string, ContentNode]>]>> = []) {
     Object.keys(content).forEach((key) => {
+        console.log(content)
         let change = []
         let item = content[key];
+
         let de_nested = de_nesting(item)
         change = [key, de_nested]
         data.push([change])
