@@ -1,4 +1,4 @@
-use candid::candid_method;
+use candid::{candid_method, Principal};
 use ic_cdk::caller;
 use ic_cdk_macros::update;
 
@@ -9,7 +9,7 @@ use crate::user::{RegisterUser, User};
 #[update]
 #[candid_method(update)]
 pub fn send_friend_request(user_principal: String) -> Result<User, String> {
-    let mut user = User::get_user_from_principal(user_principal.clone());
+    let mut user = User::get_user_from_text_principal(user_principal.clone());
     if user.clone().is_none() {
         return Err("User does not exist".to_string());
     }
@@ -37,7 +37,7 @@ pub fn send_friend_request(user_principal: String) -> Result<User, String> {
 #[update]
 #[candid_method(update)]
 pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
-    let user = User::get_user_from_principal(user_principal.clone());
+    let user = User::get_user_from_text_principal(user_principal.clone());
     if let Some(mut friend) = Friend::get_friends_of_caller() {
         if let Some(index) = friend.friend_requests.iter().position(|request| *request == user.clone().unwrap()) {
             FRIENDS_STORE.with(|friends_store| {
@@ -46,7 +46,7 @@ pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
                 store.entry(caller()).or_default().friends.push(user.clone().unwrap());
 
                 // Add the caller to the friend's list as well
-                store.entry(user_principal.parse().unwrap()).or_default().friends.push(user.clone().unwrap());
+                store.entry(user_principal.parse().unwrap()).or_default().friends.push(User::get_user_from_principal(caller()).unwrap());
             });
 
             Ok(user.unwrap())
@@ -61,7 +61,7 @@ pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
 #[update]
 #[candid_method(update)]
 pub fn unfriend(user_principal: String) -> Result<User, String> {
-    let user = User::get_user_from_principal(user_principal);
+    let user = User::get_user_from_text_principal(user_principal);
     if let Some(mut friend) = Friend::get_friends_of_caller() {
         if let Some(index) = friend.friends.iter().position(|friend| friend.clone() == user.clone().unwrap()) {
             friend.unfriend(&user.clone().unwrap());
@@ -77,7 +77,7 @@ pub fn unfriend(user_principal: String) -> Result<User, String> {
 #[update]
 #[candid_method(update)]
 pub fn cancel_friend_request(user_principal: String) -> Result<User, String> {
-    let user = User::get_user_from_principal(user_principal);
+    let user = User::get_user_from_text_principal(user_principal);
     if let Some(mut friend) = Friend::get_friends_of_caller() {
         if let Some(index) = friend.friend_requests.iter().position(|request| *request == user.clone().unwrap()) {
             friend.cancel_friend_request(&user.clone().unwrap());

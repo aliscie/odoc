@@ -19,7 +19,6 @@ interface SlateNode {
 }
 
 
-
 function nesting(content_node: [string, ContentNode], alL_contents: Array<[string, ContentNode]>, visited: any[] = []) {
 
     let children = content_node[1].children.map((child_id: string) => {
@@ -53,6 +52,9 @@ export function normalize_files_contents(content: Array<Array<[string, Array<[st
     let data = {}
     // Array<Array<[string, Array<[string, ContentNode]>]>>
     content.map((node: Array<[string, Array<[string, ContentNode]>]>) => {
+        if (!node[0]) {
+            return
+        }
         let file_id: string = node[0][0];
         let file_content: Array<[string, ContentNode]> = node[0][1];
         let nested_file_content: Array<SlateNode> = [];

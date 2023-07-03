@@ -1,3 +1,5 @@
+import {Principal} from "@dfinity/principal";
+
 export let note_page_content = [{"id": 4, "children": [{"id": 5, "text": "", "type": "h1"}]}]
 export let file_data = {"id": "0000", "content": "0", "name": "Untitled", "children": {}, "parent": []}
 export let payment_contract = {
@@ -5,9 +7,7 @@ export let payment_contract = {
     "children": [{"id": "002", "text": "", "data": [{"Table": {"rows": [], "columns": []}}]}],
     "type": "payment_contract"
 }
-export let payment_contract_content = [
-    {type: "span", children: [{text: ""}]},
-    payment_contract,
+export let file_content_sample = [
     {type: "span", children: [{text: ""}]},
 ]
 export let payment_contract_row = {"Contract": {"PaymentContract": "0"}}
@@ -53,11 +53,13 @@ export let contracts_sample = {
 }
 export let contract_sample = {
     "contract_id": "18",
-    "sender": "",
+    // empty dummy principal
+    "sender": Principal.fromText("2vxsx-fae"),
+    "receiver": Principal.fromText("2vxsx-fae"),
     "released": false,
     "confirmed": false,
     "amount": "",
-    "receiver": ""
+
 }
 export let contract_id_sample = {"Contract": {"PaymentContract": "18"}}
 

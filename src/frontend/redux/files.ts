@@ -45,6 +45,7 @@ async function get_initial_data() {
         return false;
     }
     data = await backend.get_initial_data();
+    console.log("init data.....", data)
 
     const authClient = await AuthClient.create();
     const userPrincipal = authClient.getIdentity().getPrincipal().toString();
@@ -147,7 +148,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 ...state,
             }
         case 'CONTRACT_CHANGES':
-            state.changes.contents[action.id] = action.changes;
+            state.changes.contracts[action.changes.contract_id] = action.changes;
             return {
                 ...state,
             }

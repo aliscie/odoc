@@ -57,53 +57,43 @@ impl Payment {
     }
 
     pub fn update_payment_contracts(contracts: Vec<StoredContract>) -> Result<(), String> {
-        CONTRACTS_STORE.with(|contracts_store| {
-            let mut caller_contracts = contracts_store.borrow_mut();
-            let caller_contract = caller_contracts.entry(caller()).or_insert_with(HashMap::new);
+        let mut total_amount: u64 = 0;
+        let mut visited = vec![];
 
-            // Calculate the sum of total non-released amounts
-            let mut total_amount: u64 = 0;
-            for contract in caller_contract.values() {
-                if let StoredContract::PaymentContract(payment) = contract {
-                    if !payment.released {
-                        total_amount += payment.amount;
-                    }
-                }
-            }
+        let all_contracts: HashMap<ContractId, StoredContract> = Contract::get_all_contracts().unwrap_or(HashMap::new());
 
-            // Check if the total amount exceeds 1000
-            if total_amount > 1000 {
-                return Err("Total non-released amount exceeds 1000".to_string());
-            }
-
-            // Update the payment contracts
-            for contract in contracts {
-                if let StoredContract::PaymentContract(payment) = contract {
-                    if payment.confirmed {
-                        return Err("Payment contract is confirmed and cannot be updated".to_string());
-                    }
-
-                    // Check if updating the contract will exceed the limit
-                    if total_amount + payment.amount > 1000 {
-                        return Err("Updating the contract would exceed the total limit of 1000".to_string());
-                    }
-
+        for contract in &contracts {
+            if let StoredContract::PaymentContract(payment) = contract {
+                if !payment.released && payment.receiver != caller() {
+                    visited.push(payment.clone().contract_id);
                     total_amount += payment.amount;
-
-                    let existing_payment = caller_contract
-                        .entry(payment.contract_id.clone())
-                        .or_insert_with(|| StoredContract::PaymentContract(payment.clone()));
-
-                    if let StoredContract::PaymentContract(existing_payment) = existing_payment {
-                        *existing_payment = payment;
-                    } else {
-                        panic!("Invalid contract type");
-                    }
                 }
             }
+        }
 
-            Ok(())
-        })
+        for contract in all_contracts.values() {
+            if let StoredContract::PaymentContract(payment) = contract {
+                if !payment.released && payment.receiver != caller() && !visited.contains(&payment.contract_id) {
+                    visited.push(payment.clone().contract_id);
+                    total_amount += payment.amount;
+                }
+            }
+        };
+
+        if total_amount > 1000 {
+            return Err("Total non-released amount exceeds 1000".to_string());
+        }
+
+
+        for contract in contracts {
+            if let StoredContract::PaymentContract(payment) = contract {
+                Payment::update_or_create(caller(), payment.clone())?;
+                Payment::update_or_create(payment.receiver.clone(), payment)?;
+            } else {
+                panic!("Invalid contract type");
+            }
+        };
+        Ok(())
     }
 
 
@@ -116,11 +106,11 @@ impl Payment {
         Ok(())
     }
 
-    pub fn update_or_create(payment: Payment) -> Result<(), String> {
+    pub fn update_or_create(owner: Principal, payment: Payment) -> Result<Payment, String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contract = caller_contracts
-                .entry(caller())
+                .entry(owner)
                 .or_insert_with(HashMap::new);
 
             let contract = caller_contract
@@ -131,8 +121,8 @@ impl Payment {
                 if existing_payment.confirmed {
                     return Err("Payment contract is confirmed and cannot be updated".to_string());
                 }
-                *existing_payment = payment;
-                return Ok(());
+                *existing_payment = payment.clone();
+                return Ok(payment);
             }
 
             Err("Somthing went wrong.".to_string())

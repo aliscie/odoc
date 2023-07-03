@@ -51,7 +51,10 @@ function FileContentPage(props: any) {
     useEffect(() => {
         let timeout = setTimeout(() => {
             dispatch(handleRedux("UPDATE_FILE_TITLE", {id: current_file.id, title: title}));
-            dispatch(handleRedux("FILE_CHANGES", {id: current_file.id, changes: current_file}));
+            dispatch(handleRedux("FILE_CHANGES", {
+                id: current_file.id,
+                changes: {content: "", parent: [], children: [], ...current_file}
+            }));
         }, 250);
         return () => clearTimeout(timeout);
     }, [title])

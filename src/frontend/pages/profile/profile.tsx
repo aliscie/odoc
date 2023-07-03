@@ -2,15 +2,11 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
-import {useDispatch, useSelector} from "react-redux";
-import ListItemButton from '@mui/material/ListItemButton';
+import {useSelector} from "react-redux";
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import {Button, Rating, TextField, Tooltip, Typography} from "@mui/material";
 import {actor} from "../../backend_connect/ic_agent";
-import {handleRedux} from "../../redux/main";
 import {LoadingButton} from "../../components/genral/load_buttton";
 import {useSnackbar} from "notistack";
 import Friends from "./friends";
@@ -27,7 +23,7 @@ export function convertToBlobLink(imageData) {
 
 export default function ProfileComponent() {
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    const {profile, friends} = useSelector((state: any) => state.filesReducer);
+    const {profile, friends, contracts} = useSelector((state: any) => state.filesReducer);
     // const dispatch = useDispatch();
     const [profileData, setProfileData] = React.useState(profile || {});
 
@@ -112,7 +108,7 @@ export default function ProfileComponent() {
                 </List>
             )}
             {friends[0] && <Friends friends={friends}/>}
-            <TransactionsHistory friends={friends}/>
+            {Object.keys(contracts).length > 0 && <TransactionsHistory contracts={contracts}/>}
         </Box>
     );
 }
