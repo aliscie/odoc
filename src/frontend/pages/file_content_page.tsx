@@ -7,6 +7,7 @@ import {EditorRenderer} from "../components/editor_components/editor_renderer";
 import {payment_contract} from "../data_processing/data_samples";
 import {table} from "../components/genral/editor_demo";
 import {logger} from "../dev_utils/log_data";
+import {FileNode} from "../../declarations/user_canister/user_canister.did";
 
 
 function FileContentPage(props: any) {
@@ -51,10 +52,10 @@ function FileContentPage(props: any) {
     useEffect(() => {
         let timeout = setTimeout(() => {
             dispatch(handleRedux("UPDATE_FILE_TITLE", {id: current_file.id, title: title}));
-            dispatch(handleRedux("FILE_CHANGES", {
-                id: current_file.id,
-                changes: {content: "", parent: [], children: [], ...current_file}
-            }));
+            if (title !== current_file.name) {
+                let file: FileNode = {...current_file, name: title, content: "", parent: [], children: []}
+                dispatch(handleRedux("FILE_CHANGES", {changes: file}));
+            }
         }, 250);
         return () => clearTimeout(timeout);
     }, [title])

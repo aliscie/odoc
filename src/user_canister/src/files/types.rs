@@ -62,7 +62,7 @@ impl FileNode {
     //     })
     // }
 
-    pub fn update_or_create(file_id: FileId, name: String, parent: Option<FileId>) -> Self {
+    pub fn update_or_create(updated_file: FileNode) -> Self {
         USER_FILES.with(
             |files_store| {
                 let principal_id = ic_cdk::api::caller();
@@ -71,27 +71,28 @@ impl FileNode {
                 // Check if the user principal is already in the file store
                 let user_files_map = user_files.entry(principal_id.clone()).or_insert_with(HashMap::new);
 
-                if let Some(file) = user_files_map.get_mut(&file_id) {
-                    file.name = name.clone();
-                    file.parent = parent.clone();
+                if let Some(file) = user_files_map.get_mut(&updated_file.id.clone()) {
+                    file.name = updated_file.name.clone();
+                    file.parent = updated_file.parent.clone();
                     return file.clone();
                 }
 
                 let file = FileNode {
-                    id: file_id.clone(),
-                    parent: parent.clone(),
-                    name: name.clone(),
-                    content: 0.to_string(),
-                    children: Vec::new(),
+                    id: updated_file.id.clone(),
+                    parent: updated_file.parent.clone(),
+                    name: updated_file.name.clone(),
+                    content: updated_file.content.clone(),
+                    children: updated_file.children.clone(),
                 };
 
-                user_files_map.insert(file_id.clone(), file.clone());
+                user_files_map.insert(updated_file.id.clone(), file.clone());
 
-                if let Some(parent_id) = parent.clone() {
+                if let Some(parent_id) = updated_file.parent.clone() {
                     if let Some(parent_file) = user_files_map.get_mut(&parent_id) {
-                        parent_file.children.push(file_id.clone());
+                        parent_file.children.push(updated_file.id.clone());
                     }
                 }
+                ic_cdk::println!("Updated file: {:#?}", file);
                 file
             }
         )
