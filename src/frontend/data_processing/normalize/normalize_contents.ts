@@ -9,7 +9,7 @@ interface Node {
     parent: number[];
 }
 
-interface SlateNode {
+export interface SlateNode {
     id: String;
     type?: string;
     text?: string;
@@ -45,6 +45,19 @@ function nesting(content_node: [string, ContentNode], alL_contents: Array<[strin
 
 }
 
+export function normalize_content_tree(tree: Array<[string, ContentNode]>) {
+    let nested_file_content: Array<SlateNode> = [];
+    let visited = [];
+    tree.map((node: [string, ContentNode]) => {
+        if (!visited.includes(node[0]) && !node[1].parent[0]) {
+            visited.push(node[0])
+            let slate_node: SlateNode = nesting(node, tree, visited)
+            nested_file_content.push(slate_node)
+        }
+    })
+    return nested_file_content
+}
+
 export function normalize_files_contents(content: Array<Array<[string, Array<[string, ContentNode]>]>>) {
     if (!content[0]) {
         return []
@@ -57,15 +70,15 @@ export function normalize_files_contents(content: Array<Array<[string, Array<[st
         }
         let file_id: string = node[0][0];
         let file_content: Array<[string, ContentNode]> = node[0][1];
-        let nested_file_content: Array<SlateNode> = [];
-        let visited = [];
-        file_content.map((node: [string, ContentNode]) => {
-            if (!visited.includes(node[0]) && !node[1].parent[0]) {
-                visited.push(node[0])
-                let slate_node: SlateNode = nesting(node, file_content, visited)
-                nested_file_content.push(slate_node)
-            }
-        })
+        let nested_file_content: Array<SlateNode> = normalize_content_tree(file_content);
+        // let visited = [];
+        // file_content.map((node: [string, ContentNode]) => {
+        //     if (!visited.includes(node[0]) && !node[1].parent[0]) {
+        //         visited.push(node[0])
+        //         let slate_node: SlateNode = nesting(node, file_content, visited)
+        //         nested_file_content.push(slate_node)
+        //     }
+        // })
         data[file_id] = nested_file_content
 
     })

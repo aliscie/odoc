@@ -62,6 +62,9 @@ impl ContentNode {
             }
         })
     }
+
+
+
     pub fn new(file_id: FileId, content_parent_id: Option<ContentId>, node_type: String, text: String, data: Option<ContentData>) -> Option<ContentNode> {
         let caller_principal = ic_cdk::api::caller();
         let mut new_node = ContentNode {

@@ -38,7 +38,7 @@ export type Execute = { 'TransferNft' : null } |
   { 'TransferUsdt' : null };
 export interface FileNode {
   'id' : string,
-  'content' : string,
+  'share_id' : [] | [string],
   'name' : string,
   'children' : Array<string>,
   'parent' : [] | [string],
@@ -93,6 +93,8 @@ export type Result_2 = { 'Ok' : null } |
   { 'Err' : string };
 export type Result_3 = { 'Ok' : InitialData } |
   { 'Err' : string };
+export type Result_4 = { 'Ok' : [FileNode, Array<[string, ContentNode]>] } |
+  { 'Err' : string };
 export interface Row {
   'id' : string,
   'contract' : [] | [Contract],
@@ -128,6 +130,7 @@ export interface _SERVICE {
     [] | [Array<[string, ContentNode]>]
   >,
   'get_initial_data' : ActorMethod<[], Result_3>,
+  'get_shared_file' : ActorMethod<[string], Result_4>,
   'multi_updates' : ActorMethod<
     [
       Array<FileNode>,
@@ -139,6 +142,7 @@ export interface _SERVICE {
   'register' : ActorMethod<[RegisterUser], Result>,
   'rename_file' : ActorMethod<[string, string], boolean>,
   'send_friend_request' : ActorMethod<[string], Result>,
+  'share_file' : ActorMethod<[string, string], Result_1>,
   'unfriend' : ActorMethod<[string], Result>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
 }

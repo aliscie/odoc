@@ -18,6 +18,7 @@ use files::*;
 use files::FileNode;
 use friends::*;
 use queries::*;
+pub use share_files::*;
 use storage_schema::*;
 use updates::*;
 use user::*;
@@ -37,6 +38,7 @@ mod tables;
 mod queries;
 mod updates;
 mod friends;
+mod share_files;
 
 thread_local! {
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
@@ -45,6 +47,7 @@ thread_local! {
     static FILE_CONTENTS: RefCell<FileContentsStore> = RefCell::default();
     static FRIENDS_STORE: RefCell<FriendsStore> = RefCell::default();
     static CONTRACTS_STORE: RefCell<ContractStore> = RefCell::default();
+    static FILES_SHARE_STORE: RefCell<FilesShareStore> = RefCell::default();
 }
 
 #[cfg(test)]
