@@ -17,9 +17,9 @@ pub struct FileNode {
     pub id: FileId,
     pub parent: Option<FileId>,
     pub name: String,
-    pub content: ContentId,
     #[serde(default)]
     pub children: Vec<FileId>,
+    pub share_id: Option<String>,
 }
 
 impl FileNode {
@@ -29,8 +29,8 @@ impl FileNode {
             id: id.clone(),
             parent: parent.clone(),
             name: name.clone(),
-            content: 0.to_string(),
             children: Vec::new(),
+            share_id: None,
         };
 
         USER_FILES.with(|files_store| {
@@ -71,18 +71,12 @@ impl FileNode {
                 // Check if the user principal is already in the file store
                 let user_files_map = user_files.entry(principal_id.clone()).or_insert_with(HashMap::new);
 
-                if let Some(file) = user_files_map.get_mut(&updated_file.id.clone()) {
-                    file.name = updated_file.name.clone();
-                    file.parent = updated_file.parent.clone();
-                    return file.clone();
-                }
-
                 let file = FileNode {
                     id: updated_file.id.clone(),
                     parent: updated_file.parent.clone(),
                     name: updated_file.name.clone(),
-                    content: updated_file.content.clone(),
                     children: updated_file.children.clone(),
+                    share_id: updated_file.share_id.clone(),
                 };
 
                 user_files_map.insert(updated_file.id.clone(), file.clone());

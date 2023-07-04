@@ -34,7 +34,7 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
 
     const handleItemClick = () => {
         handleClick(index);
-        dispatch(handleRedux("CURRENT_FILE", {id: item.id, name: item.name}));
+        dispatch(handleRedux("CURRENT_FILE", {file: item}));
     };
 
     path = path ? path : item.name;

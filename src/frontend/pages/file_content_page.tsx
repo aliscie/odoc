@@ -6,18 +6,14 @@ import {handleRedux} from "../redux/main";
 import {EditorRenderer} from "../components/editor_components/editor_renderer";
 import {payment_contract} from "../data_processing/data_samples";
 import {table} from "../components/genral/editor_demo";
-import {logger} from "../dev_utils/log_data";
 import {FileNode} from "../../declarations/user_canister/user_canister.did";
 
 
 function FileContentPage(props: any) {
 
-    const {all_friends} = useSelector((state: any) => state.filesReducer);
+    const {all_friends, current_file, files_content} = useSelector((state: any) => state.filesReducer);
 
     let {searchValue} = useSelector((state: any) => state.uiReducer);
-    const {current_file, files_content} = useSelector(
-        (state: any) => state.filesReducer
-    );
 
     let [title, setTitle] = React.useState(current_file.name);
     console.log({title})
@@ -53,7 +49,13 @@ function FileContentPage(props: any) {
         let timeout = setTimeout(() => {
             dispatch(handleRedux("UPDATE_FILE_TITLE", {id: current_file.id, title: title}));
             if (title !== current_file.name) {
-                let file: FileNode = {...current_file, name: title, content: "", parent: [], children: []}
+                let file: FileNode = {
+                    ...current_file,
+                    name: title,
+                    parent: current_file.parent,
+                    children: current_file.children,
+                    share_id: current_file.share_id || []
+                };
                 dispatch(handleRedux("FILE_CHANGES", {changes: file}));
             }
         }, 250);

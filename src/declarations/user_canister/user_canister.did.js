@@ -9,7 +9,7 @@ export const idlFactory = ({ IDL }) => {
   const Result_1 = IDL.Variant({ 'Ok' : IDL.Text, 'Err' : IDL.Text });
   const FileNode = IDL.Record({
     'id' : IDL.Text,
-    'content' : IDL.Text,
+    'share_id' : IDL.Opt(IDL.Text),
     'name' : IDL.Text,
     'children' : IDL.Vec(IDL.Text),
     'parent' : IDL.Opt(IDL.Text),
@@ -112,6 +112,10 @@ export const idlFactory = ({ IDL }) => {
     'DiscoverUsers' : IDL.Vec(IDL.Tuple(IDL.Text, User)),
   });
   const Result_3 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
+  const Result_4 = IDL.Variant({
+    'Ok' : IDL.Tuple(FileNode, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode))),
+    'Err' : IDL.Text,
+  });
   const RegisterUser = IDL.Record({
     'name' : IDL.Opt(IDL.Text),
     'description' : IDL.Opt(IDL.Text),
@@ -154,6 +158,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_initial_data' : IDL.Func([], [Result_3], ['query']),
+    'get_shared_file' : IDL.Func([IDL.Text], [Result_4], []),
     'multi_updates' : IDL.Func(
         [
           IDL.Vec(FileNode),
@@ -170,6 +175,7 @@ export const idlFactory = ({ IDL }) => {
     'register' : IDL.Func([RegisterUser], [Result], []),
     'rename_file' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
+    'share_file' : IDL.Func([IDL.Text, IDL.Text], [Result_1], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
   });

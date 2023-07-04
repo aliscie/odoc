@@ -14,22 +14,6 @@ use crate::user::{RegisterUser, User};
 #[candid_method(update)]
 fn create_new_file(name: String, parent: Option<FileId>) -> FileNode {
     let file = FileNode::new(name.clone(), parent);
-
-    let content_node = ContentNode::new(file.clone().id, None, String::from(""), String::from(""), None);
-    let child_content_node = ContentNode::new(file.clone().id, Some(content_node.clone().unwrap().id), String::from("h1"), String::from("child is here."), None);
-
-    USER_FILES.with(|files_store| {
-        let principal_id = ic_cdk::api::caller();
-
-        let mut user_files = files_store.borrow_mut();
-        let user_files_map = user_files.get_mut(&principal_id).unwrap();
-
-        // Update the content ID of the file
-        if let Some(file) = user_files_map.get_mut(&file.id) {
-            file.content = content_node.unwrap().id;
-        }
-    });
-
     file
 }
 

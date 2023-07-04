@@ -18,7 +18,7 @@ const CreateFile = () => {
         // let res = await backend.create_file(value)
 
         let id = randomString();
-        let file: FileNode = {id, name: "untitled", parent: [], children: [], content: ""};
+        let file: FileNode = {id, name: "untitled", parent: [], children: [], share_id: []};
         dispatch(handleRedux("ADD", {data: file}))
         dispatch(handleRedux("ADD_CONTENT", {id, content: file_content_sample}))
         dispatch(handleRedux("FILE_CHANGES", {id, changes: file}));

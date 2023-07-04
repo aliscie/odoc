@@ -41,7 +41,7 @@ export var initialState = {
 
 function getCurrentFile(data: any) {
     let file = {id: null, name: null};
-    let stored_file = JSON.parse(localStorage.getItem("current_file") || "{id: null, name: null}")
+    let stored_file = JSON.parse(localStorage.getItem("current_file") || "{id: null, name: null, share_id: []}")
     if (data[stored_file.id]) {
         file = stored_file;
     }
@@ -66,6 +66,7 @@ async function get_initial_data() {
         let confirmed_friends = data.Ok.Friends[0] && data.Ok.Friends[0].friends || []
         all_friends = [...friend_requests.map((i: any) => i), ...confirmed_friends.map((i: any) => i)]
     }
+
     if (data.Ok) {
         initialState["files"] = normalize_files(data.Ok.Files);
         initialState["files_content"] = normalize_files_contents(data.Ok.FilesContents);
@@ -117,10 +118,10 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 files: files,
             }
         case 'CURRENT_FILE':
-            localStorage.setItem("current_file", JSON.stringify({id: action.id, name: action.name}));
+            localStorage.setItem("current_file", JSON.stringify({...action.file}));
             return {
                 ...state,
-                current_file: {id: action.id, name: action.name},
+                current_file: {...action.file},
             }
         case 'UPDATE_CONTENT':
             state.files_content[action.id] = action.content;
