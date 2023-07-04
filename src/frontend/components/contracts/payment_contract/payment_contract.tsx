@@ -3,18 +3,24 @@ import {GridColDef, GridRowModel, GridValueGetterParams} from '@mui/x-data-grid'
 import {Button} from '@mui/material';
 import {StyledDataGrid} from "../spread_sheet";
 import {useDispatch, useSelector} from "react-redux";
-import {contract_sample, randomString} from "../../../data_processing/data_samples";
+import {randomString} from "../../../data_processing/data_samples";
 import {handleRedux} from "../../../redux/main";
 import {useSnackbar} from "notistack";
 import CustomColumnMenu from "./column_menu";
 import {useTotalDept} from "./use_total_dept";
 import ReleaseButton from "./release_button";
 import CustomEditComponent from "./render_reciver_column";
-import {logger} from "../../../dev_utils/log_data";
 import {Principal} from "@dfinity/principal";
+import CancelButton from "./cancel_button";
 
 
 function handleRelease(id: number) {
+    // Perform release logic here
+    // Update the 'released' property of the corresponding row
+    // Set the state or dispatch an action to update the data
+}
+
+function handleCancel(id: number) {
     // Perform release logic here
     // Update the 'released' property of the corresponding row
     // Set the state or dispatch an action to update the data
@@ -85,7 +91,11 @@ export default function PaymentContract(props: any) {
                         released={params.row.released}
                         onClick={() => handleRelease(params.row.id)}
                     />
-                    <Button color={"warning"}>X</Button>
+                    <CancelButton
+                        released={params.row.released}
+                        onClick={() => handleCancel(params.row.id)}
+                    />
+
                 </>
             ),
         },
@@ -197,7 +207,7 @@ export default function PaymentContract(props: any) {
                 "amount": BigInt(newRow.amount),
                 "receiver": Principal.fromText(receiver.id),
             }
-            console.log({update_contract: contract})
+
             dispatch(handleRedux("UPDATE_CONTRACT", {id, contract}));
             dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
             revoke_message();

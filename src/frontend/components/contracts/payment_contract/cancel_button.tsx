@@ -3,7 +3,7 @@ import {Button, DialogActions, DialogContent, DialogTitle, Paper} from "@mui/mat
 import DialogOver from "../../genral/daiolog_over";
 
 
-function ReleaseButton({released, onClick}: { released: boolean, onClick: () => void }) {
+function CancelButton({released, onClick}: { released: boolean, onClick: () => void }) {
     const [is_released, setReleased] = React.useState(released);
 
     const handleConfirm = () => {
@@ -15,7 +15,7 @@ function ReleaseButton({released, onClick}: { released: boolean, onClick: () => 
         return <Paper>
             <DialogTitle>Confirmation</DialogTitle>
             <DialogContent>
-                Are you sure you want to release?
+                Are you sure you want to cancel?
             </DialogContent>
             <DialogActions>
                 <Button onClick={props.handleCancel} color="primary">
@@ -34,13 +34,13 @@ function ReleaseButton({released, onClick}: { released: boolean, onClick: () => 
 
     return (
         <DialogOver
-            color={"success"}
+            color={"warning"}
             disabled={is_released}
             variant="text"
             DialogContent={Dialog}>
-            {released ? 'Released' : 'Release'}
+            {!released && 'X'}
         </DialogOver>
     );
 }
 
-export default ReleaseButton
+export default CancelButton

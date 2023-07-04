@@ -81,7 +81,7 @@ impl Payment {
         };
 
         if total_amount > 1000 {
-            return Err("Total non-released amount exceeds 1000".to_string());
+            return Err("Total non-released contracts exceeds your current balance of 1000".to_string());
         }
 
 

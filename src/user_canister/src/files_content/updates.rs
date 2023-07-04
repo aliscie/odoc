@@ -24,8 +24,6 @@ fn content_updates(file_id: FileId, content_parent_id: Option<ContentId>, new_te
 }
 
 
-
-
 #[update]
 #[candid_method(update)]
 fn multi_updates(
@@ -33,19 +31,20 @@ fn multi_updates(
     updates: Vec<HashMap<FileId, ContentTree>>,
     contracts: Vec<StoredContract>,
 ) -> Result<String, String> {
-    // Update file names and parents
+    // Update file names and parents or create
     for file in files {
-        let file_id = file.id.clone();
-        if let Some(mut updated_file) = FileNode::get_file(file_id.clone()) {
-            if let Some(parent_id) = file.parent {
-                updated_file.parent = Some(parent_id);
-            }
-            if !file.name.is_empty() {
-                updated_file.name = file.name;
-            }
-            FileNode::update_or_create(file_id, updated_file.name, updated_file.parent);
-        }
+        FileNode::update_or_create(file);
+        // if let Some(mut updated_file) = FileNode::get_file(file.id.clone()) {
+        //     if let Some(parent_id) = file.parent {
+        //         updated_file.parent = Some(parent_id);
+        //     }
+        //     FileNode::update_or_create(updated_file);
+        // }
     }
+
+
+    // Update payment contracts
+    Payment::update_payment_contracts(contracts)?;
 
     // Update FILE_CONTENTS
     for update in updates {
@@ -54,8 +53,6 @@ fn multi_updates(
         }
     }
 
-    // Update payment contracts
-    Payment::update_payment_contracts(contracts)?;
 
     Ok("Updates applied successfully".to_string())
 }

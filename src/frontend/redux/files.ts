@@ -27,7 +27,9 @@ export type FilesActions =
     | "RESOLVE_CHANGES"
     | FriendsActions;
 
+
 export var initialState = {
+
     current_file: {id: null, name: null},
     is_files_saved: true,
     files: {},
@@ -35,6 +37,16 @@ export var initialState = {
     friends: [{friends: [], friend_requests: []}],
     changes: {files: {}, contents: {}, contracts: {}},
 };
+
+
+function getCurrentFile(data: any) {
+    let file = {id: null, name: null};
+    let stored_file = JSON.parse(localStorage.getItem("current_file") || "{id: null, name: null}")
+    if (data[stored_file.id]) {
+        file = stored_file;
+    }
+    return file;
+}
 
 
 async function get_initial_data() {
@@ -45,7 +57,6 @@ async function get_initial_data() {
         return false;
     }
     data = await backend.get_initial_data();
-    console.log("init data.....", data)
 
     const authClient = await AuthClient.create();
     const userPrincipal = authClient.getIdentity().getPrincipal().toString();
@@ -59,6 +70,8 @@ async function get_initial_data() {
         initialState["files"] = normalize_files(data.Ok.Files);
         initialState["files_content"] = normalize_files_contents(data.Ok.FilesContents);
         initialState["contracts"] = normalize_contracts(data.Ok.Contracts);
+        initialState["current_file"] = getCurrentFile(initialState["files"]);
+
         initialState["profile"] = data.Ok.Profile;
         initialState["users"] = data.Ok.DiscoverUsers;
         initialState["id"] = userPrincipal;
@@ -104,6 +117,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 files: files,
             }
         case 'CURRENT_FILE':
+            localStorage.setItem("current_file", JSON.stringify({id: action.id, name: action.name}));
             return {
                 ...state,
                 current_file: {id: action.id, name: action.name},
