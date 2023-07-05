@@ -1,10 +1,8 @@
-import {GridRenderEditCellParams, useGridApiContext} from "@mui/x-data-grid";
+import {useGridApiContext} from "@mui/x-data-grid";
 import FreeSoloCreateOption from "../../genral/auto_complete";
 import * as React from "react";
-import {useSelector} from "react-redux";
 
 function CustomEditComponent(props: any) {
-    // const {all_friends} = useSelector((state: any) => state.filesReducer);
     props.value = props.row.receiver;
     const {id, value, field} = props;
     const apiRef = useGridApiContext();

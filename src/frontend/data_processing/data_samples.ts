@@ -1,10 +1,24 @@
 import {Principal} from "@dfinity/principal";
 
+let contract_id = randomString();
 export let note_page_content = [{"id": 4, "children": [{"id": 5, "text": "", "type": "h1"}]}]
 export let file_data = {"id": "0000", "content": "0", "name": "Untitled", "children": {}, "parent": []}
 export let payment_contract = {
-    "id": 0,
-    "children": [{"id": "002", "text": "", "data": [{"Table": {"rows": [], "columns": []}}]}],
+    "id": contract_id,
+    "children": [{
+        "id": "002", "text": "", "data": [{
+            "Table": {
+                "rows": [
+                    {
+                        id: "0",
+                        contract: [{"PaymentContract": contract_id}],
+                        cells: [],
+                        requests: [],
+                    }
+                ], "columns": []
+            }
+        }]
+    }],
     "type": "payment_contract"
 }
 export let file_content_sample = [
@@ -52,7 +66,7 @@ export let contracts_sample = {
     }
 }
 export let contract_sample = {
-    "contract_id": "18",
+    "contract_id": contract_id,
     // empty dummy principal
     "sender": Principal.fromText("2vxsx-fae"),
     "receiver": Principal.fromText("2vxsx-fae"),

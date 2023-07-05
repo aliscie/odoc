@@ -73,6 +73,7 @@ pub struct Formula {
 
 #[derive(Eq, PartialEq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
 pub struct Column {
+    pub id: String,
     pub(crate) editable: bool,
     pub(crate) field: String,
     pub(crate) _type: ColumnTypes,
@@ -85,6 +86,7 @@ pub struct Column {
 impl Column {
     pub fn new(field: String, _type: ColumnTypes) -> Self {
         Column {
+            id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
             editable: true,
             field,
             _type,

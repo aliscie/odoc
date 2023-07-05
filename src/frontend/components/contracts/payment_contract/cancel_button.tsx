@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Button, DialogActions, DialogContent, DialogTitle, Paper} from "@mui/material";
+import {Button, DialogActions, DialogContent, DialogTitle, Paper, Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
 
 
@@ -12,12 +12,12 @@ function CancelButton({released, onClick}: { released: boolean, onClick: () => v
     };
 
     let Dialog = (props: any) => {
-        return <Paper>
-            <DialogTitle>Confirmation</DialogTitle>
-            <DialogContent>
+        return <>
+            <Typography variant={'subtitle2'}  >Confirmation</Typography>
+            <Typography>
                 Are you sure you want to cancel?
-            </DialogContent>
-            <DialogActions>
+            </Typography>
+            <div>
                 <Button onClick={props.handleCancel} color="primary">
                     No
                 </Button>
@@ -27,8 +27,8 @@ function CancelButton({released, onClick}: { released: boolean, onClick: () => v
                 }} color="primary" autoFocus>
                     Yes
                 </Button>
-            </DialogActions>
-        </Paper>
+            </div>
+        </>
     }
 
 

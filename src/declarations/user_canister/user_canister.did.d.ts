@@ -2,6 +2,7 @@ import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
 export interface Column {
+  'id' : string,
   '_type' : ColumnTypes,
   'field' : string,
   'filters' : Array<Filter>,
