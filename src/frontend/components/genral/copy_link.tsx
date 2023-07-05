@@ -1,19 +1,15 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import IconButton from "@mui/material/IconButton";
 import LinkIcon from "@mui/icons-material/Link";
-import {Button, DialogActions, DialogContent, DialogTitle, Paper, Tooltip} from "@mui/material";
-import ContextMenu from "./context_menu";
-import MultiSelect from "./multi_select";
+import {ListItemButton, ListItemText} from "@mui/material";
 import {randomString} from "../../data_processing/data_samples";
 import {actor} from "../../backend_connect/ic_agent";
 import {useSelector} from "react-redux";
 import DialogOver from "./daiolog_over";
-
-const OptionsCom = () => {
-    let options = ["Update", "View", "Comment"];
-    return <MultiSelect options={options}/>
-}
+import MultiAutoComplete from "./multi_autocompelte";
+import List from "@mui/material/List";
+import CheckIcon from '@mui/icons-material/Check';
+import {User} from "../../../declarations/user_canister/user_canister.did";
 
 let Dialog = (props: any) => {
 
@@ -21,6 +17,7 @@ let Dialog = (props: any) => {
     let file_share_id = current_file.share_id[0];
     let url = window.location.host;
     let [share_link, setShareLink] = useState(`${url}/share?id=${file_share_id}`);
+    let [is_copy, setCopy] = useState(false);
     useEffect(() => {
         (async () => {
             if (!file_share_id) {
@@ -35,52 +32,75 @@ let Dialog = (props: any) => {
         })()
 
     }, [])
+    let options = [
+        {title: "View"},
+        {title: "Update"},
+        {title: "Comment"},
+    ]
 
-    return <Paper>
-        {share_link ? <span>{share_link}</span> : <span className={"loader"}></span>}
-    </Paper>
+    const copyLink = async () => {
+        navigator.clipboard.writeText(share_link);
+        setCopy(true)
+        setTimeout(() => {
+            setCopy(false)
+        }, 2000)
+    };
+    const {all_friends} = useSelector((state: any) => state.filesReducer);
+
+    let users = all_friends.map((f: User) => {
+        return {title: f.name}
+    })
+    return <List
+        // style={{
+        //     color: "var(--color)",
+        //     background:'var(--background-color)'
+        // }}
+    >
+        <ListItemButton onClick={copyLink}>
+            {share_link ? <span>{share_link}</span> : <span className={"loader"}></span>}
+            {is_copy ? <CheckIcon size={"small"} color={"success"}/> : null}
+        </ListItemButton>
+
+        <ListItemText
+            // primaryTypographyProps={{style: {color: "var(--color)"}}}
+            // secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
+            primary={"Anyone with the link can "}
+            secondary={<MultiAutoComplete defaultValue={{title: "View"}} options={options} multiple={true}/>}
+        />
+
+        <ListItemText
+            // primaryTypographyProps={{style: {color: "var(--color)"}}}
+            // secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
+            primary={"Who can view"}
+            secondary={<MultiAutoComplete  options={users} multiple={true}/>}
+        />
+        <ListItemText
+            // primaryTypographyProps={{style: {color: "var(--color)"}}}
+            // secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
+            primary={"Who can update"}
+            secondary={<MultiAutoComplete options={users} multiple={true}/>}
+        />
+        <ListItemText
+            // primaryTypographyProps={{style: {color: "var(--color)"}}}
+            // secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
+            primary={"Who can comment"}
+            secondary={<MultiAutoComplete
+                // defaultValue={{title: ""}}
+                options={users} multiple={true}/>}
+        />
+
+
+    </List>
 }
 
 const CopyButton = () => {
-    // const {current_file} = useSelector((state: any) => state.filesReducer);
-    // let [title, setTitle] = useState(<span>Copy link.</span>)
-
-    // const copyLink = async () => {
-    //     let res = await actor.share_file(current_file.id, randomString())
-    //     console.log(res)
-    //
-    //     const currentLink = window.location.href;
-    //     navigator.clipboard.writeText(currentLink);
-    //     setTitle(<span style={{color: "lightgreen"}}>Copied.</span>)
-    //     setTimeout(() => {
-    //         setTitle(<span>Copy link.</span>)
-    //     }, 2000)
-    // };
-
-
-    // let options = [
-    //     {preventClose: true, content: <span>People with the link can<OptionsCom/></span>},
-    //     {content: "private",},
-    //     {content: "Who can see",},
-    //     {content: "Who can update",},
-    //     {content: "Who can comment",},
-    // ]
-
 
     return (
         <DialogOver
-            // color={"success"}
-            // disabled={is_released}
             variant="text"
             DialogContent={Dialog}
         >
-            {/*<ContextMenu options={options}>*/}
-            {/*    <Tooltip arrow title={title} placement="bottom">*/}
-            {/*        <IconButton onClick={copyLink}>*/}
             <LinkIcon/>
-            {/*        </IconButton>*/}
-            {/*    </Tooltip>*/}
-            {/*</ContextMenu>*/}
         </DialogOver>
     );
 };

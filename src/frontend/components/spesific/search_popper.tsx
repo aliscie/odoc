@@ -16,7 +16,7 @@ import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
-import MultiSelect from "../genral/multi_select";
+import MultiAutoComplete from "../genral/multi_autocompelte";
 
 export function OptionItem(props: any) {
     return (
@@ -117,7 +117,13 @@ export default function SearchPopper() {
                             className="handle"><OpenWithIcon/></IconButton>
 
                         <div>
-                            <MultiSelect options={options}/>
+
+                            <MultiAutoComplete
+                                options={
+                                    options.map((option) => {
+                                        return {title: option}
+                                    })}
+                                multiple={true}/>
 
                             <TextField
                                 size="small"

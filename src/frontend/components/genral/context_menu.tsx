@@ -29,9 +29,14 @@ export default function ContextMenu(props: any) {
     };
 
     return (
-        <div onContextMenu={handleContextMenu} style={{cursor: 'context-menu'}}>
+        <div onContextMenu={handleContextMenu}
+             style={{cursor: 'context-menu'}}>
             {props.children}
             <Menu
+                id="basic-menu"
+                MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                }}
                 open={contextMenu !== null}
                 onClose={handleClose}
                 anchorReference="anchorPosition"
@@ -41,14 +46,15 @@ export default function ContextMenu(props: any) {
                         : undefined
                 }
             >
-                {props.options.map((item: any) =>
-                    <MenuItem onMouseUp={() => {
+                {props.options.map((item: any) => <MenuItem
+                    onClick={() => {
                         !item.preventClose && handleClose()
+                        item.onClick && item.onClick()
                     }}>
-                        {item.icon && <ListItemIcon>
-                            {item.icon}
-                        </ListItemIcon>}
-                        {item.content}</MenuItem>
+                    {item.icon && <ListItemIcon>
+                        {item.icon}
+                    </ListItemIcon>}
+                    {item.content}</MenuItem>
                 )}
 
             </Menu>

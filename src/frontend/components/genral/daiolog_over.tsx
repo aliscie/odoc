@@ -1,6 +1,6 @@
 import * as React from "react";
 import {styled} from "@mui/system";
-import {Button, Paper, Tooltip, tooltipClasses, TooltipProps} from "@mui/material";
+import {Button, Tooltip, tooltipClasses, TooltipProps} from "@mui/material";
 import ClickAwayListener from "@mui/base/ClickAwayListener";
 
 function DialogOver({DialogContent, ...props}: any) {
@@ -20,18 +20,18 @@ function DialogOver({DialogContent, ...props}: any) {
         <Tooltip {...props} classes={{popper: className}}/>
     ))(({theme}) => ({
         [`& .${tooltipClasses.tooltip}`]: {
-            backgroundColor: '#f5f5f9',
-            color: 'rgba(0, 0, 0, 0.87)',
-            maxWidth: 220,
-            fontSize: theme.typography.pxToRem(12),
-            border: '1px solid #dadde9',
+            color: 'var(--color)',
+            backgroundColor: 'var(--primary-background-color)',
+            boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)",
+            borderRadius: "4px",
+            maxWidth: 500,
         },
     }));
     const Dialog = () => {
         return <ClickAwayListener onClickAway={handleCancel}>
-            <Paper>
+            <div>
                 <DialogContent handleClick={handleClick} handleCancel={handleCancel}/>
-            </Paper>
+            </div>
         </ClickAwayListener>
     }
 

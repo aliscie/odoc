@@ -28,7 +28,7 @@ function DeleteColumnMenuItem(props: GridColumnMenuItemProps) {
     );
 }
 
-function CustomColumnMenu(props: GridColumnMenuProps, handleDeleteColumn: any) {
+function CustomColumnMenu(props: GridColumnMenuProps) {
     const itemProps = {
         colDef: props.colDef,
         onClick: props.hideMenu,
@@ -56,7 +56,7 @@ function CustomColumnMenu(props: GridColumnMenuProps, handleDeleteColumn: any) {
                 },
                 DeleteColumnMenuItem: {
                     displayOrder: 2,
-                    handleDeleteColumn
+                    // handleDeleteColumn
                 }
             }}
         />

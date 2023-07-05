@@ -13,6 +13,7 @@ function Pages() {
     return <Routes>
 
         <Route path="/about_us" element={<LandingPage/>}/>
+        <Route path="/" element={<LandingPage/>}/>
         <Route path="/Discover" element={<Discover/>}/>
         <Route path="/editor_demo" element={<EditorDemo/>}/>
         <Route path="/Blog" element={<NFTComparisonTable/>}/>

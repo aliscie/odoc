@@ -1,4 +1,5 @@
 type Column = record {
+  id : text;
   _type : ColumnTypes;
   field : text;
   filters : vec Filter;

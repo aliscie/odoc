@@ -63,6 +63,7 @@ export const idlFactory = ({ IDL }) => {
     'execute' : Execute,
   });
   const Column = IDL.Record({
+    'id' : IDL.Text,
     '_type' : ColumnTypes,
     'field' : IDL.Text,
     'filters' : IDL.Vec(Filter),

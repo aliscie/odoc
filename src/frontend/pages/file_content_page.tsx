@@ -4,7 +4,7 @@ import {useEffect} from "react";
 import Editor from "odoc-editor";
 import {handleRedux} from "../redux/main";
 import {EditorRenderer} from "../components/editor_components/editor_renderer";
-import {payment_contract} from "../data_processing/data_samples";
+import {contract_sample, payment_contract} from "../data_processing/data_samples";
 import {table} from "../components/genral/editor_demo";
 import {FileNode} from "../../declarations/user_canister/user_canister.did";
 
@@ -78,6 +78,9 @@ function FileContentPage(props: any) {
     function handleOnInsertComponent(e: any, component: any) {
         if (component.type == "payment_contract") {
             // dispatch(handleRedux("ADD_CONTENT", {id: current_file.id, content: payment_contract_content}))
+            // add contract
+            dispatch(handleRedux("ADD_CONTRACT", {contract: contract_sample}))
+            dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract_sample}));
         }
 
     }

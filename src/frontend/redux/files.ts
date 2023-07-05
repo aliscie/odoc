@@ -5,6 +5,7 @@ import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {logger} from "../dev_utils/log_data";
+import {FileNode} from "../../declarations/user_canister/user_canister.did";
 
 export type FilesActions =
     "ADD"
@@ -41,7 +42,10 @@ export var initialState = {
 
 function getCurrentFile(data: any) {
     let file = {id: null, name: null};
-    let stored_file = JSON.parse(localStorage.getItem("current_file") || "{id: null, name: null, share_id: []}")
+    let dummy_file: FileNode | String = {id: "", name: "", share_id: [], children: [], parent: []};
+    dummy_file = JSON.stringify(dummy_file);
+
+    let stored_file = JSON.parse(localStorage.getItem("current_file") || dummy_file)
     if (data[stored_file.id]) {
         file = stored_file;
     }
@@ -129,7 +133,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 ...state,
             }
         case 'ADD_CONTRACT':
-            state.contracts[action.id] = action.contract;
+            state.contracts[action.contract.contract_id] = action.contract;
             return {
                 ...state,
             }
