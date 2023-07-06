@@ -21,6 +21,7 @@ let Dialog = (props: any) => {
     useEffect(() => {
         (async () => {
             if (!file_share_id) {
+                setShareLink(null);
                 let res = await actor.share_file(current_file.id, randomString())
                 if (res.Ok) {
 
@@ -72,7 +73,7 @@ let Dialog = (props: any) => {
             // primaryTypographyProps={{style: {color: "var(--color)"}}}
             // secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
             primary={"Who can view"}
-            secondary={<MultiAutoComplete  options={users} multiple={true}/>}
+            secondary={<MultiAutoComplete options={users} multiple={true}/>}
         />
         <ListItemText
             // primaryTypographyProps={{style: {color: "var(--color)"}}}

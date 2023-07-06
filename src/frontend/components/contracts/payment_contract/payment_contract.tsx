@@ -83,17 +83,31 @@ export default function PaymentContract(props: any) {
                 extra_cells[cell_value[0]] = cell_value[1]
             });
             let contract_id = row.contract[0].PaymentContract;
-            let contract = contracts[contract_id]
+            let contract = contracts && contracts[contract_id]
+            if (contract) {
 
-            let receiver = all_friends.filter((friend: any) => friend.id === contract.receiver.toString())[0]
-            return {
-                id: row.id,
-                receiver: receiver && receiver.name,
-                amount: contract.amount,
-                released: contract.released,
-                ...extra_cells
+                function getUser(userId: string) {
+                    if (userId === profile.id) {
+                        return profile.name;
+                    } else {
+                        const friend = all_friends.find((f) => f.id == userId.toString())
+                        return friend ? friend.name : null;
+                    }
+                }
+
+                let receiver = getUser(contract.receiver.toString());
+                return {
+                    id: row.id,
+                    receiver: receiver && receiver,
+                    amount: contract.amount,
+                    released: contract.released,
+                    ...extra_cells
+                }
+            } else {
+                return null
             }
-        });
+
+        }).filter((row: any) => row !== null);
     }
 
     // let normalized_row = normalize_row(rows)
