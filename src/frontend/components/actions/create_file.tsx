@@ -12,22 +12,22 @@ const CreateFile = () => {
     const dispatch = useDispatch();
     // const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
-    const handleCreateFile = async (value: string) => {
+    const handleCreateFile = async () => {
         // let loading = enqueueSnackbar(<span>Creating note page... <span
         //     className={"loader"}/></span>, {variant: "info"});
         // let res = await backend.create_file(value)
 
         let id = randomString();
-        let file: FileNode = {id, name: "untitled", parent: [], children: [], share_id: []};
+        let file: FileNode = {id, name: "NewName", parent: [], children: [], share_id: []};
         dispatch(handleRedux("ADD", {data: file}))
         dispatch(handleRedux("ADD_CONTENT", {id, content: file_content_sample}))
-        dispatch(handleRedux("FILE_CHANGES", {id, changes: file}));
+        dispatch(handleRedux("FILE_CHANGES", {changes: file}));
         // closeSnackbar(loading)
         // enqueueSnackbar('New file is created!', {variant: "success"});
     };
 
 
     // return (<InputOption   title={"note page"} tooltip={"hit enter to create"} onEnter={handleCreateFile}/>)
-    return (<Button onClick={() => handleCreateFile("Untitled")}>New file</Button>)
+    return (<Button onClick={() => handleCreateFile()}>New file</Button>)
 }
 export default CreateFile

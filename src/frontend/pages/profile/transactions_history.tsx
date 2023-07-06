@@ -48,7 +48,7 @@ function Transaction(props: any) {
             primary={`Sender: ${sender}`}
             secondary={`Receiver: ${receiver}, Amount: ${props.amount} ICPs`}
         />
-        {!props.released && <Button>Release</Button>}
+        {!props.released && <Tooltip title={"Click here to release contract"}><Button>Release</Button></Tooltip>}
         {!props.confirmed && props.receiver !== Principal.fromText(profile.id) && <Button>Confirm</Button>}
         {!props.canceled && props.receiver === Principal.fromText(profile.id) &&
             <Button color={"warning"}>Cancel</Button>}

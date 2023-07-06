@@ -1,7 +1,8 @@
 import * as React from "react";
 import {Button, DialogActions, DialogContent, DialogTitle, Paper, Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
-
+import SendIcon from '@mui/icons-material/Send';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
 
 function ReleaseButton({released, onClick}: { released: boolean, onClick: () => void }) {
     const [is_released, setReleased] = React.useState(released);
@@ -33,11 +34,12 @@ function ReleaseButton({released, onClick}: { released: boolean, onClick: () => 
 
     return (
         <DialogOver
-            color={"success"}
+            size={"small"}
+            // color={"success"}
             disabled={is_released}
             variant="text"
             DialogContent={Dialog}>
-            {released ? 'Released' : 'Release'}
+            {is_released ? <DoneAllIcon color={"success"}/> : <SendIcon/>}
         </DialogOver>
     );
 }

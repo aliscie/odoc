@@ -8,11 +8,8 @@ import Collapse from "@mui/material/Collapse";
 import List from "@mui/material/List";
 import {NestedDataItem} from "./nest_list";
 import ContextMenu from "../../genral/context_menu";
-import DeleteIcon from '@mui/icons-material/Delete';
 import {useDispatch} from "react-redux";
 import {handleRedux} from "../../../redux/main";
-import {Input} from "@mui/material";
-import {backend} from "../../../backend_connect/main";
 import DeleteFile from "../../actions/delete_file";
 import RenameFile from "../../actions/rename_file";
 

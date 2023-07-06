@@ -70,7 +70,7 @@ async function get_initial_data() {
         let confirmed_friends = data.Ok.Friends[0] && data.Ok.Friends[0].friends || []
         all_friends = [...friend_requests.map((i: any) => i), ...confirmed_friends.map((i: any) => i)]
     }
-
+    // console.log({orignal:data.Ok.Files})
     if (data.Ok) {
         initialState["files"] = normalize_files(data.Ok.Files);
         initialState["files_content"] = normalize_files_contents(data.Ok.FilesContents);
@@ -156,7 +156,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
         //         is_files_saved: false
         //     }
         case 'FILE_CHANGES':
-            state.changes.files[action.id] = action.changes;
+            state.changes.files[action.changes.id] = action.changes;
             return {
                 ...state,
             }

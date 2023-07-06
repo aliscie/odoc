@@ -47,7 +47,7 @@ function FileContentPage(props: any) {
 
     useEffect(() => {
         let timeout = setTimeout(() => {
-            dispatch(handleRedux("UPDATE_FILE_TITLE", {id: current_file.id, title: title}));
+
             if (title !== current_file.name) {
                 let file: FileNode = {
                     ...current_file,
@@ -56,6 +56,7 @@ function FileContentPage(props: any) {
                     children: current_file.children,
                     share_id: current_file.share_id || []
                 };
+                dispatch(handleRedux("UPDATE_FILE_TITLE", {id: current_file.id, title: title}));
                 dispatch(handleRedux("FILE_CHANGES", {changes: file}));
             }
         }, 250);
@@ -77,8 +78,7 @@ function FileContentPage(props: any) {
 
     function handleOnInsertComponent(e: any, component: any) {
         if (component.type == "payment_contract") {
-            // dispatch(handleRedux("ADD_CONTENT", {id: current_file.id, content: payment_contract_content}))
-            // add contract
+
             dispatch(handleRedux("ADD_CONTRACT", {contract: contract_sample}))
             dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract_sample}));
         }
