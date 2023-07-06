@@ -21,6 +21,7 @@ function MultiSaveButton(props: any) {
 
         let loading = enqueueSnackbar(<span>Creating note page... <span className={"loader"}/></span>,);
         let files: Array<FileNode> = Object.values(changes.files);
+        // console.log({to_save:files})
         let res = await actor.multi_updates(files, denormalized_content, contracts);
         closeSnackbar(loading)
         if (res.Err) {

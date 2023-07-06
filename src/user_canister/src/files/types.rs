@@ -61,36 +61,32 @@ impl FileNode {
     //         user_files_map.get_mut(&file_id)
     //     })
     // }
-
     pub fn update_or_create(updated_file: FileNode) -> Self {
-        USER_FILES.with(
-            |files_store| {
-                let principal_id = ic_cdk::api::caller();
+        USER_FILES.with(|files_store| {
+            let principal_id = ic_cdk::api::caller();
 
-                let mut user_files = files_store.borrow_mut();
-                // Check if the user principal is already in the file store
-                let user_files_map = user_files.entry(principal_id.clone()).or_insert_with(HashMap::new);
+            let mut user_files = files_store.borrow_mut();
+            // Check if the user principal is already in the file store
+            let user_files_map = user_files.entry(principal_id.clone()).or_insert_with(HashMap::new);
 
-                let file = FileNode {
-                    id: updated_file.id.clone(),
-                    parent: updated_file.parent.clone(),
-                    name: updated_file.name.clone(),
-                    children: updated_file.children.clone(),
-                    share_id: updated_file.share_id.clone(),
-                };
-
-                user_files_map.insert(updated_file.id.clone(), file.clone());
-
-                if let Some(parent_id) = updated_file.parent.clone() {
-                    if let Some(parent_file) = user_files_map.get_mut(&parent_id) {
-                        parent_file.children.push(updated_file.id.clone());
-                    }
-                }
-                ic_cdk::println!("Updated file: {:#?}", file);
-                file
+            if let Some(existing_file) = user_files_map.get_mut(&updated_file.id) {
+                existing_file.name = updated_file.name.clone();
+                existing_file.parent = updated_file.parent.clone();
+                existing_file.children = updated_file.children.clone();
+            } else {
+                user_files_map.insert(updated_file.id.clone(), updated_file.clone());
             }
-        )
+
+            if let Some(parent_id) = updated_file.parent.clone() {
+                if let Some(parent_file) = user_files_map.get_mut(&parent_id) {
+                    parent_file.children.push(updated_file.id.clone());
+                }
+            }
+
+            updated_file
+        })
     }
+
     pub fn get_file(file_id: FileId) -> Option<Self> {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();

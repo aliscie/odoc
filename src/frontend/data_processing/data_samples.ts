@@ -1,8 +1,19 @@
 import {Principal} from "@dfinity/principal";
+import {Column} from "../../declarations/user_canister/user_canister.did";
 
 let contract_id = randomString();
 export let note_page_content = [{"id": 4, "children": [{"id": 5, "text": "", "type": "h1"}]}]
-export let file_data = {"id": "0000", "content": "0", "name": "Untitled", "children": {}, "parent": []}
+export let file_data = {"id": "0000", "content": "0", "name": "NameTest", "children": {}, "parent": []}
+let column: Column = {
+    _type: {Text: null},
+    field: "receiver",
+    filters: [],
+    permissions: [],
+    dataValidator: [],
+    editable: true,
+    formula: [],
+    id: randomString(),
+}
 export let payment_contract = {
     "id": contract_id,
     "children": [{
@@ -10,12 +21,22 @@ export let payment_contract = {
             "Table": {
                 "rows": [
                     {
-                        id: "0",
+                        id: contract_id,
                         contract: [{"PaymentContract": contract_id}],
                         cells: [],
                         requests: [],
                     }
-                ], "columns": []
+                ],
+                "columns": [
+                    {...column},
+                    {...column, id: randomString(), field: "amount"},
+                    {
+                        ...column,
+                        id: randomString(),
+                        field: "released",
+                    },
+                    // {...column, id: randomString(), field: "confined",}
+                ]
             }
         }]
     }],
