@@ -12,6 +12,7 @@ function denormalize_payment_contract(content: any[], data: Array<StoredContract
                 "receiver": item.receiver,
                 "released": item.released || false,
                 "confirmed": item.confirmed || false,
+                "canceled": item.canceled || false,
                 "amount": BigInt(item.amount),
             }
         }

@@ -108,7 +108,7 @@ export default function ProfileComponent() {
                 </List>
             )}
             {friends[0] && <Friends friends={friends}/>}
-            {Object.keys(contracts).length > 0 && <TransactionsHistory contracts={contracts}/>}
+            {Object.keys(contracts).length > 0 && <TransactionsHistory/>}
         </Box>
     );
 }

@@ -9,7 +9,8 @@ function ReceiverComponent(props: any) {
     const handleValueChange = (event: any) => {
         apiRef.current.setEditCellValue({id, field, value: event.name});
     };
-    return <FreeSoloCreateOption onChange={handleValueChange} options={props.options} value={props.row.receiver}/>
+    return <FreeSoloCreateOption onChange={handleValueChange} options={props.options}
+                                 value={props.row.receiver && props.row.receiver.name}/>
 }
 
 export default ReceiverComponent

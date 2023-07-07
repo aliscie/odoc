@@ -72,6 +72,7 @@ export type Operation = { 'Equal' : null } |
   { 'Bigger' : null } |
   { 'BiggerOrEqual' : null };
 export interface Payment {
+  'canceled' : boolean,
   'contract_id' : string,
   'sender' : Principal,
   'released' : boolean,
@@ -88,9 +89,9 @@ export interface RegisterUser {
 }
 export type Result = { 'Ok' : User } |
   { 'Err' : string };
-export type Result_1 = { 'Ok' : string } |
+export type Result_1 = { 'Ok' : null } |
   { 'Err' : string };
-export type Result_2 = { 'Ok' : null } |
+export type Result_2 = { 'Ok' : string } |
   { 'Err' : string };
 export type Result_3 = { 'Ok' : InitialData } |
   { 'Err' : string };
@@ -114,11 +115,14 @@ export interface User {
 }
 export interface _SERVICE {
   'accept_friend_request' : ActorMethod<[string], Result>,
+  'accept_payment' : ActorMethod<[string], Result_1>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
-  'content_updates' : ActorMethod<[string, [] | [string], string], Result_1>,
+  'cancel_payment' : ActorMethod<[string], Result_1>,
+  'content_updates' : ActorMethod<[string, [] | [string], string], Result_2>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
-  'create_payment_contract' : ActorMethod<[string], Result_2>,
+  'create_payment_contract' : ActorMethod<[string], Result_1>,
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
+  'delete_payment' : ActorMethod<[string], Result_1>,
   'get_all_files' : ActorMethod<[], [] | [Array<[string, FileNode]>]>,
   'get_all_files_content' : ActorMethod<
     [],
@@ -137,13 +141,14 @@ export interface _SERVICE {
       Array<FileNode>,
       Array<Array<[string, Array<[string, ContentNode]>]>>,
       Array<StoredContract>,
+      Array<string>,
     ],
-    Result_1
+    Result_2
   >,
   'register' : ActorMethod<[RegisterUser], Result>,
   'rename_file' : ActorMethod<[string, string], boolean>,
   'send_friend_request' : ActorMethod<[string], Result>,
-  'share_file' : ActorMethod<[string, string], Result_1>,
+  'share_file' : ActorMethod<[string, string], Result_2>,
   'unfriend' : ActorMethod<[string], Result>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
 }

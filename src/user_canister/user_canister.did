@@ -53,6 +53,7 @@ type InitialData = record {
 };
 type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
 type Payment = record {
+  canceled : bool;
   contract_id : text;
   sender : principal;
   released : bool;
@@ -67,8 +68,8 @@ type RegisterUser = record {
   photo : opt vec nat8;
 };
 type Result = variant { Ok : User; Err : text };
-type Result_1 = variant { Ok : text; Err : text };
-type Result_2 = variant { Ok; Err : text };
+type Result_1 = variant { Ok; Err : text };
+type Result_2 = variant { Ok : text; Err : text };
 type Result_3 = variant { Ok : InitialData; Err : text };
 type Result_4 = variant {
   Ok : record { FileNode; vec record { text; ContentNode } };
@@ -91,11 +92,14 @@ type User = record {
 };
 service : {
   accept_friend_request : (text) -> (Result);
+  accept_payment : (text) -> (Result_1);
   cancel_friend_request : (text) -> (Result);
-  content_updates : (text, opt text, text) -> (Result_1);
+  cancel_payment : (text) -> (Result_1);
+  content_updates : (text, opt text, text) -> (Result_2);
   create_new_file : (text, opt text) -> (FileNode);
-  create_payment_contract : (text) -> (Result_2);
+  create_payment_contract : (text) -> (Result_1);
   delete_file : (text) -> (opt FileNode);
+  delete_payment : (text) -> (Result_1);
   get_all_files : () -> (opt vec record { text; FileNode }) query;
   get_all_files_content : () -> (
       vec record { text; vec record { text; ContentNode } },
@@ -109,11 +113,12 @@ service : {
       vec FileNode,
       vec vec record { text; vec record { text; ContentNode } },
       vec StoredContract,
-    ) -> (Result_1);
+      vec text,
+    ) -> (Result_2);
   register : (RegisterUser) -> (Result);
   rename_file : (text, text) -> (bool);
   send_friend_request : (text) -> (Result);
-  share_file : (text, text) -> (Result_1);
+  share_file : (text, text) -> (Result_2);
   unfriend : (text) -> (Result);
   update_user_profile : (RegisterUser) -> (Result);
 }
