@@ -60,6 +60,5 @@ fn get_initial_data() -> Result<InitialData, String> {
         DiscoverUsers: users,
         Contracts: contracts,
     };
-
     Ok(initial_data)
 }

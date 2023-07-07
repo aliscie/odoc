@@ -9,7 +9,7 @@ use ic_cdk::{api::call::ManualReply, caller, export::{
 use crate::{CONTRACTS_STORE, FILE_CONTENTS, StoredContract};
 use crate::contracts::Contract;
 use crate::files::COUNTER;
-use crate::storage_schema::ContractId;
+use crate::storage_schema::{ContentId, ContractId};
 use crate::tables::Table;
 use crate::user::User;
 
@@ -19,6 +19,7 @@ pub struct Payment {
     pub(crate) receiver: Principal,
     pub(crate) sender: Principal,
     pub(crate) amount: u64,
+    pub(crate) canceled: bool,
     pub(crate) released: bool,
     pub(crate) confirmed: bool,
 }
@@ -31,6 +32,7 @@ impl Payment {
             receiver,
             sender,
             amount,
+            canceled: false,
             released: false,
             confirmed: false,
         };
@@ -121,6 +123,9 @@ impl Payment {
                 if existing_payment.confirmed {
                     return Err("Payment contract is confirmed and cannot be updated".to_string());
                 }
+                if existing_payment.canceled == true {
+                    return Err("Payment contract is canceled and cannot be updated".to_string());
+                }
                 *existing_payment = payment.clone();
                 return Ok(payment);
             }
@@ -152,6 +157,37 @@ impl Payment {
         })
     }
 
+    // pub fn accept_for_both(sender: String, id: ContentId) -> Result<(), String> {
+    //     let sender: Principal = sender.parse().unwrap();
+    //     Payment::accept_payment(sender, id.clone())?;
+    //     Payment::accept_payment(caller(), id)
+    // }
+
+    pub fn accept_payment(sender: Principal, contract_id: ContentId) -> Result<(), String> {
+        CONTRACTS_STORE.with(|contracts_store| {
+            let mut caller_contracts = contracts_store.borrow_mut();
+            let caller_contract = caller_contracts
+                .get_mut(&sender)
+                .ok_or("Caller has no contracts")?;
+            let contract = caller_contract
+                .get_mut(&contract_id) // Use payment.contract_id as the key
+                .ok_or("Contract not found")?;
+
+            if let StoredContract::PaymentContract(existing_payment) = contract {
+                if existing_payment.confirmed {
+                    return Err("Payment contract is already confirmed.".to_string());
+                }
+                if existing_payment.receiver != caller() {
+                    return Err("Payment contract is not for this user.".to_string());
+                }
+                existing_payment.confirmed = true;
+                return Ok(());
+            }
+
+            Err("Payment not found in contract".to_string())
+        })
+    }
+
     pub fn multi_update(payments: Vec<Payment>) -> Vec<Result<(), String>> {
         payments
             .into_iter()
@@ -159,6 +195,79 @@ impl Payment {
             .collect()
     }
 
+    pub fn delete_for_both(contract_id: ContractId) -> Result<(), String> {
+        let payment = Payment::get(contract_id.clone())?;
+        Payment::delete_payment_contract(payment.receiver, contract_id.clone())?;
+        Payment::delete_payment_contract(payment.sender, contract_id)
+    }
+
+    pub fn cancel_payment(user: Principal, contract_id: ContractId) -> Result<(), String> {
+        CONTRACTS_STORE.with(|contracts_store| {
+            let mut caller_contracts = contracts_store.borrow_mut();
+            let caller_contract = caller_contracts
+                .get_mut(&user)
+                .ok_or("Caller has no contracts")?;
+            let contract = caller_contract
+                .get_mut(&contract_id) // Use payment.contract_id as the key
+                .ok_or("Contract not found")?;
+
+            if let StoredContract::PaymentContract(existing_payment) = contract {
+                if existing_payment.confirmed {
+                    return Err("Payment contract is confirmed and cannot be updated".to_string());
+                }
+                if existing_payment.released {
+                    return Err("Payment contract is already released".to_string());
+                }
+
+                return if existing_payment.canceled == true {
+                    Err("Payment contract is already canceled".to_string())
+                } else {
+                    existing_payment.canceled = true;
+                    Ok(())
+                };
+            }
+
+            Err("Payment not found in contract".to_string())
+        })
+    }
+
+    pub fn delete_payment_contract(user: Principal, contract_id: ContractId) -> Result<(), String> {
+        CONTRACTS_STORE.with(|contracts_store| {
+            let mut caller_contracts = contracts_store.borrow_mut();
+            let caller_contract = caller_contracts
+                .get_mut(&user)
+                .ok_or("Caller has no contracts")?;
+            if let Some(contract) = caller_contract.remove(&contract_id) {
+                if let StoredContract::PaymentContract(payment) = contract {
+                    if payment.confirmed {
+                        return Err("Payment contract is confirmed and cannot be deleted, Hint: You can request a delete first.".to_string());
+                    }
+                    if payment.released {
+                        return Err("Payment contract is already released".to_string());
+                    }
+                    caller_contract.remove(&contract_id);
+                }
+            }
+            Ok(())
+        })
+    }
+    pub fn get(contract_id: ContractId) -> Result<Payment, String> {
+        CONTRACTS_STORE.with(|contracts_store| {
+            let caller_contracts = contracts_store.borrow();
+            let caller_contract = caller_contracts
+                .get(&caller())
+                .ok_or("Caller has no contracts")?;
+            let contract = caller_contract
+                .get(&contract_id) // Use payment.contract_id as the key
+                .ok_or("Contract not found")?;
+
+            if let StoredContract::PaymentContract(existing_payment) = contract {
+                return Ok(existing_payment.clone());
+            }
+
+            Err("Payment not found in contract".to_string())
+        })
+    }
     pub fn get_contract_id(&self) -> ContractId {
         self.contract_id.clone() // Return a reference to the contract_id
     }

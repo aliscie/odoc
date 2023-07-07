@@ -7,7 +7,7 @@ use crate::{CONTRACTS_STORE, FILE_CONTENTS, Payment, StoredContract};
 
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
-use crate::storage_schema::{ContentId, ContentTree, FileId};
+use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId};
 
 #[update]
 #[candid_method(update)]
@@ -30,16 +30,12 @@ fn multi_updates(
     files: Vec<FileNode>,
     updates: Vec<HashMap<FileId, ContentTree>>,
     contracts: Vec<StoredContract>,
+    delete_contracts: Vec<ContractId>,
 ) -> Result<String, String> {
+    let mut messages = "".to_string();
     // Update file names and parents or create
     for file in files {
         FileNode::update_or_create(file);
-        // if let Some(mut updated_file) = FileNode::get_file(file.id.clone()) {
-        //     if let Some(parent_id) = file.parent {
-        //         updated_file.parent = Some(parent_id);
-        //     }
-        //     FileNode::update_or_create(updated_file);
-        // }
     }
 
 
@@ -52,7 +48,13 @@ fn multi_updates(
             ContentNode::update_file_contents(file_id, content_tree);
         }
     }
+    for contract_id in delete_contracts {
+        let message = Payment::delete_for_both(contract_id);
+        if let Err(e) = message {
+            messages.push_str(&format!("Error deleting contract: {}", e));
+        }
+    }
 
-
-    Ok("Updates applied successfully".to_string())
+    messages.push_str("Updates applied successfully.");
+    Ok(messages)
 }

@@ -4,9 +4,10 @@ import {normalize_files} from "../data_processing/normalize/normalize_files";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
-import {logger} from "../dev_utils/log_data";
 import {FileNode} from "../../declarations/user_canister/user_canister.did";
 
+// import {logout} from "../backend_connect/ic_agent";
+// await logout();
 export type FilesActions =
     "ADD"
     | "REMOVE"
@@ -26,6 +27,8 @@ export type FilesActions =
     | "CONTENT_CHANGES"
     | "CONTRACT_CHANGES"
     | "RESOLVE_CHANGES"
+    // | "DELETE_CONTRACT"
+    | "REMOVE_CONTRACT"
     | FriendsActions;
 
 
@@ -36,7 +39,7 @@ export var initialState = {
     files: {},
     files_content: {},
     friends: [{friends: [], friend_requests: []}],
-    changes: {files: {}, contents: {}, contracts: {}},
+    changes: {files: {}, contents: {}, contracts: {}, delete_contracts: []},
 };
 
 
@@ -116,6 +119,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
         case 'REMOVE':
             let file_id = action.id;
             let files = {...state.files};
+            delete state.files_content[file_id];
             delete files[file_id];
             return {
                 ...state,
@@ -143,6 +147,12 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             return {
                 ...state,
             }
+        case 'REMOVE_CONTRACT':
+            delete state.contracts[action.id]
+            delete state.changes.delete_contracts.push(action.id)
+            return {
+                ...state,
+            }
 
         case 'FILES_SAVED':
             state.files_content[action.id] = action.content;
@@ -160,7 +170,11 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             return {
                 ...state,
             }
-
+        // case 'DELETE_CONTRACT':
+        //     state.changes.delete_contracts.push(action.id);
+        //     return {
+        //         ...state,
+        //     }
         case 'CONTENT_CHANGES':
             state.changes.contents[action.id] = action.changes;
             return {

@@ -6,7 +6,8 @@ export const idlFactory = ({ IDL }) => {
     'photo' : IDL.Vec(IDL.Nat8),
   });
   const Result = IDL.Variant({ 'Ok' : User, 'Err' : IDL.Text });
-  const Result_1 = IDL.Variant({ 'Ok' : IDL.Text, 'Err' : IDL.Text });
+  const Result_1 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Text });
+  const Result_2 = IDL.Variant({ 'Ok' : IDL.Text, 'Err' : IDL.Text });
   const FileNode = IDL.Record({
     'id' : IDL.Text,
     'share_id' : IDL.Opt(IDL.Text),
@@ -14,7 +15,6 @@ export const idlFactory = ({ IDL }) => {
     'children' : IDL.Vec(IDL.Text),
     'parent' : IDL.Opt(IDL.Text),
   });
-  const Result_2 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Text });
   const Contract = IDL.Variant({ 'PaymentContract' : IDL.Text });
   const Row = IDL.Record({
     'id' : IDL.Text,
@@ -90,6 +90,7 @@ export const idlFactory = ({ IDL }) => {
     'parent' : IDL.Opt(IDL.Text),
   });
   const Payment = IDL.Record({
+    'canceled' : IDL.Bool,
     'contract_id' : IDL.Text,
     'sender' : IDL.Principal,
     'released' : IDL.Bool,
@@ -124,15 +125,18 @@ export const idlFactory = ({ IDL }) => {
   });
   return IDL.Service({
     'accept_friend_request' : IDL.Func([IDL.Text], [Result], []),
+    'accept_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'cancel_friend_request' : IDL.Func([IDL.Text], [Result], []),
+    'cancel_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'content_updates' : IDL.Func(
         [IDL.Text, IDL.Opt(IDL.Text), IDL.Text],
-        [Result_1],
+        [Result_2],
         [],
       ),
     'create_new_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [FileNode], []),
-    'create_payment_contract' : IDL.Func([IDL.Text], [Result_2], []),
+    'create_payment_contract' : IDL.Func([IDL.Text], [Result_1], []),
     'delete_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], []),
+    'delete_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'get_all_files' : IDL.Func(
         [],
         [IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Text, FileNode)))],
@@ -169,14 +173,15 @@ export const idlFactory = ({ IDL }) => {
             )
           ),
           IDL.Vec(StoredContract),
+          IDL.Vec(IDL.Text),
         ],
-        [Result_1],
+        [Result_2],
         [],
       ),
     'register' : IDL.Func([RegisterUser], [Result], []),
     'rename_file' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
-    'share_file' : IDL.Func([IDL.Text, IDL.Text], [Result_1], []),
+    'share_file' : IDL.Func([IDL.Text, IDL.Text], [Result_2], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
   });

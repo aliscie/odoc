@@ -18,8 +18,10 @@ import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {Column, ColumnTypes, Row, Table} from "../../../../declarations/user_canister/user_canister.did";
-
+import {Column, ColumnTypes, Payment, Row, Table} from "../../../../declarations/user_canister/user_canister.did";
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import GppBadIcon from '@mui/icons-material/GppBad';
+import ConfirmButton from "./confirm_button";
 
 function updateTableContent(props: any, content: any, updater: any) {
     let table_content = props.children[0];
@@ -49,12 +51,6 @@ function handleRelease(id: number) {
     // Set the state or dispatch an action to update the data
 }
 
-function handleCancel(id: number) {
-    // Perform release logic here
-    // Update the 'released' property of the corresponding row
-    // Set the state or dispatch an action to update the data
-}
-
 
 export default function PaymentContract(props: any) {
 
@@ -76,8 +72,8 @@ export default function PaymentContract(props: any) {
     let initial_columns = table_content.data[0].Table.columns;
 
     function normalize_row(data: any) {
-        return data.map((row: any) => {
-            console.log({normalize_row: row})
+        return data.map((row: Row) => {
+
             let extra_cells = {}
             row.cells && row.cells[0] && row.cells[0].map((cell_value: [string, string]) => {
                 extra_cells[cell_value[0]] = cell_value[1]
@@ -88,20 +84,19 @@ export default function PaymentContract(props: any) {
 
                 function getUser(userId: string) {
                     if (userId === profile.id) {
-                        return profile.name;
+                        return profile;
                     } else {
                         const friend = all_friends.find((f) => f.id == userId.toString())
-                        return friend ? friend.name : null;
+                        return friend ? friend : null;
                     }
                 }
 
                 let receiver = getUser(contract.receiver.toString());
                 return {
+                    ...contract,
+                    ...extra_cells,
                     id: row.id,
-                    receiver: receiver && receiver,
-                    amount: contract.amount,
-                    released: contract.released,
-                    ...extra_cells
+                    receiver: receiver && receiver.name,
                 }
             } else {
                 return null
@@ -112,22 +107,35 @@ export default function PaymentContract(props: any) {
 
     // let normalized_row = normalize_row(rows)
     const [rows, setRows] = React.useState(initial_rows);
+    let RenderConfirmed = (props: any) => {
+        let receiver = props.row.receiver;
+        let is_confirmed = props.row.confirmed == true;
 
+        if (is_confirmed) {
+            return <VerifiedUserIcon/>
+        }
+
+        if (receiver === profile.name) { // TODO use receiver.id === profile.id instead.
+            return <ConfirmButton
+                sender={props.row.sender}
+                id={props.row.id}
+                confirmed={is_confirmed}
+                // onClick={() => handleRelease(params.row.id)}
+            />
+        }
+        return <GppBadIcon disabled/>
+    }
     let RenderReceiver = (props: any) => ReceiverComponent({...props, options: all_friends})
     let RenderRelease = (params: GridValueGetterParams) => (
         <span style={{minWidth: "200px"}}>
-            <Tooltip title={"Click here to release the payment."}>
                 <ReleaseButton
                     released={params.row.released}
                     onClick={() => handleRelease(params.row.id)}
                 />
-            </Tooltip>
-            <Tooltip title={"Click here to cancel the payment."}>
-                <CancelButton
-                    released={params.row.released}
-                    onClick={() => handleCancel(params.row.id)}
-                />
-            </Tooltip>
+
+            {!params.row.canceled && <CancelButton
+                contract={params.row}
+            />}
         </span>
     )
 
@@ -136,12 +144,13 @@ export default function PaymentContract(props: any) {
 
     const handleAddRow = (rowId: string, before: boolean) => {
         const id = randomString();
-        const contract = {
+        const contract: Payment = {
             contract_id: id,
             sender: Principal.fromText(profile.id),
             receiver: Principal.fromText("2vxsx-fae"),
             released: false,
             confirmed: false,
+            canceled: false,
             amount: BigInt(0),
         };
         const newRow: Row = {
@@ -251,6 +260,7 @@ export default function PaymentContract(props: any) {
         // Example dispatching an action to update content
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
         dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
+        dispatch(handleRedux("REMOVE_CONTRACT", {id: rowId}));
     };
 
     const handleDeleteColumn = (colId: string) => {
@@ -276,7 +286,6 @@ export default function PaymentContract(props: any) {
         const newContent = updateTableContent(props, content, updateColumn);
 
         // Example dispatching an action to update content
-        console.log({newContent})
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
         // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
         dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
@@ -325,9 +334,9 @@ export default function PaymentContract(props: any) {
             if (diff.length > 0) {
                 let new_cells: Array<[string, string]> = diff.map((key: string) => {
                     if (newRow[key]) {
-                        return [String(key), String(newRow[key])];
+                        return [String(key), newRow[key] || ""];
                     } else {
-                        return [String(key), String(oldRow[key])];
+                        return [String(key), oldRow[key] || ""];
                     }
 
                 })
@@ -335,6 +344,7 @@ export default function PaymentContract(props: any) {
                 // update row cells
 
                 function updateCells(newTable: Table) {
+
                     newTable.rows.map((row: Row) => {
                         if (row.id === oldRow.id) {
                             row.cells = [[...row.cells, ...new_cells]];
@@ -344,7 +354,7 @@ export default function PaymentContract(props: any) {
                     return newTable;
                 }
 
-                let newContent = updateTableContent(props, content, updateCells)
+                let newContent: Payment = updateTableContent(props, content, updateCells)
                 dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
                 dispatch((handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent})));
 
@@ -421,7 +431,7 @@ export default function PaymentContract(props: any) {
             },
         ]
 
-        if (!["receiver", "amount", "released"].includes(props.field.toLowerCase())) {
+        if (!["receiver", "amount", "released", "confirmed"].includes(props.field.toLowerCase())) {
             options.push({
                 content: "Delete column",
                 icon: <DeleteIcon color={"error"}/>,
@@ -439,6 +449,8 @@ export default function PaymentContract(props: any) {
                     placeholder={"Rename column..."}/>,
                 preventClose: true,
             })
+
+            // TODO if you are the sendr you may delete a row
         }
         let children = <GridCell {...props} />;
 
@@ -459,13 +471,21 @@ export default function PaymentContract(props: any) {
 
     let custom_columns = columns.map((column: any) => {
         let new_column = {...column}
-        if (column.field === "receiver") {
-            new_column['renderEditCell'] = RenderReceiver
-        } else if (column.field === "released") {
-            new_column['renderCell'] = RenderRelease
-            new_column['width'] = 150;
+        switch (column.field.toLowerCase()) {
+            case "receiver":
+                new_column['renderEditCell'] = RenderReceiver
+                return new_column
+            case "released":
+                new_column['renderCell'] = RenderRelease
+                new_column['width'] = 150;
+                return new_column
+            case "confirmed":
+                new_column['renderCell'] = RenderConfirmed
+                return new_column
+            default:
+                return new_column
+
         }
-        return new_column
     })
     return (
         <div contentEditable={false}

@@ -1,5 +1,5 @@
 import {Principal} from "@dfinity/principal";
-import {Column} from "../../declarations/user_canister/user_canister.did";
+import {Column, Payment} from "../../declarations/user_canister/user_canister.did";
 
 let contract_id = randomString();
 export let note_page_content = [{"id": 4, "children": [{"id": 5, "text": "", "type": "h1"}]}]
@@ -35,7 +35,7 @@ export let payment_contract = {
                         id: randomString(),
                         field: "released",
                     },
-                    // {...column, id: randomString(), field: "confined",}
+                    {...column, id: randomString(), field: "confirmed",}
                 ]
             }
         }]
@@ -86,16 +86,16 @@ export let contracts_sample = {
         }
     }
 }
-export let contract_sample = {
+export let contract_sample: Payment = {
     "contract_id": contract_id,
-    // empty dummy principal
     "sender": Principal.fromText("2vxsx-fae"),
     "receiver": Principal.fromText("2vxsx-fae"),
     "released": false,
     "confirmed": false,
-    "amount": "",
-
+    "canceled": false,
+    "amount": BigInt(0),
 }
+
 export let contract_id_sample = {"Contract": {"PaymentContract": "18"}}
 
 let payment_contract_sample = {
