@@ -23,6 +23,7 @@ use storage_schema::*;
 use updates::*;
 use user::*;
 use user::*;
+pub use wallet::*;
 
 use crate::files_content::ContentNode;
 use crate::user::User;
@@ -39,6 +40,7 @@ mod queries;
 mod updates;
 mod friends;
 mod share_files;
+mod wallet;
 
 thread_local! {
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
@@ -48,6 +50,7 @@ thread_local! {
     static FRIENDS_STORE: RefCell<FriendsStore> = RefCell::default();
     static CONTRACTS_STORE: RefCell<ContractStore> = RefCell::default();
     static FILES_SHARE_STORE: RefCell<FilesShareStore> = RefCell::default();
+    static WALLETS_STORE: RefCell<WalletStore> = RefCell::default();
 }
 
 #[cfg(test)]

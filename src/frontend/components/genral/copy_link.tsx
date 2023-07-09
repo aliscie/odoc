@@ -51,6 +51,7 @@ let Dialog = (props: any) => {
     let users = all_friends.map((f: User) => {
         return {title: f.name}
     })
+
     return <List
         // style={{
         //     color: "var(--color)",

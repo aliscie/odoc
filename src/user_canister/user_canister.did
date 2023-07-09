@@ -23,6 +23,14 @@ type ContentNode = record {
   parent : opt text;
 };
 type Contract = variant { PaymentContract : text };
+type Exchange = record {
+  to : text;
+  _type : ExchangeType;
+  date : text;
+  from : text;
+  amount : nat64;
+};
+type ExchangeType = variant { Withdraw; Deposit };
 type Execute = variant { TransferNft; TransferToken; TransferUsdt };
 type FileNode = record {
   id : text;
@@ -50,6 +58,7 @@ type InitialData = record {
   Friends : opt Friend;
   Profile : User;
   DiscoverUsers : vec record { text; User };
+  Wallet : Wallet;
 };
 type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
 type Payment = record {
@@ -70,8 +79,9 @@ type RegisterUser = record {
 type Result = variant { Ok : User; Err : text };
 type Result_1 = variant { Ok; Err : text };
 type Result_2 = variant { Ok : text; Err : text };
-type Result_3 = variant { Ok : InitialData; Err : text };
-type Result_4 = variant {
+type Result_3 = variant { Ok : nat64; Err : text };
+type Result_4 = variant { Ok : InitialData; Err : text };
+type Result_5 = variant {
   Ok : record { FileNode; vec record { text; ContentNode } };
   Err : text;
 };
@@ -90,6 +100,11 @@ type User = record {
   description : text;
   photo : vec nat8;
 };
+type Wallet = record {
+  balance : nat64;
+  owner : text;
+  exchanges : vec Exchange;
+};
 service : {
   accept_friend_request : (text) -> (Result);
   accept_payment : (text) -> (Result_1);
@@ -100,6 +115,7 @@ service : {
   create_payment_contract : (text) -> (Result_1);
   delete_file : (text) -> (opt FileNode);
   delete_payment : (text) -> (Result_1);
+  deposit_usdt : (nat64) -> (Result_3);
   get_all_files : () -> (opt vec record { text; FileNode }) query;
   get_all_files_content : () -> (
       vec record { text; vec record { text; ContentNode } },
@@ -107,8 +123,8 @@ service : {
   get_all_users : () -> (vec record { text; User }) query;
   get_file : (text) -> (opt FileNode) query;
   get_file_content : (text) -> (opt vec record { text; ContentNode }) query;
-  get_initial_data : () -> (Result_3) query;
-  get_shared_file : (text) -> (Result_4);
+  get_initial_data : () -> (Result_4) query;
+  get_shared_file : (text) -> (Result_5);
   multi_updates : (
       vec FileNode,
       vec vec record { text; vec record { text; ContentNode } },
@@ -121,4 +137,5 @@ service : {
   share_file : (text, text) -> (Result_2);
   unfriend : (text) -> (Result);
   update_user_profile : (RegisterUser) -> (Result);
+  withdraw_usdt : (nat64) -> (Result_3);
 }

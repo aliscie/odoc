@@ -27,7 +27,7 @@ export function NavAppBar() {
 
     const dispatch = useDispatch();
     const {isNavOpen, isDarkMode, isLoggedIn, searchTool} = useSelector((state: any) => state.uiReducer);
-    const {profile} = useSelector((state: any) => state.filesReducer);
+    const {profile, current_file, files} = useSelector((state: any) => state.filesReducer);
 
     async function loginProfile() {
         if (isLoggedIn) {
@@ -52,6 +52,7 @@ export function NavAppBar() {
     }
 
     let image_link = profile ? convertToBlobLink(profile.photo) : "";
+    let is_owner_current_file = current_file && Object.keys(files).includes(current_file.id);
     return (
 
         <TopNavBar>
@@ -65,7 +66,7 @@ export function NavAppBar() {
             <Routes>
                 <Route path="*" element={<BreadPage/>}/>
             </Routes>
-            <CopyButton/>
+            {is_owner_current_file && <CopyButton/>}
 
             <Button onClick={() => dispatch(handleRedux("TOGGLE_DARK"))}>
                 {isDarkMode ? <LightModeIcon/> : <DarkModeIcon/>}

@@ -7,7 +7,7 @@ use ic_cdk::{api::call::ManualReply, caller, export::{
 }};
 use ic_cdk_macros::query;
 
-use crate::{CONTRACTS_STORE, FRIENDS_STORE, ID_STORE, Payment, PROFILE_STORE, StoredContract};
+use crate::{CONTRACTS_STORE, FRIENDS_STORE, ID_STORE, Payment, PROFILE_STORE, StoredContract, Wallet};
 use crate::contracts::Contract;
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
@@ -23,6 +23,7 @@ pub struct InitialData {
     Friends: Option<Friend>,
     DiscoverUsers: HashMap<String, User>,
     Contracts: HashMap<ContractId, StoredContract>,
+    Wallet: Wallet,
 }
 
 #[query]
@@ -59,6 +60,7 @@ fn get_initial_data() -> Result<InitialData, String> {
         Friends: Friend::get_friends_of_caller(),
         DiscoverUsers: users,
         Contracts: contracts,
+        Wallet: Wallet::get(),
     };
     Ok(initial_data)
 }

@@ -29,6 +29,7 @@ export type FilesActions =
     | "RESOLVE_CHANGES"
     // | "DELETE_CONTRACT"
     | "REMOVE_CONTRACT"
+    | "UPDATE_BALANCE"
     | FriendsActions;
 
 
@@ -85,6 +86,7 @@ async function get_initial_data() {
         initialState["id"] = userPrincipal;
         initialState["friends"] = data.Ok.Friends;
         initialState["all_friends"] = all_friends;
+        initialState["wallet"] = data.Ok.Wallet;
 
     }
 }
@@ -129,7 +131,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             localStorage.setItem("current_file", JSON.stringify({...action.file}));
             return {
                 ...state,
-                current_file: {...action.file},
+                current_file: action.file,
             }
         case 'UPDATE_CONTENT':
             state.files_content[action.id] = action.content;
@@ -199,6 +201,13 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
 
         case 'UPDATE_FILE_TITLE':
             state.files[action.id].name = action.title;
+            return {
+                ...state,
+            }
+
+
+        case 'UPDATE_BALANCE':
+            state.wallet.balance = action.balance;
             return {
                 ...state,
             }

@@ -8,7 +8,8 @@ import {EditorRenderer} from "../components/editor_components/editor_renderer";
 import {ContentNode, FileNode} from "../../declarations/user_canister/user_canister.did";
 import {normalize_content_tree, SlateNode} from "../data_processing/normalize/normalize_contents";
 import {useSnackbar} from "notistack";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {handleRedux} from "../redux/main";
 
 function ShareFilePage(props: any) {
     let url = window.location.search;
@@ -18,8 +19,8 @@ function ShareFilePage(props: any) {
     let file_id: null | String = Object.keys(files).find((key: string) => files[key].share_id[0] == id);
 
     let [file, setFile] = useState<null | FileNode>(files[file_id]);
-    let [state, setState]: any = useState(files_content[file.id]);
-
+    let [state, setState]: any = useState(file ? files_content[file.id] : null);
+    const dispatch = useDispatch();
 
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     useEffect(() => {
@@ -40,7 +41,7 @@ function ShareFilePage(props: any) {
                 }
             })()
         }
-
+        dispatch(handleRedux("CURRENT_FILE", {file}));
 
     }, [file])
 

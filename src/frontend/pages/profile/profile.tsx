@@ -5,14 +5,15 @@ import ListItem from '@mui/material/ListItem';
 import {useSelector} from "react-redux";
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import {Button, Rating, TextField, Tooltip, Typography} from "@mui/material";
+import {Rating, TextField, Tooltip, Typography} from "@mui/material";
 import {actor} from "../../backend_connect/ic_agent";
-import {LoadingButton} from "../../components/genral/load_buttton";
 import {useSnackbar} from "notistack";
 import Friends from "./friends";
 import TransactionsHistory from "./transactions_history";
-import SwipeDownAltIcon from '@mui/icons-material/SwipeDownAlt';
-import SwipeUpAltIcon from '@mui/icons-material/SwipeUpAlt';
+import Deposit from "./actions/deposit";
+import Withdraw from "./actions/withdraw";
+import LoaderButton from "../../components/genral/loader_button";
+
 export function convertToBlobLink(imageData) {
     const imageContent = new Uint8Array(imageData);
     const image = URL.createObjectURL(
@@ -24,10 +25,9 @@ export function convertToBlobLink(imageData) {
 
 export default function ProfileComponent() {
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    const {profile, friends, contracts} = useSelector((state: any) => state.filesReducer);
-    // const dispatch = useDispatch();
-    const [profileData, setProfileData] = React.useState(profile || {});
+    const {profile, friends, contracts, wallet} = useSelector((state: any) => state.filesReducer);
 
+    const [profileData, setProfileData] = React.useState(profile || {});
     const handleSaveChanges = async () => {
 
         const res = await actor.update_user_profile({
@@ -53,6 +53,7 @@ export default function ProfileComponent() {
         // reader.readAsDataURL(file);
     };
 
+
     return (
         <Box sx={{bgcolor: 'var(--background)', color: 'var(--color)', width: '80%'}}>
             {profile && (
@@ -75,15 +76,12 @@ export default function ProfileComponent() {
 
                     <ListItem style={{display: "flex"}}>
                         <Typography style={{color: "var(--money-color)"}}>
-                            1000 ICPs
+                            {Number(wallet.balance)} USDT
                         </Typography>
 
-                        <Button variant="text" startIcon={<SwipeDownAltIcon/>}>
-                            Deposit
-                        </Button>
-                        <Button variant="text" startIcon={<SwipeUpAltIcon/>}>
-                            Withdraw
-                        </Button>
+                        <Deposit/>
+                        <Withdraw/>
+
                     </ListItem>
 
                     {Object.entries(profileData).map(([key, value]) => {
@@ -110,12 +108,13 @@ export default function ProfileComponent() {
                         );
                     })}
                     <ListItem>
-                        <LoadingButton onClick={handleSaveChanges} name={"Save changes"}/>
+                        <LoaderButton onClick={handleSaveChanges}>Save changes</LoaderButton>
+
                     </ListItem>
                 </List>
             )}
             {friends[0] && <Friends friends={friends}/>}
-            {Object.keys(contracts).length > 0 && <TransactionsHistory/>}
+            {contracts && Object.keys(contracts).length > 0 && <TransactionsHistory/>}
         </Box>
     );
 }
