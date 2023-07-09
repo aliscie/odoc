@@ -57,6 +57,20 @@ impl Payment {
 
         payment
     }
+    pub fn get_total_dept(sender: Principal) -> u64 {
+        let mut total_dept: u64 = 0;
+        let all_contracts: HashMap<ContractId, StoredContract> = Contract::get_all_contracts().unwrap_or(HashMap::new());
+
+        for contract in all_contracts.values() {
+            if let StoredContract::PaymentContract(payment) = contract {
+                if (!payment.released && !payment.canceled)&& payment.sender == sender {
+                    total_dept += payment.amount;
+                }
+            }
+        };
+
+        total_dept
+    }
 
     pub fn update_payment_contracts(contracts: Vec<StoredContract>) -> Result<(), String> {
         let user_balance: u64 = WALLETS_STORE.with(|wallets_store| {
@@ -221,7 +235,7 @@ impl Payment {
                     return Err("Payment contract is already released".to_string());
                 }
                 // if existing_payment.canceled == true {
-                    // TODO if payment.cancelled  { payment.cancelled= false
+                // TODO if payment.cancelled  { payment.cancelled= false
                 //     return Err("Payment contract is canceled and cannot be released".to_string());
                 // }
                 existing_payment.released = true;
