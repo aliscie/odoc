@@ -1,8 +1,7 @@
 import {AuthClient} from "@dfinity/auth-client";
 import {Actor, HttpAgent} from "@dfinity/agent";
-import {canisterId} from "./handle_vars";
+import {canisterId, identityCanisterId} from "./handle_vars";
 import {idlFactory} from "../../declarations/user_canister";
-import {agent} from "./main";
 
 let backendActor, loading = false
 
@@ -60,7 +59,7 @@ function get_identity_url() {
     let identityProvider = "https://identity.ic0.app/#authorize";
     if (import.meta.env.VITE_DFX_NETWORK != "ic") {
         let port = import.meta.env.VITE_DFX_PORT;
-        identityProvider = `http://${import.meta.env.VITE_IDENTITY_PROVIDER_ID}.localhost:${port}/#authorize`
+        identityProvider = `http://${identityCanisterId}.localhost:${port}/#authorize`
     }
     return identityProvider
 }

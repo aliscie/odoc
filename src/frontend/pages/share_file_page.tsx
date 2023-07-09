@@ -8,34 +8,41 @@ import {EditorRenderer} from "../components/editor_components/editor_renderer";
 import {ContentNode, FileNode} from "../../declarations/user_canister/user_canister.did";
 import {normalize_content_tree, SlateNode} from "../data_processing/normalize/normalize_contents";
 import {useSnackbar} from "notistack";
+import {useSelector} from "react-redux";
 
 function ShareFilePage(props: any) {
-    console.log("ShareFilePage") // TODO why this is rendered twice?
-    let [file, setFile]: any = useState();
-    let [state, setState]: any = useState();
     let url = window.location.search;
     let id = url.split("=")[1];
+
+    const {files, files_content} = useSelector((state: any) => state.filesReducer);
+    let file_id: null | String = Object.keys(files).find((key: string) => files[key].share_id[0] == id);
+
+    let [file, setFile] = useState<null | FileNode>(files[file_id]);
+    let [state, setState]: any = useState(files_content[file.id]);
+
+
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-let loading = enqueueSnackbar(<span><span className={"loader"}/></span>);
     useEffect(() => {
 
-        (async () => {
-            let res = await actor.get_shared_file(id)
-            closeSnackbar(loading)
-            if (res.Ok) {
-                let file: FileNode = res.Ok[0]
-                let content_tree: Array<[string, ContentNode]> = res.Ok[1]
-                let normalized_tree: Array<SlateNode> = normalize_content_tree(content_tree);
-                setFile(file);
-                setState(normalized_tree)
-                console.log({file, content_tree})
-            } else {
-                enqueueSnackbar(`Error: ${res.Err}`, {variant: "error"});
-            }
-            console.log({res})
-        })()
+        if (!file) {
+            (async () => {
+                let loading = enqueueSnackbar(<span><span className={"loader"}/></span>);
+                let res = await actor.get_shared_file(id)
+                closeSnackbar(loading)
+                if (res.Ok) {
+                    let file: FileNode = res.Ok[0]
+                    let content_tree: Array<[string, ContentNode]> = res.Ok[1]
+                    let normalized_tree: Array<SlateNode> = normalize_content_tree(content_tree);
+                    setFile(file);
+                    setState(normalized_tree)
+                } else {
+                    enqueueSnackbar(`Error: ${res.Err}`, {variant: "error"});
+                }
+            })()
+        }
 
-    }, [])
+
+    }, [file])
 
     return (
         <>

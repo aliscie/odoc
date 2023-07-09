@@ -73,6 +73,7 @@ impl FileNode {
                 existing_file.name = updated_file.name.clone();
                 existing_file.parent = updated_file.parent.clone();
                 existing_file.children = updated_file.children.clone();
+                existing_file.share_id = updated_file.share_id.clone();
             } else {
                 user_files_map.insert(updated_file.id.clone(), updated_file.clone());
             }
