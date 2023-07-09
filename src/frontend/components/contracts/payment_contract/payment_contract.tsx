@@ -298,7 +298,7 @@ export default function PaymentContract(props: any) {
             const newColumns = [...prevColumns];
             newColumns[index] = {
                 ...newColumns[index],
-                headerName: newName,
+                headerName: newName.replace("_", "")
             };
             return newColumns;
         });

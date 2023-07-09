@@ -6,7 +6,7 @@ use ic_cdk::{api::call::ManualReply, caller, export::{
     Principal,
 }};
 
-use crate::{CONTRACTS_STORE, FILE_CONTENTS, StoredContract};
+use crate::{CONTRACTS_STORE, FILE_CONTENTS, StoredContract, WALLETS_STORE};
 use crate::contracts::Contract;
 use crate::files::COUNTER;
 use crate::storage_schema::{ContentId, ContractId};
@@ -59,6 +59,12 @@ impl Payment {
     }
 
     pub fn update_payment_contracts(contracts: Vec<StoredContract>) -> Result<(), String> {
+        let user_balance: u64 = WALLETS_STORE.with(|wallets_store| {
+            let wallets = wallets_store.borrow();
+            let wallet = wallets.get(&caller()).unwrap();
+            wallet.balance
+        });
+
         let mut total_amount: u64 = 0;
         let mut visited = vec![];
 
@@ -82,7 +88,7 @@ impl Payment {
             }
         };
 
-        if total_amount > 1000 {
+        if total_amount > user_balance {
             return Err("Total non-released contracts exceeds your current balance of 1000".to_string());
         }
 

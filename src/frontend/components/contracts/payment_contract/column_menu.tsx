@@ -34,7 +34,6 @@ function CustomColumnMenu(props: GridColumnMenuProps) {
         onClick: props.hideMenu,
     };
 
-    console.log({itemProps})
     let slots = {}
     if (!['sender', 'receiver', "amount", "release"].includes(itemProps.colDef.field)) {
         slots = {

@@ -3,7 +3,7 @@ import {useSnackbar} from "notistack";
 
 export function useTotalDept() {
 
-    const {contracts, profile} = useSelector((state: any) => state.filesReducer);
+    const {contracts, profile, wallet} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     let balance = 1000;
 
@@ -16,7 +16,7 @@ export function useTotalDept() {
             }
         })
 
-        if (total_dept > 1000) {
+        if (Number(total_dept) > Number(wallet.balance)) {
             enqueueSnackbar(
                 `Your balance is ${balance}ICPs and your dept is ${total_dept}ICPs.
                 You can't promos more than you have.

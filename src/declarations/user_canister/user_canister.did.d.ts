@@ -34,6 +34,15 @@ export interface ContentNode {
   'parent' : [] | [string],
 }
 export type Contract = { 'PaymentContract' : string };
+export interface Exchange {
+  'to' : string,
+  '_type' : ExchangeType,
+  'date' : string,
+  'from' : string,
+  'amount' : bigint,
+}
+export type ExchangeType = { 'Withdraw' : null } |
+  { 'Deposit' : null };
 export type Execute = { 'TransferNft' : null } |
   { 'TransferToken' : null } |
   { 'TransferUsdt' : null };
@@ -66,6 +75,7 @@ export interface InitialData {
   'Friends' : [] | [Friend],
   'Profile' : User,
   'DiscoverUsers' : Array<[string, User]>,
+  'Wallet' : Wallet,
 }
 export type Operation = { 'Equal' : null } |
   { 'Contains' : null } |
@@ -93,9 +103,11 @@ export type Result_1 = { 'Ok' : null } |
   { 'Err' : string };
 export type Result_2 = { 'Ok' : string } |
   { 'Err' : string };
-export type Result_3 = { 'Ok' : InitialData } |
+export type Result_3 = { 'Ok' : bigint } |
   { 'Err' : string };
-export type Result_4 = { 'Ok' : [FileNode, Array<[string, ContentNode]>] } |
+export type Result_4 = { 'Ok' : InitialData } |
+  { 'Err' : string };
+export type Result_5 = { 'Ok' : [FileNode, Array<[string, ContentNode]>] } |
   { 'Err' : string };
 export interface Row {
   'id' : string,
@@ -113,6 +125,11 @@ export interface User {
   'description' : string,
   'photo' : Uint8Array | number[],
 }
+export interface Wallet {
+  'balance' : bigint,
+  'owner' : string,
+  'exchanges' : Array<Exchange>,
+}
 export interface _SERVICE {
   'accept_friend_request' : ActorMethod<[string], Result>,
   'accept_payment' : ActorMethod<[string], Result_1>,
@@ -123,6 +140,7 @@ export interface _SERVICE {
   'create_payment_contract' : ActorMethod<[string], Result_1>,
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
   'delete_payment' : ActorMethod<[string], Result_1>,
+  'deposit_usdt' : ActorMethod<[bigint], Result_3>,
   'get_all_files' : ActorMethod<[], [] | [Array<[string, FileNode]>]>,
   'get_all_files_content' : ActorMethod<
     [],
@@ -134,8 +152,8 @@ export interface _SERVICE {
     [string],
     [] | [Array<[string, ContentNode]>]
   >,
-  'get_initial_data' : ActorMethod<[], Result_3>,
-  'get_shared_file' : ActorMethod<[string], Result_4>,
+  'get_initial_data' : ActorMethod<[], Result_4>,
+  'get_shared_file' : ActorMethod<[string], Result_5>,
   'multi_updates' : ActorMethod<
     [
       Array<FileNode>,
@@ -151,4 +169,5 @@ export interface _SERVICE {
   'share_file' : ActorMethod<[string, string], Result_2>,
   'unfriend' : ActorMethod<[string], Result>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
+  'withdraw_usdt' : ActorMethod<[bigint], Result_3>,
 }
