@@ -60,7 +60,7 @@ fn get_initial_data() -> Result<InitialData, String> {
         Friends: Friend::get_friends_of_caller(),
         DiscoverUsers: users,
         Contracts: contracts,
-        Wallet: Wallet::get(),
+        Wallet: Wallet::get(caller()),
     };
     Ok(initial_data)
 }

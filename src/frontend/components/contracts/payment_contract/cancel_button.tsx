@@ -2,7 +2,7 @@ import * as React from "react";
 import {Button, Input, Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
 import {useSnackbar} from "notistack";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Payment} from "../../../../declarations/user_canister/user_canister.did";
 
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -11,6 +11,7 @@ import {actor} from "../../../backend_connect/ic_agent";
 
 function CancelButton({contract}: { contract: Payment }) {
     // const [is_released, setReleased] = React.useState(contract.released);
+    const {contracts} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     let dispatch = useDispatch();
 
@@ -20,7 +21,7 @@ function CancelButton({contract}: { contract: Payment }) {
         closeSnackbar(loader);
         if ('Ok' in res) {
             enqueueSnackbar("Canceled successfully", {variant: "success"});
-        dispatch(handleRedux("UPDATE_CONTRACT", {id: contract.contract_id, ...contract, canceled: true}))
+            dispatch(handleRedux("UPDATE_CONTRACT", {id: contract.contract_id, ...contract, canceled: true}))
         } else {
             enqueueSnackbar(res.Err, {variant: "error"});
         }
@@ -69,7 +70,7 @@ function CancelButton({contract}: { contract: Payment }) {
             disabled={contract.released}
             variant="text"
             DialogContent={Dialog}>
-            {!contract.released && <CancelIcon/>}
+            {!(contract.canceled || contract.released) && <CancelIcon/>}
         </DialogOver>
     );
 }

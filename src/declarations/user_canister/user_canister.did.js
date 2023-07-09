@@ -107,6 +107,8 @@ export const idlFactory = ({ IDL }) => {
   const ExchangeType = IDL.Variant({
     'Withdraw' : IDL.Null,
     'Deposit' : IDL.Null,
+    'LocalSend' : IDL.Null,
+    'LocalReceive' : IDL.Null,
   });
   const Exchange = IDL.Record({
     'to' : IDL.Text,
@@ -198,6 +200,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'register' : IDL.Func([RegisterUser], [Result], []),
+    'release_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'rename_file' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'share_file' : IDL.Func([IDL.Text, IDL.Text], [Result_2], []),

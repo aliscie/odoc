@@ -145,7 +145,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             }
 
         case 'UPDATE_CONTRACT':
-            state.contracts[action.id] = action.contract;
+            state.contracts[action.contract.contract_id] = {...state.contracts[action.contract.contract_id], ...action.contract}
             return {
                 ...state,
             }

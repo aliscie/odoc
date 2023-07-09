@@ -7,7 +7,7 @@ use ic_cdk::caller;
 use ic_cdk_macros::update;
 use serde::__private::de::Content;
 
-use crate::{CONTRACTS_STORE, FILE_CONTENTS, StoredContract, USER_FILES};
+use crate::{CONTRACTS_STORE, ExchangeType, FILE_CONTENTS, StoredContract, USER_FILES, Wallet};
 use crate::contracts::{Contract, Payment};
 use crate::files::{COUNTER, FileNode};
 use crate::files_content::{ContentData, ContentNode};
@@ -65,21 +65,22 @@ fn cancel_payment(id: ContentId) -> Result<(), String> {
 }
 
 
-// #[update]
-// #[candid_method(update)]
-// fn release_payment(id: ContentId) -> Result<(), String> {
-//     let payment = Payment::get(id.clone())?;
-//     // Payment::release_payment(payment.receiver, id.clone())?;
-//     // Payment::release_payment(payment.sender, id.clone())
-//
-//     // TODO receiver.balance += payment.amount
-//     // TODO sender.balance -= payment.amount
-//     // if payment.confirmed {
-//     //TODO increase the trust score
-//     // }
-//
-//     // TODO if payment.cancelled  { payment.cancelled= false
-// }
+#[update]
+#[candid_method(update)]
+fn release_payment(id: ContentId) -> Result<(), String> {
+    let payment = Payment::release_payment(id.clone())?;
+    let mut receiver_wallet = Wallet::get(payment.receiver.clone());
+    let mut sender_wallet = Wallet::get(caller());
+    receiver_wallet.deposit(payment.amount, caller().to_string(),ExchangeType::LocalReceive)?;
+    sender_wallet.withdraw(payment.amount, payment.receiver.to_string(),ExchangeType::LocalSend)?;
+
+    // if payment.confirmed {
+    //TODO increase the trust score
+    // }
+
+
+    Ok(())
+}
 
 #[update]
 #[candid_method(update)]
