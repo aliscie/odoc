@@ -11,7 +11,8 @@ import {LoadingButton} from "../../components/genral/load_buttton";
 import {useSnackbar} from "notistack";
 import Friends from "./friends";
 import TransactionsHistory from "./transactions_history";
-
+import SwipeDownAltIcon from '@mui/icons-material/SwipeDownAlt';
+import SwipeUpAltIcon from '@mui/icons-material/SwipeUpAlt';
 export function convertToBlobLink(imageData) {
     const imageContent = new Uint8Array(imageData);
     const image = URL.createObjectURL(
@@ -76,7 +77,13 @@ export default function ProfileComponent() {
                         <Typography style={{color: "var(--money-color)"}}>
                             1000 ICPs
                         </Typography>
-                        <Button>Deposit</Button>
+
+                        <Button variant="text" startIcon={<SwipeDownAltIcon/>}>
+                            Deposit
+                        </Button>
+                        <Button variant="text" startIcon={<SwipeUpAltIcon/>}>
+                            Withdraw
+                        </Button>
                     </ListItem>
 
                     {Object.entries(profileData).map(([key, value]) => {
