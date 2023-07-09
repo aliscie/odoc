@@ -6,7 +6,7 @@ use ic_cdk::{api::call::ManualReply, caller, export::{
     Principal,
 }};
 
-use crate::{CONTRACTS_STORE, FILE_CONTENTS, StoredContract, WALLETS_STORE};
+use crate::{CONTRACTS_STORE, FILE_CONTENTS, StoredContract, Wallet, WALLETS_STORE};
 use crate::contracts::Contract;
 use crate::files::COUNTER;
 use crate::storage_schema::{ContentId, ContractId};
@@ -205,6 +205,36 @@ impl Payment {
         let payment = Payment::get(contract_id.clone())?;
         Payment::delete_payment_contract(payment.receiver, contract_id.clone())?;
         Payment::delete_payment_contract(payment.sender, contract_id)
+    }
+    pub fn release(contract_id: ContractId, user: Principal) -> Result<Payment, String> {
+        CONTRACTS_STORE.with(|contracts_store| {
+            let mut caller_contracts = contracts_store.borrow_mut();
+            let caller_contract = caller_contracts
+                .get_mut(&user)
+                .ok_or("Caller has no contracts")?;
+            let contract = caller_contract
+                .get_mut(&contract_id) // Use payment.contract_id as the key
+                .ok_or("Contract not found")?;
+
+            if let StoredContract::PaymentContract(existing_payment) = contract {
+                if existing_payment.released == true {
+                    return Err("Payment contract is already released".to_string());
+                }
+                // if existing_payment.canceled == true {
+                    // TODO if payment.cancelled  { payment.cancelled= false
+                //     return Err("Payment contract is canceled and cannot be released".to_string());
+                // }
+                existing_payment.released = true;
+                return Ok(existing_payment.clone());
+            }
+            Err("Payment not found in contract".to_string())
+        })
+    }
+    pub fn release_payment(contract_id: ContractId) -> Result<Payment, String> { // release_for_both
+        let payment = Payment::get(contract_id.clone())?;
+        let sender = caller();
+        Payment::release(contract_id.clone(), sender)?;
+        Payment::release(contract_id, payment.receiver)
     }
 
     pub fn cancel_payment(user: Principal, contract_id: ContractId) -> Result<(), String> {

@@ -2,12 +2,14 @@ use ic_cdk::{api::call::ManualReply, caller, export::{
     candid::{CandidType, Deserialize},
     Principal,
 }};
-use crate::WALLETS_STORE;
+use crate::{Contract, WALLETS_STORE};
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub enum ExchangeType {
     Deposit,
     Withdraw,
+    LocalReceive,
+    LocalSend,
 }
 
 impl Default for ExchangeType {
@@ -33,29 +35,27 @@ pub struct Wallet {
 }
 
 impl Wallet {
-    pub fn get() -> Wallet {
-        let caller_principal = caller();
-
+    pub fn get(principal: Principal) -> Wallet {
         WALLETS_STORE.with(|store| {
             let mut store = store.borrow_mut();
-            if let Some(wallet) = store.get(&caller_principal) {
+            if let Some(wallet) = store.get(&principal) {
                 // User already has a wallet, return the existing one
                 wallet.clone()
             } else {
                 // User does not have a wallet, create a new one
                 let new_wallet = Wallet {
-                    owner: caller_principal.to_string(),
+                    owner: principal.to_string(),
                     balance: 0,
                     exchanges: vec![],
                 };
 
-                store.insert(caller_principal, new_wallet.clone());
+                store.insert(principal, new_wallet.clone());
                 new_wallet
             }
         })
     }
 
-    pub fn deposit(&mut self, amount: u64, from: String) -> Result<(), String> {
+    pub fn deposit(&mut self, amount: u64, from: String, _type: ExchangeType) -> Result<(), String> {
         // let now = std::time::SystemTime::now();
         let now = "".to_string();
         WALLETS_STORE.with(|store| {
@@ -67,7 +67,7 @@ impl Wallet {
                     to: self.owner.clone(),
                     amount,
                     date: now,
-                    _type: ExchangeType::Deposit,
+                    _type,
                 };
                 wallet.exchanges.push(exchange);
             }
@@ -75,7 +75,7 @@ impl Wallet {
         Ok(())
     }
 
-    pub fn withdraw(&mut self, amount: u64, to: String) -> Result<(), String> {
+    pub fn withdraw(&mut self, amount: u64, to: String, _type: ExchangeType) -> Result<(), String> {
         // let now = std::time::SystemTime::now();
         let now = "".to_string();
         if self.balance >= amount {
@@ -88,7 +88,7 @@ impl Wallet {
                         to,
                         amount,
                         date: now,
-                        _type: ExchangeType::Withdraw,
+                        _type,
                     };
                     wallet.exchanges.push(exchange);
                 }

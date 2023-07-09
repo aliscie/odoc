@@ -76,10 +76,10 @@ function Friends(props: any) {
                         secondaryAction={
                             <>
                                 <LoaderButton
-                                    onClick={async () => await handleReject(value.id)}
-                                >Reject</LoaderButton>
-                                <LoaderButton
                                     onClick={async () => await handleCLickConfirm(value.id)}
+                                >Confirm</LoaderButton>
+                                <LoaderButton
+                                    onClick={async () => await handleReject(value.id)}
                                 >Reject</LoaderButton>
                             </>
                         }

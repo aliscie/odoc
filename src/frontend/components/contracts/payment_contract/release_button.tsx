@@ -3,13 +3,33 @@ import {Button, DialogActions, DialogContent, DialogTitle, Paper, Typography} fr
 import DialogOver from "../../genral/daiolog_over";
 import SendIcon from '@mui/icons-material/Send';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
+import {actor} from "../../../backend_connect/ic_agent";
+import {useSnackbar} from "notistack";
+import {Payment, StoredContract} from "../../../../declarations/user_canister/user_canister.did";
+import {useState} from "react";
+import {useDispatch} from "react-redux";
+import {handleRedux} from "../../../redux/main";
 
-function ReleaseButton({released, onClick}: { released: boolean, onClick: () => void }) {
-    const [is_released, setReleased] = React.useState(released);
+function ReleaseButton({contract}: { contract: Payment }) {
+    const [loading, setLoading] = useState(false);
+    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+    const dispatch = useDispatch();
 
-    const handleConfirm = () => {
-        setReleased(true)
-        onClick();
+    const handleRelease = async () => {
+        setLoading(true)
+        let res = await actor.release_payment(contract.contract_id);
+        setLoading(false)
+        if ("Ok" in res) {
+            let new_contract = {
+                contract_id: contract.contract_id,
+                canceled: false,
+                released: true,
+            }
+            dispatch(handleRedux("UPDATE_CONTRACT", {contract: new_contract}))
+        } else {
+            enqueueSnackbar(res.Err, {variant: "error"})
+        }
+
     };
 
     let Dialog = (props: any) => {
@@ -22,7 +42,7 @@ function ReleaseButton({released, onClick}: { released: boolean, onClick: () => 
                     No
                 </Button>
                 <Button onClick={() => {
-                    handleConfirm()
+                    handleRelease()
                     props.handleClick()
                 }} color="primary" autoFocus>
                     Yes
@@ -30,16 +50,16 @@ function ReleaseButton({released, onClick}: { released: boolean, onClick: () => 
             </div>
         </>
     }
-
-
+    let children = contract.released ? <DoneAllIcon color={"success"}/> : <SendIcon/>
     return (
         <DialogOver
             size={"small"}
             // color={"success"}
-            disabled={is_released}
+            disabled={contract.released}
             variant="text"
             DialogContent={Dialog}>
-            {is_released ? <DoneAllIcon color={"success"}/> : <SendIcon/>}
+            {loading ? <span className={"loader"}></span> : children}
+
         </DialogOver>
     );
 }

@@ -45,13 +45,6 @@ function updateTableContent(props: any, content: any, updater: any) {
 }
 
 
-function handleRelease(id: number) {
-    // Perform release logic here
-    // Update the 'released' property of the corresponding row
-    // Set the state or dispatch an action to update the data
-}
-
-
 export default function PaymentContract(props: any) {
 
 
@@ -120,24 +113,22 @@ export default function PaymentContract(props: any) {
                 sender={props.row.sender}
                 id={props.row.id}
                 confirmed={is_confirmed}
-                // onClick={() => handleRelease(params.row.id)}
             />
         }
         return <GppBadIcon disabled/>
     }
     let RenderReceiver = (props: any) => ReceiverComponent({...props, options: all_friends})
-    let RenderRelease = (params: GridValueGetterParams) => (
-        <span style={{minWidth: "200px"}}>
+    let RenderRelease = (params: GridValueGetterParams) => {
+        return <span style={{minWidth: "200px"}}>
                 <ReleaseButton
-                    released={params.row.released}
-                    onClick={() => handleRelease(params.row.id)}
+                    contract={params.row}
                 />
 
-            {!params.row.canceled && <CancelButton
+            <CancelButton
                 contract={params.row}
-            />}
+            />
         </span>
-    )
+    }
 
     let [columns, setColumns] = React.useState(initial_columns)
 

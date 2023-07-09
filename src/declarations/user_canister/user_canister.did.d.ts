@@ -42,7 +42,9 @@ export interface Exchange {
   'amount' : bigint,
 }
 export type ExchangeType = { 'Withdraw' : null } |
-  { 'Deposit' : null };
+  { 'Deposit' : null } |
+  { 'LocalSend' : null } |
+  { 'LocalReceive' : null };
 export type Execute = { 'TransferNft' : null } |
   { 'TransferToken' : null } |
   { 'TransferUsdt' : null };
@@ -164,6 +166,7 @@ export interface _SERVICE {
     Result_2
   >,
   'register' : ActorMethod<[RegisterUser], Result>,
+  'release_payment' : ActorMethod<[string], Result_1>,
   'rename_file' : ActorMethod<[string, string], boolean>,
   'send_friend_request' : ActorMethod<[string], Result>,
   'share_file' : ActorMethod<[string, string], Result_2>,

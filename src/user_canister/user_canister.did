@@ -30,7 +30,7 @@ type Exchange = record {
   from : text;
   amount : nat64;
 };
-type ExchangeType = variant { Withdraw; Deposit };
+type ExchangeType = variant { Withdraw; Deposit; LocalSend; LocalReceive };
 type Execute = variant { TransferNft; TransferToken; TransferUsdt };
 type FileNode = record {
   id : text;
@@ -132,6 +132,7 @@ service : {
       vec text,
     ) -> (Result_2);
   register : (RegisterUser) -> (Result);
+  release_payment : (text) -> (Result_1);
   rename_file : (text, text) -> (bool);
   send_friend_request : (text) -> (Result);
   share_file : (text, text) -> (Result_2);

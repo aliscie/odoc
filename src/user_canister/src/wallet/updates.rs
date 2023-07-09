@@ -13,15 +13,15 @@ use crate::{Exchange, ExchangeType, Wallet, WALLETS_STORE};
 #[update]
 #[candid_method(update)]
 fn deposit_usdt(amount: u64) -> Result<u64, String> {
-    let mut wallet = Wallet::get();
-    wallet.deposit(amount, "".to_string())?;
+    let mut wallet = Wallet::get(caller());
+    wallet.deposit(amount, "".to_string(), ExchangeType::Deposit)?;
     Ok(wallet.balance + amount)
 }
 
 #[update]
 #[candid_method(update)]
 fn withdraw_usdt(amount: u64) -> Result<u64, String> {
-    let mut wallet = Wallet::get();
-    wallet.withdraw(amount, "".to_string())?;
+    let mut wallet = Wallet::get(caller());
+    wallet.withdraw(amount, "".to_string(), ExchangeType::Withdraw)?;
     Ok(wallet.balance - amount)
 }
