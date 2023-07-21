@@ -45,15 +45,9 @@ export default function FreeSoloCreateOption(props: any) {
                 // Regular option
                 return option.name;
             }}
-            renderOption={(props, option) => <li  {...props}><AvatarChips {...option}/></li>}
+            renderOption={(props, option) => <li  {...props}><AvatarChips user={option}/></li>}
             sx={{
                 width: 300,
-                '& .MuiInputBase-root': {
-                    color: 'var(--color)', // Text color in the text field
-                },
-                '& .MuiAutocomplete-popper': {
-                    backgroundColor: 'black', // Background color of the autocomplete list
-                },
             }}
             freeSolo
             renderInput={(params) => <TextField {...params} />}

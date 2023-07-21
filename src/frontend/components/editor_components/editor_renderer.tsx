@@ -19,7 +19,7 @@ export function EditorRenderer(props: any) {
         case 'table-row':
             return <TableRow {...attributes}>{children}</TableRow>
         case 'table-cell':
-            return <TableCell style={{color: "var(--color)"}} {...attributes}>{children}</TableCell>
+            return <TableCell {...attributes}>{children}</TableCell>
         case "mention":
             return <MentionComponent {...props}/>
         case "payment_contract":

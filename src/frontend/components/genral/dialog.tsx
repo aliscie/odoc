@@ -22,8 +22,6 @@ export default function FormDialog(props: { open: boolean, title: string, descri
             <Dialog
                 PaperProps={{
                     style: {
-                        backgroundColor: 'var(--background-color)',
-                        color: 'var(--color)',
                     },
                 }}
 

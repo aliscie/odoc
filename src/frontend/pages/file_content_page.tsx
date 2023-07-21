@@ -1,36 +1,28 @@
 import {useDispatch, useSelector} from "react-redux";
 import * as React from "react";
 import {useEffect} from "react";
-import Editor from "odoc-editor";
 import {handleRedux} from "../redux/main";
-import {EditorRenderer} from "../components/editor_components/editor_renderer";
 import {contract_sample, payment_contract} from "../data_processing/data_samples";
-import {table} from "../components/genral/editor_demo";
 import {FileNode} from "../../declarations/user_canister/user_canister.did";
+import EditorComponent from "../components/editor_components/main";
 
 
 function FileContentPage(props: any) {
 
-    const {all_friends, current_file, files_content} = useSelector((state: any) => state.filesReducer);
+    const {current_file, files_content} = useSelector((state: any) => state.filesReducer);
 
-    let {searchValue} = useSelector((state: any) => state.uiReducer);
 
     let [title, setTitle] = React.useState(current_file.name);
-    console.log({title})
 
 
     const dispatch = useDispatch();
 
 
     function onChange(changes: any) {
-        dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: changes}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: changes}));
-        // dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: changes}));
-        // if (file_name || file_parent) {
-        //      dispatch(handleRedux("FILE_CHANGES", {id: current_file.id, changes: current_file}));
-        // }
-
-        console.log("changes", changes);
+        if (files_content[current_file.id] !== changes) {
+            dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: changes}));
+            dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: changes}));
+        }
     }
 
     const editorKey = current_file.name || ""; // Provide a key based on current_file.name
@@ -63,27 +55,17 @@ function FileContentPage(props: any) {
         return () => clearTimeout(timeout);
     }, [title])
 
-    // let {revoke_message} = useTotalDept();
-    // const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    // let handleSave = async () => {
-    //
-    //     let loading = enqueueSnackbar(<span>saving... <span className={"loader"}/></span>, {});
-    //     let content_tree = denormalize_file_contents(files_content[current_file.id])
-    //
-    //     let res = await actor.save_payment_contract(current_file.id, title || current_file.name, [], content_tree, [])
-    //     closeSnackbar(loading);
-    //     enqueueSnackbar(`Your file is saved`, {variant: "success"});
-    //
-    // }
 
     function handleOnInsertComponent(e: any, component: any) {
+        console.log("handleOnInsertComponent", component);
         if (component.type == "payment_contract") {
-
             dispatch(handleRedux("ADD_CONTRACT", {contract: contract_sample}))
             dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract_sample}));
         }
 
     }
+
+    let fileName = current_file.name; // Making a copy of the name, in order to prevent content conflict on setTitle
 
     if (current_file.id != null) {
         let content = files_content[current_file.id];
@@ -92,26 +74,15 @@ function FileContentPage(props: any) {
 
                 {current_file.name && (
                     <>
-                        {/*<Button onClick={handleSave} style={{width: "100%"}} contentEditable={false}>Save</Button>*/}
                         <h1
                             onKeyDown={preventEnter}
                             onKeyUp={handleTitleKeyDown}
-                            contentEditable={true}>{current_file.name}</h1>
-                        <Editor
-                            componentsOptions={[
-                                table,
-                                payment_contract,
-                                {type: "accumulative_contract"},
-                                {type: "custom_contract"},
-                            ]}
-                            onInsertComponent={handleOnInsertComponent}
-                            mentionOptions={all_friends ? all_friends.map((i) => i.name) : []}
-                            key={editorKey} // Add key prop to trigger re-render
+                            contentEditable={true}>{fileName}</h1>
+                        <EditorComponent
+                            handleOnInsertComponent={handleOnInsertComponent}
                             onChange={onChange}
-                            renderElement={EditorRenderer}
-                            searchOptions={"gi"}
-                            search={searchValue}
-                            data={content || []}
+                            editorKey={editorKey}
+                            content={content || []}
                         />
                     </>
                 )}

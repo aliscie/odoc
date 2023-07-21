@@ -18,7 +18,6 @@ function customCheckbox(theme: Theme) {
             display: 'none',
         },
         '& .MuiCheckbox-root.Mui-checked:not(.MuiCheckbox-indeterminate) svg': {
-            backgroundColor: "var(--secondary-background-color)",
             borderColor: '#1890ff',
         },
         '& .MuiCheckbox-root.Mui-checked .MuiIconButton-label:after': {
@@ -29,7 +28,6 @@ function customCheckbox(theme: Theme) {
             borderLeft: 0,
             transform: 'rotate(45deg) translate(-50%,-50%)',
             opacity: 1,
-            transition: 'all .2s cubic-bezier(.12,.4,.29,1.46) .1s',
             content: '""',
             top: '50%',
             left: '39%',
@@ -49,7 +47,6 @@ function customCheckbox(theme: Theme) {
 
 export const StyledDataGrid = styled(DataGrid)(({theme}) => ({
     border: 0,
-    color: "var(--color)",
     fontFamily: [
         '-apple-system',
         'BlinkMacSystemFont',
@@ -64,20 +61,8 @@ export const StyledDataGrid = styled(DataGrid)(({theme}) => ({
     ].join(','),
     WebkitFontSmoothing: 'auto',
     letterSpacing: 'normal',
-    '& .MuiDataGrid-columnsContainer': {
-        backgroundColor: "var(--background-color)",
-    },
     '& .MuiDataGrid-iconSeparator': {
         display: 'none',
-    },
-    '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
-        borderRight: `1px solid var(--color)`,
-    },
-    '& .MuiDataGrid-columnsContainer, .MuiDataGrid-cell': {
-        borderBottom: `1px solid var(--color)`,
-    },
-    '& .MuiDataGrid-cell': {
-        color: "var(--text-color)",
     },
 
     // ...customCheckbox(theme),

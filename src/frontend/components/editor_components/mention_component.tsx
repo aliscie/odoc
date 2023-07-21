@@ -33,7 +33,7 @@ const user = {
 
 function MentionComponent(props: any) {
     // return (<Tooltip arrow placement={"top"} title={<UserInfoCard user={user}/>}>
-    //     <Chip style={{color: 'var(--text-color)'}} size={"small"}  {...props.element}
+    //     <Chip size={"small"}  {...props.element}
     //           icon={<FaceIcon style={{color: 'var(--text-color)'}}/>}
     //           label={props.element.character}/>
     // </Tooltip>)

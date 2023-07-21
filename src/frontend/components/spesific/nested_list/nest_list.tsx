@@ -31,7 +31,8 @@ const NestedList: React.FC<NestedListProps> = ({title, data}) => {
         <div>
             <List
                 subheader={
-                    <ListSubheader style={{background: "none", color: "white"}} component="p"
+                    <ListSubheader
+                        style={{background: "none", color: "white"}} component="p"
                                    id="nested-list-subheader">
                         {title}
                     </ListSubheader>

@@ -63,7 +63,7 @@ impl Payment {
 
         for contract in all_contracts.values() {
             if let StoredContract::PaymentContract(payment) = contract {
-                if (!payment.released && !payment.canceled)&& payment.sender == sender {
+                if (!payment.released && !payment.canceled) && payment.sender == sender {
                     total_dept += payment.amount;
                 }
             }
@@ -73,11 +73,7 @@ impl Payment {
     }
 
     pub fn update_payment_contracts(contracts: Vec<StoredContract>) -> Result<(), String> {
-        let user_balance: u64 = WALLETS_STORE.with(|wallets_store| {
-            let wallets = wallets_store.borrow();
-            let wallet = wallets.get(&caller()).unwrap();
-            wallet.balance
-        });
+        let user_balance: u64 = Wallet::get(caller()).balance;
 
         let mut total_amount: u64 = 0;
         let mut visited = vec![];

@@ -2,19 +2,13 @@ import * as React from 'react';
 import {styled} from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
-import Avatar from '@mui/material/Avatar';
 import IconButton, {IconButtonProps} from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import {red} from '@mui/material/colors';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
+
+import {User} from "../../../declarations/user_canister/user_canister.did";
+import AvatarChips from "./person_chip";
 
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
@@ -26,12 +20,21 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 })(({theme, expand}) => ({
     transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
     marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-        duration: theme.transitions.duration.shortest,
-    }),
+    // transition: theme.transitions.create('transform', {
+    //     duration: theme.transitions.duration.shortest,
+    // }),
 }));
 
-export default function PostComponent(props: any) {
+interface Props {
+    // user: User,
+    content?: any,
+    buttons?: any
+    headerAction?: any,
+    subheader?: string,
+    avatar?: any,
+}
+
+export default function PostComponent(props: Props) {
     const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {
@@ -39,43 +42,31 @@ export default function PostComponent(props: any) {
     };
 
     return (
-        <Card sx={{maxWidth: 345}}>
+        <Card
+        >
             <CardHeader
-                avatar={
-                    <Avatar sx={{bgcolor: red[500]}} aria-label="recipe">
-                        R
-                    </Avatar>
-                }
-                action={
-                    <IconButton aria-label="settings">
-                        <MoreVertIcon/>
-                    </IconButton>
-                }
-                title={props.title}
-                subheader="September 14, 2016"
+                titleTypographyProps={{textAlign: "left"}}
+                avatar={props.avatar}
+                action={props.headerAction}
+                // title={props.user.name}
+                subheader={props.subheader}
             />
-            <CardMedia
-                component="img"
-                height="194"
-                image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbFiyMa6u6jEbygcwwbH9T_lASWAw54zMtlA&usqp=CAU"
-                alt="Paella dish"
-            />
+
             <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                    {props.description}
-                </Typography>
+                {props.content}
             </CardContent>
+
             <CardActions disableSpacing>
                 {props.buttons}
 
-                <ExpandMore
-                    expand={expanded}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}
-                    aria-label="show more"
-                >
-                    <ExpandMoreIcon/>
-                </ExpandMore>
+                {/*<ExpandMore*/}
+                {/*    expand={expanded}*/}
+                {/*    onClick={handleExpandClick}*/}
+                {/*    aria-expanded={expanded}*/}
+                {/*    aria-label="show more"*/}
+                {/*>*/}
+                {/*    <ExpandMoreIcon/>*/}
+                {/*</ExpandMore>*/}
             </CardActions>
             <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>

@@ -20,7 +20,6 @@ export interface SlateNode {
 
 
 function nesting(content_node: [string, ContentNode], alL_contents: Array<[string, ContentNode]>, visited: any[] = []) {
-
     let children = content_node[1].children.map((child_id: string) => {
         let child: [string, ContentNode] = alL_contents.find((node: [string, ContentNode]) => node[0] === child_id)
         visited.push(child[0])

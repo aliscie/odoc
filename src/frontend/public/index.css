@@ -24,7 +24,9 @@ hr {
 .mySidenav {
     color: var(--color);
 }
-
+a{
+    color: var(--color);
+}
 .dark {
     --hover-color: #3b8cb0;
     --color: #d9d9d9;
@@ -56,7 +58,6 @@ body {
     -moz-osx-font-smoothing: grayscale;
 
     color: var(--color);
-    transition: 0.4s;
     background: var(--background-color);
     /*background-image: var(--background-image);*/
     background-size: 100% auto;

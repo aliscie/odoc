@@ -20,8 +20,6 @@ function DialogOver({DialogContent, ...props}: any) {
         <Tooltip {...props} classes={{popper: className}}/>
     ))(({theme}) => ({
         [`& .${tooltipClasses.tooltip}`]: {
-            color: 'var(--color)',
-            backgroundColor: 'var(--primary-background-color)',
             boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)",
             borderRadius: "4px",
             maxWidth: 500,
@@ -38,6 +36,7 @@ function DialogOver({DialogContent, ...props}: any) {
 
     return <HtmlTooltip arrow open={open} title={<Dialog/>}>
         <Button
+            color={"inherit"}
             {...props}
             onClick={handleClick}
             variant="text"

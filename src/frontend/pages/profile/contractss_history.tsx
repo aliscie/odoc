@@ -12,13 +12,11 @@ import {Principal} from "@dfinity/principal";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DialogOver from "../../components/genral/daiolog_over";
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import DoneAllIcon from "@mui/icons-material/DoneAll";
-import SendIcon from "@mui/icons-material/Send";
 import ConfirmButton from "../../components/contracts/payment_contract/confirm_button";
 import CancelButton from "../../components/contracts/payment_contract/cancel_button";
 
 
-function Transaction(props: any) {
+function ContractItem(props: any) {
 
     const {profile, all_friends} = useSelector((state: any) => state.filesReducer);
     let Report = () => {
@@ -46,7 +44,6 @@ function Transaction(props: any) {
 
     }
     let normal_style = {
-        color: 'var(--secondary-text-color)'
     }
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const dispatch = useDispatch();
@@ -89,7 +86,7 @@ function Transaction(props: any) {
     console.log({cdfadsfdsfsd:props})
     return <ListItem key={props.id}>
         <ListItemText
-            primaryTypographyProps={{style: {color: "var(--color)"}}}
+            primaryTypographyProps={{style: {}}}
             secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
             primary={`Sender: ${sender}`}
             secondary={`Receiver: ${receiver}, Amount: ${props.amount} ICPs`}
@@ -114,21 +111,21 @@ function Transaction(props: any) {
     </ListItem>
 }
 
-function TransactionsHistory(props: any) {
+function ContractsHistory(props: any) {
     const {profile, friends, contracts} = useSelector((state: any) => state.filesReducer);
     // const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     // const dispatch = useDispatch();
 
 
     return (
-        <List dense sx={{bgcolor: 'var(--background)', color: "var(--color)", marginTop: '5%', padding: 0}}>
-            <Divider textAlign="left">Transactions history</Divider>
+        <List dense
+        >
+            <Divider textAlign="left">Contracts history</Divider>
             {Object.keys(contracts).map((key) => {
-                let transaction = contracts[key]
-                return <Transaction id={key} {...transaction}/>
+                return <ContractItem id={key} {...contracts[key]}/>
             })}
         </List>
     );
 }
 
-export default TransactionsHistory
+export default ContractsHistory

@@ -2,60 +2,54 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import {Rating, TextField, Tooltip, Typography} from "@mui/material";
 import {actor} from "../../backend_connect/ic_agent";
-import {useSnackbar} from "notistack";
 import Friends from "./friends";
-import TransactionsHistory from "./transactions_history";
 import Deposit from "./actions/deposit";
 import Withdraw from "./actions/withdraw";
 import LoaderButton from "../../components/genral/loader_button";
-
-export function convertToBlobLink(imageData) {
-    const imageContent = new Uint8Array(imageData);
-    const image = URL.createObjectURL(
-        new Blob([imageContent.buffer], {type: "image/png"})
-    );
-    return image;
-}
+import ContractsHistory from "./contractss_history";
+import {convertToBlobLink, convertToBytes} from "../../data_processing/image_to_vec";
+import {handleRedux} from "../../redux/main";
 
 
 export default function ProfileComponent() {
-    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+    const dispatch = useDispatch();
     const {profile, friends, contracts, wallet} = useSelector((state: any) => state.filesReducer);
 
     const [profileData, setProfileData] = React.useState(profile || {});
     const handleSaveChanges = async () => {
-
-        const res = await actor.update_user_profile({
-            name: [profileData.name],
-            description: [profileData.description],
-            photo: [profileData.photo],
-        });
-
-        // console.log({profileData, res});
-        if (res.Ok) {
-            enqueueSnackbar("Profile updated successfully", {variant: "success"});
+        if (profileData.changed) {
+            const res = await actor.update_user_profile({
+                name: [profileData.name],
+                description: [profileData.description],
+                photo: [profileData.photo],
+            });
+            setProfileData((pre: any) => {
+                return {...pre, changed: false}
+            })
+            return res;
         } else {
-            enqueueSnackbar(res.Err, {variant: "error"});
+            return {Err: "No changes to save"}
         }
     };
 
-    const handlePhotoChange = (e) => {
-        const file = e.target.files[0];
-        // const reader = new FileReader();
-        // reader.onload = (event) => {
-        //     setProfileData({...profileData, photo: event.target.result});
-        // };
-        // reader.readAsDataURL(file);
+    const handlePhotoChange = async (e) => {
+        let photo = await convertToBytes(e.target.files[0]);
+        setProfileData((pre: any) => {
+            return {...pre, photo, changed: true}
+        })
+
+        dispatch(handleRedux("UPDATE_PROFILE", {profile: {photo}}))
+
     };
 
 
     return (
-        <Box sx={{bgcolor: 'var(--background)', color: 'var(--color)', width: '80%'}}>
+        <Box sx={{width: '80%'}}>
             {profile && (
                 <List>
                     <ListItem>
@@ -75,7 +69,7 @@ export default function ProfileComponent() {
                     </ListItem>
 
                     <ListItem style={{display: "flex"}}>
-                        <Typography style={{color: "var(--money-color)"}}>
+                        <Typography >
                             {Number(wallet.balance)} USDT
                         </Typography>
 
@@ -85,36 +79,43 @@ export default function ProfileComponent() {
                     </ListItem>
 
                     {Object.entries(profileData).map(([key, value]) => {
-                        if (key === 'photo') {
+                        if (['photo', 'changed'].includes(key)) {
                             return null; // Skip rendering the photo field again
                         }
+
                         return (
                             <ListItem key={key}>
                                 <TextField
                                     disabled={key === 'id'}
                                     label={key.charAt(0).toUpperCase() + key.slice(1)}
                                     value={value}
-                                    onChange={(e) => setProfileData({...profileData, [key]: e.target.value})}
+                                    onChange={(e) => setProfileData({
+                                        ...profileData,
+                                        [key]: e.target.value,
+                                        changed: true
+                                    })}
                                     fullWidth
                                     variant="standard"
                                     InputLabelProps={{
-                                        style: {color: 'var(--secondary-text-color)'},
+                                        style: {},
                                     }}
                                     InputProps={{
-                                        style: {color: "var(--color)"},
+                                        style: {},
                                     }}
                                 />
                             </ListItem>
                         );
                     })}
                     <ListItem>
-                        <LoaderButton onClick={handleSaveChanges}>Save changes</LoaderButton>
-
+                        <LoaderButton
+                            disabled={!profileData.changed}
+                            successMessage={"Profile saved"} onClick={handleSaveChanges}>
+                            Save changes</LoaderButton>
                     </ListItem>
                 </List>
             )}
             {friends[0] && <Friends friends={friends}/>}
-            {contracts && Object.keys(contracts).length > 0 && <TransactionsHistory/>}
+            {contracts && Object.keys(contracts).length > 0 && <ContractsHistory/>}
         </Box>
     );
 }

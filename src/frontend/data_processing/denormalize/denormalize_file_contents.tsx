@@ -18,6 +18,8 @@ function de_nesting(nested: any[], data = []) {
             children: children.map((child) => String(child.id)),
         };
         data.push([String(id), obj]);
+        // push data.push([String(id), obj]); at the beginning of the array data
+        // data.unshift([String(id), obj]);
         if (children) {
             de_nesting(children, data)
         }
@@ -25,7 +27,7 @@ function de_nesting(nested: any[], data = []) {
     return data;
 }
 
-function denormalize_file_contents(content: any[], data: Array<Array<[string, Array<[string, ContentNode]>]>> = []) {
+function deserialize_file_contents(content: any[], data: Array<Array<[string, Array<[string, ContentNode]>]>> = []) {
     Object.keys(content).forEach((key) => {
         console.log(content)
         let change = []
@@ -40,4 +42,4 @@ function denormalize_file_contents(content: any[], data: Array<Array<[string, Ar
 }
 
 
-export default denormalize_file_contents;
+export default deserialize_file_contents;

@@ -47,14 +47,13 @@ export default function ContextMenu(props: any) {
                 }
             >
                 {props.options.map((item: any) => <MenuItem
-                    onClick={() => {
-                        !item.preventClose && handleClose()
-                        item.onClick && item.onClick()
-                    }}>
-                    {item.icon && <ListItemIcon>
-                        {item.icon}
-                    </ListItemIcon>}
-                    {item.content}</MenuItem>
+                        onClick={() => {
+                            !item.preventClose && handleClose()
+                            item.onClick && item.onClick()
+                        }}>
+                        {item.icon && item.icon}
+                        {item.content}
+                    </MenuItem>
                 )}
 
             </Menu>
