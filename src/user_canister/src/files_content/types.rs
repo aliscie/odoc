@@ -120,15 +120,8 @@ impl ContentNode {
             let caller_principal = ic_cdk::api::caller();
             let file_contents_map = contents.entry(caller_principal).or_insert_with(HashMap::new);
             let file_content_tree: &mut ContentTree = file_contents_map.entry(file_id).or_insert_with(ContentTree::new);
-            file_content_tree.extend(content_nodes);
+            *file_content_tree = content_nodes;
 
-            // for content_node in content_nodes {
-            //     if let Some(existing_node) = file_content_tree.get_mut(&content_node.id) {
-            //         *existing_node = content_node;
-            //     } else {
-            //         file_content_tree.insert(content_node.id, content_node);
-            //     }
-            // }
         });
     }
 

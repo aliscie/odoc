@@ -2,6 +2,7 @@ import React from 'react';
 import './styles/LandingPage.css';
 import Card from "../components/genral/card";
 import CustomizedAccordions from "../components/genral/acordoin";
+import {Divider} from "@mui/material";
 
 const data = [
     {
@@ -77,7 +78,7 @@ const LandingPage: React.FC = () => {
                 ))}
 
             </section>
-            <hr/>
+            <Divider/>
             <section className="roadmap">
                 <h2>Roadmap</h2>
                 <ul>

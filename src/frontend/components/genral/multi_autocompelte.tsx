@@ -7,7 +7,6 @@ import {autocompleteClasses} from '@mui/material/Autocomplete';
 
 const Root = styled('div')(
     ({theme}) => `
-  color: var(--color);
   font-size: 14px;
 `,
 );
@@ -20,8 +19,6 @@ const Label = styled('label')`
 
 const InputWrapper = styled('div')(
     ({theme}) => `
-  border: 1px solid var(--color);
-  background-color: var(--background-color);
   border-radius: 4px;
   padding: 1px;
   display: flex;

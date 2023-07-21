@@ -28,7 +28,7 @@ fn content_updates(file_id: FileId, content_parent_id: Option<ContentId>, new_te
 #[candid_method(update)]
 fn multi_updates(
     files: Vec<FileNode>,
-    updates: Vec<HashMap<FileId, ContentTree>>,
+    content_trees: Vec<HashMap<FileId, ContentTree>>,
     contracts: Vec<StoredContract>,
     delete_contracts: Vec<ContractId>,
 ) -> Result<String, String> {
@@ -43,7 +43,7 @@ fn multi_updates(
     Payment::update_payment_contracts(contracts)?;
 
     // Update FILE_CONTENTS
-    for update in updates {
+    for update in content_trees {
         for (file_id, content_tree) in update {
             ContentNode::update_file_contents(file_id, content_tree);
         }

@@ -1,13 +1,12 @@
 import BasicMenu from "../genral/basic_menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import {handleRedux} from "../../redux/main";
-import {Avatar, Button} from "@mui/material";
+import {AppBar, Avatar, Button, Toolbar} from "@mui/material";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import MenuIcon from "@mui/icons-material/Menu";
-import {Link, Route, Routes} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
-import TopNavBar from "../genral/top_nav_bar";
 import React, {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import SearchIcon from "@mui/icons-material/Search";
@@ -22,9 +21,8 @@ import Person2Icon from '@mui/icons-material/Person2';
 import SettingsIcon from '@mui/icons-material/Settings';
 import {convertToBlobLink} from "../../data_processing/image_to_vec";
 
+
 export function NavAppBar() {
-
-
     const dispatch = useDispatch();
     const {isNavOpen, isDarkMode, isLoggedIn, searchTool} = useSelector((state: any) => state.uiReducer);
     const {profile, current_file, files} = useSelector((state: any) => state.filesReducer);
@@ -33,63 +31,77 @@ export function NavAppBar() {
         if (isLoggedIn) {
             // let user = await backend.register({name: "Ali", description: "descr"});
             // console.log(user)
-            dispatch(handleRedux("LOGIN"))
+            dispatch(handleRedux('LOGIN'));
         }
     }
 
     useEffect(() => {
-        loginProfile()
-
-    }, [])
+        loginProfile();
+    }, []);
 
     async function handleLogin() {
-        await agent.identify()
+        await agent.identify();
     }
 
     async function handleLogout() {
-        await agent.logout()
+        await agent.logout();
         // dispatch(handleRedux("LOGOUT"))
     }
 
-    let image_link = profile ? convertToBlobLink(profile.photo) : "";
+    let image_link = profile ? convertToBlobLink(profile.photo) : '';
     let is_owner_current_file = current_file && Object.keys(files).includes(current_file.id);
+
     return (
-
-        <TopNavBar>
-            <Button
-                onClick={() => dispatch(handleRedux("TOGGLE_NAV"))}
-            >
-                {isNavOpen ? <MenuOpenIcon/> : <MenuIcon/>}
-            </Button>
-
-
-            <Routes>
-                <Route path="*" element={<BreadPage/>}/>
-            </Routes>
-            {is_owner_current_file && <CopyButton/>}
-
-            <Button onClick={() => dispatch(handleRedux("TOGGLE_DARK"))}>
-                {isDarkMode ? <LightModeIcon/> : <DarkModeIcon/>}
-            </Button>
-
-
-            <Tooltip title={'You can press "Command+F"'} placement="top">
-                <IconButton
-                    onClick={() => dispatch(handleRedux("SEARCH_TOOL"))}
-                    size="small" color="primary">
-                    {searchTool ? <CloseIcon/> : <SearchIcon/>}
+        <AppBar position="fixed">
+            <Toolbar style={{transition: ' 0.4s', marginLeft: isNavOpen ? "250px" : 0}}>
+                <IconButton onClick={() => dispatch(handleRedux('TOGGLE_NAV'))}>
+                    {isNavOpen ? <MenuOpenIcon/> : <MenuIcon/>}
                 </IconButton>
-            </Tooltip>
-            {isLoggedIn ? <BasicMenu options={[
-                {content: "Profile", to: "Profile", icon: <Person2Icon/>},
-                {content: "Settings", icon: <SettingsIcon/>},
-                {content: "Logout", icon: <LogoutIcon/>, onClick: handleLogout}
-            ]}>
-                <Avatar style={{display: "inline"}} alt="Remy Sharp"
-                        src={image_link}/>
-            </BasicMenu> : <Button onClick={handleLogin}> login</Button>}
-            {isLoggedIn && <MultiSaveButton/>}
-        </TopNavBar>
-    )
 
+                <Routes>
+                    <Route path="*" element={<BreadPage/>}/>
+                </Routes>
+
+                {is_owner_current_file && <CopyButton/>}
+
+                <IconButton color={'inherit'} onClick={() => dispatch(handleRedux('TOGGLE_DARK'))}>
+                    {isDarkMode ? <LightModeIcon/> : <DarkModeIcon/>}
+                </IconButton>
+
+                <Tooltip title={'You can press "Command+F"'} placement="top">
+                    <IconButton
+                        color={'inherit'}
+                        onClick={() => dispatch(handleRedux('SEARCH_TOOL'))}
+                        size="small"
+                    >
+                        {searchTool ? <CloseIcon/> : <SearchIcon/>}
+                    </IconButton>
+                </Tooltip>
+
+                {isLoggedIn ? (
+                    <BasicMenu
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        options={[
+                            {content: "Profile", to: "Profile", icon: <Person2Icon/>},
+                            {content: 'Settings', icon: <SettingsIcon/>},
+                            {content: 'Logout', icon: <LogoutIcon/>, onClick: handleLogout},
+                        ]}
+                    >
+                        <Avatar style={{display: 'inline'}} alt="Remy Sharp" src={image_link}/>
+                    </BasicMenu>
+                ) : (
+                    <Button onClick={handleLogin}>Login</Button>
+                )}
+
+                {isLoggedIn && <MultiSaveButton/>}
+            </Toolbar>
+        </AppBar>
+    );
 }

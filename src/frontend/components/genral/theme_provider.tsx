@@ -1,39 +1,48 @@
-
-import * as React from 'react';
+import React from 'react';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
+import {useSelector} from "react-redux";
 
-const ColorModeContext = React.createContext({
-    toggleColorMode: () => {
+
+window.matchMedia('(display-mode: standalone)').addEventListener('change', (evt) => {
+    let displayMode = 'browser';
+    if (evt.matches) {
+        displayMode = 'standalone';
     }
+    // Log display mode change to analytics
+    console.log('DISPLAY_MODE_CHANGED', displayMode);
 });
 
 
-export default function ModeThemeProvider(props: any) {
-    const [mode, setMode] = React.useState<'light' | 'dark'>('light');
-    const colorMode = React.useMemo(
-        () => ({
-            toggleColorMode: () => {
-                setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
-            },
-        }),
-        [],
-    );
+const users = [
+    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: true},
+    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: true},
+    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: false},
+    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: true},
+    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: true},
+    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: false},
+    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: true},
+    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: true},
+    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: false},
+];
 
-    const theme = React.useMemo(
-        () =>
-            createTheme({
-                palette: {
-                    mode,
-                },
-            }),
-        [mode],
-    );
 
+function Theme(props: any) {
+
+    let {isDarkMode} = useSelector((state: any) => state.uiReducer);
+    const darkTheme = createTheme({palette: {mode: 'dark'}});
+    const lightTheme = createTheme({palette: {mode: 'light'}});
     return (
-        <ColorModeContext.Provider value={colorMode}>
-            <ThemeProvider theme={theme}>
-                {props.children}
-            </ThemeProvider>
-        </ColorModeContext.Provider>
+        <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+            {props.children}
+            {/*<PwaDownloadPopup/>*/}
+            {/*<PersistentDrawerRight>*/}
+            {/*    <UserList users={users}/>*/}
+            {/*    <SwipeableTextMobileStepper/>*/}
+            {/*</PersistentDrawerRight>*/}
+        </ThemeProvider>
     );
 }
+
+export default Theme;

@@ -1,6 +1,6 @@
 
 .sidenav {
-    color: var(--color);
+    /*color: var(--color);*/
     height: 100%;
     width: 0;
     position: fixed;
@@ -8,7 +8,7 @@
     top: 0;
     left: 0;
     overflow-x: hidden;
-    transition: 0.5s;
+    transition: width 0.5s;
     padding-top: 60px;
 }
 
@@ -21,15 +21,15 @@
 .sidenav nav {
     background: none;
     /*background: var(--background-color);*/
-    color: var(--color);
+    /*color: var(--color);*/
 }
 
 .sidenav a {
-    color: var(--color);
+    /*color: var(--color);*/
     text-decoration: none;
     font-size: 25px;
     /*display: block;*/
-    transition: 0.3s;
+    transition: width 0.3s;
 }
 
 .sidenav a:hover {

@@ -117,15 +117,11 @@ impl User {
     }
 
     pub fn user_name_is_duplicate(name: String) -> bool {
-        let user: Option<User> = ID_STORE.with(|id_store| {
-            PROFILE_STORE.with(|profile_store| {
-                id_store
-                    .borrow()
-                    .get(&name)
-                    .and_then(|id| profile_store.borrow().get(id).cloned())
+        PROFILE_STORE.with(|profile_store| {
+            profile_store.borrow().values().any(|user| {
+                user.id != caller().to_text() && user.name == name
             })
-        });
-        user.is_some()
+        })
     }
     pub fn user_is_anonymous() -> bool {
         let principal_id = ic_cdk::api::caller();

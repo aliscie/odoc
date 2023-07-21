@@ -26,7 +26,8 @@ export function BreadPage() {
                 const last = index === pathnames.length - 1;
                 const to = `/${pathnames.slice(0, index + 1).join('/')}`;
                 return last ? (
-                    <Typography sx={{color: "var(--color)"}} key={to}>
+                    <Typography
+                        key={to}>
                         {pathnames[index].replaceAll("_", " ")}
                     </Typography>
                 ) : (

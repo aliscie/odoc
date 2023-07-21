@@ -74,12 +74,7 @@ function RegistrationForm() {
                                 variant="standard"
                                 value={formValues[input.id] || ""}
                                 onChange={input.type === 'file' ? handleUploadPhoto : handleChange}
-                                InputProps={{
-                                    style: {color: 'var(--color)'},
-                                }}
-                                InputLabelProps={{
-                                    style: {color: 'var(--secondary-text-color)'},
-                                }}
+
                             />
                         </>
                     ))}

@@ -10,3 +10,10 @@ export async function convertToBytes(image) {
     const imageArray = await image.arrayBuffer();
     return [...new Uint8Array(imageArray)];
 }
+
+export async function fileToLink(file) {
+    let imageArray = new Uint8Array(file);
+    return URL.createObjectURL(
+        new Blob([imageArray.buffer], {type: "image/png"})
+    );
+}

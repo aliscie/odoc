@@ -5,7 +5,7 @@ import {handleRedux} from "../../redux/main";
 import {actor} from "../../backend_connect/ic_agent";
 import {useSnackbar} from "notistack";
 import {ContentNode, FileNode, StoredContract} from "../../../declarations/user_canister/user_canister.did";
-import denormalize_file_contents from "../../data_processing/denormalize/denormalize_file_contents";
+import deserialize_file_contents from "../../data_processing/denormalize/denormalize_file_contents";
 import denormalize_payment_contract from "../../data_processing/denormalize/denormalize_contracts";
 
 function MultiSaveButton(props: any) {
@@ -16,7 +16,7 @@ function MultiSaveButton(props: any) {
     let is_files_saved = Object.keys(changes.contents).length === 0 && Object.keys(changes.files).length === 0 && Object.keys(changes.contracts).length === 0;
 
     async function handleClick() {
-        let denormalized_content: Array<Array<[string, Array<[string, ContentNode]>]>> = denormalize_file_contents(changes.contents)
+        let denormalized_content: Array<Array<[string, Array<[string, ContentNode]>]>> = deserialize_file_contents(changes.contents)
         let contracts: Array<StoredContract> = denormalize_payment_contract(changes.contracts);
 
         let loading = enqueueSnackbar(<span>Creating note page... <span className={"loader"}/></span>,);
@@ -41,11 +41,12 @@ function MultiSaveButton(props: any) {
     let tip_for_changed = <span>You need to save</span>;
     return <Tooltip arrow leaveDelay={200} title={is_files_saved ? tip_for_saved : tip_for_changed}>
         <Button
-            color="primary"
+            // style={{color: "var(--color)"}}
+            color="warning"
             variant={!is_files_saved ? "contained" : "text"}
             disabled={is_files_saved}
             onClick={handleClick}
-        >Save</Button>
+        >SAVE</Button>
     </Tooltip>
 }
 

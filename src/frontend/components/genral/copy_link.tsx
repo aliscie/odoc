@@ -52,12 +52,7 @@ let Dialog = (props: any) => {
         return {title: f.name}
     })
 
-    return <List
-        // style={{
-        //     color: "var(--color)",
-        //     background:'var(--background-color)'
-        // }}
-    >
+    return <List>
         <ListItemButton onClick={copyLink}>
             {share_link ? <span>{share_link}</span> : <span className={"loader"}></span>}
             {is_copy ? <CheckIcon size={"small"} color={"success"}/> : null}

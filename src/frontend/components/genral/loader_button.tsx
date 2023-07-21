@@ -3,8 +3,14 @@ import {useState} from "react";
 import {useSnackbar} from "notistack";
 import LoadingButton from '@mui/lab/LoadingButton';
 
+interface LoaderButtonProps {
+    successMessage?: string,
+    onClick: any,
+    children: any;
+    disabled?: boolean;
+}
 
-function LoaderButton(props: any) {
+function LoaderButton(props: LoaderButtonProps) {
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     let [loading, setLoading] = useState(false);
 
@@ -12,6 +18,7 @@ function LoaderButton(props: any) {
         setLoading(true)
         let res = props.onClick && await props.onClick()
         if ("Ok" in res) {
+            props.successMessage && enqueueSnackbar(props.successMessage, {variant: "success"});
         } else {
             enqueueSnackbar(res.Err, {variant: "error"});
         }
@@ -21,6 +28,7 @@ function LoaderButton(props: any) {
 
     return (<LoadingButton
         loading={loading}
+        disabled={props.disabled}
         // loadingPosition="start"
         // startIcon={<SaveIcon/>}
         onClick={handleClick}

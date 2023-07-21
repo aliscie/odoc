@@ -12,6 +12,7 @@ import {useDispatch} from "react-redux";
 import {handleRedux} from "../../../redux/main";
 import DeleteFile from "../../actions/delete_file";
 import RenameFile from "../../actions/rename_file";
+import Draggable from "../../genral/draggable";
 
 interface ItemProps {
     data: Record<number, NestedDataItem>; // Use Record<number, NestedDataItem> instead of any
@@ -39,10 +40,10 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
     path = path && path.replaceAll(".", "")
 
     let options = [
-        {
-            content: <RenameFile item={item}/>,
-            preventClose: true,
-        },
+        // {
+        //     content: <RenameFile item={item}/>,
+        //     preventClose: true,
+        // },
         {content: <DeleteFile item={item}/>},
     ]
 
@@ -50,10 +51,13 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
         <>
             <Link to={path}>
                 <ContextMenu options={options}>
-                    <ListItemButton id={html_file_id} onClick={handleItemClick} sx={{pl}}>
-                        {hasChildren && (isOpen ? <ExpandLess/> : <ExpandMore/>)}
-                        <ListItemText primary={item.name}/>
-                    </ListItemButton>
+                    <Draggable>
+                        <ListItemButton
+                            id={html_file_id} onClick={handleItemClick} sx={{pl}}>
+                            {hasChildren && (isOpen ? <ExpandLess/> : <ExpandMore/>)}
+                            <ListItemText primary={item.name}/>
+                        </ListItemButton>
+                    </Draggable>
                 </ContextMenu>
             </Link>
             {hasChildren && (

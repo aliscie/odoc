@@ -10,8 +10,8 @@ import Avatar from "@mui/material/Avatar";
 import ListItemText from "@mui/material/ListItemText";
 import {Rating, Tooltip} from "@mui/material";
 import * as React from "react";
-import {convertToBlobLink} from "./profile";
 import LoaderButton from "../../components/genral/loader_button";
+import {convertToBlobLink} from "../../data_processing/image_to_vec";
 
 
 function Friend(props: any) {
@@ -65,7 +65,7 @@ function Friends(props: any) {
     }
 
     return (
-        <List dense sx={{bgcolor: 'var(--background)', color: "var(--color)"}}>
+        <List dense>
             <Divider textAlign="left">Friends</Divider>
 
             {friend_requests && friend_requests.map((value) => {

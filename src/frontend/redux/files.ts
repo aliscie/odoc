@@ -4,7 +4,7 @@ import {normalize_files} from "../data_processing/normalize/normalize_files";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
-import {FileNode} from "../../declarations/user_canister/user_canister.did";
+import {FileNode, User} from "../../declarations/user_canister/user_canister.did";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
@@ -30,6 +30,7 @@ export type FilesActions =
     // | "DELETE_CONTRACT"
     | "REMOVE_CONTRACT"
     | "UPDATE_BALANCE"
+    | "UPDATE_PROFILE"
     | FriendsActions;
 
 
@@ -60,9 +61,12 @@ function getCurrentFile(data: any) {
 async function get_initial_data() {
     let isLoggedIn = await agent.is_logged() // TODO avoid repetition `isLoggedIn` is already used in ui.ts
     let data = await backend.get_initial_data();
+    console.log({data})
     if (data.Err == "Anonymous user." && isLoggedIn) {
         initialState["Anonymous"] = true;
         return false;
+    } else if (data.Err) {
+        initialState["isLoggedIn"] = false;
     }
     data = await backend.get_initial_data();
 
@@ -72,7 +76,7 @@ async function get_initial_data() {
     if (data.Ok && data.Ok.Friends) {
         let friend_requests = data.Ok.Friends[0] && data.Ok.Friends[0].friend_requests || []
         let confirmed_friends = data.Ok.Friends[0] && data.Ok.Friends[0].friends || []
-        all_friends = [...friend_requests.map((i: any) => i), ...confirmed_friends.map((i: any) => i)]
+        all_friends = [...friend_requests.map((i: User) => i), ...confirmed_friends.map((i: any) => i)]
     }
     // console.log({orignal:data.Ok.Files})
     if (data.Ok) {
@@ -235,6 +239,12 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             return {
                 ...state,
                 friends: [friends],
+            };
+
+        case 'UPDATE_PROFILE':
+            state.profile = {...state.profile, ...action.profile}
+            return {
+                ...state,
             };
 
 
