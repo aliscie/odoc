@@ -5,21 +5,6 @@
       "package": "central_canister",
       "type": "rust"
     },
-    "user_canister": {
-      "candid": "src/user_canister/user_canister.did",
-      "package": "user_canister",
-      "type": "rust"
-    },
-    "internet_identity": {
-      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
-      "remote": {
-        "id": {
-          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
-        }
-      },
-      "type": "custom",
-      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
-    },
     "frontend": {
       "dependencies": [
         "user_canister"
@@ -32,6 +17,51 @@
         "build"
       ],
       "type": "assets"
+    },
+    "internet_identity": {
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "type": "custom",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
+    },
+    "sns_governance": {
+      "build": "",
+      "candid": "candid/sns_governance.did",
+      "type": "custom",
+      "wasm": ""
+    },
+    "sns_index": {
+      "build": "",
+      "candid": "candid/sns_index.did",
+      "type": "custom",
+      "wasm": ""
+    },
+    "sns_ledger": {
+      "build": "",
+      "candid": "candid/sns_ledger.did",
+      "type": "custom",
+      "wasm": ""
+    },
+    "sns_root": {
+      "build": "",
+      "candid": "candid/sns_root.did",
+      "type": "custom",
+      "wasm": ""
+    },
+    "sns_swap": {
+      "build": "",
+      "candid": "candid/sns_swap.did",
+      "type": "custom",
+      "wasm": ""
+    },
+    "user_canister": {
+      "candid": "src/user_canister/user_canister.did",
+      "package": "user_canister",
+      "type": "rust"
     }
   },
   "defaults": {
@@ -40,6 +70,6 @@
       "packtool": ""
     }
   },
-  "version": 1,
-  "dfx": "0.14.0"
+  "dfx": "0.14.0",
+  "version": 1
 }
