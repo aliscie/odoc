@@ -5,6 +5,163 @@ import {EditorRenderer} from "../editor_components/editor_renderer";
 import {file_data, payment_contract, file_content_sample} from "../../data_processing/data_samples";
 import {handleRedux} from "../../redux/main";
 
+let x = [{
+    "id": "ac686n",
+    "type": "table",
+    "data": [],
+    "children": [{
+        "id": "kpi6hc",
+        "type": "table-row",
+        "data": [],
+        "children": [{
+            "id": "iu89ym",
+            "type": "table-cell",
+            "data": [],
+            "children": [{"id": "a5nslz", "type": "", "data": [], "text": ""}]
+        }, {
+            "id": "jqzsu1",
+            "type": "table-cell",
+            "data": [],
+            "children": [{"id": "1u54wg", "type": "", "data": [], "text": "Human"}]
+        }, {
+            "id": "indzwc",
+            "type": "table-cell",
+            "data": [],
+            "children": [{"id": "pb7xjs", "type": "", "data": [], "text": "Dog"}]
+        }, {
+            "id": "d6c3m7",
+            "type": "table-cell",
+            "data": [],
+            "children": [{"id": "ebvpuk", "type": "", "data": [], "text": "Cat"}]
+        }]
+    }, {
+        "id": "l9zapr",
+        "type": "table-row",
+        "data": [],
+        "children": [{
+            "id": "b8mlry",
+            "type": "table-cell",
+            "data": [],
+            "children": [{"id": "haxma8", "type": "", "data": [], "text": "# of Feet"}]
+        }, {
+            "id": "tyln0r",
+            "type": "table-cell",
+            "data": [],
+            "children": [{"id": "1lano2", "type": "", "data": [], "text": "2"}]
+        }, {
+            "id": "0f4hmk",
+            "type": "table-cell",
+            "data": [],
+            "children": [{"id": "lzra4a", "type": "", "data": [], "text": "4"}]
+        }, {
+            "id": "wh4idq",
+            "type": "table-cell",
+            "data": [],
+            "children": [{"id": "z5z4sq", "type": "", "data": [], "text": "4"}]
+        }]
+    }, {
+        "id": "srkohg",
+        "type": "table-row",
+        "data": [],
+        "children": [{
+            "id": "e9guyb",
+            "type": "table-cell",
+            "data": [],
+            "children": [{"id": "xasld6", "type": "", "data": [], "text": "# of Lives"}]
+        }, {
+            "id": "r4aecd",
+            "type": "table-cell",
+            "data": [],
+            "children": [{"id": "izlg74", "type": "", "data": [], "text": "1"}]
+        }, {
+            "id": "394exv",
+            "type": "table-cell",
+            "data": [],
+            "children": [{"id": "xm3oqt", "type": "", "data": [], "text": "1"}]
+        }, {
+            "id": "qsuyug",
+            "type": "table-cell",
+            "data": [],
+            "children": [{"id": "sgdthx", "type": "", "data": [], "text": "9"}]
+        }]
+    }]
+}, {
+    "id": "yndeb7",
+    "type": "span",
+    "data": [],
+    "children": [{"id": "nvdd3i", "type": "", "data": [], "text": "test "}]
+}, {
+    "id": "90luj2",
+    "type": "payment_contract",
+    "data": [],
+    "children": [{
+        "id": "002",
+        "type": "",
+        "data": [{
+            "Table": {
+                "rows": [{
+                    "id": "90luj2",
+                    "contract": [{"PaymentContract": "90luj2"}],
+                    "cells": [[["new_name", "any value"]]],
+                    "requests": []
+                }, {
+                    "id": "lhh2jh",
+                    "contract": [{"PaymentContract": "lhh2jh"}],
+                    "cells": [[["new_name", ""]]],
+                    "requests": []
+                }],
+                "columns": [{
+                    "id": "0oxxml",
+                    "_type": {"Text": null},
+                    "field": "receiver",
+                    "filters": [],
+                    "permissions": [],
+                    "dataValidator": [],
+                    "editable": true,
+                    "formula": []
+                }, {
+                    "id": "t8twba",
+                    "_type": {"Text": null},
+                    "field": "new_name",
+                    "filters": [],
+                    "permissions": [],
+                    "dataValidator": [],
+                    "editable": true,
+                    "formula": []
+                }, {
+                    "id": "ujmyal",
+                    "_type": {"Text": null},
+                    "field": "amount",
+                    "filters": [],
+                    "permissions": [],
+                    "dataValidator": [],
+                    "editable": true,
+                    "formula": []
+                }, {
+                    "id": "fgpip0",
+                    "_type": {"Text": null},
+                    "field": "released",
+                    "filters": [],
+                    "permissions": [],
+                    "dataValidator": [],
+                    "editable": true,
+                    "formula": []
+                }, {
+                    "id": "wsqlzr",
+                    "_type": {"Text": null},
+                    "field": "confirmed",
+                    "filters": [],
+                    "permissions": [],
+                    "dataValidator": [],
+                    "editable": true,
+                    "formula": []
+                }]
+            }
+        }],
+        "text": ""
+    }]
+}, {"id": "z4cize", "type": "span", "data": [], "children": [{"id": "z4qif2", "type": "", "data": [], "text": " "}]}]
+
 
 export const initialValue = [
     {type: "h1", children: [{text: "My heading is here."}]},
@@ -127,7 +284,7 @@ export default function EditorDemo() {
                 renderElement={EditorRenderer}
                 searchOptions={"gi"}
                 search={searchValue}
-                data={initialValue}/>
+                data={x}/>
         </span>
     );
 }

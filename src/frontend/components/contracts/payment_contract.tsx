@@ -1,29 +1,30 @@
 import * as React from 'react';
 import {GridCell, GridRowModel, GridValueGetterParams} from '@mui/x-data-grid';
-import {Button, ButtonGroup, Tooltip} from '@mui/material';
-import {StyledDataGrid} from "../spread_sheet";
+import {Button, ButtonGroup} from '@mui/material';
+import {StyledDataGrid} from "./spread_sheet";
 import {useDispatch, useSelector} from "react-redux";
-import {randomString} from "../../../data_processing/data_samples";
-import {handleRedux} from "../../../redux/main";
+import {handleRedux} from "../../redux/main";
 import {useSnackbar} from "notistack";
-import CustomColumnMenu from "./column_menu";
-import {useTotalDept} from "./use_total_dept";
-import ReleaseButton from "./release_button";
-import ReceiverComponent from "./render_reciver_column";
+import CustomColumnMenu from "./payment_contract/column_menu";
+import {useTotalDept} from "./payment_contract/use_total_dept";
+import ReleaseButton from "./payment_contract/release_button";
+import ReceiverComponent from "./payment_contract/render_reciver_column";
 import {Principal} from "@dfinity/principal";
-import CancelButton from "./cancel_button";
-import ContextMenu from "../../genral/context_menu";
+import CancelButton from "./payment_contract/cancel_button";
+import ContextMenu from "../genral/context_menu";
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {Column, ColumnTypes, Payment, Row, Table} from "../../../../declarations/user_canister/user_canister.did";
+import {Payment, Row, Table} from "../../../declarations/user_canister/user_canister.did";
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import GppBadIcon from '@mui/icons-material/GppBad';
-import ConfirmButton from "./confirm_button";
+import ConfirmButton from "./payment_contract/confirm_button";
+import useRowManager from "./hooks/useRowManager";
+import useColumnManager from "./hooks/useColumnManager";
 
-function updateTableContent(props: any, content: any, updater: any) {
+export function updateTableContent(props: any, content: any, updater: any) {
     let table_content = props.children[0];
 
     let newContent = content.map((item) => {
@@ -63,6 +64,8 @@ export default function PaymentContract(props: any) {
     let table_content = props.children[0]
     let initial_rows = table_content.data[0].Table.rows
     let initial_columns = table_content.data[0].Table.columns;
+    let {rows, handleAddRow, handleDeleteRow} = useRowManager({initial_rows, props})
+    let {columns, handleDeleteColumn, handleRenameColumn, handleAddColumn} = useColumnManager({initial_columns, props})
 
     function normalize_row(data: any) {
         return data.map((row: Row) => {
@@ -98,8 +101,6 @@ export default function PaymentContract(props: any) {
         }).filter((row: any) => row !== null);
     }
 
-    // let normalized_row = normalize_row(rows)
-    const [rows, setRows] = React.useState(initial_rows);
     let RenderConfirmed = (props: any) => {
         let receiver = props.row.receiver;
         let is_confirmed = props.row.confirmed == true;
@@ -129,186 +130,6 @@ export default function PaymentContract(props: any) {
             />
         </span>
     }
-
-    let [columns, setColumns] = React.useState(initial_columns)
-
-
-    const handleAddRow = (rowId: string, before: boolean) => {
-        const id = randomString();
-        const contract: Payment = {
-            contract_id: id,
-            sender: Principal.fromText(profile.id),
-            receiver: Principal.fromText("2vxsx-fae"),
-            released: false,
-            confirmed: false,
-            canceled: false,
-            amount: BigInt(0),
-        };
-        const newRow: Row = {
-            id,
-            contract: [{"PaymentContract": id}],
-            cells: [],
-            requests: [],
-        };
-
-        const cells = initial_rows[0] && initial_rows[0].cells[0];
-
-        if (cells && cells.length > 0) {
-            const cell_name = cells[0][0];
-            newRow.cells = [[[cell_name, ""]]];
-        }
-        const rowIndex = initial_rows.findIndex((row) => row.id === rowId);
-        if (rowIndex === -1) {
-            // Row not found, handle the error or return early
-            return;
-        }
-        let step = before ? 0 : 1;
-        let newTableRows = [...rows];
-        newTableRows.splice(rowIndex + step, 0, newRow);
-
-        function updateRows(newTable: Table) {
-            newTable.rows = newTableRows;
-            setRows(newTableRows);
-            return newTable;
-        }
-
-        const newContent = updateTableContent(props, content, updateRows);
-
-        // Example dispatching an action to update content
-        dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-        dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
-        dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
-    };
-
-
-    const handleAddColumn = (colId: number, before: boolean) => {
-        let column_type: ColumnTypes = {'Text': null};
-        let id = randomString();
-        const newColumn: Column = {
-            id,
-            _type: column_type,
-            field: `column${columns.length + 1}`,
-            filters: [],
-            permissions: [],
-            dataValidator: [],
-            formula: [],
-            // headerName: `Column ${columns.length + 1}`,
-            // width: 150,
-            editable: true,
-        };
-        let index = columns.findIndex((col) => col.id === colId);
-        let step = before ? 0 : 1;
-        setColumns((prevColumns) => {
-            const newColumns = [...prevColumns];
-            newColumns.splice(index + step, 0, newColumn);
-            return newColumns;
-        });
-
-        // Update newContent with the added column
-        function updateColumn(newTable: Table) {
-            newTable.columns.splice(index + step, 0, newColumn);
-            return newTable;
-        }
-
-        const newContent = updateTableContent(props, content, updateColumn);
-
-        // TODO: Dispatch relevant actions or update state as needed
-        dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-        // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
-        // dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
-    };
-
-    // const generateNewContent = (newData: any): any[] => {
-    //     return content.map((item) => {
-    //         if (item.id === props.id) {
-    //             const newChildren = item.children.map((child) => {
-    //                 if (child.data && child.id === table_content.id) {
-    //                     const updatedData = child.data.map((data) => {
-    //                         return {...data, ...newData};
-    //                     });
-    //                     return {...child, data: updatedData};
-    //                 }
-    //                 return child;
-    //             });
-    //             return {...item, children: newChildren};
-    //         }
-    //         return item;
-    //     });
-    // };
-
-
-    const handleDeleteRow = (rowId: string) => {
-        function deleteRow(newTable: Table) {
-            newTable.rows = newTable.rows.filter((row) => row.id !== rowId); // Remove the row with matching rowId
-            setRows(newTable.rows);
-            return newTable;
-        }
-
-        const newContent = updateTableContent(props, content, deleteRow);
-
-        // Example dispatching an action to update content
-        dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
-        dispatch(handleRedux("REMOVE_CONTRACT", {id: rowId}));
-    };
-
-    const handleDeleteColumn = (colId: string) => {
-        let colIndex = columns.findIndex((col: Column) => col.id === colId);
-
-        function updateColumn(newTable: Table) {
-            newTable.rows.forEach((row) => {
-                if (row.cells[colIndex]) {
-                    row.cells[colIndex].splice(0, 1);
-                }
-            });
-            // newTable.columns = newTable.columns.filter((col: Column, index: number) => index !== colIndex);
-            setRows(newTable.rows);
-            setColumns((pre: any) => {
-                let new_columns: Array<Column> = pre.filter((item: any, index: number) => index !== colIndex);
-                // let remove_contract_column = new_columns.filter((item: any, index: number) => !["receiver", "amount", "release", "confined"].includes(item.field.toLowerCase()));
-                newTable.columns = new_columns;
-                return new_columns
-            })
-            return newTable;
-        }
-
-        const newContent = updateTableContent(props, content, updateColumn);
-
-        // Example dispatching an action to update content
-        dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-        // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
-    };
-
-
-    const handleRenameColumn = (colId: number, newName: string) => {
-        let index = columns.findIndex((col) => col.id === colId);
-        setColumns((prevColumns) => {
-            const newColumns = [...prevColumns];
-            newColumns[index] = {
-                ...newColumns[index],
-                headerName: newName.replace("_", "")
-            };
-            return newColumns;
-        });
-
-        function renameColumn(newTable: Table) {
-            newTable.columns[index].field = newName.replace(" ", "_");
-            newTable.columns[index].headerName = newName;
-            return newTable;
-        }
-
-        const newContent = updateTableContent(props, content, renameColumn);
-
-
-        // TODO: Dispatch relevant actions or update state as needed
-        dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-        // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
-        // dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
-    };
 
 
     const {enqueueSnackbar} = useSnackbar();
@@ -493,20 +314,8 @@ export default function PaymentContract(props: any) {
                 slots={{
                     // row: CustomRow,
                     cell: CustomCell,
-                    columnMenu: (p: any) => CustomColumnMenu(p),
-                    // toolbar: () => (
-                    //     <span style={{display: 'flex'}}>
-                    //         <Button size={"small"} onClick={handleAddRow} variant="text" color="primary">
-                    //             Add Row
-                    //         </Button>
-                    //         <Button size={"small"} onClick={handleAddColumn} variant="text" color="primary">
-                    //             Add Column
-                    //         </Button>
-                    //     </span>
-                    // ),
 
                 }}
-                // checkboxSelection
             />
 
 

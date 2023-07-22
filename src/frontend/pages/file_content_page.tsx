@@ -5,6 +5,7 @@ import {handleRedux} from "../redux/main";
 import {contract_sample, payment_contract} from "../data_processing/data_samples";
 import {FileNode} from "../../declarations/user_canister/user_canister.did";
 import EditorComponent from "../components/editor_components/main";
+import {logger} from "../dev_utils/log_data";
 
 
 function FileContentPage(props: any) {
