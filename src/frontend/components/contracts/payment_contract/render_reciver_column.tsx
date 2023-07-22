@@ -3,6 +3,7 @@ import FreeSoloCreateOption from "../../genral/auto_complete";
 import * as React from "react";
 
 function ReceiverComponent(props: any) {
+
     const {id, field} = props;
     const apiRef = useGridApiContext();
 

@@ -5,8 +5,6 @@ import IconButton from "@mui/material/IconButton";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
 import EditorComponent from "../editor_components/main";
-import {handleRedux} from "../../redux/main";
-import {file_content_sample, file_data} from "../../data_processing/data_samples";
 
 export const content = [
     {type: "p", children: [{text: ""}]},

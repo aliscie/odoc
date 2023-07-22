@@ -1,8 +1,8 @@
 import SpreadSheet from "../contracts/spread_sheet";
 import * as React from "react";
 import MentionComponent from "./mention_component";
-import PaymentContract from "../contracts/payment_contract/payment_contract";
 import {Table, TableBody, TableCell, TableRow} from "@mui/material";
+import PaymentContract from "../contracts/payment_contract";
 
 export function EditorRenderer(props: any) {
 
