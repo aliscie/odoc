@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import LinkIcon from "@mui/icons-material/Link";
 import {ListItemButton, ListItemText} from "@mui/material";
 import {randomString} from "../../data_processing/data_samples";
 import {actor} from "../../backend_connect/ic_agent";
@@ -10,6 +9,7 @@ import MultiAutoComplete from "./multi_autocompelte";
 import List from "@mui/material/List";
 import CheckIcon from '@mui/icons-material/Check';
 import {User} from "../../../declarations/user_canister/user_canister.did";
+import ShareIcon from "@mui/icons-material/Share";
 
 let Dialog = (props: any) => {
 
@@ -97,7 +97,7 @@ const CopyButton = () => {
             variant="text"
             DialogContent={Dialog}
         >
-            <LinkIcon/>
+            <ShareIcon/>
         </DialogOver>
     );
 };

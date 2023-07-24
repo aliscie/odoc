@@ -5,6 +5,7 @@ import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {FileNode, User} from "../../declarations/user_canister/user_canister.did";
+import {logger} from "../dev_utils/log_data";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
@@ -31,6 +32,7 @@ export type FilesActions =
     | "REMOVE_CONTRACT"
     | "UPDATE_BALANCE"
     | "UPDATE_PROFILE"
+    | "CHANGE_FILE_PARENT"
     | FriendsActions;
 
 
@@ -78,7 +80,19 @@ async function get_initial_data() {
         let confirmed_friends = data.Ok.Friends[0] && data.Ok.Friends[0].friends || []
         all_friends = [...friend_requests.map((i: User) => i), ...confirmed_friends.map((i: any) => i)]
     }
-    // console.log({orignal:data.Ok.Files})
+
+    // logger(data.Ok.Files)
+    // data.Ok.Files[0] = [
+    //     ["uxaqdd", {
+    //         "id": "uxaqdd",
+    //         "share_id": [],
+    //         "name": "two ",
+    //         "children": [],
+    //         "parent": [] // TODO parent must be "parent": [uxaqdd]
+    //     }],
+    //     ["x16mrz", {"id": "x16mrz", "share_id": [], "name": "2", "children": ["uxaqdd"], "parent": []}]
+    // ]
+
     if (data.Ok) {
         initialState["files"] = normalize_files(data.Ok.Files);
         initialState["files_content"] = normalize_files_contents(data.Ok.FilesContents);
@@ -137,6 +151,21 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 ...state,
                 current_file: action.file,
             }
+
+        case 'CHANGE_FILE_PARENT':
+            state.files[action.id] = {...state.files[action.id], parent: action.parent}
+            state.changes.files[action.id] = {...state.files[action.id], parent: [action.parent]};
+
+            if (!state.files[action.parent].children.includes(action.id)) {
+                state.files[action.parent].children.push(action.id)
+                state.changes.files[action.parent] = state.files[action.parent];
+            }
+
+
+            return {
+                ...state,
+            }
+
         case 'UPDATE_CONTENT':
             state.files_content[action.id] = action.content;
             return {

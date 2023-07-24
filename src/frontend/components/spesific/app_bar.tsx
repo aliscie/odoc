@@ -97,7 +97,7 @@ export function NavAppBar() {
                         <Avatar style={{display: 'inline'}} alt="Remy Sharp" src={image_link}/>
                     </BasicMenu>
                 ) : (
-                    <Button onClick={handleLogin}>Login</Button>
+                    <Button color={'inherit'} onClick={handleLogin}>Login</Button>
                 )}
 
                 {isLoggedIn && <MultiSaveButton/>}

@@ -43,7 +43,7 @@ export let payment_contract = {
     "type": "payment_contract"
 }
 export let file_content_sample = [
-    {type: "span", children: [{text: ""}]},
+    {type: "p", children: [{text: ""}]},
 ]
 export let payment_contract_row = {"Contract": {"PaymentContract": "0"}}
 export let payment_contract_row2 = {"Contract": {"PaymentContract": "1"}}

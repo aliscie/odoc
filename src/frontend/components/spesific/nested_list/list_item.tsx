@@ -11,8 +11,8 @@ import ContextMenu from "../../genral/context_menu";
 import {useDispatch} from "react-redux";
 import {handleRedux} from "../../../redux/main";
 import DeleteFile from "../../actions/delete_file";
-import RenameFile from "../../actions/rename_file";
 import Draggable from "../../genral/draggable";
+import {actor} from "../../../backend_connect/ic_agent";
 
 interface ItemProps {
     data: Record<number, NestedDataItem>; // Use Record<number, NestedDataItem> instead of any
@@ -47,11 +47,21 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
         {content: <DeleteFile item={item}/>},
     ]
 
+    const handleDrop: any = async (dropped, droppedOver, type) => {
+        console.log("dropped", {dropped, droppedOver, type})
+        let id = dropped;
+        let parent = droppedOver
+        console.log({id, parent})
+        dispatch(handleRedux("CHANGE_FILE_PARENT", {id, parent}));
+    };
     return (
         <>
             <Link to={path}>
                 <ContextMenu options={options}>
-                    <Draggable>
+                    <Draggable
+                        id={item.id}
+                        onDrop={handleDrop}
+                    >
                         <ListItemButton
                             id={html_file_id} onClick={handleItemClick} sx={{pl}}>
                             {hasChildren && (isOpen ? <ExpandLess/> : <ExpandMore/>)}

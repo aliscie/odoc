@@ -138,6 +138,7 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Tuple(FileNode, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode))),
     'Err' : IDL.Text,
   });
+  const Result_6 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
   const RegisterUser = IDL.Record({
     'name' : IDL.Opt(IDL.Text),
     'description' : IDL.Opt(IDL.Text),
@@ -185,6 +186,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_initial_data' : IDL.Func([], [Result_4], ['query']),
     'get_shared_file' : IDL.Func([IDL.Text], [Result_5], []),
+    'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_6], []),
     'multi_updates' : IDL.Func(
         [
           IDL.Vec(FileNode),
