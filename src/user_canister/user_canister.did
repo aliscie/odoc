@@ -85,6 +85,7 @@ type Result_5 = variant {
   Ok : record { FileNode; vec record { text; ContentNode } };
   Err : text;
 };
+type Result_6 = variant { Ok; Err };
 type Row = record {
   id : text;
   contract : opt Contract;
@@ -125,6 +126,7 @@ service : {
   get_file_content : (text) -> (opt vec record { text; ContentNode }) query;
   get_initial_data : () -> (Result_4) query;
   get_shared_file : (text) -> (Result_5);
+  move_file : (text, opt text) -> (Result_6);
   multi_updates : (
       vec FileNode,
       vec vec record { text; vec record { text; ContentNode } },

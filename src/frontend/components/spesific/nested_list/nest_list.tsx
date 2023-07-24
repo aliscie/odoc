@@ -2,10 +2,11 @@ import React, {useState} from 'react';
 import List from '@mui/material/List';
 import {ListSubheader} from "@mui/material";
 import ItemComponent from "./list_item";
+import Draggable from "../../genral/draggable";
 
 
 export interface NestedDataItem {
-    id: number;
+    id: string;
     name: string;
     children: number[];
 }
@@ -33,7 +34,7 @@ const NestedList: React.FC<NestedListProps> = ({title, data}) => {
                 subheader={
                     <ListSubheader
                         style={{background: "none", color: "white"}} component="p"
-                                   id="nested-list-subheader">
+                        id="nested-list-subheader">
                         {title}
                     </ListSubheader>
                 }
@@ -41,6 +42,7 @@ const NestedList: React.FC<NestedListProps> = ({title, data}) => {
                 component="nav"
                 aria-labelledby="nested-list-subheader"
             >
+                <Draggable preventDragUnder={true}><div style={{ height: '5px', width: '100%'}}></div></Draggable>
                 {Object.values(data).map((item, index) => (
                     item.parent && item.parent.length == 0 && <ItemComponent
                         key={item.id}
@@ -52,6 +54,7 @@ const NestedList: React.FC<NestedListProps> = ({title, data}) => {
                         isChild={false}
                     />
                 ))}
+                <Draggable preventDragUnder={true}><div style={{ height: '5px', width: '100%'}}></div></Draggable>
             </List>
         </div>
     );

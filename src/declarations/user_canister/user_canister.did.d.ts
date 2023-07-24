@@ -111,6 +111,8 @@ export type Result_4 = { 'Ok' : InitialData } |
   { 'Err' : string };
 export type Result_5 = { 'Ok' : [FileNode, Array<[string, ContentNode]>] } |
   { 'Err' : string };
+export type Result_6 = { 'Ok' : null } |
+  { 'Err' : null };
 export interface Row {
   'id' : string,
   'contract' : [] | [Contract],
@@ -156,6 +158,7 @@ export interface _SERVICE {
   >,
   'get_initial_data' : ActorMethod<[], Result_4>,
   'get_shared_file' : ActorMethod<[string], Result_5>,
+  'move_file' : ActorMethod<[string, [] | [string]], Result_6>,
   'multi_updates' : ActorMethod<
     [
       Array<FileNode>,

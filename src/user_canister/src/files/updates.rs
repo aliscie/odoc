@@ -3,7 +3,7 @@ use std::fs::File;
 use candid::candid_method;
 use ic_cdk_macros::update;
 
-use crate::{USER_FILES};
+use crate::USER_FILES;
 use crate::files::FileNode;
 use crate::files_content::{ContentData, ContentNode};
 use crate::storage_schema::FileId;
@@ -15,6 +15,13 @@ use crate::user::{RegisterUser, User};
 fn create_new_file(name: String, parent: Option<FileId>) -> FileNode {
     let file = FileNode::new(name.clone(), parent);
     file
+}
+
+#[update]
+#[candid_method(update)]
+fn move_file(id: String, parent: Option<FileId>) -> Result<(), ()> {
+    let res = FileNode::move_file(id, parent);
+    Ok(())
 }
 
 

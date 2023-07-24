@@ -69,14 +69,7 @@ impl FileNode {
             // Check if the user principal is already in the file store
             let user_files_map = user_files.entry(principal_id.clone()).or_insert_with(HashMap::new);
 
-            if let Some(existing_file) = user_files_map.get_mut(&updated_file.id) {
-                existing_file.name = updated_file.name.clone();
-                existing_file.parent = updated_file.parent.clone();
-                existing_file.children = updated_file.children.clone();
-                existing_file.share_id = updated_file.share_id.clone();
-            } else {
-                user_files_map.insert(updated_file.id.clone(), updated_file.clone());
-            }
+            user_files_map.insert(updated_file.id.clone(), updated_file.clone());
 
             if let Some(parent_id) = updated_file.parent.clone() {
                 if let Some(parent_file) = user_files_map.get_mut(&parent_id) {
