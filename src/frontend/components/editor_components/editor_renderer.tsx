@@ -2,7 +2,7 @@ import SpreadSheet from "../contracts/spread_sheet";
 import * as React from "react";
 import MentionComponent from "./mention_component";
 import {Table, TableBody, TableCell, TableRow} from "@mui/material";
-import PaymentContract from "../contracts/payment_contract";
+import ContractView from "../views/contract_view";
 
 export function EditorRenderer(props: any) {
 
@@ -23,7 +23,7 @@ export function EditorRenderer(props: any) {
         case "mention":
             return <MentionComponent {...props}/>
         case "payment_contract":
-            return <PaymentContract {...props.element} />;
+            return <ContractView {...props.element} />;
         case "accumulate_contract":
             return <SpreadSheet {...props.element} />;
         case "custom_contract":

@@ -16,6 +16,27 @@
     --background-image: url("../assets/background.png");
 }
 
+
+/* Example of the CSS for fade transition */
+.fade-enter {
+    opacity: 0;
+}
+
+.fade-enter-active {
+    opacity: 1;
+    transition: opacity 300ms;
+}
+
+.fade-exit {
+    opacity: 1;
+}
+
+.fade-exit-active {
+    opacity: 0;
+    transition: opacity 300ms;
+}
+
+
 hr {
     color: var(--color) !important;
 
@@ -24,9 +45,11 @@ hr {
 .mySidenav {
     color: var(--color);
 }
-a{
+
+a {
     color: var(--color);
 }
+
 .dark {
     --hover-color: #3b8cb0;
     --color: #d9d9d9;

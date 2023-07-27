@@ -5,7 +5,6 @@ import {StyledDataGrid} from "./spread_sheet";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import {useSnackbar} from "notistack";
-import CustomColumnMenu from "./payment_contract/column_menu";
 import {useTotalDept} from "./payment_contract/use_total_dept";
 import ReleaseButton from "./payment_contract/release_button";
 import ReceiverComponent from "./payment_contract/render_reciver_column";
@@ -23,6 +22,7 @@ import GppBadIcon from '@mui/icons-material/GppBad';
 import ConfirmButton from "./payment_contract/confirm_button";
 import useRowManager from "./hooks/useRowManager";
 import useColumnManager from "./hooks/useColumnManager";
+import useGetUser from "../../utils/get_user_by_principal";
 
 export function updateTableContent(props: any, content: any, updater: any) {
     let table_content = props.children[0];
@@ -47,8 +47,7 @@ export function updateTableContent(props: any, content: any, updater: any) {
 
 
 export default function PaymentContract(props: any) {
-
-
+    let {getUser} = useGetUser();
     const dispatch = useDispatch();
 
     const {
@@ -78,21 +77,13 @@ export default function PaymentContract(props: any) {
             let contract = contracts && contracts[contract_id]
             if (contract) {
 
-                function getUser(userId: string) {
-                    if (userId === profile.id) {
-                        return profile;
-                    } else {
-                        const friend = all_friends.find((f) => f.id == userId.toString())
-                        return friend ? friend : null;
-                    }
-                }
 
                 let receiver = getUser(contract.receiver.toString());
                 return {
                     ...contract,
                     ...extra_cells,
                     id: row.id,
-                    receiver: receiver && receiver.name,
+                    receiver: receiver && receiver,
                 }
             } else {
                 return null
@@ -174,7 +165,7 @@ export default function PaymentContract(props: any) {
 
             let id = oldRow.id;
 
-            var receiver = all_friends.filter((friend: any) => friend.name === newRow.receiver)[0]
+            let receiver = all_friends.filter((friend: any) => friend.name === newRow.receiver)[0]
             if (!receiver) {
                 enqueueSnackbar("Please select a receiver", {variant: "warning"});
                 return Promise.resolve();
@@ -299,6 +290,7 @@ export default function PaymentContract(props: any) {
 
         }
     })
+
     return (
         <div contentEditable={false}
              style={{maxHeight: "25%", maxWidth: '100%'}}
@@ -312,6 +304,7 @@ export default function PaymentContract(props: any) {
                 processRowUpdate={processRowUpdate}
                 onProcessRowUpdateError={handleProcessRowUpdateError}
                 slots={{
+                    // toolbar: () => <div>{OptionsComponent}</div>,
                     // row: CustomRow,
                     cell: CustomCell,
 
