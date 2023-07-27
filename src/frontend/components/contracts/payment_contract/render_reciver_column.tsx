@@ -6,12 +6,11 @@ function ReceiverComponent(props: any) {
 
     const {id, field} = props;
     const apiRef = useGridApiContext();
-
     const handleValueChange = (event: any) => {
         apiRef.current.setEditCellValue({id, field, value: event.name});
     };
     return <FreeSoloCreateOption onChange={handleValueChange} options={props.options}
-                                 value={props.row.receiver && props.row.receiver.name}/>
+                                 value={props.row.receiver}/>
 }
 
 export default ReceiverComponent

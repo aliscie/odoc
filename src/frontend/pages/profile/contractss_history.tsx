@@ -14,25 +14,18 @@ import DialogOver from "../../components/genral/daiolog_over";
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import ConfirmButton from "../../components/contracts/payment_contract/confirm_button";
 import CancelButton from "../../components/contracts/payment_contract/cancel_button";
+import useGetUser from "../../utils/get_user_by_principal";
 
 
 function ContractItem(props: any) {
+    let {getUser} = useGetUser();
 
-    const {profile, all_friends} = useSelector((state: any) => state.filesReducer);
+    const {profile} = useSelector((state: any) => state.filesReducer);
     let Report = () => {
         return <Tooltip
             title={"Reporting the cancellation of this contract means you are tinging that the cancellation is mnot fair"}>
             <Button color={"warning"}>Report</Button>
         </Tooltip>
-    }
-
-    function getUser(userId: string) {
-        if (userId === profile.id) {
-            return profile.name;
-        } else {
-            const friend = all_friends.find((f) => f.id == userId.toString())
-            return friend ? friend.name : null;
-        }
     }
 
     let receiver = getUser(props.receiver.toString());
@@ -43,8 +36,7 @@ function ContractItem(props: any) {
         color: "tomato"
 
     }
-    let normal_style = {
-    }
+    let normal_style = {}
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const dispatch = useDispatch();
 
@@ -83,7 +75,7 @@ function ContractItem(props: any) {
     let receiver_id = Principal.fromText(props.receiver.toString())
     let is_sender = profile.id == props.sender.toString();
     let is_receiver = profile.id == props.receiver.toString();
-    console.log({cdfadsfdsfsd:props})
+    console.log({cdfadsfdsfsd: props})
     return <ListItem key={props.id}>
         <ListItemText
             primaryTypographyProps={{style: {}}}

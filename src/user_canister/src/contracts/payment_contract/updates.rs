@@ -68,11 +68,24 @@ fn cancel_payment(id: ContentId) -> Result<(), String> {
 #[update]
 #[candid_method(update)]
 fn release_payment(id: ContentId) -> Result<(), String> {
+    let payment = Payment::get(id.clone())?;
+    let mut message = "".to_string();
+    if payment.receiver.to_string() == "2vxsx-fae" {
+        message.push_str("Payment is not accepted by the receiver yet. ");
+    }
+    if payment.amount == 0 {
+        message.push_str("Payment amount is 0. ");
+    }
+    if message != "" {
+        return Err(message);
+    }
+
     let payment = Payment::release_payment(id.clone())?;
+
     let mut receiver_wallet = Wallet::get(payment.receiver.clone());
     let mut sender_wallet = Wallet::get(caller());
-    receiver_wallet.deposit(payment.amount, caller().to_string(),ExchangeType::LocalReceive)?;
-    sender_wallet.withdraw(payment.amount, payment.receiver.to_string(),ExchangeType::LocalSend)?;
+    receiver_wallet.deposit(payment.amount, caller().to_string(), ExchangeType::LocalReceive)?;
+    sender_wallet.withdraw(payment.amount, payment.receiver.to_string(), ExchangeType::LocalSend)?;
 
     // if payment.confirmed {
     //TODO increase the trust score

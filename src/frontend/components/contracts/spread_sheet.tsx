@@ -3,6 +3,9 @@ import {DataGrid} from '@mui/x-data-grid';
 import {styled, Theme} from '@mui/material/styles';
 import {process_row} from "../../data_processing/normalize/normalize_tables";
 
+// import { DataGridPro } from '@mui/x-data-grid-pro';
+
+
 function customCheckbox(theme: Theme) {
     // ... your existing customCheckbox implementation
 }
@@ -12,6 +15,7 @@ const TableContainer = styled('div')({
     margin: '0 auto', // Center the table within the container
 });
 
+// export const StyledDataGrid = styled(DataGridPro)(({theme}) => ({
 export const StyledDataGrid = styled(DataGrid)(({theme}) => ({
     border: 0,
     fontFamily: [
