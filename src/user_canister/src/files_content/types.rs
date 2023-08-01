@@ -27,6 +27,7 @@ pub struct ContentNode {
     pub parent: Option<ContentId>,
     pub _type: String,
     pub text: String,
+    pub language: String,
     pub data: Option<ContentData>,
     #[serde(default)]
     pub children: Vec<ContentId>,
@@ -72,6 +73,7 @@ impl ContentNode {
             parent: content_parent_id.clone(),
             _type: node_type, // Set the appropriate type
             text,
+            language: "".to_string(),
             data, // Set the appropriate data
             children: Vec::new(),
         };

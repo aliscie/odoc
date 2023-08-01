@@ -1,17 +1,11 @@
 import {ContentNode} from "../../../declarations/user_canister/user_canister.did";
 
-interface Node {
-    id: String;
-    _type: string;
-    text: string;
-    children: string[];
-    data: any[];
-    parent: number[];
-}
 
 export interface SlateNode {
     id: String;
+    language?: string;
     type?: string;
+    language?: string;
     text?: string;
     children?: SlateNode[];
     data?: any[];
@@ -33,6 +27,10 @@ function nesting(content_node: [string, ContentNode], alL_contents: Array<[strin
         // text: content_node[1].text,
         // children
     };
+
+    if (content_node[1].language.length > 0) {
+        item['language'] = content_node[1].language
+    }
     if (children.length > 0) {
         item['children'] = children
     } else {

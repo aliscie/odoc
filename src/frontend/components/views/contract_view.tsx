@@ -55,25 +55,28 @@ function ContractView(props: any) {
         sx={{
             width: '100%',
             transition: 'height 0.3s', // Add transition property for the height
-            height: isOver ? 'auto' : '56px', // Set the initial height and the expanded height
         }}
-        onMouseLeave={() => setOver(false)} onMouseEnter={() => setOver(true)} contentEditable={false}
+        onMouseLeave={() => setOver(false)}
+        onMouseEnter={() => setOver(true)}
+        contentEditable={false}
+    >
+        <Box
+            sx={{
+                borderBottom: 1, borderColor: 'divider', opacity: isOver ? 1 : 0, transition: '0.3s',
+                // position:"absolute",
+            }}
         >
-        <TransitionGroup>
-
-            {isOver && <Collapse> <Box sx={{borderBottom: 1, borderColor: 'divider'}}>
-                {OptionsComponent}
-                <TextField
-                    label="Custom Search"
-                    variant="outlined"
-                    onChange={(e) => handleCustomFilter(e.target.value)}
-                    size="small" // Set the size to "small" to make the input thinner
-                />
-            </Box></Collapse>}
-        </TransitionGroup>
-
+            {OptionsComponent}
+            <TextField
+                label="Custom Search"
+                variant="outlined"
+                onChange={(e) => handleCustomFilter(e.target.value)}
+                size="small" // Set the size to "small" to make the input thinner
+            />
+        </Box>
 
         {ViewsComponent}
+
     </Box>
 }
 

@@ -31,6 +31,7 @@ export interface ContentNode {
   'data' : [] | [ContentData],
   'text' : string,
   'children' : Array<string>,
+  'language' : string,
   'parent' : [] | [string],
 }
 export type Contract = { 'PaymentContract' : string };

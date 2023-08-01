@@ -29,10 +29,12 @@ export function EditorRenderer(props: any) {
         case "custom_contract":
             return <SpreadSheet {...props.element} />;
         default:
-            return (<Tag
-                style={{margin: 0}}
-                {...props}
-                placeholder={"Enter somthing or hit @ for mentions or / for inserting components"}
-                {...attributes}>{children}</Tag>)
+            return null
+        // return (<Tag
+        //     style={{margin: 0}}
+        //     {...props}
+        //     placeholder={"Enter somthing or hit @ for mentions or / for inserting components"}
+        //     {...attributes}>{children}</Tag>)
     }
+    return null;
 }
