@@ -5,7 +5,7 @@ export function useTotalDept() {
 
     const {contracts, profile, wallet} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    let balance = 1000;
+    let balance = Number(wallet.balance) || 0;
 
     let revoke_message = () => {
         let total_dept = 0;
@@ -18,9 +18,11 @@ export function useTotalDept() {
 
         if (Number(total_dept) > Number(wallet.balance)) {
             enqueueSnackbar(
-                `Your balance is ${balance}ICPs and your dept is ${total_dept}ICPs.
-                You can't promos more than you have.
-                You need to deposit about ${total_dept - balance}ICPs.`, {variant: "error"})
+                <span style={{display: 'block'}}>
+                    <div>Insufficient balance: <b>{balance} USDTs</b> </div>
+                    <div>Dept:                 <b>{total_dept} USDTs</b> </div>
+                    <div>Deposit required:     <b>${total_dept - balance} USDTs</b> </div>
+                </span>, {variant: "error"})
             return true;
         }
         return false;

@@ -20,6 +20,7 @@ type ContentNode = record {
   data : opt ContentData;
   "text" : text;
   children : vec text;
+  language : text;
   parent : opt text;
 };
 type Contract = variant { PaymentContract : text };

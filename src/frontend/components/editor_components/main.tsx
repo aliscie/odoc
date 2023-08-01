@@ -4,6 +4,7 @@ import {EditorRenderer} from "./editor_renderer";
 import Editor from "odoc-editor";
 import * as React from "react";
 import {useSelector} from "react-redux";
+import {logger} from "../../dev_utils/log_data";
 
 interface Props {
     handleOnInsertComponent?: any;
@@ -21,6 +22,7 @@ function EditorComponent(props: Props) {
         <Editor
             componentsOptions={[
                 {...table},
+                {type: 'code-block', language: 'typescript', children: [{text: ""}]},
                 payment_contract,
                 {type: "accumulative_contract"},
                 {type: "custom_contract"},

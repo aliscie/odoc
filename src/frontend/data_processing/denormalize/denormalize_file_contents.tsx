@@ -14,6 +14,7 @@ function de_nesting(nested: any[], data = []) {
             _type: item.type || "",
             data: item.data || [],
             text: item.text || "",
+            language: item.language || "",
             parent: item.parent || [],
             children: children.map((child) => String(child.id)),
         };

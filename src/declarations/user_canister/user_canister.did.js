@@ -88,6 +88,7 @@ export const idlFactory = ({ IDL }) => {
     'data' : IDL.Opt(ContentData),
     'text' : IDL.Text,
     'children' : IDL.Vec(IDL.Text),
+    'language' : IDL.Text,
     'parent' : IDL.Opt(IDL.Text),
   });
   const Payment = IDL.Record({

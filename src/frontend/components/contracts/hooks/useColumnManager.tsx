@@ -5,6 +5,7 @@ import {randomString} from "../../../data_processing/data_samples";
 import * as React from "react";
 import {content} from "../../spesific/create_new_post";
 import {updateTableContent} from "../payment_contract";
+import {useFormulaDialog} from "../../../hook/dialog";
 
 function useColumnManager(props: any) {
     const {current_file} = useSelector((state: any) => state.filesReducer);
@@ -67,6 +68,7 @@ function useColumnManager(props: any) {
         dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
     };
 
+
     const handleAddColumn = (colId: number, before: boolean) => {
         let column_type: ColumnTypes = {'Text': null};
         let id = randomString();
@@ -96,7 +98,7 @@ function useColumnManager(props: any) {
             return newTable;
         }
 
-        const newContent = updateTableContent(props, content, updateColumn);
+        const newContent = updateTableContent(props.props, content, updateColumn);
 
         // TODO: Dispatch relevant actions or update state as needed
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
@@ -108,4 +110,5 @@ function useColumnManager(props: any) {
 
     return {columns, handleDeleteColumn, handleRenameColumn, handleAddColumn}
 }
+
 export default useColumnManager;

@@ -23,8 +23,11 @@ import ConfirmButton from "./payment_contract/confirm_button";
 import useRowManager from "./hooks/useRowManager";
 import useColumnManager from "./hooks/useColumnManager";
 import useGetUser from "../../utils/get_user_by_principal";
+import {useFormulaDialog} from "../../hook/dialog";
+import FunctionsIcon from '@mui/icons-material/Functions';
 
 export function updateTableContent(props: any, content: any, updater: any) {
+    // props = props.props
     let table_content = props.children[0];
 
     let newContent = content.map((item) => {
@@ -196,6 +199,16 @@ export default function PaymentContract(props: any) {
         , []
     );
 
+
+    const {dialog, handleClickOpen} = useFormulaDialog();
+
+
+    const handleFormula = (colId: string) => {
+        handleClickOpen();
+
+    }
+
+
     function CustomCell(props: any) {
         let field = props.field;
 
@@ -212,6 +225,7 @@ export default function PaymentContract(props: any) {
             <span style={{width: "100px"}} key="one"
                   onClick={() => handleAddColumn(props.column.id, false)}>Add column</span>,
         ];
+
         let button_group_props = {
             variant: "text",
             size: "small",
@@ -226,6 +240,11 @@ export default function PaymentContract(props: any) {
             {
                 content: <ButtonGroup {...button_group_props}>{add_column}</ButtonGroup>,
                 // preventClose: true,
+            },
+            {
+                content: "Formula",
+                icon: <FunctionsIcon/>,
+                onClick: () => handleFormula(props.column.id),
             },
             {
                 content: "Delete row",
@@ -295,6 +314,7 @@ export default function PaymentContract(props: any) {
         <div contentEditable={false}
              style={{maxHeight: "25%", maxWidth: '100%'}}
         >
+            {dialog}
             <StyledDataGrid
                 rows={normalize_row(rows)}
                 columns={custom_columns}

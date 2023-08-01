@@ -69,7 +69,7 @@ function useRowManager(props: any) {
         }
 
         let content = files_content[current_file.id];
-        const newContent = updateTableContent(props, content, deleteRow);
+        const newContent = updateTableContent(props.props, content, deleteRow);
 
         // Example dispatching an action to update content
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));

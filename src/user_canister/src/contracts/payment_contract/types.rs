@@ -99,7 +99,8 @@ impl Payment {
         };
 
         if total_amount > user_balance {
-            return Err("Total non-released contracts exceeds your current balance of 1000".to_string());
+            let message = format!("Total non-released contracts exceeds your current balance of {}", user_balance).to_string();
+            return Err(message);
         }
 
 

@@ -30,6 +30,7 @@ function ContractItem(props: any) {
 
     let receiver = getUser(props.receiver.toString());
     let sender = getUser(props.sender.toString());
+    console.log({})
 
     let canceled_style = {
         textDecoration: 'line-through',
@@ -72,7 +73,7 @@ function ContractItem(props: any) {
         </>
     }
 
-    let receiver_id = Principal.fromText(props.receiver.toString())
+    // let receiver_id = Principal.fromText(props.receiver.toString())
     let is_sender = profile.id == props.sender.toString();
     let is_receiver = profile.id == props.receiver.toString();
     console.log({cdfadsfdsfsd: props})
@@ -81,7 +82,7 @@ function ContractItem(props: any) {
             primaryTypographyProps={{style: {}}}
             secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
             primary={`Sender: ${sender}`}
-            secondary={`Receiver: ${receiver}, Amount: ${props.amount} ICPs`}
+            secondary={`Receiver: ${receiver}, Amount: ${props.amount} USDTs`}
         />
         {!props.released && is_sender &&
             <Tooltip title={"Click here to release contract"}><Button>Release</Button></Tooltip>}
