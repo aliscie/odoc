@@ -7,7 +7,8 @@ const initialState = {
     searchTool: false,
     isDarkMode: true,
     searchValue: String,
-    isLoggedIn: await agent.is_logged(),
+    isLoggedIn: false,
+    // isLoggedIn: await agent.is_logged(),
 
 };
 
