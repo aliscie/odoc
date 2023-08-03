@@ -109,7 +109,7 @@ async function get_initial_data() {
 }
 
 
-await get_initial_data()
+
 
 
 export function filesReducer(state = initialState, action: { data: any, type: FilesActions, id?: any, file?: any, name: any, content?: any, changes: any }) {
