@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {GridCell, GridRowModel, GridValueGetterParams} from '@mui/x-data-grid';
+import {GridCell, GridRowModel, GridValueGetterParams, GridValueSetterParams} from '@mui/x-data-grid';
 import {Button, ButtonGroup} from '@mui/material';
 import {StyledDataGrid} from "./spread_sheet";
 import {useDispatch, useSelector} from "react-redux";
@@ -25,6 +25,31 @@ import useColumnManager from "./hooks/useColumnManager";
 import useGetUser from "../../utils/get_user_by_principal";
 import {useFormulaDialog} from "../../hook/dialog";
 import FunctionsIcon from '@mui/icons-material/Functions';
+import {Parser} from "hot-formula-parser";
+
+function getFormula(tableParams: GridValueGetterParams, formula: string) {
+    let parser = new Parser();
+
+    parser.setFunction("COL", (params: any) => {
+        let res = tableParams.row[params[0]];
+        return Number(res) || String(res);
+    });
+
+    let res = parser.parse(formula);
+    return res.error || res.result;
+}
+
+// function setFullName(params: GridValueSetterParams) {
+//     const [firstName, lastName] = params.value!.toString().split(' ');
+//     return {...params.row, firstName, lastName};
+// }
+//
+// function parseFullName(value: any) {
+//     return String(value)
+//         .split(' ')
+//         .map((str) => (str.length > 0 ? str[0].toUpperCase() + str.slice(1) : ''))
+//         .join(' ');
+// }
 
 export function updateTableContent(props: any, content: any, updater: any) {
     // props = props.props
@@ -65,9 +90,16 @@ export default function PaymentContract(props: any) {
     // ToDo  `props.data[0]` instead of `props.children[0].data[0]`
     let table_content = props.children[0]
     let initial_rows = table_content.data[0].Table.rows
+
     let initial_columns = table_content.data[0].Table.columns;
     let {rows, handleAddRow, handleDeleteRow} = useRowManager({initial_rows, props})
-    let {columns, handleDeleteColumn, handleRenameColumn, handleAddColumn} = useColumnManager({initial_columns, props})
+    let {
+        columns,
+        handleDeleteColumn,
+        handleRenameColumn,
+        handleAddColumn,
+        handleColumnValidator
+    } = useColumnManager({initial_columns, props})
 
     function normalize_row(data: any) {
         return data.map((row: Row) => {
@@ -153,7 +185,8 @@ export default function PaymentContract(props: any) {
 
                     newTable.rows.map((row: Row) => {
                         if (row.id === oldRow.id) {
-                            row.cells = [[...row.cells, ...new_cells]];
+                            row = {...row, cells: [...row.cells, ...new_cells]};
+                            // row.cells = [[...row.cells, ...new_cells]];
                         }
                         return row;
                     })
@@ -179,7 +212,7 @@ export default function PaymentContract(props: any) {
                 "sender": Principal.fromText(profile.id),
                 "released": newRow.released,
                 "confirmed": newRow.confirmed || false,
-                "amount": BigInt(newRow.amount),
+                "amount": BigInt(newRow.amount || 0),
                 "receiver": Principal.fromText(receiver.id),
             }
 
@@ -200,13 +233,7 @@ export default function PaymentContract(props: any) {
     );
 
 
-    const {dialog, handleClickOpen} = useFormulaDialog();
-
-
-    const handleFormula = (colId: string) => {
-        handleClickOpen();
-
-    }
+    const {dialog, handleClickOpen} = useFormulaDialog(handleColumnValidator);
 
 
     function CustomCell(props: any) {
@@ -241,11 +268,7 @@ export default function PaymentContract(props: any) {
                 content: <ButtonGroup {...button_group_props}>{add_column}</ButtonGroup>,
                 // preventClose: true,
             },
-            {
-                content: "Formula",
-                icon: <FunctionsIcon/>,
-                onClick: () => handleFormula(props.column.id),
-            },
+
             {
                 content: "Delete row",
                 icon: <DeleteIcon color={"error"}/>,
@@ -259,6 +282,14 @@ export default function PaymentContract(props: any) {
                 icon: <DeleteIcon color={"error"}/>,
                 onClick: () => handleDeleteColumn(props.column.id),
             })
+
+            options.unshift(
+                {
+                    content: "Formula",
+                    icon: <FunctionsIcon/>,
+                    onClick: () => handleClickOpen(props.column),
+                })
+
             // push at index 0
             options.unshift({
                 content: <input
@@ -272,7 +303,7 @@ export default function PaymentContract(props: any) {
                 preventClose: true,
             })
 
-            // TODO if you are the sendr you may delete a row
+
         }
         let children = <GridCell {...props} />;
 
@@ -304,7 +335,16 @@ export default function PaymentContract(props: any) {
             case "confirmed":
                 new_column['renderCell'] = RenderConfirmed
                 return new_column
+            case "amount":
+                return new_column
             default:
+                // let formula = {
+                //     // valueGetter: getFullName,
+                //     // valueSetter: setFullName,
+                //     // valueParser: parseFullName,
+                // }
+                // console.log({formula: new_column['formula']})
+                new_column['valueGetter'] = (params: GridValueGetterParams) => getFormula(params, new_column['dataValidator'][0])
                 return new_column
 
         }

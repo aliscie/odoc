@@ -17,12 +17,27 @@ interface Props {
 function EditorComponent(props: Props) {
     let {searchValue} = useSelector((state: any) => state.uiReducer);
     const {all_friends} = useSelector((state: any) => state.filesReducer);
-
+    let content = props.content
+    if (props.content.length == 0) {
+        content = [{type: "p", children: [{text: ""}]}];
+    }
     return (
         <Editor
+            insertFooter={true}
             componentsOptions={[
                 {...table},
-                {type: 'code-block', language: 'typescript', children: [{text: ""}]},
+                {
+                    "type": "code-block",
+                    "language": "typescript",
+                    "children": [
+
+                        {
+                            "type": "code-line",
+                            "children": [{"text": ""}]
+                        },
+
+                    ]
+                },
                 payment_contract,
                 {type: "accumulative_contract"},
                 {type: "custom_contract"},
@@ -34,7 +49,7 @@ function EditorComponent(props: Props) {
             renderElement={EditorRenderer}
             searchOptions={"gi"}
             search={searchValue || ""}
-            data={props.content}
+            data={content}
         />
     )
 }

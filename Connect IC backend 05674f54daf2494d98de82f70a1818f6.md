@@ -43,7 +43,8 @@ export const get_actor = async () => {
     return createActor(canisterId, {
         agentOptions: {
             identity,
-            host: window.location.href,
+            host: window
+            .location.href,
         }
     });
 }
