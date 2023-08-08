@@ -14,11 +14,14 @@ import LoaderButton from "../../components/genral/loader_button";
 import ContractsHistory from "./contractss_history";
 import {convertToBlobLink, convertToBytes} from "../../data_processing/image_to_vec";
 import {handleRedux} from "../../redux/main";
+import BasicTabs from "./history";
+import TransactionHistory from "./transaction_history";
 
 
 export default function ProfileComponent() {
     const dispatch = useDispatch();
     const {profile, friends, contracts, wallet} = useSelector((state: any) => state.filesReducer);
+
 
     const [profileData, setProfileData] = React.useState(profile || {});
     const handleSaveChanges = async () => {
@@ -69,7 +72,7 @@ export default function ProfileComponent() {
                     </ListItem>
 
                     <ListItem style={{display: "flex"}}>
-                        <Typography >
+                        <Typography>
                             {Number(wallet.balance)} USDT
                         </Typography>
 
@@ -114,8 +117,14 @@ export default function ProfileComponent() {
                     </ListItem>
                 </List>
             )}
-            {friends[0] && <Friends friends={friends}/>}
-            {contracts && Object.keys(contracts).length > 0 && <ContractsHistory/>}
+
+            {wallet && <BasicTabs
+                items={{
+                    "Friends": <Friends friends={friends}/>,
+                    "Contracts": <ContractsHistory/>,
+                    "Transactions": <TransactionHistory items={wallet.exchanges}/>,
+                }}
+            />}
         </Box>
     );
 }

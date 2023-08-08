@@ -5,6 +5,7 @@ import {handleRedux} from "../redux/main";
 import {contract_sample, payment_contract} from "../data_processing/data_samples";
 import {FileNode} from "../../declarations/user_canister/user_canister.did";
 import EditorComponent from "../components/editor_components/main";
+import {Typography} from "@mui/material";
 
 
 function FileContentPage(props: any) {
@@ -25,9 +26,13 @@ function FileContentPage(props: any) {
         }
     }
 
+    // const history = useHistory();
+
+
     const editorKey = current_file.name || ""; // Provide a key based on current_file.name
     let handleTitleKeyDown = (e: any) => {
         setTitle(e.target.innerText);
+        // history.push(e.target.innerText.replace(""));
     };
     let preventEnter = (e: any) => {
         if (e.key === "Enter") {
@@ -65,7 +70,6 @@ function FileContentPage(props: any) {
 
     }
 
-    let fileName = current_file.name; // Making a copy of the name, in order to prevent content conflict on setTitle
 
     if (current_file.id != null) {
         let content = files_content[current_file.id];
@@ -74,10 +78,11 @@ function FileContentPage(props: any) {
 
                 {current_file.name && (
                     <>
-                        <h1
+                        <Typography
+                            variant="h3"
                             onKeyDown={preventEnter}
                             onKeyUp={handleTitleKeyDown}
-                            contentEditable={true}>{fileName}</h1>
+                            contentEditable={true}>{current_file.name}</Typography>
                         <EditorComponent
                             handleOnInsertComponent={handleOnInsertComponent}
                             onChange={onChange}

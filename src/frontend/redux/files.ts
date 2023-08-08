@@ -1,10 +1,11 @@
 import {normalize_files_contents} from "../data_processing/normalize/normalize_contents";
-import {agent, backend} from "../backend_connect/main";
+import {agent} from "../backend_connect/main";
 import {normalize_files} from "../data_processing/normalize/normalize_files";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {FileNode, User} from "../../declarations/user_canister/user_canister.did";
+import {actor} from "../backend_connect/ic_agent";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
@@ -59,17 +60,14 @@ function getCurrentFile(data: any) {
 }
 
 
-async function get_initial_data() {
+export async function get_initial_data() {
     let isLoggedIn = await agent.is_logged() // TODO avoid repetition `isLoggedIn` is already used in ui.ts
-    let data = await backend.get_initial_data();
-    console.log({data})
-    if (data.Err == "Anonymous user." && isLoggedIn) {
-        initialState["Anonymous"] = true;
-        return false;
-    } else if (data.Err) {
-        initialState["isLoggedIn"] = false;
-    }
-    data = await backend.get_initial_data();
+    let data = await actor.get_initial_data();
+    // console.log({is:data.Err == "Anonymous user." && isLoggedIn})
+    initialState["Anonymous"] = data.Err == "Anonymous user." && isLoggedIn;
+    initialState["isLoggedIn"] = data.Err != "Anonymous user." && isLoggedIn
+
+    data = await actor.get_initial_data();
 
     const authClient = await AuthClient.create();
     const userPrincipal = authClient.getIdentity().getPrincipal().toString();
@@ -79,18 +77,6 @@ async function get_initial_data() {
         let confirmed_friends = data.Ok.Friends[0] && data.Ok.Friends[0].friends || []
         all_friends = [...friend_requests.map((i: User) => i), ...confirmed_friends.map((i: any) => i)]
     }
-
-    // logger(data.Ok.Files)
-    // data.Ok.Files[0] = [
-    //     ["uxaqdd", {
-    //         "id": "uxaqdd",
-    //         "share_id": [],
-    //         "name": "two ",
-    //         "children": [],
-    //         "parent": [] // TODO parent must be "parent": [uxaqdd]
-    //     }],
-    //     ["x16mrz", {"id": "x16mrz", "share_id": [], "name": "2", "children": ["uxaqdd"], "parent": []}]
-    // ]
 
     if (data.Ok) {
         initialState["files"] = normalize_files(data.Ok.Files);
@@ -107,9 +93,6 @@ async function get_initial_data() {
 
     }
 }
-
-
-
 
 
 export function filesReducer(state = initialState, action: { data: any, type: FilesActions, id?: any, file?: any, name: any, content?: any, changes: any }) {

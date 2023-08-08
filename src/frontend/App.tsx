@@ -8,17 +8,18 @@ import SearchPopper from "./components/spesific/search_popper";
 import Theme from "./components/genral/theme_provider";
 import {SnackbarProvider} from "notistack";
 import RegistrationForm from "./components/spesific/registeration_form";
-import {get_initial_data} from "./backend_connect/connect";
 import {handleRedux} from "./redux/main";
 import {useDispatch} from "react-redux";
 import {agent} from "./backend_connect/main";
+import {get_initial_data} from "./redux/files";
 
+await get_initial_data();
 
 function App() {
     const dispatch = useDispatch();
     useEffect(() => {
         (async () => {
-            await get_initial_data();
+            // await get_initial_data()
             if (await agent.is_logged()) {
                 dispatch(handleRedux('LOGIN'));
             }

@@ -7,8 +7,7 @@ import ContractView from "../views/contract_view";
 export function EditorRenderer(props: any) {
 
     const {element, attributes = {}, children} = props;
-    let Tag = element.type || "p"
-    // console.log('----------', {Tag, props, data: element.data})
+    let Tag: string = element.type || "p"
     switch (Tag) {
         case 'table':
             return (
@@ -28,13 +27,11 @@ export function EditorRenderer(props: any) {
             return <SpreadSheet {...props.element} />;
         case "custom_contract":
             return <SpreadSheet {...props.element} />;
-        default:
-            return null
-        // return (<Tag
-        //     style={{margin: 0}}
-        //     {...props}
-        //     placeholder={"Enter somthing or hit @ for mentions or / for inserting components"}
-        //     {...attributes}>{children}</Tag>)
+
     }
-    return null;
+    return (<Tag
+        style={{margin: 0}}
+        {...props}
+        placeholder={"Enter somthing or hit @ for mentions or / for inserting components"}
+        {...attributes}>{children}</Tag>)
 }

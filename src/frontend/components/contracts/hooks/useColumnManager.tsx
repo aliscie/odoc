@@ -3,12 +3,11 @@ import {handleRedux} from "../../../redux/main";
 import {useDispatch, useSelector} from "react-redux";
 import {randomString} from "../../../data_processing/data_samples";
 import * as React from "react";
-import {content} from "../../spesific/create_new_post";
 import {updateTableContent} from "../payment_contract";
-import {useFormulaDialog} from "../../../hook/dialog";
 
 function useColumnManager(props: any) {
-    const {current_file} = useSelector((state: any) => state.filesReducer);
+    const {files_content, current_file} = useSelector((state: any) => state.filesReducer);
+    let content = files_content[current_file.id];
 
     let [columns, setColumns] = React.useState(props.initial_columns)
     let {setRows} = props;
@@ -34,11 +33,36 @@ function useColumnManager(props: any) {
             return newTable;
         }
 
+
         const newContent = updateTableContent(props.props, content, updateColumn);
 
         // Example dispatching an action to update content
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
         // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
+        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
+    };
+    const handleColumnValidator = (colId: number, dataValidator: any) => {
+        let formula = dataValidator[0].children[0].children[0].text;
+        let index = columns.findIndex((col) => col.id === colId);
+        setColumns((prevColumns) => {
+            const newColumns = [...prevColumns];
+            newColumns[index] = {
+                ...newColumns[index],
+                dataValidator: [formula]
+            };
+            return newColumns;
+        });
+dfx
+        function renameColumn(newTable: Table) {
+            newTable.columns[index]["dataValidator"] = [formula];
+            return newTable;
+        }
+
+        const newContent = updateTableContent(props.props, content, renameColumn);
+
+
+        // TODO: Dispatch relevant actions or update state as needed
+        dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
         dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
     };
 
@@ -101,6 +125,7 @@ function useColumnManager(props: any) {
         const newContent = updateTableContent(props.props, content, updateColumn);
 
         // TODO: Dispatch relevant actions or update state as needed
+        console.log({newContent})
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
         // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
         // dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
@@ -108,7 +133,7 @@ function useColumnManager(props: any) {
     };
 
 
-    return {columns, handleDeleteColumn, handleRenameColumn, handleAddColumn}
+    return {columns, handleDeleteColumn, handleRenameColumn, handleAddColumn, handleColumnValidator}
 }
 
 export default useColumnManager;

@@ -3,56 +3,73 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import Editor from "odoc-editor";
 import {EditorRenderer} from "../components/editor_components/editor_renderer";
 
-export function useFormulaDialog() {
-    const [open, setOpen] = React.useState(false);
+export function useFormulaDialog(saveFormula) {
 
-    const handleClickOpen = () => {
+    const [open, setOpen] = React.useState(false);
+    const [formula, setFormula] = React.useState('');
+    const [columnId, setColId] = React.useState('');
+    // console.log({formula})
+
+    const handleClickOpen = (column) => {
+        console.log({column})
+        setColId(column.id);
+        setFormula(column.dataValidator)
         setOpen(true);
-    };
+    }
 
     const handleClose = () => {
         setOpen(false);
     };
 
+    const handleSave = () => {
+        saveFormula(columnId, formula)
+        handleClose()
+    }
+
     const dialog = (
         <div>
             <Dialog
-                // style={{width: "900px"}}
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                {/*<DialogTitle id="alert-dialog-title">*/}
-                {/*    {"Use Google's location service?"}*/}
-                {/*</DialogTitle>*/}
                 <DialogContent style={{width: "500px"}}>
                     <Editor
-                        // componentsOptions={[
-                        //     {...table},
-                        //     {type: 'code-block', language: 'typescript', children: [{text: ""}]},
-                        //     payment_contract,
-                        //     {type: "accumulative_contract"},
-                        //     {type: "custom_contract"},
-                        // ]}
-                        // onInsertComponent={props.handleOnInsertComponent}
-                        // mentionOptions={all_friends ? all_friends.map((i) => i.name) : []}
-                        // key={props.editorKey} // Add key prop to trigger re-render
-                        // onChange={props.onChange}
+                        insertFooter={false}
+                        autoCompleteOptions={[
+                            "COL('name')",
+                            "COL('amount')",
+                            "COL('sender')",
+                            "COL('receiver')",
+                            "Apple",]}
+                        onChange={setFormula}
                         renderElement={EditorRenderer}
                         searchOptions={"gi"}
-                        // search={searchValue || ""}
-                        data={[{type: 'code-block', language: 'typescript', children: [{text: ""}]}]}
+                        data={
+                            [{
+                                "type": "code-block",
+                                "language": "typescript",
+                                "children": [
+
+                                    {
+                                        "type": "code-line",
+                                        "children": [{
+                                            text: formula[0] || ""
+                                        }]
+                                    },
+
+                                ]
+                            },]
+                        }
                     />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Close</Button>
-                    <Button onClick={handleClose} autoFocus>
+                    <Button onClick={handleSave} autoFocus>
                         Save
                     </Button>
                 </DialogActions>

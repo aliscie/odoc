@@ -71,7 +71,7 @@ fn release_payment(id: ContentId) -> Result<(), String> {
     let payment = Payment::get(id.clone())?;
     let mut message = "".to_string();
     if payment.receiver.to_string() == "2vxsx-fae" {
-        message.push_str("Payment is not accepted by the receiver yet. ");
+        message.push_str("Payment is have no receiver. ");
     }
     if payment.amount == 0 {
         message.push_str("Payment amount is 0. ");

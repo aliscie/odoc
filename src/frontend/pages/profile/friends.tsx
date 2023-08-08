@@ -66,7 +66,6 @@ function Friends(props: any) {
 
     return (
         <List dense>
-            <Divider textAlign="left">Friends</Divider>
 
             {friend_requests && friend_requests.map((value) => {
                 const labelId = `checkbox-list-secondary-label-${value.name}`;
