@@ -2,9 +2,9 @@ import {randomString} from "../../../data_processing/data_samples";
 import {Payment, Row, Table} from "../../../../declarations/user_canister/user_canister.did";
 import {Principal} from "@dfinity/principal";
 import {handleRedux} from "../../../redux/main";
-import {updateTableContent} from "../payment_contract";
 import * as React from "react";
 import {useDispatch, useSelector} from "react-redux";
+import {updateTableContent} from "../utils/update_table";
 
 function useRowManager(props: any) {
     const {profile, current_file, files_content} = useSelector((state: any) => state.filesReducer);

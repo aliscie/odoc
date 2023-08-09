@@ -62,10 +62,13 @@ function FileContentPage(props: any) {
 
 
     function handleOnInsertComponent(e: any, component: any) {
-        console.log("handleOnInsertComponent", component);
-        if (component.type == "payment_contract") {
-            dispatch(handleRedux("ADD_CONTRACT", {contract: contract_sample}))
-            dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract_sample}));
+        switch (component.type) {
+            case "payment_contract":
+                dispatch(handleRedux("ADD_CONTRACT", {contract: contract_sample}))
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract_sample}));
+            // case "data_grid":
+            //     dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract_sample}));
+
         }
 
     }
