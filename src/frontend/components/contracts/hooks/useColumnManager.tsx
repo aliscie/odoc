@@ -3,7 +3,7 @@ import {handleRedux} from "../../../redux/main";
 import {useDispatch, useSelector} from "react-redux";
 import {randomString} from "../../../data_processing/data_samples";
 import * as React from "react";
-import {updateTableContent} from "../payment_contract";
+import {updateTableContent} from "../utils/update_table";
 
 function useColumnManager(props: any) {
     const {files_content, current_file} = useSelector((state: any) => state.filesReducer);

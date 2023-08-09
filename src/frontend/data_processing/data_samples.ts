@@ -14,6 +14,34 @@ let column: Column = {
     formula: [],
     id: randomString(),
 }
+export let data_grid = {
+
+    "id": randomString(),
+    "children": [{
+        "id": "002", "text": "", "data": [{
+            "Table": {
+                "rows": [
+                    {
+                        id: contract_id,
+                        contract: [],
+                        cells: [],
+                        requests: [],
+                    }
+                ],
+                "columns": [
+                    {...column, id: randomString(), field: "name"},
+                    {
+                        ...column,
+                        id: randomString(),
+                        field: "last_name",
+                    },
+                    {...column, id: randomString(), field: "full_name",}
+                ]
+            }
+        }]
+    }],
+    "type": "data_grid"
+}
 export let payment_contract = {
     "id": contract_id,
     "children": [{

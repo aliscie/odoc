@@ -3,6 +3,7 @@ import * as React from "react";
 import MentionComponent from "./mention_component";
 import {Table, TableBody, TableCell, TableRow} from "@mui/material";
 import ContractView from "../views/contract_view";
+import DataGrid from "../contracts/data_grid";
 
 export function EditorRenderer(props: any) {
 
@@ -23,6 +24,8 @@ export function EditorRenderer(props: any) {
             return <MentionComponent {...props}/>
         case "payment_contract":
             return <ContractView {...props.element} />;
+        case "data_grid":
+            return <DataGrid {...props.element} />;
         case "accumulate_contract":
             return <SpreadSheet {...props.element} />;
         case "custom_contract":

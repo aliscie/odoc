@@ -1,12 +1,11 @@
 import * as React from 'react';
-import {GridCell, GridRowModel, GridValueGetterParams} from '@mui/x-data-grid';
+import {GridCell, GridRowModel} from '@mui/x-data-grid';
 import {Button, ButtonGroup} from '@mui/material';
 import {StyledDataGrid} from "./spread_sheet";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import {useSnackbar} from "notistack";
 import {useTotalDept} from "./payment_contract/use_total_dept";
-import {Principal} from "@dfinity/principal";
 import ContextMenu from "../genral/context_menu";
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
@@ -19,12 +18,11 @@ import useColumnManager from "./hooks/useColumnManager";
 import useGetUser from "../../utils/get_user_by_principal";
 import {useFormulaDialog} from "../../hook/dialog";
 import FunctionsIcon from '@mui/icons-material/Functions';
-import {RenderConfirmed, RenderReceiver, RenderRelease} from "./payment_contract/renderers";
+import {RenderRelease} from "./payment_contract/renderers";
 import {updateTableContent} from "./utils/update_table";
-import {getFormula} from "./utils/parse_formula";
 
 
-export default function PaymentContract(props: any) {
+export default function DataGrid(props: any) {
     let {getUser} = useGetUser();
     const dispatch = useDispatch();
 
@@ -52,29 +50,7 @@ export default function PaymentContract(props: any) {
     } = useColumnManager({initial_columns, props})
 
     function normalize_row(data: any) {
-        return data.map((row: Row) => {
-
-            let extra_cells = {}
-            row.cells && row.cells[0] && row.cells[0].map((cell_value: [string, string]) => {
-                extra_cells[cell_value[0]] = cell_value[1]
-            });
-            let contract_id = row.contract[0].PaymentContract;
-            let contract = contracts && contracts[contract_id]
-            if (contract) {
-
-
-                let receiver = getUser(contract.receiver.toString());
-                return {
-                    ...contract,
-                    ...extra_cells,
-                    id: row.id,
-                    receiver: receiver && receiver,
-                }
-            } else {
-                return null
-            }
-
-        }).filter((row: any) => row !== null);
+        return data
     }
 
 
@@ -120,24 +96,6 @@ export default function PaymentContract(props: any) {
             }
 
             let id = oldRow.id;
-
-            let receiver = all_friends.filter((friend: any) => friend.name === newRow.receiver)[0]
-            if (!receiver) {
-                enqueueSnackbar("Please select a receiver", {variant: "warning"});
-                return Promise.resolve();
-            }
-
-            let contract = {
-                "contract_id": id,
-                "sender": Principal.fromText(profile.id),
-                "released": newRow.released,
-                "confirmed": newRow.confirmed || false,
-                "amount": BigInt(newRow.amount || 0),
-                "receiver": Principal.fromText(receiver.id),
-            }
-
-            dispatch(handleRedux("UPDATE_CONTRACT", {id: contract.contract_id, contract}));
-            dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
             revoke_message();
             return Promise.resolve(newRow);
         },
@@ -194,75 +152,27 @@ export default function PaymentContract(props: any) {
                 icon: <DeleteIcon color={"error"}/>,
                 onClick: () => handleDeleteRow(props.rowId),
             },
-        ]
-
-        if (!["receiver", "amount", "released", "confirmed"].includes(props.field.toLowerCase())) {
-            options.push({
+            {
                 content: "Delete column",
                 icon: <DeleteIcon color={"error"}/>,
                 onClick: () => handleDeleteColumn(props.column.id),
-            })
-
-            options.unshift(
-                {
-                    content: "Formula",
-                    icon: <FunctionsIcon/>,
-                    onClick: () => handleClickOpen(props.column),
-                })
-
-            // push at index 0
-            options.unshift({
-                content: <input
-                    onKeyDown={(e: any) => {
-                        if (e.key === "Enter") {
-                            handleRenameColumn(props.column.id, e.target.value)
-                        }
-                    }
-                    }
-                    placeholder={"Rename column..."}/>,
-                preventClose: true,
-            })
+            },
+            {
+                content: "Formula",
+                icon: <FunctionsIcon/>,
+                onClick: () => handleClickOpen(props.column),
+            }
+        ]
 
 
-        }
         let children = <GridCell {...props} />;
 
-        switch (field.toLowerCase()) {
-            // TODO
-            //     case "receiver":
-            //         children = <RenderReceiver  {...props}/>
-            case "released":
-                children = <RenderRelease  {...props}/>
-            default:
-                children = <GridCell {...props} />
-        }
         return <ContextMenu options={options}>
             {children}
         </ContextMenu>;
 
     }
 
-    let custom_columns = columns.map((column: any) => {
-        let new_column = {...column}
-        switch (column.field.toLowerCase()) {
-            case "receiver":
-                new_column['renderEditCell'] = RenderReceiver
-                return new_column
-            case "released":
-                new_column['renderCell'] = RenderRelease
-                new_column['width'] = 150;
-                return new_column
-            case "confirmed":
-                new_column['renderCell'] = RenderConfirmed
-                return new_column
-            case "amount":
-                return new_column
-            default:
-                new_column['valueGetter'] = (params: GridValueGetterParams) => getFormula(params, new_column['dataValidator'][0])
-                return new_column
-
-        }
-    })
 
     return (
         <div contentEditable={false}
@@ -271,7 +181,7 @@ export default function PaymentContract(props: any) {
             {dialog}
             <StyledDataGrid
                 rows={normalize_row(rows)}
-                columns={custom_columns}
+                columns={columns}
                 // disableColumnSelector
                 hideFooterPagination
                 editMode="row"
