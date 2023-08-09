@@ -1,6 +1,5 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
-import {actor} from "../backend_connect/ic_agent";
 import Editor from "odoc-editor";
 import {table} from "../components/genral/editor_demo";
 import {payment_contract} from "../data_processing/data_samples";
@@ -10,6 +9,7 @@ import {normalize_content_tree, SlateNode} from "../data_processing/normalize/no
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../redux/main";
+import {actor} from "../App";
 
 function ShareFilePage(props: any) {
     let url = window.location.search;

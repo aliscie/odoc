@@ -28,7 +28,7 @@
         "entrypoint": "src/frontend/public/index.html"
       },
       "source": [
-        "frontend/assets",
+        "src/frontend/assets",
         "build"
       ],
       "type": "assets"

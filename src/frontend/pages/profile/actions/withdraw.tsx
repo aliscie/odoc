@@ -2,11 +2,11 @@ import SwipeDownAltIcon from "@mui/icons-material/SwipeDownAlt";
 import {Button} from "@mui/material";
 import * as React from "react";
 import {useState} from "react";
-import {actor} from "../../../backend_connect/ic_agent";
 import {useSnackbar} from "notistack";
 import {handleRedux} from "../../../redux/main";
 import {useDispatch} from "react-redux";
 import LoaderButton from "../../../components/genral/loader_button";
+import {actor} from "../../../App";
 
 function Withdraw(props: any) {
     const dispatch = useDispatch();

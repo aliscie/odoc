@@ -1,6 +1,6 @@
 import {AuthClient} from "@dfinity/auth-client";
 import {Actor, HttpAgent} from "@dfinity/agent";
-import {canisterId, identityCanisterId} from "./handle_vars";
+import {canisterId as userCanisterId, identityCanisterId} from "./handle_vars";
 import {idlFactory} from "../../declarations/user_canister";
 
 let backendActor, loading = false
@@ -42,7 +42,7 @@ export const get_actor = async () => {
     if (!backendActor) {
         const authClient = await AuthClient.create();
         const identity = await authClient.getIdentity();
-        backendActor = createActor(canisterId, {
+        backendActor = createActor(userCanisterId, {
             agentOptions: {
                 identity,
                 host: window.location.href,
@@ -86,11 +86,13 @@ export async function is_logged() {
 }
 
 export async function logout() {
-    const authClient = await AuthClient.create();
-    await authClient.logout()
-    window.location.reload()
+    if (!(await is_logged())) {
+        const authClient = await AuthClient.create();
+        await authClient.logout()
+        window.location.reload()
+    }
+
 }
 
 
-export const actor = await get_actor();
 // export const actor = user_canister;

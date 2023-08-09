@@ -3,7 +3,7 @@ import React from "react";
 import {useDispatch} from "react-redux";
 import {useSnackbar} from "notistack";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {actor} from "../../backend_connect/ic_agent";
+import {actor} from "../../App";
 
 const DeleteFile = (props: any) => {
     const dispatch = useDispatch();

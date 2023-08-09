@@ -6,12 +6,12 @@ import {useSelector} from "react-redux";
 import IconButton from "@mui/material/IconButton";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
-import {actor} from "../backend_connect/ic_agent";
 import {useSnackbar} from "notistack";
 import EditorDemo from "../components/genral/editor_demo";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AvatarChips from "../components/genral/person_chip";
 import CreatePost from "../components/spesific/create_new_post";
+import {actor} from "../App";
 
 const Discover = () => {
 

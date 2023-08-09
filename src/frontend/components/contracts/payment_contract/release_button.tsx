@@ -4,11 +4,11 @@ import {Button, Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
 import SendIcon from '@mui/icons-material/Send';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
-import {actor} from "../../../backend_connect/ic_agent";
 import {useSnackbar} from "notistack";
 import {Payment} from "../../../../declarations/user_canister/user_canister.did";
 import {useDispatch} from "react-redux";
 import {handleRedux} from "../../../redux/main";
+import {actor} from "../../../App";
 
 function ReleaseButton({contract}: { contract: Payment }) {
     const [loading, setLoading] = useState(false);
