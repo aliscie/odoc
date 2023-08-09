@@ -1,7 +1,7 @@
 import {AuthClient} from "@dfinity/auth-client";
 import {Actor, HttpAgent} from "@dfinity/agent";
-import {canisterId as userCanisterId, identityCanisterId} from "./handle_vars";
-import {idlFactory} from "../../declarations/user_canister";
+import {canisterId as userCanisterId, idlFactory} from "../../declarations/user_canister";
+import {canisterId as identityCanisterId} from "../../declarations/internet_identity";
 
 let backendActor, loading = false
 
@@ -35,7 +35,7 @@ const createActor = (canisterId, options = {}) => {
 // get center canister actor
 
 
-export const get_actor = async () => {
+export const get_user_actor = async () => {
     await new Promise(resolve => !loading && resolve());
     loading = true
 

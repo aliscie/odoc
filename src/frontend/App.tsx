@@ -12,9 +12,10 @@ import {handleRedux} from "./redux/main";
 import {useDispatch} from "react-redux";
 import {agent} from "./backend_connect/main";
 import {get_initial_data} from "./redux/files";
-import {get_actor} from "./backend_connect/ic_agent";
+import {get_user_actor} from "./backend_connect/ic_agent";
 import {ActorSubclass} from "@dfinity/agent";
 import {_SERVICE} from "../declarations/user_canister/user_canister.did";
+import {user_canister} from "../declarations/user_canister";
 
 export let actor: ActorSubclass<_SERVICE> | undefined;
 
@@ -23,8 +24,8 @@ function App() {
     const [state, setState] = useState(false);
     useEffect(() => {
         (async () => {
-
-            actor = await get_actor();
+            // actor = user_canister;
+            actor = await get_user_actor();
             await get_initial_data();
 
             if (await agent.is_logged()) {
