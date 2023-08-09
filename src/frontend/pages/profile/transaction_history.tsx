@@ -1,6 +1,5 @@
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
-import {actor} from "../../backend_connect/ic_agent";
 import {handleRedux} from "../../redux/main";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
@@ -16,6 +15,7 @@ import ConfirmButton from "../../components/contracts/payment_contract/confirm_b
 import CancelButton from "../../components/contracts/payment_contract/cancel_button";
 import useGetUser from "../../utils/get_user_by_principal";
 import {logger} from "../../dev_utils/log_data";
+import {actor} from "../../App";
 
 
 export function ContractItem(props: any) {

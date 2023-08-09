@@ -6,7 +6,6 @@ import {useDispatch, useSelector} from "react-redux";
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import {Rating, TextField, Tooltip, Typography} from "@mui/material";
-import {actor} from "../../backend_connect/ic_agent";
 import Friends from "./friends";
 import Deposit from "./actions/deposit";
 import Withdraw from "./actions/withdraw";
@@ -16,6 +15,7 @@ import {convertToBlobLink, convertToBytes} from "../../data_processing/image_to_
 import {handleRedux} from "../../redux/main";
 import BasicTabs from "./history";
 import TransactionHistory from "./transaction_history";
+import {actor} from "../../App";
 
 
 export default function ProfileComponent() {

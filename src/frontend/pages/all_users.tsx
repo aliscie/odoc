@@ -7,8 +7,8 @@ import IconButton from "@mui/material/IconButton";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import {actor} from "../backend_connect/ic_agent";
 import {useSnackbar} from "notistack";
+import {actor} from "../App";
 
 
 const AllUsers = () => {

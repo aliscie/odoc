@@ -3,7 +3,7 @@ import {Button, Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import {useSnackbar} from "notistack";
-import {actor} from "../../../backend_connect/ic_agent";
+import {actor} from "../../../App";
 
 function ConfirmButton({
                            confirmed,

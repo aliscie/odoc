@@ -2,7 +2,6 @@ import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {ListItemButton, ListItemText} from "@mui/material";
 import {randomString} from "../../data_processing/data_samples";
-import {actor} from "../../backend_connect/ic_agent";
 import {useSelector} from "react-redux";
 import DialogOver from "./daiolog_over";
 import MultiAutoComplete from "./multi_autocompelte";
@@ -10,6 +9,7 @@ import List from "@mui/material/List";
 import CheckIcon from '@mui/icons-material/Check';
 import {User} from "../../../declarations/user_canister/user_canister.did";
 import ShareIcon from "@mui/icons-material/Share";
+import {actor} from "../../App";
 
 let Dialog = (props: any) => {
 

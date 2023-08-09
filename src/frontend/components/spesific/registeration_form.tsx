@@ -1,10 +1,10 @@
 import FormDialog from "../genral/dialog";
 import * as React from "react";
 import {TextField} from "@mui/material";
-import {actor} from "../../backend_connect/ic_agent";
 import {useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
 import {convertToBytes} from "../../data_processing/image_to_vec";
+import {actor} from "../../App";
 
 const inputs = [
     {id: "username", label: "Username", type: "text", required: true},

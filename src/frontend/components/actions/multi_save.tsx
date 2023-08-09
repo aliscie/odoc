@@ -2,11 +2,11 @@ import {Button, Tooltip} from "@mui/material";
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
-import {actor} from "../../backend_connect/ic_agent";
 import {useSnackbar} from "notistack";
 import {ContentNode, FileNode, StoredContract} from "../../../declarations/user_canister/user_canister.did";
 import deserialize_file_contents from "../../data_processing/denormalize/denormalize_file_contents";
 import denormalize_payment_contract from "../../data_processing/denormalize/denormalize_contracts";
+import {actor} from "../../App";
 
 function MultiSaveButton(props: any) {
     const dispatch = useDispatch();

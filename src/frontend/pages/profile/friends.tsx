@@ -1,6 +1,5 @@
 import {useSnackbar} from "notistack";
 import {useDispatch} from "react-redux";
-import {actor} from "../../backend_connect/ic_agent";
 import {handleRedux} from "../../redux/main";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
@@ -12,6 +11,7 @@ import {Rating, Tooltip} from "@mui/material";
 import * as React from "react";
 import LoaderButton from "../../components/genral/loader_button";
 import {convertToBlobLink} from "../../data_processing/image_to_vec";
+import {actor} from "../../App";
 
 
 function Friend(props: any) {

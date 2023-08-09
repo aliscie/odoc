@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import "./App.css";
 import NavBar from "./components/spesific/nav_bar";
 import Pages from "./pages/main";
@@ -12,24 +12,32 @@ import {handleRedux} from "./redux/main";
 import {useDispatch} from "react-redux";
 import {agent} from "./backend_connect/main";
 import {get_initial_data} from "./redux/files";
+import {get_actor} from "./backend_connect/ic_agent";
+import {ActorSubclass} from "@dfinity/agent";
+import {_SERVICE} from "../declarations/user_canister/user_canister.did";
 
-await get_initial_data();
+export let actor: ActorSubclass<_SERVICE> | undefined;
 
 function App() {
     const dispatch = useDispatch();
+    const [state, setState] = useState(false);
     useEffect(() => {
         (async () => {
-            // await get_initial_data()
+
+            actor = await get_actor();
+            await get_initial_data();
+
             if (await agent.is_logged()) {
                 dispatch(handleRedux('LOGIN'));
             }
+            setState(true)
 
         })()
     }, []);
 
     return (
         <Theme>
-            <BrowserRouter>
+            {state && <BrowserRouter>
                 <SearchPopper/>
                 <SnackbarProvider maxSnack={3}>
                     <RegistrationForm/>
@@ -38,7 +46,7 @@ function App() {
                         <Pages/>
                     </NavBar>
                 </SnackbarProvider>
-            </BrowserRouter>
+            </BrowserRouter>}
         </Theme>
     )
         ;

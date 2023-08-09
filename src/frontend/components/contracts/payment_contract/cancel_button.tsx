@@ -7,7 +7,7 @@ import {Payment} from "../../../../declarations/user_canister/user_canister.did"
 
 import CancelIcon from '@mui/icons-material/Cancel';
 import {handleRedux} from "../../../redux/main";
-import {actor} from "../../../backend_connect/ic_agent";
+import {actor} from "../../../App";
 
 function CancelButton({contract}: { contract: Payment }) {
     // const [is_released, setReleased] = React.useState(contract.released);

@@ -12,7 +12,7 @@ import {useDispatch} from "react-redux";
 import {handleRedux} from "../../../redux/main";
 import DeleteFile from "../../actions/delete_file";
 import Draggable from "../../genral/draggable";
-import {actor} from "../../../backend_connect/ic_agent";
+import {actor} from "../../../App";
 
 interface ItemProps {
     data: Record<number, NestedDataItem>; // Use Record<number, NestedDataItem> instead of any

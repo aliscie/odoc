@@ -1,8 +1,8 @@
 import * as React from "react";
-import {actor} from "../../../backend_connect/ic_agent";
 import {useDispatch} from "react-redux";
 import LoaderButton from "../../../components/genral/loader_button";
 import {handleRedux} from "../../../redux/main";
+import {actor} from "../../../App";
 
 function Deposit(props: any) {
     const dispatch = useDispatch();

@@ -5,7 +5,7 @@ import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {FileNode, User} from "../../declarations/user_canister/user_canister.did";
-import {actor} from "../backend_connect/ic_agent";
+import {actor} from "../App";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
