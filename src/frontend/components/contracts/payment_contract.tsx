@@ -115,7 +115,7 @@ export default function PaymentContract(props: any) {
 
                 let newContent: Payment = updateTableContent(props, content, updateCells)
                 dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-                dispatch((handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent})));
+                dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
 
             }
 

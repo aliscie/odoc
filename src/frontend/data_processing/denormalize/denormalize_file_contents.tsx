@@ -30,8 +30,7 @@ function de_nesting(nested: any[], data = []) {
 
 function deserialize_file_contents(content: any[], data: Array<Array<[string, Array<[string, ContentNode]>]>> = []) {
     Object.keys(content).forEach((key) => {
-        console.log(content)
-        let change = []
+        let change = [];
         let item = content[key];
 
         let de_nested = de_nesting(item)
