@@ -18,8 +18,8 @@ import useColumnManager from "./hooks/useColumnManager";
 import useGetUser from "../../utils/get_user_by_principal";
 import {useFormulaDialog} from "../../hook/dialog";
 import FunctionsIcon from '@mui/icons-material/Functions';
-import {RenderRelease} from "./payment_contract/renderers";
 import {updateTableContent} from "./utils/update_table";
+import {logger} from "../../dev_utils/log_data";
 
 
 export default function DataGrid(props: any) {
@@ -41,16 +41,27 @@ export default function DataGrid(props: any) {
 
     let initial_columns = table_content.data[0].Table.columns;
     let {rows, handleAddRow, handleDeleteRow} = useRowManager({initial_rows, props})
+
     let {
         columns,
         handleDeleteColumn,
         handleRenameColumn,
         handleAddColumn,
         handleColumnValidator
-    } = useColumnManager({initial_columns, props})
+    } = useColumnManager({initial_columns, props});
 
     function normalize_row(data: any) {
-        return data
+        let res = [];
+        data.map((item: any) => {
+            let deserilzedrow = {};
+            console.log({item});
+            item.cells[0].map((cell: any) => {
+                deserilzedrow[cell[0]] = cell[1];
+                deserilzedrow['id'] = item.id;
+            })
+            res.push(deserilzedrow);
+        })
+        return res;
     }
 
 
@@ -59,44 +70,44 @@ export default function DataGrid(props: any) {
 
     const processRowUpdate = React.useCallback(
         (newRow: GridRowModel, oldRow: GridRowModel) => {
-            console.log('Updated row:', newRow);
-            console.log('Old row:', oldRow);
+            // console.log('Updated row:', newRow);
+            // console.log('Old row:', oldRow);
 
-            let old_keys = Object.keys(oldRow);
-            let keys = Object.keys(newRow);
-            let diff = keys.filter((key) => !old_keys.includes(key));
-            if (diff.length > 0) {
-                let new_cells: Array<[string, string]> = diff.map((key: string) => {
-                    if (newRow[key]) {
-                        return [String(key), newRow[key] || ""];
-                    } else {
-                        return [String(key), oldRow[key] || ""];
+            // let old_keys = Object.keys(oldRow);
+            // let keys = Object.keys(newRow);
+            // let diff = keys.filter((key) => !old_keys.includes(key));
+
+
+            let new_cells: Array<[string, string]> = Object.keys(newRow).map((key: string) => {
+
+                // if (newRow[key]) {
+                return [String(key), newRow[key] || ""];
+                // } else {
+                //     return [String(key), oldRow[key] || ""];
+                // }
+
+            })
+
+
+            function updateCells(newTable: Table) {
+                const updatedRows = newTable.rows.map((row: Row) => {
+                    if (row.id === oldRow.id) {
+                        // const updatedCells = [...row.cells, ...new_cells];
+                        return {...row, cells: [new_cells]};
                     }
-
-                })
-
-                // update row cells
-
-                function updateCells(newTable: Table) {
-
-                    newTable.rows.map((row: Row) => {
-                        if (row.id === oldRow.id) {
-                            row = {...row, cells: [...row.cells, ...new_cells]};
-                            // row.cells = [[...row.cells, ...new_cells]];
-                        }
-                        return row;
-                    })
-                    return newTable;
-                }
-
-                let newContent: Payment = updateTableContent(props, content, updateCells)
-                dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-                dispatch((handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent})));
-
+                    return row;
+                });
+                return {...newTable, rows: updatedRows};
             }
 
-            let id = oldRow.id;
-            revoke_message();
+            let newContent: Payment = updateTableContent(props, content, updateCells)
+
+            dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
+            dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
+
+
+            // let id = oldRow.id;
+            // revoke_message();
             return Promise.resolve(newRow);
         },
         []

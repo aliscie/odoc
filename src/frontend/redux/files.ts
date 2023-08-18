@@ -193,11 +193,13 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
         //     return {
         //         ...state,
         //     }
+
         case 'CONTENT_CHANGES':
             state.changes.contents[action.id] = action.changes;
             return {
                 ...state,
             }
+
         case 'CONTRACT_CHANGES':
             state.changes.contracts[action.changes.contract_id] = action.changes;
             return {
