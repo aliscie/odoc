@@ -4,8 +4,6 @@ import {Button, ButtonGroup} from '@mui/material';
 import {StyledDataGrid} from "./spread_sheet";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
-import {useSnackbar} from "notistack";
-import {useTotalDept} from "./payment_contract/use_total_dept";
 import ContextMenu from "../genral/context_menu";
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
@@ -15,23 +13,17 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {Payment, Row, Table} from "../../../declarations/user_canister/user_canister.did";
 import useRowManager from "./hooks/useRowManager";
 import useColumnManager from "./hooks/useColumnManager";
-import useGetUser from "../../utils/get_user_by_principal";
 import {useFormulaDialog} from "../../hook/dialog";
 import FunctionsIcon from '@mui/icons-material/Functions';
 import {updateTableContent} from "./utils/update_table";
-import {logger} from "../../dev_utils/log_data";
 
 
 export default function DataGrid(props: any) {
-    let {getUser} = useGetUser();
     const dispatch = useDispatch();
 
     const {
-        profile,
         files_content,
         current_file,
-        contracts,
-        all_friends
     } = useSelector((state: any) => state.filesReducer);
     let content = files_content[current_file.id];
 
@@ -45,7 +37,6 @@ export default function DataGrid(props: any) {
     let {
         columns,
         handleDeleteColumn,
-        handleRenameColumn,
         handleAddColumn,
         handleColumnValidator
     } = useColumnManager({initial_columns, props});
@@ -54,7 +45,6 @@ export default function DataGrid(props: any) {
         let res = [];
         data.map((item: any) => {
             let deserilzedrow = {};
-            console.log({item});
             item.cells[0].map((cell: any) => {
                 deserilzedrow[cell[0]] = cell[1];
                 deserilzedrow['id'] = item.id;
@@ -63,10 +53,6 @@ export default function DataGrid(props: any) {
         })
         return res;
     }
-
-
-    const {enqueueSnackbar} = useSnackbar();
-    let {revoke_message} = useTotalDept();
 
     const processRowUpdate = React.useCallback(
         (newRow: GridRowModel, oldRow: GridRowModel) => {
