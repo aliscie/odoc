@@ -1,5 +1,4 @@
-# Please note the name changed from AUTODOX to ODOC just sound better.
-## old version of Autodox can be found [here](https://github.com/aliscie/autodox-old)
+## old version of Odoc can be found [here](https://github.com/aliscie/Odoc-old)
 ## TO get started
   1. `dfx start --background --clean`
   2. `dfx deploy backend`
@@ -12,11 +11,8 @@
 <h3 align="center">SAVES YOUR TIME</h3>
 
 
-<img style="psotion: absolute; left: 50%; width: 20%" src="https://github.com/aliscie/odoc/assets/58806996/d7f60d3c-e2ec-4060-a61a-27b4f1bc5e81"/>
-<hr/>
-<img style="width: 100%; margin:0; padding:0"  src="https://github.com/aliscie/odoc/assets/58806996/1680d830-5b50-4293-9a00-6429c197a588"/>
 
-
+<img align="left" src="https://i.ibb.co/xzJXxWK/logo2.png" style="width:100%">
 Odoc
 
 This app is Notion.so clone, roam research clone and obsidian clone. The main purpose of this app is not to just clone these note-taking apps but to make an all-in-one **Open source note-taking app** with automation features.

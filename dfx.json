@@ -1,19 +1,34 @@
 {
   "canisters": {
-    "backend": {
-      "candid": "src/backend/backend.did",
-      "package": "backend",
+    "central_canister": {
+      "candid": "src/central_canister/central_canister.did",
+      "package": "central_canister",
       "type": "rust"
+    },
+    "user_canister": {
+      "candid": "src/user_canister/user_canister.did",
+      "package": "user_canister",
+      "type": "rust"
+    },
+    "internet_identity": {
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "type": "custom",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
     },
     "frontend": {
       "dependencies": [
-        "backend"
+        "user_canister"
       ],
       "frontend": {
-        "entrypoint": "public/index.html"
+        "entrypoint": "src/frontend/public/index.html"
       },
       "source": [
-        "src/assets",
+        "src/frontend/assets",
         "build"
       ],
       "type": "assets"
@@ -26,5 +41,5 @@
     }
   },
   "version": 1,
-  "dfx": "0.14.0"
+  "dfx": "0.14.3"
 }

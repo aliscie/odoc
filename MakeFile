@@ -1,0 +1,14 @@
+run_fe:
+	npm start
+run_be:
+	dfx deploy backend
+
+start:
+	chmod +x ./scripts/start.sh
+	./scripts/start.sh
+
+kill:
+	kill -INT $(lsof -t -i :4943)
+
+kill_dfx:
+	killall dfx replica

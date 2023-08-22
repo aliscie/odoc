@@ -1,0 +1,126 @@
+
+:root {
+    --color: black;
+    --secondary-text-color: #525252;
+    --hover-color: #327b98;
+    --primary-color: #00a3ff;
+    --secondary-color: #006ae6;
+    --background-color: #d7d7d7;
+    --primary-background-color: #c2c2c2;
+    --secondary-background-color: #8ebfd7;
+    --background: linear-gradient(135deg, rgba(10, 78, 147, 0.8), rgba(0, 230, 203, 0.8));
+    --light-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 240, 0.8));
+    --money-color: green;
+    --card-color: #ffffff;
+    --main-background: radial-gradient(circle at center bottom, #000000, #042dc7 40%, #40e0d0);
+    --background-image: url("../assets/background.png");
+}
+
+
+/* Example of the CSS for fade transition */
+.fade-enter {
+    opacity: 0;
+}
+
+.fade-enter-active {
+    opacity: 1;
+    transition: opacity 300ms;
+}
+
+.fade-exit {
+    opacity: 1;
+}
+
+.fade-exit-active {
+    opacity: 0;
+    transition: opacity 300ms;
+}
+
+
+hr {
+    color: var(--color) !important;
+
+}
+
+.mySidenav {
+    color: var(--color);
+}
+
+a {
+    color: var(--color);
+}
+
+.dark {
+    --hover-color: #3b8cb0;
+    --color: #d9d9d9;
+    --secondary-text-color: #939393;
+    --money-color: lightgreen;
+    --primary-background-color: #545454;
+    --background-color: #333;
+    --primary-color: #00a3ff;
+    --secondary-color: #006ae6;
+    --background: linear-gradient(135deg, rgba(0, 42, 84, 0.8), rgba(0, 107, 230, 0.8));
+    --secondary-background-color: #638698;
+    --light-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 240, 0.8));
+    --main-background: conic-gradient(#30d5c8, yellow, #00ced1, #000080, blue, magenta, #30D5C8);
+    --card-color: #b2b2b2;
+    --background-image: url("../assets/dark_background.png");
+}
+
+.card {
+    color: var(--color);
+    background: rgba(183, 0, 255, 0.06);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    color: var(--color);
+    background: var(--background-color);
+    /*background-image: var(--background-image);*/
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+
+.code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.btn {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    opacity: 0.9;
+}
+
+.btn:hover {
+    opacity: 1;
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(138, 35, 244, 0.5);
+}
+
+.btn:active {
+    background: var(--secondary-color);
+}
+
+
+.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+}
