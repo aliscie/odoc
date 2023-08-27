@@ -4,6 +4,7 @@ import MentionComponent from "./mention_component";
 import {Table, TableBody, TableCell, TableRow} from "@mui/material";
 import ContractView from "../views/contract_view";
 import DataGrid from "../contracts/data_grid";
+import AccumulativeContract from "../contracts/AccumulativeContract";
 
 export function EditorRenderer(props: any) {
 
@@ -26,8 +27,8 @@ export function EditorRenderer(props: any) {
             return <ContractView {...props.element} />;
         case "data_grid":
             return <DataGrid {...props.element} />;
-        case "accumulate_contract":
-            return <SpreadSheet {...props.element} />;
+        case "accumulative_contract":
+            return <AccumulativeContract {...props.element} />;
         case "custom_contract":
             return <SpreadSheet {...props.element} />;
 

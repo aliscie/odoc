@@ -42,6 +42,7 @@ export default function useViews(props: Props) {
     const handleChange: any = (event: React.ChangeEvent<{ value: unknown }>) => {
         setValue(event.target.value as number);
     };
+
     let OptionsComponent = <Select
         size="small"
         value={value}
@@ -52,6 +53,7 @@ export default function useViews(props: Props) {
     >
         {props.views.map((item: View) => <MenuItem value={item.id}>{item.name}</MenuItem>)}
     </Select>
+
     let ViewsComponent = props.views.map((item: View, index: number) => {
         return <CustomTabPanel value={value} index={item.id}>{item.component}</CustomTabPanel>
     })

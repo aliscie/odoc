@@ -56,6 +56,14 @@ let roadMap = [
             "In the release column by default, they are false but when I click it, I should see a popup that asks me for confirmation, and then I can click conform"
     },
     {
+        is_done: true,
+        title: "Accumulative contract",
+        content: "When the user transfer to an accumulative contract part of the payment will go to one person and the other part will go to the other person\n" +
+            "The creator of the accumulative contract can’t update the contract after it gets approved by any of the parties.\n" +
+            "The creator of the accumulative contract/or any one of the parties can make changes but these changes will not be applied till the other party accept/approved them\n" +
+            "Users will be notified when others release them a payment in the payment contract (note accumulative contract will not have transaction notification)\n"
+    },
+    {
         is_done: false,
         title: "USDC wallet",
         content: "User can deposit USDC and withdraw to external wallets"
@@ -65,14 +73,7 @@ let roadMap = [
         title: "Dynamic user canisters",
         content: "Each user will have their own canister to store their files and contents. However, contracts and friends will be stored and handed in the central canister."
     },
-    {
-        is_done: false,
-        title: "Accumulative contract",
-        content: "When the user transfer to an accumulative contract part of the payment will go to one person and the other part will go to the other person\n" +
-            "The creator of the accumulative contract can’t update the contract after it gets approved by any of the parties.\n" +
-            "The creator of the accumulative contract/or any one of the parties can make changes but these changes will not be applied till the other party accept/approved them\n" +
-            "Users will be notified when others release them a payment in the payment contract (note accumulative contract will not have transaction notification)\n"
-    },
+
     {
         is_done: false,
         title: "Custom contract",

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {GridCell, GridRowModel} from '@mui/x-data-grid';
+import {GridCell, GridRowModel, GridToolbar} from '@mui/x-data-grid';
 import {Button, ButtonGroup} from '@mui/material';
 import {StyledDataGrid} from "./spread_sheet";
 import {useDispatch, useSelector} from "react-redux";
@@ -16,14 +16,17 @@ import useColumnManager from "./hooks/useColumnManager";
 import {useFormulaDialog} from "../../hook/dialog";
 import FunctionsIcon from '@mui/icons-material/Functions';
 import {updateTableContent} from "./utils/update_table";
+import PayButton from "./accumalitve_contract/pay_button";
+import {RenderReceiver} from "./payment_contract/renderers";
 
 
-export default function DataGrid(props: any) {
+export default function AccumulativeContract(props: any) {
     const dispatch = useDispatch();
 
     const {
         files_content,
         current_file,
+        all_friends
     } = useSelector((state: any) => state.filesReducer);
     let content = files_content[current_file.id];
 
@@ -56,21 +59,11 @@ export default function DataGrid(props: any) {
 
     const processRowUpdate = React.useCallback(
         (newRow: GridRowModel, oldRow: GridRowModel) => {
-            // console.log('Updated row:', newRow);
-            // console.log('Old row:', oldRow);
-
-            // let old_keys = Object.keys(oldRow);
-            // let keys = Object.keys(newRow);
-            // let diff = keys.filter((key) => !old_keys.includes(key));
 
 
             let new_cells: Array<[string, string]> = Object.keys(newRow).map((key: string) => {
 
-                // if (newRow[key]) {
                 return [String(key), newRow[key] || ""];
-                // } else {
-                //     return [String(key), oldRow[key] || ""];
-                // }
 
             })
 
@@ -79,7 +72,7 @@ export default function DataGrid(props: any) {
                 const updatedRows = newTable.rows.map((row: Row) => {
                     if (row.id === oldRow.id) {
                         // const updatedCells = [...row.cells, ...new_cells];
-                        return {...row, cells: [new_cells]};
+                        return {...row, cells: [new_cells] };
                     }
                     return row;
                 });
@@ -87,13 +80,15 @@ export default function DataGrid(props: any) {
             }
 
             let newContent: Payment = updateTableContent(props, content, updateCells)
+            // TODO when hit save new data get removed, but they stored correctly in the BackEnd?
+            // console.log({
+            //     newContent
+            // })
 
             dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
             dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
 
 
-            // let id = oldRow.id;
-            // revoke_message();
             return Promise.resolve(newRow);
         },
         []
@@ -161,6 +156,9 @@ export default function DataGrid(props: any) {
             }
         ]
 
+        if (['receiver', 'share'].includes(field)) {
+            options = options.filter((item: any) => !["Formula", "Delete column"].includes(item.content));
+        }
 
         let children = <GridCell {...props} />;
 
@@ -170,6 +168,19 @@ export default function DataGrid(props: any) {
 
     }
 
+
+    let custom_columns = columns.map((column: any) => {
+        let new_column = {...column}
+        switch (column.field.toLowerCase()) {
+            case "receiver":
+                new_column['renderEditCell'] = (props: any) => RenderReceiver({...props, options: all_friends})
+                return new_column
+            default:
+                return new_column
+
+        }
+    })
+
     return (
         <div contentEditable={false}
              style={{maxHeight: "25%", maxWidth: '100%'}}
@@ -177,18 +188,22 @@ export default function DataGrid(props: any) {
             {dialog}
             <StyledDataGrid
                 rows={normalize_row(rows)}
-                columns={columns}
+                columns={custom_columns}
                 // disableColumnSelector
                 hideFooterPagination
                 editMode="row"
                 processRowUpdate={processRowUpdate}
                 onProcessRowUpdateError={handleProcessRowUpdateError}
                 slots={{
-                    // toolbar: () => <div>{OptionsComponent}</div>,
-                    // row: CustomRow,
+                    toolbar: GridToolbar,
                     cell: CustomCell,
-
+                    toolbar: () => <ButtonGroup variant="text" size={'small'}>
+                        <Button>Views</Button>
+                        <Button>Filter</Button>
+                        <PayButton contract={{amount: 100}}/>
+                    </ButtonGroup>
                 }}
+
             />
 
 

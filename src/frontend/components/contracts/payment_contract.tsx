@@ -58,7 +58,7 @@ export default function PaymentContract(props: any) {
             row.cells && row.cells[0] && row.cells[0].map((cell_value: [string, string]) => {
                 extra_cells[cell_value[0]] = cell_value[1]
             });
-            let contract_id = row.contract[0].PaymentContract;
+            let contract_id = row.contract[0] && row.contract[0].PaymentContract;
             let contract = contracts && contracts[contract_id]
             if (contract) {
 
@@ -246,7 +246,7 @@ export default function PaymentContract(props: any) {
         let new_column = {...column}
         switch (column.field.toLowerCase()) {
             case "receiver":
-                new_column['renderEditCell'] = RenderReceiver
+                new_column['renderEditCell'] = (props: any) => RenderReceiver({...props, options: all_friends})
                 return new_column
             case "released":
                 new_column['renderCell'] = RenderRelease

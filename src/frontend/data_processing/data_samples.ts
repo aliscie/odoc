@@ -22,9 +22,9 @@ export let data_grid = {
             "Table": {
                 "rows": [
                     {
-                        id: contract_id,
+                        id: randomString(),
                         contract: [],
-                        cells: [],
+                        cells: [[["name", ""], ["last_name", "x"], ["full_name", "xxxa"]]],
                         requests: [],
                     }
                 ],
@@ -42,6 +42,36 @@ export let data_grid = {
     }],
     "type": "data_grid"
 }
+
+
+export let accumulative_contract = {
+
+    "id": randomString(),
+    "children": [{
+        "id": "002", "text": "", "data": [{
+            "Table": {
+                "rows": [
+                    {
+                        id: randomString(),
+                        contract: [],
+                        cells: [[["receiver", "any"], ["share%", "10"]]],
+                        requests: [],
+                    }
+                ],
+                "columns": [
+                    {...column, id: randomString(), field: "receiver"},
+                    {
+                        ...column,
+                        id: randomString(),
+                        field: "share%",
+                    },
+                ]
+            }
+        }]
+    }],
+    "type": "accumulative_contract"
+}
+
 export let payment_contract = {
     "id": contract_id,
     "children": [{

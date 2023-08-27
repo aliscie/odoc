@@ -49,20 +49,21 @@ function ContractView(props: any) {
         },
         [setFilterModel],
     );
-    let [isOver, setOver] = useState(false);
+    // let [isOver, setOver] = useState(false);
 
     return <Box
         sx={{
             width: '100%',
-            transition: 'height 0.3s', // Add transition property for the height
+            // transition: 'height 0.3s', // Add transition property for the height
         }}
-        onMouseLeave={() => setOver(false)}
-        onMouseEnter={() => setOver(true)}
+        // onMouseLeave={() => setOver(false)}
+        // onMouseEnter={() => setOver(true)}
         contentEditable={false}
     >
         <Box
             sx={{
-                borderBottom: 1, borderColor: 'divider', opacity: isOver ? 1 : 0, transition: '0.3s',
+                borderBottom: 1, borderColor: 'divider',
+                // opacity: isOver ? 1 : 0, transition: '0.3s',
                 // position:"absolute",
             }}
         >

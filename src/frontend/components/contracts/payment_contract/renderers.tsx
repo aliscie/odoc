@@ -27,7 +27,7 @@ export let RenderConfirmed = (props: any) => {
     }
     return <GppBadIcon disabled/>
 }
-export let RenderReceiver = (props: any) => ReceiverComponent({...props, options: all_friends})
+export let RenderReceiver = (props: any) => ReceiverComponent({...props})
 export let RenderRelease = (params: GridValueGetterParams) => {
     return <span style={{minWidth: "200px"}}>
                 <ReleaseButton

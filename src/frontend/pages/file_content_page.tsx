@@ -14,6 +14,7 @@ function FileContentPage(props: any) {
 
 
     let [title, setTitle] = React.useState(current_file.name);
+    let [renderTitle, setRender] = React.useState<string>(current_file.name);
 
 
     const dispatch = useDispatch();
@@ -85,7 +86,7 @@ function FileContentPage(props: any) {
                             variant="h3"
                             onKeyDown={preventEnter}
                             onKeyUp={handleTitleKeyDown}
-                            contentEditable={true}>{current_file.name}</Typography>
+                            contentEditable={true}>{renderTitle}</Typography>
                         <EditorComponent
                             handleOnInsertComponent={handleOnInsertComponent}
                             onChange={onChange}

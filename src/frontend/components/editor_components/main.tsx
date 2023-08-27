@@ -1,5 +1,5 @@
 import {table} from "../genral/editor_demo";
-import {data_grid, payment_contract} from "../../data_processing/data_samples";
+import {accumulative_contract, data_grid, payment_contract} from "../../data_processing/data_samples";
 import {EditorRenderer} from "./editor_renderer";
 import Editor from "odoc-editor";
 import * as React from "react";
@@ -40,7 +40,7 @@ function EditorComponent(props: Props) {
                 },
                 data_grid,
                 payment_contract,
-                {type: "accumulative_contract"},
+                accumulative_contract,
                 {type: "custom_contract"},
             ]}
             onInsertComponent={props.handleOnInsertComponent}

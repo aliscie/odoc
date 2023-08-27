@@ -9,8 +9,8 @@ function useColumnManager(props: any) {
     const {files_content, current_file} = useSelector((state: any) => state.filesReducer);
     let content = files_content[current_file.id];
 
-    let [columns, setColumns] = React.useState(props.initial_columns)
-    let {setRows} = props;
+    let [columns, setColumns]: any = React.useState(props.initial_columns)
+    // let {setRows} = props;
     const dispatch = useDispatch();
 
     const handleDeleteColumn = (colId: string) => {
@@ -23,7 +23,7 @@ function useColumnManager(props: any) {
                 }
             });
             // newTable.columns = newTable.columns.filter((col: Column, index: number) => index !== colIndex);
-            setRows(newTable.rows);
+            // setRows(newTable.rows);
             setColumns((pre: any) => {
                 let new_columns: Array<Column> = pre.filter((item: any, index: number) => index !== colIndex);
                 // let remove_contract_column = new_columns.filter((item: any, index: number) => !["receiver", "amount", "release", "confined"].includes(item.field.toLowerCase()));
@@ -52,7 +52,8 @@ function useColumnManager(props: any) {
             };
             return newColumns;
         });
-dfx
+        dfx
+
         function renameColumn(newTable: Table) {
             newTable.columns[index]["dataValidator"] = [formula];
             return newTable;
