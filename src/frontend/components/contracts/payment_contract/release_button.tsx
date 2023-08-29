@@ -18,7 +18,7 @@ function ReleaseButton({contract}: { contract: Payment }) {
     const handleRelease = async () => {
         setLoading(true)
         let res = await actor.release_payment(contract.contract_id);
-        console.log({res})
+        // console.log({res})
         setLoading(false)
         if ("Ok" in res) {
             let new_contract = {

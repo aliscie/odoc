@@ -18,7 +18,7 @@ export let data_grid = {
 
     "id": randomString(),
     "children": [{
-        "id": "002", "text": "", "data": [{
+        "id": randomString(), "text": "", "data": [{
             "Table": {
                 "rows": [
                     {
@@ -44,11 +44,11 @@ export let data_grid = {
 }
 
 
-export let accumulative_contract = {
+export let shares_contract = {
 
     "id": randomString(),
     "children": [{
-        "id": "002", "text": "", "data": [{
+        "id": randomString(), "text": "", "data": [{
             "Table": {
                 "rows": [
                     {
@@ -69,13 +69,13 @@ export let accumulative_contract = {
             }
         }]
     }],
-    "type": "accumulative_contract"
+    "type": "shares_contract"
 }
 
 export let payment_contract = {
     "id": contract_id,
     "children": [{
-        "id": "002", "text": "", "data": [{
+        "id": randomString(), "text": "", "data": [{
             "Table": {
                 "rows": [
                     {

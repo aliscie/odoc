@@ -69,18 +69,6 @@ mod tests {
 
     use super::*;
 
-// #[test]
-    // fn test_create() {
-    //     // Create a mock caller instance
-    //     let mock_caller = MockCaller;
-    //
-    //     // Set the mock caller as the current caller
-    //     ic_cdk::api::set_caller(Box::new(mock_caller));
-    //
-    //     let file = FileNode::new(String::from("hi"), None);
-    //     println!("----------------new file id is  {:#?}", "file.id");
-    // }
-
     #[test]
     fn save_candid_2() {
         #[ic_cdk_macros::query(name = "__get_candid_interface_tmp_hack")]

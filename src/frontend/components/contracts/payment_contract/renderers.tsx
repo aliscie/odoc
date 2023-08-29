@@ -6,10 +6,8 @@ import {GridValueGetterParams} from "@mui/x-data-grid";
 import ReleaseButton from "./release_button";
 import CancelButton from "./cancel_button";
 import * as React from "react";
-import {useSelector} from "react-redux";
 
 export let RenderConfirmed = (props: any) => {
-    const {profile,} = useSelector((state: any) => state.filesReducer);
 
     let receiver = props.row.receiver;
     let is_confirmed = props.row.confirmed == true;
@@ -18,7 +16,7 @@ export let RenderConfirmed = (props: any) => {
         return <VerifiedUserIcon/>
     }
 
-    if (receiver === profile.name) { // TODO use receiver.id === profile.id instead.
+    if (receiver === props.profile.name) { // TODO use receiver.id === profile.id instead.
         return <ConfirmButton
             sender={props.row.sender}
             id={props.row.id}

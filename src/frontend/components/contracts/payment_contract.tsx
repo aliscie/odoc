@@ -253,7 +253,7 @@ export default function PaymentContract(props: any) {
                 new_column['width'] = 150;
                 return new_column
             case "confirmed":
-                new_column['renderCell'] = RenderConfirmed
+                new_column['renderCell'] = (props: any) => RenderConfirmed({...props, profile})
                 return new_column
             case "amount":
                 return new_column
@@ -265,8 +265,9 @@ export default function PaymentContract(props: any) {
     })
 
     return (
-        <div contentEditable={false}
-             style={{maxHeight: "25%", maxWidth: '100%'}}
+        <div
+            contentEditable={false}
+            style={{maxHeight: "25%", maxWidth: '100%'}}
         >
             {dialog}
             <StyledDataGrid

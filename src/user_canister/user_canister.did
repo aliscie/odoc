@@ -23,7 +23,7 @@ type ContentNode = record {
   language : text;
   parent : opt text;
 };
-type Contract = variant { PaymentContract : text };
+type Contract = variant { PaymentContract : text; SharesContract : text };
 type Exchange = record {
   to : text;
   _type : ExchangeType;
@@ -93,7 +93,12 @@ type Row = record {
   cells : opt vec record { text; text };
   requests : opt Contract;
 };
-type StoredContract = variant { PaymentContract : Payment };
+type Share = record { contract_id : text; share : nat64; receiver : principal };
+type SharesContract = record { shares : vec Share; payments : vec Payment };
+type StoredContract = variant {
+  PaymentContract : Payment;
+  SharesContract : SharesContract;
+};
 type Table = record { rows : vec Row; columns : vec Column };
 type Trigger = variant { Timer; Update };
 type User = record {

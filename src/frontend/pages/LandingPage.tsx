@@ -57,7 +57,7 @@ let roadMap = [
     },
     {
         is_done: true,
-        title: "Accumulative contract",
+        title: "Shares contract",
         content: "When the user transfer to an accumulative contract part of the payment will go to one person and the other part will go to the other person\n" +
             "The creator of the accumulative contract can’t update the contract after it gets approved by any of the parties.\n" +
             "The creator of the accumulative contract/or any one of the parties can make changes but these changes will not be applied till the other party accept/approved them\n" +

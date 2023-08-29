@@ -126,7 +126,6 @@ function useColumnManager(props: any) {
         const newContent = updateTableContent(props.props, content, updateColumn);
 
         // TODO: Dispatch relevant actions or update state as needed
-        console.log({newContent})
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
         // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
         // dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));

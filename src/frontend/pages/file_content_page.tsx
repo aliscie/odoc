@@ -2,10 +2,12 @@ import {useDispatch, useSelector} from "react-redux";
 import * as React from "react";
 import {useEffect} from "react";
 import {handleRedux} from "../redux/main";
-import {contract_sample, payment_contract} from "../data_processing/data_samples";
-import {FileNode} from "../../declarations/user_canister/user_canister.did";
+import {contract_sample, randomString} from "../data_processing/data_samples";
+import {FileNode, Payment} from "../../declarations/user_canister/user_canister.did";
 import EditorComponent from "../components/editor_components/main";
 import {Typography} from "@mui/material";
+import {Principal} from "@dfinity/principal";
+import {logger} from "../dev_utils/log_data";
 
 
 function FileContentPage(props: any) {
@@ -14,7 +16,6 @@ function FileContentPage(props: any) {
 
 
     let [title, setTitle] = React.useState(current_file.name);
-    let [renderTitle, setRender] = React.useState<string>(current_file.name);
 
 
     const dispatch = useDispatch();
@@ -67,6 +68,10 @@ function FileContentPage(props: any) {
             case "payment_contract":
                 dispatch(handleRedux("ADD_CONTRACT", {contract: contract_sample}))
                 dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract_sample}));
+            case "data_grid":
+                return null;
+            default:
+                return null;
             // case "data_grid":
             //     dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract_sample}));
 
@@ -77,6 +82,8 @@ function FileContentPage(props: any) {
 
     if (current_file.id != null) {
         let content = files_content[current_file.id];
+
+
         return (
             <div style={{marginTop: "3px", marginLeft: "10%", marginRight: "10%"}}>
 
@@ -86,7 +93,7 @@ function FileContentPage(props: any) {
                             variant="h3"
                             onKeyDown={preventEnter}
                             onKeyUp={handleTitleKeyDown}
-                            contentEditable={true}>{renderTitle}</Typography>
+                            contentEditable={true}>{current_file.name}</Typography>
                         <EditorComponent
                             handleOnInsertComponent={handleOnInsertComponent}
                             onChange={onChange}

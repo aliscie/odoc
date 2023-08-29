@@ -14,7 +14,10 @@ function MultiSaveButton(props: any) {
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     let {changes} = useSelector((state: any) => state.filesReducer);
     let is_files_saved = Object.keys(changes.contents).length === 0 && Object.keys(changes.files).length === 0 && Object.keys(changes.contracts).length === 0;
+
     async function handleClick() {
+
+
         let denormalized_content: Array<Array<[string, Array<[string, ContentNode]>]>> = deserialize_file_contents(changes.contents)
         let contracts: Array<StoredContract> = denormalize_payment_contract(changes.contracts);
 
@@ -23,7 +26,7 @@ function MultiSaveButton(props: any) {
 
         let delete_contracts: Array<String> = changes.delete_contracts || [];
 
-        let res = await actor.multi_updates(files, denormalized_content, contracts, delete_contracts);
+        let res = actor && await actor.multi_updates(files, denormalized_content, contracts, delete_contracts);
         closeSnackbar(loading)
         if (res.Err) {
             enqueueSnackbar(res.Err, {variant: "error"});
@@ -31,7 +34,7 @@ function MultiSaveButton(props: any) {
             enqueueSnackbar("Saved!", {variant: "success"});
             dispatch(handleRedux("RESOLVE_CHANGES"));
         }
-        console.log({res})
+        // console.log({res})
 
     }
 

@@ -1,4 +1,5 @@
 import {ContentNode} from "../../../declarations/user_canister/user_canister.did";
+import {logger} from "../../dev_utils/log_data";
 
 
 export interface SlateNode {
@@ -60,13 +61,13 @@ export function normalize_files_contents(content: Array<Array<[string, Array<[st
         return []
     }
     let data = {}
-    // Array<Array<[string, Array<[string, ContentNode]>]>>
     content.map((node: Array<[string, Array<[string, ContentNode]>]>) => {
         if (!node[0]) {
             return
         }
         let file_id: string = node[0][0];
         let file_content: Array<[string, ContentNode]> = node[0][1];
+
         let nested_file_content: Array<SlateNode> = normalize_content_tree(file_content);
         // let visited = [];
         // file_content.map((node: [string, ContentNode]) => {

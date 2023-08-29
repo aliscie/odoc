@@ -5,10 +5,6 @@ import PaymentContract from "../contracts/payment_contract";
 import TextField from '@mui/material/TextField';
 import {useDemoData} from '@mui/x-data-grid-generator';
 import GalleryView from "./galarry";
-import {useState} from "react";
-import Fade from '@mui/material/Fade';
-import {TransitionGroup} from 'react-transition-group';
-import {Collapse} from "@mui/material";
 
 function ContractView(props: any) {
     const VISIBLE_FIELDS = [props.children[0].data[0].Table.columns.map((c: any) => c.field)];
@@ -18,21 +14,15 @@ function ContractView(props: any) {
         visibleFields: VISIBLE_FIELDS,
         rowLength: 100,
     });
-    // console.log({data})
 
     let views = [
-        {id: 'xxx', name: "table", component: <PaymentContract {...props} />},
-        {id: 'yyy', name: "galary", component: <GalleryView items={props.children[0].data[0].Table.rows}/>}
+        {id: 'dlkjfoi23', name: "table", component: <PaymentContract {...props} />},
+        {id: 'lksdjifow', name: "gallery", component: <GalleryView items={props.children[0].data[0].Table.rows}/>}
     ];
 
-    const {OptionsComponent, ViewsComponent} = useViews({views, default: 'xxx'})
+    const {OptionsComponent, ViewsComponent} = useViews({views, default: 'dlkjfoi23'})
 
 
-    // const columns = React.useMemo(
-    //     () => data.columns.filter((column) => VISIBLE_FIELDS.includes(column.field)),
-    //     [data.columns],
-    // );
-    // console.log({columns})
 
     const handleCustomFilter = React.useCallback(
         (value: string) => {
@@ -40,7 +30,7 @@ function ContractView(props: any) {
                 ...prevFilterModel,
                 items: [
                     {
-                        columnField: 'name', // Replace 'name' with the field you want to filter
+                        columnField: 'name',
                         operatorValue: 'contains',
                         value,
                     },
@@ -49,15 +39,11 @@ function ContractView(props: any) {
         },
         [setFilterModel],
     );
-    // let [isOver, setOver] = useState(false);
 
     return <Box
         sx={{
             width: '100%',
-            // transition: 'height 0.3s', // Add transition property for the height
         }}
-        // onMouseLeave={() => setOver(false)}
-        // onMouseEnter={() => setOver(true)}
         contentEditable={false}
     >
         <Box

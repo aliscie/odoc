@@ -28,8 +28,10 @@ function ShareFilePage(props: any) {
         if (!file) {
             (async () => {
                 let loading = enqueueSnackbar(<span><span className={"loader"}/></span>);
-                let res = await actor.get_shared_file(id)
-                closeSnackbar(loading)
+                let res = actor && await actor.get_shared_file(id)
+
+                closeSnackbar(loading);
+
                 if (res.Ok) {
                     let file: FileNode = res.Ok[0]
                     let content_tree: Array<[string, ContentNode]> = res.Ok[1]
@@ -41,6 +43,7 @@ function ShareFilePage(props: any) {
                 }
             })()
         }
+
         dispatch(handleRedux("CURRENT_FILE", {file}));
 
     }, [file])
@@ -53,7 +56,7 @@ function ShareFilePage(props: any) {
                 componentsOptions={[
                     table,
                     payment_contract,
-                    {type: "accumulative_contract"},
+                    {type: "shares_contract"},
                     {type: "custom_contract"},
                 ]}
                 renderElement={EditorRenderer}

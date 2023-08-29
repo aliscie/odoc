@@ -3,7 +3,6 @@ import {StoredContract} from "../../../declarations/user_canister/user_canister.
 
 function denormalize_payment_contract(content: any[], data: Array<StoredContract> = []) {
     Object.keys(content).forEach((key) => {
-        console.log({xxxx: content});
         let item = content[key];
         let de_normal: StoredContract = {
             "PaymentContract": {

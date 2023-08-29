@@ -16,7 +16,10 @@ export const idlFactory = ({ IDL }) => {
     'parent' : IDL.Opt(IDL.Text),
   });
   const Result_3 = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });
-  const Contract = IDL.Variant({ 'PaymentContract' : IDL.Text });
+  const Contract = IDL.Variant({
+    'PaymentContract' : IDL.Text,
+    'SharesContract' : IDL.Text,
+  });
   const Row = IDL.Record({
     'id' : IDL.Text,
     'contract' : IDL.Opt(Contract),
@@ -100,7 +103,19 @@ export const idlFactory = ({ IDL }) => {
     'amount' : IDL.Nat64,
     'receiver' : IDL.Principal,
   });
-  const StoredContract = IDL.Variant({ 'PaymentContract' : Payment });
+  const Share = IDL.Record({
+    'contract_id' : IDL.Text,
+    'share' : IDL.Nat64,
+    'receiver' : IDL.Principal,
+  });
+  const SharesContract = IDL.Record({
+    'shares' : IDL.Vec(Share),
+    'payments' : IDL.Vec(Payment),
+  });
+  const StoredContract = IDL.Variant({
+    'PaymentContract' : Payment,
+    'SharesContract' : SharesContract,
+  });
   const Friend = IDL.Record({
     'friend_requests' : IDL.Vec(User),
     'friends' : IDL.Vec(User),

@@ -17,7 +17,6 @@ const getCenterCanisterActor = async () => {
 // let central_canister_actor = await getCenterCanisterActor();
 // let res = await central_canister_actor.create_canister()
 // let user_canister_id = await central_canister_actor.get_user_canister()
-// console.log({res})
 // TODO canisterId = user_canister_id.ik
 
 

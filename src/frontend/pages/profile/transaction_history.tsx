@@ -31,7 +31,6 @@ export function ContractItem(props: any) {
 
     let receiver = getUser(props.receiver.toString());
     let sender = getUser(props.sender.toString());
-    console.log({})
 
     let canceled_style = {
         textDecoration: 'line-through',
@@ -77,7 +76,7 @@ export function ContractItem(props: any) {
     // let receiver_id = Principal.fromText(props.receiver.toString())
     let is_sender = profile.id == props.sender.toString();
     let is_receiver = profile.id == props.receiver.toString();
-    console.log({cdfadsfdsfsd: props})
+
     return <ListItem key={props.id}>
         <ListItemText
             primaryTypographyProps={{style: {}}}

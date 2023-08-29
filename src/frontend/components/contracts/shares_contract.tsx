@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {GridCell, GridRowModel, GridToolbar} from '@mui/x-data-grid';
-import {Button, ButtonGroup} from '@mui/material';
+import {Button, ButtonGroup, Input} from '@mui/material';
 import {StyledDataGrid} from "./spread_sheet";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
@@ -18,16 +18,21 @@ import FunctionsIcon from '@mui/icons-material/Functions';
 import {updateTableContent} from "./utils/update_table";
 import PayButton from "./accumalitve_contract/pay_button";
 import {RenderReceiver} from "./payment_contract/renderers";
+import BasicMenu from "../genral/drop_down";
 
 
-export default function AccumulativeContract(props: any) {
+export default function SharesContract(props: any) {
+
+
     const dispatch = useDispatch();
 
     const {
         files_content,
         current_file,
-        all_friends
+        all_friends,
+        profile
     } = useSelector((state: any) => state.filesReducer);
+
     let content = files_content[current_file.id];
 
     // ToDo  `props.data[0]` instead of `props.children[0].data[0]`
@@ -72,7 +77,7 @@ export default function AccumulativeContract(props: any) {
                 const updatedRows = newTable.rows.map((row: Row) => {
                     if (row.id === oldRow.id) {
                         // const updatedCells = [...row.cells, ...new_cells];
-                        return {...row, cells: [new_cells] };
+                        return {...row, cells: [new_cells]};
                     }
                     return row;
                 });
@@ -81,9 +86,6 @@ export default function AccumulativeContract(props: any) {
 
             let newContent: Payment = updateTableContent(props, content, updateCells)
             // TODO when hit save new data get removed, but they stored correctly in the BackEnd?
-            // console.log({
-            //     newContent
-            // })
 
             dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
             dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
@@ -173,7 +175,10 @@ export default function AccumulativeContract(props: any) {
         let new_column = {...column}
         switch (column.field.toLowerCase()) {
             case "receiver":
-                new_column['renderEditCell'] = (props: any) => RenderReceiver({...props, options: all_friends})
+                new_column['renderEditCell'] = (props: any) => RenderReceiver({
+                    ...props,
+                    options: [...all_friends, profile]
+                })
                 return new_column
             default:
                 return new_column
@@ -195,11 +200,11 @@ export default function AccumulativeContract(props: any) {
                 processRowUpdate={processRowUpdate}
                 onProcessRowUpdateError={handleProcessRowUpdateError}
                 slots={{
-                    toolbar: GridToolbar,
                     cell: CustomCell,
                     toolbar: () => <ButtonGroup variant="text" size={'small'}>
-                        <Button>Views</Button>
+                        <BasicMenu options={[{content: "Shares"}, {content: "Payments"}]}>Views</BasicMenu>
                         <Button>Filter</Button>
+                        <Input style={{width: '100px'}} placeholder={'Amount'}/>
                         <PayButton contract={{amount: 100}}/>
                     </ButtonGroup>
                 }}

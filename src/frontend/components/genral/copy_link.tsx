@@ -27,7 +27,7 @@ let Dialog = (props: any) => {
 
                     setShareLink(`${url}/share?id=${res.Ok}`)
                 }
-                console.log({res})
+                // console.log({res})
             }
 
         })()

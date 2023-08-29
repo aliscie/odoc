@@ -34,7 +34,8 @@ export interface ContentNode {
   'language' : string,
   'parent' : [] | [string],
 }
-export type Contract = { 'PaymentContract' : string };
+export type Contract = { 'PaymentContract' : string } |
+  { 'SharesContract' : string };
 export interface Exchange {
   'to' : string,
   '_type' : ExchangeType,
@@ -120,7 +121,17 @@ export interface Row {
   'cells' : [] | [Array<[string, string]>],
   'requests' : [] | [Contract],
 }
-export type StoredContract = { 'PaymentContract' : Payment };
+export interface Share {
+  'contract_id' : string,
+  'share' : bigint,
+  'receiver' : Principal,
+}
+export interface SharesContract {
+  'shares' : Array<Share>,
+  'payments' : Array<Payment>,
+}
+export type StoredContract = { 'PaymentContract' : Payment } |
+  { 'SharesContract' : SharesContract };
 export interface Table { 'rows' : Array<Row>, 'columns' : Array<Column> }
 export type Trigger = { 'Timer' : null } |
   { 'Update' : null };

@@ -48,10 +48,8 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
     ]
 
     const handleDrop: any = async (dropped, droppedOver, type) => {
-        console.log("dropped", {dropped, droppedOver, type})
         let id = dropped;
         let parent = droppedOver
-        console.log({id, parent})
         dispatch(handleRedux("CHANGE_FILE_PARENT", {id, parent}));
     };
     return (

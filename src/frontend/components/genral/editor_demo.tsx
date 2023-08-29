@@ -277,7 +277,7 @@ export default function EditorDemo() {
                 componentsOptions={[
                     table,
                     payment_contract,
-                    {type: "accumulative_contract"},
+                    {type: "shares_contract"},
                     {type: "custom_contract"},
                 ]}
                 mentionOptions={["Ali", "Alen", "Alice", "John,", "Jack", "James", "Mik", "Mathis"]}

@@ -9,6 +9,7 @@ import {actor} from "../App";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
+
 export type FilesActions =
     "ADD"
     | "REMOVE"
@@ -63,7 +64,6 @@ function getCurrentFile(data: any) {
 export async function get_initial_data() {
     let isLoggedIn = await agent.is_logged() // TODO avoid repetition `isLoggedIn` is already used in ui.ts
     let data = await actor.get_initial_data();
-    // console.log({is:data.Err == "Anonymous user." && isLoggedIn})
     initialState["Anonymous"] = data.Err == "Anonymous user." && isLoggedIn;
     initialState["isLoggedIn"] = data.Err != "Anonymous user." && isLoggedIn
 
