@@ -54,7 +54,8 @@ export let shares_contract = {
                     {
                         id: randomString(),
                         contract: [],
-                        cells: [[["receiver", "any"], ["share%", "10"]]],
+                        // contract: [{"SharesContract": shares_contract_id}],
+                        cells: [[["receiver", "any"], ["share%", "100"]]],
                         requests: [],
                     }
                 ],
