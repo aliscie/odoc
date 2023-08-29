@@ -19,6 +19,7 @@ import {updateTableContent} from "./utils/update_table";
 import PayButton from "./accumalitve_contract/pay_button";
 import {RenderReceiver} from "./payment_contract/renderers";
 import BasicMenu from "../genral/drop_down";
+import {useState} from "react";
 
 
 export default function SharesContract(props: any) {
@@ -186,14 +187,44 @@ export default function SharesContract(props: any) {
         }
     })
 
+    let [view, setView] = useState("Shares");
+    let [data, setDate]: any = useState({
+        rows: normalize_row(rows),
+        columns: custom_columns
+    });
+
+    let Click = (e: string) => {
+        setView(e);
+        if (e == 'Shares') {
+            setDate({
+                rows: normalize_row(rows),
+                columns: custom_columns
+            });
+        } else {
+            setDate({
+                rows: [
+                    {id: 1, sender: 'Ali', amountUSDC: '14', "date": "2020-11-01"},
+                    {id: 2, sender: 'John', amountUSDC: '14', "date": "2020-10-01"},
+                ],
+                columns: [
+                    {field: 'sender', headerName: 'sender', width: 150},
+                    {field: 'amountUSDC', headerName: 'amountUSDC', width: 150},
+                    {field: 'date', headerName: 'date', width: 150},
+                ]
+            });
+        }
+
+    }
+
     return (
         <div contentEditable={false}
              style={{maxHeight: "25%", maxWidth: '100%'}}
         >
             {dialog}
-            <StyledDataGrid
-                rows={normalize_row(rows)}
-                columns={custom_columns}
+            {view && <StyledDataGrid
+                {...data}
+                // rows={data}
+                // columns={renderColumns}
                 // disableColumnSelector
                 hideFooterPagination
                 editMode="row"
@@ -202,14 +233,15 @@ export default function SharesContract(props: any) {
                 slots={{
                     cell: CustomCell,
                     toolbar: () => <ButtonGroup variant="text" size={'small'}>
-                        <BasicMenu options={[{content: "Shares"}, {content: "Payments"}]}>Views</BasicMenu>
+                        <BasicMenu
+                            options={[{content: "Shares", Click}, {Click, content: "Payments"}]}>{view}</BasicMenu>
                         <Button>Filter</Button>
                         <Input style={{width: '100px'}} placeholder={'Amount'}/>
                         <PayButton contract={{amount: 100}}/>
                     </ButtonGroup>
                 }}
 
-            />
+            />}
 
 
         </div>
