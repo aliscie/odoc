@@ -41,6 +41,8 @@ mod updates;
 mod friends;
 mod share_files;
 mod wallet;
+mod timer;
+
 
 thread_local! {
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
