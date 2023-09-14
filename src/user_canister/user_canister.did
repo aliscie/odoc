@@ -62,7 +62,7 @@ type InitialData = record {
   Wallet : Wallet;
 };
 type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
-type Payment = record {
+type PaymentContract = record {
   canceled : bool;
   contract_id : text;
   sender : principal;
@@ -93,10 +93,21 @@ type Row = record {
   cells : opt vec record { text; text };
   requests : opt Contract;
 };
-type Share = record { contract_id : text; share : nat64; receiver : principal };
-type SharesContract = record { shares : vec Share; payments : vec Payment };
+type Share = record {
+  accumulation : nat64;
+  conformed : bool;
+  contract_id : text;
+  share : nat64;
+  receiver : principal;
+};
+type SharePayment = record { sender : principal; amount : nat64 };
+type SharesContract = record {
+  shares : vec Share;
+  payments : vec SharePayment;
+  contract_id : text;
+};
 type StoredContract = variant {
-  PaymentContract : Payment;
+  PaymentContract : PaymentContract;
   SharesContract : SharesContract;
 };
 type Table = record { rows : vec Row; columns : vec Column };
@@ -117,10 +128,12 @@ service : {
   accept_payment : (text) -> (Result_1);
   cancel_friend_request : (text) -> (Result);
   cancel_payment : (text) -> (Result_1);
+  conform : (text) -> (Result_1);
   content_updates : (text, opt text, text) -> (Result_2);
   counter : () -> (nat32) query;
   create_new_file : (text, opt text) -> (FileNode);
   create_payment_contract : (text) -> (Result_1);
+  create_share_contract : (vec Share) -> (Result_2);
   cycles_used : () -> (nat64);
   delete_file : (text) -> (opt FileNode);
   delete_payment : (text) -> (Result_1);
@@ -141,6 +154,7 @@ service : {
       vec StoredContract,
       vec text,
     ) -> (Result_2);
+  pay : (text, nat64) -> (Result_1);
   register : (RegisterUser) -> (Result);
   release_payment : (text) -> (Result_1);
   rename_file : (text, text) -> (bool);
@@ -149,6 +163,7 @@ service : {
   start_with_interval_secs : (nat64) -> ();
   stop : () -> ();
   unfriend : (text) -> (Result);
+  update_shares : (vec Share, text) -> (Result_2);
   update_user_profile : (RegisterUser) -> (Result);
   withdraw_usdt : (nat64) -> (Result_3);
 }

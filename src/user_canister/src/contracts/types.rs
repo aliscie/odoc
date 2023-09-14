@@ -6,19 +6,12 @@ use ic_cdk::{api::call::ManualReply, caller, export::{
     Principal,
 }};
 
-use crate::contracts::Payment;
-use crate::{CONTRACTS_STORE, Share};
+use crate::contracts::PaymentContract;
+use crate::{CONTRACTS_STORE, Share, SharesContract};
 use crate::files::COUNTER;
 use crate::storage_schema::ContractId;
 use crate::tables::Table;
 use crate::user::User;
-
-#[derive(Eq, PartialEq, Clone, Debug, Default, CandidType, Deserialize)]
-pub struct Shares {
-    pub(crate) user: User,
-    pub(crate) share: u64,
-    pub(crate) accumulation: bool,
-}
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub enum Contract {
@@ -28,14 +21,8 @@ pub enum Contract {
 }
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
-pub struct SharesContract{
-    shares: Vec<Share>,
-    payments: Vec<Payment>,
-}
-
-#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub enum StoredContract {
-    PaymentContract(Payment),
+    PaymentContract(PaymentContract),
     SharesContract(SharesContract),
     // CustomContract(Table),
 }

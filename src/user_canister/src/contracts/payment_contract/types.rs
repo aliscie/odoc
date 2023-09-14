@@ -14,7 +14,7 @@ use crate::tables::Table;
 use crate::user::User;
 
 #[derive(PartialEq, Eq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
-pub struct Payment {
+pub struct PaymentContract {
     pub(crate) contract_id: ContractId,
     pub(crate) receiver: Principal,
     pub(crate) sender: Principal,
@@ -25,9 +25,9 @@ pub struct Payment {
 }
 
 
-impl Payment {
+impl PaymentContract {
     pub fn new(receiver: Principal, sender: Principal, amount: u64) -> Self {
-        let payment = Payment {
+        let payment = PaymentContract {
             contract_id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
             receiver,
             sender,
@@ -106,8 +106,8 @@ impl Payment {
 
         for contract in contracts {
             if let StoredContract::PaymentContract(payment) = contract {
-                Payment::update_or_create(caller(), payment.clone())?;
-                Payment::update_or_create(payment.receiver.clone(), payment)?;
+                PaymentContract::update_or_create(caller(), payment.clone())?;
+                PaymentContract::update_or_create(payment.receiver.clone(), payment)?;
             } else {
                 panic!("Invalid contract type");
             }
@@ -125,7 +125,7 @@ impl Payment {
         Ok(())
     }
 
-    pub fn update_or_create(owner: Principal, payment: Payment) -> Result<Payment, String> {
+    pub fn update_or_create(owner: Principal, payment: PaymentContract) -> Result<PaymentContract, String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contract = caller_contracts
@@ -151,7 +151,7 @@ impl Payment {
         })
     }
 
-    pub fn update(payment: Payment) -> Result<(), String> {
+    pub fn update(payment: PaymentContract) -> Result<(), String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contract = caller_contracts
@@ -205,7 +205,7 @@ impl Payment {
         })
     }
 
-    pub fn multi_update(payments: Vec<Payment>) -> Vec<Result<(), String>> {
+    pub fn multi_update(payments: Vec<PaymentContract>) -> Vec<Result<(), String>> {
         payments
             .into_iter()
             .map(|payment| Self::update(payment))
@@ -213,11 +213,11 @@ impl Payment {
     }
 
     pub fn delete_for_both(contract_id: ContractId) -> Result<(), String> {
-        let payment = Payment::get(contract_id.clone())?;
-        Payment::delete_payment_contract(payment.receiver, contract_id.clone())?;
-        Payment::delete_payment_contract(payment.sender, contract_id)
+        let payment = PaymentContract::get(contract_id.clone())?;
+        PaymentContract::delete_payment_contract(payment.receiver, contract_id.clone())?;
+        PaymentContract::delete_payment_contract(payment.sender, contract_id)
     }
-    pub fn release(contract_id: ContractId, user: Principal) -> Result<Payment, String> {
+    pub fn release(contract_id: ContractId, user: Principal) -> Result<PaymentContract, String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contract = caller_contracts
@@ -241,11 +241,11 @@ impl Payment {
             Err("Payment not found in contract".to_string())
         })
     }
-    pub fn release_payment(contract_id: ContractId) -> Result<Payment, String> { // release_for_both
-        let payment = Payment::get(contract_id.clone())?;
+    pub fn release_payment(contract_id: ContractId) -> Result<PaymentContract, String> { // release_for_both
+        let payment = PaymentContract::get(contract_id.clone())?;
         let sender = caller();
-        Payment::release(contract_id.clone(), sender)?;
-        Payment::release(contract_id, payment.receiver)
+        PaymentContract::release(contract_id.clone(), sender)?;
+        PaymentContract::release(contract_id, payment.receiver)
     }
 
     pub fn cancel_payment(user: Principal, contract_id: ContractId) -> Result<(), String> {
@@ -298,7 +298,7 @@ impl Payment {
             Ok(())
         })
     }
-    pub fn get(contract_id: ContractId) -> Result<Payment, String> {
+    pub fn get(contract_id: ContractId) -> Result<PaymentContract, String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let caller_contracts = contracts_store.borrow();
             let caller_contract = caller_contracts

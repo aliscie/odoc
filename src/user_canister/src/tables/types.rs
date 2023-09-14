@@ -7,7 +7,7 @@ use candid::{CandidType, Deserialize, Principal};
 
 use crate::contracts::Contract;
 use crate::storage_schema::ContractId;
-use crate::{Payment, USER_FILES};
+use crate::{PaymentContract, USER_FILES};
 
 static COUNTER: AtomicU64 = AtomicU64::new(0);
 
@@ -126,7 +126,7 @@ pub struct Row {
 
 
 impl Row {
-    pub fn new_payment(payment: Payment) -> Self {
+    pub fn new_payment(payment: PaymentContract) -> Self {
         Row {
             id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
             contract: Option::from(Contract::PaymentContract(payment.get_contract_id())),

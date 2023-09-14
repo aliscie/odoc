@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use candid::candid_method;
 use ic_cdk::caller;
 use ic_cdk_macros::update;
-use crate::{CONTRACTS_STORE, FILE_CONTENTS, Payment, StoredContract};
+use crate::{CONTRACTS_STORE, FILE_CONTENTS, PaymentContract, StoredContract};
 
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
@@ -40,7 +40,7 @@ fn multi_updates(
 
 
     // Update payment contracts
-    Payment::update_payment_contracts(contracts)?;
+    PaymentContract::update_payment_contracts(contracts)?;
 
     // Update FILE_CONTENTS
     for update in content_trees {
@@ -49,7 +49,7 @@ fn multi_updates(
         }
     }
     for contract_id in delete_contracts {
-        let message = Payment::delete_for_both(contract_id);
+        let message = PaymentContract::delete_for_both(contract_id);
         if let Err(e) = message {
             messages.push_str(&format!("Error deleting contract: {}", e));
         }

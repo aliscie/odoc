@@ -7,7 +7,7 @@ use ic_cdk::{api::call::ManualReply, caller, export::{
 }};
 use ic_cdk_macros::query;
 
-use crate::{CONTRACTS_STORE, FRIENDS_STORE, ID_STORE, Payment, PROFILE_STORE, StoredContract, Wallet};
+use crate::{CONTRACTS_STORE, FRIENDS_STORE, ID_STORE, PaymentContract, PROFILE_STORE, StoredContract, Wallet};
 use crate::contracts::Contract;
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
