@@ -8,16 +8,26 @@ use ic_cdk::{api::call::ManualReply, call, caller, export::{
 
 use crate::{CONTRACTS_STORE, ExchangeType, PaymentContract, StoredContract, Wallet};
 use crate::files::COUNTER;
-use crate::storage_schema::ContractId;
+use crate::storage_schema::{ContractId, ShareContractId};
 use crate::user::User;
 
 #[derive(PartialEq, Eq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
 pub struct Share {
-    pub(crate) contract_id: ContractId,
+    pub(crate) share_contract_id: ShareContractId,
     pub(crate) receiver: Principal,
     pub(crate) conformed: bool,
     pub(crate) accumulation: u64,
+    pub(crate) contractor: Option<Principal>,
+    // the contract auther/ requester
     // only receiver can mutate this
+    pub(crate) share: u64,
+}
+
+#[derive(PartialEq, Eq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
+pub struct ShareRequest {
+    pub(crate) share_contract_id: ShareContractId,
+    pub(crate) receiver: Principal,
+    pub(crate) contractor: Option<Principal>,
     pub(crate) share: u64,
 }
 
@@ -36,6 +46,8 @@ pub struct SharesContract {
     pub(crate) shares: Vec<Share>,
     pub(crate) payments: Vec<SharePayment>,
 
+    pub(crate) shares_requests: Vec<Share>,
+
     // Note SharesContract arrange
     // 1. the payer should have their access/services/goods using `access_formula` and `access_id`
     // 2. the receiver should have their shares using `shares`.
@@ -52,12 +64,15 @@ pub struct SharesContract {
 }
 
 impl SharesContract {
-
     pub fn new(shares: Vec<Share>) -> SharesContract {
         let share = SharesContract {
             contract_id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
             shares,
             payments: vec![],
+            shares_requests: vec![],
+        };
+        if !share.clone().is_valid_shares() {
+            panic!("Shares does not sum to 100%")
         };
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
@@ -97,6 +112,14 @@ impl SharesContract {
         })
     }
 
+    pub fn is_valid_shares(&mut self) -> bool {
+        let mut shares_value = 0;
+        for share in &self.shares {
+            shares_value += share.share
+        }
+        shares_value == 1
+    }
+
     pub fn update(&mut self, updated_share: Share) -> Result<(), String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
@@ -110,17 +133,23 @@ impl SharesContract {
 
             // TODO if let StoredContract::SharesContract(existing_share_contract) = self {
             if let StoredContract::SharesContract(existing_share_contract) = contract {
-                // Find the corresponding share in the contract's shares list
+                let mut share_contract = existing_share_contract.clone();
                 if let Some(existing_share) = existing_share_contract
                     .shares
                     .iter_mut()
-                    .find(|s| s.receiver == updated_share.receiver)
+                    .find(|s| s.share_contract_id == updated_share.share_contract_id)
                 {
                     if existing_share.conformed {
                         return Err("Share is conformed and cannot be updated".to_string());
                     }
-
+                    let original_value = existing_share.share;
                     existing_share.share = updated_share.share;
+
+                    if !share_contract.is_valid_shares() {
+                        // reset share value to original value.
+                        existing_share.share = original_value;
+                        return Err("Shares does not sum to 100%".to_string());
+                    };
 
                     return Ok(());
                 }
@@ -130,7 +159,7 @@ impl SharesContract {
         })
     }
 
-    pub fn conform(&mut self) -> Result<(), String> {
+    pub fn conform(&mut self, share_contract_id: ShareContractId) -> Result<(), String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contract = caller_contracts
@@ -146,7 +175,7 @@ impl SharesContract {
                 if let Some(existing_share) = existing_share_contract
                     .shares
                     .iter_mut()
-                    .find(|s| s.contract_id == self.contract_id)
+                    .find(|s| s.share_contract_id == share_contract_id)
                 {
                     if existing_share.conformed {
                         return Err("Share is conformed and cannot be updated".to_string());
@@ -167,7 +196,72 @@ impl SharesContract {
         })
     }
 
-    pub fn pay(&mut self, amount: u64) -> Result<(), String> {
+    pub fn request(&mut self, shares_request: Share) -> Result<(), String> {
+        CONTRACTS_STORE.with(|contracts_store| {
+            let mut caller_contracts = contracts_store.borrow_mut();
+            let caller_contract = caller_contracts
+                .get_mut(&caller())
+                .ok_or("Caller has no contracts")?;
+
+            let contract = caller_contract
+                .get_mut(&self.contract_id) // Use updated_share.contract_id as the key
+                .ok_or("Contract not found")?;
+
+            if let StoredContract::SharesContract(existing_share_contract) = contract {
+                // Find the corresponding share in the contract's shares list
+                existing_share_contract.shares_requests.push(shares_request);
+            }
+
+            Err("Share not found in contract".to_string())
+        })
+    }
+
+    pub fn approve_request(&mut self, share_request_contract_id: ShareContractId) -> Result<(), String> {
+        CONTRACTS_STORE.with(|contracts_store| {
+            let mut caller_contracts = contracts_store.borrow_mut();
+            let caller_contract = caller_contracts
+                .get_mut(&caller())
+                .ok_or("Caller has no contracts")?;
+
+            let contract = caller_contract
+                .get_mut(&self.contract_id) // Use updated_share.contract_id as the key
+                .ok_or("Contract not found")?;
+
+            if let StoredContract::SharesContract(existing_share_contract) = contract {
+                // Find the corresponding share in the contract's shares list
+                if let Some(existing_share) = existing_share_contract
+                    .shares_requests
+                    .iter_mut()
+                    .find(|s| s.share_contract_id == share_request_contract_id)
+                {
+                    if existing_share.conformed {
+                        return Err("Share is conformed and cannot be updated".to_string());
+                    }
+
+                    // 1. approve
+                    if caller() == existing_share.receiver {
+                        existing_share.conformed = true;
+                    } else {
+                        return Err("Only the share receiver can conform share".to_string());
+                    }
+
+                    // 2. set the share
+                    let mut share = existing_share_contract.shares.iter_mut().find(|s| s.share_contract_id == share_request_contract_id).unwrap();
+                    share = existing_share;
+                    if !existing_share_contract.is_valid_shares() {
+                        return Err("Shares does not sum to 100%".to_string());
+                    }
+
+                    return Ok(());
+                }
+            }
+
+            Err("Share not found in contract".to_string())
+        })
+    }
+
+
+    pub fn pay(&mut self, amount: u64) -> Result<SharesContract, String> {
 
         // 1. Create payment
         let payment = SharePayment {
@@ -186,26 +280,11 @@ impl SharesContract {
                 .ok_or("Contract not found")?;
 
             if let StoredContract::SharesContract(existing_share_contract) = contract {
-                // 1.2. Deposit payments for share holders
                 existing_share_contract.payments.push(payment);
-
-
-                let mut wallet = Wallet::get(caller());
-                wallet.withdraw(amount, "".to_string(), ExchangeType::LocalSend)?;
-
-
-                // 2. Distribute payments to share holders
-                for existing_share in existing_share_contract.shares.iter_mut() {
-                    let share_value = amount * existing_share.share;
-                    let mut wallet = Wallet::get(existing_share.receiver);
-                    wallet.deposit(share_value, "".to_string(), ExchangeType::LocalReceive)?;
-                    existing_share.accumulation += share_value;
-                }
-
-                return Ok(());
+                return Ok(existing_share_contract.clone());
             }
 
-            Err("Share not found in contract".to_string())
+            return Err("Share not found in contract".to_string());
         })
     }
 }

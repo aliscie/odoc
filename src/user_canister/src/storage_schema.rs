@@ -13,6 +13,7 @@ pub type FileId = String;
 pub type ContentId = String;
 pub type ContentTree = HashMap<ContentId, ContentNode>;
 pub type ContractId = String;
+pub type ShareContractId = String;
 pub type ShareId = String;
 
 // Stores types

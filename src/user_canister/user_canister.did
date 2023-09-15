@@ -94,17 +94,25 @@ type Row = record {
   requests : opt Contract;
 };
 type Share = record {
+  share_contract_id : text;
   accumulation : nat64;
   conformed : bool;
-  contract_id : text;
   share : nat64;
   receiver : principal;
+  contractor : opt principal;
 };
 type SharePayment = record { sender : principal; amount : nat64 };
+type ShareRequest = record {
+  share_contract_id : text;
+  share : nat64;
+  receiver : principal;
+  contractor : opt principal;
+};
 type SharesContract = record {
   shares : vec Share;
   payments : vec SharePayment;
   contract_id : text;
+  shares_requests : vec Share;
 };
 type StoredContract = variant {
   PaymentContract : PaymentContract;
@@ -126,9 +134,10 @@ type Wallet = record {
 service : {
   accept_friend_request : (text) -> (Result);
   accept_payment : (text) -> (Result_1);
+  approve_request : (vec text, text) -> (Result_1);
   cancel_friend_request : (text) -> (Result);
   cancel_payment : (text) -> (Result_1);
-  conform : (text) -> (Result_1);
+  conform : (text, text) -> (Result_1);
   content_updates : (text, opt text, text) -> (Result_2);
   counter : () -> (nat32) query;
   create_new_file : (text, opt text) -> (FileNode);
@@ -158,6 +167,7 @@ service : {
   register : (RegisterUser) -> (Result);
   release_payment : (text) -> (Result_1);
   rename_file : (text, text) -> (bool);
+  request_share_change : (vec ShareRequest, text) -> (Result_1);
   send_friend_request : (text) -> (Result);
   share_file : (text, text) -> (Result_2);
   start_with_interval_secs : (nat64) -> ();
