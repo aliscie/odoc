@@ -85,7 +85,7 @@ export type Operation = { 'Equal' : null } |
   { 'Contains' : null } |
   { 'Bigger' : null } |
   { 'BiggerOrEqual' : null };
-export interface Payment {
+export interface PaymentContract {
   'canceled' : boolean,
   'contract_id' : string,
   'sender' : Principal,
@@ -122,15 +122,27 @@ export interface Row {
   'requests' : [] | [Contract],
 }
 export interface Share {
-  'contract_id' : string,
+  'share_contract_id' : string,
+  'accumulation' : bigint,
+  'conformed' : boolean,
   'share' : bigint,
   'receiver' : Principal,
+  'contractor' : [] | [Principal],
+}
+export interface SharePayment { 'sender' : Principal, 'amount' : bigint }
+export interface ShareRequest {
+  'share_contract_id' : string,
+  'share' : bigint,
+  'receiver' : Principal,
+  'contractor' : [] | [Principal],
 }
 export interface SharesContract {
   'shares' : Array<Share>,
-  'payments' : Array<Payment>,
+  'payments' : Array<SharePayment>,
+  'contract_id' : string,
+  'shares_requests' : Array<Share>,
 }
-export type StoredContract = { 'PaymentContract' : Payment } |
+export type StoredContract = { 'PaymentContract' : PaymentContract } |
   { 'SharesContract' : SharesContract };
 export interface Table { 'rows' : Array<Row>, 'columns' : Array<Column> }
 export type Trigger = { 'Timer' : null } |
@@ -149,12 +161,15 @@ export interface Wallet {
 export interface _SERVICE {
   'accept_friend_request' : ActorMethod<[string], Result>,
   'accept_payment' : ActorMethod<[string], Result_1>,
+  'approve_request' : ActorMethod<[Array<string>, string], Result_1>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
   'cancel_payment' : ActorMethod<[string], Result_1>,
+  'conform' : ActorMethod<[string, string], Result_1>,
   'content_updates' : ActorMethod<[string, [] | [string], string], Result_2>,
   'counter' : ActorMethod<[], number>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
   'create_payment_contract' : ActorMethod<[string], Result_1>,
+  'create_share_contract' : ActorMethod<[Array<Share>], Result_2>,
   'cycles_used' : ActorMethod<[], bigint>,
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
   'delete_payment' : ActorMethod<[string], Result_1>,
@@ -182,14 +197,17 @@ export interface _SERVICE {
     ],
     Result_2
   >,
+  'pay' : ActorMethod<[string, bigint], Result_1>,
   'register' : ActorMethod<[RegisterUser], Result>,
   'release_payment' : ActorMethod<[string], Result_1>,
   'rename_file' : ActorMethod<[string, string], boolean>,
+  'request_share_change' : ActorMethod<[Array<ShareRequest>, string], Result_1>,
   'send_friend_request' : ActorMethod<[string], Result>,
   'share_file' : ActorMethod<[string, string], Result_2>,
   'start_with_interval_secs' : ActorMethod<[bigint], undefined>,
   'stop' : ActorMethod<[], undefined>,
   'unfriend' : ActorMethod<[string], Result>,
+  'update_shares' : ActorMethod<[Array<Share>, string], Result_2>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
   'withdraw_usdt' : ActorMethod<[bigint], Result_3>,
 }

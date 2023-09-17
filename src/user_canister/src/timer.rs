@@ -67,10 +67,10 @@ fn cycles_used() -> u64 {
 }
 
 //
-#[ic_cdk_macros::init]
-fn init(min_interval_secs: u64) {
-    start_with_interval_secs(min_interval_secs);
-}
+// #[ic_cdk_macros::init]
+// fn init(min_interval_secs: u64) {
+//     start_with_interval_secs(min_interval_secs);
+// }
 
 // #[ic_cdk_macros::post_upgrade]
 // fn post_upgrade(min_interval_secs: u64) {

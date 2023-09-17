@@ -16,7 +16,7 @@ import useColumnManager from "./hooks/useColumnManager";
 import {useFormulaDialog} from "../../hook/dialog";
 import FunctionsIcon from '@mui/icons-material/Functions';
 import {updateTableContent} from "./utils/update_table";
-import PayButton from "./accumalitve_contract/pay_button";
+import PayButton from "./shares_contract/pay_button";
 import {RenderReceiver} from "./payment_contract/renderers";
 import BasicMenu from "../genral/drop_down";
 import {useState} from "react";
