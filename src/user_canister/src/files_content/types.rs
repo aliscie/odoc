@@ -1,13 +1,13 @@
 use std::collections::HashMap;
-use std::fs::File;
+
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::time::{SystemTime, UNIX_EPOCH};
+
 
 use candid::{CandidType, Deserialize};
-use ic_cdk::caller;
+
 
 use crate::{FILE_CONTENTS, USER_FILES};
-use crate::contracts::Contract;
+
 use crate::storage_schema::{ContentId, ContentTree, FileId};
 use crate::tables::Table;
 

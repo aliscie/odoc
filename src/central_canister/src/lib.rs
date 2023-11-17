@@ -17,7 +17,7 @@ thread_local! {
 }
 
 
-#[candid_method(query)]
+
 #[ic_cdk::query]
 fn get_user_canister() -> Result<String, String> {
     USER_CANISTERS_STORE.with(|store| {
@@ -30,7 +30,7 @@ fn get_user_canister() -> Result<String, String> {
 }
 
 
-#[candid_method(update)]
+
 #[ic_cdk::update]
 fn create_canister() -> Result<String, String> {
 

@@ -3,6 +3,7 @@ import './styles/LandingPage.css';
 import Card from "../components/genral/card";
 import CustomizedAccordions from "../components/genral/acordoin";
 import {Divider} from "@mui/material";
+import TabsPanel from "../components/genral/tabs_panel";
 
 const data = [
     {
@@ -116,6 +117,9 @@ const LandingPage: React.FC = () => {
                 <p>Empowering Freelancers with Transparent and Liberating Smart Contracts on the Blockchain. Also, it is
                     all in one where you can manage your tasks, notes, documentation, and agreements/contracts. </p>
             </header>
+            {/*<TabsPanel*/}
+            {/*    items={[{label: "I'm hiring", value: <h1>You can create smart contract please watch the video</h1>}, {label: "I'm freelancer", value: <h1>You can receive payments</h1>}]}*/}
+            {/*/>*/}
             <section className="features">
                 {data.map((card, index) => (
                     <Card key={index} title={card.title}>

@@ -1,7 +1,8 @@
 import {Principal} from "@dfinity/principal";
 import {Column, Payment} from "../../declarations/user_canister/user_canister.did";
 
-let contract_id = randomString();
+let payment_contract_id = randomString();
+let shares_contract_id = randomString();
 export let note_page_content = [{"id": 4, "children": [{"id": 5, "text": "", "type": "h1"}]}]
 export let file_data = {"id": "0000", "content": "0", "name": "NameTest", "children": {}, "parent": []}
 let column: Column = {
@@ -54,8 +55,8 @@ export let shares_contract = {
                     {
                         id: randomString(),
                         contract: [],
-                        // contract: [{"SharesContract": shares_contract_id}],
-                        cells: [[["receiver", "any"], ["share%", "100"]]],
+                        contract: [{"SharesContract": shares_contract_id}],
+                        // cells: [[["receiver", "any"], ["share%", "100"]]],
                         requests: [],
                     }
                 ],
@@ -74,14 +75,14 @@ export let shares_contract = {
 }
 
 export let payment_contract = {
-    "id": contract_id,
+    "id": payment_contract_id,
     "children": [{
         "id": randomString(), "text": "", "data": [{
             "Table": {
                 "rows": [
                     {
-                        id: contract_id,
-                        contract: [{"PaymentContract": contract_id}],
+                        id: payment_contract_id,
+                        contract: [{"PaymentContract": payment_contract_id}],
                         cells: [],
                         requests: [],
                     }
@@ -145,8 +146,8 @@ export let contracts_sample = {
         }
     }
 }
-export let contract_sample: Payment = {
-    "contract_id": contract_id,
+export let payment_contract_sample: Payment = {
+    "contract_id": payment_contract_id,
     "sender": Principal.fromText("2vxsx-fae"),
     "receiver": Principal.fromText("2vxsx-fae"),
     "released": false,
@@ -157,28 +158,28 @@ export let contract_sample: Payment = {
 
 export let contract_id_sample = {"Contract": {"PaymentContract": "18"}}
 
-let payment_contract_sample = {
-    "Table": {
-        "rows": [{
-            "contract": [{"PaymentContract": "4"}],
-            "cells": [[["task", "signup task"]]],
-            "requests": []
-        }, {
-            "contract": [{"PaymentContract": "5"}],
-            "cells": [[["task", "login task"]]],
-            "requests": []
-        }, {"contract": [{"PaymentContract": "6"}], "cells": [[["task", "dark mode"]]], "requests": []}],
-        "columns": [{
-            "_type": {"Text": null},
-            "field": "task",
-            "filters": [],
-            "permissions": [],
-            "dataValidator": [],
-            "editable": true,
-            "formula": []
-        }]
-    }
-}
+// let payment_contract_sample = {
+//     "Table": {
+//         "rows": [{
+//             "contract": [{"PaymentContract": "4"}],
+//             "cells": [[["task", "signup task"]]],
+//             "requests": []
+//         }, {
+//             "contract": [{"PaymentContract": "5"}],
+//             "cells": [[["task", "login task"]]],
+//             "requests": []
+//         }, {"contract": [{"PaymentContract": "6"}], "cells": [[["task", "dark mode"]]], "requests": []}],
+//         "columns": [{
+//             "_type": {"Text": null},
+//             "field": "task",
+//             "filters": [],
+//             "permissions": [],
+//             "dataValidator": [],
+//             "editable": true,
+//             "formula": []
+//         }]
+//     }
+// }
 
 export function randomString() {
     return Math.random().toString(36).substring(2, 8);

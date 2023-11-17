@@ -1,9 +1,7 @@
-use ic_cdk::{api::call::ManualReply, caller, export::{
-    candid::{CandidType, Deserialize},
-    Principal,
-}};
+use ic_cdk::{caller};
+use candid::{CandidType, Deserialize};
 
-use crate::{FRIENDS_STORE, ID_STORE, PROFILE_STORE};
+use crate::{FRIENDS_STORE};
 use crate::user::User;
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]

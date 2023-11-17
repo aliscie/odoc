@@ -2,7 +2,7 @@ import {useDispatch, useSelector} from "react-redux";
 import * as React from "react";
 import {useEffect} from "react";
 import {handleRedux} from "../redux/main";
-import {contract_sample} from "../data_processing/data_samples";
+import {payment_contract_sample} from "../data_processing/data_samples";
 import {FileNode} from "../../declarations/user_canister/user_canister.did";
 import EditorComponent from "../components/editor_components/main";
 import {Typography} from "@mui/material";
@@ -64,8 +64,8 @@ function FileContentPage(props: any) {
     function handleOnInsertComponent(e: any, component: any) {
         switch (component.type) {
             case "payment_contract":
-                dispatch(handleRedux("ADD_CONTRACT", {contract: contract_sample}))
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract_sample}));
+                dispatch(handleRedux("ADD_CONTRACT", {contract: payment_contract_sample}))
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: payment_contract_sample}));
             case "shares_contract":
 
             // let payment = {

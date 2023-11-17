@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, HashMap};
 use candid::Principal;
 
 use crate::{ShareFile, StoredContract, Wallet};
-use crate::contracts::Contract;
+
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
 use crate::friends::Friend;
@@ -25,3 +25,4 @@ pub type FileContentsStore = BTreeMap<Principal, HashMap<FileId, ContentTree>>;
 pub type ContractStore = BTreeMap<Principal, HashMap<ContractId, StoredContract>>;
 pub type FilesShareStore = BTreeMap<ShareId, ShareFile>;
 pub type WalletStore = BTreeMap<Principal, Wallet>;
+pub type ClientPrincipals = BTreeMap<Principal, Principal>;

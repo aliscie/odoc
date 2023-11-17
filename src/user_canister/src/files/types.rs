@@ -1,13 +1,13 @@
 use std::collections::HashMap;
-use std::fs::File;
+
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::time::{SystemTime, UNIX_EPOCH};
+
 
 use candid::{CandidType, Deserialize};
 
 use crate::USER_FILES;
-use crate::files_content::ContentNode;
-use crate::storage_schema::{ContentId, FileId};
+
+use crate::storage_schema::{FileId};
 
 pub static COUNTER: AtomicU64 = AtomicU64::new(0);
 

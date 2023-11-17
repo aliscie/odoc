@@ -1,11 +1,11 @@
-use std::collections::HashMap;
+
 use candid::Principal;
-use ic_cdk::{call, caller};
+use ic_cdk::{caller};
 use crate::{FILE_CONTENTS, FILES_SHARE_STORE, USER_FILES};
 use crate::files::FileNode;
-use crate::files_content::ContentNode;
+
 use candid::{CandidType, Deserialize};
-use crate::storage_schema::{ContentId, ContentTree, FileId};
+use crate::storage_schema::{ContentTree, FileId};
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct ShareFile {
@@ -25,7 +25,7 @@ impl ShareFile {
             owner: caller(),
         };
 
-        let shared_file = FILES_SHARE_STORE.with(|files_share_store| {
+        let _shared_file = FILES_SHARE_STORE.with(|files_share_store| {
             let mut files_share_store = files_share_store.borrow_mut();
             if let Some(share_file) = files_share_store.get(&share_id) {
                 Some(share_file.clone())

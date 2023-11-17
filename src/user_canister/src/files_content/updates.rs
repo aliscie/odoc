@@ -1,16 +1,14 @@
 use std::collections::HashMap;
 
-use candid::candid_method;
-use ic_cdk::caller;
+
 use ic_cdk_macros::update;
-use crate::{CONTRACTS_STORE, FILE_CONTENTS, PaymentContract, StoredContract};
+use crate::{PaymentContract, StoredContract};
 
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
 use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId};
 
 #[update]
-#[candid_method(update)]
 fn content_updates(file_id: FileId, content_parent_id: Option<ContentId>, new_text: String) -> Result<String, String> {
     if FileNode::get_file(file_id.clone()).is_none() {
         return Err("No such file with this id.".to_string());
@@ -25,7 +23,6 @@ fn content_updates(file_id: FileId, content_parent_id: Option<ContentId>, new_te
 
 
 #[update]
-#[candid_method(update)]
 fn multi_updates(
     files: Vec<FileNode>,
     content_trees: Vec<HashMap<FileId, ContentTree>>,

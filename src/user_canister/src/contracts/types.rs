@@ -1,17 +1,17 @@
 use std::collections::HashMap;
-use std::sync::atomic::Ordering;
 
-use ic_cdk::{api::call::ManualReply, caller, export::{
-    candid::{CandidType, Deserialize},
-    Principal,
-}};
 
+use candid::{
+    CandidType, Deserialize,
+};
+use ic_cdk::{caller};
+
+use crate::{CONTRACTS_STORE, SharesContract};
 use crate::contracts::PaymentContract;
-use crate::{CONTRACTS_STORE, Share, SharesContract};
-use crate::files::COUNTER;
+
 use crate::storage_schema::ContractId;
-use crate::tables::Table;
-use crate::user::User;
+
+
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub enum Contract {

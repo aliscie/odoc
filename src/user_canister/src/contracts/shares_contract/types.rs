@@ -2,14 +2,13 @@ use std::collections::HashMap;
 use std::sync::atomic::Ordering;
 
 use candid::Principal;
-use ic_cdk::{api::call::ManualReply, call, caller, export::{
-    candid::{CandidType, Deserialize},
-}};
+use ic_cdk::{caller};
+use candid::{CandidType, Deserialize};
 
-use crate::{CONTRACTS_STORE, ExchangeType, PaymentContract, StoredContract, Wallet};
+use crate::{CONTRACTS_STORE, StoredContract};
 use crate::files::COUNTER;
 use crate::storage_schema::{ContractId, ShareContractId};
-use crate::user::User;
+
 
 #[derive(PartialEq, Eq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
 pub struct Share {
@@ -115,7 +114,7 @@ impl SharesContract {
     pub fn is_valid_shares(&mut self) -> bool {
         let mut shares_value = 0;
         for share in &self.shares {
-            shares_value += share.share
+            shares_value += share.clone().share
         }
         shares_value == 1
     }
@@ -132,7 +131,7 @@ impl SharesContract {
                 .ok_or("Contract not found")?;
 
             // TODO if let StoredContract::SharesContract(existing_share_contract) = self {
-            if let StoredContract::SharesContract(existing_share_contract) = contract {
+            if let StoredContract::SharesContract(ref mut existing_share_contract) = contract {
                 let mut share_contract = existing_share_contract.clone();
                 if let Some(existing_share) = existing_share_contract
                     .shares
@@ -142,7 +141,7 @@ impl SharesContract {
                     if existing_share.conformed {
                         return Err("Share is conformed and cannot be updated".to_string());
                     }
-                    let original_value = existing_share.share;
+                    let original_value = existing_share.clone().share;
                     existing_share.share = updated_share.share;
 
                     if !share_contract.is_valid_shares() {
@@ -170,9 +169,9 @@ impl SharesContract {
                 .get_mut(&self.contract_id) // Use updated_share.contract_id as the key
                 .ok_or("Contract not found")?;
 
-            if let StoredContract::SharesContract(existing_share_contract) = contract {
+            if let StoredContract::SharesContract(ref mut existing_share_contract) = contract {
                 // Find the corresponding share in the contract's shares list
-                if let Some(existing_share) = existing_share_contract
+                if let Some(existing_share) = existing_share_contract.clone()
                     .shares
                     .iter_mut()
                     .find(|s| s.share_contract_id == share_contract_id)
@@ -209,7 +208,7 @@ impl SharesContract {
 
             if let StoredContract::SharesContract(existing_share_contract) = contract {
                 // Find the corresponding share in the contract's shares list
-                existing_share_contract.shares_requests.push(shares_request);
+                existing_share_contract.clone().shares_requests.push(shares_request);
             }
 
             Err("Share not found in contract".to_string())
@@ -229,7 +228,7 @@ impl SharesContract {
 
             if let StoredContract::SharesContract(existing_share_contract) = contract {
                 // Find the corresponding share in the contract's shares list
-                if let Some(existing_share) = existing_share_contract
+                if let Some(existing_share) = existing_share_contract.clone()
                     .shares_requests
                     .iter_mut()
                     .find(|s| s.share_contract_id == share_request_contract_id)
@@ -246,9 +245,9 @@ impl SharesContract {
                     }
 
                     // 2. set the share
-                    let mut share = existing_share_contract.shares.iter_mut().find(|s| s.share_contract_id == share_request_contract_id).unwrap();
+                    let mut share = existing_share_contract.clone().shares.iter_mut().find(|s| s.share_contract_id == share_request_contract_id).unwrap();
                     share = existing_share;
-                    if !existing_share_contract.is_valid_shares() {
+                    if !existing_share_contract.clone().is_valid_shares() {
                         return Err("Shares does not sum to 100%".to_string());
                     }
 
@@ -280,7 +279,7 @@ impl SharesContract {
                 .ok_or("Contract not found")?;
 
             if let StoredContract::SharesContract(existing_share_contract) = contract {
-                existing_share_contract.payments.push(payment);
+                existing_share_contract.clone().payments.push(payment);
                 return Ok(existing_share_contract.clone());
             }
 

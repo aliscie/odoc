@@ -1,8 +1,6 @@
-use ic_cdk::{api::call::ManualReply, caller, export::{
-    candid::{CandidType, Deserialize},
-    Principal,
-}};
-use crate::{Contract, WALLETS_STORE};
+
+use candid::{CandidType, Deserialize, Principal};
+use crate::{WALLETS_STORE};
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub enum ExchangeType {
@@ -61,7 +59,7 @@ impl Wallet {
         WALLETS_STORE.with(|store| {
             let mut store = store.borrow_mut();
             if let Some(wallet) = store.get_mut(&self.owner.parse().unwrap()) {
-                wallet.balance += amount;
+                wallet.balance += amount.clone();
                 let exchange = Exchange {
                     from,
                     to: self.owner.clone(),
@@ -82,7 +80,7 @@ impl Wallet {
             WALLETS_STORE.with(|store| {
                 let mut store = store.borrow_mut();
                 if let Some(wallet) = store.get_mut(&self.owner.parse().unwrap()) {
-                    wallet.balance -= amount;
+                    wallet.balance -= amount.clone();
                     let exchange = Exchange {
                         from: self.owner.clone(),
                         to,

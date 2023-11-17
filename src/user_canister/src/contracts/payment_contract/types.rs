@@ -1,17 +1,15 @@
 use std::collections::HashMap;
 use std::sync::atomic::Ordering;
 
-use ic_cdk::{api::call::ManualReply, caller, export::{
-    candid::{CandidType, Deserialize},
-    Principal,
-}};
+use ic_cdk::{caller};
+use candid::{CandidType, Deserialize, Principal};
 
-use crate::{CONTRACTS_STORE, FILE_CONTENTS, StoredContract, Wallet, WALLETS_STORE};
+use crate::{CONTRACTS_STORE, StoredContract, Wallet};
 use crate::contracts::Contract;
 use crate::files::COUNTER;
 use crate::storage_schema::{ContentId, ContractId};
-use crate::tables::Table;
-use crate::user::User;
+
+
 
 #[derive(PartialEq, Eq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
 pub struct PaymentContract {

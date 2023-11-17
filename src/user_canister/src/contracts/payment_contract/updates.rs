@@ -1,23 +1,22 @@
 use std::collections::HashMap;
-use std::fs::File;
-use std::sync::atomic::Ordering;
 
-use candid::{candid_method, Principal};
+
+
+use candid::{Principal};
 use ic_cdk::caller;
 use ic_cdk_macros::update;
-use serde::__private::de::Content;
 
-use crate::{CONTRACTS_STORE, ExchangeType, FILE_CONTENTS, StoredContract, USER_FILES, Wallet};
-use crate::contracts::{Contract, PaymentContract};
-use crate::files::{COUNTER, FileNode};
+
+use crate::{ExchangeType, Wallet};
+use crate::contracts::{PaymentContract};
+use crate::files::{FileNode};
 use crate::files_content::{ContentData, ContentNode};
-use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId};
+use crate::storage_schema::{ContentId};
 use crate::tables::{Column, ColumnTypes, Row, Table};
-use crate::tables;
-use crate::user::{RegisterUser, User};
+
+use crate::user::{User};
 
 #[update]
-#[candid_method(update)]
 fn create_payment_contract(file_name: String) -> Result<(), String> {
     // fn create_payment_contract(file_name: String) -> Result<(FileNode, ContentNode, Contract), String> {
     let user = User::user_profile();
@@ -47,13 +46,12 @@ fn create_payment_contract(file_name: String) -> Result<(), String> {
         "".to_string(),
         "".to_string(),
         Some(ContentData::Table(table)));
-    let content = ContentNode::new(file_node.id, Some(table_content.clone().unwrap().id), "".to_string(), "".to_string(), None);
+    let _content = ContentNode::new(file_node.id, Some(table_content.clone().unwrap().id), "".to_string(), "".to_string(), None);
     // Ok((file_node, content_node.unwrap(), contract))
     Ok(())
 }
 
 #[update]
-#[candid_method(update)]
 fn cancel_payment(id: ContentId) -> Result<(), String> {
     let payment = PaymentContract::get(id.clone())?;
     PaymentContract::cancel_payment(payment.receiver, id.clone())?;
@@ -66,7 +64,6 @@ fn cancel_payment(id: ContentId) -> Result<(), String> {
 
 
 #[update]
-#[candid_method(update)]
 fn release_payment(id: ContentId) -> Result<(), String> {
     let payment = PaymentContract::get(id.clone())?;
     let mut message = "".to_string();
@@ -96,13 +93,11 @@ fn release_payment(id: ContentId) -> Result<(), String> {
 }
 
 #[update]
-#[candid_method(update)]
 fn delete_payment(id: String) -> Result<(), String> {
     PaymentContract::delete_for_both(id)
 }
 
 #[update]
-#[candid_method(update)]
 fn accept_payment(id: ContentId) -> Result<(), String> {
     let payment = PaymentContract::get(id.clone())?;
     PaymentContract::accept_payment(payment.receiver, id.clone())?;

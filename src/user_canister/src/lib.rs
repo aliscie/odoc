@@ -1,32 +1,13 @@
 use std::cell::RefCell;
-use std::collections::{BTreeMap, HashMap};
-
-use ic_cdk::{
-    api::call::ManualReply,
-    export::{
-        candid::{CandidType, Deserialize},
-        Principal,
-    },
-};
-use ic_cdk::export::candid::{
-    candid_method, check_prog, export_service, IDLProg, TypeEnv,
-};
-use ic_cdk_macros::*;
 
 pub use contracts::*;
-use files::*;
-use files::FileNode;
-use friends::*;
-use queries::*;
 pub use share_files::*;
 use storage_schema::*;
-use updates::*;
-use user::*;
-use user::*;
 pub use wallet::*;
 
-use crate::files_content::ContentNode;
-use crate::user::User;
+// use ic_cdk::candid::{
+//     candid_method, check_prog, export_service, IDLProg, TypeEnv,};
+
 
 mod user;
 mod media;
@@ -41,7 +22,8 @@ mod updates;
 mod friends;
 mod share_files;
 mod wallet;
-mod timer;
+// mod timer;
+mod websocket;
 
 
 thread_local! {
@@ -53,42 +35,36 @@ thread_local! {
     static CONTRACTS_STORE: RefCell<ContractStore> = RefCell::default();
     static FILES_SHARE_STORE: RefCell<FilesShareStore> = RefCell::default();
     static WALLETS_STORE: RefCell<WalletStore> = RefCell::default();
+    static CLIENTS_CONNECTED: RefCell<ClientPrincipals> = RefCell::default();
+
 }
 
 #[cfg(test)]
 mod tests {
-    use std::borrow::Cow;
-    use std::env;
-    use std::fs::{create_dir_all, write};
-    use std::path::PathBuf;
-
-    use candid::Principal;
-    use ic_cdk::{api, update};
-    use ic_cdk::export::candid::{
-        candid_method, CandidType, check_prog, Deserialize, export_service, IDLProg, TypeEnv,
-    };
-    use serde::de::Unexpected::Str;
-
+    // use std::borrow::Cow;
+    // use std::collections::HashMap;
+    // use std::env;
+    // use std::fs::{create_dir_all, write};
+    // use std::path::PathBuf;
+    //
+    // use candid::Principal;
+    // use candid::{
+    //     candid_method, CandidType, Deserialize,
+    //     // IDLProg,
+    //     TypeEnv,
+    // };
+    // use ic_cdk::{api, update};
+    // use ic_websocket_cdk::{CanisterWsCloseArguments, CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments, CanisterWsOpenResult, ClientPrincipal, WsHandlers, WsInitParams};
+    // use serde::de::Unexpected::Str;
+    // use crate::files::FileNode;
+    // use crate::queries::InitialData;
+    // use crate::user::{RegisterUser, User};
+    //
     use super::*;
 
     #[test]
     fn save_candid_2() {
-        #[ic_cdk_macros::query(name = "__get_candid_interface_tmp_hack")]
-        fn export_candid() -> String {
-            export_service!();
-            __export_service()
-        }
-
-        let dir: PathBuf = env::current_dir().unwrap();
-        let canister_name: Cow<str> = dir.file_name().unwrap().to_string_lossy();
-
-        match create_dir_all(&dir) {
-            Ok(_) => println!("Successfully created directory"),
-            Err(e) => println!("Failed to create directory: {}", e),
-        }
-
-        let res = write(dir.join(format!("{:?}.did", canister_name).replace("\"", "")), export_candid());
-        println!("-------- Wrote to {:?}", dir);
-        println!("-------- res {:?}", canister_name);
+        // println!("-------- Wrote to {:?}", dir);
+        // println!("-------- res {:?}", canister_name);
     }
 }
