@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
-use candid::{candid_method, Principal};
-use ic_cdk::api::call::ManualReply;
+
+
 use ic_cdk_macros::query;
 
-use crate::{ID_STORE, PROFILE_STORE};
+use crate::{PROFILE_STORE};
 use crate::user::User;
 
 //
