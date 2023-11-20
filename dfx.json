@@ -1,10 +1,5 @@
 {
   "canisters": {
-    "central_canister": {
-      "candid": "src/central_canister/central_canister.did",
-      "package": "central_canister",
-      "type": "rust"
-    },
     "user_canister": {
       "candid": "src/user_canister/user_canister.did",
       "package": "user_canister",
@@ -41,5 +36,5 @@
     }
   },
   "version": 1,
-  "dfx": "0.15.1"
+  "dfx": "0.15.2-beta.2"
 }

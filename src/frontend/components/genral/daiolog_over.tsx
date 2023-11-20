@@ -1,7 +1,7 @@
 import * as React from "react";
 import {styled} from "@mui/system";
 import {Button, Tooltip, tooltipClasses, TooltipProps} from "@mui/material";
-import ClickAwayListener from "@mui/base/ClickAwayListener";
+import { ClickAwayListener } from '@mui/base';
 
 function DialogOver({DialogContent, ...props}: any) {
 

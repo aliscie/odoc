@@ -1,3 +1,6 @@
+
+
+
 import {StrictMode} from "react";
 import {createRoot} from "react-dom/client";
 
@@ -5,26 +8,23 @@ import App from "./App";
 import {Provider} from "react-redux";
 import store from "./redux/main";
 import IcWebSocket, {generateRandomIdentity, createWsConfig} from "ic-websocket-js";
-import {canisterId, user_canister} from "../declarations/user_canister/index";
+import {canisterId, user_canister} from "../declarations/user_canister";
 
-const rootElement = document.getElementById("root");
-const root = createRoot(rootElement);
-
-
-const gatewayUrl = "ws://127.0.0.1:8080";
-const icUrl = "http://127.0.0.1:4943";
-
-
-console.log("test from index.tsx")
-
-const wsConfig = createWsConfig({
-    canisterId: canisterId,
-    canisterActor: user_canister,
-    identity: generateRandomIdentity(),
-    networkUrl: icUrl,
-});
-
-const ws = new IcWebSocket(gatewayUrl, undefined, wsConfig);
+//
+// const gatewayUrl = "ws://127.0.0.1:8080";
+// const icUrl = "http://127.0.0.1:4943";
+//
+//
+// console.log("test from index.tsx")
+//
+// const wsConfig = createWsConfig({
+//     canisterId: canisterId,
+//     canisterActor: user_canister,
+//     identity: generateRandomIdentity(),
+//     networkUrl: icUrl,
+// });
+//
+// const ws = new IcWebSocket(gatewayUrl, undefined, wsConfig);
 
 
 // // message Candid type
@@ -57,11 +57,21 @@ const ws = new IcWebSocket(gatewayUrl, undefined, wsConfig);
 // };
 
 
-root.render(
-    <StrictMode>
-        <Provider store={store}>
-            <App/>
-        </Provider>
+const rootElement = document.getElementById('root');
 
-    </StrictMode>
+// Check if the root element is present in the HTML
+if (!rootElement) {
+  throw new Error('Root element with id "root" not found in the document');
+}
+
+// Create a root using createRoot
+const root = createRoot(rootElement);
+
+// Render the app component within StrictMode and Redux Provider
+root.render(
+  <StrictMode>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </StrictMode>
 );

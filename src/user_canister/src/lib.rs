@@ -24,7 +24,17 @@ mod share_files;
 mod wallet;
 // mod timer;
 mod websocket;
-
+use user::*;
+use files::*;
+use files_content::*;
+use contracts::*;
+use friends::*;
+use share_files::*;
+use std::collections::HashMap;
+use queries::*;
+use updates::*;
+use ic_websocket_cdk::*;
+use websocket::*;
 
 thread_local! {
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
@@ -39,32 +49,34 @@ thread_local! {
 
 }
 
-#[cfg(test)]
-mod tests {
-    // use std::borrow::Cow;
-    // use std::collections::HashMap;
-    // use std::env;
-    // use std::fs::{create_dir_all, write};
-    // use std::path::PathBuf;
-    //
-    // use candid::Principal;
-    // use candid::{
-    //     candid_method, CandidType, Deserialize,
-    //     // IDLProg,
-    //     TypeEnv,
-    // };
-    // use ic_cdk::{api, update};
-    // use ic_websocket_cdk::{CanisterWsCloseArguments, CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments, CanisterWsOpenResult, ClientPrincipal, WsHandlers, WsInitParams};
-    // use serde::de::Unexpected::Str;
-    // use crate::files::FileNode;
-    // use crate::queries::InitialData;
-    // use crate::user::{RegisterUser, User};
-    //
-    use super::*;
+// #[cfg(test)]
+// mod tests {
+//     // use std::borrow::Cow;
+//     // use std::collections::HashMap;
+//     // use std::env;
+//     // use std::fs::{create_dir_all, write};
+//     // use std::path::PathBuf;
+//     //
+//     // use candid::Principal;
+//     // use candid::{
+//     //     candid_method, CandidType, Deserialize,
+//     //     // IDLProg,
+//     //     TypeEnv,
+//     // };
+//     // use ic_cdk::{api, update};
+//     // use ic_websocket_cdk::{CanisterWsCloseArguments, CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments, CanisterWsOpenResult, ClientPrincipal, WsHandlers, WsInitParams};
+//     // use serde::de::Unexpected::Str;
+//     // use crate::files::FileNode;
+//     // use crate::queries::InitialData;
+//     // use crate::user::{RegisterUser, User};
+//     //
+//     use super::*;
+//
+//     #[test]
+//     fn save_candid_2() {
+//         // println!("-------- Wrote to {:?}", dir);
+//         // println!("-------- res {:?}", canister_name);
+//     }
+// }
 
-    #[test]
-    fn save_candid_2() {
-        // println!("-------- Wrote to {:?}", dir);
-        // println!("-------- res {:?}", canister_name);
-    }
-}
+ic_cdk_macros::export_candid!();

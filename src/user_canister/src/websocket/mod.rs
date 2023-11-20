@@ -1,6 +1,6 @@
-mod handlers;
+pub mod handlers;
 
-use handlers::*;
+pub use handlers::*;
 
 
 use ic_cdk_macros::*;
