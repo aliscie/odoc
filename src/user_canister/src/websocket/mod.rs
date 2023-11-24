@@ -1,5 +1,9 @@
 pub mod handlers;
+mod notification;
 
+use crate::{NOTIFICATIONS};
+use ic_cdk::caller;
+pub use notification::*;
 pub use handlers::*;
 
 
@@ -51,11 +55,24 @@ fn ws_close(args: CanisterWsCloseArguments) -> CanisterWsCloseResult {
 fn ws_message(args: CanisterWsMessageArguments, msg_type: Option<AppMessage>) -> CanisterWsMessageResult {
     ic_websocket_cdk::ws_message(args, msg_type)
 }
+
 // method called by the WS Gateway to get messages for all the clients it serves
 #[query]
 fn ws_get_messages(args: CanisterWsGetMessagesArguments) -> CanisterWsGetMessagesResult {
     ic_websocket_cdk::ws_get_messages(args)
 }
+
+
+#[query]
+fn get_notifications() -> Vec<Notification> {
+    let user = caller();
+    let notifications = NOTIFICATIONS.with(|notifications| {
+        let notifications = notifications.borrow();
+        notifications.get(&user).unwrap().clone()
+    });
+    return notifications;
+}
+
 
 // send a message with a text input
 #[update]

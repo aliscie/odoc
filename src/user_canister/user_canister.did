@@ -77,6 +77,13 @@ type InitialData = record {
   DiscoverUsers : vec record { text; User };
   Wallet : Wallet;
 };
+type Notification = record {
+  is_seen : bool;
+  title : text;
+  date : text;
+  description : text;
+  target : text;
+};
 type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
 type PaymentContract = record {
   canceled : bool;
@@ -177,6 +184,7 @@ service : () -> {
   get_file : (text) -> (opt FileNode) query;
   get_file_content : (text) -> (opt vec record { text; ContentNode }) query;
   get_initial_data : () -> (Result_4) query;
+  get_notifications : () -> (vec Notification) query;
   get_shared_file : (text) -> (Result_5);
   move_file : (text, opt text) -> (Result_6);
   multi_updates : (

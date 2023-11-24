@@ -15,21 +15,21 @@ import {actor} from "../App";
 
 const Discover = () => {
 
-        const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+        // const {enqueueSnackbar, closeSnackbar} = useSnackbar();
         const {users, isLoggedIn, Anonymous} = useSelector((state: any) => state.filesReducer);
 
-        async function handleFriedReq() {
-            let loading = enqueueSnackbar(<span>sending friend request... <span
-                className={"loader"}/></span>, {variant: "info"});
-            let friend_request = await actor.send_friend_request(user[0])
-            closeSnackbar(loading)
-            if (friend_request.Err) {
-                enqueueSnackbar(friend_request.Err, {variant: "error"});
-            }
-            if (friend_request.Ok) {
-                enqueueSnackbar("Friend request sent", {variant: "success"});
-            }
-        }
+        // async function handleFriedReq() {
+        //     let loading = enqueueSnackbar(<span>sending friend request... <span
+        //         className={"loader"}/></span>, {variant: "info"});
+        //     let friend_request = await actor.send_friend_request(user[0])
+        //     closeSnackbar(loading)
+        //     if (friend_request.Err) {
+        //         enqueueSnackbar(friend_request.Err, {variant: "error"});
+        //     }
+        //     if (friend_request.Ok) {
+        //         enqueueSnackbar("Friend request sent", {variant: "success"});
+        //     }
+        // }
 
         let Buttons = (props: any) => <><IconButton
             aria-label="add to favorites">

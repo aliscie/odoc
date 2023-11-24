@@ -46,7 +46,7 @@ thread_local! {
     static FILES_SHARE_STORE: RefCell<FilesShareStore> = RefCell::default();
     static WALLETS_STORE: RefCell<WalletStore> = RefCell::default();
     static CLIENTS_CONNECTED: RefCell<ClientPrincipals> = RefCell::default();
-
+    static NOTIFICATIONS: RefCell<UserNotifications> = RefCell::default();
 }
 
 // #[cfg(test)]

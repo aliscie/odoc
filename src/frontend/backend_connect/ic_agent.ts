@@ -86,11 +86,11 @@ export async function is_logged() {
 }
 
 export async function logout() {
-    if (!(await is_logged())) {
+    // if (!(await is_logged())) {
         const authClient = await AuthClient.create();
         await authClient.logout()
         window.location.reload()
-    }
+    // }
 
 }
 

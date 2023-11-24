@@ -100,6 +100,13 @@ export interface InitialData {
   'DiscoverUsers' : Array<[string, User]>,
   'Wallet' : Wallet,
 }
+export interface Notification {
+  'is_seen' : boolean,
+  'title' : string,
+  'date' : string,
+  'description' : string,
+  'target' : string,
+}
 export type Operation = { 'Equal' : null } |
   { 'Contains' : null } |
   { 'Bigger' : null } |
@@ -212,6 +219,7 @@ export interface _SERVICE {
     [] | [Array<[string, ContentNode]>]
   >,
   'get_initial_data' : ActorMethod<[], Result_4>,
+  'get_notifications' : ActorMethod<[], Array<Notification>>,
   'get_shared_file' : ActorMethod<[string], Result_5>,
   'move_file' : ActorMethod<[string, [] | [string]], Result_6>,
   'multi_updates' : ActorMethod<

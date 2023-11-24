@@ -9,6 +9,7 @@ import {actor} from "../App";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
+// localStorage.clear()
 
 export type FilesActions =
     "ADD"

@@ -1,7 +1,7 @@
 use candid::{CandidType, encode_one, decode_one};
-use ic_cdk::{print, api::time};
+use ic_cdk::{print, api::time, caller, println};
 use serde::{Deserialize, Serialize};
-
+use crate::CLIENTS_CONNECTED;
 use ic_websocket_cdk::{
     ws_send, ClientPrincipal, OnCloseCallbackArgs, OnMessageCallbackArgs, OnOpenCallbackArgs,
 };
@@ -21,14 +21,15 @@ impl AppMessage {
 
 pub fn on_open(args: OnOpenCallbackArgs) {
     let msg = AppMessage {
-        text: String::from("ping"),
+        text: String::from("Connection is open"),
         timestamp: time(),
     };
-    // CLIENTS_CONNECTED.with(|clients_connected| {
-    //     clients_connected
-    //         .borrow_mut()
-    //         .insert(caller(), args.client_principal.clone());
-    // });
+
+    CLIENTS_CONNECTED.with(|clients_connected| {
+        clients_connected
+            .borrow_mut()
+            .insert(caller(), args.client_principal.clone());
+    });
 
     send_app_message(args.client_principal, msg);
 }
@@ -36,7 +37,7 @@ pub fn on_open(args: OnOpenCallbackArgs) {
 pub fn on_message(args: OnMessageCallbackArgs) {
     let app_msg: AppMessage = decode_one(&args.message).unwrap();
     let new_msg = AppMessage {
-        text: String::from("ping"),
+        text: String::from("on_message is sent"),
         timestamp: time(),
     };
     print(format!("Received message: {:?}", app_msg));

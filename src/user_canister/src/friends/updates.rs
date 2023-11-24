@@ -1,18 +1,21 @@
-
-use ic_cdk::caller;
+use candid::Principal;
+use ic_cdk::{caller, println};
 use ic_cdk_macros::update;
 
-use crate::{FRIENDS_STORE};
+use crate::{FRIENDS_STORE, websocket, CLIENTS_CONNECTED};
 use crate::friends::Friend;
 use crate::user::{User};
+use crate::websocket::Notification;
 
 #[update]
 pub fn send_friend_request(user_principal: String) -> Result<User, String> {
+
     let user = User::get_user_from_text_principal(user_principal.clone());
     if user.clone().is_none() {
         return Err("User does not exist".to_string());
     }
-    if caller().to_text() == user_principal {
+
+    if caller() == user.clone().unwrap().principal() {
         return Err("You can't send a friend request to yourself.".to_string());
     }
     let mut friend = if let Some(friend) = Friend::get_friends_of_caller() {
@@ -26,7 +29,17 @@ pub fn send_friend_request(user_principal: String) -> Result<User, String> {
 
     if !friend.friends.contains(&user.clone().unwrap()) && !friend.friend_requests.contains(&user.clone().unwrap()) {
         friend.send_friend_request(user.clone().unwrap());
+        let notification = Notification {
+            title: "You have new friend request".to_string(),
+            description: "".to_string(),
+            target: "".to_string(),
+            date: "".to_string(),
+            is_seen: false,
+        };
 
+
+
+        websocket::notify(user.clone().unwrap().principal(), notification);
         Ok(user.unwrap())
     } else {
         Err("Friend request already sent or user is already a friend.".to_string())

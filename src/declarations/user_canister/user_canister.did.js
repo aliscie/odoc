@@ -159,6 +159,13 @@ export const idlFactory = ({ IDL }) => {
     'Wallet' : Wallet,
   });
   const Result_4 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
+  const Notification = IDL.Record({
+    'is_seen' : IDL.Bool,
+    'title' : IDL.Text,
+    'date' : IDL.Text,
+    'description' : IDL.Text,
+    'target' : IDL.Text,
+  });
   const Result_5 = IDL.Variant({
     'Ok' : IDL.Tuple(FileNode, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode))),
     'Err' : IDL.Text,
@@ -249,6 +256,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_initial_data' : IDL.Func([], [Result_4], ['query']),
+    'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
     'get_shared_file' : IDL.Func([IDL.Text], [Result_5], []),
     'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_6], []),
     'multi_updates' : IDL.Func(
