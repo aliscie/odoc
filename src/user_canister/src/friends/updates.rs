@@ -1,15 +1,14 @@
 use candid::Principal;
-use ic_cdk::{caller, println};
+use ic_cdk::{caller, print, println};
 use ic_cdk_macros::update;
 
-use crate::{FRIENDS_STORE, websocket, CLIENTS_CONNECTED};
+use crate::{FRIENDS_STORE, websocket};
 use crate::friends::Friend;
 use crate::user::{User};
 use crate::websocket::Notification;
 
 #[update]
 pub fn send_friend_request(user_principal: String) -> Result<User, String> {
-
     let user = User::get_user_from_text_principal(user_principal.clone());
     if user.clone().is_none() {
         return Err("User does not exist".to_string());
@@ -37,9 +36,11 @@ pub fn send_friend_request(user_principal: String) -> Result<User, String> {
             is_seen: false,
         };
 
+        if let Ok(u) = Principal::from_text(user_principal) {
+            print("Sending notification to user: ");
+            websocket::notify(u, notification);
+        }
 
-
-        websocket::notify(user.clone().unwrap().principal(), notification);
         Ok(user.unwrap())
     } else {
         Err("Friend request already sent or user is already a friend.".to_string())

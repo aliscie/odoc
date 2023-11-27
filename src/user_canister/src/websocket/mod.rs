@@ -11,14 +11,13 @@ use ic_cdk_macros::*;
 use ic_websocket_cdk::{CanisterWsCloseArguments, CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments, CanisterWsOpenResult, WsHandlers, WsInitParams};
 
 use handlers::{on_close, on_message, on_open};
-use crate::CLIENTS_CONNECTED;
 // use crate::handlers::{AppMessage, send_app_message};
 
 // mod canister;
 
 
 // Paste here the principal of the gateway obtained when running the gateway
-pub const GATEWAY_PRINCIPAL: &str = "y5hie-mg67p-324c7-bou5z-gat35-je6vp-4fn2j-6wktj-d3l25-ft42h-cqe";
+pub const GATEWAY_PRINCIPAL: &str = "qznnj-w4akz-crbb6-5vszi-wfofw-p2crg-om7fi-n5rob-mwluu-lstug-dqe";
 
 #[init]
 fn init() {
@@ -28,7 +27,7 @@ fn init() {
         on_close: Some(on_close),
     };
 
-    let params = WsInitParams::new(handlers, String::from(GATEWAY_PRINCIPAL));
+    let params = WsInitParams::new(handlers, vec![String::from(GATEWAY_PRINCIPAL)]);
 
     ic_websocket_cdk::init(params);
 }
@@ -77,15 +76,10 @@ fn get_notifications() -> Vec<Notification> {
 // send a message with a text input
 #[update]
 fn send_message(text: String) {
-    let client_principal = CLIENTS_CONNECTED.with(|clients_connected| {
-        let clients_connected = clients_connected.borrow();
-        clients_connected.keys().last().unwrap().clone()
-    });
-
     let msg: AppMessage = AppMessage {
         text,
         timestamp: 0,
     };
-    send_app_message(client_principal, msg);
+    send_app_message(caller(), msg);
 }
 

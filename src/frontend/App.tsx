@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import "./App.css";
 import NavBar from "./components/spesific/nav_bar";
 import Pages from "./pages/main";
@@ -9,21 +9,75 @@ import Theme from "./components/genral/theme_provider";
 import {SnackbarProvider} from "notistack";
 import RegistrationForm from "./components/spesific/registeration_form";
 import {handleRedux} from "./redux/main";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {agent} from "./backend_connect/main";
 import {get_initial_data} from "./redux/files";
 import {get_user_actor} from "./backend_connect/ic_agent";
-import {ActorSubclass} from "@dfinity/agent";
+import {ActorSubclass, SignIdentity} from "@dfinity/agent";
 import {_SERVICE} from "../declarations/user_canister/user_canister.did";
-import {user_canister} from "../declarations/user_canister";
+import {canisterId, user_canister} from "../declarations/user_canister";
+import IcWebSocket, {createWsConfig, generateRandomIdentity} from "ic-websocket-js";
+import {AuthClient} from "@dfinity/auth-client";
+import {IDL} from "@dfinity/candid";
 
 export let actor: ActorSubclass<_SERVICE> | undefined;
+
 
 function App() {
     const dispatch = useDispatch();
     const [state, setState] = useState(false);
+
+    // Use a ref to track whether the WebSocket has already been set up
+    const isWebSocketSetup = useRef(false);
+
     useEffect(() => {
         (async () => {
+            const gatewayUrl = "ws://127.0.0.1:8080";
+            const icUrl = "http://127.0.0.1:4943";
+
+            const authClient = await AuthClient.create();
+            const _identity = authClient.getIdentity();
+
+            // Check the ref before setting up the WebSocket
+            if (await authClient.isAuthenticated() && !isWebSocketSetup.current) {
+                const wsConfig = createWsConfig({
+                    canisterId: canisterId,
+                    canisterActor: user_canister,
+                    identity: _identity as SignIdentity,
+                    networkUrl: icUrl,
+                });
+
+                const ws = new IcWebSocket(gatewayUrl, undefined, wsConfig);
+                console.log("WS is on");
+
+                ws.onopen = () => {
+                    console.log("Connected to the canister");
+                };
+
+                ws.onmessage = async (event) => {
+                    console.log("Received message:", event.data);
+                };
+
+                ws.onclose = () => {
+                    console.log("Disconnected from the ws canister");
+                };
+
+                ws.onerror = (error) => {
+                    console.log("Error:", error);
+                };
+
+                // Update the ref to indicate that the WebSocket has been set up
+                isWebSocketSetup.current = true;
+            }
+        })();
+    }, []);
+
+
+    useEffect(() => {
+
+        (async () => {
+
+
             // actor = user_canister;
             actor = await get_user_actor();
             await get_initial_data();

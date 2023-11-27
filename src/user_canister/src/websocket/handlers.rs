@@ -1,7 +1,6 @@
 use candid::{CandidType, encode_one, decode_one};
 use ic_cdk::{print, api::time, caller, println};
 use serde::{Deserialize, Serialize};
-use crate::CLIENTS_CONNECTED;
 use ic_websocket_cdk::{
     ws_send, ClientPrincipal, OnCloseCallbackArgs, OnMessageCallbackArgs, OnOpenCallbackArgs,
 };
@@ -25,13 +24,13 @@ pub fn on_open(args: OnOpenCallbackArgs) {
         timestamp: time(),
     };
 
-    CLIENTS_CONNECTED.with(|clients_connected| {
-        clients_connected
-            .borrow_mut()
-            .insert(caller(), args.client_principal.clone());
-    });
+    // CLIENTS_CONNECTED.with(|clients_connected| {
+    //     clients_connected
+    //         .borrow_mut()
+    //         .insert(caller(), args.client_principal.clone());
+    // });
 
-    send_app_message(args.client_principal, msg);
+    send_app_message(caller(), msg);
 }
 
 pub fn on_message(args: OnMessageCallbackArgs) {
