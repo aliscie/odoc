@@ -4,10 +4,12 @@ use serde::{Deserialize, Serialize};
 use ic_websocket_cdk::{
     ws_send, ClientPrincipal, OnCloseCallbackArgs, OnMessageCallbackArgs, OnOpenCallbackArgs,
 };
+use crate::websocket::Notification;
 
 
 #[derive(CandidType, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
 pub struct AppMessage {
+    pub notification: Option<Notification>,
     pub text: String,
     pub timestamp: u64,
 }
@@ -20,15 +22,10 @@ impl AppMessage {
 
 pub fn on_open(args: OnOpenCallbackArgs) {
     let msg = AppMessage {
+        notification: None,
         text: String::from("Connection is open"),
         timestamp: time(),
     };
-
-    // CLIENTS_CONNECTED.with(|clients_connected| {
-    //     clients_connected
-    //         .borrow_mut()
-    //         .insert(caller(), args.client_principal.clone());
-    // });
 
     send_app_message(caller(), msg);
 }
@@ -36,6 +33,7 @@ pub fn on_open(args: OnOpenCallbackArgs) {
 pub fn on_message(args: OnMessageCallbackArgs) {
     let app_msg: AppMessage = decode_one(&args.message).unwrap();
     let new_msg = AppMessage {
+        notification: None,
         text: String::from("on_message is sent"),
         timestamp: time(),
     };

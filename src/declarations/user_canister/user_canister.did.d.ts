@@ -1,7 +1,11 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
-export interface AppMessage { 'text' : string, 'timestamp' : bigint }
+export interface AppMessage {
+  'text' : string,
+  'notification' : [] | [Notification],
+  'timestamp' : bigint,
+}
 export interface CanisterOutputCertifiedMessages {
   'messages' : Array<CanisterOutputMessage>,
   'cert' : Uint8Array | number[],
@@ -15,7 +19,10 @@ export interface CanisterOutputMessage {
 export interface CanisterWsCloseArguments { 'client_key' : ClientKey }
 export interface CanisterWsGetMessagesArguments { 'nonce' : bigint }
 export interface CanisterWsMessageArguments { 'msg' : WebsocketMessage }
-export interface CanisterWsOpenArguments { 'client_nonce' : bigint }
+export interface CanisterWsOpenArguments {
+  'gateway_principal' : Principal,
+  'client_nonce' : bigint,
+}
 export interface ClientKey {
   'client_principal' : Principal,
   'client_nonce' : bigint,
@@ -91,6 +98,10 @@ export interface Friend {
   'friend_requests' : Array<User>,
   'friends' : Array<User>,
 }
+export interface FriendRequestNotification {
+  'sender' : Principal,
+  'receiver' : Principal,
+}
 export interface InitialData {
   'FilesContents' : [] | [Array<[string, Array<[string, ContentNode]>]>],
   'Contracts' : Array<[string, StoredContract]>,
@@ -100,12 +111,11 @@ export interface InitialData {
   'DiscoverUsers' : Array<[string, User]>,
   'Wallet' : Wallet,
 }
+export type NoteContent = { 'FriendRequest' : FriendRequestNotification };
 export interface Notification {
+  'id' : string,
   'is_seen' : boolean,
-  'title' : string,
-  'date' : string,
-  'description' : string,
-  'target' : string,
+  'content' : NoteContent,
 }
 export type Operation = { 'Equal' : null } |
   { 'Contains' : null } |
@@ -218,6 +228,7 @@ export interface _SERVICE {
     [string],
     [] | [Array<[string, ContentNode]>]
   >,
+  'get_friends' : ActorMethod<[], [] | [Friend]>,
   'get_initial_data' : ActorMethod<[], Result_4>,
   'get_notifications' : ActorMethod<[], Array<Notification>>,
   'get_shared_file' : ActorMethod<[string], Result_5>,
@@ -236,8 +247,8 @@ export interface _SERVICE {
   'release_payment' : ActorMethod<[string], Result_1>,
   'rename_file' : ActorMethod<[string, string], boolean>,
   'request_share_change' : ActorMethod<[Array<ShareRequest>, string], Result_1>,
+  'see_notifications' : ActorMethod<[string], undefined>,
   'send_friend_request' : ActorMethod<[string], Result>,
-  'send_message' : ActorMethod<[string], undefined>,
   'share_file' : ActorMethod<[string, string], Result_2>,
   'unfriend' : ActorMethod<[string], Result>,
   'update_shares' : ActorMethod<[Array<Share>, string], Result_2>,

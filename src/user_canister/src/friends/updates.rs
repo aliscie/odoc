@@ -1,11 +1,15 @@
 use candid::Principal;
 use ic_cdk::{caller, print, println};
 use ic_cdk_macros::update;
+use std::sync::atomic::Ordering;
 
 use crate::{FRIENDS_STORE, websocket};
+use crate::files::COUNTER;
 use crate::friends::Friend;
 use crate::user::{User};
-use crate::websocket::Notification;
+use crate::websocket::{FriendRequestNotification, NoteContent, Notification};
+
+
 
 #[update]
 pub fn send_friend_request(user_principal: String) -> Result<User, String> {
@@ -28,18 +32,10 @@ pub fn send_friend_request(user_principal: String) -> Result<User, String> {
 
     if !friend.friends.contains(&user.clone().unwrap()) && !friend.friend_requests.contains(&user.clone().unwrap()) {
         friend.send_friend_request(user.clone().unwrap());
-        let notification = Notification {
-            title: "You have new friend request".to_string(),
-            description: "".to_string(),
-            target: "".to_string(),
-            date: "".to_string(),
-            is_seen: false,
-        };
-
         if let Ok(u) = Principal::from_text(user_principal) {
-            print("Sending notification to user: ");
-            websocket::notify(u, notification);
+            websocket::notify_friend_request(u);
         }
+
 
         Ok(user.unwrap())
     } else {
@@ -91,6 +87,17 @@ pub fn cancel_friend_request(user_principal: String) -> Result<User, String> {
     if let Some(mut friend) = Friend::get_friends_of_caller() {
         if let Some(_index) = friend.friend_requests.iter().position(|request| *request == user.clone().unwrap()) {
             friend.cancel_friend_request(&user.clone().unwrap());
+
+            // get the id of the notification with receiver caller() and sender user
+            let note_id = websocket::get_friend_request_id(caller(), user.clone().unwrap().principal());
+            if let Some(id) = note_id {
+                websocket::unnotify(user.clone().unwrap().principal(), id);
+            } else {
+                let note_id = websocket::get_friend_request_id(user.clone().unwrap().principal(), caller());
+                websocket::unnotify(user.clone().unwrap().principal(), note_id.unwrap());
+            }
+
+
             Ok(user.unwrap())
         } else {
             Err("No friend request found from the specified user.".to_string())

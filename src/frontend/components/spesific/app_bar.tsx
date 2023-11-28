@@ -20,7 +20,9 @@ import MultiSaveButton from "../actions/multi_save";
 import Person2Icon from '@mui/icons-material/Person2';
 import SettingsIcon from '@mui/icons-material/Settings';
 import {convertToBlobLink} from "../../data_processing/image_to_vec";
-
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import {Badge} from "@mui/base";
+import {Notifications} from "../notifcations/notification";
 
 export function NavAppBar() {
     const dispatch = useDispatch();
@@ -77,6 +79,7 @@ export function NavAppBar() {
                         {searchTool ? <CloseIcon/> : <SearchIcon/>}
                     </IconButton>
                 </Tooltip>
+                {isLoggedIn && <Notifications/> }
 
                 {isLoggedIn ? (
                     <BasicMenu

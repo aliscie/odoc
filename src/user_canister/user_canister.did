@@ -1,4 +1,8 @@
-type AppMessage = record { "text" : text; timestamp : nat64 };
+type AppMessage = record {
+  "text" : text;
+  notification : opt Notification;
+  timestamp : nat64;
+};
 type CanisterOutputCertifiedMessages = record {
   messages : vec CanisterOutputMessage;
   cert : vec nat8;
@@ -12,7 +16,10 @@ type CanisterOutputMessage = record {
 type CanisterWsCloseArguments = record { client_key : ClientKey };
 type CanisterWsGetMessagesArguments = record { nonce : nat64 };
 type CanisterWsMessageArguments = record { msg : WebsocketMessage };
-type CanisterWsOpenArguments = record { client_nonce : nat64 };
+type CanisterWsOpenArguments = record {
+  gateway_principal : principal;
+  client_nonce : nat64;
+};
 type ClientKey = record { client_principal : principal; client_nonce : nat64 };
 type Column = record {
   id : text;
@@ -68,6 +75,10 @@ type Formula = record {
   execute : Execute;
 };
 type Friend = record { friend_requests : vec User; friends : vec User };
+type FriendRequestNotification = record {
+  sender : principal;
+  receiver : principal;
+};
 type InitialData = record {
   FilesContents : opt vec record { text; vec record { text; ContentNode } };
   Contracts : vec record { text; StoredContract };
@@ -77,13 +88,8 @@ type InitialData = record {
   DiscoverUsers : vec record { text; User };
   Wallet : Wallet;
 };
-type Notification = record {
-  is_seen : bool;
-  title : text;
-  date : text;
-  description : text;
-  target : text;
-};
+type NoteContent = variant { FriendRequest : FriendRequestNotification };
+type Notification = record { id : text; is_seen : bool; content : NoteContent };
 type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
 type PaymentContract = record {
   canceled : bool;
@@ -183,6 +189,7 @@ service : () -> {
   get_all_users : () -> (vec record { text; User }) query;
   get_file : (text) -> (opt FileNode) query;
   get_file_content : (text) -> (opt vec record { text; ContentNode }) query;
+  get_friends : () -> (opt Friend) query;
   get_initial_data : () -> (Result_4) query;
   get_notifications : () -> (vec Notification) query;
   get_shared_file : (text) -> (Result_5);
@@ -198,8 +205,8 @@ service : () -> {
   release_payment : (text) -> (Result_1);
   rename_file : (text, text) -> (bool);
   request_share_change : (vec ShareRequest, text) -> (Result_1);
+  see_notifications : (text) -> ();
   send_friend_request : (text) -> (Result);
-  send_message : (text) -> ();
   share_file : (text, text) -> (Result_2);
   unfriend : (text) -> (Result);
   update_shares : (vec Share, text) -> (Result_2);

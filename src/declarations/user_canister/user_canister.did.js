@@ -102,6 +102,10 @@ export const idlFactory = ({ IDL }) => {
     'language' : IDL.Text,
     'parent' : IDL.Opt(IDL.Text),
   });
+  const Friend = IDL.Record({
+    'friend_requests' : IDL.Vec(User),
+    'friends' : IDL.Vec(User),
+  });
   const PaymentContract = IDL.Record({
     'canceled' : IDL.Bool,
     'contract_id' : IDL.Text,
@@ -124,10 +128,6 @@ export const idlFactory = ({ IDL }) => {
   const StoredContract = IDL.Variant({
     'PaymentContract' : PaymentContract,
     'SharesContract' : SharesContract,
-  });
-  const Friend = IDL.Record({
-    'friend_requests' : IDL.Vec(User),
-    'friends' : IDL.Vec(User),
   });
   const ExchangeType = IDL.Variant({
     'Withdraw' : IDL.Null,
@@ -159,12 +159,17 @@ export const idlFactory = ({ IDL }) => {
     'Wallet' : Wallet,
   });
   const Result_4 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
+  const FriendRequestNotification = IDL.Record({
+    'sender' : IDL.Principal,
+    'receiver' : IDL.Principal,
+  });
+  const NoteContent = IDL.Variant({
+    'FriendRequest' : FriendRequestNotification,
+  });
   const Notification = IDL.Record({
+    'id' : IDL.Text,
     'is_seen' : IDL.Bool,
-    'title' : IDL.Text,
-    'date' : IDL.Text,
-    'description' : IDL.Text,
-    'target' : IDL.Text,
+    'content' : NoteContent,
   });
   const Result_5 = IDL.Variant({
     'Ok' : IDL.Tuple(FileNode, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode))),
@@ -210,8 +215,15 @@ export const idlFactory = ({ IDL }) => {
     'is_service_message' : IDL.Bool,
   });
   const CanisterWsMessageArguments = IDL.Record({ 'msg' : WebsocketMessage });
-  const AppMessage = IDL.Record({ 'text' : IDL.Text, 'timestamp' : IDL.Nat64 });
-  const CanisterWsOpenArguments = IDL.Record({ 'client_nonce' : IDL.Nat64 });
+  const AppMessage = IDL.Record({
+    'text' : IDL.Text,
+    'notification' : IDL.Opt(Notification),
+    'timestamp' : IDL.Nat64,
+  });
+  const CanisterWsOpenArguments = IDL.Record({
+    'gateway_principal' : IDL.Principal,
+    'client_nonce' : IDL.Nat64,
+  });
   return IDL.Service({
     'accept_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'accept_payment' : IDL.Func([IDL.Text], [Result_1], []),
@@ -255,6 +267,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)))],
         ['query'],
       ),
+    'get_friends' : IDL.Func([], [IDL.Opt(Friend)], ['query']),
     'get_initial_data' : IDL.Func([], [Result_4], ['query']),
     'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
     'get_shared_file' : IDL.Func([IDL.Text], [Result_5], []),
@@ -282,8 +295,8 @@ export const idlFactory = ({ IDL }) => {
         [Result_1],
         [],
       ),
+    'see_notifications' : IDL.Func([IDL.Text], [], []),
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
-    'send_message' : IDL.Func([IDL.Text], [], []),
     'share_file' : IDL.Func([IDL.Text, IDL.Text], [Result_2], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
     'update_shares' : IDL.Func([IDL.Vec(Share), IDL.Text], [Result_2], []),

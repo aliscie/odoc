@@ -9,16 +9,15 @@ import Theme from "./components/genral/theme_provider";
 import {SnackbarProvider} from "notistack";
 import RegistrationForm from "./components/spesific/registeration_form";
 import {handleRedux} from "./redux/main";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {agent} from "./backend_connect/main";
 import {get_initial_data} from "./redux/files";
 import {get_user_actor} from "./backend_connect/ic_agent";
 import {ActorSubclass, SignIdentity} from "@dfinity/agent";
 import {_SERVICE} from "../declarations/user_canister/user_canister.did";
 import {canisterId, user_canister} from "../declarations/user_canister";
-import IcWebSocket, {createWsConfig, generateRandomIdentity} from "ic-websocket-js";
+import IcWebSocket, {createWsConfig} from "ic-websocket-js";
 import {AuthClient} from "@dfinity/auth-client";
-import {IDL} from "@dfinity/candid";
 
 export let actor: ActorSubclass<_SERVICE> | undefined;
 
@@ -48,14 +47,24 @@ function App() {
                 });
 
                 const ws = new IcWebSocket(gatewayUrl, undefined, wsConfig);
-                console.log("WS is on");
 
                 ws.onopen = () => {
                     console.log("Connected to the canister");
                 };
 
                 ws.onmessage = async (event) => {
-                    console.log("Received message:", event.data);
+                    let is_friend_request = event.data.notification[0].content.FriendRequest;
+                    // dispatch(handleRedux('NOTIFY', {title: event.data.text}));
+
+                    let notification_list = actor && await actor.get_notifications();
+                    dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
+
+                    if (is_friend_request) {
+                        let new_friends = actor && await actor.get_friends();
+                        new_friends && dispatch(handleRedux("UPDATE_FRIEND", {friends: new_friends[0]}))
+
+
+                    }
                 };
 
                 ws.onclose = () => {

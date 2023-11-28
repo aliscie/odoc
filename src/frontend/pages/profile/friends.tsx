@@ -61,6 +61,8 @@ function Friends(props: any) {
         if (res.Ok) {
             dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
         }
+        let notification_list = actor && await actor.get_notifications();
+        dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
         return res
     }
 

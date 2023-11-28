@@ -35,6 +35,9 @@ export type FilesActions =
     | "UPDATE_BALANCE"
     | "UPDATE_PROFILE"
     | "CHANGE_FILE_PARENT"
+    | "NOTIFY"
+    | "UPDATE_FRIEND"
+    | "UPDATE_NOTIFY"
     | FriendsActions;
 
 
@@ -46,6 +49,7 @@ export var initialState = {
     files_content: {},
     friends: [{friends: [], friend_requests: []}],
     changes: {files: {}, contents: {}, contracts: {}, delete_contracts: []},
+    notifications: [],
 };
 
 
@@ -118,6 +122,16 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             return {
                 ...state,
                 files: {...state.files, [action.id]: action.file},
+            }
+        case 'NOTIFY':
+            return {
+                ...state,
+                notifications: [...state.notifications, action.data],
+            }
+        case 'UPDATE_NOTIFY':
+            return {
+                ...state,
+                notifications: action.new_list,
             }
         case 'REMOVE':
             let file_id = action.id;
@@ -211,6 +225,13 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             return {
                 ...state,
             }
+
+        case 'UPDATE_FRIEND':
+            return {
+                ...state,
+                friends: [action.friends],
+            };
+
         case 'ADD_FRIEND':
             friends.friends.push(action.friend);
             return {

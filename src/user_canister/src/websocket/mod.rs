@@ -64,22 +64,42 @@ fn ws_get_messages(args: CanisterWsGetMessagesArguments) -> CanisterWsGetMessage
 
 #[query]
 fn get_notifications() -> Vec<Notification> {
-    let user = caller();
-    let notifications = NOTIFICATIONS.with(|notifications| {
+    NOTIFICATIONS.with(|notifications| {
         let notifications = notifications.borrow();
-        notifications.get(&user).unwrap().clone()
-    });
-    return notifications;
+        if let Some(notifications) = notifications.get(&caller()) {
+            // Convert the reference to a Vec<Notification>
+            return notifications.to_vec();
+        } else {
+            // Return an empty Vec<Notification>
+            return Vec::new();
+        }
+    })
 }
 
-
-// send a message with a text input
 #[update]
-fn send_message(text: String) {
-    let msg: AppMessage = AppMessage {
-        text,
-        timestamp: 0,
-    };
-    send_app_message(caller(), msg);
+fn see_notifications(id: String) {
+    NOTIFICATIONS.with(|notifications| {
+        let mut user_notifications = notifications.borrow_mut();
+        let user_notifications = user_notifications.entry(caller()).or_insert_with(Vec::new);
+        for notification in user_notifications.iter_mut() {
+            if notification.id == id {
+                notification.is_seen = true;
+            }
+        }
+    });
 }
+
+
+//
+//
+// // send a message with a text input
+// #[update]
+// fn send_message(text: String) {
+//     let msg: AppMessage = AppMessage {
+//         text,
+//         timestamp: 0,
+//     };
+//     send_app_message(caller(), msg);
+// }
+
 
