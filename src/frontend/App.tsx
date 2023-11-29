@@ -18,6 +18,7 @@ import {_SERVICE} from "../declarations/user_canister/user_canister.did";
 import {canisterId, user_canister} from "../declarations/user_canister";
 import IcWebSocket, {createWsConfig} from "ic-websocket-js";
 import {AuthClient} from "@dfinity/auth-client";
+import {logger} from "./dev_utils/log_data";
 
 export let actor: ActorSubclass<_SERVICE> | undefined;
 
@@ -53,17 +54,37 @@ function App() {
                 };
 
                 ws.onmessage = async (event) => {
-                    let is_friend_request = event.data.notification[0].content.FriendRequest;
+                    logger(event.data)
+                    // let sample = [{
+                    //     "id": "8",
+                    //     "is_seen": false,
+                    //     "content": {
+                    //         "ContractUpdate": {
+                    //             "contract_type": "payment",
+                    //             "contract_id": "j5nsrc",
+                    //             "sender": {"__principal__": "37dm3-rlxyt-btc4n-vf4jh-wqhfn-nctiu-a4aqh-osig6-hj2yf-muxom-sqe"},
+                    //             "receiver": {"__principal__": "5fb7x-iq625-soxc3-wwqui-23cgd-cphxe-hqqsx-q3a7b-32vlp-esw5y-iqe"}
+                    //         }
+                    //     }
+                    // }]
+                    if (event.data.notification.length == 0) {
+                        return
+                    }
+
+                    // check if the key is `FriendRequest` or ContractUpdate in event.data.notification[0].content[key]
+                    let keys = Object.keys(event.data.notification[0].content);
                     // dispatch(handleRedux('NOTIFY', {title: event.data.text}));
 
                     let notification_list = actor && await actor.get_notifications();
                     dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
-
-                    if (is_friend_request) {
+                    if ("FriendRequest" in keys) {
                         let new_friends = actor && await actor.get_friends();
                         new_friends && dispatch(handleRedux("UPDATE_FRIEND", {friends: new_friends[0]}))
 
 
+                    } else if ("ContractUpdate" in keys) {
+                        // let new_contracts = actor && await actor.get_contracts();
+                        // new_contracts && dispatch(handleRedux("UPDATE_CONTRACT", {contracts: new_contracts[0]}))
                     }
                 };
 

@@ -159,17 +159,20 @@ export const idlFactory = ({ IDL }) => {
     'Wallet' : Wallet,
   });
   const Result_4 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
-  const FriendRequestNotification = IDL.Record({
-    'sender' : IDL.Principal,
-    'receiver' : IDL.Principal,
+  const ContractNotification = IDL.Record({
+    'contract_type' : IDL.Text,
+    'contract_id' : IDL.Text,
   });
   const NoteContent = IDL.Variant({
-    'FriendRequest' : FriendRequestNotification,
+    'ContractUpdate' : ContractNotification,
+    'FriendRequest' : IDL.Record({}),
   });
   const Notification = IDL.Record({
     'id' : IDL.Text,
     'is_seen' : IDL.Bool,
     'content' : NoteContent,
+    'sender' : IDL.Principal,
+    'receiver' : IDL.Principal,
   });
   const Result_5 = IDL.Variant({
     'Ok' : IDL.Tuple(FileNode, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode))),

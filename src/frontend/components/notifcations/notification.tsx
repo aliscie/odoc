@@ -44,7 +44,7 @@ export function Notifications() {
                     horizontal: 'right',
                 }}
                 options={new_notifications.map(notification => {
-                    let item = {content: notification.id}
+                    let item = {content: Object.keys(notification.content)[0]};
                     return item
                 })}
             >

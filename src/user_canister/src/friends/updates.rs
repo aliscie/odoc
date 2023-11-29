@@ -94,10 +94,12 @@ pub fn cancel_friend_request(user_principal: String) -> Result<User, String> {
                 websocket::unnotify(user.clone().unwrap().principal(), id);
             } else {
                 let note_id = websocket::get_friend_request_id(user.clone().unwrap().principal(), caller());
-                websocket::unnotify(user.clone().unwrap().principal(), note_id.unwrap());
+                if let Some(id) = note_id {
+                    websocket::unnotify(user.clone().unwrap().principal(), id);
+                    // rais error if id is not found
+
+                }
             }
-
-
             Ok(user.unwrap())
         } else {
             Err("No friend request found from the specified user.".to_string())

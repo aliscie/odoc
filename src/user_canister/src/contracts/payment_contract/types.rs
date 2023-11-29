@@ -4,7 +4,7 @@ use std::sync::atomic::Ordering;
 use ic_cdk::{caller};
 use candid::{CandidType, Deserialize, Principal};
 
-use crate::{CONTRACTS_STORE, StoredContract, Wallet};
+use crate::{CONTRACTS_STORE, StoredContract, Wallet, websocket};
 use crate::contracts::Contract;
 use crate::files::COUNTER;
 use crate::storage_schema::{ContentId, ContractId};
@@ -105,7 +105,8 @@ impl PaymentContract {
         for contract in contracts {
             if let StoredContract::PaymentContract(payment) = contract {
                 PaymentContract::update_or_create(caller(), payment.clone())?;
-                PaymentContract::update_or_create(payment.receiver.clone(), payment)?;
+                PaymentContract::update_or_create(payment.receiver.clone(), payment.clone())?;
+                websocket::contract_notification(payment.receiver.clone(), caller(), "payment".to_string(), payment.clone().contract_id);
             } else {
                 panic!("Invalid contract type");
             }

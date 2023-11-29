@@ -62,6 +62,10 @@ export interface ContentNode {
 }
 export type Contract = { 'PaymentContract' : string } |
   { 'SharesContract' : string };
+export interface ContractNotification {
+  'contract_type' : string,
+  'contract_id' : string,
+}
 export interface Exchange {
   'to' : string,
   '_type' : ExchangeType,
@@ -98,10 +102,6 @@ export interface Friend {
   'friend_requests' : Array<User>,
   'friends' : Array<User>,
 }
-export interface FriendRequestNotification {
-  'sender' : Principal,
-  'receiver' : Principal,
-}
 export interface InitialData {
   'FilesContents' : [] | [Array<[string, Array<[string, ContentNode]>]>],
   'Contracts' : Array<[string, StoredContract]>,
@@ -111,11 +111,14 @@ export interface InitialData {
   'DiscoverUsers' : Array<[string, User]>,
   'Wallet' : Wallet,
 }
-export type NoteContent = { 'FriendRequest' : FriendRequestNotification };
+export type NoteContent = { 'ContractUpdate' : ContractNotification } |
+  { 'FriendRequest' : {} };
 export interface Notification {
   'id' : string,
   'is_seen' : boolean,
   'content' : NoteContent,
+  'sender' : Principal,
+  'receiver' : Principal,
 }
 export type Operation = { 'Equal' : null } |
   { 'Contains' : null } |

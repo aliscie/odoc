@@ -47,6 +47,7 @@ type ContentNode = record {
   parent : opt text;
 };
 type Contract = variant { PaymentContract : text; SharesContract : text };
+type ContractNotification = record { contract_type : text; contract_id : text };
 type Exchange = record {
   to : text;
   _type : ExchangeType;
@@ -75,10 +76,6 @@ type Formula = record {
   execute : Execute;
 };
 type Friend = record { friend_requests : vec User; friends : vec User };
-type FriendRequestNotification = record {
-  sender : principal;
-  receiver : principal;
-};
 type InitialData = record {
   FilesContents : opt vec record { text; vec record { text; ContentNode } };
   Contracts : vec record { text; StoredContract };
@@ -88,8 +85,17 @@ type InitialData = record {
   DiscoverUsers : vec record { text; User };
   Wallet : Wallet;
 };
-type NoteContent = variant { FriendRequest : FriendRequestNotification };
-type Notification = record { id : text; is_seen : bool; content : NoteContent };
+type NoteContent = variant {
+  ContractUpdate : ContractNotification;
+  FriendRequest : record {};
+};
+type Notification = record {
+  id : text;
+  is_seen : bool;
+  content : NoteContent;
+  sender : principal;
+  receiver : principal;
+};
 type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
 type PaymentContract = record {
   canceled : bool;

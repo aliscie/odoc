@@ -31,13 +31,11 @@ pub fn on_open(args: OnOpenCallbackArgs) {
 }
 
 pub fn on_message(args: OnMessageCallbackArgs) {
-    let app_msg: AppMessage = decode_one(&args.message).unwrap();
     let new_msg = AppMessage {
         notification: None,
         text: String::from("on_message is sent"),
         timestamp: time(),
     };
-    print(format!("Received message: {:?}", app_msg));
     send_app_message(args.client_principal, new_msg)
 }
 
