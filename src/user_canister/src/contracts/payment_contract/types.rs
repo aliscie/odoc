@@ -131,6 +131,12 @@ impl PaymentContract {
                 .entry(owner)
                 .or_insert_with(HashMap::new);
 
+            let old_contract: Option<StoredContract> = caller_contract.get(&payment.contract_id).cloned();
+            if let Some(StoredContract::PaymentContract(old_payment)) = old_contract {
+                if old_payment == payment {
+                    return Err("There are no changes.".to_string());
+                }
+            }
             let contract = caller_contract
                 .entry(payment.clone().contract_id)
                 .or_insert_with(|| StoredContract::PaymentContract(payment.clone()));

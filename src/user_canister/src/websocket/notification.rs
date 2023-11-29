@@ -135,8 +135,6 @@ pub fn contract_notification(receiver: Principal, sender: Principal, contract_ty
         }),
         is_seen: false,
     };
-    new_notification.save();
-
     websocket::notify(receiver.clone(), new_notification);
 }
 

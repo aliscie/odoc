@@ -31,7 +31,6 @@ export function Notifications() {
         });
     }, [notifications]);
 
-
     return (
         <>
             <BasicMenu
@@ -44,7 +43,11 @@ export function Notifications() {
                     horizontal: 'right',
                 }}
                 options={new_notifications.map(notification => {
-                    let item = {content: Object.keys(notification.content)[0]};
+                    let item = {
+                        content: Object.keys(notification.content)[0],
+                        to: 'profile'
+                        // onClick: () => clickNotification(notification)
+                    };
                     return item
                 })}
             >

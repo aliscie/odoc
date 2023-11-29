@@ -55,18 +55,6 @@ function App() {
 
                 ws.onmessage = async (event) => {
                     logger(event.data)
-                    // let sample = [{
-                    //     "id": "8",
-                    //     "is_seen": false,
-                    //     "content": {
-                    //         "ContractUpdate": {
-                    //             "contract_type": "payment",
-                    //             "contract_id": "j5nsrc",
-                    //             "sender": {"__principal__": "37dm3-rlxyt-btc4n-vf4jh-wqhfn-nctiu-a4aqh-osig6-hj2yf-muxom-sqe"},
-                    //             "receiver": {"__principal__": "5fb7x-iq625-soxc3-wwqui-23cgd-cphxe-hqqsx-q3a7b-32vlp-esw5y-iqe"}
-                    //         }
-                    //     }
-                    // }]
                     if (event.data.notification.length == 0) {
                         return
                     }
