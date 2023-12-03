@@ -13,7 +13,7 @@ import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {Payment, Row, Table} from "../../../declarations/user_canister/user_canister.did";
+import {PaymentContract, Row, Table} from "../../../declarations/user_canister/user_canister.did";
 import useRowManager from "./hooks/useRowManager";
 import useColumnManager from "./hooks/useColumnManager";
 import useGetUser from "../../utils/get_user_by_principal";
@@ -113,7 +113,7 @@ export default function PaymentContract(props: any) {
                     return newTable;
                 }
 
-                let newContent: Payment = updateTableContent(props, content, updateCells)
+                let newContent: PaymentContract = updateTableContent(props, content, updateCells)
                 dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
                 dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
 
@@ -127,7 +127,7 @@ export default function PaymentContract(props: any) {
                 return Promise.resolve();
             }
 
-            let contract = {
+            let contract: Payment = {
                 "contract_id": id,
                 "sender": Principal.fromText(profile.id),
                 "released": newRow.released,

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 
 use ic_cdk_macros::update;
-use crate::{PaymentContract, StoredContract};
+use crate::{PaymentContract, SharesContract, StoredContract};
 
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
@@ -37,7 +37,12 @@ fn multi_updates(
 
 
     // Update payment contracts
-    PaymentContract::update_payment_contracts(contracts)?;
+    PaymentContract::update_payment_contracts(contracts.clone())?;
+
+
+    // Update shares contracts
+    SharesContract::update_shares_contracts(contracts)?;
+
 
     // Update FILE_CONTENTS
     for update in content_trees {

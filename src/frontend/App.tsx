@@ -66,6 +66,7 @@ function App() {
                     let notification_list = actor && await actor.get_notifications();
                     dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
                     if ("FriendRequest" in keys) {
+                        // TODO this does not seams to update live.
                         let new_friends = actor && await actor.get_friends();
                         new_friends && dispatch(handleRedux("UPDATE_FRIEND", {friends: new_friends[0]}))
 

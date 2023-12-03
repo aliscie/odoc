@@ -33,7 +33,7 @@ fn update_shares(shares: Vec<Share>, contract_id: ContractId) -> Result<String, 
 
 
 #[update]
-fn pay(contract_id: ContractId, amount: u64) -> Result<(), String> {
+fn pay_for_share_contract(contract_id: ContractId, amount: u64) -> Result<(), String> {
     let mut contract = SharesContract::get(contract_id)?;
     let mut wallet = Wallet::get(caller());
 

@@ -93,6 +93,48 @@ impl SharesContract {
         share
     }
 
+    pub fn update_or_create(share: SharesContract) -> Result<(), String> {
+        // TODO
+        if !share.clone().is_valid_shares() {
+            return Err("Shares does not sum to 100%".to_string());
+        }
+        CONTRACTS_STORE.with(|contracts_store| {
+            let mut caller_contracts = contracts_store.borrow_mut();
+            let caller_contract = caller_contracts
+                .entry(caller())
+                .or_insert_with(HashMap::new);
+
+
+            // check if there are changes by comparing old and new payment
+            if let Some(old_contract) = caller_contract.get(&share.clone().contract_id) {
+                if let StoredContract::SharesContract(old_share) = old_contract {
+                    if old_share == &share {
+                        return Err("No changes detected in the shares contract".to_string());
+                    }
+                }
+            }
+
+            let contract = caller_contract
+                .entry(share.clone().contract_id)
+                .or_insert_with(|| StoredContract::SharesContract(share.clone()));
+
+
+            if let StoredContract::SharesContract(existing_share) = contract {
+                *existing_share = share.clone();
+            };
+            Ok(())
+        })
+    }
+
+    pub fn update_shares_contracts(contracts: Vec<StoredContract>) -> Result<(), String> {
+        for contract in contracts {
+            if let StoredContract::SharesContract(share_contract) = contract {
+                SharesContract::update_or_create(share_contract)?;
+            }
+        };
+        Ok(())
+    }
+
     pub fn get(contract_id: ContractId) -> Result<SharesContract, String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let caller_contracts = contracts_store.borrow();
@@ -116,7 +158,7 @@ impl SharesContract {
         for share in &self.shares {
             shares_value += share.clone().share
         }
-        shares_value == 1
+        shares_value == 100
     }
 
     pub fn update(&mut self, updated_share: Share) -> Result<(), String> {

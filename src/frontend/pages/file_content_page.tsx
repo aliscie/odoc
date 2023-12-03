@@ -2,7 +2,7 @@ import {useDispatch, useSelector} from "react-redux";
 import * as React from "react";
 import {useEffect} from "react";
 import {handleRedux} from "../redux/main";
-import {payment_contract_sample} from "../data_processing/data_samples";
+import {payment_contract_sample, shares_contract_sample} from "../data_processing/data_samples";
 import {FileNode} from "../../declarations/user_canister/user_canister.did";
 import EditorComponent from "../components/editor_components/main";
 import {Typography} from "@mui/material";
@@ -67,29 +67,8 @@ function FileContentPage(props: any) {
                 dispatch(handleRedux("ADD_CONTRACT", {contract: payment_contract_sample}))
                 dispatch(handleRedux("CONTRACT_CHANGES", {changes: payment_contract_sample}));
             case "shares_contract":
-
-            // let payment = {
-            //     "contract_id": contract_id,
-            //     "sender": Principal.fromText("2vxsx-fae"),
-            //     "receiver": Principal.fromText("2vxsx-fae"),
-            //     "released": false,
-            //     "confirmed": false,
-            //     "canceled": false,
-            //     "amount": BigInt(0),
-            // }
-
-            // let share1 = {
-            //     contract_id: ContractId,
-            //     receiver: Principal,
-            //     share: u64,
-            // }
-
-            // let shares_contract = {
-            //     shares: [share1, share2],
-            //     payments: [payment, payment]
-            // };
-            // dispatch(handleRedux("ADD_CONTRACT", {contract: shares_contract}))
-            // dispatch(handleRedux("CONTRACT_CHANGES", {changes: shares_contract}));
+                dispatch(handleRedux("ADD_CONTRACT", {contract: shares_contract_sample}))
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: shares_contract_sample}));
             case "data_grid":
                 return null;
             default:

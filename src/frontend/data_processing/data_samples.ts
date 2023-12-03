@@ -1,8 +1,15 @@
 import {Principal} from "@dfinity/principal";
-import {Column, Payment} from "../../declarations/user_canister/user_canister.did";
+import {
+    Column,
+    Payment,
+    PaymentContract,
+    Share, SharePayment,
+    SharesContract
+} from "../../declarations/user_canister/user_canister.did";
 
 let payment_contract_id = randomString();
 let shares_contract_id = randomString();
+let first_share_id = randomString();
 export let note_page_content = [{"id": 4, "children": [{"id": 5, "text": "", "type": "h1"}]}]
 export let file_data = {"id": "0000", "content": "0", "name": "NameTest", "children": {}, "parent": []}
 let column: Column = {
@@ -49,14 +56,14 @@ export let shares_contract = {
 
     "id": randomString(),
     "children": [{
-        "id": randomString(), "text": "", "data": [{
+        "id": shares_contract_id, "text": "", "data": [{
             "Table": {
                 "rows": [
                     {
                         id: randomString(),
                         contract: [],
-                        contract: [{"SharesContract": shares_contract_id}],
-                        // cells: [[["receiver", "any"], ["share%", "100"]]],
+                        contract: [{"SharesContract": first_share_id}],
+                        cells: [],
                         requests: [],
                     }
                 ],
@@ -146,7 +153,7 @@ export let contracts_sample = {
         }
     }
 }
-export let payment_contract_sample: Payment = {
+export let payment_contract_sample: PaymentContract = {
     "contract_id": payment_contract_id,
     "sender": Principal.fromText("2vxsx-fae"),
     "receiver": Principal.fromText("2vxsx-fae"),
@@ -154,6 +161,33 @@ export let payment_contract_sample: Payment = {
     "confirmed": false,
     "canceled": false,
     "amount": BigInt(0),
+}
+
+let share_sample: Share = {
+    //   'share_contract_id' : string,
+    // 'accumulation' : bigint,
+    // 'conformed' : boolean,
+    // 'share' : bigint,
+    // 'receiver' : Principal,
+    // 'contractor' : [] | [Principal],
+    'share_contract_id': first_share_id,
+    'accumulation': BigInt(0),
+    'conformed': false,
+    'share': BigInt(100),
+    'receiver': Principal.fromText("2vxsx-fae"),
+    'contractor': [],
+}
+
+export let shares_contract_sample: SharesContract = {
+    //  'shares' : Array<Share>,
+    // 'payments' : Array<SharePayment>,
+    // 'contract_id' : string,
+    // 'shares_requests' : Array<Share>,
+    'shares': [share_sample],
+    'payments': [],
+    'contract_id': shares_contract_id,
+    'shares_requests': [],
+
 }
 
 export let contract_id_sample = {"Contract": {"PaymentContract": "18"}}

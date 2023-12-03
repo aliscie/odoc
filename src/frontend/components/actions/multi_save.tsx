@@ -5,7 +5,7 @@ import {handleRedux} from "../../redux/main";
 import {useSnackbar} from "notistack";
 import {ContentNode, FileNode, StoredContract} from "../../../declarations/user_canister/user_canister.did";
 import deserialize_file_contents from "../../data_processing/denormalize/denormalize_file_contents";
-import denormalize_payment_contract from "../../data_processing/denormalize/denormalize_contracts";
+import denormalize_contract from "../../data_processing/denormalize/denormalize_contracts";
 import {actor} from "../../App";
 import {logger} from "../../dev_utils/log_data";
 
@@ -19,7 +19,7 @@ function MultiSaveButton(props: any) {
 
 
         let denormalized_content: Array<Array<[string, Array<[string, ContentNode]>]>> = deserialize_file_contents(changes.contents)
-        let contracts: Array<StoredContract> = denormalize_payment_contract(changes.contracts);
+        let contracts: Array<StoredContract> = denormalize_contract(changes.contracts);
 
         let loading = enqueueSnackbar(<span>Creating note page... <span className={"loader"}/></span>,);
         let files: Array<FileNode> = Object.values(changes.files);

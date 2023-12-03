@@ -22,6 +22,17 @@ pub struct PaymentContract {
     pub(crate) confirmed: bool,
 }
 
+// ------------ TODO study the imposable of make the PaymentContract like the shares contract ------------ \\
+//               in which all the rows of the table stored in a field payments : Vec<>
+//                 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
+//                 pub struct PaymentContract {
+//                     pub(crate) contract_id: ContractId,
+//                     pub(crate) payments: Vec<Payment>,
+//                 }
+
+
+// ------------ TODO Maybe we can get rid of both types of cutracts ------------ \\
+//                  we could use only custom contract to achieve both functionalities
 
 impl PaymentContract {
     pub fn new(receiver: Principal, sender: Principal, amount: u64) -> Self {
@@ -107,9 +118,10 @@ impl PaymentContract {
                 PaymentContract::update_or_create(caller(), payment.clone())?;
                 PaymentContract::update_or_create(payment.receiver.clone(), payment.clone())?;
                 websocket::contract_notification(payment.receiver.clone(), caller(), "payment".to_string(), payment.clone().contract_id);
-            } else {
-                panic!("Invalid contract type");
             }
+            // else {
+            //     panic!("Invalid contract type");
+            // }
         };
         Ok(())
     }
@@ -131,10 +143,12 @@ impl PaymentContract {
                 .entry(owner)
                 .or_insert_with(HashMap::new);
 
-            let old_contract: Option<StoredContract> = caller_contract.get(&payment.contract_id).cloned();
-            if let Some(StoredContract::PaymentContract(old_payment)) = old_contract {
-                if old_payment == payment {
-                    return Err("There are no changes.".to_string());
+            // check if there are changes by comparing old and new payment
+            if let Some(old_contract) = caller_contract.get(&payment.contract_id) {
+                if let StoredContract::PaymentContract(old_payment) = old_contract {
+                    if old_payment == &payment {
+                        return Err("No changes detected in the payment contract.".to_string());
+                    }
                 }
             }
             let contract = caller_contract
