@@ -117,13 +117,18 @@ export default function SharesContract(props: any) {
             let updated_share_id = newRow.contract && newRow.contract[0] && newRow.contract[0]["SharesContract"];
 
             let updated_contract: SharesContract = {
-                ...contract,
+                contract_id: contract.contract_id,
+                payments: contract.payments,
+                shares_requests: contract.shares_requests,
                 shares: contract.shares.map((item: Share) => {
                     if (item.share_contract_id == updated_share_id) {
                         return {
-                            ...item,
-                            share: newRow["share%"],
-                            receiver: Principal.fromText(newRow["receiver"])
+                            "accumulation": BigInt(item.accumulation),
+                            "conformed": Boolean(item.conformed),
+                            "contractor": [...item.contractor],
+                            "share_contract_id": updated_share_id,
+                            "share": newRow["share%"],
+                            "receiver": Principal.fromText(newRow["receiver"])
                         }
                     }
                     return item;
@@ -259,6 +264,7 @@ export default function SharesContract(props: any) {
         let updated_contract = {...contract, shares: [...contract.shares, new_share]};
         let updated_contracts = {...contracts};
         updated_contracts[updated_contract.contract_id] = updated_contract
+        console.log({id_is_here: updated_contract.contract_id})
 
         const newRow: Row = {
             id: new_share_id,
@@ -300,8 +306,9 @@ export default function SharesContract(props: any) {
         // in this case we are not adding a new contract we are just adding new share to the current contracts
         // so there is no need to the following line
         // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
-        dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contracts}));
 
+        logger({updated_contracts, new_share_id});
+        dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contract}));
         dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
 
