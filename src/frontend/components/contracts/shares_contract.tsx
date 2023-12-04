@@ -11,8 +11,7 @@ import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {Row, Share, SharesContract, StoredContract, Table} from "../../../declarations/user_canister/user_canister.did";
-import useRowManager from "./hooks/useRowManager";
+import {Row, Share, SharesContract, Table, User} from "../../../declarations/user_canister/user_canister.did";
 import useColumnManager from "./hooks/useColumnManager";
 import {useFormulaDialog} from "../../hook/dialog";
 import FunctionsIcon from '@mui/icons-material/Functions';
@@ -24,13 +23,11 @@ import {randomString} from "../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
 import {logger} from "../../dev_utils/log_data";
 import useGetUser from "../../utils/get_user_by_principal";
-import {log} from "util";
-import {BatchId, BatchOperationKind} from "../../../declarations/frontend/frontend.did";
 
 
 export default function SharesContract(props: any) {
 
-    let {getUser} = useGetUser();
+    let {getUser, getUserByName} = useGetUser();
     const dispatch = useDispatch();
 
     const {
@@ -75,7 +72,7 @@ export default function SharesContract(props: any) {
             let receiver = share && getUser(share.receiver.toString());
             let res: Row = {
                 "share%": share && share.share,
-                "receiver": receiver ? receiver.name : "",
+                "receiver": receiver ? receiver : "",
                 "id": row.id,
                 "contract": [{"SharesContract": row.id}],
                 // "cells": row.cells,
@@ -88,52 +85,56 @@ export default function SharesContract(props: any) {
 
     const processRowUpdate = React.useCallback((newRow: GridRowModel, oldRow: GridRowModel) => {
 
-            let new_cells: Array<[string, string]> = Object.keys(newRow).map((key: string) => {
-                return [String(key), newRow[key] || ""];
-            })
-
+            // ------------------ Update the extra cells ------------------ \\
+            // let new_cells: Array<[string, string]> = Object.keys(newRow).map((key: string) => {
+            //     return [String(key), newRow[key] || ""];
+            // })
             //
-            function updateCells(newTable: Table) {
-                const updatedRows = newTable.rows.map((row: Row) => {
-                    if (row.id === oldRow.id) {
-                        // const updatedCells = [...row.cells, ...new_cells];
-                        return {...row, cells: [new_cells]};
-                    }
-                    return row;
-                });
-                return {...newTable, rows: updatedRows};
-            };
-
+            // function updateCells(newTable: Table) {
+            //     const updatedRows = newTable.rows.map((row: Row) => {
+            //         if (row.id === oldRow.id) {
+            //             // const updatedCells = [...row.cells, ...new_cells];
+            //             return {...row, cells: [new_cells]};
+            //         }
+            //         return row;
+            //     });
+            //     return {...newTable, rows: updatedRows};
+            // };
             //
-            let newContent: SharesContract = updateTableContent(props, content, updateCells)
+            // let newContent: SharesContract = updateTableContent(props, content, updateCells)
             // // TODO when hit save new data get removed, but they stored correctly in the BackEnd?
             //
-
-            dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-            dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
+            // dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
+            // dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
 
 
             // ------------------ Update Contract ------------------ \\
             let updated_share_id = newRow.contract && newRow.contract[0] && newRow.contract[0]["SharesContract"];
+            let receiver_name: string = newRow["receiver"];
+            let receiver: User | null = getUserByName(receiver_name);
 
             let updated_contract: SharesContract = {
-                contract_id: contract.contract_id,
-                payments: contract.payments,
-                shares_requests: contract.shares_requests,
-                shares: contract.shares.map((item: Share) => {
-                    if (item.share_contract_id == updated_share_id) {
+                ...contracts[table_content.id],
+                // contract_id: contract.contract_id,
+                // payments: contract.payments,
+                // shares_requests: contract.shares_requests,
+                shares: contracts[table_content.id].shares.map((item: Share) => {
+                    if (item.share_contract_id === updated_share_id) {
                         return {
+                            ...item,
                             "accumulation": BigInt(item.accumulation),
                             "conformed": Boolean(item.conformed),
                             "contractor": [...item.contractor],
                             "share_contract_id": updated_share_id,
                             "share": newRow["share%"],
-                            "receiver": Principal.fromText(newRow["receiver"])
-                        }
+                            "receiver": Principal.fromText(receiver ? receiver.id.toString() : "2vxsx-fae"),
+                        };
+                    } else {
+                        return item;
                     }
-                    return item;
-                })
-            }
+                }),
+            };
+
 
             // ------------------ TODO save the contract in form of StoredContract ------------------ \\
             //                      That is in order to prevent the need for extra steps in denormalize_contracts.tsx
@@ -146,7 +147,7 @@ export default function SharesContract(props: any) {
             //                             }
             //                         };
 
-            dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contract}))
+            dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contract}));
             dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contract}));
             // revoke_message();
 
