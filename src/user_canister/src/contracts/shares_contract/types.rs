@@ -38,13 +38,22 @@ pub struct SharePayment {
     // pub(crate) date: String,
 }
 
+#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
+pub struct SharePaymentOption {
+    pub(crate) id: String,
+    pub(crate) title: String,
+    pub(crate) description: String,
+    pub(crate) date: String,
+    pub(crate) amount: u64,
+}
+
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub struct SharesContract {
     pub(crate) contract_id: ContractId,
     pub(crate) shares: Vec<Share>,
     pub(crate) payments: Vec<SharePayment>,
-
+    pub(crate) payment_options: Vec<SharePaymentOption>,
     pub(crate) shares_requests: Vec<Share>,
 
     // Note SharesContract arrange
@@ -68,6 +77,7 @@ impl SharesContract {
             contract_id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
             shares,
             payments: vec![],
+            payment_options: vec![],
             shares_requests: vec![],
         };
         if !share.clone().is_valid_shares() {

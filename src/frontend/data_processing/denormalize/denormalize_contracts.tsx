@@ -1,6 +1,7 @@
 import {
     PaymentContract,
     Share,
+    SharePaymentOption,
     SharesContract,
     StoredContract
 } from "../../../declarations/user_canister/user_canister.did";
@@ -63,17 +64,27 @@ export default function denormalize_payment_contract(content: any[], data: Array
                         'conformed': s.conformed,
                         'share': BigInt(s.share),
                         'receiver': s.receiver,
-                        'contractor': s.contractor
+                        'contractor': s.contractor,
                     }
                     shares.push(share);
                 }
-                ;
+                let payment_options: Array<SharePaymentOption> = item.payment_options.map((option) => {
+                    let payment_option: SharePaymentOption = {
+                        'id': String(option.id),
+                        'title': String(option.title),
+                        'date': String(option.date), // Json stringed data
+                        'description': String(option.description),
+                        'amount': BigInt(option.amount),
+                    };
+                    return payment_option;
+                })
                 let de_normal_share_contract: StoredContract = {
                     "SharesContract": {
                         "shares": shares,
                         "payments": item.payments,
                         "shares_requests": item.shares_requests,
                         "contract_id": item.contract_id,
+                        "payment_options": payment_options,
                     }
                 };
                 data.push(de_normal_share_contract);

@@ -2,8 +2,9 @@ import * as React from "react";
 import {useState} from "react";
 import {Button, Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
+import {SharePaymentOption} from "../../../../declarations/user_canister/user_canister.did";
 
-function PayButton({contract}: { contract: any }) {
+function PayButton({contract}: { SharesContract }) {
     const [loading, setLoading] = useState(false);
     // const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     // const dispatch = useDispatch();
@@ -28,21 +29,21 @@ function PayButton({contract}: { contract: any }) {
 
     let Dialog = (props: any) => {
         return <>
-            <Typography bold={true} color={"orange"} variant={'subtitle2'}>Confirmation</Typography>
-            <Typography>
-                Are you sure you want to pay {contract.amount} USDC?
-            </Typography>
-            <div>
-                <Button onClick={props.handleCancel} color="primary">
-                    No
-                </Button>
-                <Button onClick={() => {
-                    handleRelease()
-                    props.handleClick()
-                }} color="primary" autoFocus>
-                    Yes
-                </Button>
-            </div>
+            {/*<Typography bold={true} color={"orange"} variant={'subtitle2'}>Confirmation</Typography>*/}
+            {contract.payment_options.map((option: SharePaymentOption) => {
+                return <Typography>
+                    <Typography variant={"subtitle2"}>{option.title + " "}</Typography>
+                    <Typography variant={"caption"}>{" " + option.amount.toString()}<span style={{color:"lightgreen"}}>USDC</span></Typography>
+                    <Typography variant={"caption"}>{" " + option.description}</Typography>
+                    <Button
+                        onClick={() => {
+                            // handleRelease()
+                            // props.handleClick()
+                        }}
+                    >Pay now</Button>
+                </Typography>
+            })
+            }
         </>
     }
     // let children = contract.released ? <DoneAllIcon color={"success"}/> : <SendIcon/>

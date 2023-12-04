@@ -25,6 +25,7 @@ export function normalize_contracts(json) {
                     payments: shareContractData.payments,
                     contract_id: shareContractData.contract_id,
                     shares_requests: shareContractData.shares_requests,
+                    payment_options: shareContractData.payment_options
                 };
 
                 dataStructure[key] = shares_contract;

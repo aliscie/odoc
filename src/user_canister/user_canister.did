@@ -138,6 +138,13 @@ type Share = record {
   contractor : opt principal;
 };
 type SharePayment = record { sender : principal; amount : nat64 };
+type SharePaymentOption = record {
+  id : text;
+  title : text;
+  date : text;
+  description : text;
+  amount : nat64;
+};
 type ShareRequest = record {
   share_contract_id : text;
   share : nat64;
@@ -145,6 +152,7 @@ type ShareRequest = record {
   contractor : opt principal;
 };
 type SharesContract = record {
+  payment_options : vec SharePaymentOption;
   shares : vec Share;
   payments : vec SharePayment;
   contract_id : text;
@@ -206,7 +214,7 @@ service : () -> {
       vec StoredContract,
       vec text,
     ) -> (Result_2);
-  pay : (text, nat64) -> (Result_1);
+  pay_for_share_contract : (text, nat64) -> (Result_1);
   register : (RegisterUser) -> (Result);
   release_payment : (text) -> (Result_1);
   rename_file : (text, text) -> (bool);

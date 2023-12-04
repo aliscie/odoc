@@ -1,9 +1,9 @@
 import {Principal} from "@dfinity/principal";
 import {
     Column,
-    Payment,
     PaymentContract,
-    Share, SharePayment,
+    PaymentContract,
+    Share, SharePayment, SharePaymentOption,
     SharesContract
 } from "../../declarations/user_canister/user_canister.did";
 
@@ -178,6 +178,13 @@ let share_sample: Share = {
     'contractor': [],
 }
 
+let payment_option: SharePaymentOption = {
+    'id': "",
+    'title': "",
+    'date': "",
+    'description': "",
+    'amount': BigInt(0),
+}
 export let shares_contract_sample: SharesContract = {
     //  'shares' : Array<Share>,
     // 'payments' : Array<SharePayment>,
@@ -187,6 +194,7 @@ export let shares_contract_sample: SharesContract = {
     'payments': [],
     'contract_id': shares_contract_id,
     'shares_requests': [],
+    "payment_options": [payment_option],
 
 }
 

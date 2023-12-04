@@ -115,11 +115,19 @@ export const idlFactory = ({ IDL }) => {
     'amount' : IDL.Nat64,
     'receiver' : IDL.Principal,
   });
+  const SharePaymentOption = IDL.Record({
+    'id' : IDL.Text,
+    'title' : IDL.Text,
+    'date' : IDL.Text,
+    'description' : IDL.Text,
+    'amount' : IDL.Nat64,
+  });
   const SharePayment = IDL.Record({
     'sender' : IDL.Principal,
     'amount' : IDL.Nat64,
   });
   const SharesContract = IDL.Record({
+    'payment_options' : IDL.Vec(SharePaymentOption),
     'shares' : IDL.Vec(Share),
     'payments' : IDL.Vec(SharePayment),
     'contract_id' : IDL.Text,
@@ -289,7 +297,7 @@ export const idlFactory = ({ IDL }) => {
         [Result_2],
         [],
       ),
-    'pay' : IDL.Func([IDL.Text, IDL.Nat64], [Result_1], []),
+    'pay_for_share_contract' : IDL.Func([IDL.Text, IDL.Nat64], [Result_1], []),
     'register' : IDL.Func([RegisterUser], [Result], []),
     'release_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'rename_file' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),

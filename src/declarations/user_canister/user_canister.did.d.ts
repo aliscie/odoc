@@ -171,6 +171,13 @@ export interface Share {
   'contractor' : [] | [Principal],
 }
 export interface SharePayment { 'sender' : Principal, 'amount' : bigint }
+export interface SharePaymentOption {
+  'id' : string,
+  'title' : string,
+  'date' : string,
+  'description' : string,
+  'amount' : bigint,
+}
 export interface ShareRequest {
   'share_contract_id' : string,
   'share' : bigint,
@@ -178,6 +185,7 @@ export interface ShareRequest {
   'contractor' : [] | [Principal],
 }
 export interface SharesContract {
+  'payment_options' : Array<SharePaymentOption>,
   'shares' : Array<Share>,
   'payments' : Array<SharePayment>,
   'contract_id' : string,
@@ -245,7 +253,7 @@ export interface _SERVICE {
     ],
     Result_2
   >,
-  'pay' : ActorMethod<[string, bigint], Result_1>,
+  'pay_for_share_contract' : ActorMethod<[string, bigint], Result_1>,
   'register' : ActorMethod<[RegisterUser], Result>,
   'release_payment' : ActorMethod<[string], Result_1>,
   'rename_file' : ActorMethod<[string, string], boolean>,
