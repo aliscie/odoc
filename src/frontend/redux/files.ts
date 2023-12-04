@@ -126,7 +126,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
         case 'NOTIFY':
             return {
                 ...state,
-                notifications: [...state.notifications, action.data],
+                notifications: [...state.notifications, action.new_notification],
             }
         case 'UPDATE_NOTIFY':
             return {

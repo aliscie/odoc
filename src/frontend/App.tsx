@@ -54,27 +54,26 @@ function App() {
                 };
 
                 ws.onmessage = async (event) => {
-                    logger(event.data)
-                    if (event.data.notification.length == 0) {
-                        return
-                    }
+
+
+                    // if (event.data.notification.length == 0) {
+                    //     return
+                    // }
+                    dispatch(handleRedux('NOTIFY', {new_notification:event.data.notification[0]}));
 
                     // check if the key is `FriendRequest` or ContractUpdate in event.data.notification[0].content[key]
                     let keys = Object.keys(event.data.notification[0].content);
-                    // dispatch(handleRedux('NOTIFY', {title: event.data.text}));
 
-                    let notification_list = actor && await actor.get_notifications();
-                    dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
-                    if ("FriendRequest" in keys) {
+                    if (keys.toString().includes("FriendRequest")) {
                         // TODO this does not seams to update live.
                         let new_friends = actor && await actor.get_friends();
                         new_friends && dispatch(handleRedux("UPDATE_FRIEND", {friends: new_friends[0]}))
 
-
-                    } else if ("ContractUpdate" in keys) {
+                    } else if (keys.toString().includes("ContractUpdate")) {
                         // let new_contracts = actor && await actor.get_contracts();
                         // new_contracts && dispatch(handleRedux("UPDATE_CONTRACT", {contracts: new_contracts[0]}))
                     }
+
                 };
 
                 ws.onclose = () => {

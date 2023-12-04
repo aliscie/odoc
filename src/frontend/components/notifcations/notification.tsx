@@ -13,6 +13,9 @@ import {handleRedux} from "../../redux/main";
 export function Notifications() {
     const dispatch = useDispatch();
     const {notifications} = useSelector((state: any) => state.filesReducer);
+    const new_notifications = notifications.filter((notification: any) => {
+        return notification && !notification.is_read
+    });
 
     useEffect(() => {
         (async () => {
@@ -23,13 +26,6 @@ export function Notifications() {
         })();
     }, []);
 
-
-    const new_notifications = React.useMemo(() => {
-        return notifications.filter((notification: any) => {
-
-            return notification && !notification.is_read
-        });
-    }, [notifications]);
 
     return (
         <>
@@ -53,12 +49,18 @@ export function Notifications() {
             >
                 <Badge
                     invisible={new_notifications.length == 0}
-                    color={'inherit'}
+                    // color={'inherit'}
                     anchorOrigin={{
                         vertical: 'bottom',
                         horizontal: 'left',
                     }}
-                    badgeContent={new_notifications.length}
+                    badgeContent={
+                        new_notifications && <span
+                            style={{color: 'tomato'}}
+                        >
+                            {new_notifications.length > 0 && new_notifications.length}
+                        </span>
+                    }
                     color={new_notifications.length > 0 ? 'error' : "action"}
                 >
                     <NotificationsIcon color={new_notifications.length > 0 ? 'error' : "action"}/>
