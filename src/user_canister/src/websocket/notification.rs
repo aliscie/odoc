@@ -1,11 +1,10 @@
-use candid::{CandidType, Deserialize, Principal};
-use ic_cdk::{caller, print, println};
-use serde::Serialize;
-
-use std::collections::BTreeMap;
 use std::sync::atomic::Ordering;
 
-use crate::{FILE_CONTENTS, NOTIFICATIONS, USER_FILES, websocket};
+use candid::{CandidType, Deserialize, Principal};
+use ic_cdk::caller;
+use serde::Serialize;
+
+use crate::{NOTIFICATIONS, SharePayment, SharesContract, USER_FILES, websocket};
 use crate::files::COUNTER;
 use crate::websocket::{AppMessage, notification, send_app_message};
 
@@ -23,6 +22,7 @@ pub struct ContractNotification {
 pub enum NoteContent {
     FriendRequest(FriendRequestNotification),
     ContractUpdate(ContractNotification),
+    SharePayment(SharesContract),
 }
 
 #[derive(Eq, PartialOrd, Serialize, PartialEq, Clone, Debug, CandidType, Deserialize)]

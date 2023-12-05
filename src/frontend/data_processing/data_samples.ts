@@ -69,6 +69,7 @@ export let shares_contract = {
                 ],
                 "columns": [
                     {...column, id: randomString(), field: "receiver"},
+                    {...column, id: randomString(), field: "accumulation", editable: false},
                     {
                         ...column,
                         id: randomString(),

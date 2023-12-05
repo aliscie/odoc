@@ -1,31 +1,23 @@
 import * as React from "react";
 import {useState} from "react";
-import {Button, Typography} from "@mui/material";
+import {Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
 import {SharePaymentOption} from "../../../../declarations/user_canister/user_canister.did";
+import {actor} from "../../../App";
+import {logger} from "../../../dev_utils/log_data";
+import {LoadingButton} from "@mui/lab";
 
 function PayButton({contract}: { SharesContract }) {
     const [loading, setLoading] = useState(false);
     // const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     // const dispatch = useDispatch();
 
-    const handleRelease = async () => {
-        setLoading(true)
-        // let res = await actor.release_payment(contract.contract_id);
-        // console.log({res})
-        // setLoading(false)
-        // if ("Ok" in res) {
-        //     let new_contract = {
-        //         contract_id: contract.contract_id,
-        //         canceled: false,
-        //         released: true,
-        //     }
-        //     dispatch(handleRedux("UPDATE_CONTRACT", {contract: new_contract}))
-        // } else {
-        //     enqueueSnackbar(res.Err, {variant: "error"})
-        // }
-
-    };
+    const handlePay = async (option: any) => {
+        setLoading(true);
+        let payment_res = actor && await actor.pay_for_share_contract(contract.contract_id, option.amount);
+        setLoading(false);
+        logger({payment_res})
+    }
 
     let Dialog = (props: any) => {
         return <>
@@ -33,14 +25,13 @@ function PayButton({contract}: { SharesContract }) {
             {contract.payment_options.map((option: SharePaymentOption) => {
                 return <Typography>
                     <Typography variant={"subtitle2"}>{option.title + " "}</Typography>
-                    <Typography variant={"caption"}>{" " + option.amount.toString()}<span style={{color:"lightgreen"}}>USDC</span></Typography>
+                    <Typography variant={"caption"}>{" " + option.amount.toString()}<span
+                        style={{color: "lightgreen"}}>USDC</span></Typography>
                     <Typography variant={"caption"}>{" " + option.description}</Typography>
-                    <Button
-                        onClick={() => {
-                            // handleRelease()
-                            // props.handleClick()
-                        }}
-                    >Pay now</Button>
+                    <LoadingButton
+                        loading={loading}
+                        onClick={async () => await handlePay(option)}
+                    >Pay now</LoadingButton>
                 </Typography>
             })
             }

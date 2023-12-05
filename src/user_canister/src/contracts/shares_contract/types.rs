@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 use std::sync::atomic::Ordering;
+use serde::Serialize;
 
 use candid::Principal;
-use ic_cdk::{caller};
+use ic_cdk::{caller, print};
 use candid::{CandidType, Deserialize};
 
 use crate::{CONTRACTS_STORE, StoredContract};
@@ -10,7 +11,7 @@ use crate::files::COUNTER;
 use crate::storage_schema::{ContractId, ShareContractId};
 
 
-#[derive(PartialEq, Eq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
+#[derive(PartialEq, Eq, PartialOrd, Clone, Debug, Serialize, CandidType, Deserialize)]
 pub struct Share {
     pub(crate) share_contract_id: ShareContractId,
     pub(crate) receiver: Principal,
@@ -31,14 +32,14 @@ pub struct ShareRequest {
 }
 
 
-#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, Serialize, CandidType, Deserialize)]
 pub struct SharePayment {
     pub(crate) amount: u64,
     pub(crate) sender: Principal,
     // pub(crate) date: String,
 }
 
-#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, Serialize, CandidType, Deserialize)]
 pub struct SharePaymentOption {
     pub(crate) id: String,
     pub(crate) title: String,
@@ -48,7 +49,7 @@ pub struct SharePaymentOption {
 }
 
 
-#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, Serialize, CandidType, Deserialize)]
 pub struct SharesContract {
     pub(crate) contract_id: ContractId,
     pub(crate) shares: Vec<Share>,
@@ -116,11 +117,12 @@ impl SharesContract {
 
 
             // check if there are changes by comparing old and new payment
-            if let Some(old_contract) = caller_contract.get(&share.clone().contract_id) {
-                if let StoredContract::SharesContract(old_share) = old_contract {
-                    if old_share == &share {
-                        return Err("No changes detected in the shares contract".to_string());
-                    }
+            if let Some(StoredContract::SharesContract(old_share)) = caller_contract.get(&share.clone().contract_id) {
+                if old_share == &share {
+                    return Err("No changes detected in the shares contract".to_string());
+                }
+                if old_share.payments != share.clone().payments {
+                    return Err("You can't update payments".to_string());
                 }
             }
 
@@ -171,44 +173,45 @@ impl SharesContract {
         shares_value == 100
     }
 
-    pub fn update(&mut self, updated_share: Share) -> Result<(), String> {
-        CONTRACTS_STORE.with(|contracts_store| {
-            let mut caller_contracts = contracts_store.borrow_mut();
-            let caller_contract = caller_contracts
-                .get_mut(&caller())
-                .ok_or("Caller has no contracts")?;
 
-            let contract = caller_contract
-                .get_mut(&self.contract_id) // Use updated_share.contract_id as the key
-                .ok_or("Contract not found")?;
-
-            // TODO if let StoredContract::SharesContract(existing_share_contract) = self {
-            if let StoredContract::SharesContract(ref mut existing_share_contract) = contract {
-                let mut share_contract = existing_share_contract.clone();
-                if let Some(existing_share) = existing_share_contract
-                    .shares
-                    .iter_mut()
-                    .find(|s| s.share_contract_id == updated_share.share_contract_id)
-                {
-                    if existing_share.conformed {
-                        return Err("Share is conformed and cannot be updated".to_string());
-                    }
-                    let original_value = existing_share.clone().share;
-                    existing_share.share = updated_share.share;
-
-                    if !share_contract.is_valid_shares() {
-                        // reset share value to original value.
-                        existing_share.share = original_value;
-                        return Err("Shares does not sum to 100%".to_string());
-                    };
-
-                    return Ok(());
-                }
-            }
-
-            Err("Share not found in contract".to_string())
-        })
-    }
+    // pub fn update(&mut self, updated_share: Share) -> Result<(), String> {
+    //     CONTRACTS_STORE.with(|contracts_store| {
+    //         let mut caller_contracts = contracts_store.borrow_mut();
+    //         let caller_contract = caller_contracts
+    //             .get_mut(&caller())
+    //             .ok_or("Caller has no contracts")?;
+    //
+    //         let contract = caller_contract
+    //             .get_mut(&self.contract_id) // Use updated_share.contract_id as the key
+    //             .ok_or("Contract not found")?;
+    //
+    //         // TODO if let StoredContract::SharesContract(existing_share_contract) = self {
+    //         if let StoredContract::SharesContract(ref mut existing_share_contract) = contract {
+    //             let mut share_contract = existing_share_contract.clone();
+    //             if let Some(existing_share) = existing_share_contract
+    //                 .shares
+    //                 .iter_mut()
+    //                 .find(|s| s.share_contract_id == updated_share.share_contract_id)
+    //             {
+    //                 if existing_share.conformed {
+    //                     return Err("Share is conformed and cannot be updated".to_string());
+    //                 }
+    //                 let original_value = existing_share.clone().share;
+    //                 existing_share.share = updated_share.share;
+    //
+    //                 if !share_contract.is_valid_shares() {
+    //                     // reset share value to original value.
+    //                     existing_share.share = original_value;
+    //                     return Err("Shares does not sum to 100%".to_string());
+    //                 };
+    //
+    //                 return Ok(());
+    //             }
+    //         }
+    //
+    //         Err("Share not found in contract".to_string())
+    //     })
+    // }
 
     pub fn conform(&mut self, share_contract_id: ShareContractId) -> Result<(), String> {
         CONTRACTS_STORE.with(|contracts_store| {
@@ -311,31 +314,42 @@ impl SharesContract {
         })
     }
 
-
-    pub fn pay(&mut self, amount: u64) -> Result<SharesContract, String> {
-
-        // 1. Create payment
-        let payment = SharePayment {
-            sender: caller(),
-            amount,
-        };
-
+    pub fn pay(&mut self, amount: u64) -> Result<(), String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contract = caller_contracts
-                .get_mut(&caller())
-                .ok_or("Caller has no contracts")?;
+                .entry(caller())
+                .or_insert_with(HashMap::new);
 
-            let contract = caller_contract
-                .get_mut(&self.contract_id)
-                .ok_or("Contract not found")?;
 
-            if let StoredContract::SharesContract(existing_share_contract) = contract {
-                existing_share_contract.clone().payments.push(payment);
-                return Ok(existing_share_contract.clone());
+            // let all_receiver : Vec<Principal> = self.shares.iter().map(|s| s.receiver.clone()).collect();
+            // if !all_receiver.contains(&caller()) {
+            //     return Err("You can't pay for your own contract".to_string());
+            // };
+
+
+            // 1. update payments
+            let new_payment = SharePayment {
+                sender: caller(),
+                amount: amount.clone(),
+            };
+            self.payments.push(new_payment);
+
+            // 2. update accumulations iter throught self.shares and update self
+            for share in self.shares.iter_mut() {
+                share.accumulation += share.share.clone() * amount.clone() / 100;
             }
 
-            return Err("Share not found in contract".to_string());
+            let contract = caller_contract
+                .entry(self.clone().contract_id)
+                .or_insert_with(|| StoredContract::SharesContract(self.clone()));
+
+            // save changes
+            if let StoredContract::SharesContract(existing_share) = contract {
+                *existing_share = self.clone();
+            };
+
+            Ok(())
         })
     }
 }

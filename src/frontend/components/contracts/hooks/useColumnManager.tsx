@@ -7,7 +7,7 @@ import {updateTableContent} from "../utils/update_table";
 
 function useColumnManager(props: any) {
     const {files_content, current_file} = useSelector((state: any) => state.filesReducer);
-    let content = files_content[current_file.id];
+    let content = current_file && files_content[current_file.id];
 
     let [columns, setColumns]: any = React.useState(props.initial_columns)
     // let {setRows} = props;

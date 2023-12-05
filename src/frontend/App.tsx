@@ -59,10 +59,10 @@ function App() {
                     // if (event.data.notification.length == 0) {
                     //     return
                     // }
-                    dispatch(handleRedux('NOTIFY', {new_notification:event.data.notification[0]}));
+                    dispatch(handleRedux('NOTIFY', {new_notification: event.data.notification[0]}));
 
                     // check if the key is `FriendRequest` or ContractUpdate in event.data.notification[0].content[key]
-                    let keys = Object.keys(event.data.notification[0].content);
+                    let keys = Object.keys(event.data.notification[0] && event.data.notification[0].content);
 
                     if (keys.toString().includes("FriendRequest")) {
                         // TODO this does not seams to update live.
@@ -72,8 +72,10 @@ function App() {
                     } else if (keys.toString().includes("ContractUpdate")) {
                         // let new_contracts = actor && await actor.get_contracts();
                         // new_contracts && dispatch(handleRedux("UPDATE_CONTRACT", {contracts: new_contracts[0]}))
+                    } else if (keys.toString().includes("SharePayment")) {
+                        let share_payment = event.data.notification[0].content["SharePayment"];
+                        dispatch(handleRedux("UPDATE_CONTRACT", {contract: share_payment}))
                     }
-
                 };
 
                 ws.onclose = () => {

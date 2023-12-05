@@ -1,4 +1,4 @@
-import {Button, Tooltip} from "@mui/material";
+import {Tooltip} from "@mui/material";
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
@@ -7,16 +7,17 @@ import {ContentNode, FileNode, StoredContract} from "../../../declarations/user_
 import deserialize_file_contents from "../../data_processing/denormalize/denormalize_file_contents";
 import denormalize_contract from "../../data_processing/denormalize/denormalize_contracts";
 import {actor} from "../../App";
-import {logger} from "../../dev_utils/log_data";
+import {LoadingButton} from "@mui/lab";
 
 function MultiSaveButton(props: any) {
     const dispatch = useDispatch();
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     let {changes} = useSelector((state: any) => state.filesReducer);
     let is_files_saved = Object.keys(changes.contents).length === 0 && Object.keys(changes.files).length === 0 && Object.keys(changes.contracts).length === 0;
+    const [loading, setLoading] = React.useState(false);
 
     async function handleClick() {
-
+        setLoading(true);
 
         let denormalized_content: Array<Array<[string, Array<[string, ContentNode]>]>> = deserialize_file_contents(changes.contents)
         let contracts: Array<StoredContract> = denormalize_contract(changes.contracts);
@@ -35,20 +36,21 @@ function MultiSaveButton(props: any) {
             dispatch(handleRedux("RESOLVE_CHANGES"));
         }
         // console.log({res})
-
+        setLoading(false);
     }
 
 
     let tip_for_saved = "Your changes saved to the blockchain.";
     let tip_for_changed = <span>You need to save</span>;
     return <Tooltip arrow leaveDelay={200} title={is_files_saved ? tip_for_saved : tip_for_changed}>
-        <Button
+        <LoadingButton
             // style={{color: "var(--color)"}}
+            loading={loading}
             color="warning"
             variant={!is_files_saved ? "contained" : "text"}
             disabled={is_files_saved}
             onClick={handleClick}
-        >SAVE</Button>
+        >SAVE</LoadingButton>
     </Tooltip>
 }
 

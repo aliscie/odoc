@@ -13,6 +13,7 @@ export const idlFactory = ({ IDL }) => {
     'share_id' : IDL.Opt(IDL.Text),
     'name' : IDL.Text,
     'children' : IDL.Vec(IDL.Text),
+    'author' : IDL.Text,
     'parent' : IDL.Opt(IDL.Text),
   });
   const Share = IDL.Record({
@@ -102,10 +103,6 @@ export const idlFactory = ({ IDL }) => {
     'language' : IDL.Text,
     'parent' : IDL.Opt(IDL.Text),
   });
-  const Friend = IDL.Record({
-    'friend_requests' : IDL.Vec(User),
-    'friends' : IDL.Vec(User),
-  });
   const PaymentContract = IDL.Record({
     'canceled' : IDL.Bool,
     'contract_id' : IDL.Text,
@@ -137,6 +134,11 @@ export const idlFactory = ({ IDL }) => {
     'PaymentContract' : PaymentContract,
     'SharesContract' : SharesContract,
   });
+  const Result_4 = IDL.Variant({ 'Ok' : StoredContract, 'Err' : IDL.Text });
+  const Friend = IDL.Record({
+    'friend_requests' : IDL.Vec(User),
+    'friends' : IDL.Vec(User),
+  });
   const ExchangeType = IDL.Variant({
     'Withdraw' : IDL.Null,
     'Deposit' : IDL.Null,
@@ -166,7 +168,7 @@ export const idlFactory = ({ IDL }) => {
     'DiscoverUsers' : IDL.Vec(IDL.Tuple(IDL.Text, User)),
     'Wallet' : Wallet,
   });
-  const Result_4 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
+  const Result_5 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
   const ContractNotification = IDL.Record({
     'contract_type' : IDL.Text,
     'contract_id' : IDL.Text,
@@ -174,6 +176,7 @@ export const idlFactory = ({ IDL }) => {
   const NoteContent = IDL.Variant({
     'ContractUpdate' : ContractNotification,
     'FriendRequest' : IDL.Record({}),
+    'SharePayment' : SharesContract,
   });
   const Notification = IDL.Record({
     'id' : IDL.Text,
@@ -182,11 +185,11 @@ export const idlFactory = ({ IDL }) => {
     'sender' : IDL.Principal,
     'receiver' : IDL.Principal,
   });
-  const Result_5 = IDL.Variant({
+  const Result_6 = IDL.Variant({
     'Ok' : IDL.Tuple(FileNode, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode))),
     'Err' : IDL.Text,
   });
-  const Result_6 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
+  const Result_7 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
   const RegisterUser = IDL.Record({
     'name' : IDL.Opt(IDL.Text),
     'description' : IDL.Opt(IDL.Text),
@@ -214,7 +217,7 @@ export const idlFactory = ({ IDL }) => {
     'cert' : IDL.Vec(IDL.Nat8),
     'tree' : IDL.Vec(IDL.Nat8),
   });
-  const Result_7 = IDL.Variant({
+  const Result_8 = IDL.Variant({
     'Ok' : CanisterOutputCertifiedMessages,
     'Err' : IDL.Text,
   });
@@ -272,6 +275,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Tuple(IDL.Text, User))],
         ['query'],
       ),
+    'get_contract' : IDL.Func([IDL.Text, IDL.Text], [Result_4], ['query']),
     'get_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], ['query']),
     'get_file_content' : IDL.Func(
         [IDL.Text],
@@ -279,10 +283,10 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_friends' : IDL.Func([], [IDL.Opt(Friend)], ['query']),
-    'get_initial_data' : IDL.Func([], [Result_4], ['query']),
+    'get_initial_data' : IDL.Func([], [Result_5], ['query']),
     'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
-    'get_shared_file' : IDL.Func([IDL.Text], [Result_5], []),
-    'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_6], []),
+    'get_shared_file' : IDL.Func([IDL.Text], [Result_6], []),
+    'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_7], []),
     'multi_updates' : IDL.Func(
         [
           IDL.Vec(FileNode),
@@ -310,13 +314,12 @@ export const idlFactory = ({ IDL }) => {
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'share_file' : IDL.Func([IDL.Text, IDL.Text], [Result_2], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
-    'update_shares' : IDL.Func([IDL.Vec(Share), IDL.Text], [Result_2], []),
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
     'withdraw_usdt' : IDL.Func([IDL.Nat64], [Result_3], []),
     'ws_close' : IDL.Func([CanisterWsCloseArguments], [Result_1], []),
     'ws_get_messages' : IDL.Func(
         [CanisterWsGetMessagesArguments],
-        [Result_7],
+        [Result_8],
         ['query'],
       ),
     'ws_message' : IDL.Func(

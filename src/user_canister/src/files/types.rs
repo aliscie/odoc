@@ -4,6 +4,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 
 use candid::{CandidType, Deserialize};
+use ic_cdk::caller;
 
 use crate::USER_FILES;
 
@@ -20,6 +21,7 @@ pub struct FileNode {
     #[serde(default)]
     pub children: Vec<FileId>,
     pub share_id: Option<String>,
+    pub author: String,
 }
 
 impl FileNode {
@@ -31,6 +33,7 @@ impl FileNode {
             name: name.clone(),
             children: Vec::new(),
             share_id: None,
+            author: caller().to_string(),
         };
 
         USER_FILES.with(|files_store| {

@@ -1,16 +1,15 @@
-
-
-
-
-use ic_cdk::caller;
+use std::sync::atomic::Ordering;
+use candid::Principal;
+use ic_cdk::{call, caller};
 use ic_cdk_macros::update;
-
 
 
 use crate::storage_schema::{ContractId, ShareContractId};
 
 
-use crate::{ExchangeType, Share, ShareRequest, SharesContract, Wallet};
+use crate::{ExchangeType, Share, SharePayment, ShareRequest, SharesContract, Wallet, websocket};
+use crate::files::COUNTER;
+use crate::websocket::{NoteContent, Notification};
 
 
 #[update]
@@ -21,31 +20,41 @@ fn create_share_contract(shares: Vec<Share>) -> Result<String, String> {
 }
 
 
-#[update]
-fn update_shares(shares: Vec<Share>, contract_id: ContractId) -> Result<String, String> {
-    let mut share_contract = SharesContract::get(contract_id)?;
-    for share in shares {
-        share_contract.update(share).expect("TODO: panic message");
-    }
-
-    Ok("Share updated.".to_string())
-}
+// #[update]
+// fn update_shares(shares: Vec<Share>, contract_id: ContractId) -> Result<String, String> {
+//     let mut share_contract = SharesContract::get(contract_id)?;
+//     for share in shares {
+//         share_contract.update(share).expect("TODO: panic message");
+//     }
+//
+//     Ok("Share updated.".to_string())
+// }
 
 
 #[update]
 fn pay_for_share_contract(contract_id: ContractId, amount: u64) -> Result<(), String> {
-    let mut contract = SharesContract::get(contract_id)?;
+    // TODO fix this issue too much cloning
+
+    let mut contract: SharesContract = SharesContract::get(contract_id)?;
     let mut wallet = Wallet::get(caller());
 
-    wallet.withdraw(amount, "".to_string(), ExchangeType::LocalSend)?;
+    wallet.withdraw(amount.clone(), "".to_string(), ExchangeType::LocalSend)?;
 
-    let mut share_contract = contract.pay(amount)?;
+    contract.pay(amount.clone())?;
 
-    for existing_share in share_contract.shares.iter_mut() {
-        let share_value = amount * existing_share.share;
-        let mut wallet = Wallet::get(existing_share.receiver);
+    for share in contract.clone().shares.iter() {
+        let share_value = amount.clone() * (share.clone().share / 100);
+        let mut wallet = Wallet::get(share.receiver.clone());
         wallet.deposit(share_value, "".to_string(), ExchangeType::LocalReceive)?;
-        existing_share.accumulation += share_value;
+
+        let new_notification = Notification {
+            id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+            sender: caller(),
+            receiver: share.receiver.clone(),
+            content: NoteContent::SharePayment(contract.clone()),
+            is_seen: false,
+        };
+        websocket::notify(share.receiver.clone(), new_notification); // note without using clone here the websocket::notify does not work.
     }
     Ok(())
 }

@@ -11,6 +11,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../redux/main";
 import {actor} from "../App";
 
+type FileQuery = undefined | { Ok: [FileNode, Array<[string, ContentNode]>] } | { Err: string };
+
 function ShareFilePage(props: any) {
     let url = window.location.search;
     let id = url.split("=")[1];
@@ -28,7 +30,7 @@ function ShareFilePage(props: any) {
         if (!file) {
             (async () => {
                 let loading = enqueueSnackbar(<span><span className={"loader"}/></span>);
-                let res = actor && await actor.get_shared_file(id)
+                let res: FileQuery = actor && await actor.get_shared_file(id)
 
                 closeSnackbar(loading);
 

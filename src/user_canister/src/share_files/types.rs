@@ -42,7 +42,7 @@ impl ShareFile {
             name: file.name.clone(),
             children: file.children.clone(),
             share_id: Some(share_id.clone()),
-
+            author: file.author,
         });
 
         Ok(share_id)

@@ -2,7 +2,8 @@ use std::collections::HashMap;
 
 
 use ic_cdk::{caller};
-use candid::{CandidType, Deserialize};
+use candid::{CandidType, Deserialize, Principal};
+use candid::types::principal::PrincipalError;
 use ic_cdk_macros::query;
 
 use crate::{PROFILE_STORE, StoredContract, Wallet};
@@ -24,8 +25,21 @@ pub struct InitialData {
     Wallet: Wallet,
 }
 
-#[query]
 
+#[query]
+fn get_contract(author: String, contract_id: String) -> Result<StoredContract, String> {
+    let author: Result<Principal, PrincipalError> = Principal::from_text(author);
+    if author.is_err() {
+        return Err("Invalid principal.".to_string());
+    };
+    let contract = Contract::get_contract(author.unwrap(), contract_id);
+    if let Some(contract) = contract {
+        return Ok(contract);
+    }
+    Err("Invalid principal.".to_string())
+}
+
+#[query]
 fn get_initial_data() -> Result<InitialData, String> {
     let profile = User::user_profile();
 

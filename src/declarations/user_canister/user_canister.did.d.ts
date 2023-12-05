@@ -85,6 +85,7 @@ export interface FileNode {
   'share_id' : [] | [string],
   'name' : string,
   'children' : Array<string>,
+  'author' : string,
   'parent' : [] | [string],
 }
 export interface Filter {
@@ -112,7 +113,8 @@ export interface InitialData {
   'Wallet' : Wallet,
 }
 export type NoteContent = { 'ContractUpdate' : ContractNotification } |
-  { 'FriendRequest' : {} };
+  { 'FriendRequest' : {} } |
+  { 'SharePayment' : SharesContract };
 export interface Notification {
   'id' : string,
   'is_seen' : boolean,
@@ -148,13 +150,15 @@ export type Result_2 = { 'Ok' : string } |
   { 'Err' : string };
 export type Result_3 = { 'Ok' : bigint } |
   { 'Err' : string };
-export type Result_4 = { 'Ok' : InitialData } |
+export type Result_4 = { 'Ok' : StoredContract } |
   { 'Err' : string };
-export type Result_5 = { 'Ok' : [FileNode, Array<[string, ContentNode]>] } |
+export type Result_5 = { 'Ok' : InitialData } |
   { 'Err' : string };
-export type Result_6 = { 'Ok' : null } |
+export type Result_6 = { 'Ok' : [FileNode, Array<[string, ContentNode]>] } |
+  { 'Err' : string };
+export type Result_7 = { 'Ok' : null } |
   { 'Err' : null };
-export type Result_7 = { 'Ok' : CanisterOutputCertifiedMessages } |
+export type Result_8 = { 'Ok' : CanisterOutputCertifiedMessages } |
   { 'Err' : string };
 export interface Row {
   'id' : string,
@@ -234,16 +238,17 @@ export interface _SERVICE {
     Array<[string, Array<[string, ContentNode]>]>
   >,
   'get_all_users' : ActorMethod<[], Array<[string, User]>>,
+  'get_contract' : ActorMethod<[string, string], Result_4>,
   'get_file' : ActorMethod<[string], [] | [FileNode]>,
   'get_file_content' : ActorMethod<
     [string],
     [] | [Array<[string, ContentNode]>]
   >,
   'get_friends' : ActorMethod<[], [] | [Friend]>,
-  'get_initial_data' : ActorMethod<[], Result_4>,
+  'get_initial_data' : ActorMethod<[], Result_5>,
   'get_notifications' : ActorMethod<[], Array<Notification>>,
-  'get_shared_file' : ActorMethod<[string], Result_5>,
-  'move_file' : ActorMethod<[string, [] | [string]], Result_6>,
+  'get_shared_file' : ActorMethod<[string], Result_6>,
+  'move_file' : ActorMethod<[string, [] | [string]], Result_7>,
   'multi_updates' : ActorMethod<
     [
       Array<FileNode>,
@@ -262,11 +267,10 @@ export interface _SERVICE {
   'send_friend_request' : ActorMethod<[string], Result>,
   'share_file' : ActorMethod<[string, string], Result_2>,
   'unfriend' : ActorMethod<[string], Result>,
-  'update_shares' : ActorMethod<[Array<Share>, string], Result_2>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
   'withdraw_usdt' : ActorMethod<[bigint], Result_3>,
   'ws_close' : ActorMethod<[CanisterWsCloseArguments], Result_1>,
-  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_7>,
+  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_8>,
   'ws_message' : ActorMethod<
     [CanisterWsMessageArguments, [] | [AppMessage]],
     Result_1
