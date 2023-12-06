@@ -169,8 +169,8 @@ export interface Row {
 export interface Share {
   'share_contract_id' : string,
   'accumulation' : bigint,
-  'conformed' : boolean,
   'share' : bigint,
+  'confirmed' : boolean,
   'receiver' : Principal,
   'contractor' : [] | [Principal],
 }
@@ -224,7 +224,7 @@ export interface _SERVICE {
   'approve_request' : ActorMethod<[Array<string>, string], Result_1>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
   'cancel_payment' : ActorMethod<[string], Result_1>,
-  'conform' : ActorMethod<[string, string], Result_1>,
+  'conform_share' : ActorMethod<[string, string], Result_1>,
   'content_updates' : ActorMethod<[string, [] | [string], string], Result_2>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
   'create_payment_contract' : ActorMethod<[string], Result_1>,

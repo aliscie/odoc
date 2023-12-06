@@ -60,7 +60,7 @@ fn pay_for_share_contract(contract_id: ContractId, amount: u64) -> Result<(), St
 }
 
 #[update]
-fn conform(share_contract_id: ShareContractId, contract_id: ContractId) -> Result<(), String> {
+fn conform_share(share_contract_id: ShareContractId, contract_id: ContractId) -> Result<(), String> {
     let mut contract = SharesContract::get(contract_id)?;
     contract.conform(share_contract_id)
 }
@@ -74,7 +74,7 @@ fn request_share_change(shares_requests: Vec<ShareRequest>, contract_id: Contrac
             share_contract_id: share_request.share_contract_id,
             receiver: share_request.receiver,
             share: share_request.share,
-            conformed: false,
+            confirmed: false,
             accumulation: 0,
             contractor: Some(caller()),
         };

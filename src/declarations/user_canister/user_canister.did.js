@@ -19,8 +19,8 @@ export const idlFactory = ({ IDL }) => {
   const Share = IDL.Record({
     'share_contract_id' : IDL.Text,
     'accumulation' : IDL.Nat64,
-    'conformed' : IDL.Bool,
     'share' : IDL.Nat64,
+    'confirmed' : IDL.Bool,
     'receiver' : IDL.Principal,
     'contractor' : IDL.Opt(IDL.Principal),
   });
@@ -244,7 +244,7 @@ export const idlFactory = ({ IDL }) => {
     'approve_request' : IDL.Func([IDL.Vec(IDL.Text), IDL.Text], [Result_1], []),
     'cancel_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'cancel_payment' : IDL.Func([IDL.Text], [Result_1], []),
-    'conform' : IDL.Func([IDL.Text, IDL.Text], [Result_1], []),
+    'conform_share' : IDL.Func([IDL.Text, IDL.Text], [Result_1], []),
     'content_updates' : IDL.Func(
         [IDL.Text, IDL.Opt(IDL.Text), IDL.Text],
         [Result_2],

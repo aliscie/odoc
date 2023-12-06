@@ -15,7 +15,7 @@ use crate::storage_schema::{ContractId, ShareContractId};
 pub struct Share {
     pub(crate) share_contract_id: ShareContractId,
     pub(crate) receiver: Principal,
-    pub(crate) conformed: bool,
+    pub(crate) confirmed: bool,
     pub(crate) accumulation: u64,
     pub(crate) contractor: Option<Principal>,
     // the contract auther/ requester
@@ -105,7 +105,6 @@ impl SharesContract {
     }
 
     pub fn update_or_create(share: SharesContract) -> Result<(), String> {
-        // TODO
         if !share.clone().is_valid_shares() {
             return Err("Shares does not sum to 100%".to_string());
         }
@@ -123,6 +122,11 @@ impl SharesContract {
                 }
                 if old_share.payments != share.clone().payments {
                     return Err("You can't update payments".to_string());
+                }
+                for old_share in old_share.shares.iter() {
+                    if old_share.clone().confirmed && old_share != share.shares.iter().find(|s| s.share_contract_id == old_share.share_contract_id).unwrap() {
+                        return Err("You can't update a confirmed shares".to_string());
+                    }
                 }
             }
 
@@ -193,8 +197,8 @@ impl SharesContract {
     //                 .iter_mut()
     //                 .find(|s| s.share_contract_id == updated_share.share_contract_id)
     //             {
-    //                 if existing_share.conformed {
-    //                     return Err("Share is conformed and cannot be updated".to_string());
+    //                 if existing_share.confirmed {
+    //                     return Err("Share is confirmed and cannot be updated".to_string());
     //                 }
     //                 let original_value = existing_share.clone().share;
     //                 existing_share.share = updated_share.share;
@@ -224,27 +228,20 @@ impl SharesContract {
                 .get_mut(&self.contract_id) // Use updated_share.contract_id as the key
                 .ok_or("Contract not found")?;
 
-            if let StoredContract::SharesContract(ref mut existing_share_contract) = contract {
-                // Find the corresponding share in the contract's shares list
-                if let Some(existing_share) = existing_share_contract.clone()
-                    .shares
-                    .iter_mut()
-                    .find(|s| s.share_contract_id == share_contract_id)
-                {
-                    if existing_share.conformed {
-                        return Err("Share is conformed and cannot be updated".to_string());
-                    }
-
-                    if caller() == existing_share.receiver {
-                        existing_share.conformed = true;
-                    } else {
-                        return Err("Only the share receiver can conform share".to_string());
-                    }
-
-
-                    return Ok(());
-                }
-            }
+            if let StoredContract::SharesContract(existing_share) = contract {
+                let mut updated = existing_share.clone();
+                updated.shares = existing_share.clone().shares
+                    .into_iter()
+                    .map(|mut s| {
+                        if s.share_contract_id == share_contract_id {
+                            s.confirmed = true;
+                        }
+                        s
+                    })
+                    .collect();
+                *existing_share = updated.clone();
+                return Ok(());
+            };
 
             Err("Share not found in contract".to_string())
         })
@@ -288,13 +285,13 @@ impl SharesContract {
                     .iter_mut()
                     .find(|s| s.share_contract_id == share_request_contract_id)
                 {
-                    if existing_share.conformed {
-                        return Err("Share is conformed and cannot be updated".to_string());
+                    if existing_share.confirmed {
+                        return Err("Share is confirmed and cannot be updated".to_string());
                     }
 
                     // 1. approve
                     if caller() == existing_share.receiver {
-                        existing_share.conformed = true;
+                        existing_share.confirmed = true;
                     } else {
                         return Err("Only the share receiver can conform share".to_string());
                     }

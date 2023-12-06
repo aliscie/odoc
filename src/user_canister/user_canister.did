@@ -135,8 +135,8 @@ type Row = record {
 type Share = record {
   share_contract_id : text;
   accumulation : nat64;
-  conformed : bool;
   share : nat64;
+  confirmed : bool;
   receiver : principal;
   contractor : opt principal;
 };
@@ -191,7 +191,7 @@ service : () -> {
   approve_request : (vec text, text) -> (Result_1);
   cancel_friend_request : (text) -> (Result);
   cancel_payment : (text) -> (Result_1);
-  conform : (text, text) -> (Result_1);
+  conform_share : (text, text) -> (Result_1);
   content_updates : (text, opt text, text) -> (Result_2);
   create_new_file : (text, opt text) -> (FileNode);
   create_payment_contract : (text) -> (Result_1);

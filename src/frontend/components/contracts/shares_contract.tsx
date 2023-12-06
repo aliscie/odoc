@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {GridCell, GridRowModel} from '@mui/x-data-grid';
+import {GridCell, GridRenderCellParams, GridRowModel} from '@mui/x-data-grid';
 import {Button, ButtonGroup} from '@mui/material';
 import {StyledDataGrid} from "./spread_sheet";
 import {useDispatch, useSelector} from "react-redux";
@@ -32,6 +32,7 @@ import {randomString} from "../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
 import useGetUser from "../../utils/get_user_by_principal";
 import {actor} from "../../App";
+import ShareConfirmButton from "./shares_contract/conforim_button";
 
 // export type SharesContractViews = "Payments" | "Shares" | "SharesRequests" | "PaymentOptions";
 
@@ -164,7 +165,7 @@ export default function SharesContract(props: any) {
                         return {
                             ...item,
                             "accumulation": BigInt(item.accumulation),
-                            "conformed": Boolean(item.conformed),
+                            "confirmed": Boolean(item.confirmed),
                             "contractor": [...item.contractor],
                             "share_contract_id": updated_share_id,
                             "share": newRow["share%"],
@@ -279,6 +280,16 @@ export default function SharesContract(props: any) {
                     options: [...all_friends, profile]
                 })
                 return new_column
+
+            case "confirmed":
+                new_column['renderCell'] = (params: GridRenderCellParams<any, Date>) => {
+                    return <ShareConfirmButton
+                        contract={contracts[table_content.id]}
+                        share_contract_id={params.row.contract[0]["SharesContract"]}
+                    />
+                }
+
+                return new_column
             default:
                 return new_column
 
@@ -360,7 +371,7 @@ export default function SharesContract(props: any) {
                 const new_share: Share = {
                     share_contract_id: new_share_id,
                     accumulation: 0n,
-                    conformed: true,
+                    confirmed: false,
                     share: 0n,
                     receiver: Principal.fromText("2vxsx-fae"), // TODO fix this not anonymous
                     contractor: [],

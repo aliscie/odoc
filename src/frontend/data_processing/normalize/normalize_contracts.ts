@@ -13,7 +13,7 @@ export function normalize_contracts(json) {
                     let share: Share = {
                         share_contract_id: s.share_contract_id,
                         accumulation: BigInt(s.accumulation),
-                        conformed: s.conformed,
+                        confirmed: s.confirmed,
                         share: BigInt(s.share),
                         receiver: s.receiver,
                         contractor: s.contractor,
