@@ -57,6 +57,17 @@ pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
                 store.entry(user_principal.parse().unwrap()).or_default().friends.push(User::get_user_from_principal(caller()).unwrap());
             });
 
+            // -------- notification seen ------ \\\
+            let note = websocket::get_friend_request_id(user.clone().unwrap().principal(), caller());
+            if let Some(notification) = note {
+                notification.seen();
+                notification.save(user.clone().unwrap().principal());
+            } else {
+                let note = websocket::get_friend_request_id(caller(), user.clone().unwrap().principal());
+                note.clone().unwrap().seen();
+                note.unwrap().save(user.clone().unwrap().principal());
+            };
+
             Ok(user.unwrap())
         } else {
             Err("No friend request found from the specified user.".to_string())
@@ -72,6 +83,24 @@ pub fn unfriend(user_principal: String) -> Result<User, String> {
     if let Some(mut friend) = Friend::get_friends_of_caller() {
         if let Some(_index) = friend.friends.iter().position(|friend| friend.clone() == user.clone().unwrap()) {
             friend.unfriend(&user.clone().unwrap());
+
+            // -------- notification ------ \\\
+            let note = websocket::get_friend_request_id(user.clone().unwrap().principal(), caller());
+            if let Some(notification) = note {
+                notification.seen();
+            } else {
+                let note = websocket::get_friend_request_id(caller(), user.clone().unwrap().principal());
+                note.unwrap().seen();
+            };
+            let new_note = Notification {
+                id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+                content: NoteContent::Unfriend,
+                sender: caller(),
+                receiver: user.clone().unwrap().principal(),
+                is_seen: false,
+            };
+            new_note.save(user.clone().unwrap().principal());
+
             Ok(user.unwrap())
         } else {
             Err("The specified user is not a friend.".to_string())
@@ -88,14 +117,14 @@ pub fn cancel_friend_request(user_principal: String) -> Result<User, String> {
         if let Some(_index) = friend.friend_requests.iter().position(|request| *request == user.clone().unwrap()) {
             friend.cancel_friend_request(&user.clone().unwrap());
 
-            // get the id of the notification with receiver caller() and sender user
-            let note_id = websocket::get_friend_request_id(caller(), user.clone().unwrap().principal());
-            if let Some(id) = note_id {
-                websocket::unnotify(user.clone().unwrap().principal(), id);
+            //------------ Get the id of the notification with receiver caller() and sender user ------------\\
+            let note = websocket::get_friend_request_id(caller(), user.clone().unwrap().principal());
+            if let Some(notification) = note {
+                notification.delete();
             } else {
-                let note_id = websocket::get_friend_request_id(user.clone().unwrap().principal(), caller());
-                if let Some(id) = note_id {
-                    websocket::unnotify(user.clone().unwrap().principal(), id);
+                let note = websocket::get_friend_request_id(user.clone().unwrap().principal(), caller());
+                if let Some(notification) = note {
+                    notification.delete();
                     // rais error if id is not found
 
                 }

@@ -19,7 +19,7 @@ const AllUsers = () => {
         async function handleFriedReq(user) {
             let loading = enqueueSnackbar(<span>sending friend request... <span
                 className={"loader"}/></span>, {variant: "info"});
-            let friend_request = await actor.send_friend_request(user)
+            let friend_request = actor && await actor.send_friend_request(user)
             closeSnackbar(loading)
             if (friend_request.Err) {
                 enqueueSnackbar(friend_request.Err, {variant: "error"});

@@ -1,5 +1,5 @@
 use ic_cdk::{caller};
-use candid::{CandidType, Deserialize};
+use candid::{CandidType, Deserialize, Principal};
 
 use crate::{FRIENDS_STORE};
 use crate::user::User;
@@ -19,6 +19,14 @@ impl Friend {
             return store.get(&caller()).cloned();
         })
     }
+
+    pub fn get_friends_of_user(user: Principal) -> Option<Friend> {
+        FRIENDS_STORE.with(|friends_store| {
+            let store = friends_store.borrow();
+            return store.get(&user).cloned();
+        })
+    }
+
     // Send a friend request
     pub fn send_friend_request(&mut self, user: User) {
         self.friend_requests.push(user.clone());
@@ -57,12 +65,15 @@ impl Friend {
 
     // Unfriend a user
     pub fn unfriend(&mut self, user: &User) {
-        self.friends.retain(|friend| friend != user);
         FRIENDS_STORE.with(|friends_store| {
             let mut store = friends_store.borrow_mut();
             if let Some(friend) = store.get_mut(&caller()) {
                 friend.friends.retain(|friend| friend != user);
-            }
+            };
+            // also retain for self.friends
+            if let Some(friend) = store.get_mut(&user.id.parse().unwrap()) {
+                friend.friends.retain(|friend| friend != &User::get_user_from_principal(caller()).unwrap());
+            };
         });
     }
 }

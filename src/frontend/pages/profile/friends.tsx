@@ -42,9 +42,10 @@ function Friends(props: any) {
     let friends = props.friends[0].friends || [];
 
     async function handleCLickConfirm(id: string) {
-        let res = await actor.accept_friend_request(id)
-        dispatch(handleRedux("ADD_FRIEND", {id: id, friend: res.Ok}))
-        dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
+        let res = actor && await actor.accept_friend_request(id)
+        dispatch(handleRedux("ADD_FRIEND", {id: id, friend: res.Ok}));
+        dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}));
+        actor && dispatch(handleRedux('UPDATE_NOTIFY', {new_list: await actor.get_notifications()}));
         return res
     }
 

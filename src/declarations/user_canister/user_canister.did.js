@@ -174,8 +174,10 @@ export const idlFactory = ({ IDL }) => {
     'contract_id' : IDL.Text,
   });
   const NoteContent = IDL.Variant({
+    'Any' : IDL.Record({}),
     'ContractUpdate' : ContractNotification,
     'FriendRequest' : IDL.Record({}),
+    'Unfriend' : IDL.Null,
     'SharePayment' : SharesContract,
   });
   const Notification = IDL.Record({
@@ -216,6 +218,7 @@ export const idlFactory = ({ IDL }) => {
     'messages' : IDL.Vec(CanisterOutputMessage),
     'cert' : IDL.Vec(IDL.Nat8),
     'tree' : IDL.Vec(IDL.Nat8),
+    'is_end_of_queue' : IDL.Bool,
   });
   const Result_8 = IDL.Variant({
     'Ok' : CanisterOutputCertifiedMessages,

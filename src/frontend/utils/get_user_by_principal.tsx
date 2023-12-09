@@ -3,7 +3,8 @@ import {User} from "../../declarations/user_canister/user_canister.did";
 
 function useGetUser() {
     const {profile, all_friends} = useSelector((state: any) => state.filesReducer);
-    let users = [...all_friends, profile];
+    // console.log({all_friends})
+    let users = all_friends && [...all_friends, profile];
 
     function getUser(userId: string): String | null {
         const friend = users.find((f) => f.id == userId.toString())

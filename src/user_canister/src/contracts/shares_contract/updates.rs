@@ -1,16 +1,13 @@
 use std::sync::atomic::Ordering;
+
 use candid::Principal;
 use ic_cdk::{call, caller};
 use ic_cdk_macros::update;
 
-
-use crate::storage_schema::{ContractId, ShareContractId};
-
-
 use crate::{ExchangeType, Share, SharePayment, ShareRequest, SharesContract, Wallet, websocket};
 use crate::files::COUNTER;
+use crate::storage_schema::{ContractId, ShareContractId};
 use crate::websocket::{NoteContent, Notification};
-
 
 #[update]
 fn create_share_contract(shares: Vec<Share>) -> Result<String, String> {
@@ -54,7 +51,7 @@ fn pay_for_share_contract(contract_id: ContractId, amount: u64) -> Result<(), St
             content: NoteContent::SharePayment(contract.clone()),
             is_seen: false,
         };
-        websocket::notify(share.receiver.clone(), new_notification); // note without using clone here the websocket::notify does not work.
+        new_notification.save(share.receiver.clone());
     }
     Ok(())
 }

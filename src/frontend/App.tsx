@@ -18,7 +18,6 @@ import {_SERVICE} from "../declarations/user_canister/user_canister.did";
 import {canisterId, user_canister} from "../declarations/user_canister";
 import IcWebSocket, {createWsConfig} from "ic-websocket-js";
 import {AuthClient} from "@dfinity/auth-client";
-import {logger} from "./dev_utils/log_data";
 
 export let actor: ActorSubclass<_SERVICE> | undefined;
 
@@ -32,8 +31,8 @@ function App() {
 
     useEffect(() => {
         (async () => {
-            const gatewayUrl = "ws://127.0.0.1:8080";
-            const icUrl = "http://127.0.0.1:4943";
+            const gatewayUrl = "ws://127.0.0.1:8084";
+            const icUrl = `http://127.0.0.1:${import.meta.env.VITE_DFX_PORT}`;
 
             const authClient = await AuthClient.create();
             const _identity = authClient.getIdentity();
@@ -75,6 +74,10 @@ function App() {
                     } else if (keys.toString().includes("SharePayment")) {
                         let share_payment = event.data.notification[0].content["SharePayment"];
                         dispatch(handleRedux("UPDATE_CONTRACT", {contract: share_payment}))
+                    } else if (keys.toString().includes("Unfriend")) {
+                        actor && dispatch(handleRedux('UPDATE_NOTIFY', {new_list: await actor.get_notifications()}));
+                        let new_friends = actor && await actor.get_friends();
+                        new_friends && dispatch(handleRedux("UPDATE_FRIEND", {friends: new_friends[0]}))
                     }
                 };
 

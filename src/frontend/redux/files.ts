@@ -77,6 +77,7 @@ export async function get_initial_data() {
     const authClient = await AuthClient.create();
     const userPrincipal = authClient.getIdentity().getPrincipal().toString();
     let all_friends = []
+
     if (data.Ok && data.Ok.Friends) {
         let friend_requests = data.Ok.Friends[0] && data.Ok.Friends[0].friend_requests || []
         let confirmed_friends = data.Ok.Friends[0] && data.Ok.Friends[0].friends || []
@@ -129,6 +130,9 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 notifications: [...state.notifications, action.new_notification],
             }
         case 'UPDATE_NOTIFY':
+            console.log("UPDATE_NOTIFY", {
+                action
+            })
             return {
                 ...state,
                 notifications: action.new_list,

@@ -17,7 +17,6 @@ use handlers::{on_close, on_message, on_open};
 
 
 // Paste here the principal of the gateway obtained when running the gateway
-pub const GATEWAY_PRINCIPAL: &str = "qznnj-w4akz-crbb6-5vszi-wfofw-p2crg-om7fi-n5rob-mwluu-lstug-dqe";
 
 #[init]
 fn init() {
@@ -27,7 +26,7 @@ fn init() {
         on_close: Some(on_close),
     };
 
-    let params = WsInitParams::new(handlers, vec![String::from(GATEWAY_PRINCIPAL)]);
+    let params = WsInitParams::new(handlers);
 
     ic_websocket_cdk::init(params);
 }

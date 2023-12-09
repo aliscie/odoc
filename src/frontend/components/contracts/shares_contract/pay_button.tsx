@@ -16,7 +16,6 @@ function PayButton({contract}: { SharesContract }) {
         setLoading(true);
         let payment_res = actor && await actor.pay_for_share_contract(contract.contract_id, option.amount);
         setLoading(false);
-        logger({payment_res})
     }
 
     let Dialog = (props: any) => {

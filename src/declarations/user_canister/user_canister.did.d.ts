@@ -10,6 +10,7 @@ export interface CanisterOutputCertifiedMessages {
   'messages' : Array<CanisterOutputMessage>,
   'cert' : Uint8Array | number[],
   'tree' : Uint8Array | number[],
+  'is_end_of_queue' : boolean,
 }
 export interface CanisterOutputMessage {
   'key' : string,
@@ -112,8 +113,10 @@ export interface InitialData {
   'DiscoverUsers' : Array<[string, User]>,
   'Wallet' : Wallet,
 }
-export type NoteContent = { 'ContractUpdate' : ContractNotification } |
+export type NoteContent = { 'Any' : {} } |
+  { 'ContractUpdate' : ContractNotification } |
   { 'FriendRequest' : {} } |
+  { 'Unfriend' : null } |
   { 'SharePayment' : SharesContract };
 export interface Notification {
   'id' : string,

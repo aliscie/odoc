@@ -7,6 +7,7 @@ type CanisterOutputCertifiedMessages = record {
   messages : vec CanisterOutputMessage;
   cert : vec nat8;
   tree : vec nat8;
+  is_end_of_queue : bool;
 };
 type CanisterOutputMessage = record {
   key : text;
@@ -87,8 +88,10 @@ type InitialData = record {
   Wallet : Wallet;
 };
 type NoteContent = variant {
+  Any : record {};
   ContractUpdate : ContractNotification;
   FriendRequest : record {};
+  Unfriend;
   SharePayment : SharesContract;
 };
 type Notification = record {
