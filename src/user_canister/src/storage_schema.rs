@@ -14,6 +14,7 @@ pub type ContentId = String;
 pub type ContentTree = HashMap<ContentId, ContentNode>;
 pub type ContractId = String;
 pub type ShareContractId = String;
+pub type ShareRequestId = String;
 pub type ShareId = String;
 
 // Stores types

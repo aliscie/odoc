@@ -17,7 +17,6 @@ function ShareConfirmButton(props: Props) {
 
     //  ------------- TODO why this render too many times ---------------- \\
     //                 console.log("Render ShareConfirmButton")
-    console.log({share})
     // const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const [is_confirmed, setConform] = React.useState(share && share.confirmed);
 

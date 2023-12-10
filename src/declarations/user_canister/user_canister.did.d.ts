@@ -113,8 +113,7 @@ export interface InitialData {
   'DiscoverUsers' : Array<[string, User]>,
   'Wallet' : Wallet,
 }
-export type NoteContent = { 'Any' : {} } |
-  { 'ContractUpdate' : ContractNotification } |
+export type NoteContent = { 'ContractUpdate' : ContractNotification } |
   { 'FriendRequest' : {} } |
   { 'Unfriend' : null } |
   { 'SharePayment' : SharesContract };
@@ -175,7 +174,6 @@ export interface Share {
   'share' : bigint,
   'confirmed' : boolean,
   'receiver' : Principal,
-  'contractor' : [] | [Principal],
 }
 export interface SharePayment { 'sender' : Principal, 'amount' : bigint }
 export interface SharePaymentOption {
@@ -186,17 +184,19 @@ export interface SharePaymentOption {
   'amount' : bigint,
 }
 export interface ShareRequest {
-  'share_contract_id' : string,
-  'share' : bigint,
-  'receiver' : Principal,
-  'contractor' : [] | [Principal],
+  'id' : string,
+  'requester' : Principal,
+  'shares' : Array<Share>,
+  'is_applied' : boolean,
+  'name' : string,
+  'approvals' : Array<Principal>,
 }
 export interface SharesContract {
   'payment_options' : Array<SharePaymentOption>,
   'shares' : Array<Share>,
   'payments' : Array<SharePayment>,
   'contract_id' : string,
-  'shares_requests' : Array<Share>,
+  'shares_requests' : Array<[string, ShareRequest]>,
 }
 export type StoredContract = { 'PaymentContract' : PaymentContract } |
   { 'SharesContract' : SharesContract };
@@ -224,6 +224,7 @@ export interface WebsocketMessage {
 export interface _SERVICE {
   'accept_friend_request' : ActorMethod<[string], Result>,
   'accept_payment' : ActorMethod<[string], Result_1>,
+  'apply_request' : ActorMethod<[Array<string>, string], Result_1>,
   'approve_request' : ActorMethod<[Array<string>, string], Result_1>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
   'cancel_payment' : ActorMethod<[string], Result_1>,
@@ -265,7 +266,6 @@ export interface _SERVICE {
   'register' : ActorMethod<[RegisterUser], Result>,
   'release_payment' : ActorMethod<[string], Result_1>,
   'rename_file' : ActorMethod<[string, string], boolean>,
-  'request_share_change' : ActorMethod<[Array<ShareRequest>, string], Result_1>,
   'see_notifications' : ActorMethod<[string], undefined>,
   'send_friend_request' : ActorMethod<[string], Result>,
   'share_file' : ActorMethod<[string, string], Result_2>,

@@ -1,11 +1,12 @@
 import {
     PaymentContract,
     Share,
-    SharePaymentOption,
+    SharePaymentOption, ShareRequest,
     SharesContract,
     StoredContract
 } from "../../../declarations/user_canister/user_canister.did";
 import {logger} from "../../dev_utils/log_data";
+import {Principal} from "@dfinity/principal";
 
 // function detectContractType(data: any): StoredContract | null {
 //     if ('contract_id' in data && 'sender' in data && 'receiver' in data && 'amount' in data) {
@@ -64,7 +65,6 @@ export default function denormalize_payment_contract(content: any[], data: Array
                         'confirmed': s.confirmed,
                         'share': BigInt(s.share),
                         'receiver': s.receiver,
-                        'contractor': s.contractor,
                     }
                     shares.push(share);
                 }
@@ -78,11 +78,40 @@ export default function denormalize_payment_contract(content: any[], data: Array
                     };
                     return payment_option;
                 })
+                let shares_requests: Array<[string, ShareRequest]> = item.shares_requests.map((req: ShareRequest) => {
+                    // let x = {
+                    //     "req": ["lxmaj4", {
+                    //         "id": "lux3jn",
+                    //         "requester": {"__principal__": "xy2x6-ab3cb-gtl4h-7zqk5-sdyua-q4avf-37cya-dcrl4-o37zu-jgyyr-uae"},
+                    //         "shares": [{
+                    //             "share_contract_id": "lxmaj4",
+                    //             "accumulation": "0",
+                    //             "share": "100",
+                    //             "confirmed": false,
+                    //             "receiver": {"__principal__": "2vxsx-fae"}
+                    //         }],
+                    //         "is_applied": false,
+                    //         "name": "name",
+                    //         "approvals": []
+                    //     }]
+                    // }
+                    // logger({req})
+                    // let shares_req: ShareRequest = {
+                    //     // 'id': string,
+                    //     // 'requester': Principal,
+                    //     // 'shares': Array < Share >,
+                    //     // 'is_applied': boolean,
+                    //     // 'name': string,
+                    //     // 'approvals': Array < Principal >,
+                    // }
+                    return [req[1].id, req[1]]
+                });
+
                 let de_normal_share_contract: StoredContract = {
                     "SharesContract": {
                         "shares": shares,
                         "payments": item.payments,
-                        "shares_requests": item.shares_requests,
+                        "shares_requests": shares_requests,
                         "contract_id": item.contract_id,
                         "payment_options": payment_options,
                     }

@@ -88,21 +88,17 @@ function FileContentPage(props: any) {
         return (
             <div style={{marginTop: "3px", marginLeft: "10%", marginRight: "10%"}}>
 
-                {current_file.name && (
-                    <>
-                        <Typography
-                            variant="h3"
-                            onKeyDown={preventEnter}
-                            onKeyUp={handleTitleKeyDown}
-                            contentEditable={true}>{current_file.name}</Typography>
-                        <EditorComponent
-                            handleOnInsertComponent={handleOnInsertComponent}
-                            onChange={onChange}
-                            editorKey={editorKey}
-                            content={content || []}
-                        />
-                    </>
-                )}
+                <Typography
+                    variant="h3"
+                    onKeyDown={preventEnter}
+                    onKeyUp={handleTitleKeyDown}
+                    contentEditable={true}>{current_file.name}</Typography>
+                <EditorComponent
+                    handleOnInsertComponent={handleOnInsertComponent}
+                    onChange={onChange}
+                    editorKey={editorKey}
+                    content={content || []}
+                />
             </div>
         );
     }

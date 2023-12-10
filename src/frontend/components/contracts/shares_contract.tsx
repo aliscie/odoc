@@ -16,6 +16,7 @@ import {
     Share,
     SharePayment,
     SharePaymentOption,
+    ShareRequest,
     SharesContract,
     StoredContract,
     Table,
@@ -33,11 +34,15 @@ import {Principal} from "@dfinity/principal";
 import useGetUser from "../../utils/get_user_by_principal";
 import {actor} from "../../App";
 import ShareConfirmButton from "./shares_contract/conforim_button";
+import useSharesRequests from "./shares_contract/use_shares_requests";
+import ApproveButton from "./shares_contract/approve_button";
+import ApplyButton from "./shares_contract/apply_button";
+import {logger} from "../../dev_utils/log_data";
 
 // export type SharesContractViews = "Payments" | "Shares" | "SharesRequests" | "PaymentOptions";
 
 export default function SharesContract(props: any) {
-
+    let [view, setView] = useState("Shares");
     let {getUser, getUserByName} = useGetUser();
     const dispatch = useDispatch();
 
@@ -55,6 +60,10 @@ export default function SharesContract(props: any) {
     let initial_rows = table_content.data[0].Table.rows
 
     let initial_columns = table_content.data[0].Table.columns;
+
+
+    //  ---------- TODO Why this component renders 10 times -------- \\
+
     // let {initial_rows, handleDeleteRow} = useRowManager({initial_rows, props})
 
     let {
@@ -63,7 +72,6 @@ export default function SharesContract(props: any) {
         handleAddColumn,
         handleColumnValidator
     } = useColumnManager({initial_columns, props});
-
     // use effect with async
 
     //// ----------------------- TODO ----------------------- \\\\
@@ -72,130 +80,51 @@ export default function SharesContract(props: any) {
     //                            which should not happen
 
     function normalize_share_rows(CONTRACTS, ROWS: any): Array<Row> {
-        return ROWS.map((row: any) => {
-            let share_id: String = row.contract && row.contract[0] && row.contract[0]["SharesContract"];
-            let share: Share = CONTRACTS[table_content.id] && CONTRACTS[table_content.id].shares.filter((item: Share) => item.share_contract_id == share_id)[0];
 
-
-            //❗️ Note: don't confuse "share" with share
-            //  "share" is for share file
-            // share is the share contract
-            // Both has similar names.
-
-
-            if (!CONTRACTS[table_content.id]) {
-                console.error("-------------- contract not found", {table_id: table_content.id, CONTRACTS})
-            } else if (!share) {
-                console.error("-------------- Share not found", share_id, {CONTRACTS, row})
-            }
-
-
+        return CONTRACTS[table_content.id].shares.map((share)=>{
             let receiver = share && getUser(share.receiver.toString());
-            let res: Row = {
+            return {
                 "accumulation": share && share.accumulation,
                 "share%": share && share.share,
                 "receiver": receiver ? receiver : "",
-                "id": row.id,
-                "contract": [{"SharesContract": row.id}],
-                // "cells": row.cells,
-                // requests: row && row.requests,
-                ...row,
+                "id": share.share_contract_id,
+                "contract": [{"SharesContract": share.share_contract_id}],
+                "cells": [],
             }
-            return res;
         })
-    }
-
-    const processRowUpdate = React.useCallback((newRow: GridRowModel, oldRow: GridRowModel) => {
-
-            // ------------------ Update the extra cells ------------------ \\
-            // let new_cells: Array<[string, string]> = Object.keys(newRow).map((key: string) => {
-            //     return [String(key), newRow[key] || ""];
-            // })
-            //
-            // function updateCells(newTable: Table) {
-            //     const updatedRows = newTable.rows.map((row: Row) => {
-            //         if (row.id === oldRow.id) {
-            //             // const updatedCells = [...row.cells, ...new_cells];
-            //             return {...row, cells: [new_cells]};
-            //         }
-            //         return row;
-            //     });
-            //     return {...newTable, rows: updatedRows};
-            // };
-            //
-            // let newContent: SharesContract = updateTableContent(props, content, updateCells)
-            // // TODO when hit save new data get removed, but they stored correctly in the BackEnd?
-            //
-            // dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-            // dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
-
-
-            // ------------------ Update Payment Option ------------------ \\
-            let payment_options: Array<SharePaymentOption> = contracts[table_content.id].payment_options;
-            if (Object.keys(newRow).toString() === ["id", "title", "amount", "description"].toString()) {
-                payment_options = payment_options.map((item: SharePaymentOption) => {
-                    if (item.id === oldRow.id) {
-                        let new_item: SharePaymentOption = {
-                            'id': newRow.id,
-                            'title': newRow.title,
-                            'date': "", // TODO handle and string data if needed later.
-                            'description': newRow.description,
-                            'amount': BigInt(newRow.amount),
-                        };
-                        return new_item;
-                    }
-                    return item
-                })
-                console.log("end the function here")
-            }
-
-            // ------------------ Update Contract ------------------ \\
-            let updated_share_id = newRow.contract && newRow.contract[0] && newRow.contract[0]["SharesContract"];
-            let receiver_name: string = newRow["receiver"];
-            let receiver: User | null = getUserByName(receiver_name);
-
-            let updated_contract: SharesContract = {
-                ...contracts[table_content.id],
-                "payment_options": payment_options,
-                // contract_id: contract.contract_id,
-                // payments: contract.payments,
-                // shares_requests: contract.shares_requests,
-                shares: contracts[table_content.id].shares.map((item: Share) => {
-                    if (item.share_contract_id === updated_share_id) {
-                        return {
-                            ...item,
-                            "accumulation": BigInt(item.accumulation),
-                            "confirmed": Boolean(item.confirmed),
-                            "contractor": [...item.contractor],
-                            "share_contract_id": updated_share_id,
-                            "share": newRow["share%"],
-                            "receiver": Principal.fromText(receiver ? receiver.id.toString() : "2vxsx-fae"),
-                        };
-                    }
-                    return item;
-                }),
-            };
+        // return ROWS.map((row: any) => {
+        //     let share_id: String = row.contract && row.contract[0] && row.contract[0]["SharesContract"];
+        //     let share: Share = CONTRACTS[table_content.id] && CONTRACTS[table_content.id].shares.filter((item: Share) => item.share_contract_id == share_id)[0];
+        //
+        //
+        //     //❗️ Note: don't confuse "share" with share
+        //     //  "share" is for share file
+        //     // share is the share contract
+        //     // Both has similar names.
+        //
+        //
+        //     if (!CONTRACTS[table_content.id]) {
+        //         console.error("-------------- contract not found", {table_id: table_content.id, CONTRACTS})
+        //     } else if (!share) {
+        //         console.error("-------------- Share not found", share_id, {CONTRACTS, row})
+        //     }
+        //
+        //
+        //     let receiver = share && getUser(share.receiver.toString());
+        //     let res: Row = {
+        //         "accumulation": share && share.accumulation,
+        //         "share%": share && share.share,
+        //         "receiver": receiver ? receiver : "",
+        //         "id": row.id,
+        //         "contract": [{"SharesContract": row.id}],
+        //         // "cells": row.cells,
+        //         ...row,
+        //     }
+        //     return res;
+        // })
 
 
-            // ------------------ TODO save the contract in form of StoredContract ------------------ \\
-            //                      That is in order to prevent the need for extra steps in denormalize_contracts.tsx
-            //                         let contract: StoredContract = {
-            //                             "SharesContract": {
-            //                                 "shares": shares,
-            //                                 "payments": item.payments,
-            //                                 "shares_requests": item.shares_requests,
-            //                                 "contract_id": item.contract_id,
-            //                             }
-            //                         };
-
-            dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contract}));
-            dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contract}));
-            // revoke_message();
-
-            return Promise.resolve(newRow);
-        },
-        []
-    );
+    };
 
     const handleProcessRowUpdateError = React.useCallback(
         (params: any) => {
@@ -296,7 +225,7 @@ export default function SharesContract(props: any) {
         }
     })
 
-    let [view, setView] = useState("Shares");
+
     let [data, setData]: any = useState({
         rows: normalize_share_rows(contracts, initial_rows),
         columns: custom_columns
@@ -326,6 +255,133 @@ export default function SharesContract(props: any) {
             }
         })()
     }, [current_file])
+    let {currentRequest, addRequestRow, handleClickReq, UpdatedContractFromRow} = useSharesRequests({
+        table_content,
+        props,
+        setView,
+        data,
+        setData
+    });
+
+
+    const processRowUpdate = React.useCallback((newRow: GridRowModel, oldRow: GridRowModel) => {
+
+            // ------------------ Update the extra cells ------------------ \\
+            // let new_cells: Array<[string, string]> = Object.keys(newRow).map((key: string) => {
+            //     return [String(key), newRow[key] || ""];
+            // })
+            //
+            // function updateCells(newTable: Table) {
+            //     const updatedRows = newTable.rows.map((row: Row) => {
+            //         if (row.id === oldRow.id) {
+            //             // const updatedCells = [...row.cells, ...new_cells];
+            //             return {...row, cells: [new_cells]};
+            //         }
+            //         return row;
+            //     });
+            //     return {...newTable, rows: updatedRows};
+            // };
+            //
+            // let newContent: SharesContract = updateTableContent(props, content, updateCells)
+            // // TODO when hit save new data get removed, but they stored correctly in the BackEnd?
+            //
+            // dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
+            // dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
+            let shares_requests: Array<[string, ShareRequest]> = contracts[table_content.id].shares_requests;
+            let shares_requests_keys = ['id', 'receiver', 'share']
+
+            // ------------------ Update Shares Requests ------------------ \\
+            if (Object.keys(newRow).toString() === shares_requests_keys.toString()) {
+
+                let new_rows = [...data.rows];
+                setData((pre) => {
+                    new_rows = new_rows.map((row: Row) => {
+                        if (row.id === oldRow.id) {
+                            return {...row, ...newRow}
+                        }
+                        return row
+                    });
+                    return {...pre, rows: new_rows}
+                });
+
+                shares_requests = contracts[table_content.id].shares_requests.map((share_req: [string, ShareRequest]) => {
+                    if (share_req[1].id == currentRequest.id) {
+                        let new_item: [string, ShareRequest] = [newRow.id, {
+                            ...share_req[1],
+                            shares: UpdatedContractFromRow(new_rows),
+                        }]
+                        return new_item;
+                    }
+                    return share_req;
+                });
+
+            }
+
+
+            // ------------------ Update Payment Option ------------------ \\
+            let payment_options: Array<SharePaymentOption> = contracts[table_content.id].payment_options;
+            if (Object.keys(newRow).toString() === ["id", "title", "amount", "description"].toString()) {
+                payment_options = payment_options.map((item: SharePaymentOption) => {
+                    if (item.id === oldRow.id) {
+                        let new_item: SharePaymentOption = {
+                            'id': newRow.id,
+                            'title': newRow.title,
+                            'date': "", // TODO handle and string data if needed later.
+                            'description': newRow.description,
+                            'amount': BigInt(newRow.amount),
+                        };
+                        return new_item;
+                    }
+                    return item
+                })
+            }
+
+            // ------------------ Update Contract ------------------ \\
+            let updated_share_id = newRow.contract && newRow.contract[0] && newRow.contract[0]["SharesContract"];
+            let receiver_name: string = newRow["receiver"];
+            let receiver: User | null = getUserByName(receiver_name);
+
+            let updated_contract: SharesContract = {
+                ...contracts[table_content.id],
+                "payment_options": payment_options,
+                // contract_id: contract.contract_id,
+                // payments: contract.payments,
+                "shares_requests": shares_requests,
+                shares: contracts[table_content.id].shares.map((item: Share) => {
+                    if (item.share_contract_id === updated_share_id) {
+                        return {
+                            ...item,
+                            "accumulation": BigInt(item.accumulation || 0),
+                            "confirmed": Boolean(item.confirmed),
+                            "share_contract_id": updated_share_id,
+                            "share": newRow["share%"],
+                            "receiver": Principal.fromText(receiver ? receiver.id.toString() : "2vxsx-fae"),
+                        };
+                    }
+                    return item;
+                }),
+            };
+
+
+            // ------------------ TODO save the contract in form of StoredContract ------------------ \\
+            //                      That is in order to prevent the need for extra steps in denormalize_contracts.tsx
+            //                         let contract: StoredContract = {
+            //                             "SharesContract": {
+            //                                 "shares": shares,
+            //                                 "payments": item.payments,
+            //                                 "shares_requests": item.shares_requests,
+            //                                 "contract_id": item.contract_id,
+            //                             }
+            //                         };
+            dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contract}));
+            dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contract}));
+            // revoke_message();
+
+            return Promise.resolve(newRow);
+        },
+        [currentRequest, data]
+    );
+
 
     const handleAddRow = (rowId: string, before: boolean) => {
         let newRow = {};
@@ -373,8 +429,7 @@ export default function SharesContract(props: any) {
                     accumulation: 0n,
                     confirmed: false,
                     share: 0n,
-                    receiver: Principal.fromText("2vxsx-fae"), // TODO fix this not anonymous
-                    contractor: [],
+                    receiver: Principal.fromText(profile.id), // TODO fix this not anonymous
                 };
                 updated_contracts[table_content.id] = {
                     ...contracts[table_content.id],
@@ -423,7 +478,7 @@ export default function SharesContract(props: any) {
                 dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contracts[table_content.id]}));
                 break;
             default:
-                console.error("Unknown view")
+                addRequestRow(rowId, before);
                 break;
 
         }
@@ -439,14 +494,16 @@ export default function SharesContract(props: any) {
 
     };
 
+
     let Click = (e: string) => {
-        setView(e);
+
         switch (e) {
             case 'Shares':
                 setData({
                     rows: normalize_share_rows(contracts, initial_rows),
                     columns: custom_columns
                 });
+                setView(e);
                 break;
             case "Payments":
                 setData({
@@ -464,7 +521,40 @@ export default function SharesContract(props: any) {
                         {field: 'date', headerName: 'date', width: 150},
                     ]
                 });
-                break
+                setView(e);
+                break;
+
+            case '+Request':
+                let new_share: Share = {
+                    'share_contract_id': randomString(),
+                    'accumulation': 0n,
+                    'share': 100n,
+                    'confirmed': false,
+                    'receiver': Principal.fromText(profile.id),
+                };
+                let new_request: ShareRequest = {
+                    id: randomString(),
+                    name: "name",
+                    requester: Principal.fromText(profile.id),
+                    shares: [new_share],
+                    approvals: [],
+                    is_applied: false,
+                };
+
+                let shares_requests: Array<[string, ShareRequest]> = contracts[table_content.id].shares_requests;
+                shares_requests.push([new_request.id, new_request]);
+
+                let updated_contract: SharesContract = {
+                    ...contracts[table_content.id],
+                    shares_requests,
+                };
+
+                dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contract}));
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contract}));
+                handleClickReq(new_request);
+                // setView(new_request.id);
+                break;
+
             case 'Payment options':
                 let payment_options_rows = contracts[table_content.id].payment_options.map((payment_option: SharePaymentOption) => {
                     let payment_option_row = {
@@ -485,8 +575,10 @@ export default function SharesContract(props: any) {
                         {field: 'description', headerName: 'description', width: 150, editable: true},
                     ]
                 });
-
-
+                setView(e);
+                break;
+            default:
+                setView(e);
         }
 
     }
@@ -512,9 +604,25 @@ export default function SharesContract(props: any) {
                             options={[
                                 {content: "Shares", Click},
                                 {content: "Payment options", Click},
-                                {content: "Payments", Click}
+                                {content: "Payments", Click},
+                                ...contracts[table_content.id].shares_requests.map((req: ShareRequest) => {
+                                    return {content: req[1] && req[1].id, Click: async () => handleClickReq(req[1])}
+                                }),
+                                {content: "+Request", Click}
                             ]}>{view}</BasicMenu>
                         <Button>Filter</Button>
+
+                        {currentRequest && <ApproveButton
+                            req={currentRequest}
+                            id={currentRequest && currentRequest.id}
+                            contract={contracts[table_content.id]}/>}
+
+                        {currentRequest && <ApplyButton
+                            setData={setData}
+                            props={props}
+                            req={currentRequest}
+                            id={currentRequest && currentRequest.id}
+                            contract={contracts[table_content.id]}/>}
                         <PayButton contract={contracts[table_content.id]}/>
                     </ButtonGroup>
                 }}

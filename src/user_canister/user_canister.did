@@ -88,7 +88,6 @@ type InitialData = record {
   Wallet : Wallet;
 };
 type NoteContent = variant {
-  Any : record {};
   ContractUpdate : ContractNotification;
   FriendRequest : record {};
   Unfriend;
@@ -141,7 +140,6 @@ type Share = record {
   share : nat64;
   confirmed : bool;
   receiver : principal;
-  contractor : opt principal;
 };
 type SharePayment = record { sender : principal; amount : nat64 };
 type SharePaymentOption = record {
@@ -152,17 +150,19 @@ type SharePaymentOption = record {
   amount : nat64;
 };
 type ShareRequest = record {
-  share_contract_id : text;
-  share : nat64;
-  receiver : principal;
-  contractor : opt principal;
+  id : text;
+  requester : principal;
+  shares : vec Share;
+  is_applied : bool;
+  name : text;
+  approvals : vec principal;
 };
 type SharesContract = record {
   payment_options : vec SharePaymentOption;
   shares : vec Share;
   payments : vec SharePayment;
   contract_id : text;
-  shares_requests : vec Share;
+  shares_requests : vec record { text; ShareRequest };
 };
 type StoredContract = variant {
   PaymentContract : PaymentContract;
@@ -191,6 +191,7 @@ type WebsocketMessage = record {
 service : () -> {
   accept_friend_request : (text) -> (Result);
   accept_payment : (text) -> (Result_1);
+  apply_request : (vec text, text) -> (Result_1);
   approve_request : (vec text, text) -> (Result_1);
   cancel_friend_request : (text) -> (Result);
   cancel_payment : (text) -> (Result_1);
@@ -225,7 +226,6 @@ service : () -> {
   register : (RegisterUser) -> (Result);
   release_payment : (text) -> (Result_1);
   rename_file : (text, text) -> (bool);
-  request_share_change : (vec ShareRequest, text) -> (Result_1);
   see_notifications : (text) -> ();
   send_friend_request : (text) -> (Result);
   share_file : (text, text) -> (Result_2);

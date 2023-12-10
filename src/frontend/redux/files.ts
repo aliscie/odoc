@@ -130,9 +130,10 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 notifications: [...state.notifications, action.new_notification],
             }
         case 'UPDATE_NOTIFY':
-            console.log("UPDATE_NOTIFY", {
-                action
-            })
+            // --------- TODO why UPDATE_NOTIFY is called twice? --------- \\
+            // console.log("UPDATE_NOTIFY", {
+            //     action
+            // })
             return {
                 ...state,
                 notifications: action.new_list,

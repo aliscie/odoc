@@ -17,7 +17,7 @@ pub enum Contract {
     // CustomContract(Table),
 }
 
-#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(Eq, PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub enum StoredContract {
     PaymentContract(PaymentContract),
     SharesContract(SharesContract),

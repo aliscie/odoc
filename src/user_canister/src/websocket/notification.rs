@@ -18,7 +18,7 @@ pub struct ContractNotification {
     pub(crate) contract_id: String,
 }
 
-#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
+#[derive(Eq, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub enum NoteContent {
     FriendRequest(FriendRequestNotification),
     ContractUpdate(ContractNotification),
@@ -26,7 +26,7 @@ pub enum NoteContent {
     Unfriend,
 }
 
-#[derive(Eq, PartialOrd, Serialize, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(Eq, Serialize, PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub struct Notification {
     pub(crate) id: String,
     pub(crate) sender: Principal,

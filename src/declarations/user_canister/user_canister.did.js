@@ -22,7 +22,6 @@ export const idlFactory = ({ IDL }) => {
     'share' : IDL.Nat64,
     'confirmed' : IDL.Bool,
     'receiver' : IDL.Principal,
-    'contractor' : IDL.Opt(IDL.Principal),
   });
   const Result_3 = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });
   const Contract = IDL.Variant({
@@ -123,12 +122,20 @@ export const idlFactory = ({ IDL }) => {
     'sender' : IDL.Principal,
     'amount' : IDL.Nat64,
   });
+  const ShareRequest = IDL.Record({
+    'id' : IDL.Text,
+    'requester' : IDL.Principal,
+    'shares' : IDL.Vec(Share),
+    'is_applied' : IDL.Bool,
+    'name' : IDL.Text,
+    'approvals' : IDL.Vec(IDL.Principal),
+  });
   const SharesContract = IDL.Record({
     'payment_options' : IDL.Vec(SharePaymentOption),
     'shares' : IDL.Vec(Share),
     'payments' : IDL.Vec(SharePayment),
     'contract_id' : IDL.Text,
-    'shares_requests' : IDL.Vec(Share),
+    'shares_requests' : IDL.Vec(IDL.Tuple(IDL.Text, ShareRequest)),
   });
   const StoredContract = IDL.Variant({
     'PaymentContract' : PaymentContract,
@@ -174,7 +181,6 @@ export const idlFactory = ({ IDL }) => {
     'contract_id' : IDL.Text,
   });
   const NoteContent = IDL.Variant({
-    'Any' : IDL.Record({}),
     'ContractUpdate' : ContractNotification,
     'FriendRequest' : IDL.Record({}),
     'Unfriend' : IDL.Null,
@@ -196,12 +202,6 @@ export const idlFactory = ({ IDL }) => {
     'name' : IDL.Opt(IDL.Text),
     'description' : IDL.Opt(IDL.Text),
     'photo' : IDL.Opt(IDL.Vec(IDL.Nat8)),
-  });
-  const ShareRequest = IDL.Record({
-    'share_contract_id' : IDL.Text,
-    'share' : IDL.Nat64,
-    'receiver' : IDL.Principal,
-    'contractor' : IDL.Opt(IDL.Principal),
   });
   const ClientKey = IDL.Record({
     'client_principal' : IDL.Principal,
@@ -244,6 +244,7 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     'accept_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'accept_payment' : IDL.Func([IDL.Text], [Result_1], []),
+    'apply_request' : IDL.Func([IDL.Vec(IDL.Text), IDL.Text], [Result_1], []),
     'approve_request' : IDL.Func([IDL.Vec(IDL.Text), IDL.Text], [Result_1], []),
     'cancel_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'cancel_payment' : IDL.Func([IDL.Text], [Result_1], []),
@@ -308,11 +309,6 @@ export const idlFactory = ({ IDL }) => {
     'register' : IDL.Func([RegisterUser], [Result], []),
     'release_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'rename_file' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
-    'request_share_change' : IDL.Func(
-        [IDL.Vec(ShareRequest), IDL.Text],
-        [Result_1],
-        [],
-      ),
     'see_notifications' : IDL.Func([IDL.Text], [], []),
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'share_file' : IDL.Func([IDL.Text, IDL.Text], [Result_2], []),

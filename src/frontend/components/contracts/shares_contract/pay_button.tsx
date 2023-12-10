@@ -4,7 +4,6 @@ import {Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
 import {SharePaymentOption} from "../../../../declarations/user_canister/user_canister.did";
 import {actor} from "../../../App";
-import {logger} from "../../../dev_utils/log_data";
 import {LoadingButton} from "@mui/lab";
 
 function PayButton({contract}: { SharesContract }) {

@@ -4,7 +4,7 @@ use candid::Principal;
 use ic_cdk::{call, caller};
 use ic_cdk_macros::update;
 
-use crate::{ExchangeType, Share, SharePayment, ShareRequest, SharesContract, Wallet, websocket};
+use crate::{ExchangeType, Share, SharesContract, Wallet, websocket};
 use crate::files::COUNTER;
 use crate::storage_schema::{ContractId, ShareContractId};
 use crate::websocket::{NoteContent, Notification};
@@ -63,29 +63,38 @@ fn conform_share(share_contract_id: ShareContractId, contract_id: ContractId) ->
 }
 
 
-#[update]
-fn request_share_change(shares_requests: Vec<ShareRequest>, contract_id: ContractId) -> Result<(), String> {
-    let mut contract = SharesContract::get(contract_id)?;
-    for share_request in shares_requests {
-        let request = Share {
-            share_contract_id: share_request.share_contract_id,
-            receiver: share_request.receiver,
-            share: share_request.share,
-            confirmed: false,
-            accumulation: 0,
-            contractor: Some(caller()),
-        };
-        contract.request(request).expect("Error at adding share_request");
-    };
-    Ok(())
-}
+// #[update]
+// fn request_share_change(shares_requests: Vec<ShareRequest>, contract_id: ContractId) -> Result<(), String> {
+//     let mut contract = SharesContract::get(contract_id)?;
+//     for share_request in shares_requests {
+//         let request = Share {
+//             share_contract_id: share_request.share_contract_id,
+//             receiver: share_request.receiver,
+//             share: share_request.share,
+//             confirmed: false,
+//             accumulation: 0,
+//             contractor: Some(caller()),
+//         };
+//         contract.request(request).expect("Error at adding share_request");
+//     };
+//     Ok(())
+// }
 
 
 #[update]
 fn approve_request(share_requests_id: Vec<ShareContractId>, contract_id: ContractId) -> Result<(), String> {
     let mut contract = SharesContract::get(contract_id)?;
     for request in share_requests_id {
-        contract.approve_request(request).expect("Err at approve_request.");
+        contract.approve_request(request)?;
+    }
+    Ok(())
+}
+
+#[update]
+fn apply_request(share_requests_id: Vec<ShareContractId>, contract_id: ContractId) -> Result<(), String> {
+    let mut contract = SharesContract::get(contract_id)?;
+    for request in share_requests_id {
+        contract.apply_request(request)?;
     }
     Ok(())
 }
