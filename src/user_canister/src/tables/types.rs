@@ -121,7 +121,6 @@ pub struct Row {
     pub id: String,
     contract: Option<Contract>,
     pub(crate) cells: Option<HashMap<ColumnName, TableCellValue>>,
-    pub(crate) requests: Option<Contract>,
 }
 
 
@@ -131,7 +130,6 @@ impl Row {
             id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
             contract: Option::from(Contract::PaymentContract(payment.get_contract_id())),
             cells: None,
-            requests: None,
         }
     }
 }

@@ -1,5 +1,5 @@
 import {randomString} from "../../../data_processing/data_samples";
-import {Payment, Row, Table} from "../../../../declarations/user_canister/user_canister.did";
+import {PaymentContract, Row, Table} from "../../../../declarations/user_canister/user_canister.did";
 import {Principal} from "@dfinity/principal";
 import {handleRedux} from "../../../redux/main";
 import * as React from "react";
@@ -13,7 +13,7 @@ function useRowManager(props: any) {
     const [rows, setRows] = React.useState(props.initial_rows);
     const handleAddRow = (rowId: string, before: boolean) => {
         const id = randomString();
-        const contract: Payment = {
+        const contract: PaymentContract = {
             contract_id: id,
             sender: Principal.fromText(profile.id),
             receiver: Principal.fromText("2vxsx-fae"),
@@ -26,7 +26,6 @@ function useRowManager(props: any) {
             id,
             contract: [{"PaymentContract": id}],
             cells: [],
-            requests: [],
         };
 
         const cells = props.initial_rows[0] && props.initial_rows[0].cells[0];

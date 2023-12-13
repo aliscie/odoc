@@ -10,7 +10,7 @@ import {Typography} from "@mui/material";
 
 function FileContentPage(props: any) {
 
-    const {current_file, files_content} = useSelector((state: any) => state.filesReducer);
+    const {current_file, files_content, profile} = useSelector((state: any) => state.filesReducer);
 
 
     let [title, setTitle] = React.useState(current_file.name);
@@ -67,8 +67,9 @@ function FileContentPage(props: any) {
                 dispatch(handleRedux("ADD_CONTRACT", {contract: payment_contract_sample}))
                 dispatch(handleRedux("CONTRACT_CHANGES", {changes: payment_contract_sample}));
             case "shares_contract":
-                dispatch(handleRedux("ADD_CONTRACT", {contract: shares_contract_sample}))
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: shares_contract_sample}));
+                let new_contract = {...shares_contract_sample, author: profile.id};
+                dispatch(handleRedux("ADD_CONTRACT", {contract: new_contract}))
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: new_contract}));
             case "data_grid":
                 return null;
             default:

@@ -1,4 +1,4 @@
-
+use std::collections::HashMap;
 use candid::Principal;
 use ic_cdk::{caller};
 use crate::{FILE_CONTENTS, FILES_SHARE_STORE, USER_FILES};
@@ -7,10 +7,22 @@ use crate::files::FileNode;
 use candid::{CandidType, Deserialize};
 use crate::storage_schema::{ContentTree, FileId};
 
-#[derive(Clone, Debug, Deserialize, CandidType)]
+
+#[derive(PartialEq, Clone, Debug, Deserialize, CandidType)]
+pub enum ShareFilePermission {
+    None,
+    CanUpdate,
+    CanView,
+    CanComment,
+}
+
+
+#[derive(PartialEq, Clone, Debug, Deserialize, CandidType)]
 pub struct ShareFile {
     pub file: FileId,
     pub owner: Principal,
+    pub permission: ShareFilePermission,
+    pub users_permissions: HashMap<Principal, ShareFilePermission>,
     // TODO later consider sharing children of file
     //  children
     //  contracts
@@ -18,11 +30,13 @@ pub struct ShareFile {
 
 impl ShareFile {
     pub fn new(file_id: FileId, share_id: String) -> Result<String, String> {
-        let file = FileNode::get_file(file_id.clone()).ok_or("No such file with this id.")?;
+        let file = FileNode::get_file(&file_id).ok_or("No such file with this id.")?;
 
         let share_file = ShareFile {
             file: file.id,
             owner: caller(),
+            permission: ShareFilePermission::CanUpdate,
+            users_permissions: Default::default(),
         };
 
         let _shared_file = FILES_SHARE_STORE.with(|files_share_store| {
@@ -36,26 +50,70 @@ impl ShareFile {
             }
         });
 
-        FileNode::update_or_create(FileNode {
+        let new_file = FileNode {
             id: file_id.clone(),
             parent: file.parent.clone(),
             name: file.name.clone(),
             children: file.children.clone(),
             share_id: Some(share_id.clone()),
             author: file.author,
-        });
+        };
+        new_file.save()?;
 
         Ok(share_id)
     }
-
-    pub fn get_file(share_id: String) -> Result<(FileNode, ContentTree), String> {
-        let shared_file = FILES_SHARE_STORE.with(|files_share_store| {
+    pub fn get(share_id: &String) -> Result<Self, String> {
+        FILES_SHARE_STORE.with(|files_share_store| {
             let files_share_store = files_share_store.borrow();
-            if let Some(share_file) = files_share_store.get(&share_id) {
-                return Some(share_file.clone());
+            if let Some(share_file) = files_share_store.get(share_id) {
+                Ok(share_file.clone())
+            } else {
+                Err("No such share file.".to_string())
             }
-            return None;
+        })
+    }
+    pub fn check_permission(&self, permission: ShareFilePermission) -> bool {
+        if self.permission == ShareFilePermission::None {
+            return false;
+        }
+        if self.permission == ShareFilePermission::CanUpdate {
+            return true;
+        }
+        if self.permission == ShareFilePermission::CanView && permission == ShareFilePermission::CanView {
+            return true;
+        }
+        if self.permission == ShareFilePermission::CanComment && (permission == ShareFilePermission::CanView || permission == ShareFilePermission::CanComment) {
+            return true;
+        }
+        // check if caller has permissions
+        if let Some(user_permission) = self.users_permissions.get(&caller()) {
+            if *user_permission == ShareFilePermission::None {
+                return false;
+            }
+            if *user_permission == ShareFilePermission::CanUpdate {
+                return true;
+            }
+            if *user_permission == ShareFilePermission::CanView && permission == ShareFilePermission::CanView {
+                return true;
+            }
+            if *user_permission == ShareFilePermission::CanComment && (permission == ShareFilePermission::CanView || permission == ShareFilePermission::CanComment) {
+                return true;
+            }
+        }
+        false
+    }
+
+    pub fn get_file(share_id: &String) -> Result<(FileNode, ContentTree), String> {
+        let shared_file: ShareFile = FILES_SHARE_STORE.with(|files_share_store| {
+            let files_share_store = files_share_store.borrow();
+            files_share_store.get(share_id).cloned()
         }).ok_or("No such share id.")?;
+
+        let can_view = shared_file.check_permission(ShareFilePermission::CanView);
+        if !can_view {
+            return Err("No permission to view this file.".to_string());
+        }
+
 
         let file = USER_FILES.with(|files_store| {
             let user_files = files_store.borrow();

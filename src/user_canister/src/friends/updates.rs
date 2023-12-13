@@ -1,15 +1,14 @@
-use candid::Principal;
-use ic_cdk::{caller, print, println};
-use ic_cdk_macros::update;
 use std::sync::atomic::Ordering;
+
+use candid::Principal;
+use ic_cdk::{caller, println};
+use ic_cdk_macros::update;
 
 use crate::{FRIENDS_STORE, websocket};
 use crate::files::COUNTER;
 use crate::friends::Friend;
-use crate::user::{User};
-use crate::websocket::{FriendRequestNotification, NoteContent, Notification};
-
-
+use crate::user::User;
+use crate::websocket::{NoteContent, Notification};
 
 #[update]
 pub fn send_friend_request(user_principal: String) -> Result<User, String> {
@@ -61,12 +60,13 @@ pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
             let note = websocket::get_friend_request_id(user.clone().unwrap().principal(), caller());
             if let Some(notification) = note {
                 notification.seen();
-                notification.save(user.clone().unwrap().principal());
             } else {
                 let note = websocket::get_friend_request_id(caller(), user.clone().unwrap().principal());
                 note.clone().unwrap().seen();
-                note.unwrap().save(user.clone().unwrap().principal());
             };
+            let note_content = NoteContent::AcceptFriendRequest;
+            let new_note = Notification::new(user.clone().unwrap().principal(), note_content);
+            new_note.save();
 
             Ok(user.unwrap())
         } else {
@@ -99,7 +99,7 @@ pub fn unfriend(user_principal: String) -> Result<User, String> {
                 receiver: user.clone().unwrap().principal(),
                 is_seen: false,
             };
-            new_note.save(user.clone().unwrap().principal());
+            new_note.save();
 
             Ok(user.unwrap())
         } else {
@@ -126,7 +126,6 @@ pub fn cancel_friend_request(user_principal: String) -> Result<User, String> {
                 if let Some(notification) = note {
                     notification.delete();
                     // rais error if id is not found
-
                 }
             }
             Ok(user.unwrap())

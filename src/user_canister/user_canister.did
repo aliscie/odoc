@@ -90,7 +90,10 @@ type InitialData = record {
 type NoteContent = variant {
   ContractUpdate : ContractNotification;
   FriendRequest : record {};
+  AcceptFriendRequest;
   Unfriend;
+  ShareRequestApplied : SharesContract;
+  ShareRequestApproved : SharesContract;
   SharePayment : SharesContract;
 };
 type Notification = record {
@@ -132,7 +135,6 @@ type Row = record {
   id : text;
   contract : opt Contract;
   cells : opt vec record { text; text };
-  requests : opt Contract;
 };
 type Share = record {
   share_contract_id : text;
@@ -162,6 +164,7 @@ type SharesContract = record {
   shares : vec Share;
   payments : vec SharePayment;
   contract_id : text;
+  author : text;
   shares_requests : vec record { text; ShareRequest };
 };
 type StoredContract = variant {
@@ -192,10 +195,10 @@ service : () -> {
   accept_friend_request : (text) -> (Result);
   accept_payment : (text) -> (Result_1);
   apply_request : (vec text, text) -> (Result_1);
-  approve_request : (vec text, text) -> (Result_1);
+  approve_request : (text, vec text, text) -> (Result_1);
   cancel_friend_request : (text) -> (Result);
   cancel_payment : (text) -> (Result_1);
-  conform_share : (text, text) -> (Result_1);
+  conform_share : (text, text, text) -> (Result_1);
   content_updates : (text, opt text, text) -> (Result_2);
   create_new_file : (text, opt text) -> (FileNode);
   create_payment_contract : (text) -> (Result_1);

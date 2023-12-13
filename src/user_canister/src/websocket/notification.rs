@@ -24,6 +24,9 @@ pub enum NoteContent {
     ContractUpdate(ContractNotification),
     SharePayment(SharesContract),
     Unfriend,
+    AcceptFriendRequest,
+    ShareRequestApplied(SharesContract),
+    ShareRequestApproved(SharesContract),
 }
 
 #[derive(Eq, Serialize, PartialEq, Clone, Debug, CandidType, Deserialize)]
@@ -38,16 +41,18 @@ pub struct Notification {
 
 // impliemtn a function to Notification that get the id of friedn requst by importing reciveer and sender
 impl Notification {
-    // pub fn new(notification: Self) -> Self {
-    //     NOTIFICATIONS.with(|notifications| {
-    //         let mut user_notifications = notifications.borrow_mut();
-    //         let user_notifications = user_notifications.entry(caller()).or_insert_with(Vec::new);
-    //         user_notifications.push(notification);
-    //     });
-    // }
+    pub fn new(user: Principal, content: NoteContent) -> Self {
+        Notification {
+            id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+            content,
+            sender: caller(),
+            receiver: user,
+            is_seen: false,
+        }
+    }
 
 
-    pub fn save(&self, user: Principal) {
+    pub fn save(&self) {
         NOTIFICATIONS.with(|notifications| {
             let mut user_notifications = notifications.borrow_mut();
             let user_notifications = user_notifications.entry(self.receiver.clone()).or_insert_with(Vec::new);
@@ -58,7 +63,7 @@ impl Notification {
             text: self.id.clone(),
             timestamp: 0,
         };
-        send_app_message(user, msg.clone());
+        send_app_message(self.receiver, msg.clone());
     }
 
     pub fn send(&self, user: Principal) {
@@ -156,7 +161,7 @@ pub fn notify_friend_request(user_principal: Principal) {
         content: NoteContent::FriendRequest(friend_request_notification),
         is_seen: false,
     };
-    new_notification.save(user_principal.clone());
+    new_notification.save();
 }
 
 type id = String;
@@ -173,5 +178,5 @@ pub fn contract_notification(receiver: Principal, sender: Principal, contract_ty
         }),
         is_seen: false,
     };
-    new_notification.save(receiver.clone());
+    new_notification.save();
 }

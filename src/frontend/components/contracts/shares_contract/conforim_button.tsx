@@ -10,6 +10,7 @@ import {Share, SharesContract} from "../../../../declarations/user_canister/user
 interface Props {
     share_contract_id: string,
     contract: SharesContract,
+    author: String,
 }
 
 function ShareConfirmButton(props: Props) {
@@ -19,10 +20,9 @@ function ShareConfirmButton(props: Props) {
     //                 console.log("Render ShareConfirmButton")
     // const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const [is_confirmed, setConform] = React.useState(share && share.confirmed);
-
     const handleConfirm = async () => {
         let loader = enqueueSnackbar(<>Confirming...<span className="loader"/></>);
-        let res = actor && await actor.conform_share(props.share_contract_id, props.contract.contract_id)
+        let res = actor && await actor.conform_share(props.author, props.share_contract_id, props.contract.contract_id)
         closeSnackbar(loader);
         if ('Ok' in res) {
             enqueueSnackbar("Confirmed successfully", {variant: "success"});

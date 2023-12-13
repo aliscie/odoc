@@ -40,13 +40,12 @@ function ShareFilePage(props: any) {
                     let normalized_tree: Array<SlateNode> = normalize_content_tree(content_tree);
                     setFile(file);
                     setState(normalized_tree)
+                    dispatch(handleRedux("CURRENT_FILE", {file}));
                 } else {
                     enqueueSnackbar(`Error: ${res.Err}`, {variant: "error"});
                 }
             })()
         }
-
-        dispatch(handleRedux("CURRENT_FILE", {file}));
 
     }, [file])
 
@@ -54,7 +53,7 @@ function ShareFilePage(props: any) {
         <>
             <h1>{file && file.name}</h1>
             {state && <Editor
-                contentcontentEditable={false}
+                contentEditable={false}
                 componentsOptions={[
                     table,
                     payment_contract,

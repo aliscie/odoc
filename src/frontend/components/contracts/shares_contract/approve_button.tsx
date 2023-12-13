@@ -3,11 +3,13 @@ import {useState} from "react";
 import DialogOver from "../../genral/daiolog_over";
 import {LoadingButton} from "@mui/lab";
 import {actor} from "../../../App";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Share} from "../../../../declarations/user_canister/user_canister.did";
 import {useSnackbar} from "notistack";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 
-function ApproveButton({req, id, contract}: any) {
+function ApproveButton({req, contract}: any) {
+    const dispatch = useDispatch();
     const {
         files_content,
         current_file,
@@ -17,14 +19,26 @@ function ApproveButton({req, id, contract}: any) {
     } = useSelector((state: any) => state.filesReducer);
     const [loading, setLoading] = useState(false);
     const [disabled, setDisabled] = useState(req.approvals.map((item) => item.toString()).includes(profile.id));
-    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+    const [approvals, setApprovals] = useState(req.approvals.length);
+    const {enqueueSnackbar} = useSnackbar();
     const handleApprove = async (option: any) => {
         setLoading(true);
-        let response = actor && await actor.approve_request([req.id], contract.contract_id);
-        // logger({response});
+        let response: undefined | { Ok: null } | { Err: string } = actor && await actor.approve_request(current_file.author, [req.id], contract.contract_id);
         if ("Ok" in response) {
+            setApprovals(approvals + 1);
             setDisabled(true);
-        } else {
+            // const newContent = {
+            //     ...contract,
+            //     shares_requests: contract.shares_requests.map((item) => {
+            //         if (item.id === req.id) {
+            //             return {...item, approvals: [...item.approvals, profile.id]};
+            //         }
+            //         return item;
+            //     }),
+            // };
+            //
+            // dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
+        } else if (response) {
             enqueueSnackbar(response.Err, {variant: "error"});
         }
 
@@ -45,7 +59,9 @@ function ApproveButton({req, id, contract}: any) {
             >Approve now</LoadingButton>
         </>
     }
-    // let children = contract.released ? <DoneAllIcon color={"success"}/> : <SendIcon/>
+
+    let children = disabled ? <DoneAllIcon color={"success"}/> : false
+
     return (
         <DialogOver
             size={"small"}
@@ -53,9 +69,7 @@ function ApproveButton({req, id, contract}: any) {
             disabled={disabled}
             variant="text"
             DialogContent={Dialog}>
-            Approve {" " + req.approvals.length}/{all_share_holders.length}
-            {/*{loading ? <span className={"loader"}></span> : children}*/}
-
+            {children || "Approve "} {approvals}/{all_share_holders.length}
         </DialogOver>
     );
 }

@@ -3,10 +3,12 @@ use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 
-use candid::{CandidType, Deserialize};
+use candid::{CandidType, Deserialize, Principal};
+use ic_cdk::caller;
 
 
 use crate::{FILE_CONTENTS, USER_FILES};
+use crate::files::FileNode;
 
 use crate::storage_schema::{ContentId, ContentTree, FileId};
 use crate::tables::Table;
@@ -65,7 +67,6 @@ impl ContentNode {
     }
 
 
-
     pub fn new(file_id: FileId, content_parent_id: Option<ContentId>, node_type: String, text: String, data: Option<ContentData>) -> Option<ContentNode> {
         let caller_principal = ic_cdk::api::caller();
         let mut new_node = ContentNode {
@@ -118,12 +119,11 @@ impl ContentNode {
     pub fn update_file_contents(file_id: FileId, content_nodes: ContentTree) {
         FILE_CONTENTS.with(|file_contents| {
             let mut contents = file_contents.borrow_mut();
-
-            let caller_principal = ic_cdk::api::caller();
-            let file_contents_map = contents.entry(caller_principal).or_insert_with(HashMap::new);
-            let file_content_tree: &mut ContentTree = file_contents_map.entry(file_id).or_insert_with(ContentTree::new);
+            // get author from file
+            let author: Principal = FileNode::get_file(&file_id).unwrap().author.parse().unwrap();
+            let file_contents_map = contents.entry(author).or_default();
+            let file_content_tree: &mut ContentTree = file_contents_map.entry(file_id).or_default();
             *file_content_tree = content_nodes;
-
         });
     }
 
@@ -131,8 +131,7 @@ impl ContentNode {
         FILE_CONTENTS.with(|file_contents| {
             let mut contents = file_contents.borrow_mut();
 
-            let caller_principal = ic_cdk::api::caller();
-            if let Some(file_contents_map) = contents.get_mut(&caller_principal) {
+            if let Some(file_contents_map) = contents.get_mut(&caller()) {
                 file_contents_map.remove(&file_id.clone());
             }
         });
@@ -140,8 +139,7 @@ impl ContentNode {
     pub fn delete_file_content(file_id: FileId) {
         FILE_CONTENTS.with(|file_contents| {
             let mut contents = file_contents.borrow_mut();
-            let caller_principal = ic_cdk::api::caller();
-            if let Some(file_contents_map) = contents.get_mut(&caller_principal) {
+            if let Some(file_contents_map) = contents.get_mut(&caller()) {
                 file_contents_map.remove(&file_id);
             }
         });

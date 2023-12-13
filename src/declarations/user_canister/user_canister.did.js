@@ -32,7 +32,6 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Text,
     'contract' : IDL.Opt(Contract),
     'cells' : IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))),
-    'requests' : IDL.Opt(Contract),
   });
   const ColumnTypes = IDL.Variant({
     'Tag' : IDL.Null,
@@ -135,6 +134,7 @@ export const idlFactory = ({ IDL }) => {
     'shares' : IDL.Vec(Share),
     'payments' : IDL.Vec(SharePayment),
     'contract_id' : IDL.Text,
+    'author' : IDL.Text,
     'shares_requests' : IDL.Vec(IDL.Tuple(IDL.Text, ShareRequest)),
   });
   const StoredContract = IDL.Variant({
@@ -183,7 +183,10 @@ export const idlFactory = ({ IDL }) => {
   const NoteContent = IDL.Variant({
     'ContractUpdate' : ContractNotification,
     'FriendRequest' : IDL.Record({}),
+    'AcceptFriendRequest' : IDL.Null,
     'Unfriend' : IDL.Null,
+    'ShareRequestApplied' : SharesContract,
+    'ShareRequestApproved' : SharesContract,
     'SharePayment' : SharesContract,
   });
   const Notification = IDL.Record({
@@ -245,10 +248,14 @@ export const idlFactory = ({ IDL }) => {
     'accept_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'accept_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'apply_request' : IDL.Func([IDL.Vec(IDL.Text), IDL.Text], [Result_1], []),
-    'approve_request' : IDL.Func([IDL.Vec(IDL.Text), IDL.Text], [Result_1], []),
+    'approve_request' : IDL.Func(
+        [IDL.Text, IDL.Vec(IDL.Text), IDL.Text],
+        [Result_1],
+        [],
+      ),
     'cancel_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'cancel_payment' : IDL.Func([IDL.Text], [Result_1], []),
-    'conform_share' : IDL.Func([IDL.Text, IDL.Text], [Result_1], []),
+    'conform_share' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [Result_1], []),
     'content_updates' : IDL.Func(
         [IDL.Text, IDL.Opt(IDL.Text), IDL.Text],
         [Result_2],

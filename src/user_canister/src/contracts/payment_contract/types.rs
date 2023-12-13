@@ -224,12 +224,6 @@ impl PaymentContract {
         })
     }
 
-    pub fn multi_update(payments: Vec<PaymentContract>) -> Vec<Result<(), String>> {
-        payments
-            .into_iter()
-            .map(|payment| Self::update(payment))
-            .collect()
-    }
 
     pub fn delete_for_both(contract_id: ContractId) -> Result<(), String> {
         let payment = PaymentContract::get(contract_id.clone())?;

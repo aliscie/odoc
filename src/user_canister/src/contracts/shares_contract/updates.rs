@@ -51,15 +51,16 @@ fn pay_for_share_contract(contract_id: ContractId, amount: u64) -> Result<(), St
             content: NoteContent::SharePayment(contract.clone()),
             is_seen: false,
         };
-        new_notification.save(share.receiver.clone());
+        new_notification.save();
     }
     Ok(())
 }
 
 #[update]
-fn conform_share(share_contract_id: ShareContractId, contract_id: ContractId) -> Result<(), String> {
-    let mut contract = SharesContract::get(contract_id)?;
-    contract.conform(share_contract_id)
+fn conform_share(user: String, share_contract_id: ShareContractId, contract_id: ContractId) -> Result<(), String> {
+    let user: Principal = Principal::from_text(user).expect("Error at converting user to principal");
+    let mut contract = SharesContract::get_for_author(user, contract_id)?;
+    contract.conform(user, share_contract_id)
 }
 
 
@@ -82,10 +83,11 @@ fn conform_share(share_contract_id: ShareContractId, contract_id: ContractId) ->
 
 
 #[update]
-fn approve_request(share_requests_id: Vec<ShareContractId>, contract_id: ContractId) -> Result<(), String> {
-    let mut contract = SharesContract::get(contract_id)?;
+fn approve_request(author: String, share_requests_id: Vec<ShareContractId>, contract_id: ContractId) -> Result<(), String> {
+    let author = Principal::from_text(author).expect("Error at converting user to principal");
+    let mut contract = SharesContract::get_for_author(author, contract_id)?;
     for request in share_requests_id {
-        contract.approve_request(request)?;
+        contract.approve_request(author, request)?;
     }
     Ok(())
 }

@@ -1,5 +1,4 @@
 import {PaymentContract, Share, SharesContract} from "../../../declarations/user_canister/user_canister.did";
-import {logger} from "../../dev_utils/log_data";
 
 export function normalize_contracts(json) {
     const dataStructure = {};
@@ -25,7 +24,8 @@ export function normalize_contracts(json) {
                     payments: shareContractData.payments,
                     contract_id: shareContractData.contract_id,
                     shares_requests: shareContractData.shares_requests,
-                    payment_options: shareContractData.payment_options
+                    payment_options: shareContractData.payment_options,
+                    author: shareContractData.author,
                 };
 
                 dataStructure[key] = shares_contract;

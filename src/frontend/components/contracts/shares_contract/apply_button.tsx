@@ -4,11 +4,9 @@ import DialogOver from "../../genral/daiolog_over";
 import {LoadingButton} from "@mui/lab";
 import {actor} from "../../../App";
 import {useDispatch, useSelector} from "react-redux";
-import {Share, SharesContract, Table} from "../../../../declarations/user_canister/user_canister.did";
+import {Share, SharesContract} from "../../../../declarations/user_canister/user_canister.did";
 import {handleRedux} from "../../../redux/main";
-import {updateTableContent} from "../utils/update_table";
 import {useSnackbar} from "notistack";
-import useSharesRequests from "./use_shares_requests";
 import useGetUser from "../../../utils/get_user_by_principal";
 
 function ApplyButton({setData, props, req, id, contract}: any) {
@@ -38,19 +36,23 @@ function ApplyButton({setData, props, req, id, contract}: any) {
         setLoading(true);
 
         let response = actor && await actor.apply_request([id], contract.contract_id);
-
+        setLoading(false);
 
         if ("Ok" in response) {
             setDisabled(true);
-        } else {
+        } else if (response) {
             enqueueSnackbar(response.Err, {variant: "error"});
         }
-        ;
 
-        setLoading(false);
         let new_contract: SharesContract = {
             ...contracts[props.children[0].id],
-            shares: req.shares
+            shares: req.shares,
+            shares_requests: contracts[props.children[0].id].shares_requests.map((item) => {
+                if (item.id === req.id) {
+                    return {...item, is_applied: true};
+                }
+                return item;
+            }),
         };
         dispatch(handleRedux("UPDATE_CONTRACT", {contract: new_contract}));
     }
@@ -69,10 +71,8 @@ function ApplyButton({setData, props, req, id, contract}: any) {
             color={"success"}
             disabled={disabled}
             variant="text"
-            DialogContent={Dialog}>
-            Apply
-
-        </DialogOver>
+            DialogContent={Dialog}
+        >Apply</DialogOver>
     );
 }
 

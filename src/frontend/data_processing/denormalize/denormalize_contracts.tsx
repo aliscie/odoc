@@ -1,12 +1,11 @@
 import {
     PaymentContract,
     Share,
-    SharePaymentOption, ShareRequest,
+    SharePaymentOption,
+    ShareRequest,
     SharesContract,
     StoredContract
 } from "../../../declarations/user_canister/user_canister.did";
-import {logger} from "../../dev_utils/log_data";
-import {Principal} from "@dfinity/principal";
 
 // function detectContractType(data: any): StoredContract | null {
 //     if ('contract_id' in data && 'sender' in data && 'receiver' in data && 'amount' in data) {
@@ -95,7 +94,6 @@ export default function denormalize_payment_contract(content: any[], data: Array
                     //         "approvals": []
                     //     }]
                     // }
-                    // logger({req})
                     // let shares_req: ShareRequest = {
                     //     // 'id': string,
                     //     // 'requester': Principal,
@@ -107,6 +105,7 @@ export default function denormalize_payment_contract(content: any[], data: Array
                     return [req[1].id, req[1]]
                 });
 
+
                 let de_normal_share_contract: StoredContract = {
                     "SharesContract": {
                         "shares": shares,
@@ -114,6 +113,7 @@ export default function denormalize_payment_contract(content: any[], data: Array
                         "shares_requests": shares_requests,
                         "contract_id": item.contract_id,
                         "payment_options": payment_options,
+                        "author": item.author,
                     }
                 };
                 data.push(de_normal_share_contract);

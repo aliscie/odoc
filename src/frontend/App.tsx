@@ -61,7 +61,7 @@ function App() {
                     dispatch(handleRedux('NOTIFY', {new_notification: event.data.notification[0]}));
 
                     // check if the key is `FriendRequest` or ContractUpdate in event.data.notification[0].content[key]
-                    let keys = Object.keys(event.data.notification[0] && event.data.notification[0].content);
+                    let keys = event.data.notification[0] && Object.keys(event.data.notification[0].content);
 
                     if (keys.toString().includes("FriendRequest")) {
                         // TODO this does not seams to update live.

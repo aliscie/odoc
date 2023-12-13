@@ -25,7 +25,7 @@ import {getFormula} from "./utils/parse_formula";
 
 
 export default function PaymentContract(props: any) {
-    let {getUser} = useGetUser();
+    let {getUser, getUserByName} = useGetUser();
     const dispatch = useDispatch();
 
     const {
@@ -105,7 +105,7 @@ export default function PaymentContract(props: any) {
 
                     newTable.rows.map((row: Row) => {
                         if (row.id === oldRow.id) {
-                            row = {...row, cells: [...row.cells, ...new_cells]};
+                            return {...row, cells: [...row.cells, ...new_cells]};
                             // row.cells = [[...row.cells, ...new_cells]];
                         }
                         return row;
@@ -121,13 +121,15 @@ export default function PaymentContract(props: any) {
 
             let id = oldRow.id;
 
-            let receiver = all_friends.filter((friend: any) => friend.name === newRow.receiver)[0]
+            // let receiver = all_friends.filter((friend: any) => friend.name === newRow.receiver)[0]
+            let receiver = getUserByName(newRow.receiver);
             if (!receiver) {
                 enqueueSnackbar("Please select a receiver", {variant: "warning"});
                 return Promise.resolve();
             }
 
-            let contract: Payment = {
+            let contract: PaymentContract = {
+                "canceled": Boolean(newRow.canceled || false),
                 "contract_id": id,
                 "sender": Principal.fromText(profile.id),
                 "released": newRow.released,
@@ -136,7 +138,7 @@ export default function PaymentContract(props: any) {
                 "receiver": Principal.fromText(receiver.id),
             }
 
-            dispatch(handleRedux("UPDATE_CONTRACT", {id: contract.contract_id, contract}));
+            dispatch(handleRedux("UPDATE_CONTRACT", {contract: contract}));
             dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
             revoke_message();
             return Promise.resolve(newRow);

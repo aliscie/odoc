@@ -37,7 +37,6 @@ import ShareConfirmButton from "./shares_contract/conforim_button";
 import useSharesRequests from "./shares_contract/use_shares_requests";
 import ApproveButton from "./shares_contract/approve_button";
 import ApplyButton from "./shares_contract/apply_button";
-import {logger} from "../../dev_utils/log_data";
 
 // export type SharesContractViews = "Payments" | "Shares" | "SharesRequests" | "PaymentOptions";
 
@@ -62,18 +61,78 @@ export default function SharesContract(props: any) {
     let initial_columns = table_content.data[0].Table.columns;
 
 
-    //  ---------- TODO Why this component renders 10 times -------- \\
-
-    // let {initial_rows, handleDeleteRow} = useRowManager({initial_rows, props})
-
     let {
         columns,
         handleDeleteColumn,
         handleAddColumn,
         handleColumnValidator
     } = useColumnManager({initial_columns, props});
-    // use effect with async
 
+
+    // ------------------------ Handle Columns and SetData ------------------------ \\
+    let custom_columns = columns.map((column: any) => {
+        let new_column = {...column}
+        switch (column.field.toLowerCase()) {
+            case "receiver":
+                new_column['renderEditCell'] = (props: any) => RenderReceiver({
+                    ...props,
+                    options: [...all_friends, profile]
+                })
+                return new_column
+
+            case "confirmed":
+                new_column['renderCell'] = (params: GridRenderCellParams<any, Date>) => {
+                    return <ShareConfirmButton
+                        author={current_file.author}
+                        contract={contracts[table_content.id]}
+                        share_contract_id={params.row.contract[0]["SharesContract"]}
+                    />
+                }
+
+                return new_column
+            default:
+                return new_column
+
+        }
+    })
+
+
+    let [data, setData]: any = useState({
+        rows: [],
+        columns: custom_columns
+    });
+
+    /// ----------------------- Hande contracts in Share file ----------------------- \\\
+    let current_page = window.location.pathname.split("/").pop();
+    useEffect(() => {
+
+        if (current_page === "share") {
+            (async () => {
+                let contract: undefined | { Ok: StoredContract } | { Err: string } = actor && current_file && await actor.get_contract(current_file.author, table_content.id);
+                if (contract && "Ok" in contract) {
+
+                    let fetched_contracts = {}
+                    fetched_contracts[table_content.id] = contract.Ok["SharesContract"];
+                    let normalized_rows = normalize_share_rows(fetched_contracts, initial_rows);
+                    setData((pre: any) => {
+                        return {...pre, rows: normalized_rows}
+                    })
+                    dispatch(handleRedux("UPDATE_CONTRACT", {contract: contract.Ok["SharesContract"]}));
+
+                    //TODO console.log("Why this runs 3 times?");
+
+                }
+            })()
+        } else {
+            setData((pre: any) => {
+                return {...pre, rows: normalize_share_rows(contracts, initial_rows)}
+            })
+        }
+        ;
+    }, [current_file])
+
+
+    //  ---------- TODO Why this component renders 10 times -------- \\
     //// ----------------------- TODO ----------------------- \\\\
     //                            Hande add row correct for share
     //                            Sometimes it has two shares on contract, but one row on content,
@@ -81,7 +140,22 @@ export default function SharesContract(props: any) {
 
     function normalize_share_rows(CONTRACTS, ROWS: any): Array<Row> {
 
-        return CONTRACTS[table_content.id].shares.map((share)=>{
+        // chunk-GYWC62UC.js?v=73be606e:19409 Uncaught TypeError: Cannot read properties of undefined (reading 'shares')
+        //     at normalize_share_rows (shares_contract.tsx:84:44)
+        //     at SharesContract (shares_contract.tsx:230:15)
+        //     at renderWithHooks (chunk-GYWC62UC.js?v=73be606e:12171:26)
+        //     at mountIndeterminateComponent (chunk-GYWC62UC.js?v=73be606e:14921:21)
+        //     at beginWork (chunk-GYWC62UC.js?v=73be606e:15902:22)
+        //     at beginWork$1 (chunk-GYWC62UC.js?v=73be606e:19749:22)
+        //     at performUnitOfWork (chunk-GYWC62UC.js?v=73be606e:19197:20)
+        //     at workLoopSync (chunk-GYWC62UC.js?v=73be606e:19133:13)
+        //     at renderRootSync (chunk-GYWC62UC.js?v=73be606e:19112:15)
+        //     at recoverFromConcurrentError (chunk-GYWC62UC.js?v=73be606e:18732:28)
+        // normalize_share_rows	@	shares_contract.tsx:84
+        // SharesContract	@	shares_contract.tsx:230
+        // Show 12 more frames
+
+        return CONTRACTS[table_content.id].shares.map((share) => {
             let receiver = share && getUser(share.receiver.toString());
             return {
                 "accumulation": share && share.accumulation,
@@ -91,7 +165,8 @@ export default function SharesContract(props: any) {
                 "contract": [{"SharesContract": share.share_contract_id}],
                 "cells": [],
             }
-        })
+        });
+
         // return ROWS.map((row: any) => {
         //     let share_id: String = row.contract && row.contract[0] && row.contract[0]["SharesContract"];
         //     let share: Share = CONTRACTS[table_content.id] && CONTRACTS[table_content.id].shares.filter((item: Share) => item.share_contract_id == share_id)[0];
@@ -200,62 +275,8 @@ export default function SharesContract(props: any) {
 
     }
 
-    let custom_columns = columns.map((column: any) => {
-        let new_column = {...column}
-        switch (column.field.toLowerCase()) {
-            case "receiver":
-                new_column['renderEditCell'] = (props: any) => RenderReceiver({
-                    ...props,
-                    options: [...all_friends, profile]
-                })
-                return new_column
 
-            case "confirmed":
-                new_column['renderCell'] = (params: GridRenderCellParams<any, Date>) => {
-                    return <ShareConfirmButton
-                        contract={contracts[table_content.id]}
-                        share_contract_id={params.row.contract[0]["SharesContract"]}
-                    />
-                }
-
-                return new_column
-            default:
-                return new_column
-
-        }
-    })
-
-
-    let [data, setData]: any = useState({
-        rows: normalize_share_rows(contracts, initial_rows),
-        columns: custom_columns
-    });
-
-
-    useEffect(() => {
-
-
-        (async () => {
-            let current_page = window.location.pathname.split("/").pop();
-            if (current_page === "share") {
-
-                let contract: undefined | { Ok: StoredContract } | { Err: string } = actor && current_file && await actor.get_contract(current_file.author, table_content.id);
-
-                if (contract && "Ok" in contract) {
-                    let {Ok} = contract;
-                    // let {contract: {SharesContract}} = Ok;
-                    // let {rows} = SharesContract;
-                    let fetched_contracts = {}
-                    fetched_contracts[table_content.id] = Ok["SharesContract"];
-                    let normalized_rows = normalize_share_rows(fetched_contracts, initial_rows);
-                    setData((pre: any) => {
-                        return {...pre, rows: normalized_rows}
-                    })
-                }
-            }
-        })()
-    }, [current_file])
-    let {currentRequest, addRequestRow, handleClickReq, UpdatedContractFromRow} = useSharesRequests({
+    let {setRequest, currentRequest, addRequestRow, handleClickReq, UpdatedContractFromRow} = useSharesRequests({
         table_content,
         props,
         setView,
@@ -347,6 +368,7 @@ export default function SharesContract(props: any) {
                 // contract_id: contract.contract_id,
                 // payments: contract.payments,
                 "shares_requests": shares_requests,
+                "author": contracts[table_content.id].author,
                 shares: contracts[table_content.id].shares.map((item: Share) => {
                     if (item.share_contract_id === updated_share_id) {
                         return {
@@ -423,51 +445,43 @@ export default function SharesContract(props: any) {
                 // dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contract}));
                 break;
             case "Shares":
+
                 const new_share_id = randomString();
-                const new_share: Share = {
-                    share_contract_id: new_share_id,
-                    accumulation: 0n,
-                    confirmed: false,
-                    share: 0n,
-                    receiver: Principal.fromText(profile.id), // TODO fix this not anonymous
-                };
-                updated_contracts[table_content.id] = {
-                    ...contracts[table_content.id],
-                    shares: [...contracts[table_content.id].shares, new_share]
-                };
 
                 newRow = {
                     id: new_share_id,
                     contract: [{"SharesContract": new_share_id}],
                     cells: [],
-                    requests: [],
                 };
 
                 ///// ------- get the correct positioning --------- \\\
                 const rowIndex = props.children[0].data[0].Table.rows.findIndex((row) => row.id === rowId);
                 if (rowIndex === -1) {
-                    // Row not found, handle the error or return early
+                    console.error("Row not found, handle the error or return early");
                     return;
                 }
-                let step = before ? 0 : 1;
 
-                /// ------------------- \\\
-                let newTableRows = [...data.rows];
-                // // add the new row
-                newTableRows.splice(rowIndex + step, 0, newRow);
+                let step = before ? 0 : 1;
+                let new_table_rows = [...data.rows]
+                new_table_rows.splice(rowIndex + step, 0, newRow)
+                setData((pre) => {
+                    let new_rows = [...pre.rows];
+                    new_rows.splice(rowIndex + step, 0, newRow);
+                    return {...pre, rows: new_rows}
+                });
+
+                updated_contracts[table_content.id] = {
+                    ...contracts[table_content.id],
+                    shares: UpdatedContractFromRow(new_table_rows),
+                };
 
             function updateRows(newTable: Table) {
-                newTable.rows = newTableRows;
-                setData({
-                    ...data,
-                    rows: newTableRows
-                })
+                newTable.rows = new_table_rows;
                 return newTable;
             }
 
                 let content = files_content[current_file.id];
                 const newContent = updateTableContent(props, content, updateRows);
-
 
                 // in this case we are not adding a new contract we are just adding new share to the current contracts
                 // so there is no need to the following line
@@ -504,6 +518,7 @@ export default function SharesContract(props: any) {
                     columns: custom_columns
                 });
                 setView(e);
+                setRequest(null);
                 break;
             case "Payments":
                 setData({
@@ -522,6 +537,7 @@ export default function SharesContract(props: any) {
                     ]
                 });
                 setView(e);
+                setRequest(null);
                 break;
 
             case '+Request':
@@ -529,7 +545,7 @@ export default function SharesContract(props: any) {
                     'share_contract_id': randomString(),
                     'accumulation': 0n,
                     'share': 100n,
-                    'confirmed': false,
+                    'confirmed': true,
                     'receiver': Principal.fromText(profile.id),
                 };
                 let new_request: ShareRequest = {
@@ -576,12 +592,17 @@ export default function SharesContract(props: any) {
                     ]
                 });
                 setView(e);
+                setRequest(null);
                 break;
             default:
                 setView(e);
         }
 
     }
+
+    let render_shares_requests = contracts[table_content.id] && contracts[table_content.id].shares_requests && contracts[table_content.id].shares_requests.map((req: [string, ShareRequest]) => {
+        return {content: req[1] && req[1].id, Click: async () => handleClickReq(req[1])}
+    }) || [];
 
     return (
         <div contentEditable={false}
@@ -605,24 +626,22 @@ export default function SharesContract(props: any) {
                                 {content: "Shares", Click},
                                 {content: "Payment options", Click},
                                 {content: "Payments", Click},
-                                ...contracts[table_content.id].shares_requests.map((req: ShareRequest) => {
-                                    return {content: req[1] && req[1].id, Click: async () => handleClickReq(req[1])}
-                                }),
+                                ...render_shares_requests,
                                 {content: "+Request", Click}
                             ]}>{view}</BasicMenu>
                         <Button>Filter</Button>
-
                         {currentRequest && <ApproveButton
                             req={currentRequest}
-                            id={currentRequest && currentRequest.id}
                             contract={contracts[table_content.id]}/>}
 
-                        {currentRequest && <ApplyButton
+                        {currentRequest && current_page != 'share' && < ApplyButton
                             setData={setData}
                             props={props}
                             req={currentRequest}
                             id={currentRequest && currentRequest.id}
                             contract={contracts[table_content.id]}/>}
+
+                        {currentRequest && current_page == 'share' && <Button>Upload share request</Button>}
                         <PayButton contract={contracts[table_content.id]}/>
                     </ButtonGroup>
                 }}

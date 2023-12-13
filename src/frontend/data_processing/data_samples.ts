@@ -60,7 +60,7 @@ export let shares_contract = {
             "Table": {
                 "rows": [
                     {
-                        id: randomString(),
+                        id: first_share_id,
                         contract: [],
                         contract: [{"SharesContract": first_share_id}],
                         cells: [],
@@ -71,7 +71,7 @@ export let shares_contract = {
                     {...column, id: randomString(), field: "receiver"},
                     {...column, id: randomString(), field: "accumulation", editable: false},
                     {...column, id: randomString(), field: "share%",},
-                    {...column, id: randomString(), field: "confirmed", editable: false, },
+                    {...column, id: randomString(), field: "confirmed", editable: false,},
                 ]
             }
         }]
@@ -173,7 +173,6 @@ let share_sample: Share = {
     'confirmed': false,
     'share': BigInt(100),
     'receiver': Principal.fromText("2vxsx-fae"),
-    'contractor': [],
 }
 
 let payment_option: SharePaymentOption = {
@@ -193,7 +192,7 @@ export let shares_contract_sample: SharesContract = {
     'contract_id': shares_contract_id,
     'shares_requests': [],
     "payment_options": [payment_option],
-
+    "author": "2vxsx-fae",
 }
 
 export let contract_id_sample = {"Contract": {"PaymentContract": "18"}}

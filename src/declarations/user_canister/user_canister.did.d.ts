@@ -115,7 +115,10 @@ export interface InitialData {
 }
 export type NoteContent = { 'ContractUpdate' : ContractNotification } |
   { 'FriendRequest' : {} } |
+  { 'AcceptFriendRequest' : null } |
   { 'Unfriend' : null } |
+  { 'ShareRequestApplied' : SharesContract } |
+  { 'ShareRequestApproved' : SharesContract } |
   { 'SharePayment' : SharesContract };
 export interface Notification {
   'id' : string,
@@ -166,7 +169,6 @@ export interface Row {
   'id' : string,
   'contract' : [] | [Contract],
   'cells' : [] | [Array<[string, string]>],
-  'requests' : [] | [Contract],
 }
 export interface Share {
   'share_contract_id' : string,
@@ -196,6 +198,7 @@ export interface SharesContract {
   'shares' : Array<Share>,
   'payments' : Array<SharePayment>,
   'contract_id' : string,
+  'author' : string,
   'shares_requests' : Array<[string, ShareRequest]>,
 }
 export type StoredContract = { 'PaymentContract' : PaymentContract } |
@@ -225,10 +228,10 @@ export interface _SERVICE {
   'accept_friend_request' : ActorMethod<[string], Result>,
   'accept_payment' : ActorMethod<[string], Result_1>,
   'apply_request' : ActorMethod<[Array<string>, string], Result_1>,
-  'approve_request' : ActorMethod<[Array<string>, string], Result_1>,
+  'approve_request' : ActorMethod<[string, Array<string>, string], Result_1>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
   'cancel_payment' : ActorMethod<[string], Result_1>,
-  'conform_share' : ActorMethod<[string, string], Result_1>,
+  'conform_share' : ActorMethod<[string, string, string], Result_1>,
   'content_updates' : ActorMethod<[string, [] | [string], string], Result_2>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
   'create_payment_contract' : ActorMethod<[string], Result_1>,

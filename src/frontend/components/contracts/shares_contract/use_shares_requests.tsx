@@ -7,7 +7,6 @@ import {randomString} from "../../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
 import {handleRedux} from "../../../redux/main";
 import {RenderReceiver} from "../payment_contract/renderers";
-import {logger} from "../../../dev_utils/log_data";
 
 interface ShareReqRow {
     id: string,
@@ -41,8 +40,8 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
                 confirmed: share ? Boolean(share.confirmed) : false,
                 // TODO accumulation and confirmed should come from the contracts[table_content.id].shares_requests
                 share_contract_id: item.id,
-                share: BigInt(item.share),
-                receiver: Principal.fromText(receiver.id || "2vxsx-fae"),
+                share: BigInt(item['share%'] || item['share'] || 0),
+                receiver: Principal.fromText(receiver && receiver.id || "2vxsx-fae"),
             }
         });
     }
@@ -131,7 +130,7 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
         });
 
     };
-    return {handleClickReq, UpdatedContractFromRow, currentRequest, addRequestRow};
+    return {setRequest, handleClickReq, UpdatedContractFromRow, currentRequest, addRequestRow};
 }
 
 export default useSharesRequests;
