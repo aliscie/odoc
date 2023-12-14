@@ -125,12 +125,13 @@ type Result_2 = variant { Ok : text; Err : text };
 type Result_3 = variant { Ok : nat64; Err : text };
 type Result_4 = variant { Ok : StoredContract; Err : text };
 type Result_5 = variant { Ok : InitialData; Err : text };
-type Result_6 = variant {
+type Result_6 = variant { Ok : ShareFile; Err : text };
+type Result_7 = variant {
   Ok : record { FileNode; vec record { text; ContentNode } };
   Err : text;
 };
-type Result_7 = variant { Ok; Err };
-type Result_8 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
+type Result_8 = variant { Ok; Err };
+type Result_9 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
 type Row = record {
   id : text;
   contract : opt Contract;
@@ -143,6 +144,14 @@ type Share = record {
   confirmed : bool;
   receiver : principal;
 };
+type ShareFile = record {
+  id : text;
+  permission : ShareFilePermission;
+  owner : principal;
+  file : text;
+  users_permissions : vec record { principal; ShareFilePermission };
+};
+type ShareFilePermission = variant { CanComment; None; CanView; CanUpdate };
 type SharePayment = record { sender : principal; amount : nat64 };
 type SharePaymentOption = record {
   id : text;
@@ -217,8 +226,9 @@ service : () -> {
   get_friends : () -> (opt Friend) query;
   get_initial_data : () -> (Result_5) query;
   get_notifications : () -> (vec Notification) query;
-  get_shared_file : (text) -> (Result_6);
-  move_file : (text, opt text) -> (Result_7);
+  get_share_file : (text) -> (Result_6) query;
+  get_shared_file : (text) -> (Result_7) query;
+  move_file : (text, opt text) -> (Result_8);
   multi_updates : (
       vec FileNode,
       vec vec record { text; vec record { text; ContentNode } },
@@ -231,12 +241,12 @@ service : () -> {
   rename_file : (text, text) -> (bool);
   see_notifications : (text) -> ();
   send_friend_request : (text) -> (Result);
-  share_file : (text, text) -> (Result_2);
+  share_file : (ShareFile) -> (Result_6);
   unfriend : (text) -> (Result);
   update_user_profile : (RegisterUser) -> (Result);
   withdraw_usdt : (nat64) -> (Result_3);
   ws_close : (CanisterWsCloseArguments) -> (Result_1);
-  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_8) query;
+  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_9) query;
   ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_1);
   ws_open : (CanisterWsOpenArguments) -> (Result_1);
 }

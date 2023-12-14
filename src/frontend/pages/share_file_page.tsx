@@ -11,7 +11,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../redux/main";
 import {actor} from "../App";
 
-type FileQuery = undefined | { Ok: [FileNode, Array<[string, ContentNode]>] } | { Err: string };
+export type FileQuery = undefined | { Ok: [FileNode, Array<[string, ContentNode]>] } | { Err: string };
 
 function ShareFilePage(props: any) {
     let url = window.location.search;

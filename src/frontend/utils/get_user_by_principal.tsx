@@ -6,9 +6,9 @@ function useGetUser() {
     // console.log({all_friends})
     let users = all_friends && [...all_friends, profile];
 
-    function getUser(userId: string): String | null {
+    function getUser(userId: string): User | null {
         const friend = users.find((f) => f.id == userId.toString())
-        return friend ? friend.name : null;
+        return friend ? friend : null;
     }
 
     // make a function that get return the user principal by getting name as input

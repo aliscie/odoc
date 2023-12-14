@@ -96,9 +96,11 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
         // let share_req = contracts[table_content.id].shares_requests.find((item: [string, ShareRequest]) => item[0] === req.id);
         setData({
             rows: req.shares.map((share: Share) => {
+                let receiver: any = getUser(share.receiver.toString());
+                receiver = receiver ? receiver.name : ""
                 let row: ShareReqRow = {
                     id: share.share_contract_id,
-                    receiver: getUser(share.receiver.toString()) || "",
+                    receiver,
                     share: share.share,
                     // approve: currentRequest ? (Principal.fromText(profile.id).toString() in currentRequest.approvals) : false,
                 }

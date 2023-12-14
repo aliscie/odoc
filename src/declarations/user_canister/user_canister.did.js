@@ -196,11 +196,27 @@ export const idlFactory = ({ IDL }) => {
     'sender' : IDL.Principal,
     'receiver' : IDL.Principal,
   });
-  const Result_6 = IDL.Variant({
+  const ShareFilePermission = IDL.Variant({
+    'CanComment' : IDL.Null,
+    'None' : IDL.Null,
+    'CanView' : IDL.Null,
+    'CanUpdate' : IDL.Null,
+  });
+  const ShareFile = IDL.Record({
+    'id' : IDL.Text,
+    'permission' : ShareFilePermission,
+    'owner' : IDL.Principal,
+    'file' : IDL.Text,
+    'users_permissions' : IDL.Vec(
+      IDL.Tuple(IDL.Principal, ShareFilePermission)
+    ),
+  });
+  const Result_6 = IDL.Variant({ 'Ok' : ShareFile, 'Err' : IDL.Text });
+  const Result_7 = IDL.Variant({
     'Ok' : IDL.Tuple(FileNode, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode))),
     'Err' : IDL.Text,
   });
-  const Result_7 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
+  const Result_8 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
   const RegisterUser = IDL.Record({
     'name' : IDL.Opt(IDL.Text),
     'description' : IDL.Opt(IDL.Text),
@@ -223,7 +239,7 @@ export const idlFactory = ({ IDL }) => {
     'tree' : IDL.Vec(IDL.Nat8),
     'is_end_of_queue' : IDL.Bool,
   });
-  const Result_8 = IDL.Variant({
+  const Result_9 = IDL.Variant({
     'Ok' : CanisterOutputCertifiedMessages,
     'Err' : IDL.Text,
   });
@@ -296,8 +312,9 @@ export const idlFactory = ({ IDL }) => {
     'get_friends' : IDL.Func([], [IDL.Opt(Friend)], ['query']),
     'get_initial_data' : IDL.Func([], [Result_5], ['query']),
     'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
-    'get_shared_file' : IDL.Func([IDL.Text], [Result_6], []),
-    'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_7], []),
+    'get_share_file' : IDL.Func([IDL.Text], [Result_6], ['query']),
+    'get_shared_file' : IDL.Func([IDL.Text], [Result_7], ['query']),
+    'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_8], []),
     'multi_updates' : IDL.Func(
         [
           IDL.Vec(FileNode),
@@ -318,14 +335,14 @@ export const idlFactory = ({ IDL }) => {
     'rename_file' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'see_notifications' : IDL.Func([IDL.Text], [], []),
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
-    'share_file' : IDL.Func([IDL.Text, IDL.Text], [Result_2], []),
+    'share_file' : IDL.Func([ShareFile], [Result_6], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
     'withdraw_usdt' : IDL.Func([IDL.Nat64], [Result_3], []),
     'ws_close' : IDL.Func([CanisterWsCloseArguments], [Result_1], []),
     'ws_get_messages' : IDL.Func(
         [CanisterWsGetMessagesArguments],
-        [Result_8],
+        [Result_9],
         ['query'],
       ),
     'ws_message' : IDL.Func(

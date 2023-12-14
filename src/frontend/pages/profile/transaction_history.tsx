@@ -81,8 +81,8 @@ export function ContractItem(props: any) {
         <ListItemText
             primaryTypographyProps={{style: {}}}
             secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
-            primary={`Sender: ${sender}`}
-            secondary={`Receiver: ${receiver}, Amount: ${props.amount} USDTs`}
+            primary={`Sender: ${sender && sender.name}`}
+            secondary={`Receiver: ${receiver && receiver.name}, Amount: ${props.amount} USDTs`}
         />
         {props.canceled && is_receiver && <Report/>}
     </ListItem>
@@ -105,7 +105,7 @@ function TransactionHistory(props: any) {
         <List dense
         >
             {props.items.map((item: any, index: number) => {
-                return <ContractItem {...item} id={index} sender={item.from} receiver={item.to} />
+                return <ContractItem {...item} id={index} sender={item.from} receiver={item.to}/>
             })}
         </List>
     );

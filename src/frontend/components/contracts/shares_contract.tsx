@@ -160,7 +160,7 @@ export default function SharesContract(props: any) {
             return {
                 "accumulation": share && share.accumulation,
                 "share%": share && share.share,
-                "receiver": receiver ? receiver : "",
+                "receiver": receiver ? receiver.name : "",
                 "id": share.share_contract_id,
                 "contract": [{"SharesContract": share.share_contract_id}],
                 "cells": [],
@@ -523,9 +523,11 @@ export default function SharesContract(props: any) {
             case "Payments":
                 setData({
                     rows: contracts[table_content.id].payments.map((payment: SharePayment) => {
+                        let sender: any = getUser(payment.sender.toString());
+                        sender = sender ? sender.name : ""
                         let row = {
                             id: randomString(),
-                            sender: getUser(payment.sender.toString()),
+                            sender,
                             amountUSDC: payment.amount,
                         }
                         return row

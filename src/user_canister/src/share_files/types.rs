@@ -19,6 +19,7 @@ pub enum ShareFilePermission {
 
 #[derive(PartialEq, Clone, Debug, Deserialize, CandidType)]
 pub struct ShareFile {
+    pub id: String,
     pub file: FileId,
     pub owner: Principal,
     pub permission: ShareFilePermission,
@@ -29,39 +30,40 @@ pub struct ShareFile {
 }
 
 impl ShareFile {
-    pub fn new(file_id: FileId, share_id: String) -> Result<String, String> {
-        let file = FileNode::get_file(&file_id).ok_or("No such file with this id.")?;
-
-        let share_file = ShareFile {
-            file: file.id,
-            owner: caller(),
-            permission: ShareFilePermission::CanUpdate,
-            users_permissions: Default::default(),
-        };
-
-        let _shared_file = FILES_SHARE_STORE.with(|files_share_store| {
-            let mut files_share_store = files_share_store.borrow_mut();
-            if let Some(share_file) = files_share_store.get(&share_id) {
-                Some(share_file.clone())
-            } else {
-                let share_id = share_id.clone();
-                files_share_store.insert(share_id, share_file.clone());
-                Some(share_file)
-            }
-        });
-
-        let new_file = FileNode {
-            id: file_id.clone(),
-            parent: file.parent.clone(),
-            name: file.name.clone(),
-            children: file.children.clone(),
-            share_id: Some(share_id.clone()),
-            author: file.author,
-        };
-        new_file.save()?;
-
-        Ok(share_id)
-    }
+    // pub fn new(file_id: FileId, share_id: String) -> Result<String, String> {
+    //     let file = FileNode::get_file(&file_id).ok_or("No such file with this id.")?;
+    //
+    //     let share_file = ShareFile {
+    //         id: share_id.clone(),
+    //         file: file.id,
+    //         owner: caller(),
+    //         permission: ShareFilePermission::CanUpdate,
+    //         users_permissions: Default::default(),
+    //     };
+    //
+    //     let _shared_file = FILES_SHARE_STORE.with(|files_share_store| {
+    //         let mut files_share_store = files_share_store.borrow_mut();
+    //         if let Some(share_file) = files_share_store.get(&share_id) {
+    //             Some(share_file.clone())
+    //         } else {
+    //             let share_id = share_id.clone();
+    //             files_share_store.insert(share_id, share_file.clone());
+    //             Some(share_file)
+    //         }
+    //     });
+    //
+    //     let new_file = FileNode {
+    //         id: file_id.clone(),
+    //         parent: file.parent.clone(),
+    //         name: file.name.clone(),
+    //         children: file.children.clone(),
+    //         share_id: Some(share_id.clone()),
+    //         author: file.author,
+    //     };
+    //     new_file.save()?;
+    //
+    //     Ok(share_id)
+    // }
     pub fn get(share_id: &String) -> Result<Self, String> {
         FILES_SHARE_STORE.with(|files_share_store| {
             let files_share_store = files_share_store.borrow();
@@ -73,9 +75,6 @@ impl ShareFile {
         })
     }
     pub fn check_permission(&self, permission: ShareFilePermission) -> bool {
-        if self.permission == ShareFilePermission::None {
-            return false;
-        }
         if self.permission == ShareFilePermission::CanUpdate {
             return true;
         }
@@ -100,7 +99,23 @@ impl ShareFile {
                 return true;
             }
         }
+
+        if self.permission == ShareFilePermission::None {
+            return false;
+        }
+
         false
+    }
+
+    pub fn save(&self) -> Result<Self, String> {
+        if caller().to_string() != self.owner.to_string() {
+            return Err("Only owner can make a file public.".to_string());
+        };
+        FILES_SHARE_STORE.with(|files_share_store| {
+            let mut files_share_store = files_share_store.borrow_mut();
+            files_share_store.insert(self.id.clone(), self.clone());
+            Ok(self.clone())
+        })
     }
 
     pub fn get_file(share_id: &String) -> Result<(FileNode, ContentTree), String> {

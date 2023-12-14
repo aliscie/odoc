@@ -68,7 +68,7 @@ export default function PaymentContract(props: any) {
                     ...contract,
                     ...extra_cells,
                     id: row.id,
-                    receiver: receiver && receiver,
+                    receiver: receiver && receiver.name,
                 }
             } else {
                 return null

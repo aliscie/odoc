@@ -159,11 +159,13 @@ export type Result_4 = { 'Ok' : StoredContract } |
   { 'Err' : string };
 export type Result_5 = { 'Ok' : InitialData } |
   { 'Err' : string };
-export type Result_6 = { 'Ok' : [FileNode, Array<[string, ContentNode]>] } |
+export type Result_6 = { 'Ok' : ShareFile } |
   { 'Err' : string };
-export type Result_7 = { 'Ok' : null } |
+export type Result_7 = { 'Ok' : [FileNode, Array<[string, ContentNode]>] } |
+  { 'Err' : string };
+export type Result_8 = { 'Ok' : null } |
   { 'Err' : null };
-export type Result_8 = { 'Ok' : CanisterOutputCertifiedMessages } |
+export type Result_9 = { 'Ok' : CanisterOutputCertifiedMessages } |
   { 'Err' : string };
 export interface Row {
   'id' : string,
@@ -177,6 +179,17 @@ export interface Share {
   'confirmed' : boolean,
   'receiver' : Principal,
 }
+export interface ShareFile {
+  'id' : string,
+  'permission' : ShareFilePermission,
+  'owner' : Principal,
+  'file' : string,
+  'users_permissions' : Array<[Principal, ShareFilePermission]>,
+}
+export type ShareFilePermission = { 'CanComment' : null } |
+  { 'None' : null } |
+  { 'CanView' : null } |
+  { 'CanUpdate' : null };
 export interface SharePayment { 'sender' : Principal, 'amount' : bigint }
 export interface SharePaymentOption {
   'id' : string,
@@ -254,8 +267,9 @@ export interface _SERVICE {
   'get_friends' : ActorMethod<[], [] | [Friend]>,
   'get_initial_data' : ActorMethod<[], Result_5>,
   'get_notifications' : ActorMethod<[], Array<Notification>>,
-  'get_shared_file' : ActorMethod<[string], Result_6>,
-  'move_file' : ActorMethod<[string, [] | [string]], Result_7>,
+  'get_share_file' : ActorMethod<[string], Result_6>,
+  'get_shared_file' : ActorMethod<[string], Result_7>,
+  'move_file' : ActorMethod<[string, [] | [string]], Result_8>,
   'multi_updates' : ActorMethod<
     [
       Array<FileNode>,
@@ -271,12 +285,12 @@ export interface _SERVICE {
   'rename_file' : ActorMethod<[string, string], boolean>,
   'see_notifications' : ActorMethod<[string], undefined>,
   'send_friend_request' : ActorMethod<[string], Result>,
-  'share_file' : ActorMethod<[string, string], Result_2>,
+  'share_file' : ActorMethod<[ShareFile], Result_6>,
   'unfriend' : ActorMethod<[string], Result>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
   'withdraw_usdt' : ActorMethod<[bigint], Result_3>,
   'ws_close' : ActorMethod<[CanisterWsCloseArguments], Result_1>,
-  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_8>,
+  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_9>,
   'ws_message' : ActorMethod<
     [CanisterWsMessageArguments, [] | [AppMessage]],
     Result_1

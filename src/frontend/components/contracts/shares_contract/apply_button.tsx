@@ -7,10 +7,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {Share, SharesContract} from "../../../../declarations/user_canister/user_canister.did";
 import {handleRedux} from "../../../redux/main";
 import {useSnackbar} from "notistack";
-import useGetUser from "../../../utils/get_user_by_principal";
 
 function ApplyButton({setData, props, req, id, contract}: any) {
-    let {getUser, getUserByName} = useGetUser();
     // let {} = useSharesRequests()
     const dispatch = useDispatch();
 

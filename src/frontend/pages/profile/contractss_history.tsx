@@ -77,8 +77,8 @@ export function ContractItem(props: any) {
         <ListItemText
             primaryTypographyProps={{style: {}}}
             secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
-            primary={`Sender: ${sender}`}
-            secondary={`Receiver: ${receiver}, Amount: ${props.amount} USDTs`}
+            primary={`Sender: ${sender && sender.name}`}
+            secondary={`Receiver: ${receiver && receiver.name}, Amount: ${props.amount} USDTs`}
         />
         {!props.released && is_sender &&
             <Tooltip title={"Click here to release contract"}><Button>Release</Button></Tooltip>}
