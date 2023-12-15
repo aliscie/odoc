@@ -5,6 +5,7 @@ import {useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
 import {convertToBytes} from "../../data_processing/image_to_vec";
 import {actor} from "../../App";
+import {RegisterUser} from "../../../declarations/user_canister/user_canister.did";
 
 const inputs = [
     {id: "username", label: "Username", type: "text", required: true},
@@ -26,6 +27,7 @@ function RegistrationForm() {
         setFormValues((prevValues) => ({...prevValues, [id]: value}));
     };
     var photo = [];
+
     async function handleUploadPhoto(e: any) {
         let image = e.target.files[0];
         let imageByteData = await convertToBytes(image);
@@ -37,11 +39,12 @@ function RegistrationForm() {
 
         let loader_message = <span>Creating agreement... <span className={"loader"}/></span>;
         let loading = enqueueSnackbar(loader_message, {variant: "info"});
-        let register = await actor.register({
-            name: [formValues.username],
+        let input: RegisterUser = {
+            name: [formValues.username || ""],
             description: [formValues.bio],
             photo: [photo]
-        });
+        };
+        let register = actor && await actor.register(input);
         closeSnackbar(loading)
 
         if (register.Ok) {
