@@ -359,6 +359,11 @@ export default function SharesContract(props: any) {
             }
 
             // ------------------ Update Contract ------------------ \\
+
+
+            // if (Object.keys(newRow).toString() === "accumulation,share%,receiver,id,contract,cells") {
+            // }
+
             let updated_share_id = newRow.contract && newRow.contract[0] && newRow.contract[0]["SharesContract"];
             let receiver_name: string = newRow["receiver"];
             let receiver: User | null = getUserByName(receiver_name);
@@ -396,8 +401,20 @@ export default function SharesContract(props: any) {
             //                                 "contract_id": item.contract_id,
             //                             }
             //                         };
+
+
             dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contract}));
             dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contract}));
+            setData((pre) => {
+                let new_rows = [...pre.rows];
+                new_rows = new_rows.map((row: Row) => {
+                    if (row.id === oldRow.id) {
+                        return {...row, ...newRow}
+                    }
+                    return row
+                });
+                return {...pre, rows: new_rows}
+            })
             // revoke_message();
 
             return Promise.resolve(newRow);
