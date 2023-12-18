@@ -48,34 +48,34 @@ thread_local! {
     static NOTIFICATIONS: RefCell<UserNotifications> = RefCell::default();
 }
 
-// #[cfg(test)]
-// mod tests {
-//     // use std::borrow::Cow;
-//     // use std::collections::HashMap;
-//     // use std::env;
-//     // use std::fs::{create_dir_all, write};
-//     // use std::path::PathBuf;
-//     //
-//     // use candid::Principal;
-//     // use candid::{
-//     //     candid_method, CandidType, Deserialize,
-//     //     // IDLProg,
-//     //     TypeEnv,
-//     // };
-//     // use ic_cdk::{api, update};
-//     // use ic_websocket_cdk::{CanisterWsCloseArguments, CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments, CanisterWsOpenResult, ClientPrincipal, WsHandlers, WsInitParams};
-//     // use serde::de::Unexpected::Str;
-//     // use crate::files::FileNode;
-//     // use crate::queries::InitialData;
-//     // use crate::user::{RegisterUser, User};
-//     //
-//     use super::*;
-//
-//     #[test]
-//     fn save_candid_2() {
-//         // println!("-------- Wrote to {:?}", dir);
-//         // println!("-------- res {:?}", canister_name);
-//     }
-// }
+#[cfg(test)]
+mod tests {
+    // use std::borrow::Cow;
+    // use std::collections::HashMap;
+    // use std::env;
+    // use std::fs::{create_dir_all, write};
+    // use std::path::PathBuf;
+    //
+    // use candid::Principal;
+    // use candid::{
+    //     candid_method, CandidType, Deserialize,
+    //     // IDLProg,
+    //     TypeEnv,
+    // };
+    // use ic_cdk::{api, update};
+    // use ic_websocket_cdk::{CanisterWsCloseArguments, CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments, CanisterWsOpenResult, ClientPrincipal, WsHandlers, WsInitParams};
+    // use serde::de::Unexpected::Str;
+    // use crate::files::FileNode;
+    // use crate::queries::InitialData;
+    // use crate::user::{RegisterUser, User};
+    //
+    use super::*;
+
+    #[test]
+    fn save_candid_2() {
+        // println!("-------- Wrote to {:?}", dir);
+        // println!("-------- res {:?}", canister_name);
+    }
+}
 
 ic_cdk_macros::export_candid!();

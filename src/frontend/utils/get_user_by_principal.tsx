@@ -7,7 +7,7 @@ function useGetUser() {
     let users = all_friends && [...all_friends, profile];
 
     function getUser(userId: string): User | null {
-        const friend = users.find((f) => f.id == userId.toString())
+        const friend = users && users.find((f) => f.id == userId.toString())
         return friend ? friend : null;
     }
 

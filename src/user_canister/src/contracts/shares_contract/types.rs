@@ -141,6 +141,15 @@ impl SharesContract {
     }
 
     pub fn save(&self) -> Result<(), String> {
+        let mut contractors = vec![];
+        for share in &self.shares {
+            contractors.push(share.receiver);
+        }
+
+        if caller().to_string() != self.clone().author && !contractors.contains(&caller()) {
+            return Err("Only the author or the contractors can save the contract".to_string());
+        }
+
         if !self.clone().is_valid_shares() {
             let ms: String = format!("{:?} Shares does not sum to 100% ", self.clone().contract_id);
             return Err(ms);

@@ -33,7 +33,6 @@ export function Notifications() {
         let content = Object.keys(notification.content)[0];
         let sender: any = getUser(notification.sender);
         sender = sender ? sender.name : ""
-        // logger({content})
         switch (content) {
             case "FriendRequest":
                 return `${sender} sent you a friend request`;

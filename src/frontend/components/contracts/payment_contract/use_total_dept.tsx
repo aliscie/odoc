@@ -5,7 +5,7 @@ export function useTotalDept() {
 
     const {contracts, profile, wallet} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    let balance = Number(wallet.balance) || 0;
+    let balance = wallet && Number(wallet.balance) || 0;
 
     let revoke_message = () => {
         let total_dept = 0;

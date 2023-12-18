@@ -1,6 +1,6 @@
 import {useDispatch, useSelector} from "react-redux";
 import * as React from "react";
-import {useEffect} from "react";
+import {useCallback} from "react";
 import {handleRedux} from "../redux/main";
 import {payment_contract_sample, shares_contract_sample} from "../data_processing/data_samples";
 import {FileNode} from "../../declarations/user_canister/user_canister.did";
@@ -8,12 +8,21 @@ import EditorComponent from "../components/editor_components/main";
 import {Typography} from "@mui/material";
 
 
+const debounce = (func: Function, delay: number) => {
+    let timeoutId: NodeJS.Timeout;
+
+    return (...args: any[]) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func(...args);
+        }, delay);
+    };
+};
+
+
 function FileContentPage(props: any) {
 
     const {current_file, files_content, profile} = useSelector((state: any) => state.filesReducer);
-
-
-    let [title, setTitle] = React.useState(current_file.name);
 
 
     const dispatch = useDispatch();
@@ -26,25 +35,10 @@ function FileContentPage(props: any) {
         }
     }
 
-    // const history = useHistory();
-
-
     const editorKey = current_file.name || ""; // Provide a key based on current_file.name
-    let handleTitleKeyDown = (e: any) => {
-        setTitle(e.target.innerText);
-        // history.push(e.target.innerText.replace(""));
-    };
-    let preventEnter = (e: any) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            e.target.blur();
-        }
 
-    };
-
-    useEffect(() => {
-        let timeout = setTimeout(() => {
-
+    const handleInputChange = useCallback(
+        debounce((title: string) => {
             if (title !== current_file.name) {
                 let file: FileNode = {
                     ...current_file,
@@ -56,9 +50,22 @@ function FileContentPage(props: any) {
                 dispatch(handleRedux("UPDATE_FILE_TITLE", {id: current_file.id, title: title}));
                 dispatch(handleRedux("FILE_CHANGES", {changes: file}));
             }
-        }, 250);
-        return () => clearTimeout(timeout);
-    }, [title])
+        }, 250),
+        []
+    );
+
+
+    let handleTitleKeyDown = (e: any) => {
+        let title = e.target.innerText;
+        handleInputChange(title);
+    };
+    let preventEnter = (e: any) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            e.target.blur();
+        }
+
+    };
 
 
     function handleOnInsertComponent(e: any, component: any) {
@@ -84,7 +91,7 @@ function FileContentPage(props: any) {
 
     if (current_file.id != null) {
         let content = files_content[current_file.id];
-
+        let title = `${current_file.name || "Untitled"}`;
 
         return (
             <div style={{marginTop: "3px", marginLeft: "10%", marginRight: "10%"}}>
@@ -93,7 +100,7 @@ function FileContentPage(props: any) {
                     variant="h3"
                     onKeyDown={preventEnter}
                     onKeyUp={handleTitleKeyDown}
-                    contentEditable={true}>{current_file.name}</Typography>
+                    contentEditable={true}>{title}</Typography>
                 <EditorComponent
                     handleOnInsertComponent={handleOnInsertComponent}
                     onChange={onChange}

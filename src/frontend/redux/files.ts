@@ -69,6 +69,7 @@ function getCurrentFile(data: any) {
 export async function get_initial_data() {
     let isLoggedIn = await agent.is_logged() // TODO avoid repetition `isLoggedIn` is already used in ui.ts
     let data = actor && await actor.get_initial_data();
+
     initialState["Anonymous"] = data.Err == "Anonymous user." && isLoggedIn;
     initialState["isLoggedIn"] = data.Err != "Anonymous user." && isLoggedIn
 
@@ -181,7 +182,11 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             }
 
         case 'UPDATE_CONTRACT':
-            state.contracts[action.contract.contract_id] = {...state.contracts[action.contract.contract_id], ...action.contract}
+            let original_contract = {}
+            try {
+                original_contract = state.contracts[action.contract.contract_id];
+            } catch (e) {}
+            state.contracts[action.contract.contract_id] = {...original_contract, ...action.contract}
             return {
                 ...state,
             }

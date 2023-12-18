@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use ic_cdk::caller;
 use ic_cdk_macros::update;
 
 use crate::{PaymentContract, SharesContract, StoredContract};
@@ -46,19 +45,7 @@ fn multi_updates(
     let mut messages = "".to_string();
     // Update file names and parents or create
     for file in files {
-        if file.author == caller().to_string() {
-            file.save()?;
-            // FileNode::update_or_create(file);
-        } else if let Some(file_id) = file.clone().share_id {
-            // ---------------- Checking file permissions ---------------- \\
-            // let share_file = ShareFile::get_file(file_id);
-            // if let Ok((_file_node, _content_tree)) = share_file {} else {
-            //     messages.push_str(&format!("Error getting share file: {}", share_file.unwrap_err()));
-            // }
-            file.save()?;
-        } else {
-            return Err("You don't have permissions to update this file.".to_string());
-        }
+        file.save()?;
     }
 
 

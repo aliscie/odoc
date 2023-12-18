@@ -16,6 +16,18 @@ pub enum ShareFilePermission {
     CanComment,
 }
 
+impl ShareFilePermission {
+    pub fn check(&self, permission: ShareFilePermission) -> bool {
+        match (self, permission) {
+            (ShareFilePermission::None, _) => false,
+            (ShareFilePermission::CanUpdate, _) => true,
+            (ShareFilePermission::CanComment, ShareFilePermission::CanComment) => true,
+            (ShareFilePermission::CanComment, ShareFilePermission::CanView) => true,
+            (ShareFilePermission::CanView, ShareFilePermission::CanView) => true,
+            _ => false,
+        }
+    }
+}
 
 #[derive(PartialEq, Clone, Debug, Deserialize, CandidType)]
 pub struct ShareFile {
@@ -74,38 +86,20 @@ impl ShareFile {
             }
         })
     }
+
     pub fn check_permission(&self, permission: ShareFilePermission) -> bool {
-        if self.permission == ShareFilePermission::CanUpdate {
+        if self.permission.check(permission.clone()) {
             return true;
-        }
-        if self.permission == ShareFilePermission::CanView && permission == ShareFilePermission::CanView {
-            return true;
-        }
-        if self.permission == ShareFilePermission::CanComment && (permission == ShareFilePermission::CanView || permission == ShareFilePermission::CanComment) {
-            return true;
-        }
-        // check if caller has permissions
-        if let Some(user_permission) = self.users_permissions.get(&caller()) {
-            if *user_permission == ShareFilePermission::None {
-                return false;
-            }
-            if *user_permission == ShareFilePermission::CanUpdate {
-                return true;
-            }
-            if *user_permission == ShareFilePermission::CanView && permission == ShareFilePermission::CanView {
-                return true;
-            }
-            if *user_permission == ShareFilePermission::CanComment && (permission == ShareFilePermission::CanView || permission == ShareFilePermission::CanComment) {
-                return true;
-            }
         }
 
-        if self.permission == ShareFilePermission::None {
-            return false;
+        // check if caller has permissions
+        if let Some(user_permission) = self.users_permissions.get(&caller()) {
+            return user_permission.check(permission);
         }
 
         false
     }
+
 
     pub fn save(&self) -> Result<Self, String> {
         if caller().to_string() != self.owner.to_string() {
@@ -140,11 +134,7 @@ impl ShareFile {
             let file_contents = file_contents.borrow();
 
             if let Some(file_map) = file_contents.get(&shared_file.owner) {
-                if let Some(content_tree) = file_map.get(&shared_file.file) {
-                    Some(content_tree.clone())
-                } else {
-                    None
-                }
+                file_map.get(&shared_file.file).cloned()
             } else {
                 None
             }

@@ -36,6 +36,6 @@ export function EditorRenderer(props: any) {
     return (<Tag
         style={{margin: 0}}
         {...props}
-        placeholder={"Enter somthing or hit @ for mentions or / for inserting components"}
+        placeholder={"Enter something or hit @ for mentions or / for inserting components"}
         {...attributes}>{children}</Tag>)
 }

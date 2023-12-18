@@ -26,8 +26,10 @@ export function ContractItem(props: any) {
         </Tooltip>
     }
 
-    let receiver = props.receiver && getUser(props.receiver.toString());
-    let sender = props.sender && getUser(props.sender.toString());
+    let receiver: any = props.receiver && getUser(props.receiver.toString());
+    let sender: any = props.sender && getUser(props.sender.toString());
+    sender = sender ? sender.name : "Unknown";
+    receiver = receiver ? receiver.name : "Unknown";
 
     let canceled_style = {
         textDecoration: 'line-through',
@@ -40,7 +42,7 @@ export function ContractItem(props: any) {
 
     async function handleDelete() {
         let loader = enqueueSnackbar(<>Deleting...<span className="loader"/></>);
-        let res = await actor.delete_payment(props.id)
+        let res = actor && await actor.delete_payment(props.id)
         closeSnackbar(loader);
         if ('Ok' in res) {
             enqueueSnackbar("Deleted successfully", {variant: "success"});
@@ -77,8 +79,8 @@ export function ContractItem(props: any) {
         <ListItemText
             primaryTypographyProps={{style: {}}}
             secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
-            primary={`Sender: ${sender && sender.name}`}
-            secondary={`Receiver: ${receiver && receiver.name}, Amount: ${props.amount} USDTs`}
+            primary={`Sender: ${sender}`}
+            secondary={`Receiver: ${receiver}, Amount: ${props.amount} USDTs`}
         />
         {!props.released && is_sender &&
             <Tooltip title={"Click here to release contract"}><Button>Release</Button></Tooltip>}

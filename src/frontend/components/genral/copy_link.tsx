@@ -74,13 +74,11 @@ let Dialog = (props: any) => {
     useEffect(() => {
         (async () => {
             let res: undefined | { Ok: ShareFile } | { Err: string } = actor && await actor.get_share_file(current_file.id)
-            logger({res})
             if ("Ok" in res) {
                 setShareFile(res.Ok)
 
                 setMultiOptionsValue(res.Ok.users_permissions.map((user_permission: [Principal, ShareFilePermission]) => {
                     let user: any = getUser(user_permission[0].toText());
-                    logger({user})
                     let name = user ? user.name : "";
                     let id = user ? user.id : "";
                     let perm = " " + Object.keys(user_permission[1])[0];
@@ -106,7 +104,6 @@ let Dialog = (props: any) => {
                     if (value) {
                         let permission: any = {};
                         permission[value] = null;
-                        logger({value})
                         setShareFile({...share_file, permission})
                     }
                 }}

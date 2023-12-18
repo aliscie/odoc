@@ -37,6 +37,7 @@ import ShareConfirmButton from "./shares_contract/conforim_button";
 import useSharesRequests from "./shares_contract/use_shares_requests";
 import ApproveButton from "./shares_contract/approve_button";
 import ApplyButton from "./shares_contract/apply_button";
+import {logger} from "../../dev_utils/log_data";
 
 // export type SharesContractViews = "Payments" | "Shares" | "SharesRequests" | "PaymentOptions";
 
@@ -602,7 +603,7 @@ export default function SharesContract(props: any) {
 
     }
 
-    let render_shares_requests = contracts[table_content.id] && contracts[table_content.id].shares_requests && contracts[table_content.id].shares_requests.map((req: [string, ShareRequest]) => {
+    let render_shares_requests = contracts && contracts[table_content.id] && contracts[table_content.id].shares_requests && contracts[table_content.id].shares_requests.map((req: [string, ShareRequest]) => {
         return {content: req[1] && req[1].id, Click: async () => handleClickReq(req[1])}
     }) || [];
 

@@ -109,12 +109,12 @@ export default function ProfileComponent() {
                             </ListItem>
                         );
                     })}
-                    <ListItem>
+                    {profileData.changed && <ListItem>
                         <LoaderButton
-                            disabled={!profileData.changed}
+                            color={'success'}
                             successMessage={"Profile saved"} onClick={handleSaveChanges}>
                             Save changes</LoaderButton>
-                    </ListItem>
+                    </ListItem>}
                 </List>
             )}
 
