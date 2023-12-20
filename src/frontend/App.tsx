@@ -63,6 +63,10 @@ function App() {
                     // check if the key is `FriendRequest` or ContractUpdate in event.data.notification[0].content[key]
                     let keys = event.data.notification[0] && Object.keys(event.data.notification[0].content);
 
+                    if (!keys) {
+                        return
+                    }
+
                     if (keys.toString().includes("FriendRequest")) {
                         // TODO this does not seams to update live.
                         let new_friends = actor && await actor.get_friends();

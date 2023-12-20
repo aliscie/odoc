@@ -2,26 +2,31 @@ import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import * as React from "react";
+import {useEffect} from "react";
 import {Button, Tooltip, Typography} from "@mui/material";
-import {Principal} from "@dfinity/principal";
-import DeleteIcon from "@mui/icons-material/Delete";
-import DialogOver from "../../components/genral/daiolog_over";
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import ConfirmButton from "../../components/contracts/payment_contract/confirm_button";
-import CancelButton from "../../components/contracts/payment_contract/cancel_button";
 import useGetUser from "../../utils/get_user_by_principal";
-import {logger} from "../../dev_utils/log_data";
 import {actor} from "../../App";
-
+import {logger} from "../../dev_utils/log_data";
 
 export function ContractItem(props: any) {
+    const {profile} = useSelector((state: any) => state.filesReducer);
+    const [users, setUsers] = React.useState<any>({sender: "Null", receiver: "Null"})
+    useEffect(() => {
+        (async () => {
+            let receiver = await getUser(props.receiver.toString());
+            let sender = await getUser(props.sender.toString());
+            setUsers({
+                sender: sender ? sender.name : "Null", receiver: receiver ? receiver.name : "Null"
+            })
+        })();
+    }, [props.receiver, props.sender]);
+
     let {getUser} = useGetUser();
 
-    const {profile} = useSelector((state: any) => state.filesReducer);
+
     let Report = () => {
         return <Tooltip
             title={"Reporting the cancellation of this contract means you are tinging that the cancellation is mnot fair"}>
@@ -29,8 +34,6 @@ export function ContractItem(props: any) {
         </Tooltip>
     }
 
-    let receiver = getUser(props.receiver.toString());
-    let sender = getUser(props.sender.toString());
 
     let canceled_style = {
         textDecoration: 'line-through',
@@ -81,26 +84,14 @@ export function ContractItem(props: any) {
         <ListItemText
             primaryTypographyProps={{style: {}}}
             secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
-            primary={`Sender: ${sender && sender.name}`}
-            secondary={`Receiver: ${receiver && receiver.name}, Amount: ${props.amount} USDTs`}
+            primary={`Sender: ${users.sender}`}
+            secondary={`Receiver: ${users.receiver}, Amount: ${props.amount} USDTs`}
         />
         {props.canceled && is_receiver && <Report/>}
     </ListItem>
 }
 
 function TransactionHistory(props: any) {
-    const {profile, friends, contracts} = useSelector((state: any) => state.filesReducer);
-    let x = [
-        {
-            "to": "dzkul-tmusx-sms3w-yidq6-nn66u-4pikv-twz2h-yguim-g5suo-qrhmm-nae",
-            "_type": {"Deposit": null},
-            "date": "",
-            "from": "",
-            "amount": "100"
-        }
-    ];
-
-
     return (
         <List dense
         >

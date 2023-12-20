@@ -100,7 +100,7 @@ function useColumnManager(props: any) {
         const newColumn: Column = {
             id,
             _type: column_type,
-            field: `column${columns.length + 1}`,
+            field: `column${columns && (columns.length + 1)}`,
             filters: [],
             permissions: [],
             dataValidator: [],

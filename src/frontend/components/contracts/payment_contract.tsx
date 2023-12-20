@@ -269,7 +269,10 @@ export default function PaymentContract(props: any) {
     return (
         <div
             contentEditable={false}
-            style={{maxHeight: "25%", maxWidth: '100%'}}
+            style={{
+                // maxHeight: "25%",
+                maxWidth: '70%'
+        }}
         >
             {dialog}
             <StyledDataGrid

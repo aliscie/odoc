@@ -2,30 +2,43 @@ import * as React from "react";
 import {Button, Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import {closeSnackbar, enqueueSnackbar, useSnackbar} from "notistack";
+import {closeSnackbar, enqueueSnackbar} from "notistack";
 import {actor} from "../../../App";
-import {logger} from "../../../dev_utils/log_data";
 import {Share, SharesContract} from "../../../../declarations/user_canister/user_canister.did";
 
 interface Props {
-    share_contract_id: string,
+    share: Share,
     contract: SharesContract,
-    author: String,
 }
 
 function ShareConfirmButton(props: Props) {
-    let share: Share = props.contract.shares.find((share) => share.share_contract_id === props.share_contract_id);
 
     //  ------------- TODO why this render too many times ---------------- \\
     //                 console.log("Render ShareConfirmButton")
     // const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    const [is_confirmed, setConform] = React.useState(share && share.confirmed);
+    const [is_confirmed, setConform] = React.useState(props.share && props.share.confirmed);
+
     const handleConfirm = async () => {
         let loader = enqueueSnackbar(<>Confirming...<span className="loader"/></>);
-        let res = actor && await actor.conform_share(props.author, props.share_contract_id, props.contract.contract_id)
+        let res = actor && props.share && await actor.conform_share(props.contract.author, props.share.share_contract_id, props.contract.contract_id)
         closeSnackbar(loader);
         if ('Ok' in res) {
             enqueueSnackbar("Confirmed successfully", {variant: "success"});
+            // let updated_contract: SharesContract = {
+            //     ...props.contract,
+            //     shares: props.contract.shares.map((share) => {
+            //         if (share.share_contract_id === props.share_contract_id) {
+            //             return {
+            //                 ...share,
+            //                 confirmed: true
+            //             }
+            //         } else {
+            //             return share
+            //         }
+            //
+            //     })
+            // }
+            // dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contract}));
             setConform(true)
         } else {
             enqueueSnackbar(res.Err, {variant: "error"});

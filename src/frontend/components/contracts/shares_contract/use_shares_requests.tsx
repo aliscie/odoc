@@ -28,13 +28,12 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
     } = useSelector((state: any) => state.filesReducer);
     let updated_contracts = {...contracts};
 
-    function UpdatedContractFromRow(new_rows): Array<Share> {
-        let request = currentRequest && contracts[table_content.id].shares_requests.find((item: [string, ShareRequest]) => item[0] === currentRequest.id);
+    function UpdatedContractFromRow(new_rows, shares: Array<Share>): Array<Share> {
 
         return new_rows.map((item: ShareReqRow) => {
             let receiver = getUserByName(item.receiver);
             // find share.share_contract_id == item.id
-            let share = request && request[1].shares.find((share: Share) => share.share_contract_id === item.id);
+            let share = shares.find((share: Share) => share.share_contract_id === item.id);
             return {
                 accumulation: share ? BigInt(share.accumulation) : 0n,
                 confirmed: share ? Boolean(share.confirmed) : false,
@@ -65,7 +64,7 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
             if (share_request[0] === currentRequest.id) {
                 return [share_request[1].id, {
                     ...share_request[1],
-                    shares: UpdatedContractFromRow(new_rows)
+                    shares: UpdatedContractFromRow(new_rows, share_request[1].shares)
                 }]
             }
             return share_request;
@@ -87,7 +86,7 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
 
     }
 
-    let handleClickReq = (req: ShareRequest) => {
+    let handleClickReq = async (req: ShareRequest) => {
 
         setRequest(req);
         setView(req.id)
@@ -95,8 +94,8 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
         let editable = req.requester.toString() == profile.id;
         // let share_req = contracts[table_content.id].shares_requests.find((item: [string, ShareRequest]) => item[0] === req.id);
         setData({
-            rows: req.shares.map((share: Share) => {
-                let receiver: any = getUser(share.receiver.toString());
+            rows: req.shares.map(async (share: Share) => {
+                let receiver: any = await getUser(share.receiver.toString());
                 receiver = receiver ? receiver.name : ""
                 let row: ShareReqRow = {
                     id: share.share_contract_id,

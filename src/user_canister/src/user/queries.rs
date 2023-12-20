@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-
+use candid::Principal;
+use candid::types::principal::PrincipalError;
 
 
 use ic_cdk_macros::query;
@@ -67,3 +68,27 @@ fn get_all_users() -> HashMap<String, User> {
             .collect()
     })
 }
+
+
+#[query]
+fn get_user(usd_id: String) -> Result<User, String> {
+    let user: Result<Principal, PrincipalError> = Principal::from_text(usd_id);
+
+    if user.is_err() {
+        return Err("Invalid principal.".to_string());
+    };
+
+    let user: Option<User> = PROFILE_STORE.with(|profile_store| {
+        profile_store
+            .borrow()
+            .get(&user.unwrap())
+            .cloned()
+    });
+
+    if let Some(user) = user {
+        return Ok(user);
+    }
+    Err("User not found.".to_string())
+}
+
+

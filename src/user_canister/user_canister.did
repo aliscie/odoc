@@ -203,7 +203,7 @@ type WebsocketMessage = record {
 service : () -> {
   accept_friend_request : (text) -> (Result);
   accept_payment : (text) -> (Result_1);
-  apply_request : (vec text, text) -> (Result_1);
+  apply_request : (vec text, text, text) -> (Result_1);
   approve_request : (text, vec text, text) -> (Result_1);
   cancel_friend_request : (text) -> (Result);
   cancel_payment : (text) -> (Result_1);
@@ -228,6 +228,7 @@ service : () -> {
   get_notifications : () -> (vec Notification) query;
   get_share_file : (text) -> (Result_6) query;
   get_shared_file : (text) -> (Result_7) query;
+  get_user : (text) -> (Result) query;
   move_file : (text, opt text) -> (Result_8);
   multi_updates : (
       vec FileNode,
@@ -235,7 +236,7 @@ service : () -> {
       vec StoredContract,
       vec text,
     ) -> (Result_2);
-  pay_for_share_contract : (text, nat64) -> (Result_1);
+  pay_for_share_contract : (text, nat64, text) -> (Result_1);
   register : (RegisterUser) -> (Result);
   release_payment : (text) -> (Result_1);
   rename_file : (text, text) -> (bool);

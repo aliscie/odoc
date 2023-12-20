@@ -2,19 +2,23 @@ import * as React from "react";
 import {useState} from "react";
 import {Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
-import {SharePaymentOption} from "../../../../declarations/user_canister/user_canister.did";
+import {SharePaymentOption, SharesContract} from "../../../../declarations/user_canister/user_canister.did";
 import {actor} from "../../../App";
 import {LoadingButton} from "@mui/lab";
 import {useSnackbar} from "notistack";
 
-function PayButton({contract}: { SharesContract }) {
+interface Props {
+    contract: SharesContract
+}
+
+function PayButton({contract}: Props) {
     const [loading, setLoading] = useState(false);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     // const dispatch = useDispatch();
 
     const handlePay = async (option: any) => {
         setLoading(true);
-        let payment_res = actor && await actor.pay_for_share_contract(contract.contract_id, option.amount);
+        let payment_res = actor && await actor.pay_for_share_contract(contract.contract_id, option.amount, contract.author);
         if ("Err" in payment_res) {
             enqueueSnackbar("Payment failed, " + payment_res.Err, {variant: "error"});
         }

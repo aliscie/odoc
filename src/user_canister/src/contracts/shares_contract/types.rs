@@ -232,11 +232,11 @@ impl SharesContract {
         Ok(())
     }
 
-    pub fn get(contract_id: ContractId) -> Result<SharesContract, String> {
+    pub fn get(contract_id: ContractId, author: Principal) -> Result<SharesContract, String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let caller_contracts = contracts_store.borrow();
             let caller_contract = caller_contracts
-                .get(&caller())
+                .get(&author)
                 .ok_or("Caller has no contracts")?;
             let contract = caller_contract
                 .get(&contract_id) // Use payment.contract_id as the key
@@ -518,10 +518,11 @@ impl SharesContract {
 
 
     pub fn pay(&mut self, amount: u64) -> Result<(), String> {
+        let author: Principal = self.author.parse().unwrap();
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contract = caller_contracts
-                .entry(caller())
+                .entry(author)
                 .or_insert_with(HashMap::new);
 
 

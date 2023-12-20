@@ -240,7 +240,7 @@ export interface WebsocketMessage {
 export interface _SERVICE {
   'accept_friend_request' : ActorMethod<[string], Result>,
   'accept_payment' : ActorMethod<[string], Result_1>,
-  'apply_request' : ActorMethod<[Array<string>, string], Result_1>,
+  'apply_request' : ActorMethod<[Array<string>, string, string], Result_1>,
   'approve_request' : ActorMethod<[string, Array<string>, string], Result_1>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
   'cancel_payment' : ActorMethod<[string], Result_1>,
@@ -269,6 +269,7 @@ export interface _SERVICE {
   'get_notifications' : ActorMethod<[], Array<Notification>>,
   'get_share_file' : ActorMethod<[string], Result_6>,
   'get_shared_file' : ActorMethod<[string], Result_7>,
+  'get_user' : ActorMethod<[string], Result>,
   'move_file' : ActorMethod<[string, [] | [string]], Result_8>,
   'multi_updates' : ActorMethod<
     [
@@ -279,7 +280,7 @@ export interface _SERVICE {
     ],
     Result_2
   >,
-  'pay_for_share_contract' : ActorMethod<[string, bigint], Result_1>,
+  'pay_for_share_contract' : ActorMethod<[string, bigint, string], Result_1>,
   'register' : ActorMethod<[RegisterUser], Result>,
   'release_payment' : ActorMethod<[string], Result_1>,
   'rename_file' : ActorMethod<[string, string], boolean>,

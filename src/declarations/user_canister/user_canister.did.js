@@ -263,7 +263,11 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     'accept_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'accept_payment' : IDL.Func([IDL.Text], [Result_1], []),
-    'apply_request' : IDL.Func([IDL.Vec(IDL.Text), IDL.Text], [Result_1], []),
+    'apply_request' : IDL.Func(
+        [IDL.Vec(IDL.Text), IDL.Text, IDL.Text],
+        [Result_1],
+        [],
+      ),
     'approve_request' : IDL.Func(
         [IDL.Text, IDL.Vec(IDL.Text), IDL.Text],
         [Result_1],
@@ -314,6 +318,7 @@ export const idlFactory = ({ IDL }) => {
     'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
     'get_share_file' : IDL.Func([IDL.Text], [Result_6], ['query']),
     'get_shared_file' : IDL.Func([IDL.Text], [Result_7], ['query']),
+    'get_user' : IDL.Func([IDL.Text], [Result], ['query']),
     'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_8], []),
     'multi_updates' : IDL.Func(
         [
@@ -329,7 +334,11 @@ export const idlFactory = ({ IDL }) => {
         [Result_2],
         [],
       ),
-    'pay_for_share_contract' : IDL.Func([IDL.Text, IDL.Nat64], [Result_1], []),
+    'pay_for_share_contract' : IDL.Func(
+        [IDL.Text, IDL.Nat64, IDL.Text],
+        [Result_1],
+        [],
+      ),
     'register' : IDL.Func([RegisterUser], [Result], []),
     'release_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'rename_file' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),

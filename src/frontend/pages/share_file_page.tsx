@@ -34,13 +34,14 @@ function ShareFilePage(props: any) {
 
                 closeSnackbar(loading);
 
-                if (res.Ok) {
+                if ("Ok" in res) {
                     let file: FileNode = res.Ok[0]
                     let content_tree: Array<[string, ContentNode]> = res.Ok[1]
                     let normalized_tree: Array<SlateNode> = normalize_content_tree(content_tree);
                     setFile(file);
                     setState(normalized_tree)
                     dispatch(handleRedux("CURRENT_FILE", {file}));
+                    dispatch(handleRedux("ADD_CONTENT", {id: file.id, content: normalized_tree}))
                 } else {
                     enqueueSnackbar(`Error: ${res.Err}`, {variant: "error"});
                 }

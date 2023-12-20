@@ -1,7 +1,7 @@
 use std::sync::atomic::Ordering;
 
 use candid::Principal;
-use ic_cdk::{call, caller};
+use ic_cdk::caller;
 use ic_cdk_macros::update;
 
 use crate::{ExchangeType, Share, SharesContract, Wallet, websocket};
@@ -29,20 +29,22 @@ fn create_share_contract(shares: Vec<Share>) -> Result<String, String> {
 
 
 #[update]
-fn pay_for_share_contract(contract_id: ContractId, amount: u64) -> Result<(), String> {
+fn pay_for_share_contract(contract_id: ContractId, amount: u64, author: String) -> Result<(), String> {
     // TODO fix this issue too much cloning
-
-    let mut contract: SharesContract = SharesContract::get(contract_id)?;
+    let author: Principal = author.parse().unwrap();
+    let mut contract: SharesContract = SharesContract::get(contract_id, author)?;
     let mut wallet = Wallet::get(caller());
+    let from = caller().to_string();
+    let to = author.to_string();
 
-    wallet.withdraw(amount.clone(), "".to_string(), ExchangeType::LocalSend)?;
+    wallet.withdraw(amount.clone(), to, ExchangeType::LocalSend)?;
 
     contract.pay(amount.clone())?;
 
     for share in contract.clone().shares.iter() {
         let share_value = amount.clone() * (share.clone().share / 100);
         let mut wallet = Wallet::get(share.receiver.clone());
-        wallet.deposit(share_value, "".to_string(), ExchangeType::LocalReceive)?;
+        wallet.deposit(share_value, from.clone(), ExchangeType::LocalReceive)?;
 
         let new_notification = Notification {
             id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
@@ -93,8 +95,9 @@ fn approve_request(author: String, share_requests_id: Vec<ShareContractId>, cont
 }
 
 #[update]
-fn apply_request(share_requests_id: Vec<ShareContractId>, contract_id: ContractId) -> Result<(), String> {
-    let mut contract = SharesContract::get(contract_id)?;
+fn apply_request(share_requests_id: Vec<ShareContractId>, contract_id: ContractId, author: String) -> Result<(), String> {
+    let author: Principal = author.parse().unwrap();
+    let mut contract = SharesContract::get(contract_id, author)?;
     for request in share_requests_id {
         contract.apply_request(request)?;
     }
