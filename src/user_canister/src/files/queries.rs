@@ -16,5 +16,5 @@ fn get_all_files() -> Option<HashMap<FileId, FileNode>> {
 #[query]
 fn get_file(file_id: FileId) -> Option<FileNode> {
     // let principal_id = ic_cdk::api::caller();
-    FileNode::get_file(&file_id)
+    FileNode::get(&file_id)
 }

@@ -21,7 +21,7 @@ import MultiAutoComplete from "../genral/multi_autocompelte";
 export function OptionItem(props: any) {
     return (
         <Tooltip {...props} title={props.title}>
-            <IconButton color={"inherit"}>
+            <IconButton color={"secondary"}>
                 {props.icon}
             </IconButton>
         </Tooltip>
@@ -29,12 +29,22 @@ export function OptionItem(props: any) {
 }
 
 
-const options = [
-    <OptionItem title={"Case sensitive"} icon={<AbcIcon/>}/>,
-    <OptionItem title={"Search in current file"} icon={<FindInPageIcon/>}/>,
-    <OptionItem title={"Search in the Discover"} icon={<TravelExploreIcon/>}/>,
-    <OptionItem title={"Search with AI"} icon={<AutoFixHighIcon/>}/>,
-    <OptionItem title={"Search using regular expression"} icon={<AcUnitIcon/>}/>,
+const search_options = [
+    {
+        title: <OptionItem title={"Case sensitive"} icon={<AbcIcon/>}/>
+    },
+    {
+        title: <OptionItem title={"Search in current file"} icon={<FindInPageIcon/>}/>
+    },
+    {
+        title: <OptionItem title={"Search in the Discover"} icon={<TravelExploreIcon/>}/>
+    },
+    {
+        title: <OptionItem title={"Search with AI"} icon={<AutoFixHighIcon/>}/>
+    },
+    {
+        title: <OptionItem title={"Search using regular expression"} icon={<AcUnitIcon/>}/>
+    },
 ];
 
 export default function SearchPopper() {
@@ -111,7 +121,7 @@ export default function SearchPopper() {
                                 </IconButton>
 
                                 <Box flex={1} display="flex" alignItems="center">
-                                    <MultiAutoComplete options={options} multiple={true}/>
+                                    <MultiAutoComplete options={search_options} multiple={true}/>
                                 </Box>
 
                                 <TextField
@@ -122,7 +132,7 @@ export default function SearchPopper() {
                                     id={'search_field'}
                                     autoFocus={true}
                                     placeholder="Enter text"
-                                    sx={{minWidth: "50px"}} // Adjust the width of the search field here
+                                    sx={{minWidth: "300px"}} // Adjust the width of the search field here
                                 />
 
                                 <Box display="flex" alignItems="center">

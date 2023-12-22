@@ -98,7 +98,7 @@ impl FileNode {
     }
 
 
-    pub fn get_file(file_id: &FileId) -> Option<Self> {
+    pub fn get(file_id: &FileId) -> Option<Self> {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();
 

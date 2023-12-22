@@ -142,6 +142,16 @@ export const idlFactory = ({ IDL }) => {
     'SharesContract' : SharesContract,
   });
   const Result_4 = IDL.Variant({ 'Ok' : StoredContract, 'Err' : IDL.Text });
+  const UserPost = IDL.Record({ 'id' : IDL.Text, 'name' : IDL.Text });
+  const PostUser = IDL.Record({
+    'id' : IDL.Text,
+    'creator' : UserPost,
+    'date_created' : IDL.Nat64,
+    'votes_up' : IDL.Vec(IDL.Principal),
+    'tags' : IDL.Vec(IDL.Text),
+    'content_tree' : IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)),
+    'votes_down' : IDL.Vec(IDL.Principal),
+  });
   const Friend = IDL.Record({
     'friend_requests' : IDL.Vec(User),
     'friends' : IDL.Vec(User),
@@ -196,6 +206,16 @@ export const idlFactory = ({ IDL }) => {
     'sender' : IDL.Principal,
     'receiver' : IDL.Principal,
   });
+  const Post = IDL.Record({
+    'id' : IDL.Text,
+    'creator' : IDL.Text,
+    'date_created' : IDL.Nat64,
+    'votes_up' : IDL.Vec(IDL.Principal),
+    'tags' : IDL.Vec(IDL.Text),
+    'content_tree' : IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)),
+    'votes_down' : IDL.Vec(IDL.Principal),
+  });
+  const Result_6 = IDL.Variant({ 'Ok' : Post, 'Err' : IDL.Text });
   const ShareFilePermission = IDL.Variant({
     'CanComment' : IDL.Null,
     'None' : IDL.Null,
@@ -211,12 +231,12 @@ export const idlFactory = ({ IDL }) => {
       IDL.Tuple(IDL.Principal, ShareFilePermission)
     ),
   });
-  const Result_6 = IDL.Variant({ 'Ok' : ShareFile, 'Err' : IDL.Text });
-  const Result_7 = IDL.Variant({
+  const Result_7 = IDL.Variant({ 'Ok' : ShareFile, 'Err' : IDL.Text });
+  const Result_8 = IDL.Variant({
     'Ok' : IDL.Tuple(FileNode, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode))),
     'Err' : IDL.Text,
   });
-  const Result_8 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
+  const Result_9 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
   const RegisterUser = IDL.Record({
     'name' : IDL.Opt(IDL.Text),
     'description' : IDL.Opt(IDL.Text),
@@ -239,7 +259,7 @@ export const idlFactory = ({ IDL }) => {
     'tree' : IDL.Vec(IDL.Nat8),
     'is_end_of_queue' : IDL.Bool,
   });
-  const Result_9 = IDL.Variant({
+  const Result_10 = IDL.Variant({
     'Ok' : CanisterOutputCertifiedMessages,
     'Err' : IDL.Text,
   });
@@ -286,6 +306,7 @@ export const idlFactory = ({ IDL }) => {
     'create_share_contract' : IDL.Func([IDL.Vec(Share)], [Result_2], []),
     'delete_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], []),
     'delete_payment' : IDL.Func([IDL.Text], [Result_1], []),
+    'delete_post' : IDL.Func([IDL.Text], [Result_1], []),
     'deposit_usdt' : IDL.Func([IDL.Nat64], [Result_3], []),
     'get_all_files' : IDL.Func(
         [],
@@ -313,13 +334,24 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)))],
         ['query'],
       ),
+    'get_filtered_posts' : IDL.Func(
+        [IDL.Opt(IDL.Vec(IDL.Text)), IDL.Opt(IDL.Text)],
+        [IDL.Vec(PostUser)],
+        ['query'],
+      ),
     'get_friends' : IDL.Func([], [IDL.Opt(Friend)], ['query']),
     'get_initial_data' : IDL.Func([], [Result_5], ['query']),
     'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
-    'get_share_file' : IDL.Func([IDL.Text], [Result_6], ['query']),
-    'get_shared_file' : IDL.Func([IDL.Text], [Result_7], ['query']),
+    'get_post' : IDL.Func([IDL.Text], [Result_6], ['query']),
+    'get_posts' : IDL.Func(
+        [IDL.Nat64, IDL.Nat64],
+        [IDL.Vec(PostUser)],
+        ['query'],
+      ),
+    'get_share_file' : IDL.Func([IDL.Text], [Result_7], ['query']),
+    'get_shared_file' : IDL.Func([IDL.Text], [Result_8], ['query']),
     'get_user' : IDL.Func([IDL.Text], [Result], ['query']),
-    'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_8], []),
+    'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_9], []),
     'multi_updates' : IDL.Func(
         [
           IDL.Vec(FileNode),
@@ -342,16 +374,27 @@ export const idlFactory = ({ IDL }) => {
     'register' : IDL.Func([RegisterUser], [Result], []),
     'release_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'rename_file' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
+    'save_post' : IDL.Func([Post], [Result_1], []),
+    'search_files_content' : IDL.Func(
+        [IDL.Text, IDL.Bool],
+        [
+          IDL.Vec(
+            IDL.Tuple(IDL.Text, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)))
+          ),
+        ],
+        ['query'],
+      ),
+    'search_posts' : IDL.Func([IDL.Text], [IDL.Vec(PostUser)], ['query']),
     'see_notifications' : IDL.Func([IDL.Text], [], []),
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
-    'share_file' : IDL.Func([ShareFile], [Result_6], []),
+    'share_file' : IDL.Func([ShareFile], [Result_7], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
     'withdraw_usdt' : IDL.Func([IDL.Nat64], [Result_3], []),
     'ws_close' : IDL.Func([CanisterWsCloseArguments], [Result_1], []),
     'ws_get_messages' : IDL.Func(
         [CanisterWsGetMessagesArguments],
-        [Result_9],
+        [Result_10],
         ['query'],
       ),
     'ws_message' : IDL.Func(

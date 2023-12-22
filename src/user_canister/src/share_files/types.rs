@@ -43,7 +43,7 @@ pub struct ShareFile {
 
 impl ShareFile {
     // pub fn new(file_id: FileId, share_id: String) -> Result<String, String> {
-    //     let file = FileNode::get_file(&file_id).ok_or("No such file with this id.")?;
+    //     let file = FileNode::get(&file_id).ok_or("No such file with this id.")?;
     //
     //     let share_file = ShareFile {
     //         id: share_id.clone(),

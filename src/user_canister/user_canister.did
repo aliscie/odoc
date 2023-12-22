@@ -114,6 +114,24 @@ type PaymentContract = record {
   receiver : principal;
 };
 type PermissionType = variant { CanRead; CanUpdate };
+type Post = record {
+  id : text;
+  creator : text;
+  date_created : nat64;
+  votes_up : vec principal;
+  tags : vec text;
+  content_tree : vec record { text; ContentNode };
+  votes_down : vec principal;
+};
+type PostUser = record {
+  id : text;
+  creator : UserPost;
+  date_created : nat64;
+  votes_up : vec principal;
+  tags : vec text;
+  content_tree : vec record { text; ContentNode };
+  votes_down : vec principal;
+};
 type RegisterUser = record {
   name : opt text;
   description : opt text;
@@ -121,17 +139,18 @@ type RegisterUser = record {
 };
 type Result = variant { Ok : User; Err : text };
 type Result_1 = variant { Ok; Err : text };
+type Result_10 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
 type Result_2 = variant { Ok : text; Err : text };
 type Result_3 = variant { Ok : nat64; Err : text };
 type Result_4 = variant { Ok : StoredContract; Err : text };
 type Result_5 = variant { Ok : InitialData; Err : text };
-type Result_6 = variant { Ok : ShareFile; Err : text };
-type Result_7 = variant {
+type Result_6 = variant { Ok : Post; Err : text };
+type Result_7 = variant { Ok : ShareFile; Err : text };
+type Result_8 = variant {
   Ok : record { FileNode; vec record { text; ContentNode } };
   Err : text;
 };
-type Result_8 = variant { Ok; Err };
-type Result_9 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
+type Result_9 = variant { Ok; Err };
 type Row = record {
   id : text;
   contract : opt Contract;
@@ -188,6 +207,7 @@ type User = record {
   description : text;
   photo : vec nat8;
 };
+type UserPost = record { id : text; name : text };
 type Wallet = record {
   balance : nat64;
   owner : text;
@@ -214,6 +234,7 @@ service : () -> {
   create_share_contract : (vec Share) -> (Result_2);
   delete_file : (text) -> (opt FileNode);
   delete_payment : (text) -> (Result_1);
+  delete_post : (text) -> (Result_1);
   deposit_usdt : (nat64) -> (Result_3);
   get_all_files : () -> (opt vec record { text; FileNode }) query;
   get_all_files_content : () -> (
@@ -223,13 +244,16 @@ service : () -> {
   get_contract : (text, text) -> (Result_4) query;
   get_file : (text) -> (opt FileNode) query;
   get_file_content : (text) -> (opt vec record { text; ContentNode }) query;
+  get_filtered_posts : (opt vec text, opt text) -> (vec PostUser) query;
   get_friends : () -> (opt Friend) query;
   get_initial_data : () -> (Result_5) query;
   get_notifications : () -> (vec Notification) query;
-  get_share_file : (text) -> (Result_6) query;
-  get_shared_file : (text) -> (Result_7) query;
+  get_post : (text) -> (Result_6) query;
+  get_posts : (nat64, nat64) -> (vec PostUser) query;
+  get_share_file : (text) -> (Result_7) query;
+  get_shared_file : (text) -> (Result_8) query;
   get_user : (text) -> (Result) query;
-  move_file : (text, opt text) -> (Result_8);
+  move_file : (text, opt text) -> (Result_9);
   multi_updates : (
       vec FileNode,
       vec vec record { text; vec record { text; ContentNode } },
@@ -240,14 +264,19 @@ service : () -> {
   register : (RegisterUser) -> (Result);
   release_payment : (text) -> (Result_1);
   rename_file : (text, text) -> (bool);
+  save_post : (Post) -> (Result_1);
+  search_files_content : (text, bool) -> (
+      vec record { text; vec record { text; ContentNode } },
+    ) query;
+  search_posts : (text) -> (vec PostUser) query;
   see_notifications : (text) -> ();
   send_friend_request : (text) -> (Result);
-  share_file : (ShareFile) -> (Result_6);
+  share_file : (ShareFile) -> (Result_7);
   unfriend : (text) -> (Result);
   update_user_profile : (RegisterUser) -> (Result);
   withdraw_usdt : (nat64) -> (Result_3);
   ws_close : (CanisterWsCloseArguments) -> (Result_1);
-  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_9) query;
+  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_10) query;
   ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_1);
   ws_open : (CanisterWsOpenArguments) -> (Result_1);
 }

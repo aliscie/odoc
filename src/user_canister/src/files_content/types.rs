@@ -120,7 +120,7 @@ impl ContentNode {
         FILE_CONTENTS.with(|file_contents| {
             let mut contents = file_contents.borrow_mut();
             // get author from file
-            let author: Principal = FileNode::get_file(&file_id).unwrap().author.parse().unwrap();
+            let author: Principal = FileNode::get(&file_id).unwrap().author.parse().unwrap();
             let file_contents_map = contents.entry(author).or_default();
             let file_content_tree: &mut ContentTree = file_contents_map.entry(file_id).or_default();
             *file_content_tree = content_nodes;

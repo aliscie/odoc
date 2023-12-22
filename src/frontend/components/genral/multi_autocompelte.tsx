@@ -100,7 +100,6 @@ const StyledTag = styled(Tag)<TagProps>(
 
 const Listbox = styled('ul')(
     ({theme}) => `
-  width: 300px;
   margin: 2px 0 0;
   padding: 0;
   position: absolute;
@@ -120,9 +119,9 @@ const Listbox = styled('ul')(
       flex-grow: 1;
     }
 
-    & svg {
-      color: transparent;
-    }
+//     & .CheckIcon {
+//     color: transparent;
+// }
   }
 
   & li[aria-selected='true'] {
@@ -133,15 +132,15 @@ const Listbox = styled('ul')(
       color: #1890ff;
     }
   }
-
+  
   & li.${autocompleteClasses.focused} {
     background-color: var(--background-color);
     cursor: pointer;
-
     & svg {
       color: currentColor;
     }
   }
+  
 `,
 );
 
@@ -190,7 +189,7 @@ export default function MultiAutoComplete(props: any) {
                     {(groupedOptions as typeof top100Films).map((option, index) => (
                         <li {...getOptionProps({option, index})}>
                             <span>{option.title}</span>
-                            <CheckIcon fontSize="small"/>
+                            {/*<CheckIcon  fontSize="small"/>*/}
                         </li>
                     ))}
                 </Listbox>

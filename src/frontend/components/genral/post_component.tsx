@@ -7,9 +7,6 @@ import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
 import IconButton, {IconButtonProps} from '@mui/material/IconButton';
 
-import {User} from "../../../declarations/user_canister/user_canister.did";
-import AvatarChips from "./person_chip";
-
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
 }

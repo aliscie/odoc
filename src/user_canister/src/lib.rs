@@ -24,6 +24,8 @@ mod share_files;
 mod wallet;
 // mod timer;
 mod websocket;
+mod discover;
+
 use user::*;
 use files::*;
 use files_content::*;
@@ -35,6 +37,7 @@ use queries::*;
 use updates::*;
 use ic_websocket_cdk::*;
 use websocket::*;
+use discover::*;
 
 thread_local! {
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
@@ -46,6 +49,7 @@ thread_local! {
     static FILES_SHARE_STORE: RefCell<FilesShareStore> = RefCell::default();
     static WALLETS_STORE: RefCell<WalletStore> = RefCell::default();
     static NOTIFICATIONS: RefCell<UserNotifications> = RefCell::default();
+    static POSTS: RefCell<PostsStore> = RefCell::default();
 }
 
 #[cfg(test)]

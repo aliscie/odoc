@@ -9,7 +9,7 @@ use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId};
 
 #[update]
 fn content_updates(file_id: FileId, content_parent_id: Option<ContentId>, new_text: String) -> Result<String, String> {
-    if FileNode::get_file(&file_id).is_none() {
+    if FileNode::get(&file_id).is_none() {
         return Err("No such file with this id.".to_string());
     }
     let parent_id: ContentId = match content_parent_id {

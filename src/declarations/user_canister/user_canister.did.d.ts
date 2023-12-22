@@ -142,6 +142,24 @@ export interface PaymentContract {
 }
 export type PermissionType = { 'CanRead' : null } |
   { 'CanUpdate' : null };
+export interface Post {
+  'id' : string,
+  'creator' : string,
+  'date_created' : bigint,
+  'votes_up' : Array<Principal>,
+  'tags' : Array<string>,
+  'content_tree' : Array<[string, ContentNode]>,
+  'votes_down' : Array<Principal>,
+}
+export interface PostUser {
+  'id' : string,
+  'creator' : UserPost,
+  'date_created' : bigint,
+  'votes_up' : Array<Principal>,
+  'tags' : Array<string>,
+  'content_tree' : Array<[string, ContentNode]>,
+  'votes_down' : Array<Principal>,
+}
 export interface RegisterUser {
   'name' : [] | [string],
   'description' : [] | [string],
@@ -151,6 +169,8 @@ export type Result = { 'Ok' : User } |
   { 'Err' : string };
 export type Result_1 = { 'Ok' : null } |
   { 'Err' : string };
+export type Result_10 = { 'Ok' : CanisterOutputCertifiedMessages } |
+  { 'Err' : string };
 export type Result_2 = { 'Ok' : string } |
   { 'Err' : string };
 export type Result_3 = { 'Ok' : bigint } |
@@ -159,14 +179,14 @@ export type Result_4 = { 'Ok' : StoredContract } |
   { 'Err' : string };
 export type Result_5 = { 'Ok' : InitialData } |
   { 'Err' : string };
-export type Result_6 = { 'Ok' : ShareFile } |
+export type Result_6 = { 'Ok' : Post } |
   { 'Err' : string };
-export type Result_7 = { 'Ok' : [FileNode, Array<[string, ContentNode]>] } |
+export type Result_7 = { 'Ok' : ShareFile } |
   { 'Err' : string };
-export type Result_8 = { 'Ok' : null } |
+export type Result_8 = { 'Ok' : [FileNode, Array<[string, ContentNode]>] } |
+  { 'Err' : string };
+export type Result_9 = { 'Ok' : null } |
   { 'Err' : null };
-export type Result_9 = { 'Ok' : CanisterOutputCertifiedMessages } |
-  { 'Err' : string };
 export interface Row {
   'id' : string,
   'contract' : [] | [Contract],
@@ -225,6 +245,7 @@ export interface User {
   'description' : string,
   'photo' : Uint8Array | number[],
 }
+export interface UserPost { 'id' : string, 'name' : string }
 export interface Wallet {
   'balance' : bigint,
   'owner' : string,
@@ -251,6 +272,7 @@ export interface _SERVICE {
   'create_share_contract' : ActorMethod<[Array<Share>], Result_2>,
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
   'delete_payment' : ActorMethod<[string], Result_1>,
+  'delete_post' : ActorMethod<[string], Result_1>,
   'deposit_usdt' : ActorMethod<[bigint], Result_3>,
   'get_all_files' : ActorMethod<[], [] | [Array<[string, FileNode]>]>,
   'get_all_files_content' : ActorMethod<
@@ -264,13 +286,19 @@ export interface _SERVICE {
     [string],
     [] | [Array<[string, ContentNode]>]
   >,
+  'get_filtered_posts' : ActorMethod<
+    [[] | [Array<string>], [] | [string]],
+    Array<PostUser>
+  >,
   'get_friends' : ActorMethod<[], [] | [Friend]>,
   'get_initial_data' : ActorMethod<[], Result_5>,
   'get_notifications' : ActorMethod<[], Array<Notification>>,
-  'get_share_file' : ActorMethod<[string], Result_6>,
-  'get_shared_file' : ActorMethod<[string], Result_7>,
+  'get_post' : ActorMethod<[string], Result_6>,
+  'get_posts' : ActorMethod<[bigint, bigint], Array<PostUser>>,
+  'get_share_file' : ActorMethod<[string], Result_7>,
+  'get_shared_file' : ActorMethod<[string], Result_8>,
   'get_user' : ActorMethod<[string], Result>,
-  'move_file' : ActorMethod<[string, [] | [string]], Result_8>,
+  'move_file' : ActorMethod<[string, [] | [string]], Result_9>,
   'multi_updates' : ActorMethod<
     [
       Array<FileNode>,
@@ -284,14 +312,20 @@ export interface _SERVICE {
   'register' : ActorMethod<[RegisterUser], Result>,
   'release_payment' : ActorMethod<[string], Result_1>,
   'rename_file' : ActorMethod<[string, string], boolean>,
+  'save_post' : ActorMethod<[Post], Result_1>,
+  'search_files_content' : ActorMethod<
+    [string, boolean],
+    Array<[string, Array<[string, ContentNode]>]>
+  >,
+  'search_posts' : ActorMethod<[string], Array<PostUser>>,
   'see_notifications' : ActorMethod<[string], undefined>,
   'send_friend_request' : ActorMethod<[string], Result>,
-  'share_file' : ActorMethod<[ShareFile], Result_6>,
+  'share_file' : ActorMethod<[ShareFile], Result_7>,
   'unfriend' : ActorMethod<[string], Result>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
   'withdraw_usdt' : ActorMethod<[bigint], Result_3>,
   'ws_close' : ActorMethod<[CanisterWsCloseArguments], Result_1>,
-  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_9>,
+  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_10>,
   'ws_message' : ActorMethod<
     [CanisterWsMessageArguments, [] | [AppMessage]],
     Result_1

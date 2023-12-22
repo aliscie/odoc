@@ -6,18 +6,9 @@ import {payment_contract_sample, shares_contract_sample} from "../data_processin
 import {FileNode} from "../../declarations/user_canister/user_canister.did";
 import EditorComponent from "../components/editor_components/main";
 import {Typography} from "@mui/material";
+import debounce from "../utils/debounce";
 
 
-const debounce = (func: Function, delay: number) => {
-    let timeoutId: NodeJS.Timeout;
-
-    return (...args: any[]) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-            func(...args);
-        }, delay);
-    };
-};
 
 
 function FileContentPage(props: any) {
