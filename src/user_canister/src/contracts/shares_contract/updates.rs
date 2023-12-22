@@ -62,6 +62,15 @@ fn pay_for_share_contract(contract_id: ContractId, amount: u64, author: String) 
 fn conform_share(user: String, share_contract_id: ShareContractId, contract_id: ContractId) -> Result<(), String> {
     let user: Principal = Principal::from_text(user).expect("Error at converting user to principal");
     let mut contract = SharesContract::get_for_author(user, contract_id)?;
+    let content: NoteContent = NoteContent::ConformShare(share_contract_id.clone());
+    let new_note = Notification {
+        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+        sender: caller(),
+        receiver: user,
+        content,
+        is_seen: false,
+    };
+    new_note.save();
     contract.conform(user, share_contract_id)
 }
 
@@ -85,21 +94,46 @@ fn conform_share(user: String, share_contract_id: ShareContractId, contract_id: 
 
 
 #[update]
-fn approve_request(author: String, share_requests_id: Vec<ShareContractId>, contract_id: ContractId) -> Result<(), String> {
+fn approve_request(author: String, share_requests_id: ShareContractId, contract_id: ContractId) -> Result<(), String> {
     let author = Principal::from_text(author).expect("Error at converting user to principal");
-    let mut contract = SharesContract::get_for_author(author, contract_id)?;
-    for request in share_requests_id {
-        contract.approve_request(author, request)?;
+    let mut contract: SharesContract = SharesContract::get_for_author(author, contract_id)?;
+    contract.approve_request(author, share_requests_id)?;
+    if contract.is_all_approved() {
+        let content: NoteContent = NoteContent::ShareRequestApproved(contract.clone());
+        let new_note = Notification {
+            id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+            sender: caller(),
+            receiver: author,
+            content,
+            is_seen: false,
+        };
+        new_note.save();
     }
     Ok(())
 }
 
 #[update]
-fn apply_request(share_requests_id: Vec<ShareContractId>, contract_id: ContractId, author: String) -> Result<(), String> {
+fn apply_request(share_requests_id: ShareContractId, contract_id: ContractId, author: String) -> Result<(), String> {
     let author: Principal = author.parse().unwrap();
-    let mut contract = SharesContract::get(contract_id, author)?;
-    for request in share_requests_id {
-        contract.apply_request(request)?;
+    let mut contract: SharesContract = SharesContract::get(contract_id, author)?;
+    contract.apply_request(share_requests_id)?;
+    let content: NoteContent = NoteContent::ApplyShareRequest(contract.contract_id.clone());
+
+    // ---------- Notify receivers ---------- \\
+    let mut new_note = Notification {
+        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+        sender: caller(),
+        receiver: author,
+        content,
+        is_seen: false,
+    };
+
+    for share in contract.clone().shares.iter() {
+        if share.receiver != author {
+            new_note.receiver = share.receiver.clone();
+            new_note.save();
+        }
     }
+
     Ok(())
 }

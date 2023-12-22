@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-
+use std::sync::atomic::Ordering;
 
 
 use candid::{Principal};
@@ -9,12 +9,18 @@ use ic_cdk_macros::update;
 
 use crate::{ExchangeType, Wallet};
 use crate::contracts::{PaymentContract};
-use crate::files::{FileNode};
+use crate::files::{COUNTER, FileNode};
 use crate::files_content::{ContentData, ContentNode};
 use crate::storage_schema::{ContentId};
 use crate::tables::{Column, ColumnTypes, Row, Table};
 
 use crate::user::{User};
+use crate::websocket::{NoteContent, Notification};
+
+
+// #[update]
+// TODO fn create_payment_contract(table, contract) -> Result<(), String> {
+//  Remove this unnecessary mess
 
 #[update]
 fn create_payment_contract(file_name: String) -> Result<(), String> {
@@ -55,8 +61,17 @@ fn create_payment_contract(file_name: String) -> Result<(), String> {
 fn cancel_payment(id: ContentId) -> Result<(), String> {
     let payment = PaymentContract::get(id.clone())?;
     PaymentContract::cancel_payment(payment.receiver, id.clone())?;
-    PaymentContract::cancel_payment(payment.sender, id.clone())
 
+    let content: NoteContent = NoteContent::PaymentCancelled(id.clone());
+    let new_note = Notification {
+        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+        sender: caller(),
+        receiver: payment.receiver,
+        content,
+        is_seen: false,
+    };
+    new_note.save();
+    PaymentContract::cancel_payment(payment.sender, id.clone())
     // if payment.confirmed {
     //TODO reduce the trust score
     // }
@@ -81,9 +96,18 @@ fn release_payment(id: ContentId) -> Result<(), String> {
 
     let mut receiver_wallet = Wallet::get(payment.receiver.clone());
     let mut sender_wallet = Wallet::get(caller());
-    receiver_wallet.deposit(payment.amount, caller().to_string(), ExchangeType::LocalReceive)?;
-    sender_wallet.withdraw(payment.amount, payment.receiver.to_string(), ExchangeType::LocalSend)?;
+    receiver_wallet.deposit(payment.amount.clone(), caller().to_string(), ExchangeType::LocalReceive)?;
+    sender_wallet.withdraw(payment.amount.clone(), payment.receiver.to_string(), ExchangeType::LocalSend)?;
 
+    let content: NoteContent = NoteContent::PaymentReleased(id.clone());
+    let new_note = Notification {
+        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+        sender: caller(),
+        receiver: payment.receiver,
+        content,
+        is_seen: false,
+    };
+    new_note.save();
     // if payment.confirmed {
     //TODO increase the trust score
     // }
@@ -101,5 +125,14 @@ fn delete_payment(id: String) -> Result<(), String> {
 fn accept_payment(id: ContentId) -> Result<(), String> {
     let payment = PaymentContract::get(id.clone())?;
     PaymentContract::accept_payment(payment.receiver, id.clone())?;
+    let content: NoteContent = NoteContent::AcceptPayment(id.clone());
+    let new_note = Notification {
+        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+        sender: caller(),
+        receiver: payment.sender.clone(), // Don't get confused the receiver of the payment is the caller()
+        content,
+        is_seen: false,
+    };
+    new_note.save();
     PaymentContract::accept_payment(payment.sender, id.clone())
 }

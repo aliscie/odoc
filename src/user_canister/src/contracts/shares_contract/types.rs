@@ -50,18 +50,18 @@ impl ShareRequest {
         }
     }
 
-    pub fn is_approved(&self) -> Result<bool, String> {
+    pub fn is_approved(&self) -> bool {
         for share in &self.shares {
             if !self.approvals.contains(&share.receiver) {
-                return Ok(false);
+                return false;
             }
             for share in &self.shares {
                 if !self.approvals.contains(&share.receiver) {
-                    return Ok(false);
+                    return false
                 }
             };
         }
-        Ok(true)
+        true
     }
 }
 
@@ -139,6 +139,14 @@ impl SharesContract {
 
         share
     }
+    pub fn is_all_approved(&self) -> bool {
+        for (_, share_request) in &self.shares_requests {
+            if !share_request.is_approved() {
+                return false;
+            }
+        }
+        true
+    }
 
     pub fn save(&self) -> Result<(), String> {
         let mut contractors = vec![];
@@ -181,7 +189,7 @@ impl SharesContract {
                 if old_share.shares_requests != self.clone().shares_requests {
                     for (id, request) in self.clone().shares_requests {
                         if let Some(old_shares) = old_share.shares_requests.get(&id) {
-                            if old_shares.is_approved()? && old_shares.shares != request.shares {
+                            if old_shares.is_approved() && old_shares.shares != request.shares {
                                 return Err("You can't update approved shares".to_string());
                             };
                         };
@@ -388,7 +396,7 @@ impl SharesContract {
     // then get the share_request from the share_contract.share_requests
     pub fn apply_request(&mut self, share_request_id: ShareRequestId) -> Result<(), String> {
         let request = self.shares_requests.get(&share_request_id);
-        let is_approved = request.unwrap().is_approved()?;
+        let is_approved = request.unwrap().is_approved();
         let is_applied = request.unwrap().is_applied.clone();
 
         if !is_approved {

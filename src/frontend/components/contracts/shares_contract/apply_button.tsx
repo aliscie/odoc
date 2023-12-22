@@ -33,7 +33,7 @@ function ApplyButton({setData, props, req, id, contract}: any) {
     const handleApprove = async (option: any) => {
         setLoading(true);
 
-        let response = actor && await actor.apply_request([id], contract.contract_id, contract.author)
+        let response = actor && await actor.apply_request(id, contract.contract_id, contract.author)
         setLoading(false);
 
         if ("Ok" in response) {

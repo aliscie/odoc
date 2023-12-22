@@ -23,7 +23,7 @@ function ApproveButton({req, contract}: any) {
     const {enqueueSnackbar} = useSnackbar();
     const handleApprove = async (option: any) => {
         setLoading(true);
-        let response: undefined | { Ok: null } | { Err: string } = actor && await actor.approve_request(current_file.author, [req.id], contract.contract_id);
+        let response: undefined | { Ok: null } | { Err: string } = actor && await actor.approve_request(current_file.author, req.id, contract.contract_id);
         if ("Ok" in response) {
             setApprovals(approvals + 1);
             setDisabled(true);

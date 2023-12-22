@@ -91,10 +91,16 @@ type NoteContent = variant {
   ContractUpdate : ContractNotification;
   FriendRequest : record {};
   AcceptFriendRequest;
+  ApproveShareRequest : text;
   Unfriend;
+  PaymentCancelled : text;
+  PaymentReleased : text;
   ShareRequestApplied : SharesContract;
   ShareRequestApproved : SharesContract;
+  ConformShare : text;
   SharePayment : SharesContract;
+  AcceptPayment : text;
+  ApplyShareRequest : text;
 };
 type Notification = record {
   id : text;
@@ -139,18 +145,22 @@ type RegisterUser = record {
 };
 type Result = variant { Ok : User; Err : text };
 type Result_1 = variant { Ok; Err : text };
-type Result_10 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
-type Result_2 = variant { Ok : text; Err : text };
-type Result_3 = variant { Ok : nat64; Err : text };
-type Result_4 = variant { Ok : StoredContract; Err : text };
-type Result_5 = variant { Ok : InitialData; Err : text };
-type Result_6 = variant { Ok : Post; Err : text };
-type Result_7 = variant { Ok : ShareFile; Err : text };
+type Result_10 = variant { Ok; Err };
+type Result_11 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
+type Result_2 = variant { Ok : ShareFile; Err : text };
+type Result_3 = variant { Ok : text; Err : text };
+type Result_4 = variant { Ok : nat64; Err : text };
+type Result_5 = variant { Ok : StoredContract; Err : text };
+type Result_6 = variant { Ok : InitialData; Err : text };
+type Result_7 = variant { Ok : Post; Err : text };
 type Result_8 = variant {
   Ok : record { FileNode; vec record { text; ContentNode } };
   Err : text;
 };
-type Result_9 = variant { Ok; Err };
+type Result_9 = variant {
+  Ok : vec record { FileNode; vec record { text; ContentNode } };
+  Err : text;
+};
 type Row = record {
   id : text;
   contract : opt Contract;
@@ -223,43 +233,45 @@ type WebsocketMessage = record {
 service : () -> {
   accept_friend_request : (text) -> (Result);
   accept_payment : (text) -> (Result_1);
-  apply_request : (vec text, text, text) -> (Result_1);
-  approve_request : (text, vec text, text) -> (Result_1);
+  add_to_my_files : (ShareFile) -> (Result_2);
+  apply_request : (text, text, text) -> (Result_1);
+  approve_request : (text, text, text) -> (Result_1);
   cancel_friend_request : (text) -> (Result);
   cancel_payment : (text) -> (Result_1);
   conform_share : (text, text, text) -> (Result_1);
-  content_updates : (text, opt text, text) -> (Result_2);
+  content_updates : (text, opt text, text) -> (Result_3);
   create_new_file : (text, opt text) -> (FileNode);
   create_payment_contract : (text) -> (Result_1);
-  create_share_contract : (vec Share) -> (Result_2);
+  create_share_contract : (vec Share) -> (Result_3);
   delete_file : (text) -> (opt FileNode);
   delete_payment : (text) -> (Result_1);
   delete_post : (text) -> (Result_1);
-  deposit_usdt : (nat64) -> (Result_3);
+  deposit_usdt : (nat64) -> (Result_4);
   get_all_files : () -> (opt vec record { text; FileNode }) query;
   get_all_files_content : () -> (
       vec record { text; vec record { text; ContentNode } },
     ) query;
   get_all_users : () -> (vec record { text; User }) query;
-  get_contract : (text, text) -> (Result_4) query;
+  get_contract : (text, text) -> (Result_5) query;
   get_file : (text) -> (opt FileNode) query;
   get_file_content : (text) -> (opt vec record { text; ContentNode }) query;
   get_filtered_posts : (opt vec text, opt text) -> (vec PostUser) query;
   get_friends : () -> (opt Friend) query;
-  get_initial_data : () -> (Result_5) query;
+  get_initial_data : () -> (Result_6) query;
   get_notifications : () -> (vec Notification) query;
-  get_post : (text) -> (Result_6) query;
+  get_post : (text) -> (Result_7) query;
   get_posts : (nat64, nat64) -> (vec PostUser) query;
-  get_share_file : (text) -> (Result_7) query;
+  get_share_file : (text) -> (Result_2) query;
   get_shared_file : (text) -> (Result_8) query;
+  get_shared_files : () -> (Result_9) query;
   get_user : (text) -> (Result) query;
-  move_file : (text, opt text) -> (Result_9);
+  move_file : (text, opt text) -> (Result_10);
   multi_updates : (
       vec FileNode,
       vec vec record { text; vec record { text; ContentNode } },
       vec StoredContract,
       vec text,
-    ) -> (Result_2);
+    ) -> (Result_3);
   pay_for_share_contract : (text, nat64, text) -> (Result_1);
   register : (RegisterUser) -> (Result);
   release_payment : (text) -> (Result_1);
@@ -271,12 +283,12 @@ service : () -> {
   search_posts : (text) -> (vec PostUser) query;
   see_notifications : (text) -> ();
   send_friend_request : (text) -> (Result);
-  share_file : (ShareFile) -> (Result_7);
+  share_file : (ShareFile) -> (Result_2);
   unfriend : (text) -> (Result);
   update_user_profile : (RegisterUser) -> (Result);
-  withdraw_usdt : (nat64) -> (Result_3);
+  withdraw_usdt : (nat64) -> (Result_4);
   ws_close : (CanisterWsCloseArguments) -> (Result_1);
-  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_10) query;
+  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_11) query;
   ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_1);
   ws_open : (CanisterWsOpenArguments) -> (Result_1);
 }

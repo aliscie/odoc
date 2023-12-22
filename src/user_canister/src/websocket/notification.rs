@@ -27,6 +27,12 @@ pub enum NoteContent {
     AcceptFriendRequest,
     ShareRequestApplied(SharesContract),
     ShareRequestApproved(SharesContract),
+    PaymentCancelled(String),
+    PaymentReleased(String),
+    AcceptPayment(String),
+    ConformShare(String),
+    ApproveShareRequest(String),
+    ApplyShareRequest(String),
 }
 
 #[derive(Eq, Serialize, PartialEq, Clone, Debug, CandidType, Deserialize)]
@@ -53,6 +59,7 @@ impl Notification {
 
 
     pub fn save(&self) {
+        // let date_created = ic_cdk::api::time();
         NOTIFICATIONS.with(|notifications| {
             let mut user_notifications = notifications.borrow_mut();
             let user_notifications = user_notifications.entry(self.receiver.clone()).or_insert_with(Vec::new);
