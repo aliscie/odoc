@@ -145,7 +145,6 @@ let Dialog = (props: any) => {
                     if (res && "Ok" in res) {
                         setShareLink(`${url}/share?id=${res.Ok.id}`)
                     }
-                    // console.log({res})
                 }
             }}
         >Save</Button>

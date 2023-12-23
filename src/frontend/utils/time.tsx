@@ -18,7 +18,6 @@ function formatTimestamp(timestampNanoseconds: bigint) {
 // }
 
 // export function convertUtcToTimeZone(utcTimestamp, targetTimeZone = getCurrentTimeZone()) {
-//     console.log({targetTimeZone})
 //     // Convert UTC timestamp to Date object
 //     const utcDate = new Date(utcTimestamp);
 //

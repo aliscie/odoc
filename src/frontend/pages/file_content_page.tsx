@@ -9,15 +9,11 @@ import {Typography} from "@mui/material";
 import debounce from "../utils/debounce";
 
 
-
-
-function FileContentPage(props: any) {
+function FileContentPage() {
 
     const {current_file, files_content, profile} = useSelector((state: any) => state.filesReducer);
 
-
     const dispatch = useDispatch();
-
 
     function onChange(changes: any) {
         if (files_content[current_file.id] !== changes) {

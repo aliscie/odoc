@@ -4,7 +4,6 @@ import {actor} from "../App";
 
 function useGetUser() {
     const {profile, all_friends} = useSelector((state: any) => state.filesReducer);
-    // console.log({all_friends})
     let users = all_friends && [...all_friends, profile];
 
     async function getUser(userId: string): Promise<User | null> {

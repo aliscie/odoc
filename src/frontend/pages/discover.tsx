@@ -30,8 +30,7 @@ const Discover = () => {
             let timeoutId: NodeJS.Timeout;
 
             const delayedSearch = async () => {
-                // TODO later add a Button for deep search in cuz query can cost cycles.
-                console.log("test search.");
+                // TODO later add a Button for deep search_popper in cuz query can cost cycles.
                 let res: undefined | Array<PostUser> = actor && await actor.search_posts(searchValue);
                 logger({res});
                 res && setPosts(res);

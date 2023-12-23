@@ -56,18 +56,20 @@ export function normalize_content_tree(tree: Array<[string, ContentNode]>) {
     return nested_file_content
 }
 
-export function normalize_files_contents(content: Array<Array<[string, Array<[string, ContentNode]>]>>) {
-    if (!content[0]) {
+export function normalize_files_contents(content: Array<[string, Array<[string, ContentNode]>]>) {
+    if (!content) {
+        return []
+    }
+    if (content.length == 0) {
         return []
     }
     let data = {}
-    content.map((node: Array<[string, Array<[string, ContentNode]>]>) => {
+    content.map((node: [string, Array<[string, ContentNode]>]) => {
         if (!node[0]) {
             return
         }
-        let file_id: string = node[0][0];
-        let file_content: Array<[string, ContentNode]> = node[0][1];
-
+        let file_id: string = node[0];
+        let file_content: Array<[string, ContentNode]> = node[1];
         let nested_file_content: Array<SlateNode> = normalize_content_tree(file_content);
         // let visited = [];
         // file_content.map((node: [string, ContentNode]) => {

@@ -25,6 +25,7 @@ fn get_all_files_content() -> HashMap<FileId, ContentTree> {
 
 #[query]
 fn search_files_content(search_text: String, case_insensitive: bool) -> HashMap<FileId, ContentTree> {
+    // also search in the SHARED_USER_FILES
     FILE_CONTENTS.with(|file_contents| {
         let file_contents = file_contents.borrow();
         if let Some(file_map) = file_contents.get(&caller()) {

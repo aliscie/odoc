@@ -35,7 +35,6 @@ function MultiSaveButton(props: any) {
             enqueueSnackbar("Saved!", {variant: "success"});
             dispatch(handleRedux("RESOLVE_CHANGES"));
         }
-        // console.log({res})
         setLoading(false);
     }
 

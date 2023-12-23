@@ -11,6 +11,7 @@ interface Props {
     searchValue?: string;
     editorKey?: any;
     content: any[];
+    contentEditable?: boolean;
 }
 
 function EditorComponent(props: Props) {
@@ -24,6 +25,7 @@ function EditorComponent(props: Props) {
     return (
         <>
             <Editor
+                contentEditable={props.contentEditable}
                 insertFooter={true}
                 componentsOptions={[
                     {...table},
