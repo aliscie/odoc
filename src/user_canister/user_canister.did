@@ -286,6 +286,8 @@ service : () -> {
   share_file : (ShareFile) -> (Result_2);
   unfriend : (text) -> (Result);
   update_user_profile : (RegisterUser) -> (Result);
+  vote_down : (text) -> (Result_7);
+  vote_up : (text) -> (Result_7);
   withdraw_usdt : (nat64) -> (Result_4);
   ws_close : (CanisterWsCloseArguments) -> (Result_1);
   ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_11) query;

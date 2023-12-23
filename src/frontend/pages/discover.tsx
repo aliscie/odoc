@@ -16,6 +16,7 @@ import BasicMenu from "../components/genral/basic_menu";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterPosts from "./discover/posts_filters";
 import {logger} from "../dev_utils/log_data";
+import ActionsButtons from "./discover/actions_buttons";
 
 const Discover = () => {
         const {searchValue, searchTool} = useSelector((state: any) => state.uiReducer);
@@ -71,16 +72,7 @@ const Discover = () => {
             })()
         }, [])
 
-        // let Buttons = (props: any) => <><IconButton
-        //     aria-label="add to favorites">
-        //     <FavoriteIcon/>
-        // </IconButton>
-        //     <IconButton
-        //         aria-label="share">
-        //         <ShareIcon/>
-        //     </IconButton>
-        // </>;
-        //
+
         const handleDeletePost = async (post_id) => {
             let res = actor && await actor.delete_post(post_id);
             if (res) {
@@ -143,7 +135,8 @@ const Discover = () => {
                                 // headerAction={<IconButton aria-label="settings">
                                 //     <MoreVertIcon/>
                                 // </IconButton>}
-                                // buttons={<Buttons user={user}/>}
+
+                                buttons={<ActionsButtons post={post}/>}
                                 user={post.creator}
                                 content={<EditorComponent content={content}/>}
                             />}

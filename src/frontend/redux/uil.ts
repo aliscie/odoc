@@ -1,6 +1,13 @@
 import {agent} from "../backend_connect/main";
 
-export type MainActions = "TOGGLE_NAV" | "SEARCH" | "TOGGLE_DARK" | "LOGOUT" | "LOGIN" | "SEARCH_TOOL";
+export type MainActions =
+    "TOGGLE_NAV"
+    | "SEARCH"
+    | "TOGGLE_DARK"
+    | "LOGOUT"
+    | "LOGIN"
+    | "SEARCH_TOOL"
+    | "POST_VOTE";
 const initialState = {
     count: 0,
     isNavOpen: false,
@@ -20,8 +27,6 @@ const initialState = {
 // "dbrpy-d77yw-azutg-7ndrq-kw55i-72uhh-eonyl-hks6f-cugod-h5wgl-lae"
 
 
-
-
 export function uiReducer(state = initialState, action: any) {
 
     switch (action.type) {
@@ -30,6 +35,13 @@ export function uiReducer(state = initialState, action: any) {
                 ...state,
                 isNavOpen: !state.isNavOpen,
             };
+
+        case 'POST_VOTE':
+            return {
+                ...state,
+                post_vote: action.post_vote,
+            };
+
 
         case 'TOGGLE_DARK':
             document.querySelector("body")?.classList.toggle("dark");

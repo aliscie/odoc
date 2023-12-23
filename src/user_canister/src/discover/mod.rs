@@ -1,21 +1,20 @@
-use std::collections::HashMap;
-use candid::{CandidType, Deserialize, Principal};
-use ic_cdk::{call, caller, print};
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::Ordering;
 
+use candid::{CandidType, Deserialize, Principal};
+use ic_cdk::{caller, print};
+
+pub use queries::*;
+pub use types::*;
+pub use updates::*;
+
+use crate::files::COUNTER;
+use crate::POSTS;
+use crate::storage_schema::ContentTree;
+use crate::user::User;
 
 mod queries;
 mod updates;
 mod types;
-
-pub use queries::*;
-pub use updates::*;
-pub use types::*;
-use crate::files::COUNTER;
-use crate::{POSTS};
-use crate::storage_schema::ContentTree;
-use crate::user::User;
-
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct Post {
@@ -190,60 +189,6 @@ impl Post {
             let mut posts = posts.borrow_mut();
             if posts.contains_key(&id_str) {
                 posts.remove(&id_str);
-                Ok(())
-            } else {
-                Err("Post not found".to_string())
-            }
-        })
-    }
-
-    pub fn vote_up(id: String) -> Result<(), String> {
-        let post = Post::get(id.clone())?;
-        if post.creator == caller().to_string() {
-            return Err("You cannot vote on your own post.".to_string());
-        }
-
-        let id_str = id.to_string();
-        POSTS.with(|posts| {
-            let mut posts = posts.borrow_mut();
-            if posts.contains_key(&id_str) {
-                let post = posts.get_mut(&id_str).unwrap();
-
-                if post.votes_down.contains(&caller()) {
-                    post.votes_down.retain(|x| x != &caller());
-                }
-
-                if post.votes_up.contains(&caller()) {
-                    return Err("You have already voted on this post.".to_string());
-                }
-                post.votes_up.push(caller());
-                Ok(())
-            } else {
-                Err("Post not found".to_string())
-            }
-        })
-    }
-
-    pub fn vote_down(id: String) -> Result<(), String> {
-        let post = Post::get(id.clone())?;
-        if post.creator == caller().to_string() {
-            return Err("You cannot vote on your own post.".to_string());
-        }
-
-        let id_str = id.to_string();
-        POSTS.with(|posts| {
-            let mut posts = posts.borrow_mut();
-            if posts.contains_key(&id_str) {
-                let post = posts.get_mut(&id_str).unwrap();
-
-                if post.votes_up.contains(&caller()) {
-                    post.votes_up.retain(|x| x != &caller());
-                }
-
-                if post.votes_down.contains(&caller()) {
-                    return Err("You have already voted on this post.".to_string());
-                }
-                post.votes_down.push(caller());
                 Ok(())
             } else {
                 Err("Post not found".to_string())

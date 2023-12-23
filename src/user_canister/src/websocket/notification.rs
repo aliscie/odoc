@@ -73,13 +73,13 @@ impl Notification {
         send_app_message(self.receiver, msg.clone());
     }
 
-    pub fn send(&self, user: Principal) {
+    pub fn send(&self) {
         let msg: AppMessage = AppMessage {
             notification: Some(self.clone()),
             text: self.id.clone(),
             timestamp: 0,
         };
-        send_app_message(user, msg.clone());
+        send_app_message(self.receiver, msg.clone());
     }
 
     // pub fn undo(user: Principal, id: String) {

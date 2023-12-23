@@ -400,6 +400,8 @@ export const idlFactory = ({ IDL }) => {
     'share_file' : IDL.Func([ShareFile], [Result_2], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
+    'vote_down' : IDL.Func([IDL.Text], [Result_7], []),
+    'vote_up' : IDL.Func([IDL.Text], [Result_7], []),
     'withdraw_usdt' : IDL.Func([IDL.Nat64], [Result_4], []),
     'ws_close' : IDL.Func([CanisterWsCloseArguments], [Result_1], []),
     'ws_get_messages' : IDL.Func(

@@ -335,6 +335,8 @@ export interface _SERVICE {
   'share_file' : ActorMethod<[ShareFile], Result_2>,
   'unfriend' : ActorMethod<[string], Result>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
+  'vote_down' : ActorMethod<[string], Result_7>,
+  'vote_up' : ActorMethod<[string], Result_7>,
   'withdraw_usdt' : ActorMethod<[bigint], Result_4>,
   'ws_close' : ActorMethod<[CanisterWsCloseArguments], Result_1>,
   'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_11>,
