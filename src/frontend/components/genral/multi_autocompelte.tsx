@@ -1,8 +1,5 @@
 import * as React from 'react';
 import {AutocompleteGetTagProps, useAutocomplete} from '@mui/base';
-
-
-import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import {styled} from '@mui/material/styles';
 import {autocompleteClasses} from '@mui/material/Autocomplete';
@@ -36,7 +33,7 @@ const InputWrapper = styled('div')(
   }
   & input {
     background-color: var(--background-color);
-    color: var(--background-color);
+    color: var(--color);
     height: 30px;
     box-sizing: border-box;
     padding: 4px 6px;
@@ -176,6 +173,10 @@ export default function MultiAutoComplete(props: any) {
         <Root>
             <div {...getRootProps()}>
                 <InputWrapper
+                    // style={{
+                    //     width: '100px'
+                    // }}
+                    style={props.style}
                     onChange={props.onChange}
                     ref={setAnchorEl} className={focused ? 'focused' : ''}>
                     {value.map((option: FilmOptionType, index: number) => (
@@ -186,12 +187,18 @@ export default function MultiAutoComplete(props: any) {
             </div>
             {groupedOptions.length > 0 ? (
                 <Listbox {...getListboxProps()}>
-                    {(groupedOptions as typeof top100Films).map((option, index) => (
-                        <li {...getOptionProps({option, index})}>
-                            <span>{option.title}</span>
-                            {/*<CheckIcon  fontSize="small"/>*/}
-                        </li>
-                    ))}
+                    {(groupedOptions as typeof top100Films).map((option, index) => {
+                        let is_in = value.find((v: any) => v.title === option.title)
+                        if (is_in) {
+                            return null;
+                        }
+                        return (
+                            <li {...getOptionProps({option, index})}>
+                                <span>{option.title}</span>
+                                {/*<CheckIcon  fontSize="small"/>*/}
+                            </li>
+                        )
+                    })}
                 </Listbox>
             ) : null}
         </Root>

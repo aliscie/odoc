@@ -1,28 +1,20 @@
 import React, {useEffect} from 'react';
 import './styles/LandingPage.css';
-import PostComponent from "../components/genral/post_component";
 import {Button, Grid} from "@mui/material";
 import {useSelector} from "react-redux";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import AvatarChips from "../components/genral/person_chip";
-import CreatePost from "../components/spesific/create_new_post";
+import CreatePost from "./discover/create_new_post";
 import {actor} from "../App";
 import {PostUser} from "../../declarations/user_canister/user_canister.did";
-import EditorComponent from "../components/editor_components/main";
-import {normalize_content_tree} from "../data_processing/normalize/normalize_contents";
 import {useSnackbar} from "notistack";
-import formatTimestamp from "../utils/time";
-import BasicMenu from "../components/genral/basic_menu";
-import DeleteIcon from "@mui/icons-material/Delete";
 import FilterPosts from "./discover/posts_filters";
 import {logger} from "../dev_utils/log_data";
-import ActionsButtons from "./discover/actions_buttons";
+import ViewPost from "./discover/view_update_post";
 
 const Discover = () => {
         const {searchValue, searchTool} = useSelector((state: any) => state.uiReducer);
         const {profile, users, isLoggedIn, Anonymous} = useSelector((state: any) => state.filesReducer);
 
-        const [posts, setPosts] = React.useState<| Array<PostUser>>([]);
+        const [posts, setPosts] = React.useState<| Array<PostUser>>([]); //TODO use redux for this
         const [current_page, setPage] = React.useState<number>(0);
         const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
@@ -72,16 +64,7 @@ const Discover = () => {
         }, [])
 
 
-        const handleDeletePost = async (post_id) => {
-            let res = actor && await actor.delete_post(post_id);
-            if (res) {
-                enqueueSnackbar('Post deleted successfully', {variant: 'success'});
-                setPosts(posts.filter((post) => post.id != post_id))
-            } else {
-                enqueueSnackbar('Error deleting post', {variant: 'error'});
-            }
 
-        }
 
         return (
             <Grid
@@ -95,50 +78,14 @@ const Discover = () => {
                 <FilterPosts setPage={setPage} setPosts={setPosts}/>
                 {
                     posts && posts.map((post: PostUser) => {
-                        let content = normalize_content_tree(post.content_tree);
-                        let date_local = formatTimestamp(post.date_created)
-                        // let date_local = convertUtcToTimeZone(date_created_utc);
+
                         return (<Grid item
                                       sx={{
                                           my: 1,
                                           // mx: 'auto',
                                       }}
                         >
-                            {content && <PostComponent
-                                avatar={<AvatarChips size={"large"} user={post.creator}/>}
-                                subheader={date_local}
-                                headerAction={
-
-                                    profile && post.creator.id == profile.id && <BasicMenu
-                                        anchorOrigin={{
-                                            vertical: 'bottom',
-                                            horizontal: 'right',
-                                        }}
-                                        transformOrigin={{
-                                            vertical: 'top',
-                                            horizontal: 'right',
-                                        }}
-                                        options={[
-                                            {content: "More actions in later versions."},
-                                            {
-                                                content: 'Delete',
-                                                icon: <DeleteIcon/>,
-                                                onClick: async () => await handleDeletePost(post.id)
-                                            },
-                                        ]}
-                                    >
-                                        <MoreVertIcon/>
-                                    </BasicMenu>
-
-                                }
-                                // headerAction={<IconButton aria-label="settings">
-                                //     <MoreVertIcon/>
-                                // </IconButton>}
-
-                                buttons={<ActionsButtons post={post}/>}
-                                user={post.creator}
-                                content={<EditorComponent content={content}/>}
-                            />}
+                            <ViewPost posts={posts} setPosts={setPosts} post={post}  />
                         </Grid>)
                     })
                 }

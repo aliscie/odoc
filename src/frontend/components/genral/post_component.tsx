@@ -6,6 +6,11 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
 import IconButton, {IconButtonProps} from '@mui/material/IconButton';
+import {normalize_content_tree} from "../../data_processing/normalize/normalize_contents";
+import {Post, PostUser} from "../../../declarations/user_canister/user_canister.did";
+import AvatarChips from "./person_chip";
+import formatTimestamp from "../../utils/time";
+import EditorComponent from "../editor_components/main";
 
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
@@ -24,14 +29,19 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 
 interface Props {
     // user: User,
-    content?: any,
+    // content?: any,
     buttons?: any
     headerAction?: any,
-    subheader?: string,
-    avatar?: any,
+    // subheader?: string,
+    post: PostUser | Post,
+    onChange?: any,
+    // avatar?: any,
 }
 
 export default function PostComponent(props: Props) {
+    let content = normalize_content_tree(props.post.content_tree);
+    let avatar = <AvatarChips size={"large"} user={props.post.creator}/>
+    let subheader = formatTimestamp(props.post.date_created)
     const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {
@@ -43,14 +53,16 @@ export default function PostComponent(props: Props) {
         >
             <CardHeader
                 titleTypographyProps={{textAlign: "left"}}
-                avatar={props.avatar}
+                avatar={avatar}
                 action={props.headerAction}
                 // title={props.user.name}
-                subheader={props.subheader}
+                subheader={subheader}
             />
 
             <CardContent>
-                {props.content}
+                <EditorComponent
+                    onChange={props.onChange}
+                    content={content}/>
             </CardContent>
 
             <CardActions disableSpacing>

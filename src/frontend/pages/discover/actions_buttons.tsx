@@ -1,7 +1,7 @@
 import IconButton from "@mui/material/IconButton";
 import ShareIcon from "@mui/icons-material/Share";
 import React, {useEffect} from "react";
-import {PostUser} from "../../../declarations/user_canister/user_canister.did";
+import {Post, PostUser} from "../../../declarations/user_canister/user_canister.did";
 import {actor} from "../../App";
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -13,13 +13,22 @@ interface Props {
     post: PostUser
 }
 
+let tags_options = [
+    {id: 1, title: "+add tag", value: "+add tag"},
+]
+
 function ActionsButtons(props: Props) {
     const {profile} = useSelector((state: any) => state.filesReducer);
     const {post_vote}: { post_vote: undefined | Post } = useSelector((state: any) => state.uiReducer);
-    let current_user: Principal = Principal.fromText(profile.id);
+    let current_user: Principal | undefined = profile && Principal.fromText(profile.id);
     let is_creator: boolean = profile && props.post.creator.id == profile.id;
-    let already_voted_up = props.post.votes_up.some(item => item.__principal__ === current_user.__principal__);
-    let already_voted_down = props.post.votes_down.some(item => item.__principal__ === current_user.__principal__);
+    let already_voted_up = current_user && props.post.votes_up.some(item => item.__principal__ === current_user.__principal__);
+    let already_voted_down = profile && props.post.votes_down.some(item => item.__principal__ === current_user.__principal__);
+
+    if (typeof already_voted_up === "undefined") already_voted_up = true;
+    if (typeof already_voted_down === "undefined") already_voted_down = true;
+
+
     const [votes, setVotes] = React.useState({
         up: props.post.votes_up.length,
         down: props.post.votes_down.length
@@ -53,6 +62,7 @@ function ActionsButtons(props: Props) {
             icon={<ThumbDownIcon/>}
             count={votes.down}
         />
+
 
         <IconButton
             aria-label="share">

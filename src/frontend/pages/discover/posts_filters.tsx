@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {actor} from "../../App";
 import {useSelector} from "react-redux";
 import {Button} from "@mui/material";
+import MultiAutoComplete from "../../components/genral/multi_autocompelte";
 
 interface Props {
     setPosts: React.Dispatch<React.SetStateAction<any>>;
@@ -12,7 +13,18 @@ function FilterPosts(props: Props) {
     const {profile} = useSelector((state: any) => state.filesReducer);
     const [tags, setTags] = useState<[] | [Array<string>]>([]);
     const [userIds, setUserIds] = useState<[] | [string]>([profile ? profile.id : ""]);
+    useEffect(() => {
 
+        if (tags.length > 0) {
+            (async () => {
+                const response = actor && (await actor.get_filtered_posts([tags.map((opt) => opt.title)], []));
+                props.setPosts(response || []);
+                props.setPage(0);
+            })()
+
+        }
+
+    }, [tags]);
     const handleFilter = async () => {
 
         // Constructing Option<Vec<String>> for tags
@@ -30,7 +42,12 @@ function FilterPosts(props: Props) {
             console.error('Error filtering posts:', error);
         }
     };
-
+    let initial_tags = [
+        {title: "hiring"}, {title: "seeking"}
+    ];
+    const onTagChange = (event: any, options: any) => {
+        setTags(options);
+    }
     return (
         <div>
             {/*<div>*/}
@@ -50,6 +67,13 @@ function FilterPosts(props: Props) {
             {/*    />*/}
             {/*</div>*/}
             {profile && <Button onClick={handleFilter}>Only my posts</Button>}
+            <MultiAutoComplete
+                style={{backgroundColor: "gray", display: "flex", justifyContent: "center" }}
+                onChange={onTagChange}
+                value={tags}
+                options={initial_tags}
+                multiple={true}/>
+
         </div>
     );
 }
