@@ -2,7 +2,7 @@ import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {GridCell, GridRenderCellParams, GridRowModel} from '@mui/x-data-grid';
 import {Button, ButtonGroup} from '@mui/material';
-import {StyledDataGrid} from "./spread_sheet";
+import {StyledDataGrid} from "../spread_sheet";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import ContextMenu from "../genral/context_menu";
@@ -14,7 +14,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {
     Row,
     Share,
-    SharePayment,
     SharePaymentOption,
     ShareRequest,
     SharesContract,
@@ -24,7 +23,6 @@ import {
 } from "../../../declarations/user_canister/user_canister.did";
 import useColumnManager from "./hooks/useColumnManager";
 import {useFormulaDialog} from "../../hook/dialog";
-import FunctionsIcon from '@mui/icons-material/Functions';
 import {updateTableContent} from "./utils/update_table";
 import PayButton from "./shares_contract/pay_button";
 import {RenderReceiver} from "./payment_contract/renderers";
@@ -37,7 +35,6 @@ import ShareConfirmButton from "./shares_contract/conforim_button";
 import useSharesRequests from "./shares_contract/use_shares_requests";
 import ApproveButton from "./shares_contract/approve_button";
 import ApplyButton from "./shares_contract/apply_button";
-import {logger} from "../../dev_utils/log_data";
 
 // export type SharesContractViews = "Payments" | "Shares" | "SharesRequests" | "PaymentOptions";
 

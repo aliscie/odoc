@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {GridCell, GridRowModel, GridValueGetterParams} from '@mui/x-data-grid';
 import {Button, ButtonGroup} from '@mui/material';
-import {StyledDataGrid} from "./spread_sheet";
+import {StyledDataGrid} from "../spread_sheet";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import {useSnackbar} from "notistack";

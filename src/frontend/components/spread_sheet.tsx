@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {DataGrid} from '@mui/x-data-grid';
 import {styled, Theme} from '@mui/material/styles';
-import {process_row} from "../../data_processing/normalize/normalize_tables";
-import { DataGridPro, GridLogicOperator, GridToolbar } from '@mui/x-data-grid-pro';
+import {process_row} from "../data_processing/normalize/normalize_tables";
+// import { DataGridPro, GridLogicOperator, GridToolbar } from '@mui/x-data-grid-pro';
 
 // import { DataGridPro } from '@mui/x-data-grid-pro';
 

@@ -1,4 +1,4 @@
-import SpreadSheet from "../contracts/spread_sheet";
+import SpreadSheet from "../spread_sheet";
 import * as React from "react";
 import MentionComponent from "./mention_component";
 import {Table, TableBody, TableCell, TableRow} from "@mui/material";

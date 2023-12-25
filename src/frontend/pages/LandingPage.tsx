@@ -85,9 +85,13 @@ let roadMap = [
     },
     {
         is_done: false,
-        title: "Live collaboration and notifications.",
-        content: "Users should be notified about their friend requests (WebSockets)\n" +
-            "as user edite the text others should see the updates live\n",
+        title: "Notifications.",
+        content: "Users should be notified about their friend requests (WebSockets)\n",
+    },
+    {
+        is_done: false,
+        title: "Live collaboration on editor",
+        content: "as user edite the text others should see the updates live"
     },
     {
         is_done: false,
