@@ -52,11 +52,12 @@ const AllUsers = () => {
                                           marginRight: '20%',
                                       }}
                         >
-                            <PostComponent
-                                buttons={<Buttons user={user}/>}
-                                user={user[1]}
-                                // content={}
-                            />
+                            <Buttons user={user}/>
+                            {/*<PostComponent*/}
+                            {/*    buttons={<Buttons user={user}/>}*/}
+                            {/*    user={user[1]}*/}
+                            {/*    // content={}*/}
+                            {/*/>*/}
                         </Grid>)
                     })
                 }

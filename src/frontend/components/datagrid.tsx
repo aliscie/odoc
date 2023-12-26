@@ -1,37 +1,49 @@
 import {Button, ButtonGroup} from "@mui/material";
-import BasicMenu from "./genral/drop_down";
-import ApproveButton from "./contracts/shares_contract/approve_button";
-import ApplyButton from "./contracts/shares_contract/apply_button";
-import PayButton from "./contracts/shares_contract/pay_button";
 import {StyledDataGrid} from "./spread_sheet";
 import * as React from "react";
-import {GridRowModel} from "@mui/x-data-grid";
-import {GridCell, GridRenderCellParams, GridRowModel} from '@mui/x-data-grid';
+import {useEffect} from "react";
+import {GridCell, GridRowModel} from "@mui/x-data-grid";
 import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
 import ArrowCircleDownIcon from "@mui/icons-material/ArrowCircleDown";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContextMenu from "./genral/context_menu";
-import {Column, ColumnTypes, Row, SharePaymentOption, Table} from "../../declarations/user_canister/user_canister.did";
-import {randomString} from "../data_processing/data_samples";
-import {handleRedux} from "../redux/main";
-import {updateTableContent} from "./contracts/utils/update_table";
+import {Row} from "../../declarations/user_canister/user_canister.did";
 
 interface Props {
     data: any,
-    current_view: any
+    tools: React.ReactNode,
+    addRow: any
+    deleteRow: any,
+    updateRow: any,
 }
 
 function CustomDataGrid(props: Props) {
     // const [rows, setRows] = React.useState(props.data.rows);
     // const [columns, setColumns] = React.useState(props.data.columns);
     const [data, setData] = React.useState(props.data);
+    // TODO
+        useEffect(() => {
+            setData(props.data)
+        }, [props.data]);
 
     const processRowUpdate = React.useCallback((newRow: GridRowModel, oldRow: GridRowModel) => {
+
+            setData((pre) => {
+                let new_rows = [...pre.rows];
+                new_rows = new_rows.map((row: Row) => {
+                    if (row.id === oldRow.id) {
+                        return {...row, ...newRow}
+                    }
+                    return row
+                });
+                props.updateRow(new_rows, newRow);
+                return {...pre, rows: new_rows}
+            })
             return Promise.resolve(newRow);
         },
-        [props.data, props.current_view]
+        [props.data]
     );
 
     const handleProcessRowUpdateError = React.useCallback(
@@ -39,28 +51,31 @@ function CustomDataGrid(props: Props) {
             console.log('An error occurred while updating the row with params:', params);
             return Promise.resolve();
         }
-        , []
+        , [data]
     );
+    // const {
+    //     files_content,
+    //     current_file,
+    //     all_friends,
+    //     profile,
+    //     contracts
+    // } = useSelector((state: any) => state.filesReducer);
 
     const handleAddRow = (rowId: string, before: boolean) => {
-        let newRow = {};
-        let updated_contracts = {...contracts};
-        const new_share_id = randomString();
+        // let updated_contracts = {...contracts};
+        // const new_share_id = randomString();
 
-        newRow = {
-            id: new_share_id,
-            contract: [{"SharesContract": new_share_id}],
-            cells: [],
-        };
 
         ///// ------- get the correct positioning --------- \\\
-        const rowIndex = props.children[0].data[0].Table.rows.findIndex((row) => row.id === rowId);
+        const rowIndex = data.rows.findIndex((row) => row.id === rowId);
+
         if (rowIndex === -1) {
             console.error("Row not found, handle the error or return early");
             return;
         }
 
         let step = before ? 0 : 1;
+        let newRow = props.addRow(rowIndex + step);
         let new_table_rows = [...data.rows]
         new_table_rows.splice(rowIndex + step, 0, newRow)
         setData((pre) => {
@@ -113,27 +128,28 @@ function CustomDataGrid(props: Props) {
 
 
     const handleDeleteRow = (rowId: string) => {
-        // setData((pre) => {
-        //     let rows = [...pre.rows];
-        //     rows = rows.filter((row: Row) => row.id !== rowId);
-        //     let updated_contracts = {...contracts};
-        //     if (view == "Shares") {
-        //         updated_contracts[table_content.id] = {
-        //             ...contracts[table_content.id],
-        //             shares: UpdatedContractFromRow(rows, contracts[table_content.id].shares),
-        //         };
-        //
-        //     } else if (view == "Payment options") {
-        //         let payment_options: Array<SharePaymentOption> = contracts[table_content.id].payment_options.filter((item: SharePaymentOption) => item.id !== rowId);
-        //         updated_contracts[table_content.id] = {
-        //             ...contracts[table_content.id],
-        //             payment_options,
-        //         };
-        //     }
-        //     dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contracts[table_content.id]}));
-        //     dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contracts[table_content.id]}));
-        //     return {...pre, rows}
-        // })
+        setData((pre) => {
+            let rows = [...pre.rows];
+            rows = rows.filter((row: Row) => row.id !== rowId);
+            props.deleteRow(rows, rowId);
+            // let updated_contracts = {...contracts};
+            // if (view == "Shares") {
+            //     updated_contracts[table_content.id] = {
+            //         ...contracts[table_content.id],
+            //         shares: UpdatedContractFromRow(rows, contracts[table_content.id].shares),
+            //     };
+            //
+            // } else if (view == "Payment options") {
+            //     let payment_options: Array<SharePaymentOption> = contracts[table_content.id].payment_options.filter((item: SharePaymentOption) => item.id !== rowId);
+            //     updated_contracts[table_content.id] = {
+            //         ...contracts[table_content.id],
+            //         payment_options,
+            //     };
+            // }
+            // dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contracts[table_content.id]}));
+            // dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contracts[table_content.id]}));
+            return {...pre, rows}
+        })
     };
 
     function CustomCell(props: any) {
@@ -198,43 +214,22 @@ function CustomDataGrid(props: Props) {
 
     }
 
+    // console.log({data})
 
     return <StyledDataGrid
-        {...props.data}
-        // rows={data}
-        // columns={renderColumns}
+        rows={data.rows}
+        columns={data.columns}
         // disableColumnSelector
         hideFooterPagination
         editMode="row"
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
-        // slots={{
-        //     cell: CustomCell,
-        //     toolbar: () => <ButtonGroup variant="text" size={'small'}>
-        //         <BasicMenu
-        //             options={[
-        //                 {content: "Shares", Click},
-        //                 {content: "Payment options", Click},
-        //                 {content: "Payments", Click},
-        //                 ...render_shares_requests,
-        //                 {content: "+Request", Click}
-        //             ]}>{view}</BasicMenu>
-        //         <Button>Filter</Button>
-        //         {currentRequest && <ApproveButton
-        //             req={currentRequest}
-        //             contract={contracts[table_content.id]}/>}
-        //
-        //         {currentRequest && current_page != 'share' && < ApplyButton
-        //             setData={setData}
-        //             props={props}
-        //             req={currentRequest}
-        //             id={currentRequest && currentRequest.id}
-        //             contract={contracts[table_content.id]}/>}
-        //
-        //         {currentRequest && current_page == 'share' && <Button>Upload share request</Button>}
-        //         <PayButton contract={contracts[table_content.id]}/>
-        //     </ButtonGroup>
-        // }}
+        slots={{
+            cell: CustomCell,
+            toolbar: () => <ButtonGroup variant="text" size={'small'}>
+                {props.tools}
+            </ButtonGroup>
+        }}
 
     />
 }

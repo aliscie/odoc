@@ -150,6 +150,8 @@ impl Post {
             }
             filtered_posts
                 .into_iter()
+                // .skip(start)
+                // .take(actual_count)
                 .map(|post| {
                     let user = User::get_user_from_text_principal(post.creator.clone()).unwrap();
                     let creator = UserPost {

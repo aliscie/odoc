@@ -91,20 +91,20 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
         setRequest(req);
         setView(req.id)
 
-        let editable = req.requester.toString() == profile.id;
-        // let share_req = contracts[table_content.id].shares_requests.find((item: [string, ShareRequest]) => item[0] === req.id);
+        let editable = req.requester.toString() === profile.id;
+        let rows = await Promise.all(req.shares.map(async (share: Share) => {
+            let receiver: any = await getUser(share.receiver.toString());
+            receiver = receiver ? receiver.name : "";
+            let row: ShareReqRow = {
+                receiver,
+                share: share.share,
+                id: share.share_contract_id,
+            };
+            return row;
+        }));
+
         setData({
-            rows: req.shares.map(async (share: Share) => {
-                let receiver: any = await getUser(share.receiver.toString());
-                receiver = receiver ? receiver.name : ""
-                let row: ShareReqRow = {
-                    id: share.share_contract_id,
-                    receiver,
-                    share: share.share,
-                    // approve: currentRequest ? (Principal.fromText(profile.id).toString() in currentRequest.approvals) : false,
-                }
-                return row
-            }),
+            rows,
             columns: [
                 {
                     field: 'receiver',
@@ -126,7 +126,6 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
                     width: 150,
                     editable
                 },
-                // {field: 'approvals', headerName: 'approvals', width: 150},
             ]
         });
 
