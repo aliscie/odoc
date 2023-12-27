@@ -42,6 +42,7 @@ function ShareFilePage(props: any) {
                     setState(normalized_tree)
                     dispatch(handleRedux("CURRENT_FILE", {file}));
                     dispatch(handleRedux("ADD_CONTENT", {id: file.id, content: normalized_tree}))
+                    dispatch(handleRedux("ADD_FILE", {data: file}))
                 } else {
                     enqueueSnackbar(`Error: ${res.Err}`, {variant: "error"});
                 }

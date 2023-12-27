@@ -4,10 +4,10 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 
 use candid::{CandidType, Deserialize, Principal};
-use ic_cdk::caller;
+use ic_cdk::{caller, print};
 
 
-use crate::{FILE_CONTENTS, USER_FILES};
+use crate::{FILE_CONTENTS, ShareFile, USER_FILES};
 use crate::files::FileNode;
 
 use crate::storage_schema::{ContentId, ContentTree, FileId};
@@ -54,16 +54,34 @@ impl ContentNode {
 
 
     pub fn get_all_files_content() -> HashMap<FileId, ContentTree> {
-        FILE_CONTENTS.with(|file_contents| {
+        let mut res: HashMap<FileId, ContentTree> = FILE_CONTENTS.with(|file_contents| {
             let file_contents = file_contents.borrow();
-            let caller_principal = ic_cdk::api::caller();
-
-            if let Some(file_map) = file_contents.get(&caller_principal) {
+            if let Some(file_map) = file_contents.get(&caller()) {
                 file_map.clone()
             } else {
                 HashMap::new()
             }
-        })
+        });
+
+        // add content from shared files
+        let shared_files: Vec<ShareFile> = ShareFile::get_shared();
+        for file in shared_files {
+            let file_node: Result<(FileNode, ContentTree), String> = ShareFile::get_file(&file.id);
+            if let Ok((file_node, content)) = file_node {
+                res.insert(file.id.clone(), content);
+            } else {
+                let err = file_node.unwrap_err();
+                print(
+                    format!(
+                        "Error getting file {} from shared files: {}",
+                        file.id, err
+                    )
+                        .as_str(),
+                );
+            }
+        }
+
+        res
     }
 
 

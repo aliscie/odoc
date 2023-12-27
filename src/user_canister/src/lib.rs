@@ -43,7 +43,7 @@ thread_local! {
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
     static ID_STORE: RefCell<IdStore> = RefCell::default();
     static USER_FILES: RefCell<FilesStore> = RefCell::default();
-    static SHARED_USER_FILES: RefCell<FilesShareStore> = RefCell::default();
+    static SHARED_USER_FILES: RefCell<SharedUserFiles> = RefCell::default();
     static FILE_CONTENTS: RefCell<FileContentsStore> = RefCell::default();
     static FRIENDS_STORE: RefCell<FriendsStore> = RefCell::default();
     static CONTRACTS_STORE: RefCell<ContractStore> = RefCell::default();

@@ -4,11 +4,11 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 
 use candid::{CandidType, Deserialize, Principal};
-use ic_cdk::caller;
+use ic_cdk::{caller, print};
 
 use crate::{ShareFile, ShareFilePermission, USER_FILES};
 
-use crate::storage_schema::{FileId};
+use crate::storage_schema::{ContentTree, FileId};
 
 pub static COUNTER: AtomicU64 = AtomicU64::new(0);
 
@@ -22,6 +22,8 @@ pub struct FileNode {
     pub children: Vec<FileId>,
     pub share_id: Option<String>,
     pub author: String,
+    pub permission: ShareFilePermission,
+    pub users_permissions: HashMap<Principal, ShareFilePermission>,
 }
 
 impl FileNode {
@@ -34,6 +36,8 @@ impl FileNode {
             children: Vec::new(),
             share_id: None,
             author: caller().to_string(),
+            permission: ShareFilePermission::None,
+            users_permissions: Default::default(),
         };
 
         USER_FILES.with(|files_store| {
@@ -54,6 +58,19 @@ impl FileNode {
         file
     }
 
+    pub fn check_permission(&self, permission: ShareFilePermission) -> bool {
+        if self.permission.check(permission.clone()) {
+            return true;
+        }
+
+        // check if caller has permissions
+        if let Some(user_permission) = self.users_permissions.get(&caller()) {
+            return user_permission.check(permission);
+        }
+
+        false
+    }
+
     // pub fn get_file_mut<'a>(file_id: u64) -> Option<&'a mut FileNode> {
     //     USER_FILES.with(|files_store| {
     //         let principal_id = ic_cdk::api::caller();
@@ -68,15 +85,10 @@ impl FileNode {
 
     pub fn save(&self) -> Result<Self, String> {
         if caller().to_string() != self.author {
-            if let Some(share_id) = self.share_id.clone() {
-                let res = ShareFile::get(&share_id)?;
-                let can_update = res.check_permission(ShareFilePermission::CanUpdate);
-                if !can_update {
-                    return Err("You don't have permission to update this file".to_string());
-                };
-            } else {
-                return Err("No such file to share.".to_string());
-            }
+            let can_update = self.check_permission(ShareFilePermission::CanUpdate);
+            if !can_update {
+                return Err("You don't have permission to update this file".to_string());
+            };
         }
         USER_FILES.with(|files_store| {
             // let principal_id = ic_cdk::api::caller();
@@ -100,25 +112,46 @@ impl FileNode {
 
     pub fn get(file_id: &FileId) -> Option<Self> {
         USER_FILES.with(|files_store| {
-            let principal_id = ic_cdk::api::caller();
-
             let user_files = files_store.borrow();
-            let user_files_map = user_files.get(&principal_id)?;
+            let user_files_map = user_files.get(&caller())?;
             // let user_files_map = user_files.get(&principal_id).unwrap();
             user_files_map.get(file_id).cloned()
         })
     }
+
     pub fn get_all_files() -> Option<HashMap<FileId, FileNode>> {
+        let shared_files: Vec<ShareFile> = ShareFile::get_shared();
+        let mut files: Vec<FileNode> = Vec::new();
+        for file in shared_files {
+            let file_node: Result<(FileNode, ContentTree), String> = ShareFile::get_file(&file.id);
+            if let Ok((file_node, content)) = file_node {
+                files.push(file_node);
+            } else {
+                let err = file_node.unwrap_err();
+                print(
+                    format!(
+                        "Error getting file {} from shared files: {}",
+                        file.id, err
+                    )
+                        .as_str(),
+                );
+            }
+        }
+
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();
 
             let user_files = files_store.borrow();
             let user_files_map = user_files.get(&principal_id)?;
 
-            let all_files: HashMap<FileId, FileNode> = user_files_map.clone();
+            let mut all_files: HashMap<FileId, FileNode> = user_files_map.clone();
+            for file in files {
+                all_files.insert(file.id.clone(), file);
+            }
             Some(all_files)
         })
     }
+
     pub fn delete_file(file_id: FileId) -> Option<FileNode> {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();

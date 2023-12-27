@@ -13,16 +13,14 @@ import deserialize_file_contents from "../data_processing/denormalize/denormaliz
 // localStorage.clear()
 
 export type FilesActions =
-    "ADD"
+    "ADD_FILE"
     | "REMOVE"
     | "UPDATE"
     | "GET"
     | "GET_ALL"
-    | "UPDATE"
     | "CURRENT_FILE"
     | "UPDATE_CONTENT"
     | "FILES_SAVED"
-    | "FILES_CHANGED"
     | "ADD_CONTENT"
     | "UPDATE_FILE_TITLE"
     | "ADD_CONTRACT"
@@ -117,7 +115,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 files_content: files_content,
             };
 
-        case 'ADD':
+        case 'ADD_FILE':
             return {
                 ...state,
                 files: {...state.files, [action.data.id]: action.data},

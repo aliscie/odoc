@@ -28,11 +28,18 @@ function FileContentPage() {
         debounce((title: string) => {
             if (title !== current_file.name) {
                 let file: FileNode = {
+                    // id: current_file.id,
                     ...current_file,
                     name: title,
                     parent: current_file.parent,
                     children: current_file.children,
-                    share_id: current_file.share_id || []
+                    share_id: current_file.share_id || [],
+                    // 'users_permissions': [],
+                    // 'permission': {'None': null},
+                    // author: profile.id,
+                    // 'author' : string,
+                    // 'permission': ShareFilePermission,
+                    // 'users_permissions': Array < [Principal, ShareFilePermission] >,
                 };
                 dispatch(handleRedux("UPDATE_FILE_TITLE", {id: current_file.id, title: title}));
                 dispatch(handleRedux("FILE_CHANGES", {changes: file}));
@@ -79,6 +86,9 @@ function FileContentPage() {
     if (current_file.id != null) {
         let content = files_content[current_file.id];
         let title = `${current_file.name || "Untitled"}`;
+        let editable: boolean = current_file.author === profile.id
+            || Object.keys(current_file.permission)[0] === "CanUpdate"
+            || current_file.users_permissions.includes([profile.id, {"CanUpdate": null}]);
 
         return (
             <div style={{marginTop: "3px", marginLeft: "10%", marginRight: "10%"}}>
@@ -87,8 +97,9 @@ function FileContentPage() {
                     variant="h3"
                     onKeyDown={preventEnter}
                     onKeyUp={handleTitleKeyDown}
-                    contentEditable={true}>{title}</Typography>
+                    contentEditable={editable}>{title}</Typography>
                 <EditorComponent
+                    contentEditable={editable}
                     handleOnInsertComponent={handleOnInsertComponent}
                     onChange={onChange}
                     editorKey={editorKey}

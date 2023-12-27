@@ -33,3 +33,4 @@ pub type FilesShareStore = BTreeMap<ShareId, ShareFile>;
 pub type WalletStore = BTreeMap<Principal, Wallet>;
 pub type UserNotifications = BTreeMap<Principal, Vec<Notification>>;
 pub type PostsStore = BTreeMap<PostId, Post>;
+pub type SharedUserFiles = BTreeMap<Principal, Vec<ShareFile>>;

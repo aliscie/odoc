@@ -8,11 +8,11 @@ import Collapse from "@mui/material/Collapse";
 import List from "@mui/material/List";
 import {NestedDataItem} from "./nest_list";
 import ContextMenu from "../../genral/context_menu";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../../redux/main";
 import DeleteFile from "../../actions/delete_file";
 import Draggable from "../../genral/draggable";
-import {actor} from "../../../App";
+import ShareIcon from '@mui/icons-material/Share';
 
 interface ItemProps {
     data: Record<number, NestedDataItem>; // Use Record<number, NestedDataItem> instead of any
@@ -24,6 +24,8 @@ interface ItemProps {
 }
 
 const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handleClick, path = null, pl = 1}) => {
+    const {contracts, profile, wallet} = useSelector((state: any) => state.filesReducer);
+
     const dispatch = useDispatch();
 
     const html_file_id = `file${item.id}`;
@@ -63,7 +65,9 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
                         <ListItemButton
                             id={html_file_id} onClick={handleItemClick} sx={{pl}}>
                             {hasChildren && (isOpen ? <ExpandLess/> : <ExpandMore/>)}
-                            <ListItemText primary={item.name}/>
+                            <ListItemText primary={<>
+                                {item.name} {item.author != profile.id && <ShareIcon size={"small"}/>}
+                            </>}/>
                         </ListItemButton>
                     </Draggable>
                 </ContextMenu>

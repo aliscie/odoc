@@ -7,29 +7,23 @@ export const idlFactory = ({ IDL }) => {
   });
   const Result = IDL.Variant({ 'Ok' : User, 'Err' : IDL.Text });
   const Result_1 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Text });
+  const Result_2 = IDL.Variant({ 'Ok' : IDL.Text, 'Err' : IDL.Text });
   const ShareFilePermission = IDL.Variant({
     'CanComment' : IDL.Null,
     'None' : IDL.Null,
     'CanView' : IDL.Null,
     'CanUpdate' : IDL.Null,
   });
-  const ShareFile = IDL.Record({
-    'id' : IDL.Text,
-    'permission' : ShareFilePermission,
-    'owner' : IDL.Principal,
-    'file' : IDL.Text,
-    'users_permissions' : IDL.Vec(
-      IDL.Tuple(IDL.Principal, ShareFilePermission)
-    ),
-  });
-  const Result_2 = IDL.Variant({ 'Ok' : ShareFile, 'Err' : IDL.Text });
-  const Result_3 = IDL.Variant({ 'Ok' : IDL.Text, 'Err' : IDL.Text });
   const FileNode = IDL.Record({
     'id' : IDL.Text,
+    'permission' : ShareFilePermission,
     'share_id' : IDL.Opt(IDL.Text),
     'name' : IDL.Text,
     'children' : IDL.Vec(IDL.Text),
     'author' : IDL.Text,
+    'users_permissions' : IDL.Vec(
+      IDL.Tuple(IDL.Principal, ShareFilePermission)
+    ),
     'parent' : IDL.Opt(IDL.Text),
   });
   const Share = IDL.Record({
@@ -39,7 +33,7 @@ export const idlFactory = ({ IDL }) => {
     'confirmed' : IDL.Bool,
     'receiver' : IDL.Principal,
   });
-  const Result_4 = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });
+  const Result_3 = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });
   const Contract = IDL.Variant({
     'PaymentContract' : IDL.Text,
     'SharesContract' : IDL.Text,
@@ -157,7 +151,7 @@ export const idlFactory = ({ IDL }) => {
     'PaymentContract' : PaymentContract,
     'SharesContract' : SharesContract,
   });
-  const Result_5 = IDL.Variant({ 'Ok' : StoredContract, 'Err' : IDL.Text });
+  const Result_4 = IDL.Variant({ 'Ok' : StoredContract, 'Err' : IDL.Text });
   const UserPost = IDL.Record({ 'id' : IDL.Text, 'name' : IDL.Text });
   const PostUser = IDL.Record({
     'id' : IDL.Text,
@@ -201,7 +195,7 @@ export const idlFactory = ({ IDL }) => {
     'DiscoverUsers' : IDL.Vec(IDL.Tuple(IDL.Text, User)),
     'Wallet' : Wallet,
   });
-  const Result_6 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
+  const Result_5 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
   const ContractNotification = IDL.Record({
     'contract_type' : IDL.Text,
     'contract_id' : IDL.Text,
@@ -237,22 +231,26 @@ export const idlFactory = ({ IDL }) => {
     'content_tree' : IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)),
     'votes_down' : IDL.Vec(IDL.Principal),
   });
-  const Result_7 = IDL.Variant({ 'Ok' : Post, 'Err' : IDL.Text });
+  const Result_6 = IDL.Variant({ 'Ok' : Post, 'Err' : IDL.Text });
+  const ShareFile = IDL.Record({ 'id' : IDL.Text, 'owner' : IDL.Principal });
+  const Result_7 = IDL.Variant({ 'Ok' : ShareFile, 'Err' : IDL.Text });
   const Result_8 = IDL.Variant({
     'Ok' : IDL.Tuple(FileNode, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode))),
     'Err' : IDL.Text,
   });
-  const Result_9 = IDL.Variant({
-    'Ok' : IDL.Vec(
-      IDL.Tuple(FileNode, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)))
-    ),
-    'Err' : IDL.Text,
-  });
-  const Result_10 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
+  const Result_9 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
   const RegisterUser = IDL.Record({
     'name' : IDL.Opt(IDL.Text),
     'description' : IDL.Opt(IDL.Text),
     'photo' : IDL.Opt(IDL.Vec(IDL.Nat8)),
+  });
+  const ShareFileInput = IDL.Record({
+    'id' : IDL.Text,
+    'permission' : ShareFilePermission,
+    'owner' : IDL.Principal,
+    'users_permissions' : IDL.Vec(
+      IDL.Tuple(IDL.Principal, ShareFilePermission)
+    ),
   });
   const ClientKey = IDL.Record({
     'client_principal' : IDL.Principal,
@@ -271,7 +269,7 @@ export const idlFactory = ({ IDL }) => {
     'tree' : IDL.Vec(IDL.Nat8),
     'is_end_of_queue' : IDL.Bool,
   });
-  const Result_11 = IDL.Variant({
+  const Result_10 = IDL.Variant({
     'Ok' : CanisterOutputCertifiedMessages,
     'Err' : IDL.Text,
   });
@@ -295,7 +293,6 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     'accept_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'accept_payment' : IDL.Func([IDL.Text], [Result_1], []),
-    'add_to_my_files' : IDL.Func([ShareFile], [Result_2], []),
     'apply_request' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [Result_1], []),
     'approve_request' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text],
@@ -307,16 +304,16 @@ export const idlFactory = ({ IDL }) => {
     'conform_share' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [Result_1], []),
     'content_updates' : IDL.Func(
         [IDL.Text, IDL.Opt(IDL.Text), IDL.Text],
-        [Result_3],
+        [Result_2],
         [],
       ),
     'create_new_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [FileNode], []),
     'create_payment_contract' : IDL.Func([IDL.Text], [Result_1], []),
-    'create_share_contract' : IDL.Func([IDL.Vec(Share)], [Result_3], []),
+    'create_share_contract' : IDL.Func([IDL.Vec(Share)], [Result_2], []),
     'delete_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], []),
     'delete_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'delete_post' : IDL.Func([IDL.Text], [Result_1], []),
-    'deposit_usdt' : IDL.Func([IDL.Nat64], [Result_4], []),
+    'deposit_usdt' : IDL.Func([IDL.Nat64], [Result_3], []),
     'get_all_files' : IDL.Func(
         [],
         [IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Text, FileNode)))],
@@ -336,7 +333,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Tuple(IDL.Text, User))],
         ['query'],
       ),
-    'get_contract' : IDL.Func([IDL.Text, IDL.Text], [Result_5], ['query']),
+    'get_contract' : IDL.Func([IDL.Text, IDL.Text], [Result_4], ['query']),
     'get_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], ['query']),
     'get_file_content' : IDL.Func(
         [IDL.Text],
@@ -349,19 +346,18 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_friends' : IDL.Func([], [IDL.Opt(Friend)], ['query']),
-    'get_initial_data' : IDL.Func([], [Result_6], ['query']),
+    'get_initial_data' : IDL.Func([], [Result_5], ['query']),
     'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
-    'get_post' : IDL.Func([IDL.Text], [Result_7], ['query']),
+    'get_post' : IDL.Func([IDL.Text], [Result_6], ['query']),
     'get_posts' : IDL.Func(
         [IDL.Nat64, IDL.Nat64],
         [IDL.Vec(PostUser)],
         ['query'],
       ),
-    'get_share_file' : IDL.Func([IDL.Text], [Result_2], ['query']),
-    'get_shared_file' : IDL.Func([IDL.Text], [Result_8], ['query']),
-    'get_shared_files' : IDL.Func([], [Result_9], ['query']),
+    'get_share_file' : IDL.Func([IDL.Text], [Result_7], ['query']),
+    'get_shared_file' : IDL.Func([IDL.Text], [Result_8], []),
     'get_user' : IDL.Func([IDL.Text], [Result], ['query']),
-    'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_10], []),
+    'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_9], []),
     'multi_updates' : IDL.Func(
         [
           IDL.Vec(FileNode),
@@ -373,7 +369,7 @@ export const idlFactory = ({ IDL }) => {
           IDL.Vec(StoredContract),
           IDL.Vec(IDL.Text),
         ],
-        [Result_3],
+        [Result_2],
         [],
       ),
     'pay_for_share_contract' : IDL.Func(
@@ -397,16 +393,16 @@ export const idlFactory = ({ IDL }) => {
     'search_posts' : IDL.Func([IDL.Text], [IDL.Vec(PostUser)], ['query']),
     'see_notifications' : IDL.Func([IDL.Text], [], []),
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
-    'share_file' : IDL.Func([ShareFile], [Result_2], []),
+    'share_file' : IDL.Func([ShareFileInput], [Result_7], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
-    'vote_down' : IDL.Func([IDL.Text], [Result_7], []),
-    'vote_up' : IDL.Func([IDL.Text], [Result_7], []),
-    'withdraw_usdt' : IDL.Func([IDL.Nat64], [Result_4], []),
+    'vote_down' : IDL.Func([IDL.Text], [Result_6], []),
+    'vote_up' : IDL.Func([IDL.Text], [Result_6], []),
+    'withdraw_usdt' : IDL.Func([IDL.Nat64], [Result_3], []),
     'ws_close' : IDL.Func([CanisterWsCloseArguments], [Result_1], []),
     'ws_get_messages' : IDL.Func(
         [CanisterWsGetMessagesArguments],
-        [Result_11],
+        [Result_10],
         ['query'],
       ),
     'ws_message' : IDL.Func(
