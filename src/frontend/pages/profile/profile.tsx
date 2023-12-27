@@ -19,6 +19,8 @@ import {actor} from "../../App";
 
 
 export default function ProfileComponent() {
+
+
     const dispatch = useDispatch();
     const {profile, friends, contracts, wallet} = useSelector((state: any) => state.filesReducer);
 

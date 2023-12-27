@@ -101,7 +101,8 @@ function ViewPost(props: Props) {
                 buttons={<><ActionsButtons post={props.post}/>
                     {changes || tags.length > 0 &&
                         < LoadingButton loading={loading} onClick={handleSave}> Save </LoadingButton>}
-                    {profile.id == props.post.creator.id && <PostTags post={props.post} tags={tags} setTags={setTags}/>}
+                    {profile && profile.id == props.post.creator.id &&
+                        <PostTags post={props.post} tags={tags} setTags={setTags}/>}
                 </>}
                 user={props.post.creator}
             />

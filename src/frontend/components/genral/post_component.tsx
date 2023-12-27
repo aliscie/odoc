@@ -11,6 +11,8 @@ import {Post, PostUser} from "../../../declarations/user_canister/user_canister.
 import AvatarChips from "./person_chip";
 import formatTimestamp from "../../utils/time";
 import EditorComponent from "../editor_components/main";
+import {Link} from "react-router-dom";
+import {useSelector} from "react-redux";
 
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
@@ -39,8 +41,17 @@ interface Props {
 }
 
 export default function PostComponent(props: Props) {
+
+    const {
+        profile,
+    } = useSelector((state: any) => state.filesReducer);
+
+    let path = "/user?id=" + props.post.creator.id
+    if (profile.id == props.post.creator.id) {
+        path = "/profile"
+    }
     let content = normalize_content_tree(props.post.content_tree);
-    let avatar = <AvatarChips size={"large"} user={props.post.creator}/>
+    let avatar = <Link to={path}><AvatarChips size={"large"} user={props.post.creator}/></Link>
     let subheader = formatTimestamp(props.post.date_created)
     const [expanded, setExpanded] = React.useState(false);
 

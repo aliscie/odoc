@@ -20,6 +20,8 @@ pub fn send_friend_request(user_principal: String) -> Result<User, String> {
     if caller() == user.clone().unwrap().principal() {
         return Err("You can't send a friend request to yourself.".to_string());
     }
+
+
     let mut friend = if let Some(friend) = Friend::get_friends_of_caller() {
         friend
     } else {
@@ -29,12 +31,12 @@ pub fn send_friend_request(user_principal: String) -> Result<User, String> {
         }
     };
 
+
     if !friend.friends.contains(&user.clone().unwrap()) && !friend.friend_requests.contains(&user.clone().unwrap()) {
-        friend.send_friend_request(user.clone().unwrap());
+        friend.send_friend_request(user.clone().unwrap())?;
         if let Ok(u) = Principal::from_text(user_principal) {
             websocket::notify_friend_request(u);
         }
-
 
         Ok(user.unwrap())
     } else {
@@ -44,6 +46,10 @@ pub fn send_friend_request(user_principal: String) -> Result<User, String> {
 
 #[update]
 pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
+
+    // ToDo prevent the friend request sender from accepting the request
+    //  Only the request receiver can accept_friend_request
+
     let user = User::get_user_from_text_principal(user_principal.clone());
     if let Some(friend) = Friend::get_friends_of_caller() {
         if let Some(_index) = friend.friend_requests.iter().position(|request| *request == user.clone().unwrap()) {
