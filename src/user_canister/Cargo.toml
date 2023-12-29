@@ -14,5 +14,7 @@ candid = "0.9.3"
 ic-cdk = "0.11.3"
 
 ic-cdk-macros = "0.8.1"
-serde = "1.0.176"
 serde_cbor = "0.11.2"
+
+ic-cdk-timers = "0.5.1"
+serde = { version = "1.0.176", features = ["derive"] }

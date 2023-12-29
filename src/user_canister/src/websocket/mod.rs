@@ -18,8 +18,7 @@ use handlers::{on_close, on_message, on_open};
 
 // Paste here the principal of the gateway obtained when running the gateway
 
-#[init]
-fn init() {
+pub fn init_websocket() {
     let handlers = WsHandlers {
         on_open: Some(on_open),
         on_message: Some(on_message),
@@ -31,10 +30,10 @@ fn init() {
     ic_websocket_cdk::init(params);
 }
 
-#[post_upgrade]
-fn post_upgrade() {
-    init();
-}
+// #[post_upgrade]
+// fn post_upgrade() {
+//     init();
+// }
 
 // method called by the client to open a WS connection to the canister (relayed by the WS Gateway)
 #[update]

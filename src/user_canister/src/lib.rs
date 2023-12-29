@@ -1,9 +1,22 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
+
+use ic_websocket_cdk::*;
 
 pub use contracts::*;
+use contracts::*;
+use discover::*;
+use files::*;
+use files_content::*;
+use friends::*;
+use queries::*;
 pub use share_files::*;
+use share_files::*;
 use storage_schema::*;
+use updates::*;
+use user::*;
 pub use wallet::*;
+use websocket::*;
 
 // use ic_cdk::candid::{
 //     candid_method, check_prog, export_service, IDLProg, TypeEnv,};
@@ -25,19 +38,11 @@ mod wallet;
 // mod timer;
 mod websocket;
 mod discover;
+mod timer;
+mod init;
 
-use user::*;
-use files::*;
-use files_content::*;
-use contracts::*;
-use friends::*;
-use share_files::*;
-use std::collections::HashMap;
-use queries::*;
-use updates::*;
-use ic_websocket_cdk::*;
-use websocket::*;
-use discover::*;
+use init::*;
+use timer::*;
 
 thread_local! {
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
