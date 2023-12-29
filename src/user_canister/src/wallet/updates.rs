@@ -14,7 +14,7 @@ use crate::{ExchangeType, PaymentContract, Wallet};
 #[update]
 fn deposit_usdt(amount: u64) -> Result<u64, String> {
     let mut wallet = Wallet::get(caller());
-    wallet.deposit(amount.clone(), "".to_string(), ExchangeType::Deposit)?;
+    wallet.deposit(amount.clone(), "ExternalWallet".to_string(), ExchangeType::Deposit)?;
     Ok(wallet.balance + amount)
 }
 

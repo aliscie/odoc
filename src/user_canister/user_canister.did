@@ -52,6 +52,7 @@ type ContractNotification = record { contract_type : text; contract_id : text };
 type Exchange = record {
   to : text;
   _type : ExchangeType;
+  date_created : nat64;
   date : text;
   from : text;
   amount : nat64;
@@ -79,12 +80,16 @@ type Formula = record {
   operation : Operation;
   execute : Execute;
 };
-type Friend = record { friend_requests : vec User; friends : vec User };
+type Friend = record { sender : User; receiver : User };
+type FriendSystem = record {
+  friend_requests : vec Friend;
+  friends : vec Friend;
+};
 type InitialData = record {
   FilesContents : opt vec record { text; vec record { text; ContentNode } };
   Contracts : vec record { text; StoredContract };
   Files : opt vec record { text; FileNode };
-  Friends : opt Friend;
+  Friends : opt FriendSystem;
   Profile : User;
   DiscoverUsers : vec record { text; User };
   Wallet : Wallet;
@@ -253,7 +258,7 @@ service : () -> {
   get_file : (text) -> (opt FileNode) query;
   get_file_content : (text) -> (opt vec record { text; ContentNode }) query;
   get_filtered_posts : (opt vec text, opt text) -> (vec PostUser) query;
-  get_friends : () -> (opt Friend) query;
+  get_friends : () -> (opt FriendSystem) query;
   get_initial_data : () -> (Result_5) query;
   get_notifications : () -> (vec Notification) query;
   get_post : (text) -> (Result_6) query;
@@ -270,6 +275,7 @@ service : () -> {
     ) -> (Result_2);
   pay_for_share_contract : (text, nat64, text) -> (Result_1);
   register : (RegisterUser) -> (Result);
+  reject_friend_request : (text) -> (Result);
   release_payment : (text) -> (Result_1);
   rename_file : (text, text) -> (bool);
   save_post : (Post) -> (Result_1);

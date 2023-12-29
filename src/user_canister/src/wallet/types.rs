@@ -23,6 +23,7 @@ pub struct Exchange {
     pub amount: u64,
     pub date: String,
     pub _type: ExchangeType,
+    pub date_created: u64,
 }
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, Default, CandidType, Deserialize)]
@@ -66,6 +67,7 @@ impl Wallet {
                     amount,
                     date: now,
                     _type,
+                    date_created: ic_cdk::api::time(),
                 };
                 wallet.exchanges.push(exchange);
             }
@@ -87,6 +89,7 @@ impl Wallet {
                         amount,
                         date: now,
                         _type,
+                        date_created: ic_cdk::api::time(),
                     };
                     wallet.exchanges.push(exchange);
                 }

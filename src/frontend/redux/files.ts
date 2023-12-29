@@ -6,7 +6,6 @@ import {FriendsActions} from "./friends";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {FileNode, User} from "../../declarations/user_canister/user_canister.did";
 import {actor} from "../App";
-import deserialize_file_contents from "../data_processing/denormalize/denormalize_file_contents";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
@@ -78,11 +77,21 @@ export async function get_initial_data() {
     const userPrincipal = authClient.getIdentity().getPrincipal().toString();
     let all_friends = []
 
-    if (data.Ok && data.Ok.Friends) {
+    if ("Ok" in data && data.Ok.Friends) {
         let friend_requests = data.Ok.Friends[0] && data.Ok.Friends[0].friend_requests || []
         let confirmed_friends = data.Ok.Friends[0] && data.Ok.Friends[0].friends || []
         all_friends = [...friend_requests.map((i: User) => i), ...confirmed_friends.map((i: any) => i)]
     }
+
+    const uniqueUsersSet = new Set<string>();
+
+    all_friends.forEach((item) => {
+        // uniqueUsersSet.add(item.sender);
+        uniqueUsersSet.add(item.receiver);
+    });
+
+    all_friends = Array.from(uniqueUsersSet);
+    // console.log({all_friends})
 
     if ("Ok" in data) {
         initialState["files"] = normalize_files(data.Ok.Files);

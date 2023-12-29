@@ -112,7 +112,7 @@ impl Post {
                 .skip(start)
                 .take(actual_count)
                 .map(|post| {
-                    let user = User::get_user_from_text_principal(post.creator.clone()).unwrap();
+                    let user = User::get_user_from_text_principal(&post.creator).unwrap();
                     let creator = UserPost {
                         id: user.id.clone(),
                         name: user.name.clone(),
@@ -153,7 +153,7 @@ impl Post {
                 // .skip(start)
                 // .take(actual_count)
                 .map(|post| {
-                    let user = User::get_user_from_text_principal(post.creator.clone()).unwrap();
+                    let user = User::get_user_from_text_principal(&post.creator).unwrap();
                     let creator = UserPost {
                         id: user.id.clone(),
                         name: user.name.clone(),

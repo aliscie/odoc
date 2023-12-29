@@ -70,6 +70,7 @@ export interface ContractNotification {
 export interface Exchange {
   'to' : string,
   '_type' : ExchangeType,
+  'date_created' : bigint,
   'date' : string,
   'from' : string,
   'amount' : bigint,
@@ -102,15 +103,16 @@ export interface Formula {
   'operation' : Operation,
   'execute' : Execute,
 }
-export interface Friend {
-  'friend_requests' : Array<User>,
-  'friends' : Array<User>,
+export interface Friend { 'sender' : User, 'receiver' : User }
+export interface FriendSystem {
+  'friend_requests' : Array<Friend>,
+  'friends' : Array<Friend>,
 }
 export interface InitialData {
   'FilesContents' : [] | [Array<[string, Array<[string, ContentNode]>]>],
   'Contracts' : Array<[string, StoredContract]>,
   'Files' : [] | [Array<[string, FileNode]>],
-  'Friends' : [] | [Friend],
+  'Friends' : [] | [FriendSystem],
   'Profile' : User,
   'DiscoverUsers' : Array<[string, User]>,
   'Wallet' : Wallet,
@@ -298,7 +300,7 @@ export interface _SERVICE {
     [[] | [Array<string>], [] | [string]],
     Array<PostUser>
   >,
-  'get_friends' : ActorMethod<[], [] | [Friend]>,
+  'get_friends' : ActorMethod<[], [] | [FriendSystem]>,
   'get_initial_data' : ActorMethod<[], Result_5>,
   'get_notifications' : ActorMethod<[], Array<Notification>>,
   'get_post' : ActorMethod<[string], Result_6>,
@@ -318,6 +320,7 @@ export interface _SERVICE {
   >,
   'pay_for_share_contract' : ActorMethod<[string, bigint, string], Result_1>,
   'register' : ActorMethod<[RegisterUser], Result>,
+  'reject_friend_request' : ActorMethod<[string], Result>,
   'release_payment' : ActorMethod<[string], Result_1>,
   'rename_file' : ActorMethod<[string, string], boolean>,
   'save_post' : ActorMethod<[Post], Result_1>,

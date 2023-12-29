@@ -6,18 +6,21 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import * as React from "react";
 import {useEffect} from "react";
-import {Button, Tooltip, Typography} from "@mui/material";
+import {Button, Divider, Tooltip, Typography} from "@mui/material";
 import useGetUser from "../../utils/get_user_by_principal";
 import {actor} from "../../App";
-import {logger} from "../../dev_utils/log_data";
+import {Exchange} from "../../../declarations/user_canister/user_canister.did";
+import formatTimestamp from "../../utils/time";
 
 export function ContractItem(props: any) {
+    let date_created = formatTimestamp(props.date_created)
     const {profile} = useSelector((state: any) => state.filesReducer);
     const [users, setUsers] = React.useState<any>({sender: "Null", receiver: "Null"})
+
     useEffect(() => {
         (async () => {
             let receiver = await getUser(props.receiver.toString());
-            let sender = await getUser(props.sender.toString());
+            let sender = "ExternalWallet" == props.sender ? {name: "ExternalWallet"} : await getUser(props.sender.toString());
             setUsers({
                 sender: sender ? sender.name : "Null", receiver: receiver ? receiver.name : "Null"
             })
@@ -81,17 +84,32 @@ export function ContractItem(props: any) {
     let is_receiver = profile.id == props.receiver.toString();
 
     return <ListItem key={props.id}>
-        <ListItemText
-            primaryTypographyProps={{style: {}}}
-            secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
-            primary={`Sender: ${users.sender}`}
-            secondary={`Receiver: ${users.receiver}, Amount: ${props.amount} USDTs`}
-        />
+        <ListItem key={props.id}>
+            <ListItemText
+                primaryTypographyProps={{style: {}}}
+                secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
+                primary={`Sender: ${users.sender}`}
+                secondary={
+                    <div>
+                        <div>Receiver: {users.receiver}</div>
+                        <div>Amount: {Number(props.amount)} USDTs</div>
+                        <div>Date Created: {date_created}</div>
+                    </div>
+                }
+            />
+            {props.canceled && is_receiver && <Report/>}
+        </ListItem>
+
+        <Divider/>
         {props.canceled && is_receiver && <Report/>}
     </ListItem>
 }
 
-function TransactionHistory(props: any) {
+interface TranProps {
+    items: Array<Exchange>
+}
+
+function TransactionHistory(props: TranProps) {
     return (
         <List dense
         >

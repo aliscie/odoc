@@ -6,7 +6,7 @@ use crate::{ShareFile, StoredContract, Wallet};
 use crate::discover::Post;
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
-use crate::friends::Friend;
+use crate::friends::FriendSystem;
 use crate::user::User;
 use crate::websocket::Notification;
 
@@ -25,7 +25,7 @@ pub type ShareId = String;
 // Stores types
 pub type IdStore = BTreeMap<String, Principal>;
 pub type ProfileStore = BTreeMap<Principal, User>;
-pub type FriendsStore = BTreeMap<Principal, Friend>;
+pub type FriendsStore = BTreeMap<Principal, FriendSystem>;
 pub type FilesStore = BTreeMap<Principal, HashMap<FileId, FileNode>>;
 pub type FileContentsStore = BTreeMap<Principal, HashMap<FileId, ContentTree>>;
 pub type ContractStore = BTreeMap<Principal, HashMap<ContractId, StoredContract>>;

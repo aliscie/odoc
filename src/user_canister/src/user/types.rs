@@ -45,7 +45,7 @@ impl User {
         Principal::from_text(self.id.clone()).unwrap()
     }
     // Get a user from their principal
-    pub fn get_user_from_text_principal(principal_str: String) -> Option<User> {
+    pub fn get_user_from_text_principal(principal_str: &String) -> Option<User> {
         let principal = Principal::from_text(principal_str).ok()?;
         PROFILE_STORE.with(|profile_store| {
             let store = profile_store.borrow();

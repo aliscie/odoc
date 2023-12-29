@@ -12,6 +12,7 @@ import LoaderButton from "../../components/genral/loader_button";
 import {convertToBlobLink} from "../../data_processing/image_to_vec";
 import {actor} from "../../App";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import {FriendSystem, User} from "../../../declarations/user_canister/user_canister.did";
 
 interface FriendProps {
     id: string,
@@ -22,17 +23,17 @@ interface FriendProps {
 }
 
 export function Friend(props: FriendProps) {
-    const {profile, friends} = useSelector((state: any) => state.filesReducer);
+    const {
+        friends,
+        profile
+    }: { friends: FriendSystem, profile: User } = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    let friens = friends[0] && friends[0].friends || []
+    let FS = friends[0] && friends[0].friends || []
     let friend_requests = friends[0] && friends[0].friend_requests || []
-    let is_friend_request = friend_requests.find((value) => value.id === props.id);
-
+    let is_friend_request = friend_requests.some((req) => req && req.sender.id === profile.id || req.receiver && req.receiver.id === profile.id)
+    let is_friend = FS.some((friend) => friend && friend.sender.id === profile.id || friend && friend.receiver && friend.receiver.id === profile.id)
     const dispatch = useDispatch();
 
-    let is_friend = friens && friens.find((f: any) => f.id === props.id)
-    is_friend = typeof is_friend !== "undefined" && is_friend !== null
-    console.log({is_friend})
 
     async function handleCLickConfirm(id: string) {
         let res = actor && await actor.accept_friend_request(id)
@@ -50,8 +51,20 @@ export function Friend(props: FriendProps) {
         return res
     }
 
-    async function handleReject(id: string) {
+
+    async function handleCancel(id: string) {
         let res = actor && await actor.cancel_friend_request(id)
+        // console.log({res})
+        if (res.Ok) {
+            dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
+        }
+        let notification_list = actor && await actor.get_notifications();
+        dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
+        return res
+    }
+
+    async function handleReject(id: string) {
+        let res = actor && await actor.reject_friend_request(id)
         if (res.Ok) {
             dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
         }
@@ -76,18 +89,22 @@ export function Friend(props: FriendProps) {
 
     // ToDo prevent the friend request sender from accepting the request
     //  Only the request receiver can accept_friend_request
-
+    let is_sent = friend_requests.some((req) => req && req.sender.id === profile.id)
+    // console.log({friends, id: profile.id, is_friend})
     return <ListItem
         secondaryAction={
             <>
-
-                {is_friend_request && <LoaderButton
+                {is_friend_request && !is_sent && <Tooltip title={"Friend request pending"}> <LoaderButton
                     onClick={async () => await handleCLickConfirm(props.id)}
-                >Confirm</LoaderButton>}
+                >Confirm</LoaderButton></Tooltip>}
 
-                {is_friend_request && <LoaderButton
+                {is_friend_request && !is_sent && <LoaderButton
                     onClick={async () => await handleReject(props.id)}
                 >Reject</LoaderButton>}
+
+                {is_sent && <LoaderButton
+                    onClick={async () => await handleCancel(props.id)}
+                >Cancel</LoaderButton>}
 
                 {is_friend && !is_friend_request && <LoaderButton
                     onClick={async () => await handleUnfriend(props.id)}
@@ -114,8 +131,11 @@ export function Friend(props: FriendProps) {
     </ListItem>
 }
 
-function Friends(props: any
-) {
+function Friends(props: any) {
+
+    const {
+        profile,
+    } = useSelector((state: any) => state.filesReducer);
 
     if (!props.friends[0]) {
         return <></>
@@ -128,25 +148,27 @@ function Friends(props: any
         <List dense>
 
             {friend_requests && friend_requests.map((value) => {
-                const labelId = `checkbox-list-secondary-label-${value.name}`;
+                let user = value.receiver.id != profile.id ? value.receiver : value.sender
+                const labelId = `checkbox-list-secondary-label-${value.receiver.name}`;
                 return (
                     <ListItem
-                        key={value.name}
+                        key={value.receiver.name}
                         disablePadding
                     >
-                        <Friend labelId={labelId} {...value}/>
+                        <Friend labelId={labelId} {...user}/>
                     </ListItem>
                 );
             })}
 
             {friends && friends.map((value) => {
-                const labelId = `checkbox-list-secondary-label-${value.name}`;
+                let user = value.receiver.id != profile.id ? value.receiver : value.sender
+                const labelId = `checkbox-list-secondary-label-${value.receiver.name}`;
                 return (
                     <ListItem
-                        key={value.name}
+                        key={value.receiver.name}
                         disablePadding
                     >
-                        <Friend {...value} is_friend={true} labelId={labelId}/>
+                        <Friend {...user} is_friend={true} labelId={labelId}/>
                     </ListItem>
                 );
             })}

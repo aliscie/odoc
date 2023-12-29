@@ -162,9 +162,10 @@ export const idlFactory = ({ IDL }) => {
     'content_tree' : IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)),
     'votes_down' : IDL.Vec(IDL.Principal),
   });
-  const Friend = IDL.Record({
-    'friend_requests' : IDL.Vec(User),
-    'friends' : IDL.Vec(User),
+  const Friend = IDL.Record({ 'sender' : User, 'receiver' : User });
+  const FriendSystem = IDL.Record({
+    'friend_requests' : IDL.Vec(Friend),
+    'friends' : IDL.Vec(Friend),
   });
   const ExchangeType = IDL.Variant({
     'Withdraw' : IDL.Null,
@@ -175,6 +176,7 @@ export const idlFactory = ({ IDL }) => {
   const Exchange = IDL.Record({
     'to' : IDL.Text,
     '_type' : ExchangeType,
+    'date_created' : IDL.Nat64,
     'date' : IDL.Text,
     'from' : IDL.Text,
     'amount' : IDL.Nat64,
@@ -190,7 +192,7 @@ export const idlFactory = ({ IDL }) => {
     ),
     'Contracts' : IDL.Vec(IDL.Tuple(IDL.Text, StoredContract)),
     'Files' : IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Text, FileNode))),
-    'Friends' : IDL.Opt(Friend),
+    'Friends' : IDL.Opt(FriendSystem),
     'Profile' : User,
     'DiscoverUsers' : IDL.Vec(IDL.Tuple(IDL.Text, User)),
     'Wallet' : Wallet,
@@ -345,7 +347,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(PostUser)],
         ['query'],
       ),
-    'get_friends' : IDL.Func([], [IDL.Opt(Friend)], ['query']),
+    'get_friends' : IDL.Func([], [IDL.Opt(FriendSystem)], ['query']),
     'get_initial_data' : IDL.Func([], [Result_5], ['query']),
     'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
     'get_post' : IDL.Func([IDL.Text], [Result_6], ['query']),
@@ -378,6 +380,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'register' : IDL.Func([RegisterUser], [Result], []),
+    'reject_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'release_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'rename_file' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'save_post' : IDL.Func([Post], [Result_1], []),
