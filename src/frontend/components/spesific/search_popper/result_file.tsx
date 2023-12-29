@@ -41,10 +41,12 @@ function ResultFile(props: Props) {
             }}
             style={resultFileContainerStyle}
         >
-            <Typography variant="h3" contentEditable={false}>
-                {title}
-            </Typography>
-            <div >
+            <EditorComponent
+                contentEditable={false}
+                editorKey={props.file_id}
+                content={[{type: "h1", children: [{text: title}]}]}
+            />
+            <div>
                 <EditorComponent
                     contentEditable={false}
                     editorKey={props.file_id}

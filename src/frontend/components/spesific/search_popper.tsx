@@ -16,9 +16,9 @@ import AbcIcon from '@mui/icons-material/Abc';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import MultiAutoComplete from "../genral/multi_autocompelte";
-import {actor} from "../../App";
-import useSearchFilesContent from "./search_popper/search_files_content";
+import useSearchFiles from "./search_popper/search_files_content";
 import ResultFile from "./search_popper/result_file";
+import TitleIcon from '@mui/icons-material/Title';
 
 export function OptionItem(props: any) {
     return (
@@ -37,8 +37,12 @@ const search_options = [
         value: "case_sensitive",
     },
     {
-        title: <OptionItem title={"Search in all files content"} icon={<TravelExploreIcon/>}/>,
+        title: <OptionItem title={"Files content"} icon={<TravelExploreIcon/>}/>,
         value: "files_contents",
+    },
+    {
+        title: <OptionItem title={"Files titles"} icon={<TitleIcon/>}/>,
+        value: "files_titles",
     },
     // {
     //     title: <OptionItem title={"Search in current file"} icon={<FindInPageIcon/>}/>,
@@ -100,16 +104,24 @@ function SearchPopper() {
     const handleSelectSearchOption = (event: any, options: any) => {
         setOptions(options.map((opt) => opt.value));
     }
-    let {SearchFilesContent} = useSearchFilesContent();
+    let {SearchFilesContent, SearchFilesTitles} = useSearchFiles();
     useEffect(() => {
-        if (currentOptions.includes("files_contents") && actor) {
-            (async () => {
-                // let res: Array<[string, Array<[string, ContentNode]>]> = await actor.search_files_content(searchValue, true);
-                let res: [string] | undefined = SearchFilesContent(searchValue, true);
-                setSearchRes(res);
-                // let normalized = normalize_files_contents(res);
-                // setSearchRes(normalized);
-            })();
+        let case_sensitive = false;
+        if (currentOptions.includes("case_sensitive")) {
+            case_sensitive = true;
+        }
+        if (currentOptions.includes("files_contents")) {
+            // (async () => {
+            // let res: Array<[string, Array<[string, ContentNode]>]> = await actor.search_files_content(searchValue, true);
+            let res: [string] | undefined = SearchFilesContent(searchValue, case_sensitive);
+            setSearchRes(res);
+            // let normalized = normalize_files_contents(res);
+            // setSearchRes(normalized);
+            // })();
+        } else if (currentOptions.includes("files_titles")) {
+
+            let res: [string] | undefined = SearchFilesTitles(searchValue, case_sensitive);
+            setSearchRes(res);
         }
     }, [searchValue]);
 
