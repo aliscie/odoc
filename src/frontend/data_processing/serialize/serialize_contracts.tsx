@@ -35,7 +35,7 @@ function detectContractType(data: any): string | null {
 }
 
 
-export default function denormalize_payment_contract(content: any[], data: Array<StoredContract> = []): Array<StoredContract> {
+export default function serialize_payment_contract(content: any[], data: Array<StoredContract> = []): Array<StoredContract> {
     Object.keys(content).forEach((key) => {
         let item = content[key];
         let contract_type: string | null = detectContractType(item);

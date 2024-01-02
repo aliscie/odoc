@@ -22,7 +22,6 @@ function PostTags(props: Props) {
         let is_text = typeof event.target.value === "string";
 
         if (!is_title_in && is_text) {
-            console.log({text: event.target.value});
             setInitTags((pre) => {
                 return [{title: String(event.target.value)}, ...pre];
             });

@@ -9,7 +9,7 @@ import {useSelector} from "react-redux";
 import {actor} from "../../App";
 import {useSnackbar} from "notistack";
 import {LoadingButton} from "@mui/lab";
-import deserialize_file_contents from "../../data_processing/denormalize/denormalize_file_contents";
+import serialize_file_contents from "../../data_processing/serialize/serialize_file_contents";
 import PostTags from "./tags_component";
 
 interface Props {
@@ -34,7 +34,7 @@ function ViewPost(props: Props) {
     }
     const handleSave = async () => {
         if (changes) {
-            let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> = deserialize_file_contents(changes)
+            let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> = serialize_file_contents(changes)
             let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1]
             post.content_tree = content_tree
         }

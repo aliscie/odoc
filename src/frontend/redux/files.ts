@@ -6,6 +6,7 @@ import {FriendsActions} from "./friends";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {FileNode, User} from "../../declarations/user_canister/user_canister.did";
 import {actor} from "../App";
+import {logger} from "../dev_utils/log_data";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
@@ -91,11 +92,13 @@ export async function get_initial_data() {
     });
 
     all_friends = Array.from(uniqueUsersSet);
-    // console.log({all_friends})
 
     if ("Ok" in data) {
         initialState["files"] = normalize_files(data.Ok.Files);
         initialState["denormalized_files_content"] = data.Ok.FilesContents; //[] | [Array<[string, Array<[string, ContentNode]>]>]
+        logger({
+            FilesContents: data.Ok.FilesContents[0]
+        })
         initialState["files_content"] = normalize_files_contents(data.Ok.FilesContents[0]);
         initialState["contracts"] = normalize_contracts(data.Ok.Contracts);
         initialState["current_file"] = getCurrentFile(initialState["files"]);
@@ -231,7 +234,6 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
 
         case 'CONTENT_CHANGES':
             state.changes.contents[action.id] = action.changes;
-            // state['denormalized_files_content'] = deserialize_file_contents(state.changes.contents)
             return {
                 ...state,
             }

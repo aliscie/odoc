@@ -9,7 +9,7 @@ import {ContentNode, Post} from "../../../declarations/user_canister/user_canist
 import {randomId} from "@mui/x-data-grid-generator";
 import {useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
-import deserialize_file_contents from "../../data_processing/denormalize/denormalize_file_contents";
+import serialize_file_contents from "../../data_processing/serialize/serialize_file_contents";
 import {LoadingButton} from "@mui/lab";
 import PostTags from "./tags_component";
 
@@ -34,7 +34,7 @@ function CreatePost(props: any) {
         'votes_down': [],
     }
     const handleCreatePost = async () => {
-        let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> = deserialize_file_contents(changes)
+        let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> = serialize_file_contents(changes)
         let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1]
         post.content_tree = content_tree
         setLoad(true)

@@ -214,7 +214,6 @@ function CustomDataGrid(props: Props) {
 
     }
 
-    // console.log({data})
 
     return <StyledDataGrid
         rows={data.rows}

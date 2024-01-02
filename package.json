@@ -35,7 +35,7 @@
     "hot-formula-parser": "^4.0.0",
     "ic-websocket-js": "^0.3.1",
     "notistack": "^3.0.1",
-    "odoc-editor": "^2.6.0",
+    "odoc-editor": "^2.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-draggable": "^4.4.5",

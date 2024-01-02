@@ -4,10 +4,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import {useSnackbar} from "notistack";
 import {ContentNode, FileNode, StoredContract} from "../../../declarations/user_canister/user_canister.did";
-import deserialize_file_contents from "../../data_processing/denormalize/denormalize_file_contents";
-import denormalize_contract from "../../data_processing/denormalize/denormalize_contracts";
+import serialize_file_contents from "../../data_processing/serialize/serialize_file_contents";
+import denormalize_contract from "../../data_processing/serialize/serialize_contracts";
 import {actor} from "../../App";
 import {LoadingButton} from "@mui/lab";
+import {logger} from "../../dev_utils/log_data";
 
 function MultiSaveButton(props: any) {
     const dispatch = useDispatch();
@@ -19,7 +20,11 @@ function MultiSaveButton(props: any) {
     async function handleClick() {
         setLoading(true);
 
-        let denormalized_content: Array<Array<[string, Array<[string, ContentNode]>]>> = deserialize_file_contents(changes.contents)
+        let serialized_content: Array<Array<[string, Array<[string, ContentNode]>]>> = serialize_file_contents(changes.contents)
+        // This seems has no issue, so the issue probably in the backend
+        // logger({
+        //     serialized_content
+        // })
         let contracts: Array<StoredContract> = denormalize_contract(changes.contracts);
 
         let loading = enqueueSnackbar(<span>Creating note page... <span className={"loader"}/></span>,);
@@ -27,7 +32,7 @@ function MultiSaveButton(props: any) {
 
         let delete_contracts: Array<String> = changes.delete_contracts || [];
 
-        let res = actor && await actor.multi_updates(files, denormalized_content, contracts, delete_contracts);
+        let res = actor && await actor.multi_updates(files, serialized_content, contracts, delete_contracts);
         closeSnackbar(loading)
         if (res.Err) {
             enqueueSnackbar(res.Err, {variant: "error"});

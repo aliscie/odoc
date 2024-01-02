@@ -54,7 +54,6 @@ export function Friend(props: FriendProps) {
 
     async function handleCancel(id: string) {
         let res = actor && await actor.cancel_friend_request(id)
-        // console.log({res})
         if (res.Ok) {
             dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
         }
@@ -77,7 +76,6 @@ export function Friend(props: FriendProps) {
         let loading = enqueueSnackbar(<span>sending friend request... <span
             className={"loader"}/></span>, {variant: "info"});
         let friend_request = actor && await actor.send_friend_request(user)
-        console.log({is_friend, friend_request})
         closeSnackbar(loading)
         if (friend_request.Err) {
             enqueueSnackbar(friend_request.Err, {variant: "error"});
@@ -90,7 +88,6 @@ export function Friend(props: FriendProps) {
     // ToDo prevent the friend request sender from accepting the request
     //  Only the request receiver can accept_friend_request
     let is_sent = friend_requests.some((req) => req && req.sender.id === profile.id)
-    // console.log({friends, id: profile.id, is_friend})
     return <ListItem
         secondaryAction={
             <>

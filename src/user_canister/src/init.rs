@@ -13,5 +13,5 @@ fn init() {
 #[ic_cdk::post_upgrade]
 fn post_upgrade() {
     init_websocket();
-    // init_timers(1 as u64)
+    // init_timers()
 }
