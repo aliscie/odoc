@@ -37,6 +37,7 @@ interface Props {
     // subheader?: string,
     post: PostUser | Post,
     onChange?: any,
+    editable?: boolean,
     // avatar?: any,
 }
 
@@ -47,7 +48,7 @@ export default function PostComponent(props: Props) {
     } = useSelector((state: any) => state.filesReducer);
 
     let path = "/user?id=" + props.post.creator.id
-    if (profile.id == props.post.creator.id) {
+    if (profile && props.post.creator && profile.id == props.post.creator.id) {
         path = "/profile"
     }
     let content = normalize_content_tree(props.post.content_tree);
@@ -72,6 +73,7 @@ export default function PostComponent(props: Props) {
 
             <CardContent>
                 <EditorComponent
+                    editable={props.editable}
                     onChange={props.onChange}
                     content={content}/>
             </CardContent>

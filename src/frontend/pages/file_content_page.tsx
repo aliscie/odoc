@@ -5,7 +5,6 @@ import {handleRedux} from "../redux/main";
 import {payment_contract_sample, shares_contract_sample} from "../data_processing/data_samples";
 import {FileNode} from "../../declarations/user_canister/user_canister.did";
 import EditorComponent from "../components/editor_components/main";
-import {Typography} from "@mui/material";
 import debounce from "../utils/debounce";
 
 
@@ -50,7 +49,7 @@ function FileContentPage() {
 
 
     let handleTitleKeyDown = (e: any) => {
-        let title = e.target.innerText;
+        let title = e[0].children[0].text
         handleInputChange(title);
     };
     let preventEnter = (e: any) => {
@@ -93,11 +92,19 @@ function FileContentPage() {
         return (
             <div style={{marginTop: "3px", marginLeft: "10%", marginRight: "10%"}}>
 
-                <Typography
-                    variant="h3"
-                    onKeyDown={preventEnter}
-                    onKeyUp={handleTitleKeyDown}
-                    contentEditable={editable}>{title}</Typography>
+                <EditorComponent
+                    preventSplit={true}
+                    preventToolbar={true}
+                    onChange={handleTitleKeyDown}
+                    contentEditable={editable}
+                    editorKey={current_file.id}
+                    content={[{
+                        "type": "h1",
+                        "children": [{"text": title}]
+                    }
+                    ]}
+                />
+
                 <EditorComponent
                     contentEditable={editable}
                     handleOnInsertComponent={handleOnInsertComponent}

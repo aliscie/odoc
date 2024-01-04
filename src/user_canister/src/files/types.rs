@@ -141,16 +141,25 @@ impl FileNode {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();
 
-            let user_files = files_store.borrow();
-            let user_files_map = user_files.get(&principal_id)?;
+            let mut all_files: HashMap<FileId, FileNode>;
 
-            let mut all_files: HashMap<FileId, FileNode> = user_files_map.clone();
+            if let Some(user_files_map) = files_store.borrow().get(&principal_id) {
+                // If user's files are available, clone them
+                all_files = user_files_map.clone();
+            } else {
+                // If user's files are not available, create a new HashMap
+                all_files = HashMap::new();
+            }
+
+            // Insert shared files into the all_files map
             for file in files {
                 all_files.insert(file.id.clone(), file);
             }
+
             Some(all_files)
         })
     }
+
 
     pub fn delete_file(file_id: FileId) -> Option<FileNode> {
         USER_FILES.with(|files_store| {

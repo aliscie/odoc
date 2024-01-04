@@ -1,11 +1,17 @@
+use std::time::{Duration, SystemTime};
 // use std::sync::atomic::Ordering;
 // use candid::Principal;
 use ic_cdk::{caller};
 use ic_cdk_macros::update;
 
 use crate::discover::{Post};
-// use crate::websocket::{Notification};
 
+// Move it to util
+fn time_diff(i: u64, f: u64) -> Duration {
+    let date_created_duration = Duration::from_nanos(f);
+    let current_time_duration = Duration::from_nanos(i);
+    current_time_duration - date_created_duration
+}
 
 #[update]
 fn save_post(mut post: Post) -> Result<(), String> {
@@ -27,15 +33,14 @@ fn save_post(mut post: Post) -> Result<(), String> {
             //     let x = posts.last().unwrap().date_created.clone() - posts.first().unwrap().date_created.clone();
             //     print(x.to_string());
 
-            let time_difference = posts.last().unwrap().date_created.clone() - ic_cdk::api::time();
-            // last_post_sample = 43285902000 nano seconds
-            //  Error creating post. Please wait 51 hours and 1445734 minutes before you can post again
-
-
-            let remaining_hours = time_difference / 360_000_000_000_000_000;
-            let remaining_minutes = (time_difference.clone() - remaining_hours) / 60_000_000_000;
-            let waiting_time = format!("Please wait {} hours and {} minutes before you can post again", remaining_hours, remaining_minutes);
-            return Err(waiting_time);
+            let one_day = 86400;
+            let diff = time_diff(posts.last().unwrap().date_created.clone(), ic_cdk::api::time());
+            if diff < Duration::from_secs(one_day.clone()) {
+                let hours = &one_day - diff.as_secs();
+                let remainder = (one_day - diff.as_secs()) % 3600;
+                let msg = format!("please wait {} hours and {} minutes", hours / 3600, remainder / 60);
+                return Err(msg);
+            }
         }
         post.votes_up = vec![];
         post.votes_down = vec![];

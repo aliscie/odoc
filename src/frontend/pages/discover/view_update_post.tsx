@@ -69,6 +69,7 @@ function ViewPost(props: Props) {
     return (
         <div>
             <PostComponent
+                editable={isLoggedIn && !Anonymous}
                 onChange={onChange}
                 post={props.post}
                 headerAction={

@@ -71,7 +71,8 @@ function SearchPopper() {
     const [currentOptions, setOptions] = React.useState([]);
     const anchorRef = React.useRef<HTMLDivElement | null>(null);
     // const [searchRes, setSearchRes] = React.useState <undefined | Array<[string, Array<[string, ContentNode]>]>>(null);
-    const [searchRes, setSearchRes] = React.useState <undefined | any>(null);
+    const [searchRes, setSearchRes] = React.useState<Set<string>>(new Set());
+
 
     const handleShortcutKeyPress = React.useCallback(
         (event: KeyboardEvent) => {
@@ -110,18 +111,34 @@ function SearchPopper() {
         if (currentOptions.includes("case_sensitive")) {
             case_sensitive = true;
         }
+        setSearchRes([]);
         if (currentOptions.includes("files_contents")) {
             // (async () => {
             // let res: Array<[string, Array<[string, ContentNode]>]> = await actor.search_files_content(searchValue, true);
             let res: [string] | undefined = SearchFilesContent(searchValue, case_sensitive);
-            setSearchRes(res);
+            if (res) {
+                setSearchRes((prevIds) => {
+                    const newIds = new Set(res);
+                    return new Set([...prevIds, ...newIds]);
+                });
+            }
+
             // let normalized = normalize_files_contents(res);
             // setSearchRes(normalized);
             // })();
-        } else if (currentOptions.includes("files_titles")) {
+        }
+        if (currentOptions.includes("files_titles")) {
 
             let res: [string] | undefined = SearchFilesTitles(searchValue, case_sensitive);
-            setSearchRes(res);
+            if (res) {
+                setSearchRes((prevIds) => {
+                    const newIds = new Set(res);
+                    return new Set([...prevIds, ...newIds]);
+                });
+            }
+        }
+        if (searchValue === "") {
+            setSearchRes([]);
         }
     }, [searchValue]);
 
@@ -194,10 +211,11 @@ function SearchPopper() {
                     </Card>
                 </Resizable>
 
-                {searchRes && searchRes.length > 0 && searchRes.map((res) => {
+                {searchRes && Array.from(searchRes).map((res) => {
                     return <ResultFile file_id={res}/>
                 })
                 }
+
             </Popper>
         </Draggable>
     );

@@ -23,9 +23,15 @@ const Discover = () => {
 
             const delayedSearch = async () => {
                 // TODO later add a Button for deep search_popper in cuz query can cost cycles.
-                let res: undefined | Array<PostUser> = actor && await actor.search_posts(searchValue);
-                logger({res});
-                res && setPosts(res);
+                if (searchValue.length > 0) {
+                    let res: undefined | Array<PostUser> = actor && await actor.search_posts(searchValue);
+                    res && setPosts(res);
+                } else {
+                    setPage(0)
+                    setPosts([])
+                    await set_posts()
+                }
+
             };
 
             // Clear the previous timeout
@@ -40,6 +46,8 @@ const Discover = () => {
 
 
         async function set_posts() {
+
+            // TODO store posts in local storage prevent the need to call teh backend everytime after search.
             posts.length > 0 && setPage(posts.length);
             let res: undefined | Array<PostUser> = actor && await actor.get_posts(BigInt(current_page), BigInt(current_page + 10))
 
@@ -64,8 +72,6 @@ const Discover = () => {
         }, [])
 
 
-
-
         return (
             <Grid
 
@@ -85,7 +91,7 @@ const Discover = () => {
                                           // mx: 'auto',
                                       }}
                         >
-                            <ViewPost posts={posts} setPosts={setPosts} post={post}  />
+                            <ViewPost posts={posts} setPosts={setPosts} post={post}/>
                         </Grid>)
                     })
                 }

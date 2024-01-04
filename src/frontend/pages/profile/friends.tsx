@@ -13,6 +13,7 @@ import {convertToBlobLink} from "../../data_processing/image_to_vec";
 import {actor} from "../../App";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import {FriendSystem, User} from "../../../declarations/user_canister/user_canister.did";
+import {useState} from "react";
 
 interface FriendProps {
     id: string,
@@ -32,8 +33,9 @@ export function Friend(props: FriendProps) {
     let friend_requests = friends[0] && friends[0].friend_requests || []
     let is_friend_request = friend_requests.some((req) => req && req.sender.id === profile.id || req.receiver && req.receiver.id === profile.id)
     let is_friend = FS.some((friend) => friend && friend.sender.id === profile.id || friend && friend.receiver && friend.receiver.id === profile.id)
+    const [isFriend, setIsFriend] = useState(is_friend);
     const dispatch = useDispatch();
-
+    const [isFriendReq, setIsFreindReq] = useState(is_friend_request);
 
     async function handleCLickConfirm(id: string) {
         let res = actor && await actor.accept_friend_request(id)
@@ -47,15 +49,20 @@ export function Friend(props: FriendProps) {
         let res = actor && await actor.unfriend(id)
         if (res.Ok) {
             dispatch(handleRedux("REMOVE_FRIEND", {id: id}))
+            setIsFriend(false);
         }
         return res
     }
 
+    let is_sent = friend_requests.some((req) => req && req.sender.id === profile.id)
+    const [isSent, setIsSent] = useState(is_sent);
 
     async function handleCancel(id: string) {
         let res = actor && await actor.cancel_friend_request(id)
         if (res.Ok) {
             dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
+            setIsSent(false);
+            setIsFreindReq(false)
         }
         let notification_list = actor && await actor.get_notifications();
         dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
@@ -82,32 +89,36 @@ export function Friend(props: FriendProps) {
         }
         if (friend_request.Ok) {
             enqueueSnackbar("Friend request sent", {variant: "success"});
+            setIsSent(true)
+            setIsFreindReq(true)
         }
+        return friend_request
+
     }
 
     // ToDo prevent the friend request sender from accepting the request
     //  Only the request receiver can accept_friend_request
-    let is_sent = friend_requests.some((req) => req && req.sender.id === profile.id)
+
     return <ListItem
         secondaryAction={
             <>
-                {is_friend_request && !is_sent && <Tooltip title={"Friend request pending"}> <LoaderButton
+                {isFriendReq && !isSent && <Tooltip title={"Friend request pending"}> <LoaderButton
                     onClick={async () => await handleCLickConfirm(props.id)}
                 >Confirm</LoaderButton></Tooltip>}
 
-                {is_friend_request && !is_sent && <LoaderButton
+                {isFriendReq && !isSent && <LoaderButton
                     onClick={async () => await handleReject(props.id)}
                 >Reject</LoaderButton>}
 
-                {is_sent && <LoaderButton
+                {isSent && <LoaderButton
                     onClick={async () => await handleCancel(props.id)}
                 >Cancel</LoaderButton>}
 
-                {is_friend && !is_friend_request && <LoaderButton
+                {isFriend && !isFriendReq && <LoaderButton
                     onClick={async () => await handleUnfriend(props.id)}
                 >Unfriend</LoaderButton>}
 
-                {!is_friend && !is_friend_request && <Tooltip title={"Send friend request"}> < LoaderButton
+                {!isFriend && !isFriendReq && <Tooltip title={"Send friend request"}> < LoaderButton
                     onClick={async () => await handleFriedReq(props.id)}
                 ><GroupAddIcon/> </LoaderButton></Tooltip>}
 
@@ -158,7 +169,7 @@ function Friends(props: any) {
             })}
 
             {friends && friends.map((value) => {
-                let user = value.receiver.id != profile.id ? value.receiver : value.sender
+                let user = value.receiver && value.receiver.id != profile.id ? value.receiver : value.sender
                 const labelId = `checkbox-list-secondary-label-${value.receiver.name}`;
                 return (
                     <ListItem

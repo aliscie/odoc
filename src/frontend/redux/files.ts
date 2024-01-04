@@ -86,19 +86,15 @@ export async function get_initial_data() {
 
     const uniqueUsersSet = new Set<string>();
 
-    all_friends.forEach((item) => {
-        // uniqueUsersSet.add(item.sender);
-        uniqueUsersSet.add(item.receiver);
-    });
-
-    all_friends = Array.from(uniqueUsersSet);
 
     if ("Ok" in data) {
+        all_friends.forEach((item) => {
+            item.receiver.id !== data.Ok.Profile.id && uniqueUsersSet.add(item.receiver);
+            item.sender.id !== data.Ok.Profile.id &&uniqueUsersSet.add(item.sender);
+        });
+
         initialState["files"] = normalize_files(data.Ok.Files);
         initialState["denormalized_files_content"] = data.Ok.FilesContents; //[] | [Array<[string, Array<[string, ContentNode]>]>]
-        logger({
-            FilesContents: data.Ok.FilesContents[0]
-        })
         initialState["files_content"] = normalize_files_contents(data.Ok.FilesContents[0]);
         initialState["contracts"] = normalize_contracts(data.Ok.Contracts);
         initialState["current_file"] = getCurrentFile(initialState["files"]);
@@ -107,7 +103,7 @@ export async function get_initial_data() {
         initialState["users"] = data.Ok.DiscoverUsers;
         initialState["id"] = userPrincipal;
         initialState["friends"] = data.Ok.Friends;
-        initialState["all_friends"] = all_friends;
+        initialState["all_friends"] = Array.from(uniqueUsersSet);
         initialState["wallet"] = data.Ok.Wallet;
 
     }

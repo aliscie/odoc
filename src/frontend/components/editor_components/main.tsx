@@ -54,6 +54,7 @@ function EditorComponent(props: Props) {
                 searchOptions={"gi"}
                 search={searchValue || ""}
                 data={content}
+                {...props}
             />
 
         </>
