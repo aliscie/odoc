@@ -25,7 +25,7 @@ function de_nesting(nested: any[]) {
                 children: children.map((child) => String(child.id)),
             };
 
-            data.push([String(id), obj]);
+            data.push(obj);
             if (children) {
                 parent = [String(id)]
                 queue = queue.concat(children)
@@ -39,7 +39,7 @@ function de_nesting(nested: any[]) {
 }
 
 
-function serialize_file_contents(content: any[], data: Array<Array<[string, Array<[string, ContentNode]>]>> = []) {
+function serialize_file_contents(content: any[], data: Array<Array<[string, Array<ContentNode>]>> = []) {
     Object.keys(content).forEach((key) => {
         let change = [];
         let item = content[key];

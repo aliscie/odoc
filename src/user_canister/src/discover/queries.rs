@@ -39,7 +39,7 @@ fn search_posts(text_to_find: String) -> Vec<PostUser> {
             .values()
             .flat_map(|post| {
                 post.content_tree
-                    .values()
+                    .iter()
                     .filter(|node| node.text.contains(&text_to_find))
                     .map(move |node| {
                         let user = User::get_user_from_text_principal(&post.creator).unwrap();

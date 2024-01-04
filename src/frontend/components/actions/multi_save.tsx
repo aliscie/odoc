@@ -20,18 +20,13 @@ function MultiSaveButton(props: any) {
     async function handleClick() {
         setLoading(true);
 
-        let serialized_content: Array<Array<[string, Array<[string, ContentNode]>]>> = serialize_file_contents(changes.contents)
-        // This seems has no issue, so the issue probably in the backend
-        // logger({
-        //     serialized_content
-        // })
+        let serialized_content: [Array<[string, Array<ContentNode>]>] = serialize_file_contents(changes.contents)
         let contracts: Array<StoredContract> = denormalize_contract(changes.contracts);
 
         let loading = enqueueSnackbar(<span>Creating note page... <span className={"loader"}/></span>,);
         let files: Array<FileNode> = Object.values(changes.files);
 
         let delete_contracts: Array<String> = changes.delete_contracts || [];
-
         let res = actor && await actor.multi_updates(files, serialized_content, contracts, delete_contracts);
         closeSnackbar(loading)
         if (res.Err) {

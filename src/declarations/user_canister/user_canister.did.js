@@ -159,7 +159,7 @@ export const idlFactory = ({ IDL }) => {
     'date_created' : IDL.Nat64,
     'votes_up' : IDL.Vec(IDL.Principal),
     'tags' : IDL.Vec(IDL.Text),
-    'content_tree' : IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)),
+    'content_tree' : IDL.Vec(ContentNode),
     'votes_down' : IDL.Vec(IDL.Principal),
   });
   const Friend = IDL.Record({ 'sender' : User, 'receiver' : User });
@@ -188,7 +188,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const InitialData = IDL.Record({
     'FilesContents' : IDL.Opt(
-      IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode))))
+      IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(ContentNode)))
     ),
     'Contracts' : IDL.Vec(IDL.Tuple(IDL.Text, StoredContract)),
     'Files' : IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Text, FileNode))),
@@ -230,14 +230,14 @@ export const idlFactory = ({ IDL }) => {
     'date_created' : IDL.Nat64,
     'votes_up' : IDL.Vec(IDL.Principal),
     'tags' : IDL.Vec(IDL.Text),
-    'content_tree' : IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)),
+    'content_tree' : IDL.Vec(ContentNode),
     'votes_down' : IDL.Vec(IDL.Principal),
   });
   const Result_6 = IDL.Variant({ 'Ok' : Post, 'Err' : IDL.Text });
   const ShareFile = IDL.Record({ 'id' : IDL.Text, 'owner' : IDL.Principal });
   const Result_7 = IDL.Variant({ 'Ok' : ShareFile, 'Err' : IDL.Text });
   const Result_8 = IDL.Variant({
-    'Ok' : IDL.Tuple(FileNode, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode))),
+    'Ok' : IDL.Tuple(FileNode, IDL.Vec(ContentNode)),
     'Err' : IDL.Text,
   });
   const Result_9 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
@@ -309,6 +309,7 @@ export const idlFactory = ({ IDL }) => {
         [Result_2],
         [],
       ),
+    'counter' : IDL.Func([], [IDL.Nat64], ['query']),
     'create_new_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [FileNode], []),
     'create_payment_contract' : IDL.Func([IDL.Text], [Result_1], []),
     'create_share_contract' : IDL.Func([IDL.Vec(Share)], [Result_2], []),
@@ -323,11 +324,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_all_files_content' : IDL.Func(
         [],
-        [
-          IDL.Vec(
-            IDL.Tuple(IDL.Text, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)))
-          ),
-        ],
+        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(ContentNode)))],
         ['query'],
       ),
     'get_all_users' : IDL.Func(
@@ -339,7 +336,7 @@ export const idlFactory = ({ IDL }) => {
     'get_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], ['query']),
     'get_file_content' : IDL.Func(
         [IDL.Text],
-        [IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)))],
+        [IDL.Opt(IDL.Vec(ContentNode))],
         ['query'],
       ),
     'get_filtered_posts' : IDL.Func(
@@ -363,11 +360,7 @@ export const idlFactory = ({ IDL }) => {
     'multi_updates' : IDL.Func(
         [
           IDL.Vec(FileNode),
-          IDL.Vec(
-            IDL.Vec(
-              IDL.Tuple(IDL.Text, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)))
-            )
-          ),
+          IDL.Vec(IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(ContentNode)))),
           IDL.Vec(StoredContract),
           IDL.Vec(IDL.Text),
         ],
@@ -386,11 +379,7 @@ export const idlFactory = ({ IDL }) => {
     'save_post' : IDL.Func([Post], [Result_1], []),
     'search_files_content' : IDL.Func(
         [IDL.Text, IDL.Bool],
-        [
-          IDL.Vec(
-            IDL.Tuple(IDL.Text, IDL.Vec(IDL.Tuple(IDL.Text, ContentNode)))
-          ),
-        ],
+        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(ContentNode)))],
         ['query'],
       ),
     'search_posts' : IDL.Func([IDL.Text], [IDL.Vec(PostUser)], ['query']),

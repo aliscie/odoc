@@ -86,7 +86,7 @@ type FriendSystem = record {
   friends : vec Friend;
 };
 type InitialData = record {
-  FilesContents : opt vec record { text; vec record { text; ContentNode } };
+  FilesContents : opt vec record { text; vec ContentNode };
   Contracts : vec record { text; StoredContract };
   Files : opt vec record { text; FileNode };
   Friends : opt FriendSystem;
@@ -133,7 +133,7 @@ type Post = record {
   date_created : nat64;
   votes_up : vec principal;
   tags : vec text;
-  content_tree : vec record { text; ContentNode };
+  content_tree : vec ContentNode;
   votes_down : vec principal;
 };
 type PostUser = record {
@@ -142,7 +142,7 @@ type PostUser = record {
   date_created : nat64;
   votes_up : vec principal;
   tags : vec text;
-  content_tree : vec record { text; ContentNode };
+  content_tree : vec ContentNode;
   votes_down : vec principal;
 };
 type RegisterUser = record {
@@ -160,7 +160,7 @@ type Result_5 = variant { Ok : InitialData; Err : text };
 type Result_6 = variant { Ok : Post; Err : text };
 type Result_7 = variant { Ok : ShareFile; Err : text };
 type Result_8 = variant {
-  Ok : record { FileNode; vec record { text; ContentNode } };
+  Ok : record { FileNode; vec ContentNode };
   Err : text;
 };
 type Result_9 = variant { Ok; Err };
@@ -242,6 +242,7 @@ service : () -> {
   cancel_payment : (text) -> (Result_1);
   conform_share : (text, text, text) -> (Result_1);
   content_updates : (text, opt text, text) -> (Result_2);
+  counter : () -> (nat64) query;
   create_new_file : (text, opt text) -> (FileNode);
   create_payment_contract : (text) -> (Result_1);
   create_share_contract : (vec Share) -> (Result_2);
@@ -250,13 +251,11 @@ service : () -> {
   delete_post : (text) -> (Result_1);
   deposit_usdt : (nat64) -> (Result_3);
   get_all_files : () -> (opt vec record { text; FileNode }) query;
-  get_all_files_content : () -> (
-      vec record { text; vec record { text; ContentNode } },
-    ) query;
+  get_all_files_content : () -> (vec record { text; vec ContentNode }) query;
   get_all_users : () -> (vec record { text; User }) query;
   get_contract : (text, text) -> (Result_4) query;
   get_file : (text) -> (opt FileNode) query;
-  get_file_content : (text) -> (opt vec record { text; ContentNode }) query;
+  get_file_content : (text) -> (opt vec ContentNode) query;
   get_filtered_posts : (opt vec text, opt text) -> (vec PostUser) query;
   get_friends : () -> (opt FriendSystem) query;
   get_initial_data : () -> (Result_5) query;
@@ -269,7 +268,7 @@ service : () -> {
   move_file : (text, opt text) -> (Result_9);
   multi_updates : (
       vec FileNode,
-      vec vec record { text; vec record { text; ContentNode } },
+      vec vec record { text; vec ContentNode },
       vec StoredContract,
       vec text,
     ) -> (Result_2);
@@ -280,7 +279,7 @@ service : () -> {
   rename_file : (text, text) -> (bool);
   save_post : (Post) -> (Result_1);
   search_files_content : (text, bool) -> (
-      vec record { text; vec record { text; ContentNode } },
+      vec record { text; vec ContentNode },
     ) query;
   search_posts : (text) -> (vec PostUser) query;
   see_notifications : (text) -> ();

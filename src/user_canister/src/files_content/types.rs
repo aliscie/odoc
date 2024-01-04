@@ -122,11 +122,12 @@ impl ContentNode {
             let content_id: ContentId = COUNTER.fetch_add(1, Ordering::Relaxed).to_string();
             new_node.id = content_id.clone();
 
-            file_content_tree.insert(content_id.clone(), new_node.clone());
-
+            file_content_tree.push(new_node.clone());
             if let Some(parent_id) = content_parent_id {
-                if let Some(parent_node) = file_content_tree.get_mut(&parent_id) {
-                    parent_node.children.push(content_id.clone());
+                if let Some(parent_index) = file_content_tree.iter_mut().position(|node| node.id == parent_id) {
+                    if let Some(parent_node) = file_content_tree.get_mut(parent_index) {
+                        parent_node.children.push(content_id.clone());
+                    }
                 }
             }
         });

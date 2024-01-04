@@ -35,14 +35,14 @@ fn search_files_content(search_text: String, case_insensitive: bool) -> HashMap<
                 .filter_map(|(file_id, content_tree)| {
                     let filtered_content_tree = content_tree
                         .iter()
-                        .filter(|(_, content)| {
+                        .filter(|content| {
                             if case_insensitive {
                                 content.text.to_lowercase().contains(&search_text.to_lowercase())
                             } else {
                                 content.text.contains(&search_text)
                             }
                         })
-                        .map(|(key, value)| (key.clone(), value.clone()))
+                        .map(|value| value.clone())
                         .collect::<ContentTree>();
 
                     if !filtered_content_tree.is_empty() {

@@ -109,7 +109,7 @@ export interface FriendSystem {
   'friends' : Array<Friend>,
 }
 export interface InitialData {
-  'FilesContents' : [] | [Array<[string, Array<[string, ContentNode]>]>],
+  'FilesContents' : [] | [Array<[string, Array<ContentNode>]>],
   'Contracts' : Array<[string, StoredContract]>,
   'Files' : [] | [Array<[string, FileNode]>],
   'Friends' : [] | [FriendSystem],
@@ -158,7 +158,7 @@ export interface Post {
   'date_created' : bigint,
   'votes_up' : Array<Principal>,
   'tags' : Array<string>,
-  'content_tree' : Array<[string, ContentNode]>,
+  'content_tree' : Array<ContentNode>,
   'votes_down' : Array<Principal>,
 }
 export interface PostUser {
@@ -167,7 +167,7 @@ export interface PostUser {
   'date_created' : bigint,
   'votes_up' : Array<Principal>,
   'tags' : Array<string>,
-  'content_tree' : Array<[string, ContentNode]>,
+  'content_tree' : Array<ContentNode>,
   'votes_down' : Array<Principal>,
 }
 export interface RegisterUser {
@@ -193,7 +193,7 @@ export type Result_6 = { 'Ok' : Post } |
   { 'Err' : string };
 export type Result_7 = { 'Ok' : ShareFile } |
   { 'Err' : string };
-export type Result_8 = { 'Ok' : [FileNode, Array<[string, ContentNode]>] } |
+export type Result_8 = { 'Ok' : [FileNode, Array<ContentNode>] } |
   { 'Err' : string };
 export type Result_9 = { 'Ok' : null } |
   { 'Err' : null };
@@ -277,6 +277,7 @@ export interface _SERVICE {
   'cancel_payment' : ActorMethod<[string], Result_1>,
   'conform_share' : ActorMethod<[string, string, string], Result_1>,
   'content_updates' : ActorMethod<[string, [] | [string], string], Result_2>,
+  'counter' : ActorMethod<[], bigint>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
   'create_payment_contract' : ActorMethod<[string], Result_1>,
   'create_share_contract' : ActorMethod<[Array<Share>], Result_2>,
@@ -287,15 +288,12 @@ export interface _SERVICE {
   'get_all_files' : ActorMethod<[], [] | [Array<[string, FileNode]>]>,
   'get_all_files_content' : ActorMethod<
     [],
-    Array<[string, Array<[string, ContentNode]>]>
+    Array<[string, Array<ContentNode>]>
   >,
   'get_all_users' : ActorMethod<[], Array<[string, User]>>,
   'get_contract' : ActorMethod<[string, string], Result_4>,
   'get_file' : ActorMethod<[string], [] | [FileNode]>,
-  'get_file_content' : ActorMethod<
-    [string],
-    [] | [Array<[string, ContentNode]>]
-  >,
+  'get_file_content' : ActorMethod<[string], [] | [Array<ContentNode>]>,
   'get_filtered_posts' : ActorMethod<
     [[] | [Array<string>], [] | [string]],
     Array<PostUser>
@@ -312,7 +310,7 @@ export interface _SERVICE {
   'multi_updates' : ActorMethod<
     [
       Array<FileNode>,
-      Array<Array<[string, Array<[string, ContentNode]>]>>,
+      Array<Array<[string, Array<ContentNode>]>>,
       Array<StoredContract>,
       Array<string>,
     ],
@@ -326,7 +324,7 @@ export interface _SERVICE {
   'save_post' : ActorMethod<[Post], Result_1>,
   'search_files_content' : ActorMethod<
     [string, boolean],
-    Array<[string, Array<[string, ContentNode]>]>
+    Array<[string, Array<ContentNode>]>
   >,
   'search_posts' : ActorMethod<[string], Array<PostUser>>,
   'see_notifications' : ActorMethod<[string], undefined>,

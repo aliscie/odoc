@@ -16,7 +16,7 @@ use crate::websocket::Notification;
 pub type FileId = String;
 pub type PostId = String;
 pub type ContentId = String;
-pub type ContentTree = HashMap<ContentId, ContentNode>;
+pub type ContentTree = Vec<ContentNode>;
 pub type ContractId = String;
 pub type ShareContractId = String;
 pub type ShareRequestId = String;
