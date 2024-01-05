@@ -10,8 +10,7 @@ use crate::files::COUNTER;
 use crate::storage_schema::{ContentId, ContractId};
 
 
-
-#[derive(PartialEq, Eq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
+#[derive(PartialEq, Eq, Clone, Debug, CandidType, Deserialize)]
 pub struct PaymentContract {
     pub(crate) contract_id: ContractId,
     pub(crate) receiver: Principal,
@@ -20,6 +19,7 @@ pub struct PaymentContract {
     pub(crate) canceled: bool,
     pub(crate) released: bool,
     pub(crate) confirmed: bool,
+    pub(crate) extra_cells: HashMap<String, String>,
 }
 
 // ------------ TODO study the imposable of make the PaymentContract like the shares contract ------------ \\
@@ -44,6 +44,7 @@ impl PaymentContract {
             canceled: false,
             released: false,
             confirmed: false,
+            extra_cells: Default::default(),
         };
 
         // Update the contract storage with the new payment

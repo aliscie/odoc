@@ -118,6 +118,7 @@ type Notification = record {
 };
 type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
 type PaymentContract = record {
+  extra_cells : vec record { text; text };
   canceled : bool;
   contract_id : text;
   sender : principal;
@@ -170,6 +171,7 @@ type Row = record {
   cells : opt vec record { text; text };
 };
 type Share = record {
+  extra_cells : vec record { text; text };
   share_contract_id : text;
   accumulation : nat64;
   share : nat64;

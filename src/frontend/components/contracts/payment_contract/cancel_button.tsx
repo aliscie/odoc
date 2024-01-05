@@ -3,13 +3,13 @@ import {Button, Input, Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
-import {Payment} from "../../../../declarations/user_canister/user_canister.did";
+import {PaymentContract} from "../../../../declarations/user_canister/user_canister.did";
 
 import CancelIcon from '@mui/icons-material/Cancel';
 import {handleRedux} from "../../../redux/main";
 import {actor} from "../../../App";
 
-function CancelButton({contract}: { contract: Payment }) {
+function CancelButton({contract}: { contract: PaymentContract }) {
     // const [is_released, setReleased] = React.useState(contract.released);
     const {contracts} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();

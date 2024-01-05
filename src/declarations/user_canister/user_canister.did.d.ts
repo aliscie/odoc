@@ -142,6 +142,7 @@ export type Operation = { 'Equal' : null } |
   { 'Bigger' : null } |
   { 'BiggerOrEqual' : null };
 export interface PaymentContract {
+  'extra_cells' : Array<[string, string]>,
   'canceled' : boolean,
   'contract_id' : string,
   'sender' : Principal,
@@ -203,6 +204,7 @@ export interface Row {
   'cells' : [] | [Array<[string, string]>],
 }
 export interface Share {
+  'extra_cells' : Array<[string, string]>,
   'share_contract_id' : string,
   'accumulation' : bigint,
   'share' : bigint,

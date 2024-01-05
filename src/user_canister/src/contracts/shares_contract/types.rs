@@ -13,7 +13,7 @@ use crate::tables::Formula;
 use crate::websocket::{NoteContent, Notification};
 
 
-#[derive(PartialEq, Eq, PartialOrd, Clone, Debug, Serialize, CandidType, Deserialize)]
+#[derive(PartialEq, Eq, Clone, Debug, Serialize, CandidType, Deserialize)]
 pub struct Share {
     pub(crate) share_contract_id: ShareContractId,
     pub(crate) receiver: Principal,
@@ -23,9 +23,10 @@ pub struct Share {
     // the contract auther/ requester
     // only receiver can mutate this
     pub(crate) share: u64,
+    pub(crate) extra_cells: HashMap<String, String>,
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Clone, Debug, Serialize, CandidType, Deserialize)]
+#[derive(PartialEq, Eq, Clone, Debug, Serialize, CandidType, Deserialize)]
 pub struct ShareRequest {
     pub(crate) id: ShareRequestId,
     pub(crate) name: ContractId,
@@ -57,7 +58,7 @@ impl ShareRequest {
             }
             for share in &self.shares {
                 if !self.approvals.contains(&share.receiver) {
-                    return false
+                    return false;
                 }
             };
         }

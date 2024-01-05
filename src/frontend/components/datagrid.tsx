@@ -17,16 +17,18 @@ interface Props {
     addRow: any
     deleteRow: any,
     updateRow: any,
+    deleteColumn?: any,
 }
 
 function CustomDataGrid(props: Props) {
     // const [rows, setRows] = React.useState(props.data.rows);
     // const [columns, setColumns] = React.useState(props.data.columns);
+    // console.log("TODO prevent too much Rereading");
     const [data, setData] = React.useState(props.data);
     // TODO
-        useEffect(() => {
-            setData(props.data)
-        }, [props.data]);
+    useEffect(() => {
+        setData(props.data)
+    }, [props.data]);
 
     const processRowUpdate = React.useCallback((newRow: GridRowModel, oldRow: GridRowModel) => {
 
@@ -88,42 +90,28 @@ function CustomDataGrid(props: Props) {
     };
 
     const handleAddColumn = (colId: number, before: boolean) => {
-        // let column_type: ColumnTypes = {'Text': null};
-        // let id = randomString();
-        // const newColumn: Column = {
-        //     // ...props.data.columns
-        //     id,
-        //     _type: column_type,
-        //     field: `column${columns && (columns.length + 1)}`,
-        //     filters: [],
-        //     permissions: [],
-        //     dataValidator: [],
-        //     formula: [],
-        //     // headerName: `Column ${columns.length + 1}`,
-        //     // width: 150,
-        //     editable: true,
-        // };
-        // let index = columns.findIndex((col) => col.id === colId);
-        // let step = before ? 0 : 1;
-        // setColumns((prevColumns) => {
-        //     const newColumns = [...prevColumns];
-        //     newColumns.splice(index + step, 0, newColumn);
-        //     return newColumns;
-        // });
-        //
-        // // Update newContent with the added column
-        // function updateColumn(newTable: Table) {
-        //     newTable.columns.splice(index + step, 0, newColumn);
-        //     return newTable;
-        // }
-        //
-        // const newContent = updateTableContent(props.props, content, updateColumn);
-        //
-        // // TODO: Dispatch relevant actions or update state as needed
-        // dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-        // // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
-        // // dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
-        // dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
+        const columnIndex = data.columns.findIndex((col) => col.id === colId);
+
+        if (columnIndex === -1) {
+            console.error("Row not found, handle the error or return early");
+            return;
+        }
+
+        let step = before ? 0 : 1;
+        // let newRow = props.addRow(columnIndex + step);
+        let newColumn = {
+            field: "new",
+            headerName: "new",
+            editable: true,
+            deleteable: true,
+        }
+        let new_table_rows = [...data.rows]
+        new_table_rows.splice(columnIndex + step, 0, newColumn)
+        setData((pre) => {
+            let new_columns = [...pre.columns];
+            new_columns.splice(columnIndex + step, 0, newColumn);
+            return {...pre, columns: new_columns}
+        });
     };
 
 
@@ -151,6 +139,20 @@ function CustomDataGrid(props: Props) {
             return {...pre, rows}
         })
     };
+
+    function handleDeleteColumn(colId: number) {
+
+        setData((pre) => {
+            let columns = [...pre.columns];
+            columns = columns.filter((col: any) => {
+                if (col.id !== colId) {
+                    props.deleteColumn(col);
+                    return true
+                }
+            });
+            return {...pre, columns}
+        })
+    }
 
     function CustomCell(props: any) {
         let field = props.field;
@@ -190,17 +192,21 @@ function CustomDataGrid(props: Props) {
                 icon: <DeleteIcon color={"error"}/>,
                 onClick: () => handleDeleteRow(props.rowId),
             },
-            // {
-            //     content: "Delete column",
-            //     icon: <DeleteIcon color={"error"}/>,
-            //     onClick: () => handleDeleteColumn(props.column.id),
-            // },
+
             // {
             //     content: "Formula",
             //     icon: <FunctionsIcon/>,
             //     onClick: () => handleClickOpen(props.column),
             // }
         ]
+        if (props.column.deleteable === true) {
+            options.push(
+                {
+                    content: "Delete column",
+                    icon: <DeleteIcon color={"error"}/>,
+                    onClick: () => handleDeleteColumn(props.column.id),
+                })
+        }
 
         if (['receiver', 'share'].includes(field)) {
             options = options.filter((item: any) => !["Formula", "Delete column"].includes(item.content));

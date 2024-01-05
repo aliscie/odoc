@@ -27,6 +27,7 @@ export const idlFactory = ({ IDL }) => {
     'parent' : IDL.Opt(IDL.Text),
   });
   const Share = IDL.Record({
+    'extra_cells' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
     'share_contract_id' : IDL.Text,
     'accumulation' : IDL.Nat64,
     'share' : IDL.Nat64,
@@ -112,6 +113,7 @@ export const idlFactory = ({ IDL }) => {
     'parent' : IDL.Opt(IDL.Text),
   });
   const PaymentContract = IDL.Record({
+    'extra_cells' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
     'canceled' : IDL.Bool,
     'contract_id' : IDL.Text,
     'sender' : IDL.Principal,

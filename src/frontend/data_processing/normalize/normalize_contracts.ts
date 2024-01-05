@@ -16,6 +16,7 @@ export function normalize_contracts(json) {
                         share: BigInt(s.share),
                         receiver: s.receiver,
                         contractor: s.contractor,
+                        extra_cells: s.extra_cells || [],
                     };
                     return share
                 });
@@ -40,6 +41,7 @@ export function normalize_contracts(json) {
                     amount: paymentContractData.amount,
                     receiver: paymentContractData.receiver,
                     canceled: paymentContractData.canceled,
+                    extra_cells: paymentContractData.extra_cells || [],
                 }
                 dataStructure[key] = payment;
                 break;

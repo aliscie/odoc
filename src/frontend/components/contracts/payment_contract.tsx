@@ -118,6 +118,7 @@ export default function PaymentContract(props: any) {
             confirmed: false,
             canceled: false,
             amount: BigInt(0),
+            extra_cells: []
         };
         const newRow: Row = {
             id,
@@ -230,6 +231,7 @@ export default function PaymentContract(props: any) {
             "confirmed": newRow.confirmed || false,
             "amount": BigInt(newRow.amount || 0),
             "receiver": Principal.fromText(receiver.id),
+            extra_cells: []
         }
 
         dispatch(handleRedux("UPDATE_CONTRACT", {contract: contract}));

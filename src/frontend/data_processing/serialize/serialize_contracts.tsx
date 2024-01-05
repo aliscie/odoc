@@ -50,12 +50,14 @@ export default function serialize_payment_contract(content: any[], data: Array<S
                         "confirmed": item.confirmed || false,
                         "canceled": item.canceled || false,
                         "amount": BigInt(item.amount || 0),
+                        extra_cells: item.extra_cells || []
                     }
                 };
                 data.push(de_normal);
                 break;
 
             case "SharesContract":
+
                 let shares: Array<Share> = [];
                 for (let s of item.shares) {
                     let share: Share = {
@@ -64,6 +66,7 @@ export default function serialize_payment_contract(content: any[], data: Array<S
                         'confirmed': s.confirmed,
                         'share': BigInt(s.share),
                         'receiver': s.receiver,
+                        extra_cells: s.extra_cells || []
                     }
                     shares.push(share);
                 }

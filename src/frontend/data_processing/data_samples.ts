@@ -159,6 +159,7 @@ export let payment_contract_sample: PaymentContract = {
     "confirmed": false,
     "canceled": false,
     "amount": BigInt(0),
+    extra_cells: []
 }
 
 let share_sample: Share = {
@@ -173,6 +174,7 @@ let share_sample: Share = {
     'confirmed': false,
     'share': BigInt(100),
     'receiver': Principal.fromText("2vxsx-fae"),
+    extra_cells: []
 }
 
 let payment_option: SharePaymentOption = {
