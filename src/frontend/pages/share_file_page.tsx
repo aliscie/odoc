@@ -21,7 +21,7 @@ function ShareFilePage(props: any) {
     let file_id: null | String = Object.keys(files).find((key: string) => files[key].share_id[0] == id);
 
     let [file, setFile] = useState<null | FileNode>(files[file_id]);
-    let [state, setState]: any = useState(file ? files_content[file.id] : null);
+    let [state, setState]: any = useState(file ? files_content.get(file.id) : null);
     const dispatch = useDispatch();
 
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
@@ -30,7 +30,7 @@ function ShareFilePage(props: any) {
         if (!file) {
             (async () => {
                 let loading = enqueueSnackbar(<span><span className={"loader"}/></span>);
-                let res: FileQuery = actor && await actor.get_shared_file(id)
+                let res: undefined | { Ok: [FileNode, Array<ContentNode>] } | { Err: string } = actor && await actor.get_shared_file(id)
 
                 closeSnackbar(loading);
 

@@ -125,7 +125,13 @@ impl ShareFile {
             // }
         })
     }
-
+    pub fn delete(share_id: &String) -> Result<(), String> {
+        FILES_SHARE_STORE.with(|files_share_store| {
+            let mut files_share_store = files_share_store.borrow_mut();
+            files_share_store.remove(share_id);
+            Ok(())
+        })
+    }
 
     pub fn get_file(share_id: &String) -> Result<(FileNode, ContentTree), String> {
         let shared_file: ShareFile = FILES_SHARE_STORE.with(|files_share_store| {

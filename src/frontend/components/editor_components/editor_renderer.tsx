@@ -3,7 +3,7 @@ import * as React from "react";
 import MentionComponent from "./mention_component";
 import {Table, TableBody, TableCell, TableRow} from "@mui/material";
 import ContractView from "../views/contract_view";
-import SharesContract from "../contracts/shares_contract";
+import SharesContractComponent from "../contracts/shares_contract";
 
 export function EditorRenderer(props: any) {
 
@@ -27,7 +27,7 @@ export function EditorRenderer(props: any) {
         // case "data_grid":
         //     return <DataGrid {...props.element} />;
         case "shares_contract":
-            return <SharesContract {...props.element} />;
+            return <SharesContractComponent {...props.element} />;
         case "custom_contract":
             return <SpreadSheet {...props.element} />;
 

@@ -41,6 +41,7 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
                 share_contract_id: item.id,
                 share: BigInt(item['share%'] || item['share'] || 0),
                 receiver: Principal.fromText(receiver && receiver.id || "2vxsx-fae"),
+                extra_cells: share ? share.extra_cells : [],
             }
         });
     }

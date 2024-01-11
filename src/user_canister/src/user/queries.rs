@@ -1,12 +1,12 @@
 use std::collections::HashMap;
-use candid::Principal;
 use candid::types::principal::PrincipalError;
 
 
 use ic_cdk_macros::query;
 
-use crate::{PROFILE_STORE};
+use crate::{Exchange, PROFILE_STORE};
 use crate::user::User;
+use candid::{CandidType, Deserialize, Principal};
 
 //
 // #[query(name = "getSelf")]
@@ -70,8 +70,24 @@ fn get_all_users() -> HashMap<String, User> {
 }
 
 
+
+#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, Default, CandidType, Deserialize)]
+pub struct UserProfile {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub photo: Vec<u8>,
+    // pub exchanges: Exchange,
+    // pub rate: u64,
+    // pub cancellations: u64,
+    // pub interactions: u64,
+    // pub USDCSpent: u64,
+    // pub KYC: KYC,
+    // pub USDCReceived: u64,
+}
+
 #[query]
-fn get_user(usd_id: String) -> Result<User, String> {
+fn get_user(usd_id: String) -> Result<UserProfile, String> {
     let user: Result<Principal, PrincipalError> = Principal::from_text(usd_id);
 
     if user.is_err() {
@@ -86,7 +102,14 @@ fn get_user(usd_id: String) -> Result<User, String> {
     });
 
     if let Some(user) = user {
-        return Ok(user);
+        return Ok(UserProfile{
+            id: user.id.to_string(),
+            name: user.name.to_string(),
+            description: user.description.to_string(),
+            photo: user.photo.clone(),
+            // exchanges: user.exchanges.clone(),
+            // keywords: user.keywords.clone(),
+        });
     }
     Err("User not found.".to_string())
 }

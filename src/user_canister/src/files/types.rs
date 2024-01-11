@@ -161,14 +161,14 @@ impl FileNode {
     }
 
 
-    pub fn delete_file(file_id: FileId) -> Option<FileNode> {
+    pub fn delete(&self) -> Option<FileNode> {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();
 
             let mut user_files = files_store.borrow_mut();
             let user_files_map = user_files.get_mut(&principal_id)?;
 
-            let deleted_file = user_files_map.remove(&file_id)?;
+            let deleted_file = user_files_map.remove(&self.id)?;
 
             // Recursively delete children files
             for child in deleted_file.children.clone() {
@@ -178,7 +178,7 @@ impl FileNode {
             // Remove the file ID from its parent's children list
             if let Some(parent_id) = deleted_file.parent.clone() {
                 if let Some(parent_file) = user_files_map.get_mut(&parent_id) {
-                    parent_file.children.retain(|child_id| child_id.clone() != file_id);
+                    parent_file.children.retain(|child_id| child_id.clone() != self.id);
                 }
             }
 

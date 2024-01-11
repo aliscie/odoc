@@ -30,7 +30,7 @@ function ResultFile(props: Props) {
     let file: FileNode = files[props.file_id];
 
     let title = file && file.name;
-    let content = files_content[props.file_id];
+    let content = files_content.get(props.file_id);
 
     return (
         <div

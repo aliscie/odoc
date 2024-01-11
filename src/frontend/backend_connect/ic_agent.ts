@@ -1,11 +1,13 @@
-import {AuthClient} from "@dfinity/auth-client";
-import {Actor, HttpAgent} from "@dfinity/agent";
+
+
 import {canisterId as userCanisterId, idlFactory} from "../../declarations/user_canister";
 import {canisterId as identityCanisterId} from "../../declarations/internet_identity";
+import {AuthClient} from "@dfinity/auth-client";
+import {Actor, HttpAgent} from "@dfinity/agent";
+let backendActor: any, loading: any = false
 
-let backendActor, loading = false
 
-const createActor = (canisterId, options = {}) => {
+const createActor = (canisterId: string, options: any = {}) => {
     const agent = options.agent || new HttpAgent({...options.agentOptions});
 
     if (options.agent && options.agentOptions) {
@@ -15,8 +17,8 @@ const createActor = (canisterId, options = {}) => {
     }
 
     // Fetch root key for certificate validation during development
-    if (import.meta.env.VITE_DFX_NETWORK !== "ic") {
-        agent.fetchRootKey().catch((err) => {
+    if (process.env.VITE_DFX_NETWORK !== "ic") {
+        agent.fetchRootKey().catch((err: string) => {
             console.warn(
                 "Unable to fetch root key. Check to ensure that your local replica is running"
             );
@@ -36,7 +38,7 @@ const createActor = (canisterId, options = {}) => {
 
 
 export const get_user_actor = async () => {
-    await new Promise(resolve => !loading && resolve());
+    await new Promise((resolve: any) => !loading && resolve());
     loading = true
 
     if (!backendActor) {
@@ -57,8 +59,8 @@ export const get_user_actor = async () => {
 
 function get_identity_url() {
     let identityProvider = "https://identity.ic0.app/#authorize";
-    if (import.meta.env.VITE_DFX_NETWORK != "ic") {
-        let port = import.meta.env.VITE_DFX_PORT;
+    if (process.env.VITE_DFX_NETWORK != "ic") {
+        let port = process.env.VITE_DFX_PORT;
         identityProvider = `http://${identityCanisterId}.localhost:${port}/#authorize`
     }
     return identityProvider
@@ -87,9 +89,9 @@ export async function is_logged() {
 
 export async function logout() {
     // if (!(await is_logged())) {
-        const authClient = await AuthClient.create();
-        await authClient.logout()
-        window.location.reload()
+    const authClient = await AuthClient.create();
+    await authClient.logout()
+    window.location.reload()
     // }
 
 }

@@ -72,7 +72,7 @@ function CreatePost(props: any) {
         let new_change = {};
         new_change[''] = changes;
         setChanges(new_change)
-        // if (files_content[current_file.id] !== changes) {
+        // if (files_content.get(current_file.id) !== changes) {
         //     dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: changes}));
         //     dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: changes}));
         // }

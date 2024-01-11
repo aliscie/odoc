@@ -10,9 +10,12 @@ import {actor} from "../../App";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import useGetUser from "../../utils/get_user_by_principal";
+import LoaderButton from "../genral/loader_button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import {Notification} from "../../../declarations/user_canister/user_canister.did";
+import {logger} from "../../dev_utils/log_data";
 
-function Notification({notification}: any) {
-    console.log("render Notification")
+function NotificationComponent({notification}: any) {
     let {getUser, getUserByName} = useGetUser();
     const [sender, setSender] = useState<string>("");
 
@@ -37,8 +40,10 @@ function Notification({notification}: any) {
                 return `${sender} unfriended you`;
             case "AcceptFriendRequest":
                 return `${sender} accepted your friend request.`;
+            case 'ConformShare':
+                return `${sender} confirmed share`;
             default:
-                return `${sender} unknown action`;
+                return `${sender} ${content}`;
         }
     }
 
@@ -66,7 +71,23 @@ export function Notifications() {
         })();
     }, []);
 
-
+    const clickNotification = async (n: Notification) => {
+        let res: undefined | { Ok: null } | { Err: string } = actor && await actor.notification_seen(n.id);
+        if ("Ok" in res && n.is_seen == false) {
+            n.is_seen = true;
+            dispatch(handleRedux('UPDATE_NOTIFY', {notification: n}));
+        } else if ("Err" in res) {
+            console.error(res.Err);
+        }
+    }
+    const clearNotifications = async () => {
+        let res: undefined | { Ok: null } | { Err: string } = actor && await actor.clear_notifications();
+        dispatch(handleRedux('UPDATE_NOTIFY', {new_list: []}));
+    }
+    const deleteNotification = async (n: Notification) => {
+        let res = actor && await actor.delete_notification(n.id);
+        dispatch(handleRedux("REMOVE_NOTIFY", {id: n.id}))
+    }
     return (
         <>
             <BasicMenu
@@ -78,18 +99,24 @@ export function Notifications() {
                     vertical: 'top',
                     horizontal: 'right',
                 }}
-                options={notifications.length > 0 ? notifications.map((notification: any) => {
+                options={notifications.length > 0 ? [...notifications.map((notification: any) => {
                     if (!notification) {
                         return {content: "", to: ""}
                     }
                     ;
                     let item = {
-                        content: <Notification notification={notification}/>,
-                        to: 'profile'
-                        // onClick: () => clickNotification(notification)
+                        content: <span><NotificationComponent notification={notification}/> <DeleteIcon
+                            onClick={async () => await deleteNotification(notification)} color={"error"}/> </span>,
+                        to: 'profile',
+                        onClick: () => clickNotification(notification)
                     };
                     return item
-                }) : []}
+                }), {
+                    content: "Clear notifications",
+                    onClick: async () => await clearNotifications()
+                }] : [{
+                    content: "You don't have notifications",
+                }]}
             >
                 <Badge
                     invisible={new_notifications.length == 0}
@@ -108,6 +135,7 @@ export function Notifications() {
                     color={new_notifications.length > 0 ? 'error' : "action"}
                 >
                     <NotificationsIcon color={new_notifications.length > 0 ? 'error' : "action"}/>
+
                 </Badge>
 
             </BasicMenu>

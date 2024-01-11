@@ -1,5 +1,6 @@
 pub mod handlers;
 mod notification;
+mod updates;
 
 use crate::{NOTIFICATIONS};
 use ic_cdk::caller;

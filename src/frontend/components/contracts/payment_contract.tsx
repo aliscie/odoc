@@ -27,7 +27,7 @@ export default function PaymentContract(props: any) {
         contracts,
         all_friends
     } = useSelector((state: any) => state.filesReducer);
-    let content = files_content[current_file.id];
+    let content = files_content.get(current_file.id);
 
     // ToDo  `props.data[0]` instead of `props.children[0].data[0]`
     let table_content = props.children[0]
@@ -141,7 +141,7 @@ export default function PaymentContract(props: any) {
             return newTable;
         }
 
-        let content = files_content[current_file.id];
+        let content = files_content.get(current_file.id);
         const newContent = updateTableContent(props, content, updateRows);
 
 
@@ -166,7 +166,7 @@ export default function PaymentContract(props: any) {
             return newTable;
         }
 
-        let content = files_content[current_file.id];
+        let content = files_content.get(current_file.id);
         const newContent = updateTableContent(props, content, deleteRow);
 
         // Example dispatching an action to update content

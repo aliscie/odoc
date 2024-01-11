@@ -76,6 +76,22 @@ const canisterDefinitions = Object.entries(canisters).reduce(
 );
 
 export default defineConfig({
+
+    test: {
+        globals: true,
+        environment: "jsdom",
+        css: true,
+        setupFiles:"./tests_setup.js",
+
+        transform: {
+            "^.+\\.js$": "babel-jest",
+            "^.+\\.ts$": "ts-jest",
+        },
+        moduleFileExtensions: ["js", "ts", "json"],
+        moduleNameMapper: {
+            "^canisters/(.*)": "<rootDir>/.dfx/local/canisters/$1",
+        }
+    },
     build: {
         outDir: "build",
     },

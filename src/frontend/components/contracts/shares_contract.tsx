@@ -5,7 +5,7 @@ import {Button} from '@mui/material';
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import {
-    Column,
+    Column, PaymentContract,
     Row,
     Share,
     SharePaymentOption,
@@ -27,10 +27,12 @@ import ApproveButton from "./shares_contract/approve_button";
 import ApplyButton from "./shares_contract/apply_button";
 import CustomDataGrid from "../datagrid";
 import {logger} from "../../dev_utils/log_data";
+import {HashTree} from "@dfinity/agent";
 
 // export type SharesContractViews = "Payments" | "Shares" | "SharesRequests" | "PaymentOptions";
 
-export default function SharesContract(props: any) {
+export default function SharesContractComponent(props: any) {
+
     let [view, setView] = useState("Shares");
     let {getUser, getUserByName} = useGetUser();
     const dispatch = useDispatch();
@@ -42,6 +44,12 @@ export default function SharesContract(props: any) {
         profile,
         contracts
     } = useSelector((state: any) => state.filesReducer);
+    logger({
+        current_file,
+        all_friends,
+        profile,
+        contracts
+    })
 
 
     // ToDo  `props.data[0]` instead of `props.children[0].data[0]`
@@ -65,7 +73,7 @@ export default function SharesContract(props: any) {
             case "confirmed":
                 new_column['renderCell'] = (params: GridRenderCellParams<any, Date>) => {
                     let share_contract_id = params.row.contract[0]["SharesContract"];
-                    let share: Share = contracts[table_content.id].shares.find((share) => share.share_contract_id === share_contract_id);
+                    let share: Share = contracts[table_content.id].shares.find((share: Share) => share.share_contract_id === share_contract_id);
                     return <ShareConfirmButton
                         contract={contracts[table_content.id]}
                         share={share}
@@ -87,21 +95,17 @@ export default function SharesContract(props: any) {
     let current_page = window.location.pathname.split("/").pop();
     useEffect(() => {
         (async () => {
-            if (current_page === "share") {
+            if (contracts[table_content.id] === undefined) {
 
-                let contract: undefined | { Ok: StoredContract } | { Err: string } = actor && current_file && await actor.get_contract(current_file.author, table_content.id);
-                if (contract && "Ok" in contract) {
-
-                    let fetched_contracts = {}
-                    fetched_contracts[table_content.id] = contract.Ok["SharesContract"];
+                let contract: undefined | { Ok: StoredContract } | { Err: string } = current_file && await actor?.get_contract(current_file.author, table_content.id);
+                if (contract && "Ok" in contract && "SharesContract" in contract.Ok) {
+                    let fetched_contracts: Map<string, PaymentContract | SharesContract> = new Map();
+                    fetched_contracts.set(table_content.id, contract.Ok.SharesContract);
                     let [cols, normalized_rows] = await normalize_share_rows(fetched_contracts);
-                    setData((pre: any) => {
-                        return {...pre, rows: normalized_rows}
-                    })
-                    dispatch(handleRedux("UPDATE_CONTRACT", {contract: contract.Ok["SharesContract"]}));
+                    setData({columns: cols, rows: normalized_rows})
+                    dispatch(handleRedux("UPDATE_CONTRACT", {contract: contract.Ok.SharesContract}));
 
                     //TODO console.log("Why this runs 3 times?");
-
                 }
 
             } else {
@@ -118,18 +122,19 @@ export default function SharesContract(props: any) {
     //                            Sometimes it has two shares on contract, but one row on content,
     //                            which should not happen
 
-    async function normalize_share_rows(CONTRACTS): Promise<[Array<Column>, Array<Row>]> {
+    async function normalize_share_rows(CONTRACTS: Map<string, any>): Promise<[Array<Column>, Array<Row>]> {
+        // async function normalize_share_rows(CONTRACTS: Map<string, PaymentContract | SharesContract>): Promise<[Array<Column>, Array<Row>]> {
 
         let columns = custom_columns;
         const normalizedRows = await Promise.all(
-            CONTRACTS[table_content.id].shares.map(async (share) => {
+            CONTRACTS.get(table_content.id).shares.map(async (share: Share) => {
                 let receiver = share && await getUser(share.receiver.toString());
-                let extra_cells = {}
+                let extra_cells: Map<string, any> = new Map();
 
 
                 share.extra_cells.forEach((cell) => {
-                    extra_cells[cell[0]] = cell[1]
-                    !columns.find((column) => column.field === cell[0]) && columns.push({
+                    extra_cells.set(cell[0], cell[1])
+                    !columns.find((column: Column) => column.field === cell[0]) && columns.push({
                         "id": randomString(),
                         "_type": {"Text": null},
                         "field": cell[0],
@@ -139,7 +144,7 @@ export default function SharesContract(props: any) {
                         "permissions": [],
                         "dataValidator": [],
                         "formula": [],
-                        "deleteable":true
+                        "deleteable": true
 
                     })
                 })
@@ -319,12 +324,12 @@ export default function SharesContract(props: any) {
 
                 let shares_requests: Array<[string, ShareRequest]> = contracts[table_content.id].shares_requests;
                 shares_requests = contracts[table_content.id].shares_requests.map((share_req: [string, ShareRequest]) => {
-                    if (share_req[1].id == currentRequest.id) {
+                    if (currentRequest && share_req[1].id == currentRequest.id) {
                         return [
                             share_req[0],
                             {
                                 ...share_req[1],
-                                shares: UpdatedContractFromRow(new_rows, share_req[1].shares)
+                                shares: UpdatedContractFromRow(new_rows, share_req[1].shares),
                             }
                         ]
                     } else {
@@ -347,7 +352,7 @@ export default function SharesContract(props: any) {
     }
 
 
-    const deleteRow = (rows: any, rowId: number) => {
+    const deleteRow = (rows: any, rowId: string) => {
         let delete_updated_contract: SharesContract = {...contracts[table_content.id]}
 
         switch (view) {
@@ -367,7 +372,7 @@ export default function SharesContract(props: any) {
                 break
             case "Shares requests":
                 let shares_requests: Array<[string, ShareRequest]> = delete_updated_contract.shares_requests.map((item: [string, ShareRequest]) => {
-                    if (item[1].id === currentRequest.id) {
+                    if (currentRequest && item[1].id === currentRequest.id) {
                         item[1].shares = item[1].shares.filter((share: Share) => share.share_contract_id !== rowId)
                     }
                     return item
@@ -385,8 +390,12 @@ export default function SharesContract(props: any) {
         dispatch(handleRedux("CONTRACT_CHANGES", {changes: delete_updated_contract}));
 
     };
-    const addRow = (position) => {
+    const addRow = (position: number) => {
         let new_id = randomString();
+
+        let update_contract: SharesContract = {
+            ...contracts[table_content.id],
+        };
         switch (view) {
             case "Payment options":
                 let new_payment_option: SharePaymentOption = {
@@ -396,12 +405,9 @@ export default function SharesContract(props: any) {
                     description: "",
                     date: "",
                 };
-                let payment_options_updated_contract = {
-                    ...contracts[table_content.id],
-                }
-                updated_contract.payment_options.splice(position, 0, new_payment_option);
+                update_contract.payment_options.splice(position, 0, new_payment_option);
 
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: payment_options_updated_contract}));
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: update_contract}));
 
                 return new_payment_option;
             case "Shares":
@@ -412,13 +418,10 @@ export default function SharesContract(props: any) {
                 let new_table_rows = [...data.rows]
                 new_table_rows.splice(position, 0, new_shares_row);
 
-                let shares_update_contract: SharesContract = {
-                    ...contracts[table_content.id],
-                    shares: UpdatedContractFromRow(new_table_rows, contracts[table_content.id].shares),
-                };
+                update_contract.shares = UpdatedContractFromRow(new_table_rows, contracts[table_content.id].shares)
 
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: shares_update_contract}));
-                dispatch(handleRedux("UPDATE_CONTRACT", {contract: shares_update_contract}));
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: update_contract}));
+                // dispatch(handleRedux("UPDATE_CONTRACT", {contract: update_contract}));
                 return new_shares_row;
             default:
                 let new_share_request = {id: new_id, receiver: profile.name, share: 0n};
@@ -426,20 +429,17 @@ export default function SharesContract(props: any) {
                 new_rows.splice(position, 0, new_share_request);
 
                 let shares_requests: Array<[string, ShareRequest]> = contracts[table_content.id].shares_requests.map((share_request: [string, ShareRequest]) => {
-                    if (share_request[0] === currentRequest.id) {
+                    if (currentRequest && share_request[0] === currentRequest.id) {
                         return [share_request[1].id, {
                             ...share_request[1],
-                            shares: UpdatedContractFromRow(new_rows, share_request[1].shares)
+                            shares: UpdatedContractFromRow(new_rows, share_request[1].shares),
                         }]
                     }
                     return share_request;
                 });
 
-                let req_updated_contract = {
-                    ...contracts[table_content.id],
-                    shares_requests,
-                };
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: req_updated_contract}));
+                update_contract.shares_requests = shares_requests
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: update_contract}));
                 return new_share_request
             // default:
             //     return {};

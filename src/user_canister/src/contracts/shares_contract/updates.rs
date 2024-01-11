@@ -59,19 +59,24 @@ fn pay_for_share_contract(contract_id: ContractId, amount: u64, author: String) 
 }
 
 #[update]
-fn conform_share(user: String, share_contract_id: ShareContractId, contract_id: ContractId) -> Result<(), String> {
+fn conform_share(user: String, share_contract_id: ShareContractId, contract_id: ContractId) -> Result<SharesContract, String> {
     let user: Principal = Principal::from_text(user).expect("Error at converting user to principal");
     let mut contract = SharesContract::get_for_author(user, contract_id)?;
-    let content: NoteContent = NoteContent::ConformShare(share_contract_id.clone());
-    let new_note = Notification {
-        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
-        sender: caller(),
-        receiver: user,
-        content,
-        is_seen: false,
-    };
-    new_note.save();
-    contract.conform(user, share_contract_id)
+
+    let res = contract.conform(user, share_contract_id);
+    if let Ok(shares_contract) = res.clone() {
+        let content: NoteContent = NoteContent::ConformShare(shares_contract);
+        let new_note = Notification {
+            id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+            sender: caller(),
+            receiver: user,
+            content,
+            is_seen: false,
+        };
+        new_note.save();
+    }
+
+    res
 }
 
 

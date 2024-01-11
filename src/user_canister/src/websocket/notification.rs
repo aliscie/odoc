@@ -30,7 +30,7 @@ pub enum NoteContent {
     PaymentCancelled(String),
     PaymentReleased(String),
     AcceptPayment(String),
-    ConformShare(String),
+    ConformShare(SharesContract),
     ApproveShareRequest(String),
     ApplyShareRequest(String),
 }
@@ -59,6 +59,9 @@ impl Notification {
 
 
     pub fn save(&self) {
+        if self.receiver == caller() {
+            return
+        }
         // let date_created = ic_cdk::api::time();
         NOTIFICATIONS.with(|notifications| {
             let mut user_notifications = notifications.borrow_mut();
@@ -101,6 +104,13 @@ impl Notification {
             let mut user_notifications = notifications.borrow_mut();
             let user_notifications = user_notifications.entry(caller()).or_insert_with(Vec::new);
             user_notifications.retain(|n| n.id != self.id);
+        });
+    }
+    pub fn clear() {
+        NOTIFICATIONS.with(|notifications| {
+            let mut user_notifications = notifications.borrow_mut();
+            let user_notifications = user_notifications.entry(caller()).or_insert_with(Vec::new);
+            user_notifications.clear();
         });
     }
 

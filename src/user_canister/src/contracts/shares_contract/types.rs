@@ -338,7 +338,7 @@ impl SharesContract {
     //     })
     // }
 
-    pub fn conform(&mut self, user: Principal, share_contract_id: ShareContractId) -> Result<(), String> {
+    pub fn conform(&mut self, user: Principal, share_contract_id: ShareContractId) -> Result<SharesContract, String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contract = caller_contracts
@@ -366,7 +366,7 @@ impl SharesContract {
                     })
                     .collect();
                 *existing_share = updated.clone();
-                return Ok(());
+                return Ok(updated.clone());
             };
 
             Err("Share not found in contract".to_string())

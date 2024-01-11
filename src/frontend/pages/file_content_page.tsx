@@ -15,7 +15,7 @@ function FileContentPage() {
     const dispatch = useDispatch();
 
     function onChange(changes: any) {
-        if (files_content[current_file.id] !== changes) {
+        if (files_content.get(current_file.id) !== changes) {
             dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: changes}));
             dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: changes}));
         }
@@ -83,7 +83,7 @@ function FileContentPage() {
 
 
     if (current_file.id != null) {
-        let content = files_content[current_file.id];
+        let content = files_content.get(current_file.id);
         let title = `${current_file.name || "Untitled"}`;
         let editable: boolean = current_file.author === profile.id
             || Object.keys(current_file.permission)[0] === "CanUpdate"

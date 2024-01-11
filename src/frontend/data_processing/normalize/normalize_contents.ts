@@ -3,24 +3,24 @@ import {ContentNode} from "../../../declarations/user_canister/user_canister.did
 
 export interface SlateNode {
     id: String;
-    language?: string;
     type?: string;
     language?: string;
     text?: string;
     children?: SlateNode[];
     data?: any[];
-    parent?: number[];
+    parent?: string[];
 }
 
 
 function nesting(content_node: ContentNode, alL_contents: Array<ContentNode>, visited: any[] = []) {
     let children = content_node.children.map((child_id: string) => {
-        let child: ContentNode = alL_contents.find((node: ContentNode) => node.id === child_id)
-        visited.push(child.id)
-        return nesting(child, alL_contents, visited)
+        let child: undefined | ContentNode = alL_contents.find((node: ContentNode) => node.id === child_id)
+        child && visited.push(child.id)
+        return child && nesting(child, alL_contents, visited)
     })
 
-    let item = {
+    // let item: SlateNode = {
+    let item: any = {
         id: content_node.id,
         type: content_node._type,
         data: content_node.data,
@@ -44,25 +44,25 @@ function nesting(content_node: ContentNode, alL_contents: Array<ContentNode>, vi
 
 export function normalize_content_tree(tree: Array<ContentNode>) {
     let nested_file_content: Array<SlateNode> = [];
-    let visited = [];
+    let visited: Array<string> = [];
     tree.map((node: ContentNode) => {
-        if (!visited.includes(node.id) && !node.parent.id) {
+        if (!visited.includes(node.id) && !node.parent[0]) {
             visited.push(node.id)
-            let slate_node: SlateNode = nesting(node, tree, visited)
-            nested_file_content.push(slate_node)
+            let slate_node: undefined | SlateNode = nesting(node, tree, visited)
+            slate_node && nested_file_content.push(slate_node)
         }
     })
     return nested_file_content
 }
 
-export function normalize_files_contents(content: Array<[string, Array<ContentNode>]>) {
+export function normalize_files_contents(content: undefined | Array<[string, Array<ContentNode>]>) {
     if (!content) {
         return []
     }
     if (content.length == 0) {
         return []
     }
-    let data = {}
+    let data: Map<string, Array<SlateNode>> = new Map<string, Array<SlateNode>>();
     content.map((node: [string, Array<ContentNode>]) => {
         if (!node[0]) {
             return
@@ -70,8 +70,9 @@ export function normalize_files_contents(content: Array<[string, Array<ContentNo
         let file_id: string = node[0];
         let file_content: Array<ContentNode> = node[1];
         let nested_file_content: Array<SlateNode> = normalize_content_tree(file_content);
-        data[file_id] = nested_file_content
-
+        data.set(
+            file_id, nested_file_content
+        )
     })
     return data
 }

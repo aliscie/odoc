@@ -18,7 +18,7 @@ export const createActor = (canisterId, options = {}) => {
     }
 
     // Fetch root key for certificate validation during development
-    if (import.meta.env.VITE_DFX_NETWORK !== "ic") {
+    if (process.env.VITE_DFX_NETWORK !== "ic") {
         agent.fetchRootKey().catch((err) => {
             console.warn(
                 "Unable to fetch root key. Check to ensure that your local replica is running"
@@ -55,8 +55,8 @@ export async function identify() {
         return authClient.getIdentity();
     }
     let identityProvider = "https://identity.ic0.app/#authorize";
-    if (import.meta.env.VITE_DFX_NETWORK != "ic") {
-        identityProvider = `http://${import.meta.env.VITE_IDENTITY_PROVIDER_ID}.localhost:8510/#authorize`
+    if (process.env.VITE_DFX_NETWORK != "ic") {
+        identityProvider = `http://${process.env.VITE_IDENTITY_PROVIDER_ID}.localhost:8510/#authorize`
     }
     return await authClient.login({
         identityProvider,

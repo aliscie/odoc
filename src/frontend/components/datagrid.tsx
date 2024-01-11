@@ -10,6 +10,7 @@ import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContextMenu from "./genral/context_menu";
 import {Row} from "../../declarations/user_canister/user_canister.did";
+import CustomNoRowsOverlay from "./genral/datagrid_skaleten";
 
 interface Props {
     data: any,
@@ -220,6 +221,9 @@ function CustomDataGrid(props: Props) {
 
     }
 
+    if (data.rows.length == 0) {
+        return <CustomNoRowsOverlay/>
+    }
 
     return <StyledDataGrid
         rows={data.rows}
@@ -230,6 +234,7 @@ function CustomDataGrid(props: Props) {
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
         slots={{
+            // noRowsOverlay: CustomNoRowsOverlay,
             cell: CustomCell,
             toolbar: () => <ButtonGroup variant="text" size={'small'}>
                 {props.tools}

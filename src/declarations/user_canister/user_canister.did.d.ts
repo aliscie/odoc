@@ -126,7 +126,7 @@ export type NoteContent = { 'ContractUpdate' : ContractNotification } |
   { 'PaymentReleased' : string } |
   { 'ShareRequestApplied' : SharesContract } |
   { 'ShareRequestApproved' : SharesContract } |
-  { 'ConformShare' : string } |
+  { 'ConformShare' : SharesContract } |
   { 'SharePayment' : SharesContract } |
   { 'AcceptPayment' : string } |
   { 'ApplyShareRequest' : string };
@@ -180,24 +180,26 @@ export type Result = { 'Ok' : User } |
   { 'Err' : string };
 export type Result_1 = { 'Ok' : null } |
   { 'Err' : string };
-export type Result_10 = { 'Ok' : CanisterOutputCertifiedMessages } |
-  { 'Err' : string };
-export type Result_2 = { 'Ok' : string } |
-  { 'Err' : string };
-export type Result_3 = { 'Ok' : bigint } |
-  { 'Err' : string };
-export type Result_4 = { 'Ok' : StoredContract } |
-  { 'Err' : string };
-export type Result_5 = { 'Ok' : InitialData } |
-  { 'Err' : string };
-export type Result_6 = { 'Ok' : Post } |
-  { 'Err' : string };
-export type Result_7 = { 'Ok' : ShareFile } |
-  { 'Err' : string };
-export type Result_8 = { 'Ok' : [FileNode, Array<ContentNode>] } |
-  { 'Err' : string };
-export type Result_9 = { 'Ok' : null } |
+export type Result_10 = { 'Ok' : null } |
   { 'Err' : null };
+export type Result_11 = { 'Ok' : CanisterOutputCertifiedMessages } |
+  { 'Err' : string };
+export type Result_2 = { 'Ok' : SharesContract } |
+  { 'Err' : string };
+export type Result_3 = { 'Ok' : string } |
+  { 'Err' : string };
+export type Result_4 = { 'Ok' : bigint } |
+  { 'Err' : string };
+export type Result_5 = { 'Ok' : StoredContract } |
+  { 'Err' : string };
+export type Result_6 = { 'Ok' : InitialData } |
+  { 'Err' : string };
+export type Result_7 = { 'Ok' : Post } |
+  { 'Err' : string };
+export type Result_8 = { 'Ok' : ShareFile } |
+  { 'Err' : string };
+export type Result_9 = { 'Ok' : [FileNode, Array<ContentNode>] } |
+  { 'Err' : string };
 export interface Row {
   'id' : string,
   'contract' : [] | [Contract],
@@ -277,23 +279,25 @@ export interface _SERVICE {
   'approve_request' : ActorMethod<[string, string, string], Result_1>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
   'cancel_payment' : ActorMethod<[string], Result_1>,
-  'conform_share' : ActorMethod<[string, string, string], Result_1>,
-  'content_updates' : ActorMethod<[string, [] | [string], string], Result_2>,
+  'clear_notifications' : ActorMethod<[], undefined>,
+  'conform_share' : ActorMethod<[string, string, string], Result_2>,
+  'content_updates' : ActorMethod<[string, [] | [string], string], Result_3>,
   'counter' : ActorMethod<[], bigint>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
   'create_payment_contract' : ActorMethod<[string], Result_1>,
-  'create_share_contract' : ActorMethod<[Array<Share>], Result_2>,
+  'create_share_contract' : ActorMethod<[Array<Share>], Result_3>,
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
+  'delete_notification' : ActorMethod<[string], Result_1>,
   'delete_payment' : ActorMethod<[string], Result_1>,
   'delete_post' : ActorMethod<[string], Result_1>,
-  'deposit_usdt' : ActorMethod<[bigint], Result_3>,
+  'deposit_usdt' : ActorMethod<[bigint], Result_4>,
   'get_all_files' : ActorMethod<[], [] | [Array<[string, FileNode]>]>,
   'get_all_files_content' : ActorMethod<
     [],
     Array<[string, Array<ContentNode>]>
   >,
   'get_all_users' : ActorMethod<[], Array<[string, User]>>,
-  'get_contract' : ActorMethod<[string, string], Result_4>,
+  'get_contract' : ActorMethod<[string, string], Result_5>,
   'get_file' : ActorMethod<[string], [] | [FileNode]>,
   'get_file_content' : ActorMethod<[string], [] | [Array<ContentNode>]>,
   'get_filtered_posts' : ActorMethod<
@@ -301,14 +305,14 @@ export interface _SERVICE {
     Array<PostUser>
   >,
   'get_friends' : ActorMethod<[], [] | [FriendSystem]>,
-  'get_initial_data' : ActorMethod<[], Result_5>,
+  'get_initial_data' : ActorMethod<[], Result_6>,
   'get_notifications' : ActorMethod<[], Array<Notification>>,
-  'get_post' : ActorMethod<[string], Result_6>,
+  'get_post' : ActorMethod<[string], Result_7>,
   'get_posts' : ActorMethod<[bigint, bigint], Array<PostUser>>,
-  'get_share_file' : ActorMethod<[string], Result_7>,
-  'get_shared_file' : ActorMethod<[string], Result_8>,
+  'get_share_file' : ActorMethod<[string], Result_8>,
+  'get_shared_file' : ActorMethod<[string], Result_9>,
   'get_user' : ActorMethod<[string], Result>,
-  'move_file' : ActorMethod<[string, [] | [string]], Result_9>,
+  'move_file' : ActorMethod<[string, [] | [string]], Result_10>,
   'multi_updates' : ActorMethod<
     [
       Array<FileNode>,
@@ -316,8 +320,9 @@ export interface _SERVICE {
       Array<StoredContract>,
       Array<string>,
     ],
-    Result_2
+    Result_3
   >,
+  'notification_seen' : ActorMethod<[string], Result_1>,
   'pay_for_share_contract' : ActorMethod<[string, bigint, string], Result_1>,
   'register' : ActorMethod<[RegisterUser], Result>,
   'reject_friend_request' : ActorMethod<[string], Result>,
@@ -331,14 +336,14 @@ export interface _SERVICE {
   'search_posts' : ActorMethod<[string], Array<PostUser>>,
   'see_notifications' : ActorMethod<[string], undefined>,
   'send_friend_request' : ActorMethod<[string], Result>,
-  'share_file' : ActorMethod<[ShareFileInput], Result_7>,
+  'share_file' : ActorMethod<[ShareFileInput], Result_8>,
   'unfriend' : ActorMethod<[string], Result>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
-  'vote_down' : ActorMethod<[string], Result_6>,
-  'vote_up' : ActorMethod<[string], Result_6>,
-  'withdraw_usdt' : ActorMethod<[bigint], Result_3>,
+  'vote_down' : ActorMethod<[string], Result_7>,
+  'vote_up' : ActorMethod<[string], Result_7>,
+  'withdraw_usdt' : ActorMethod<[bigint], Result_4>,
   'ws_close' : ActorMethod<[CanisterWsCloseArguments], Result_1>,
-  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_10>,
+  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_11>,
   'ws_message' : ActorMethod<
     [CanisterWsMessageArguments, [] | [AppMessage]],
     Result_1

@@ -69,13 +69,15 @@ export function Friend(props: FriendProps) {
         return res
     }
 
-    async function handleReject(id: string) {
-        let res = actor && await actor.reject_friend_request(id)
+    async function handleReject(user_id: string) {
+        let res = actor && await actor.reject_friend_request(user_id)
         if (res.Ok) {
-            dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
+            console.log({id: user_id})
+            dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: user_id}))
+            let notification_list = actor && await actor.get_notifications();
+            dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
         }
-        let notification_list = actor && await actor.get_notifications();
-        dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
+
         return res
     }
 
@@ -170,10 +172,10 @@ function Friends(props: any) {
 
             {friends && friends.map((value) => {
                 let user = value.receiver && value.receiver.id != profile.id ? value.receiver : value.sender
-                const labelId = `checkbox-list-secondary-label-${value.receiver.name}`;
+                const labelId = value.receiver && `checkbox-list-secondary-label-${value.receiver.name}`;
                 return (
                     <ListItem
-                        key={value.receiver.name}
+                        key={value.receiver && value.receiver.name}
                         disablePadding
                     >
                         <Friend {...user} is_friend={true} labelId={labelId}/>

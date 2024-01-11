@@ -21,14 +21,14 @@ url: ~
 
 NnsProposal:
     
-    title: ~
+    title: "version 0.0"
 
     
     
-    url: ~
+    url: """
 
     
-    summary: ~
+    summary: ""
 
 
 
@@ -42,7 +42,9 @@ fallback_controller_principals: []
 
 
 
-dapp_canisters: []
+dapp_canisters: [
+# get this from dfx deploy --network ic
+]
 
 
 

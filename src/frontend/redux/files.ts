@@ -4,9 +4,17 @@ import {normalize_files} from "../data_processing/normalize/normalize_files";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
-import {FileNode, User} from "../../declarations/user_canister/user_canister.did";
+import {
+    FileNode,
+    Friend, FriendSystem,
+    InitialData,
+    ShareFilePermission,
+    User,
+    Notification
+} from "../../declarations/user_canister/user_canister.did";
 import {actor} from "../App";
 import {logger} from "../dev_utils/log_data";
+import {Principal} from "@dfinity/principal";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
@@ -37,10 +45,11 @@ export type FilesActions =
     | "NOTIFY"
     | "UPDATE_FRIEND"
     | "UPDATE_NOTIFY"
+    | "REMOVE_NOTIFY"
     | FriendsActions;
 
 
-export var initialState = {
+export var initialState: any = {
 
     current_file: {id: null, name: null},
     is_files_saved: true,
@@ -54,7 +63,16 @@ export var initialState = {
 
 function getCurrentFile(data: any) {
     let file = {id: null, name: null};
-    let dummy_file: FileNode | String = {id: "", name: "", share_id: [], children: [], parent: []};
+    let dummy_file: FileNode | string = {
+        'id': "string",
+        'permission': {'CanComment': null},
+        'share_id': [],
+        'name': "",
+        'children': [],
+        'author': "",
+        'users_permissions': [],
+        'parent': [],
+    }
     dummy_file = JSON.stringify(dummy_file);
 
     let stored_file = JSON.parse(localStorage.getItem("current_file") || dummy_file)
@@ -67,30 +85,30 @@ function getCurrentFile(data: any) {
 
 export async function get_initial_data() {
     let isLoggedIn = await agent.is_logged() // TODO avoid repetition `isLoggedIn` is already used in ui.ts
-    let data = actor && await actor.get_initial_data();
+    let data: undefined | { Ok: InitialData } | { Err: string } = actor && await actor.get_initial_data();
 
-    initialState["Anonymous"] = data.Err == "Anonymous user." && isLoggedIn;
-    initialState["isLoggedIn"] = data.Err != "Anonymous user." && isLoggedIn
+    initialState["Anonymous"] = data && "Err" in data && data.Err == "Anonymous user." && isLoggedIn;
+    initialState["isLoggedIn"] = data && "Err" in data && data.Err != "Anonymous user." && isLoggedIn
 
     data = actor && await actor.get_initial_data();
 
     const authClient = await AuthClient.create();
     const userPrincipal = authClient.getIdentity().getPrincipal().toString();
-    let all_friends = []
+    let all_friends: Array<Friend> = []
 
-    if ("Ok" in data && data.Ok.Friends) {
-        let friend_requests = data.Ok.Friends[0] && data.Ok.Friends[0].friend_requests || []
+    if (data && "Ok" in data && data.Ok.Friends) {
+        let friend_requests: Array<Friend> = data.Ok.Friends[0] && data.Ok.Friends[0].friend_requests || []
         let confirmed_friends = data.Ok.Friends[0] && data.Ok.Friends[0].friends || []
-        all_friends = [...friend_requests.map((i: User) => i), ...confirmed_friends.map((i: any) => i)]
+        all_friends = [...friend_requests.map((i: Friend) => i), ...confirmed_friends.map((i: any) => i)]
     }
 
-    const uniqueUsersSet = new Set<string>();
+    const uniqueUsersSet: any = new Set<string>();
 
 
-    if ("Ok" in data) {
+    if (data && "Ok" in data) {
         all_friends.forEach((item) => {
-            item.receiver.id !== data.Ok.Profile.id && uniqueUsersSet.add(item.receiver);
-            item.sender.id !== data.Ok.Profile.id &&uniqueUsersSet.add(item.sender);
+            data && "Ok" in data && (item.receiver.id !== data.Ok.Profile.id) && uniqueUsersSet.add(item.receiver);
+            data && "Ok" in data && item.sender.id !== data.Ok.Profile.id && uniqueUsersSet.add(item.sender);
         });
 
         initialState["files"] = normalize_files(data.Ok.Files);
@@ -110,14 +128,15 @@ export async function get_initial_data() {
 }
 
 
-export function filesReducer(state = initialState, action: { data: any, type: FilesActions, id?: any, file?: any, name: any, content?: any, changes: any }) {
+// export function filesReducer(state = initialState, action: { data: any, type: FilesActions, id?: any, file?: any, name: any, content?: any, changes: any }) {
+export function filesReducer(state = initialState, action: any) {
     let friends = {...state.friends[0]};
     let friend_id = action.id;
 
     switch (action.type) {
         case 'ADD_CONTENT':
             let files_content = state.files_content
-            files_content[action.id] = action.content;
+            files_content.set(action.id, action.content)
             return {
                 ...state,
                 files_content: files_content,
@@ -133,24 +152,42 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 ...state,
                 files: {...state.files, [action.id]: action.file},
             }
+        case 'REMOVE_NOTIFY':
+            let new_notifications = state.notifications.filter((item: Notification) => {
+                return item && item.id !== action.id;
+
+            });
+            return {
+                ...state,
+                notifications: new_notifications,
+            }
         case 'NOTIFY':
             return {
                 ...state,
                 notifications: [...state.notifications, action.new_notification],
             }
         case 'UPDATE_NOTIFY':
-            // --------- TODO why UPDATE_NOTIFY is called twice? --------- \\
-            // console.log("UPDATE_NOTIFY", {
-            //     action
-            // })
-            return {
-                ...state,
-                notifications: action.new_list,
+            if (action.new_list) {
+                state.notifications = action.new_list
+            } else if (action.notification) {
+                let update_notification = {
+                    ...action.notification,
+                }
+                state.notifications = state.notifications.map((item: Notification) => {
+                    if (item.id === action.notification.id) {
+                        item = update_notification;
+                    }
+                    return item;
+                });
             }
+            return state
+
+
         case 'REMOVE':
             let file_id = action.id;
             let files = {...state.files};
-            delete state.files_content[file_id];
+            state.files_content.delete(file_id)
+            // delete state.files_content[file_id];
             delete files[file_id];
             return {
                 ...state,
@@ -178,7 +215,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             }
 
         case 'UPDATE_CONTENT':
-            state.files_content[action.id] = action.content;
+            state.files_content.set(action.id, action.content)
             return {
                 ...state,
             }
@@ -201,13 +238,13 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             }
         case 'REMOVE_CONTRACT':
             delete state.contracts[action.id]
-            delete state.changes.delete_contracts.push(action.id)
+            state.changes.delete_contracts.push(action.id)
             return {
                 ...state,
             }
 
         case 'FILES_SAVED':
-            state.files_content[action.id] = action.content;
+            state.files_content.set(action.id,action.content)
             return {
                 ...state,
                 is_files_saved: true
@@ -273,7 +310,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
 
 
         case 'REMOVE_FRIEND':
-            friends.friends = friends.friends.filter((friend) => friend.id !== friend_id);
+            friends.friends = friends.friends.filter((friend: User) => friend.id !== friend_id);
             friends.friends = friends.friends.length > 0 ? friends.friends : [];
             return {
                 ...state,
@@ -289,7 +326,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             };
 
         case 'REMOVE_FRIEND_REQUEST':
-            friends.friend_requests = friends.friend_requests.filter((request) => request.id !== friend_id);
+            friends.friend_requests = friends.friend_requests.filter((request: Friend) => request.sender.id !== friend_id && request.receiver.id !== friend_id);
             friends.friend_requests = friends.friend_requests.length > 0 ? friends.friend_requests : [];
             return {
                 ...state,

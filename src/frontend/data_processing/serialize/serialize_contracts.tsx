@@ -64,7 +64,7 @@ export default function serialize_payment_contract(content: any[], data: Array<S
                         'share_contract_id': s.share_contract_id,
                         'accumulation': BigInt(s.accumulation),
                         'confirmed': s.confirmed,
-                        'share': BigInt(s.share),
+                        'share': BigInt(s.share || 0),
                         'receiver': s.receiver,
                         extra_cells: s.extra_cells || []
                     }
