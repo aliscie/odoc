@@ -1,6 +1,7 @@
 import {defineConfig} from "vite";
 import EnvironmentPlugin from "vite-plugin-environment";
 import path from "path";
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 import dfxJson from "./dfx.json";
 
@@ -89,7 +90,7 @@ export default defineConfig({
         },
         moduleFileExtensions: ["js", "ts", "json"],
         moduleNameMapper: {
-            "^canisters/(.*)": "<rootDir>/.dfx/local/canisters/$1",
+            "^canisters/(.*)": "./.dfx/local/canisters/$1",
         }
     },
     build: {
@@ -124,6 +125,7 @@ export default defineConfig({
         ),
     },
     plugins: [
+        tsconfigPaths(),
         EnvironmentPlugin("all", {prefix: "CANISTER_"}),
         EnvironmentPlugin("all", {prefix: "DFX_"}),
         EnvironmentPlugin({BACKEND_CANISTER_ID: ""}),
