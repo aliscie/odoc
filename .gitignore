@@ -31,6 +31,4 @@ yarn-error.log*
 /.idea
 /.code
 
-yarn.lock
-
 .vscode

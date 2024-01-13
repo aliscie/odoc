@@ -401,7 +401,7 @@ export default function SharesContractComponent(props: any) {
                 let new_payment_option: SharePaymentOption = {
                     id: new_id,
                     title: "",
-                    amount: 0n,
+                    amount: BigInt(0),
                     description: "",
                     date: "",
                 };
@@ -424,7 +424,7 @@ export default function SharesContractComponent(props: any) {
                 // dispatch(handleRedux("UPDATE_CONTRACT", {contract: update_contract}));
                 return new_shares_row;
             default:
-                let new_share_request = {id: new_id, receiver: profile.name, share: 0n};
+                let new_share_request = {id: new_id, receiver: profile.name, share: BigInt(0)};
                 let new_rows = [...data.rows];
                 new_rows.splice(position, 0, new_share_request);
 
@@ -487,8 +487,8 @@ export default function SharesContractComponent(props: any) {
             case '+Request':
                 let new_share: Share = {
                     'share_contract_id': randomString(),
-                    'accumulation': 0n,
-                    'share': 100n,
+                    'accumulation': BigInt(0),
+                    'share': BigInt(100),
                     'confirmed': true,
                     'receiver': Principal.fromText(profile.id),
                     extra_cells: []
