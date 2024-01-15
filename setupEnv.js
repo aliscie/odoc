@@ -19,8 +19,8 @@ function initCanisterEnv() {
   }
 
   const network =
-    process.env.DFX_NETWORK ||
-    (process.env.NODE_ENV === "production" ? "ic" : "local");
+    import.meta.env.DFX_NETWORK ||
+    (import.meta.env.NODE_ENV === "production" ? "ic" : "local");
 
   const canisterConfig = network === "local" ? localCanisters : prodCanisters;
 

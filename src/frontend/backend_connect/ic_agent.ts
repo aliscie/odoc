@@ -17,7 +17,7 @@ const createActor = (canisterId: string, options: any = {}) => {
     }
 
     // Fetch root key for certificate validation during development
-    if (process.env.VITE_DFX_NETWORK !== "ic") {
+    if (import.meta.env.VITE_DFX_NETWORK !== "ic") {
         agent.fetchRootKey().catch((err: string) => {
             console.warn(
                 "Unable to fetch root key. Check to ensure that your local replica is running"
@@ -47,7 +47,7 @@ export const get_user_actor = async () => {
         backendActor = createActor(userCanisterId, {
             agentOptions: {
                 identity,
-                host: window.location.href,
+                host: "https://icp-api.io." //window.location.href,
             }
         });
         // }
@@ -59,8 +59,8 @@ export const get_user_actor = async () => {
 
 function get_identity_url() {
     let identityProvider = "https://identity.ic0.app/#authorize";
-    if (process.env.VITE_DFX_NETWORK != "ic") {
-        let port = process.env.VITE_DFX_PORT;
+    if (import.meta.env.VITE_DFX_NETWORK != "ic") {
+        let port = import.meta.env.VITE_DFX_PORT;
         identityProvider = `http://${identityCanisterId}.localhost:${port}/#authorize`
     }
     return identityProvider

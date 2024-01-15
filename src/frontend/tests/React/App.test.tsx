@@ -5,7 +5,7 @@ import SharesContractComponent from "../../components/contracts/shares_contract"
 
 
 // Create a mock Redux store
-const mockStore = configureStore([]);
+// const mockStore = configureStore([]);
 // const initialState = {
 //     uiReducer: {
 //         isNavOpen: false,
@@ -24,7 +24,7 @@ const mockStore = configureStore([]);
 test('Test share contract', () => {
 
 
-    let share_contract_sample = {
+    const share_contract_sample = {
         "id": "8ehxm4", "type": "shares_contract", "data": [], "children": [{
             "id": "m0r694", "type": "", "data": [{
                 "Table": {
@@ -70,7 +70,8 @@ test('Test share contract', () => {
             }], "text": ""
         }]
     };
-    let redux_sample = {
+
+    const redux_sample = {
         "current_file": {
             "id": "l835mg",
             "permission": {"CanView": null},
@@ -200,5 +201,7 @@ test('Test share contract', () => {
             <SharesContractComponent {...share_contract_sample} />
         </Provider>
     );
+    // expect x to be true
+    expect(true).toBe(false);
 
 });

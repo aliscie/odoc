@@ -1,5 +1,3 @@
-import {agent} from "../backend_connect/main";
-
 export type MainActions =
     "TOGGLE_NAV"
     | "SEARCH"

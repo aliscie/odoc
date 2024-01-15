@@ -1,11 +1,11 @@
-import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {GridRenderCellParams} from '@mui/x-data-grid';
 import {Button} from '@mui/material';
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import {
-    Column, PaymentContract,
+    Column,
+    PaymentContract,
     Row,
     Share,
     SharePaymentOption,
@@ -26,8 +26,6 @@ import useSharesRequests from "./shares_contract/use_shares_requests";
 import ApproveButton from "./shares_contract/approve_button";
 import ApplyButton from "./shares_contract/apply_button";
 import CustomDataGrid from "../datagrid";
-import {logger} from "../../dev_utils/log_data";
-import {HashTree} from "@dfinity/agent";
 
 // export type SharesContractViews = "Payments" | "Shares" | "SharesRequests" | "PaymentOptions";
 
@@ -38,18 +36,17 @@ export default function SharesContractComponent(props: any) {
     const dispatch = useDispatch();
 
     const {
-        files_content,
         current_file,
         all_friends,
         profile,
         contracts
     } = useSelector((state: any) => state.filesReducer);
-    logger({
-        current_file,
-        all_friends,
-        profile,
-        contracts
-    })
+    // logger({
+    //     current_file,
+    //     all_friends,
+    //     profile,
+    //     contracts
+    // })
 
 
     // ToDo  `props.data[0]` instead of `props.children[0].data[0]`
@@ -166,7 +163,7 @@ export default function SharesContractComponent(props: any) {
     // const {dialog, handleClickOpen} = useFormulaDialog(handleColumnValidator);
 
 
-    let {setRequest, currentRequest, addRequestRow, handleClickReq, UpdatedContractFromRow} = useSharesRequests({
+    let {setRequest, currentRequest, handleClickReq, UpdatedContractFromRow} = useSharesRequests({
         table_content,
         props,
         setView,
@@ -451,7 +448,7 @@ export default function SharesContractComponent(props: any) {
     let Click = async (e: string) => {
         switch (e) {
             case 'Shares':
-                let [col, nor_rows] = await normalize_share_rows(contracts);
+                let [_, nor_rows] = await normalize_share_rows(contracts);
                 setData({
                     rows: nor_rows,
                     columns: custom_columns
@@ -460,7 +457,7 @@ export default function SharesContractComponent(props: any) {
                 setRequest(null);
                 break;
             case "Payments":
-                let rows = [];
+                let rows: any = [];
                 for (const payment of contracts[table_content.id].payments) {
                     let sender: any = await getUser(payment.sender.toString());
                     sender = sender ? sender.name : ""

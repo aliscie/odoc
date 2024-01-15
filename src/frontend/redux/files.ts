@@ -4,17 +4,8 @@ import {normalize_files} from "../data_processing/normalize/normalize_files";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
-import {
-    FileNode,
-    Friend, FriendSystem,
-    InitialData,
-    ShareFilePermission,
-    User,
-    Notification
-} from "../../declarations/user_canister/user_canister.did";
+import {FileNode, Friend, InitialData, Notification, User} from "../../declarations/user_canister/user_canister.did";
 import {actor} from "../App";
-import {logger} from "../dev_utils/log_data";
-import {Principal} from "@dfinity/principal";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();

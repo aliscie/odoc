@@ -1,9 +1,9 @@
 import {defineConfig} from "vite";
 import EnvironmentPlugin from "vite-plugin-environment";
 import path from "path";
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 import dfxJson from "./dfx.json";
+import {resolve} from "dns";
 
 let localCanisters, prodCanisters, canisters;
 
@@ -66,7 +66,7 @@ const aliases = Object.entries(dfxJson.canisters).reduce(
 
 // Generate canister ids, required by the generated canister code in .dfx/local/canisters/*
 // This strange way of JSON.stringifying the value is required by vite
-const canisterDefinitions = Object.entries(canisters).reduce(
+const canisterDefinitions = canisters && Object.entries(canisters).reduce(
     (acc, [key, val]) => ({
         ...acc,
         [`process.env.${key.toUpperCase()}_CANISTER_ID`]: isDevelopment
@@ -75,23 +75,15 @@ const canisterDefinitions = Object.entries(canisters).reduce(
     }),
     {}
 );
-
+// let define = process.env.VITEST ? {} : {global: window, document, process};
 export default defineConfig({
-
     test: {
+        environment: 'jsdom',
         globals: true,
-        environment: "jsdom",
-        css: true,
-        setupFiles:"./tests_setup.js",
-
-        transform: {
-            "^.+\\.js$": "babel-jest",
-            "^.+\\.ts$": "ts-jest",
-        },
-        moduleFileExtensions: ["js", "ts", "json"],
-        moduleNameMapper: {
-            "^canisters/(.*)": "./.dfx/local/canisters/$1",
-        }
+        threads: false,
+        watch: false,
+        // include: ['**/__tests__/*.{js,tsx,ts}', "App.test.tsx"],
+        // setupFiles: '.test_setup.ts'
     },
     build: {
         outDir: "build",
@@ -125,7 +117,6 @@ export default defineConfig({
         ),
     },
     plugins: [
-        tsconfigPaths(),
         EnvironmentPlugin("all", {prefix: "CANISTER_"}),
         EnvironmentPlugin("all", {prefix: "DFX_"}),
         EnvironmentPlugin({BACKEND_CANISTER_ID: ""}),
