@@ -96,8 +96,8 @@ let Dialog = (props: any) => {
 
     return <List>
         <ListItemButton onClick={copyLink}>
-            {saving && <span className={"loader"}></span>}
-            <span>{share_link}</span>
+            {saving && <ListItemText className={"loader"}></ListItemText>}
+            <ListItemText>{share_link}</ListItemText>
             {is_copy ? <CheckIcon size={"small"} color={"success"}/> : null}
         </ListItemButton>
 

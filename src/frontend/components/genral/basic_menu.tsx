@@ -61,7 +61,7 @@ const BasicMenu: React.FC<BasicMenuProps> = ({options, children}) => {
                         {option.icon && option.icon}
                         {option.content}
                     </MenuItem>;
-                    option.to ? item = <Link to={option.to}>{item}</Link> : null;
+                    option.to ? item = <Link key={index} to={option.to}>{item}</Link> : null;
                     return item;
                 })}
             </Menu>

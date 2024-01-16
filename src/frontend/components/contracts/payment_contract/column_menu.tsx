@@ -43,7 +43,7 @@ function CustomColumnMenu(props: GridColumnMenuProps) {
     }
     return (
         <GridColumnMenu
-            {...props}
+            {...props} // TODO later fix all {...props} and make it exact like item={props.item_value}
             slots={slots}
             slotProps={{
                 columnMenuUserItem: {

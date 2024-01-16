@@ -26,11 +26,11 @@ import useSharesRequests from "./shares_contract/use_shares_requests";
 import ApproveButton from "./shares_contract/approve_button";
 import ApplyButton from "./shares_contract/apply_button";
 import CustomDataGrid from "../datagrid";
-import {logger} from "../../dev_utils/log_data";
 
 // export type SharesContractViews = "Payments" | "Shares" | "SharesRequests" | "PaymentOptions";
 
-export default function SharesContract(props: any) {
+export default function SharesContractComponent(props: any) {
+
     let [view, setView] = useState("Shares");
     let {getUser, getUserByName} = useGetUser();
     const dispatch = useDispatch();
@@ -42,7 +42,7 @@ export default function SharesContract(props: any) {
         profile,
         contracts
     } = useSelector((state: any) => state.filesReducer);
-
+    const redux = useSelector((state: any) => state.filesReducer);
 
     // ToDo  `props.data[0]` instead of `props.children[0].data[0]`
     let table_content = props.children[0]
@@ -139,7 +139,7 @@ export default function SharesContract(props: any) {
                         "permissions": [],
                         "dataValidator": [],
                         "formula": [],
-                        "deleteable":true
+                        "deleteable": true
 
                     })
                 })

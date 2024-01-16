@@ -1,44 +1,34 @@
-import {render, screen, fireEvent} from '@testing-library/react';
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
-import {Provider} from 'react-redux';
 import configureStore from 'redux-mock-store';
-import {NavAppBar} from "../../components/spesific/app_bar";
-import {BreadPage} from "../../components/genral/breadcrumbs";
-import App from "../../App"; // Assuming you have redux-mock-store installed
+import {Provider} from "react-redux";
+import {render} from "@testing-library/react";
+import SharesContractComponent from "../../components/contracts/shares_contract";
+import * as React from "react";
+import App from "../../App";
+import store from "../../redux/main";
+import {StrictMode} from "react";
 
+const mockStore = configureStore([]);
+import redux_sample from "./redux_example.json";
+import share_contract_example from "./share_contract_example.json";
+import {logger} from "../../dev_utils/log_data";
 
-// Create a mock Redux store
-// const mockStore = configureStore([]);
-// const initialState = {
-//     uiReducer: {
-//         isNavOpen: false,
-//         isDarkMode: false,
-//         isLoggedIn: false,
-//         searchTool: false,
-//     },
-//     filesReducer: {
-//         profile: null,
-//         current_file: null,
-//         files: {},
-//     },
-// };
-// const store = mockStore(initialState);
+const container = document.createElement('div');
+document.body.appendChild(container);
+
 
 test('clicking on Login opens a new tab', () => {
-    // render(
-    //     <Provider store={store}>
-    //
-    //         <BrowserRouter>
-    //             <App/>
-    //         </BrowserRouter>
-    //     </Provider>
-    // );
+    const store = mockStore(redux_sample);
+    render(
+        <StrictMode>
+            <Provider store={store}>
+                <SharesContractComponent {...share_contract_example} />
+            </Provider>
+        </StrictMode>
+    )
 
-    // Find the Login button and click it
-    // const loginButton = screen.getByText('Login');
-    // fireEvent.click(loginButton);
-    //
-    // // Check if a new tab is opened (you may need to adjust the condition based on your specific implementation)
-    // expect(window.open).toHaveBeenCalled();
-    expect(false).toBe(false);
+
+});
+
+afterEach(() => {
+    document.body.removeChild(container);
 });
