@@ -76,6 +76,14 @@ const canisterDefinitions = Object.entries(canisters).reduce(
 );
 
 export default defineConfig({
+    test: {
+        environment: 'jsdom',
+        globals: true,
+        threads: false,
+        watch: false,
+        // include: ['**/__tests__/*.{js,tsx,ts}', "App.test.tsx"],
+        setupFiles: './setup_tests.ts'
+    },
     build: {
         outDir: "build",
     },

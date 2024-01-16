@@ -20,10 +20,11 @@
     "@mui/base": "5.0.0-beta.24",
     "@mui/icons-material": "^5.14.18",
     "@mui/lab": "^5.0.0-alpha.135",
-    "@mui/material": "^5.14.18",
+    "@mui/material": "^5.15.4",
     "@mui/styles": "^5.13.2",
     "@mui/x-data-grid": "^6.11.0",
     "@mui/x-data-grid-generator": "^6.8.0",
+    "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^14.1.2",
     "@types/hot-formula-parser": "^4.0.0",
     "@types/react-dom": "^18.2.4",
@@ -34,7 +35,6 @@
     "flowbite": "^1.6.5",
     "flowbite-react": "^0.4.6",
     "hot-formula-parser": "^4.0.0",
-    "ic-websocket-js": "^0.3.1",
     "notistack": "^3.0.1",
     "odoc-editor": "^2.9.0",
     "react": "^18.2.0",
@@ -48,18 +48,21 @@
     "shorturl": "^0.0.3",
     "tsc": "^2.0.4",
     "typescript": "^5.0.4",
-    "vite": "^4.3.9"
+    "vite": "^4.3.9",
+    "vitest": "^1.2.0"
   },
   "scripts": {
+    "dfx": "dfx start --clean",
     "start": "vite serve",
     "build": "vite build",
     "serve": "vite preview",
-    "test": "jest",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
     "prebuild": "dfx generate",
     "deploy:local": "dfx deploy --network=local",
     "deploy:ic": "dfx deploy --network=ic",
     "format": "prettier --write .",
-    "generate": "scripts/did.sh && dfx generate && npm run format"
+    "generate": "scripts/did.sh && dfx --identity anonymous generate  && npm run format"
   },
   "eslintConfig": {
     "extends": [

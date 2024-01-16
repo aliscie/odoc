@@ -15,8 +15,8 @@ import {get_initial_data} from "./redux/files";
 import {get_user_actor} from "./backend_connect/ic_agent";
 import {ActorSubclass, SignIdentity} from "@dfinity/agent";
 import {_SERVICE} from "../declarations/user_canister/user_canister.did";
-import {canisterId, user_canister} from "../declarations/user_canister";
-import IcWebSocket, {createWsConfig} from "ic-websocket-js";
+// import {canisterId, user_canister} from "../declarations/user_canister";
+// import IcWebSocket, {createWsConfig} from "ic-websocket-js";
 import {AuthClient} from "@dfinity/auth-client";
 
 export let actor: ActorSubclass<_SERVICE> | undefined;
@@ -39,59 +39,59 @@ function App() {
 
             // Check the ref before setting up the WebSocket
             if (await authClient.isAuthenticated() && !isWebSocketSetup.current) {
-                const wsConfig = createWsConfig({
-                    canisterId: canisterId,
-                    canisterActor: user_canister,
-                    identity: _identity as SignIdentity,
-                    networkUrl: icUrl,
-                });
+                // const wsConfig = createWsConfig({
+                //     canisterId: canisterId,
+                //     canisterActor: user_canister,
+                //     identity: _identity as SignIdentity,
+                //     networkUrl: icUrl,
+                // });
 
-                const ws = new IcWebSocket(gatewayUrl, undefined, wsConfig);
+                // const ws = new IcWebSocket(gatewayUrl, undefined, wsConfig);
 
-                ws.onopen = () => {
-                    console.log("Connected to the canister");
-                };
-
-                ws.onmessage = async (event) => {
-
-
-                    // if (event.data.notification.length == 0) {
-                    //     return
-                    // }
-                    dispatch(handleRedux('NOTIFY', {new_notification: event.data.notification[0]}));
-
-                    // check if the key is `FriendRequest` or ContractUpdate in event.data.notification[0].content[key]
-                    let keys = event.data.notification[0] && Object.keys(event.data.notification[0].content);
-
-                    if (!keys) {
-                        return
-                    }
-
-                    if (keys.toString().includes("FriendRequest")) {
-                        // TODO this does not seams to update live.
-                        let new_friends = actor && await actor.get_friends();
-                        new_friends && dispatch(handleRedux("UPDATE_FRIEND", {friends: new_friends[0]}))
-
-                    } else if (keys.toString().includes("ContractUpdate")) {
-                        // let new_contracts = actor && await actor.get_contracts();
-                        // new_contracts && dispatch(handleRedux("UPDATE_CONTRACT", {contracts: new_contracts[0]}))
-                    } else if (keys.toString().includes("SharePayment")) {
-                        let share_payment = event.data.notification[0].content["SharePayment"];
-                        dispatch(handleRedux("UPDATE_CONTRACT", {contract: share_payment}))
-                    } else if (keys.toString().includes("Unfriend")) {
-                        actor && dispatch(handleRedux('UPDATE_NOTIFY', {new_list: await actor.get_notifications()}));
-                        let new_friends = actor && await actor.get_friends();
-                        new_friends && dispatch(handleRedux("UPDATE_FRIEND", {friends: new_friends[0]}))
-                    }
-                };
-
-                ws.onclose = () => {
-                    console.log("Disconnected from the ws canister");
-                };
-
-                ws.onerror = (error) => {
-                    console.log("Error:", error);
-                };
+                // ws.onopen = () => {
+                //     console.log("Connected to the canister");
+                // };
+                //
+                // ws.onmessage = async (event) => {
+                //
+                //
+                //     // if (event.data.notification.length == 0) {
+                //     //     return
+                //     // }
+                //     dispatch(handleRedux('NOTIFY', {new_notification: event.data.notification[0]}));
+                //
+                //     // check if the key is `FriendRequest` or ContractUpdate in event.data.notification[0].content[key]
+                //     let keys = event.data.notification[0] && Object.keys(event.data.notification[0].content);
+                //
+                //     if (!keys) {
+                //         return
+                //     }
+                //
+                //     if (keys.toString().includes("FriendRequest")) {
+                //         // TODO this does not seams to update live.
+                //         let new_friends = actor && await actor.get_friends();
+                //         new_friends && dispatch(handleRedux("UPDATE_FRIEND", {friends: new_friends[0]}))
+                //
+                //     } else if (keys.toString().includes("ContractUpdate")) {
+                //         // let new_contracts = actor && await actor.get_contracts();
+                //         // new_contracts && dispatch(handleRedux("UPDATE_CONTRACT", {contracts: new_contracts[0]}))
+                //     } else if (keys.toString().includes("SharePayment")) {
+                //         let share_payment = event.data.notification[0].content["SharePayment"];
+                //         dispatch(handleRedux("UPDATE_CONTRACT", {contract: share_payment}))
+                //     } else if (keys.toString().includes("Unfriend")) {
+                //         actor && dispatch(handleRedux('UPDATE_NOTIFY', {new_list: await actor.get_notifications()}));
+                //         let new_friends = actor && await actor.get_friends();
+                //         new_friends && dispatch(handleRedux("UPDATE_FRIEND", {friends: new_friends[0]}))
+                //     }
+                // };
+                //
+                // ws.onclose = () => {
+                //     console.log("Disconnected from the ws canister");
+                // };
+                //
+                // ws.onerror = (error) => {
+                //     console.log("Error:", error);
+                // };
 
                 // Update the ref to indicate that the WebSocket has been set up
                 isWebSocketSetup.current = true;
