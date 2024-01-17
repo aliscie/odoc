@@ -5,7 +5,7 @@ use ic_cdk::caller;
 use ic_cdk_macros::update;
 
 use crate::{ExchangeType, Share, SharesContract, Wallet, websocket};
-use crate::files::COUNTER;
+use crate::COUNTER;
 use crate::storage_schema::{ContractId, ShareContractId};
 use crate::websocket::{NoteContent, Notification};
 

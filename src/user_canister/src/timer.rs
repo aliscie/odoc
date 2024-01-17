@@ -1,5 +1,5 @@
 use std::sync::atomic::{AtomicU64, Ordering};
-use crate::files::COUNTER;
+use crate::COUNTER;
 
 // static COUNTER: AtomicU64 = AtomicU64::new(0);
 

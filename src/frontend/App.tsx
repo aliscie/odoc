@@ -18,6 +18,7 @@ import {_SERVICE} from "../declarations/user_canister/user_canister.did";
 // import {canisterId, user_canister} from "../declarations/user_canister";
 // import IcWebSocket, {createWsConfig} from "ic-websocket-js";
 import {AuthClient} from "@dfinity/auth-client";
+import MessagesDialog from "./components/chat/messages_box_dialog";
 
 export let actor: ActorSubclass<_SERVICE> | undefined;
 
@@ -45,7 +46,7 @@ function App() {
                 //     identity: _identity as SignIdentity,
                 //     networkUrl: icUrl,
                 // });
-
+                //
                 // const ws = new IcWebSocket(gatewayUrl, undefined, wsConfig);
 
                 // ws.onopen = () => {
@@ -123,6 +124,7 @@ function App() {
                 <SearchPopper/>
                 <SnackbarProvider maxSnack={3}>
                     <RegistrationForm/>
+                    <MessagesDialog/>
                     <NavAppBar/>
                     <NavBar>
                         <Pages/>

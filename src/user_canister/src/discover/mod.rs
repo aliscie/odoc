@@ -7,7 +7,7 @@ pub use queries::*;
 pub use types::*;
 pub use updates::*;
 
-use crate::files::COUNTER;
+use crate::COUNTER;
 use crate::POSTS;
 use crate::storage_schema::ContentTree;
 use crate::user::User;

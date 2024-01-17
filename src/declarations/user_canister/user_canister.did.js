@@ -200,6 +200,22 @@ export const idlFactory = ({ IDL }) => {
     'Wallet' : Wallet,
   });
   const Result_5 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
+  const Message = IDL.Record({
+    'id' : IDL.Text,
+    'date' : IDL.Nat64,
+    'sender' : IDL.Principal,
+    'seen_by' : IDL.Vec(IDL.Principal),
+    'message' : IDL.Text,
+    'chat_id' : IDL.Text,
+  });
+  const Chat = IDL.Record({
+    'id' : IDL.Text,
+    'creator' : IDL.Principal,
+    'members' : IDL.Vec(IDL.Principal),
+    'messages' : IDL.Vec(Message),
+    'name' : IDL.Text,
+    'admins' : IDL.Vec(IDL.Principal),
+  });
   const ContractNotification = IDL.Record({
     'contract_type' : IDL.Text,
     'contract_id' : IDL.Text,
@@ -218,6 +234,8 @@ export const idlFactory = ({ IDL }) => {
     'SharePayment' : SharesContract,
     'AcceptPayment' : IDL.Text,
     'ApplyShareRequest' : IDL.Text,
+    'NewMessage' : IDL.Text,
+    'RemovedFromChat' : IDL.Text,
   });
   const Notification = IDL.Record({
     'id' : IDL.Text,
@@ -348,6 +366,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_friends' : IDL.Func([], [IDL.Opt(FriendSystem)], ['query']),
     'get_initial_data' : IDL.Func([], [Result_5], ['query']),
+    'get_my_chats' : IDL.Func([], [IDL.Vec(Chat)], ['query']),
     'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
     'get_post' : IDL.Func([IDL.Text], [Result_6], ['query']),
     'get_posts' : IDL.Func(
@@ -358,6 +377,7 @@ export const idlFactory = ({ IDL }) => {
     'get_share_file' : IDL.Func([IDL.Text], [Result_7], ['query']),
     'get_shared_file' : IDL.Func([IDL.Text], [Result_8], []),
     'get_user' : IDL.Func([IDL.Text], [Result], ['query']),
+    'make_new_chat_room' : IDL.Func([Chat], [Result_2], []),
     'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_9], []),
     'multi_updates' : IDL.Func(
         [
@@ -387,8 +407,14 @@ export const idlFactory = ({ IDL }) => {
     'search_posts' : IDL.Func([IDL.Text], [IDL.Vec(PostUser)], ['query']),
     'see_notifications' : IDL.Func([IDL.Text], [], []),
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
+    'send_message' : IDL.Func(
+        [IDL.Opt(IDL.Principal), Message],
+        [Result_2],
+        [],
+      ),
     'share_file' : IDL.Func([ShareFileInput], [Result_7], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
+    'update_chat' : IDL.Func([Chat], [Result_2], []),
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
     'vote_down' : IDL.Func([IDL.Text], [Result_6], []),
     'vote_up' : IDL.Func([IDL.Text], [Result_6], []),

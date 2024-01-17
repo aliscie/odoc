@@ -7,7 +7,7 @@ use ic_cdk::{caller, print};
 use candid::{CandidType, Deserialize};
 
 use crate::{CONTRACTS_STORE, StoredContract};
-use crate::files::COUNTER;
+use crate::COUNTER;
 use crate::storage_schema::{ContractId, ShareContractId, ShareRequestId};
 use crate::tables::Formula;
 use crate::websocket::{NoteContent, Notification};

@@ -5,7 +5,7 @@ use ic_cdk::caller;
 use serde::Serialize;
 
 use crate::{NOTIFICATIONS, SharePayment, SharesContract, USER_FILES, websocket};
-use crate::files::COUNTER;
+use crate::COUNTER;
 use crate::websocket::{AppMessage, notification, send_app_message};
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
@@ -33,6 +33,8 @@ pub enum NoteContent {
     ConformShare(String),
     ApproveShareRequest(String),
     ApplyShareRequest(String),
+    NewMessage(String),
+    RemovedFromChat(String),
 }
 
 #[derive(Eq, Serialize, PartialEq, Clone, Debug, CandidType, Deserialize)]
@@ -82,6 +84,14 @@ impl Notification {
         send_app_message(self.receiver, msg.clone());
     }
 
+    pub fn send_to(&self, to: Principal) {
+        let msg: AppMessage = AppMessage {
+            notification: Some(self.clone()),
+            text: self.id.clone(),
+            timestamp: 0,
+        };
+        send_app_message(to, msg.clone());
+    }
     // pub fn undo(user: Principal, id: String) {
     //     // let msg: AppMessage = AppMessage {
     //     //     notification: None,

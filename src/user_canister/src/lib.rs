@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
+use candid::Principal;
 
 use ic_websocket_cdk::*;
 
@@ -18,8 +19,12 @@ use user::*;
 pub use wallet::*;
 use websocket::*;
 
-// use ic_cdk::candid::{
-//     candid_method, check_prog, export_service, IDLProg, TypeEnv,};
+// use ic_stable_structures::{
+//     memory_manager::{MemoryId, MemoryManager, VirtualMemory},
+//     BTreeMap,
+//     DefaultMemoryImpl,
+//     StableBTreeMap,
+// };
 
 
 mod user;
@@ -40,13 +45,16 @@ mod websocket;
 mod discover;
 mod timer;
 mod init;
+mod chat;
 
+use chat::*;
 use init::*;
+use std::sync::atomic::AtomicU64;
 use timer::*;
 
 thread_local! {
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
-    static ID_STORE: RefCell<IdStore> = RefCell::default();
+    // static ID_STORE: RefCell<IdStore> = RefCell::default();
     static USER_FILES: RefCell<FilesStore> = RefCell::default();
     static SHARED_USER_FILES: RefCell<SharedUserFiles> = RefCell::default();
     static FILE_CONTENTS: RefCell<FileContentsStore> = RefCell::default();
@@ -56,7 +64,21 @@ thread_local! {
     static WALLETS_STORE: RefCell<WalletStore> = RefCell::default();
     static NOTIFICATIONS: RefCell<UserNotifications> = RefCell::default();
     static POSTS: RefCell<PostsStore> = RefCell::default();
+
+    static CHATS: RefCell<ChatsStore> = RefCell::default();
+    static CHATS_NOTIFICATIONS: RefCell<ChatsNotificationStore> = RefCell::default();
+    static MY_CHATS: RefCell<MyChatsStore> = RefCell::default();
+
+  // static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
+  //       RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
+  //
+  //   // Initialize a `BTreeMap` with `MemoryId(0)` for PostsStore.
+  //   static POSTS: RefCell<PostsStore> = RefCell::new(
+  //       BTreeMap::init(MEMORY_MANAGER.with(|m| m.borrow_mut().get(MemoryId::new(0))))
+  //   );
+
 }
+pub static COUNTER: AtomicU64 = AtomicU64::new(0);
 
 #[cfg(test)]
 mod tests {

@@ -2,19 +2,19 @@ use std::collections::HashMap;
 use std::sync::atomic::Ordering;
 
 
-use candid::{Principal};
+use candid::Principal;
 use ic_cdk::caller;
 use ic_cdk_macros::update;
 
 
-use crate::{ExchangeType, Wallet};
-use crate::contracts::{PaymentContract};
-use crate::files::{COUNTER, FileNode};
+use crate::{COUNTER, ExchangeType, Wallet};
+use crate::contracts::PaymentContract;
+use crate::files::FileNode;
 use crate::files_content::{ContentData, ContentNode};
-use crate::storage_schema::{ContentId};
+use crate::storage_schema::ContentId;
 use crate::tables::{Column, ColumnTypes, Row, Table};
 
-use crate::user::{User};
+use crate::user::User;
 use crate::websocket::{NoteContent, Notification};
 
 

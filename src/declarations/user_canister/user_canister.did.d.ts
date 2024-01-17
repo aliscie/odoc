@@ -24,6 +24,14 @@ export interface CanisterWsOpenArguments {
   'gateway_principal' : Principal,
   'client_nonce' : bigint,
 }
+export interface Chat {
+  'id' : string,
+  'creator' : Principal,
+  'members' : Array<Principal>,
+  'messages' : Array<Message>,
+  'name' : string,
+  'admins' : Array<Principal>,
+}
 export interface ClientKey {
   'client_principal' : Principal,
   'client_nonce' : bigint,
@@ -117,6 +125,14 @@ export interface InitialData {
   'DiscoverUsers' : Array<[string, User]>,
   'Wallet' : Wallet,
 }
+export interface Message {
+  'id' : string,
+  'date' : bigint,
+  'sender' : Principal,
+  'seen_by' : Array<Principal>,
+  'message' : string,
+  'chat_id' : string,
+}
 export type NoteContent = { 'ContractUpdate' : ContractNotification } |
   { 'FriendRequest' : {} } |
   { 'AcceptFriendRequest' : null } |
@@ -129,7 +145,9 @@ export type NoteContent = { 'ContractUpdate' : ContractNotification } |
   { 'ConformShare' : string } |
   { 'SharePayment' : SharesContract } |
   { 'AcceptPayment' : string } |
-  { 'ApplyShareRequest' : string };
+  { 'ApplyShareRequest' : string } |
+  { 'NewMessage' : string } |
+  { 'RemovedFromChat' : string };
 export interface Notification {
   'id' : string,
   'is_seen' : boolean,
@@ -302,12 +320,14 @@ export interface _SERVICE {
   >,
   'get_friends' : ActorMethod<[], [] | [FriendSystem]>,
   'get_initial_data' : ActorMethod<[], Result_5>,
+  'get_my_chats' : ActorMethod<[], Array<Chat>>,
   'get_notifications' : ActorMethod<[], Array<Notification>>,
   'get_post' : ActorMethod<[string], Result_6>,
   'get_posts' : ActorMethod<[bigint, bigint], Array<PostUser>>,
   'get_share_file' : ActorMethod<[string], Result_7>,
   'get_shared_file' : ActorMethod<[string], Result_8>,
   'get_user' : ActorMethod<[string], Result>,
+  'make_new_chat_room' : ActorMethod<[Chat], Result_2>,
   'move_file' : ActorMethod<[string, [] | [string]], Result_9>,
   'multi_updates' : ActorMethod<
     [
@@ -331,8 +351,10 @@ export interface _SERVICE {
   'search_posts' : ActorMethod<[string], Array<PostUser>>,
   'see_notifications' : ActorMethod<[string], undefined>,
   'send_friend_request' : ActorMethod<[string], Result>,
+  'send_message' : ActorMethod<[[] | [Principal], Message], Result_2>,
   'share_file' : ActorMethod<[ShareFileInput], Result_7>,
   'unfriend' : ActorMethod<[string], Result>,
+  'update_chat' : ActorMethod<[Chat], Result_2>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
   'vote_down' : ActorMethod<[string], Result_6>,
   'vote_up' : ActorMethod<[string], Result_6>,

@@ -6,7 +6,7 @@ use crate::user::{RegisterUser, User};
 
 #[update]
 fn register(profile: RegisterUser) -> Result<User, String> {
-    if User::user_is_anonymous() {
+    if User::is_anonymous() {
         return Err("Anonymous users are not allowed to register.".to_string());
     }
 
@@ -25,7 +25,7 @@ fn register(profile: RegisterUser) -> Result<User, String> {
 
 #[update]
 fn update_user_profile(updates: RegisterUser) -> Result<User, String> {
-    if User::user_is_anonymous() {
+    if User::is_anonymous() {
         return Err("Anonymous users are not allowed to register.".to_string());
     }
 

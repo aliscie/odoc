@@ -80,7 +80,7 @@ export default defineConfig({
         environment: 'jsdom',
         globals: true,
         threads: false,
-        watch: false,
+        watch: true,
         // include: ['**/__tests__/*.{js,tsx,ts}', "App.test.tsx"],
         setupFiles: './setup_tests.ts'
     },

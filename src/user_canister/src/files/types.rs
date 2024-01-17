@@ -6,11 +6,9 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::{caller, print};
 
-use crate::{ShareFile, ShareFilePermission, USER_FILES};
+use crate::{COUNTER, ShareFile, ShareFilePermission, USER_FILES};
 
 use crate::storage_schema::{ContentTree, FileId};
-
-pub static COUNTER: AtomicU64 = AtomicU64::new(0);
 
 // #[derive(Debug, Serialize, Deserialize)]
 #[derive(Clone, Debug, Deserialize, CandidType)]

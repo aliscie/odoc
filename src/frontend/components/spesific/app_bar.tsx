@@ -21,6 +21,7 @@ import Person2Icon from '@mui/icons-material/Person2';
 import SettingsIcon from '@mui/icons-material/Settings';
 import {convertToBlobLink} from "../../data_processing/image_to_vec";
 import {Notifications} from "../notifcations/notification";
+import ChatsComponent from "../chat_component";
 
 export function NavAppBar() {
     const dispatch = useDispatch();
@@ -78,7 +79,7 @@ export function NavAppBar() {
                     </IconButton>
                 </Tooltip>
                 {isLoggedIn && <Notifications/> }
-
+                {isLoggedIn && <ChatsComponent/> }
                 {isLoggedIn ? (
                     <BasicMenu
                         anchorOrigin={{

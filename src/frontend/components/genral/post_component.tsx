@@ -7,12 +7,17 @@ import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
 import IconButton, {IconButtonProps} from '@mui/material/IconButton';
 import {normalize_content_tree} from "../../data_processing/normalize/normalize_contents";
-import {Post, PostUser} from "../../../declarations/user_canister/user_canister.did";
+import {Chat, Post, PostUser} from "../../../declarations/user_canister/user_canister.did";
 import AvatarChips from "./person_chip";
 import formatTimestamp from "../../utils/time";
 import EditorComponent from "../editor_components/main";
-import {Link} from "react-router-dom";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import Person2Icon from "@mui/icons-material/Person2";
+import BasicMenu from "./basic_menu";
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import {handleRedux} from "../../redux/main";
+import {Principal} from "@dfinity/principal";
+import useGetChats from "../chat/use_get_chats";
 
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
@@ -42,17 +47,51 @@ interface Props {
 }
 
 export default function PostComponent(props: Props) {
+    let {getChats} = useGetChats()
+    const dispatch = useDispatch();
 
     const {
         profile,
     } = useSelector((state: any) => state.filesReducer);
-
-    let path = "/user?id=" + props.post.creator.id
-    if (profile && props.post.creator && profile.id == props.post.creator.id) {
+    let creator = props.post.creator;
+    let path = "/user?id=" + creator.id
+    let options: any = [
+        {content: "Profile", to: path, icon: <Person2Icon/>},
+    ];
+    if (profile && creator && profile.id == creator.id) {
         path = "/profile"
+
+    } else {
+        options.push({
+            content: 'Message', icon: <ChatBubbleIcon/>, onClick: async () => {
+                let res = await getChats()
+                let user = Principal.fromText(creator.id);
+                let chat = user && res.length > 0 && res.find((chat: Chat) => chat.admins.some(admin => admin.__principal__ === user.__principal__));
+                dispatch(handleRedux("OPEN_CHAT", {
+                    current_chat_id: chat.id || "chat_id",
+                    current_user: user
+                }))
+            }
+        })
     }
     let content = normalize_content_tree(props.post.content_tree);
-    let avatar = <Link to={path}><AvatarChips size={"large"} user={props.post.creator}/></Link>
+    // let avatar = <Link to={path}><AvatarChips size={"large"} user={props.post.creator}/></Link>
+
+
+    let avatar = <BasicMenu
+        anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+        }}
+        transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+        }}
+        options={options}
+    >
+        <AvatarChips size={"large"} user={props.post.creator}/>
+    </BasicMenu>
+
     let subheader = formatTimestamp(props.post.date_created)
     const [expanded, setExpanded] = React.useState(false);
 

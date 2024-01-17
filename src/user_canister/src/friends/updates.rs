@@ -5,7 +5,7 @@ use ic_cdk::{caller, println};
 use ic_cdk_macros::update;
 
 use crate::{FRIENDS_STORE, websocket};
-use crate::files::COUNTER;
+use crate::COUNTER;
 use crate::friends::{Friend, FriendSystem};
 use crate::user::User;
 use crate::websocket::{NoteContent, Notification};

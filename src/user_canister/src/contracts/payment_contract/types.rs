@@ -6,7 +6,7 @@ use candid::{CandidType, Deserialize, Principal};
 
 use crate::{CONTRACTS_STORE, StoredContract, Wallet, websocket};
 use crate::contracts::Contract;
-use crate::files::COUNTER;
+use crate::COUNTER;
 use crate::storage_schema::{ContentId, ContractId};
 
 

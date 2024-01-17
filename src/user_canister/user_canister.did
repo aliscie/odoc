@@ -21,6 +21,14 @@ type CanisterWsOpenArguments = record {
   gateway_principal : principal;
   client_nonce : nat64;
 };
+type Chat = record {
+  id : text;
+  creator : principal;
+  members : vec principal;
+  messages : vec Message;
+  name : text;
+  admins : vec principal;
+};
 type ClientKey = record { client_principal : principal; client_nonce : nat64 };
 type Column = record {
   id : text;
@@ -94,6 +102,14 @@ type InitialData = record {
   DiscoverUsers : vec record { text; User };
   Wallet : Wallet;
 };
+type Message = record {
+  id : text;
+  date : nat64;
+  sender : principal;
+  seen_by : vec principal;
+  message : text;
+  chat_id : text;
+};
 type NoteContent = variant {
   ContractUpdate : ContractNotification;
   FriendRequest : record {};
@@ -108,6 +124,8 @@ type NoteContent = variant {
   SharePayment : SharesContract;
   AcceptPayment : text;
   ApplyShareRequest : text;
+  NewMessage : text;
+  RemovedFromChat : text;
 };
 type Notification = record {
   id : text;
@@ -261,12 +279,14 @@ service : () -> {
   get_filtered_posts : (opt vec text, opt text) -> (vec PostUser) query;
   get_friends : () -> (opt FriendSystem) query;
   get_initial_data : () -> (Result_5) query;
+  get_my_chats : () -> (vec Chat) query;
   get_notifications : () -> (vec Notification) query;
   get_post : (text) -> (Result_6) query;
   get_posts : (nat64, nat64) -> (vec PostUser) query;
   get_share_file : (text) -> (Result_7) query;
   get_shared_file : (text) -> (Result_8);
   get_user : (text) -> (Result) query;
+  make_new_chat_room : (Chat) -> (Result_2);
   move_file : (text, opt text) -> (Result_9);
   multi_updates : (
       vec FileNode,
@@ -286,8 +306,10 @@ service : () -> {
   search_posts : (text) -> (vec PostUser) query;
   see_notifications : (text) -> ();
   send_friend_request : (text) -> (Result);
+  send_message : (opt principal, Message) -> (Result_2);
   share_file : (ShareFileInput) -> (Result_7);
   unfriend : (text) -> (Result);
+  update_chat : (Chat) -> (Result_2);
   update_user_profile : (RegisterUser) -> (Result);
   vote_down : (text) -> (Result_6);
   vote_up : (text) -> (Result_6);

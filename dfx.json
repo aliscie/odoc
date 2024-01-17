@@ -1,4 +1,10 @@
 {
+  "declarations": {
+    "output": "src/declarations",
+    "capabilities": [
+      "nodejs"
+    ]
+  },
   "canisters": {
     "user_canister": {
       "candid": "src/user_canister/user_canister.did",
