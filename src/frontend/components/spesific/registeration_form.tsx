@@ -1,11 +1,12 @@
 import FormDialog from "../genral/dialog";
 import * as React from "react";
 import {TextField} from "@mui/material";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
 import {convertToBytes} from "../../data_processing/image_to_vec";
 import {actor} from "../../App";
-import {RegisterUser} from "../../../declarations/user_canister/user_canister.did";
+import {RegisterUser, User} from "../../../declarations/user_canister/user_canister.did";
+import {handleRedux} from "../../redux/main";
 
 const inputs = [
     {id: "username", label: "Username", type: "text", required: true},
@@ -34,6 +35,7 @@ function RegistrationForm() {
         photo = imageByteData
     }
 
+    const dispatch = useDispatch();
     const handleRegister = async () => {
         setOpen(false)
 
@@ -44,7 +46,8 @@ function RegistrationForm() {
             description: [formValues.bio],
             photo: [photo]
         };
-        let register = actor && await actor.register(input);
+        let register: undefined | { Ok: User } | { Err: string } = actor && await actor.register(input);
+        register && dispatch(handleRedux("UPDATE_PROFILE", {profile: register.Ok}))
         closeSnackbar(loading)
 
         if (register.Ok) {

@@ -66,9 +66,9 @@ export default function PostComponent(props: Props) {
             content: 'Message', icon: <ChatBubbleIcon/>, onClick: async () => {
                 let res = await getChats()
                 let user = Principal.fromText(creator.id);
-                let chat = user && res.length > 0 && res.find((chat: Chat) => chat.admins.some(admin => admin.__principal__ === user.__principal__));
+                let chat = res.find((chat: Chat) => chat.admins[0].toString() === user.toString() || chat.creator.toString() === user.toString())
                 dispatch(handleRedux("OPEN_CHAT", {
-                    current_chat_id: chat.id || "chat_id",
+                    current_chat_id: chat && chat.id || "chat_id",
                     current_user: user
                 }))
             }
@@ -95,9 +95,9 @@ export default function PostComponent(props: Props) {
     let subheader = formatTimestamp(props.post.date_created)
     const [expanded, setExpanded] = React.useState(false);
 
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
-    };
+    // const handleExpandClick = () => {
+    //     setExpanded(!expanded);
+    // };
 
     return (
         <Card

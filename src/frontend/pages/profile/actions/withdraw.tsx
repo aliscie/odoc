@@ -1,8 +1,4 @@
-import SwipeDownAltIcon from "@mui/icons-material/SwipeDownAlt";
-import {Button} from "@mui/material";
 import * as React from "react";
-import {useState} from "react";
-import {useSnackbar} from "notistack";
 import {handleRedux} from "../../../redux/main";
 import {useDispatch} from "react-redux";
 import LoaderButton from "../../../components/genral/loader_button";

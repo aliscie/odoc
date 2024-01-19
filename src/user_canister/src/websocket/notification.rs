@@ -5,6 +5,7 @@ use ic_cdk::caller;
 use serde::Serialize;
 
 use crate::{NOTIFICATIONS, SharePayment, SharesContract, USER_FILES, websocket};
+use crate::chat::Message;
 use crate::COUNTER;
 use crate::websocket::{AppMessage, notification, send_app_message};
 
@@ -33,7 +34,7 @@ pub enum NoteContent {
     ConformShare(String),
     ApproveShareRequest(String),
     ApplyShareRequest(String),
-    NewMessage(String),
+    NewMessage(Message),
     RemovedFromChat(String),
 }
 

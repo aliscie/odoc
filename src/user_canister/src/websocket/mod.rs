@@ -88,16 +88,3 @@ fn see_notifications(id: String) {
 }
 
 
-//
-//
-// // send a message with a text input
-// #[update]
-// fn send_message(text: String) {
-//     let msg: AppMessage = AppMessage {
-//         text,
-//         timestamp: 0,
-//     };
-//     send_app_message(caller(), msg);
-// }
-
-

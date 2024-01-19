@@ -112,6 +112,14 @@ export const idlFactory = ({ IDL }) => {
     'language' : IDL.Text,
     'parent' : IDL.Opt(IDL.Text),
   });
+  const Message = IDL.Record({
+    'id' : IDL.Text,
+    'date' : IDL.Nat64,
+    'sender' : IDL.Principal,
+    'seen_by' : IDL.Vec(IDL.Principal),
+    'message' : IDL.Text,
+    'chat_id' : IDL.Text,
+  });
   const PaymentContract = IDL.Record({
     'extra_cells' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
     'canceled' : IDL.Bool,
@@ -200,14 +208,6 @@ export const idlFactory = ({ IDL }) => {
     'Wallet' : Wallet,
   });
   const Result_5 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
-  const Message = IDL.Record({
-    'id' : IDL.Text,
-    'date' : IDL.Nat64,
-    'sender' : IDL.Principal,
-    'seen_by' : IDL.Vec(IDL.Principal),
-    'message' : IDL.Text,
-    'chat_id' : IDL.Text,
-  });
   const Chat = IDL.Record({
     'id' : IDL.Text,
     'creator' : IDL.Principal,
@@ -234,7 +234,7 @@ export const idlFactory = ({ IDL }) => {
     'SharePayment' : SharesContract,
     'AcceptPayment' : IDL.Text,
     'ApplyShareRequest' : IDL.Text,
-    'NewMessage' : IDL.Text,
+    'NewMessage' : Message,
     'RemovedFromChat' : IDL.Text,
   });
   const Notification = IDL.Record({
@@ -352,6 +352,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Tuple(IDL.Text, User))],
         ['query'],
       ),
+    'get_chats_notifications' : IDL.Func([], [IDL.Vec(Message)], ['query']),
     'get_contract' : IDL.Func([IDL.Text, IDL.Text], [Result_4], ['query']),
     'get_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], ['query']),
     'get_file_content' : IDL.Func(
@@ -378,6 +379,7 @@ export const idlFactory = ({ IDL }) => {
     'get_shared_file' : IDL.Func([IDL.Text], [Result_8], []),
     'get_user' : IDL.Func([IDL.Text], [Result], ['query']),
     'make_new_chat_room' : IDL.Func([Chat], [Result_2], []),
+    'message_is_seen' : IDL.Func([Message], [Result_1], []),
     'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_9], []),
     'multi_updates' : IDL.Func(
         [

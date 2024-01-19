@@ -4,7 +4,9 @@ import {useDispatch, useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
 import {handleRedux} from "../../redux/main";
 import MessagesList from "./messages_list";
-
+import {Link} from "react-router-dom";
+import CloseIcon from '@mui/icons-material/Close';
+import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 
 function MessagesDialog() {
     const dispatch = useDispatch();
@@ -29,7 +31,7 @@ function MessagesDialog() {
     // const handleRegister = async () => {
     //     setOpen(true)
     // };
-
+    const is_path_chats = window.location.pathname.includes("/chats");
     return (
         <FormDialog
             // title={"Messages"}
@@ -40,10 +42,18 @@ function MessagesDialog() {
                 </>
             }
             buttons={[
-                {name: "X", onClick: () => dispatch(handleRedux("OPEN_CHAT", {current_chat_id: false}))},
+
+                {
+                    name: <Link to={'/chats'}><OpenInFullIcon color={"action"}/></Link>,
+                    onClick: () => dispatch(handleRedux("OPEN_CHAT", {current_chat_id: false}))
+                },
+                {
+                    name: <CloseIcon color={"action"}/>,
+                    onClick: () => dispatch(handleRedux("OPEN_CHAT", {current_chat_id: false}))
+                },
                 // {name: "Register", onClick: handleRegister},
             ]}
-            open={current_chat_id ? true : false}
+            open={!is_path_chats && current_chat_id ? true : false}
         />
     );
 }

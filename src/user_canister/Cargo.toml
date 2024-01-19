@@ -18,4 +18,5 @@ serde_cbor = "0.11.2"
 
 ic-cdk-timers = "0.5.1"
 serde = { version = "1.0.176", features = ["derive"] }
-ic-stable-structures = "0.6.0"
+#pocket-ic = "2.0.1"
+#ic-stable-structures = "0.6.0"

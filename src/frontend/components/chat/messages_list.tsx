@@ -1,61 +1,81 @@
-import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import {Avatar, Typography} from "@mui/material";
-import ListItemText from "@mui/material/ListItemText";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
-import SendMessageBox from "./send_message";
 import {Message} from "../../../declarations/user_canister/user_canister.did";
 import formatTimestamp from "../../utils/time";
+import CircularProgress from '@mui/material/CircularProgress';
+import {Avatar, ListItem, ListItemAvatar, ListItemText, Typography} from "@mui/material";
+import SendMessageBox from "./send_message";
+import DoneIcon from '@mui/icons-material/Done';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import {Principal} from "@dfinity/principal";
 
-interface MessageNotificationProp {
-
+interface MessagesListProps {
 }
 
-function MessagesList(props: MessageNotificationProp) {
-    // const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    const {current_chat_id, current_user, chats} = useSelector((state: any) => state.chatsReducer);
-    // const [chats, setChatList] = React.useState<Chat[]>(chats);
+export interface FrontendMessage {
+    'id': string,
+    'date': bigint,
+    'sender': Principal,
+    'seen_by': Array<Principal>,
+    'message': string,
+    'chat_id': string,
+    'is_saving'?: boolean,
+}
 
+function MessagesList(props: MessagesListProps) {
     const dispatch = useDispatch();
-    console.log({
-            current_chat_id
+    const {current_chat_id, chats} = useSelector((state: any) => state.chatsReducer);
+    const [messages, setMessages] = useState<Message[]>([]);
+    // const [noMessages, setNoMessages] = useState(false);
+    let noMessages = current_chat_id === "chat_id";
+    useEffect(() => {
+        if (chats && chats.length > 0 && !noMessages) {
+            const currentChat = chats.find((chat: any) => chat.id === current_chat_id);
+            currentChat && setMessages(currentChat.messages || [])
         }
-    )
-    let messages = current_user && chats.length > 0 && chats.find(chat => chat.id === current_chat_id)?.messages;
+    }, [chats, current_chat_id]);
 
-
-    let list = messages && messages.map((message: Message) => <ListItem
-
-        onClick={() => {
-            dispatch(handleRedux("OPEN_CHAT", {current_chat_id: 'chat_id'}))
-        }}
-        alignItems="flex-start">
-        <ListItemAvatar>
-            <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg"/>
-        </ListItemAvatar>
-        <ListItemText
-            // primary="Username"
-            secondary={
-                <React.Fragment>
-                    <Typography
-                        sx={{display: 'inline'}}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
+    return (
+        <div>
+            {noMessages && <div>Three no messages here, yet.</div>}
+            {messages.length > 0 ? (
+                messages.map((message: FrontendMessage) => (
+                    <ListItem
+                        key={message.id}
+                        // onClick={() => dispatch(handleRedux("OPEN_CHAT", {current_chat_id: current_chat_id}))}
+                        alignItems="flex-start"
+                        button
                     >
-                        {formatTimestamp(message.date)}
-                    </Typography>
-                    {message.message}
-                </React.Fragment>
-            }
-        />
-    </ListItem>);
+                        {/* Uncomment if you want to include an avatar */}
+                        {/* <ListItemAvatar>
+              <Avatar alt="User Avatar" src="/static/images/avatar/1.jpg" />
+            </ListItemAvatar> */}
+                        <ListItemText
+                            secondary={
+                                <React.Fragment>
+                                    <Typography
+                                        sx={{display: 'inline'}}
+                                        component="span"
+                                        variant="body2"
+                                        color="text.primary"
+                                    >
+                                        {message.message}
+                                    </Typography>
+                                    {formatTimestamp(message.date)}
 
-    return <div>{list}
-        <SendMessageBox/>
-    </div>
+                                    {message.is_saving ? <DoneIcon/> : <DoneAllIcon/>}
+                                </React.Fragment>
+                            }
+                        />
+                    </ListItem>
+                ))
+            ) : (
+                !noMessages && <CircularProgress/>
+            )}
+            <SendMessageBox/>
+        </div>
+    );
 }
 
 export default MessagesList;

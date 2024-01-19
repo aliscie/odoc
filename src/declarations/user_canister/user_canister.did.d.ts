@@ -146,7 +146,7 @@ export type NoteContent = { 'ContractUpdate' : ContractNotification } |
   { 'SharePayment' : SharesContract } |
   { 'AcceptPayment' : string } |
   { 'ApplyShareRequest' : string } |
-  { 'NewMessage' : string } |
+  { 'NewMessage' : Message } |
   { 'RemovedFromChat' : string };
 export interface Notification {
   'id' : string,
@@ -311,6 +311,7 @@ export interface _SERVICE {
     Array<[string, Array<ContentNode>]>
   >,
   'get_all_users' : ActorMethod<[], Array<[string, User]>>,
+  'get_chats_notifications' : ActorMethod<[], Array<Message>>,
   'get_contract' : ActorMethod<[string, string], Result_4>,
   'get_file' : ActorMethod<[string], [] | [FileNode]>,
   'get_file_content' : ActorMethod<[string], [] | [Array<ContentNode>]>,
@@ -328,6 +329,7 @@ export interface _SERVICE {
   'get_shared_file' : ActorMethod<[string], Result_8>,
   'get_user' : ActorMethod<[string], Result>,
   'make_new_chat_room' : ActorMethod<[Chat], Result_2>,
+  'message_is_seen' : ActorMethod<[Message], Result_1>,
   'move_file' : ActorMethod<[string, [] | [string]], Result_9>,
   'multi_updates' : ActorMethod<
     [

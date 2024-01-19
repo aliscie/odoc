@@ -33,16 +33,28 @@ export default function SendMessageBox() {
             'message': message,
             'chat_id': current_chat_id,
         }
+        dispatch(handleRedux("SEND_MESSAGE", {message: {...new_message, is_saving: true}}))
+        setMessage('');
+
+        // let notification: Notification = {
+        //     'id': "string",
+        //     'is_seen': false,
+        //     'content': {'NewMessage': "from query is it faster?"},
+        //     'sender': Principal.fromText(profile.id),
+        //     'receiver': current_user,
+        // }
+        // TODO
+        //    let socket_res: undefined | { Ok: null } | { Err: null } = actor && await actor.send_socket_message(notification)
+        //    an update it takes a bit of time to send the message so I want to use it just for saving the message
+        //    ws.send()
+
         let res: undefined | { Ok: string } | { Err: string } = actor && await actor.send_message([current_user], new_message);
         // TODO use ws.send_message in addition to actor.send_message because that would be faster.
         if ("Err" in res) {
             enqueueSnackbar("Error sending message: " + res.Err, {variant: "error"});
         } else {
-
-            dispatch(handleRedux("SEND_MESSAGE", {message: new_message}))
+            dispatch(handleRedux("UPDATE_MESSAGE", {message: new_message}))
         }
-        // Clear the input field after sending the message
-        setMessage('');
     };
 
     return (

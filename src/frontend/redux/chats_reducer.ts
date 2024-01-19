@@ -1,4 +1,4 @@
-import {Chat} from "../../declarations/user_canister/user_canister.did";
+import {Chat, Message} from "../../declarations/user_canister/user_canister.did";
 import {Principal} from "@dfinity/principal";
 
 export type CHAT_ACTIONS =
@@ -6,18 +6,24 @@ export type CHAT_ACTIONS =
     | "OPEN_CHAT"
     | "SET_CHATS"
     | "SEND_MESSAGE"
-    | "SOMEONE_BLOCKED_YOU";
+    | "SOMEONE_BLOCKED_YOU"
+    | "ADD_NOTIFICATION"
+    | "SET_CHATS_NOTIFICATIONS"
+    | "UPDATE_MESSAGE"
+    | "UPDATE_NOTIFICATION"
 
 type InitialState = {
     current_chat_id: string | false,
     chats: Array<Chat>,
     current_user: Principal
+    chats_notifications: Array<Message>,
 }
 
 export const initialChatsState: InitialState = {
     current_chat_id: false,
     current_user: Principal.fromText("2vxsx-fae"),
     chats: [],
+    chats_notifications: [],
 
 };
 
@@ -35,15 +41,43 @@ export function chatsReducer(state = initialChatsState, action: any) {
             break
 
         case 'SEND_MESSAGE':
-            console.log({
-              action
-            })
             state.chats = state.chats && state.chats.map((chat: Chat) => {
                 if (chat.id == action.message.chat_id) {
                     chat.messages.push(action.message)
                 }
                 return chat
             });
+            break
+
+        case 'UPDATE_MESSAGE':
+            state.chats = state.chats && state.chats.map((chat: Chat) => {
+                if (chat.id == action.message.chat_id) {
+                    chat.messages = chat.messages.map((message: Message) => {
+                        if (message.id == action.message.id) {
+                            message = action.message
+                        }
+                        return message
+                    })
+                }
+                return chat
+            })
+            break
+
+        case 'ADD_NOTIFICATION':
+            state.chats_notifications = state.chats_notifications.filter((m: Message) => m.chat_id != action.message.chat_id)
+            state.chats_notifications.push(action.message)
+            break
+        case 'UPDATE_NOTIFICATION':
+            state.chats_notifications = state.chats_notifications.map((m: Message) => {
+                if (m.chat_id == action.message.chat_id) {
+                    return action.message
+                }
+                return m
+            })
+            break
+
+        case 'SET_CHATS_NOTIFICATIONS':
+            state.chats_notifications = action.messages
             break
         default:
             console.error("chatsReducer Unknown action type: ", action.type);

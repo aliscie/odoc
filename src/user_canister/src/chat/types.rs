@@ -2,8 +2,9 @@ use std::sync::atomic::Ordering;
 
 use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::caller;
+use serde::Serialize;
 
-use crate::{MY_CHATS, CHATS};
+use crate::{CHATS, MY_CHATS};
 use crate::COUNTER;
 use crate::storage_schema::MyChatsStore;
 use crate::websocket::{NoteContent, Notification};
@@ -21,7 +22,7 @@ pub struct Chat {
     pub creator: Principal,
 }
 
-#[derive(Clone, Debug, Deserialize, CandidType)]
+#[derive(Eq, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub struct Message {
     pub id: String,
     pub sender: Principal,
@@ -34,16 +35,17 @@ pub struct Message {
 impl Chat {
     pub fn new(user: Principal) -> Self {
         CHATS.with(|store| {
+            let mut chats = store.borrow_mut();
             let chat = Chat {
-                // id is  a random principa
-                id: Principal::anonymous().to_text(),
+                id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
                 name: "private_chat".to_string(),
-                admins: vec![user, caller()],
+                admins: vec![user],
                 members: vec![],
                 messages: vec![],
                 creator: caller(),
             };
-            chat.save()
+            chats.push(chat.clone());
+            chat
         })
     }
 
@@ -141,6 +143,16 @@ impl Chat {
             is_seen: false,
         };
         new_notification.save();
+    }
+
+    pub fn get_notifications() -> Vec<Message> {
+        // TODO order by message.date
+        let mut messages = vec![];
+        let my_chats = Chat::get_my_chats();
+        for chat in my_chats {
+            messages.push(chat.messages.last().unwrap().clone())
+        };
+        messages
     }
 }
 

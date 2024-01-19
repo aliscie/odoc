@@ -12,7 +12,7 @@ import {handleRedux} from "../../redux/main";
 import useGetUser from "../../utils/get_user_by_principal";
 
 function Notification({notification}: any) {
-    console.log("render Notification")
+    // console.log("render Notification") // TODO this renders about 20 times.
     let {getUser, getUserByName} = useGetUser();
     const [sender, setSender] = useState<string>("");
 

@@ -124,7 +124,7 @@ type NoteContent = variant {
   SharePayment : SharesContract;
   AcceptPayment : text;
   ApplyShareRequest : text;
-  NewMessage : text;
+  NewMessage : Message;
   RemovedFromChat : text;
 };
 type Notification = record {
@@ -273,6 +273,7 @@ service : () -> {
   get_all_files : () -> (opt vec record { text; FileNode }) query;
   get_all_files_content : () -> (vec record { text; vec ContentNode }) query;
   get_all_users : () -> (vec record { text; User }) query;
+  get_chats_notifications : () -> (vec Message) query;
   get_contract : (text, text) -> (Result_4) query;
   get_file : (text) -> (opt FileNode) query;
   get_file_content : (text) -> (opt vec ContentNode) query;
@@ -287,6 +288,7 @@ service : () -> {
   get_shared_file : (text) -> (Result_8);
   get_user : (text) -> (Result) query;
   make_new_chat_room : (Chat) -> (Result_2);
+  message_is_seen : (Message) -> (Result_1);
   move_file : (text, opt text) -> (Result_9);
   multi_updates : (
       vec FileNode,

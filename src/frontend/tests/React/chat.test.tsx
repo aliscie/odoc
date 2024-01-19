@@ -13,7 +13,7 @@ test('Test chat logic', () => {
     render(
         <StrictMode>
             <Provider store={store}>
-                {/*<MessageBox/>*/}
+                {/*<ChatsPage/>*/}
             </Provider>
         </StrictMode>
     )

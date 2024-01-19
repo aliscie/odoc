@@ -3,7 +3,6 @@ import './styles/LandingPage.css';
 import Card from "../components/genral/card";
 import CustomizedAccordions from "../components/genral/acordoin";
 import {Divider} from "@mui/material";
-import TabsPanel from "../components/genral/tabs_panel";
 
 const data = [
     {
@@ -26,7 +25,6 @@ const data = [
         title: "Plugins",
         content: "Plugins or extensions are customizations that you can add to your ODOC application. For example, you can add a grammar correction plugin like Grammarly or a machine learning plugin that helps you abbreviate your text."
     },
-
     {
         title: "Views",
         content: "You can view a table in the form of a chart or gallery, or in a custom view that allows you to see your data in different ways that are pleasant to the eye, more expressive, cleaner, or for input like quatrains and polls."
@@ -71,12 +69,6 @@ let roadMap = [
     },
     {
         is_done: false,
-        title: "Dynamic user canisters",
-        content: "Each user will have their own canister to store their files and contents. However, contracts and friends will be stored and handed in the central canister."
-    },
-
-    {
-        is_done: false,
         title: "Custom contract",
         content: "Custom contract where people can have a formula that automatically executes a transaction\n" +
             "From the left sidebar, As the user clicks on create button, they can select the option custom contract\n" +
@@ -84,7 +76,7 @@ let roadMap = [
             "In the custom contract, people can write a formula that looks like this if ( now() == “2022-08-03” ) { transfer_USDT({from @ali, to:@john}}\n"
     },
     {
-        is_done: false,
+        is_done: true,
         title: "Notifications.",
         content: "Users should be notified about their friend requests (WebSockets)\n",
     },

@@ -1,7 +1,9 @@
+use std::sync::atomic::Ordering;
 use candid::Principal;
 use ic_cdk::caller;
 use ic_cdk_macros::update;
 use crate::chat::{Chat, Message};
+use crate::COUNTER;
 
 
 use crate::user::User;
@@ -10,56 +12,76 @@ use crate::websocket::{NoteContent, Notification};
 
 #[update]
 fn send_message(user: Option<Principal>, mut message: Message) -> Result<String, String> {
-    if User::is_anonymous() {
-        return Err("You are anonymous".to_string());
-    }
-    // handle notifications
-    let content = NoteContent::NewMessage(message.id.clone());
-    let new_notification = Notification {
-        id: message.id.clone(),
+
+    // TODO don't create new private
+    //  if user is creator and caner() in admins
+    //  or if user in admins and caller() is creator
+    message.seen_by.push(caller());
+    let mut new_notification = Notification {
+        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
         sender: caller(),
-        receiver: user.unwrap_or("2vxsx-fae".parse().unwrap()), // todo fix this create custom chat principal for group chats.
-        content,
+        receiver: caller(),
+        content: NoteContent::NewMessage(message.clone()),
         is_seen: false,
     };
 
+    if User::is_anonymous() {
+        return Err("You are anonymous".to_string());
+    }
+
     // handle chat message
-    message.date = ic_cdk::api::time() as u64;
-    let chat = Chat::get(&message.chat_id);
-    if let Some(mut chat) = chat {
+    message.date = ic_cdk::api::time();
+    if let Some(mut chat) = Chat::get(&message.chat_id) {
 
         // permissions
         if !(chat.members.contains(&caller()) || chat.admins.contains(&caller()) || (chat.creator == caller())) {
             return Err("You are not a member of this chat.".to_string());
         }
-
-
+        if chat.admins[0] != caller() {
+            new_notification.receiver = chat.admins[0].clone();
+        } else {
+            new_notification.receiver = chat.creator.clone();
+        }
+        new_notification.send();
         chat.messages.push(message.clone());
+        // chat.save_to_my_chats();
         chat.save();
 
-        new_notification.send_to(
-            Principal::from_text(chat.id.clone()).unwrap()
-        );
         Ok(message.id)
     } else if let Some(user) = user {
-        let mut chat = Chat::get_by_user(user);
-        if chat.is_none() {
-            chat = Some(Chat::new(user));
-        }
-        let mut chat = chat.unwrap();
+        // TODO for group chats
+        //     let mut chat = Chat::get_by_user(user);
+        //     if chat.is_none() {
+        //         chat = Some(Chat::new(user));
+        //     }
+        let mut chat = Chat::new(user);
         message.chat_id = chat.id.clone();
         chat.messages.push(message.clone());
+        new_notification.receiver = user;
+        new_notification.send();
+        // chat.save_to_my_chats();
         chat.save();
         chat.add_to_my_chats(user);
         chat.add_to_my_chats(caller());
-        // new_notification.send_to(
-        //     Principal::from_text(chat.id.clone()).unwrap()
-        // ); // handle groups chats
-        new_notification.send_to(user);
         Ok(message.id)
     } else {
         Err("Please provide a user principal or valid chat id.".to_string())
     }
+}
+
+#[update]
+fn message_is_seen(message: Message) -> Result<(), String> {
+    if let Some(mut chat) = Chat::get(&message.chat_id) {
+        chat.messages = chat.messages.iter_mut().map(|m| {
+            if m.id == message.id {
+                m.seen_by.push(caller());
+            }
+            m.clone()
+        }).collect::<Vec<Message>>();
+        chat.save();
+        return Ok(());
+    }
+    Err("Chat not found".to_string())
 }
 
 #[update]

@@ -297,13 +297,12 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             };
 
         case 'UPDATE_PROFILE':
-            state.profile = {...state.profile, ...action.profile}
-            return {
-                ...state,
-            };
-
+            // TODO there is no need to make returns like that for every case just use break lik this
+            state.profile = action.profile
+            break
 
         default:
             return state;
     }
+    return [...state]
 }
