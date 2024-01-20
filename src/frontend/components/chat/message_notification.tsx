@@ -1,31 +1,29 @@
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
-import {Avatar, Typography} from "@mui/material";
-import ListItemText from "@mui/material/ListItemText";
+import {Avatar} from "@mui/material";
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
-import {Chat, Message, User} from "../../../declarations/user_canister/user_canister.did";
-import formatTimestamp from "../../utils/time";
-import useGetUser from "../../utils/get_user_by_principal";
+import {FEChat, Message, User} from "../../../declarations/user_canister/user_canister.did";
 import useGetChats from "./use_get_chats";
 import {Principal} from "@dfinity/principal";
 import {convertToBlobLink} from "../../data_processing/image_to_vec";
 import {actor} from "../../App";
+import MessageComponent from "./message";
 
 // interface MessageNotificationProp {
 //
 // }
+
 
 function MessageNotification(props: Message) {
     let {getChats, getPrivateChat} = useGetChats()
 
     const {profile} = useSelector((state: any) => state.filesReducer);
     const {current_chat_id, chats} = useSelector((state: any) => state.chatsReducer);
-    let chat = chats.find((chat: Chat) => chat.id === props.chat_id);
+    let chat = chats.find((chat: FEChat) => chat.id === props.chat_id);
 
 
-    let {getUser, getUserByName} = useGetUser();
     const [sender, setSender] = React.useState<User | null>(null);
     React.useEffect(() => {
         (async () => {
@@ -33,11 +31,9 @@ function MessageNotification(props: Message) {
             // Note on app init we are making too much requests and we are loading too much data
             // not all users will need chats every day use so load chats only when needed
             if (props.sender.toString() === profile.id) {
-                let user = await getUser(chat.admins[0].toString());
-                setSender(user)
+                setSender(chat.admins[0])
             } else {
-                let user = await getUser(props.sender.toString());
-                setSender(user)
+                setSender(chat.creator)
             }
 
         })()
@@ -53,7 +49,7 @@ function MessageNotification(props: Message) {
             }))
             if (!props.seen_by.includes(Principal.fromText(profile.id))) {
                 props.seen_by.push(Principal.fromText(profile.id))
-                dispatch(handleRedux("UPDATE_NOTIFICATION", {message:props}))
+                dispatch(handleRedux("UPDATE_NOTIFICATION", {message: props}))
                 let res = actor && await actor.message_is_seen(props)
                 console.log({res})
             }
@@ -62,22 +58,7 @@ function MessageNotification(props: Message) {
         {sender && <ListItemAvatar>
             <Avatar alt={sender.name} src={convertToBlobLink(sender.photo)}/>
         </ListItemAvatar>}
-        <ListItemText
-            primary={sender && sender.name}
-            secondary={
-                <React.Fragment>
-                    <Typography
-                        sx={{display: 'inline'}}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                    >
-                        {formatTimestamp(props.date)}
-                    </Typography>
-                    {props.message}
-                </React.Fragment>
-            }
-        />
+        <MessageComponent current_chat_id={props.chat_id}  {...props}/>
     </ListItem>
 }
 

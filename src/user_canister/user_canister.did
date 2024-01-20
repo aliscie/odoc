@@ -67,6 +67,14 @@ type Exchange = record {
 };
 type ExchangeType = variant { Withdraw; Deposit; LocalSend; LocalReceive };
 type Execute = variant { TransferNft; TransferToken; TransferUsdt };
+type FEChat = record {
+  id : text;
+  creator : UserFE;
+  members : vec principal;
+  messages : vec Message;
+  name : text;
+  admins : vec UserFE;
+};
 type FileNode = record {
   id : text;
   permission : ShareFilePermission;
@@ -157,7 +165,7 @@ type Post = record {
 };
 type PostUser = record {
   id : text;
-  creator : UserPost;
+  creator : UserFE;
   date_created : nat64;
   votes_up : vec principal;
   tags : vec text;
@@ -240,7 +248,7 @@ type User = record {
   description : text;
   photo : vec nat8;
 };
-type UserPost = record { id : text; name : text };
+type UserFE = record { id : text; name : text };
 type Wallet = record {
   balance : nat64;
   owner : text;
@@ -280,7 +288,7 @@ service : () -> {
   get_filtered_posts : (opt vec text, opt text) -> (vec PostUser) query;
   get_friends : () -> (opt FriendSystem) query;
   get_initial_data : () -> (Result_5) query;
-  get_my_chats : () -> (vec Chat) query;
+  get_my_chats : () -> (vec FEChat) query;
   get_notifications : () -> (vec Notification) query;
   get_post : (text) -> (Result_6) query;
   get_posts : (nat64, nat64) -> (vec PostUser) query;

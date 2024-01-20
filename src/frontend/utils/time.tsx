@@ -11,27 +11,35 @@ function formatTimestamp(timestampNanoseconds: bigint) {
     return formattedDate;
 }
 
+export function formatRelativeTime(timestampNanoseconds: bigint): string {
+    const timestampMilliseconds = Number(timestampNanoseconds) / 1e6;
+    const currentTimestamp = Date.now();
+    const timeDifference = currentTimestamp - timestampMilliseconds;
 
-// export function getCurrentTimeZone() {
-//     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-//     return timeZone;
-// }
+    const seconds = Math.floor(timeDifference / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const weeks = Math.floor(days / 7);
+    const months = Math.floor(weeks / 4);
+    const years = Math.floor(months / 12);
 
-// export function convertUtcToTimeZone(utcTimestamp, targetTimeZone = getCurrentTimeZone()) {
-//     // Convert UTC timestamp to Date object
-//     const utcDate = new Date(utcTimestamp);
-//
-//     // Get target time zone offset
-//     const targetTimeZoneOffset = utcDate.getTimezoneOffset();
-//
-//     // Calculate the target time by adding the target time zone offset
-//     const targetDate = new Date(utcDate.getTime() + (targetTimeZoneOffset * 60 * 1000));
-//
-//     // Format the date as a string in the target time zone
-//     const formattedDate = targetDate.toLocaleString('en', {timeZone: targetTimeZone});
-//
-//     return formattedDate;
-// }
+    if (days > 0) {
+        return `${days} day${days > 1 ? 's' : ''} ago`;
+    } else if (hours > 0) {
+        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else if (minutes > 0) {
+        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else if (weeks > 0) {
+        return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+    } else if (months > 0) {
+        return `${months} month${months > 1 ? 's' : ''} ago`;
+    } else if (years > 0) {
+        return `${years} year${years > 1 ? 's' : ''} ago`;
+    } else {
+        return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
+    }
+}
 
 
 export default formatTimestamp;

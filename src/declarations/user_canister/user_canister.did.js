@@ -162,10 +162,10 @@ export const idlFactory = ({ IDL }) => {
     'SharesContract' : SharesContract,
   });
   const Result_4 = IDL.Variant({ 'Ok' : StoredContract, 'Err' : IDL.Text });
-  const UserPost = IDL.Record({ 'id' : IDL.Text, 'name' : IDL.Text });
+  const UserFE = IDL.Record({ 'id' : IDL.Text, 'name' : IDL.Text });
   const PostUser = IDL.Record({
     'id' : IDL.Text,
-    'creator' : UserPost,
+    'creator' : UserFE,
     'date_created' : IDL.Nat64,
     'votes_up' : IDL.Vec(IDL.Principal),
     'tags' : IDL.Vec(IDL.Text),
@@ -208,13 +208,13 @@ export const idlFactory = ({ IDL }) => {
     'Wallet' : Wallet,
   });
   const Result_5 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
-  const Chat = IDL.Record({
+  const FEChat = IDL.Record({
     'id' : IDL.Text,
-    'creator' : IDL.Principal,
+    'creator' : UserFE,
     'members' : IDL.Vec(IDL.Principal),
     'messages' : IDL.Vec(Message),
     'name' : IDL.Text,
-    'admins' : IDL.Vec(IDL.Principal),
+    'admins' : IDL.Vec(UserFE),
   });
   const ContractNotification = IDL.Record({
     'contract_type' : IDL.Text,
@@ -259,6 +259,14 @@ export const idlFactory = ({ IDL }) => {
   const Result_8 = IDL.Variant({
     'Ok' : IDL.Tuple(FileNode, IDL.Vec(ContentNode)),
     'Err' : IDL.Text,
+  });
+  const Chat = IDL.Record({
+    'id' : IDL.Text,
+    'creator' : IDL.Principal,
+    'members' : IDL.Vec(IDL.Principal),
+    'messages' : IDL.Vec(Message),
+    'name' : IDL.Text,
+    'admins' : IDL.Vec(IDL.Principal),
   });
   const Result_9 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
   const RegisterUser = IDL.Record({
@@ -367,7 +375,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_friends' : IDL.Func([], [IDL.Opt(FriendSystem)], ['query']),
     'get_initial_data' : IDL.Func([], [Result_5], ['query']),
-    'get_my_chats' : IDL.Func([], [IDL.Vec(Chat)], ['query']),
+    'get_my_chats' : IDL.Func([], [IDL.Vec(FEChat)], ['query']),
     'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
     'get_post' : IDL.Func([IDL.Text], [Result_6], ['query']),
     'get_posts' : IDL.Func(

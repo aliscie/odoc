@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 use ic_cdk_macros::query;
-use crate::discover::{Post, PostUser, UserPost};
+use crate::discover::{Post, PostUser, UserFE};
 
 
 use crate::storage_schema::FileId;
@@ -43,7 +43,7 @@ fn search_posts(text_to_find: String) -> Vec<PostUser> {
                     .filter(|node| node.text.contains(&text_to_find))
                     .map(move |node| {
                         let user = User::get_user_from_text_principal(&post.creator).unwrap();
-                        let creator = UserPost {
+                        let creator = UserFE {
                             id: user.id.clone(),
                             name: user.name.clone(),
                         };

@@ -29,9 +29,9 @@ pub struct Post {
 
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
-pub struct UserPost {
-    id: String,
-    name: String,
+pub struct UserFE { // FE === FrontEnd
+    pub id: String,
+    pub name: String,
 }
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
@@ -39,7 +39,7 @@ pub struct PostUser {
     id: String,
     content_tree: ContentTree,
     tags: Vec<String>,
-    creator: UserPost,
+    creator: UserFE,
     date_created: u64,
     votes_up: Vec<Principal>,
     votes_down: Vec<Principal>,
@@ -113,7 +113,7 @@ impl Post {
                 .take(actual_count)
                 .map(|post| {
                     let user = User::get_user_from_text_principal(&post.creator).unwrap();
-                    let creator = UserPost {
+                    let creator = UserFE {
                         id: user.id.clone(),
                         name: user.name.clone(),
                     };
@@ -154,7 +154,7 @@ impl Post {
                 // .take(actual_count)
                 .map(|post| {
                     let user = User::get_user_from_text_principal(&post.creator).unwrap();
-                    let creator = UserPost {
+                    let creator = UserFE {
                         id: user.id.clone(),
                         name: user.name.clone(),
                     };

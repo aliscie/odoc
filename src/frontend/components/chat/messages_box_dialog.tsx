@@ -43,10 +43,8 @@ function MessagesDialog() {
             }
             buttons={[
 
-                {
-                    name: <Link to={'/chats'}><OpenInFullIcon color={"action"}/></Link>,
-                    onClick: () => dispatch(handleRedux("OPEN_CHAT", {current_chat_id: false}))
-                },
+                {name: <Link to={'/chats'}><OpenInFullIcon color={"action"}/></Link>,
+                onClick: () => dispatch(handleRedux("OPEN_CHAT", {current_chat_id: false}))},
                 {
                     name: <CloseIcon color={"action"}/>,
                     onClick: () => dispatch(handleRedux("OPEN_CHAT", {current_chat_id: false}))

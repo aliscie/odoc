@@ -24,15 +24,17 @@ export default function SendMessageBox() {
     };
 
     const handleSendClick = async () => {
+        let new_chat_id = randomString();
         // Handle sending the message (you can add your logic here)
         let new_message: Message = {
             'id': randomString(),
-            'date': BigInt(0),
+            'date': BigInt(Date.now() * 1e6),
             'sender': Principal.fromText(profile.id),
-            'seen_by': [],
+            'seen_by': [Principal.fromText(profile.id)],
             'message': message,
-            'chat_id': current_chat_id,
+            'chat_id': current_chat_id == 'chat_id' ? new_chat_id : current_chat_id,
         }
+
         dispatch(handleRedux("SEND_MESSAGE", {message: {...new_message, is_saving: true}}))
         setMessage('');
 
@@ -47,7 +49,9 @@ export default function SendMessageBox() {
         //    let socket_res: undefined | { Ok: null } | { Err: null } = actor && await actor.send_socket_message(notification)
         //    an update it takes a bit of time to send the message so I want to use it just for saving the message
         //    ws.send()
-
+        if (new_message.chat_id == "chat_id") {
+            console.error("chat_id is not set")
+        }
         let res: undefined | { Ok: string } | { Err: string } = actor && await actor.send_message([current_user], new_message);
         // TODO use ws.send_message in addition to actor.send_message because that would be faster.
         if ("Err" in res) {

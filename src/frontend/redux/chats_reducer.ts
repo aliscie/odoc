@@ -1,5 +1,6 @@
-import {Chat, Message} from "../../declarations/user_canister/user_canister.did";
+import {FEChat, Message, UserFE} from "../../declarations/user_canister/user_canister.did";
 import {Principal} from "@dfinity/principal";
+import {useSelector} from "react-redux";
 
 export type CHAT_ACTIONS =
     "RECEIVE_MESSAGE"
@@ -14,7 +15,7 @@ export type CHAT_ACTIONS =
 
 type InitialState = {
     current_chat_id: string | false,
-    chats: Array<Chat>,
+    chats: Array<FEChat>,
     current_user: Principal
     chats_notifications: Array<Message>,
 }
@@ -29,7 +30,7 @@ export const initialChatsState: InitialState = {
 
 
 export function chatsReducer(state = initialChatsState, action: any) {
-
+    // const {profile} = useSelector((state: any) => state.filesReducer);
     switch (action.type) {
         case 'OPEN_CHAT':
             state.current_chat_id = action.current_chat_id
@@ -41,16 +42,38 @@ export function chatsReducer(state = initialChatsState, action: any) {
             break
 
         case 'SEND_MESSAGE':
-            state.chats = state.chats && state.chats.map((chat: Chat) => {
-                if (chat.id == action.message.chat_id) {
-                    chat.messages.push(action.message)
+            let chat: FEChat | undefined = state.chats.find((chat: FEChat) => chat.id == action.message.chat_id)
+            if (!chat) {
+                let admin: UserFE = {
+                    id: state.current_user.toString(),
+                    name: "other"
                 }
-                return chat
+                chat = {
+                    'creator': {
+                        id: "profile.id",
+                        name: "profile.name"
+                    },
+                    'members': [],
+                    'name': "",
+                    'admins': [admin],
+                    id: action.message.chat_id,
+                    messages: [action.message],
+                }
+                state.chats.push(chat)
+                state.current_chat_id = action.message.chat_id
+                break
+            }
+            chat.messages.push(action.message)
+            state.chats = state.chats.map((_chat: FEChat) => {
+                if (chat && _chat.id == chat.id) {
+                    return chat
+                }
+                return _chat
             });
             break
 
         case 'UPDATE_MESSAGE':
-            state.chats = state.chats && state.chats.map((chat: Chat) => {
+            state.chats = state.chats && state.chats.map((chat: FEChat) => {
                 if (chat.id == action.message.chat_id) {
                     chat.messages = chat.messages.map((message: Message) => {
                         if (message.id == action.message.id) {

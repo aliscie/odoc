@@ -7,7 +7,7 @@ import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
 import IconButton, {IconButtonProps} from '@mui/material/IconButton';
 import {normalize_content_tree} from "../../data_processing/normalize/normalize_contents";
-import {Chat, Post, PostUser} from "../../../declarations/user_canister/user_canister.did";
+import {FEChat, Post, PostUser} from "../../../declarations/user_canister/user_canister.did";
 import AvatarChips from "./person_chip";
 import formatTimestamp from "../../utils/time";
 import EditorComponent from "../editor_components/main";
@@ -47,7 +47,7 @@ interface Props {
 }
 
 export default function PostComponent(props: Props) {
-    let {getChats} = useGetChats()
+    let {getChats, getOther} = useGetChats()
     const dispatch = useDispatch();
 
     const {
@@ -65,11 +65,10 @@ export default function PostComponent(props: Props) {
         options.push({
             content: 'Message', icon: <ChatBubbleIcon/>, onClick: async () => {
                 let res = await getChats()
-                let user = Principal.fromText(creator.id);
-                let chat = res.find((chat: Chat) => chat.admins[0].toString() === user.toString() || chat.creator.toString() === user.toString())
+                let chat = res.find((chat: FEChat) => chat.admins[0].id.toString() === creator.id || chat.creator.id.toString() === creator.id)
                 dispatch(handleRedux("OPEN_CHAT", {
                     current_chat_id: chat && chat.id || "chat_id",
-                    current_user: user
+                    current_user: Principal.fromText(creator.id)
                 }))
             }
         })

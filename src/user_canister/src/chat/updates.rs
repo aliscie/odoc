@@ -47,15 +47,14 @@ fn send_message(user: Option<Principal>, mut message: Message) -> Result<String,
         // chat.save_to_my_chats();
         chat.save();
 
-        Ok(message.id)
+        Ok(message.chat_id)
     } else if let Some(user) = user {
         // TODO for group chats
         //     let mut chat = Chat::get_by_user(user);
         //     if chat.is_none() {
         //         chat = Some(Chat::new(user));
         //     }
-        let mut chat = Chat::new(user);
-        message.chat_id = chat.id.clone();
+        let mut chat = Chat::new(user,message.chat_id.clone());
         chat.messages.push(message.clone());
         new_notification.receiver = user;
         new_notification.send();
@@ -63,7 +62,7 @@ fn send_message(user: Option<Principal>, mut message: Message) -> Result<String,
         chat.save();
         chat.add_to_my_chats(user);
         chat.add_to_my_chats(caller());
-        Ok(message.id)
+        Ok(message.chat_id)
     } else {
         Err("Please provide a user principal or valid chat id.".to_string())
     }

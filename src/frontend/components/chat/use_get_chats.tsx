@@ -2,10 +2,11 @@ import {actor} from "../../App";
 import {handleRedux} from "../../redux/main";
 import {useDispatch, useSelector} from "react-redux";
 import {Principal} from "@dfinity/principal";
-import {Chat} from "../../../declarations/user_canister/user_canister.did";
+import {Chat, FEChat} from "../../../declarations/user_canister/user_canister.did";
 
 function useGetChats() {
-    const {current_chat_id, current_user, chats} = useSelector((state: any) => state.chatsReducer);
+    const {profile} = useSelector((state: any) => state.filesReducer);
+    const {chats} = useSelector((state: any) => state.chatsReducer);
 
     const dispatch = useDispatch();
 
@@ -21,7 +22,7 @@ function useGetChats() {
 
     let getChats = async () => {
         if (!chats || chats.length === 0) {
-            let res = actor && await actor.get_my_chats();
+            let res: undefined | Array<FEChat> = actor && await actor.get_my_chats();
             res && dispatch(handleRedux("SET_CHATS", {chats: res}));
             return res
         } else {
@@ -30,7 +31,17 @@ function useGetChats() {
 
     }
 
-    return {getChats, getPrivateChat}
+
+    let getOther = (chat: FEChat) => {
+        if (chat.creator.id.toString() === profile.id) {
+            return chat.admins[0]
+        } else {
+            return chat.creator
+        }
+    }
+
+
+    return {getChats, getPrivateChat, getOther}
 
 }
 

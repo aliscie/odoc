@@ -33,11 +33,11 @@ pub struct Message {
 }
 
 impl Chat {
-    pub fn new(user: Principal) -> Self {
+    pub fn new(user: Principal, id: String) -> Self {
         CHATS.with(|store| {
             let mut chats = store.borrow_mut();
             let chat = Chat {
-                id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+                id,
                 name: "private_chat".to_string(),
                 admins: vec![user],
                 members: vec![],

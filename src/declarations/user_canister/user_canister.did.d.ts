@@ -90,6 +90,14 @@ export type ExchangeType = { 'Withdraw' : null } |
 export type Execute = { 'TransferNft' : null } |
   { 'TransferToken' : null } |
   { 'TransferUsdt' : null };
+export interface FEChat {
+  'id' : string,
+  'creator' : UserFE,
+  'members' : Array<Principal>,
+  'messages' : Array<Message>,
+  'name' : string,
+  'admins' : Array<UserFE>,
+}
 export interface FileNode {
   'id' : string,
   'permission' : ShareFilePermission,
@@ -182,7 +190,7 @@ export interface Post {
 }
 export interface PostUser {
   'id' : string,
-  'creator' : UserPost,
+  'creator' : UserFE,
   'date_created' : bigint,
   'votes_up' : Array<Principal>,
   'tags' : Array<string>,
@@ -275,7 +283,7 @@ export interface User {
   'description' : string,
   'photo' : Uint8Array | number[],
 }
-export interface UserPost { 'id' : string, 'name' : string }
+export interface UserFE { 'id' : string, 'name' : string }
 export interface Wallet {
   'balance' : bigint,
   'owner' : string,
@@ -321,7 +329,7 @@ export interface _SERVICE {
   >,
   'get_friends' : ActorMethod<[], [] | [FriendSystem]>,
   'get_initial_data' : ActorMethod<[], Result_5>,
-  'get_my_chats' : ActorMethod<[], Array<Chat>>,
+  'get_my_chats' : ActorMethod<[], Array<FEChat>>,
   'get_notifications' : ActorMethod<[], Array<Notification>>,
   'get_post' : ActorMethod<[string], Result_6>,
   'get_posts' : ActorMethod<[bigint, bigint], Array<PostUser>>,
