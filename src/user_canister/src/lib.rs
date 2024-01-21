@@ -5,7 +5,6 @@ use std::cell::RefCell;
 // type Memory = VirtualMemory<DefaultMemoryImpl>;
 
 use std::collections::HashMap;
-use candid::Principal;
 
 use ic_websocket_cdk::*;
 
@@ -23,6 +22,12 @@ use updates::*;
 use user::*;
 pub use wallet::*;
 use websocket::*;
+// use pocket_ic::{
+//     common::rest::{BlobCompression, SubnetConfigSet, SubnetKind},
+//     PocketIc, PocketIcBuilder, WasmResult,
+// };
+use ic_cdk::api::management_canister::provisional::CanisterId;
+use candid::{decode_one, encode_one, Principal};
 
 // use ic_stable_structures::{
 //     memory_manager::{MemoryId, MemoryManager, VirtualMemory},
@@ -92,32 +97,60 @@ pub static COUNTER: AtomicU64 = AtomicU64::new(0);
 
 #[cfg(test)]
 mod tests {
-    // use std::borrow::Cow;
-    // use std::collections::HashMap;
-    // use std::env;
-    // use std::fs::{create_dir_all, write};
-    // use std::path::PathBuf;
-    //
-    // use candid::Principal;
-    // use candid::{
-    //     candid_method, CandidType, Deserialize,
-    //     // IDLProg,
-    //     TypeEnv,
-    // };
-    // use ic_cdk::{api, update};
-    // use ic_websocket_cdk::{CanisterWsCloseArguments, CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments, CanisterWsOpenResult, ClientPrincipal, WsHandlers, WsInitParams};
-    // use serde::de::Unexpected::Str;
-    // use crate::files::FileNode;
-    // use crate::queries::InitialData;
-    // use crate::user::{RegisterUser, User};
-    //
-    use super::*;
-
     #[test]
-    fn save_candid_2() {
-        // println!("-------- Wrote to {:?}", dir);
-        // println!("-------- res {:?}", canister_name);
-    }
+    fn test_one() {}
 }
 
-ic_cdk_macros::export_candid!();
+fn user_canister_wasm() -> Vec<u8> {
+    let wasm_path = std::env::var_os("USER_CANISTER_WASM").expect("Missing counter wasm file");
+    std::fs::read(wasm_path).unwrap()
+}
+
+
+// fn call_counter_can(ic: &PocketIc, can_id: CanisterId, method: &str) -> WasmResult {
+//     ic.update_call(
+//         can_id,
+//         Principal::anonymous(),
+//         method,
+//         encode_one(()).unwrap(),
+//     )
+//         .expect("Failed to call counter canister")
+// }
+
+// #[test]
+// fn test_counter_canister() {
+//     dotenv::dotenv().ok();
+//
+//     println!("POCKET_IC_BIN: {:?}", std::env::var("POCKET_IC_BIN"));
+//
+//
+//     const INIT_CYCLES: u128 = 2_000_000_000_000;
+//
+//     let pic = PocketIc::new();
+//
+//     // Create a canister and charge it with 2T cycles.
+//     let can_id = pic.create_canister();
+//     pic.add_cycles(can_id, INIT_CYCLES);
+//     let user_canister_wasm = user_canister_wasm();
+//     pic.install_canister(can_id, user_canister_wasm, vec![], None);
+//     // Make some calls to the canister.
+//     let args: RegisterUser = RegisterUser {
+//         name: Some("AliSci".to_string()),
+//         description: None,
+//         photo: None,
+//     };
+//     let res_bytes: WasmResult = pic.update_call(
+//         can_id,
+//         Principal::anonymous(),
+//         "register",
+//         encode_one(args.clone()).unwrap(),
+//     )
+//         .expect("Failed to call counter canister");
+//     // let expected = Err("Anonymous users are not allowed to register.".to_string());
+//     // assert!(res_bytes == expected);
+//     println!("res_bytes: {:?}", res_bytes);
+//
+// }
+
+
+// ic_cdk_macros::export_candid!();

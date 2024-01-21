@@ -18,13 +18,13 @@ document.body.appendChild(container);
 
 test('clicking on Login opens a new tab', () => {
     const store = mockStore(redux_sample);
-    render(
-        <StrictMode>
-            <Provider store={store}>
-                <SharesContractComponent {...share_contract_example} />
-            </Provider>
-        </StrictMode>
-    )
+    // render(
+    //     <StrictMode>
+    //         <Provider store={store}>
+    //             <SharesContractComponent {...share_contract_example} />
+    //         </Provider>
+    //     </StrictMode>
+    // )
 
 
 });

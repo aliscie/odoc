@@ -38,6 +38,15 @@ function UserPage() {
         {/*</IconButton>*/}
         id: {user && user.id}
         <Friend {...user} labelId={labelId}/>
+        description: {user && user.description}
+        <div>spent: 3000 USDT</div>
+        <div>USDT interactions : 40 Users</div>
+        <div>USDT transactions : 63 transactions</div>
+        <div>payment cancellations : 5</div>
+        <div>shares : 5</div>
+        <div>shares changes: 1</div>
+        <div>custom contracts : 5</div>
+        <div>custom contracts changes : 1</div>
     </>;
 }
 

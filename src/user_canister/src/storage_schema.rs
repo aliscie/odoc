@@ -1,6 +1,8 @@
 use candid::Principal;
 
-use std::collections::{BTreeMap, HashMap};
+// use std::collections::{BTreeMap, HashMap};
+use std::collections::{HashMap};
+use std::collections::btree_map::BTreeMap;
 
 use crate::{ShareFile, StoredContract, Wallet};
 use crate::chat::{Chat, Message};
