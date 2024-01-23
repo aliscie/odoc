@@ -40,7 +40,7 @@ interface Props {
     buttons?: any
     headerAction?: any,
     // subheader?: string,
-    post: PostUser | Post,
+    post: PostUser,
     onChange?: any,
     editable?: boolean,
     // avatar?: any,

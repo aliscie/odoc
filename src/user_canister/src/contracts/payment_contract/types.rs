@@ -20,6 +20,8 @@ pub struct PaymentContract {
     pub(crate) released: bool,
     pub(crate) confirmed: bool,
     pub(crate) extra_cells: HashMap<String, String>,
+    // pub(crate) date_created: u64,
+    // pub(crate) date_updated: u64,
 }
 
 // ------------ TODO study the imposable of make the PaymentContract like the shares contract ------------ \\
@@ -331,5 +333,88 @@ impl PaymentContract {
     }
     pub fn get_contract_id(&self) -> ContractId {
         self.contract_id.clone() // Return a reference to the contract_id
+    }
+    // Helper function to get contracts for a user
+    fn get_contract_for_user(user: Principal) -> Vec<StoredContract> {
+        let res = CONTRACTS_STORE.with(|contracts_store| {
+            let caller_contracts = contracts_store.borrow();
+            caller_contracts.get(&user).cloned()
+        });
+        if let Some(contracts) = res {
+            contracts.values().cloned().collect()
+        } else {
+            Vec::new()
+        }
+    }
+
+    pub fn get_released_payments(user: Principal) -> Vec<PaymentContract> {
+        let caller_contract = Self::get_contract_for_user(user);
+
+        let mut all_payments: Vec<PaymentContract> = Vec::new();
+
+        for contract in caller_contract {
+            if let StoredContract::PaymentContract(payment) = contract {
+                if payment.released {
+                    all_payments.push(payment.clone());
+                }
+            }
+        }
+
+        all_payments
+    }
+
+    pub fn get_canceled_payments(user: Principal, from: u64, to: u64) -> Vec<PaymentContract> {
+        let caller_contract = Self::get_contract_for_user(user);
+
+        let mut canceled_payments: Vec<PaymentContract> = Vec::new();
+        let mut count = 0;
+
+        for contract in caller_contract {
+            if let StoredContract::PaymentContract(payment) = contract {
+                if payment.canceled && payment.sender == user && payment.confirmed {
+                    // Check if the payment index is within the specified range
+                    if count >= from && count < to {
+                        canceled_payments.push(payment.clone());
+                    }
+
+                    count += 1;
+
+                    // Break the loop if we have collected the required number of payments
+                    if count >= to {
+                        break;
+                    }
+                }
+            }
+        }
+
+        canceled_payments
+    }
+
+    pub fn get_latest_canceled_payments(user: Principal, from: u64, to: u64) -> Vec<PaymentContract> {
+        let caller_contract = Self::get_contract_for_user(user);
+
+        let mut canceled_payments: Vec<PaymentContract> = Vec::new();
+        let mut count = 0;
+
+        // Convert values to Vec and iterate through it in reverse order
+        for contract in caller_contract.iter().rev() {
+            if let StoredContract::PaymentContract(payment) = contract {
+                if payment.canceled && payment.sender == caller() {
+                    // Check if the payment index is within the specified range
+                    if count >= from && count < to {
+                        canceled_payments.push(payment.clone());
+                    }
+
+                    count += 1;
+
+                    // Break the loop if we have collected the required number of payments
+                    if count >= to {
+                        break;
+                    }
+                }
+            }
+        }
+
+        canceled_payments
     }
 }

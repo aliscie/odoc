@@ -260,6 +260,45 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Tuple(FileNode, IDL.Vec(ContentNode)),
     'Err' : IDL.Text,
   });
+  const ActionType = IDL.Variant({
+    'ReleasePayment' : IDL.Null,
+    'RejectShareChange' : IDL.Null,
+    'AcceptShareChange' : IDL.Null,
+    'CancelPayment' : IDL.Null,
+  });
+  const ActionRating = IDL.Record({
+    'id' : IDL.Text,
+    'action_type' : ActionType,
+    'date' : IDL.Nat64,
+    'rating' : IDL.Float64,
+  });
+  const RatingFE = IDL.Record({
+    'id' : IDL.Text,
+    'date' : IDL.Nat64,
+    'user' : UserFE,
+    'comment' : IDL.Text,
+    'rating' : IDL.Float64,
+  });
+  const UserHistoryFE = IDL.Record({
+    'id' : IDL.Principal,
+    'users_interactions' : IDL.Nat64,
+    'transactions_received' : IDL.Nat64,
+    'rates_by_actions' : IDL.Vec(ActionRating),
+    'shares_changes_rejects' : IDL.Nat64,
+    'received_shares_payments' : IDL.Nat64,
+    'latest_payments_cancellation' : IDL.Vec(PaymentContract),
+    'shares_change_request' : IDL.Nat64,
+    'total_rate' : IDL.Float64,
+    'spent' : IDL.Nat64,
+    'transactions_sent' : IDL.Nat64,
+    'rates_by_others' : IDL.Vec(RatingFE),
+    'shares_changes_accepts' : IDL.Nat64,
+    'total_payments_cancellation' : IDL.Nat64,
+  });
+  const Result_9 = IDL.Variant({
+    'Ok' : IDL.Tuple(User, UserHistoryFE),
+    'Err' : IDL.Text,
+  });
   const Chat = IDL.Record({
     'id' : IDL.Text,
     'creator' : IDL.Principal,
@@ -268,7 +307,14 @@ export const idlFactory = ({ IDL }) => {
     'name' : IDL.Text,
     'admins' : IDL.Vec(IDL.Principal),
   });
-  const Result_9 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
+  const Result_10 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
+  const Rating = IDL.Record({
+    'id' : IDL.Text,
+    'date' : IDL.Nat64,
+    'user_id' : IDL.Principal,
+    'comment' : IDL.Text,
+    'rating' : IDL.Float64,
+  });
   const RegisterUser = IDL.Record({
     'name' : IDL.Opt(IDL.Text),
     'description' : IDL.Opt(IDL.Text),
@@ -299,7 +345,7 @@ export const idlFactory = ({ IDL }) => {
     'tree' : IDL.Vec(IDL.Nat8),
     'is_end_of_queue' : IDL.Bool,
   });
-  const Result_10 = IDL.Variant({
+  const Result_11 = IDL.Variant({
     'Ok' : CanisterOutputCertifiedMessages,
     'Err' : IDL.Text,
   });
@@ -377,6 +423,11 @@ export const idlFactory = ({ IDL }) => {
     'get_initial_data' : IDL.Func([], [Result_5], ['query']),
     'get_my_chats' : IDL.Func([], [IDL.Vec(FEChat)], ['query']),
     'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
+    'get_payment_cancellations' : IDL.Func(
+        [IDL.Principal, IDL.Nat64, IDL.Nat64],
+        [IDL.Vec(PaymentContract)],
+        ['query'],
+      ),
     'get_post' : IDL.Func([IDL.Text], [Result_6], ['query']),
     'get_posts' : IDL.Func(
         [IDL.Nat64, IDL.Nat64],
@@ -386,9 +437,10 @@ export const idlFactory = ({ IDL }) => {
     'get_share_file' : IDL.Func([IDL.Text], [Result_7], ['query']),
     'get_shared_file' : IDL.Func([IDL.Text], [Result_8], []),
     'get_user' : IDL.Func([IDL.Text], [Result], ['query']),
+    'get_user_profile' : IDL.Func([IDL.Principal], [Result_9], ['query']),
     'make_new_chat_room' : IDL.Func([Chat], [Result_2], []),
     'message_is_seen' : IDL.Func([Message], [Result_1], []),
-    'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_9], []),
+    'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_10], []),
     'multi_updates' : IDL.Func(
         [
           IDL.Vec(FileNode),
@@ -404,6 +456,7 @@ export const idlFactory = ({ IDL }) => {
         [Result_1],
         [],
       ),
+    'rate_user' : IDL.Func([IDL.Principal, Rating], [Result_1], []),
     'register' : IDL.Func([RegisterUser], [Result], []),
     'reject_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'release_payment' : IDL.Func([IDL.Text], [Result_1], []),
@@ -432,7 +485,7 @@ export const idlFactory = ({ IDL }) => {
     'ws_close' : IDL.Func([CanisterWsCloseArguments], [Result_1], []),
     'ws_get_messages' : IDL.Func(
         [CanisterWsGetMessagesArguments],
-        [Result_10],
+        [Result_11],
         ['query'],
       ),
     'ws_message' : IDL.Func(

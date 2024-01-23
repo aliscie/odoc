@@ -56,7 +56,9 @@ mod discover;
 mod timer;
 mod init;
 mod chat;
+mod user_history;
 
+use user_history::*;
 use chat::*;
 use init::*;
 use std::sync::atomic::AtomicU64;
@@ -76,7 +78,7 @@ thread_local! {
     // );
 
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
-
+    static PROFILE_HISOTYR: RefCell<ProfileHistoryStore> = RefCell::default();
     // static ID_STORE: RefCell<IdStore> = RefCell::default();
     static USER_FILES: RefCell<FilesStore> = RefCell::default();
     static SHARED_USER_FILES: RefCell<SharedUserFiles> = RefCell::default();
@@ -98,7 +100,8 @@ pub static COUNTER: AtomicU64 = AtomicU64::new(0);
 #[cfg(test)]
 mod tests {
     #[test]
-    fn test_one() {}
+    fn test_one() {
+    }
 }
 
 fn user_canister_wasm() -> Vec<u8> {
@@ -153,4 +156,4 @@ fn user_canister_wasm() -> Vec<u8> {
 // }
 
 
-// ic_cdk_macros::export_candid!();
+ic_cdk_macros::export_candid!();

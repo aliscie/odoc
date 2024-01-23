@@ -11,6 +11,7 @@ use crate::files::FileNode;
 use crate::files_content::ContentNode;
 use crate::friends::FriendSystem;
 use crate::user::User;
+use crate::user_history::UserHistory;
 use crate::websocket::Notification;
 
 // use candid::{CandidType, Decode, Deserialize, Encode};
@@ -78,6 +79,7 @@ pub type ShareId = String;
 // Stores types
 // pub type IdStore = BTreeMap<String, Principal>;
 pub type ProfileStore = BTreeMap<Principal, User>;
+pub type ProfileHistoryStore = BTreeMap<Principal, UserHistory>;
 pub type FriendsStore = BTreeMap<Principal, FriendSystem>;
 pub type FilesStore = BTreeMap<Principal, HashMap<FileId, FileNode>>;
 pub type FileContentsStore = BTreeMap<Principal, HashMap<FileId, ContentTree>>;

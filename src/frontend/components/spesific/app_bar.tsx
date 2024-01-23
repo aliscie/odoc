@@ -42,6 +42,7 @@ export function NavAppBar() {
 
     async function handleLogin() {
         await agent.identify();
+        dispatch(handleRedux('LOGIN'));
     }
 
     async function handleLogout() {

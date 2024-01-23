@@ -299,45 +299,6 @@ impl SharesContract {
     }
 
 
-    // pub fn update(&mut self, updated_share: Share) -> Result<(), String> {
-    //     CONTRACTS_STORE.with(|contracts_store| {
-    //         let mut caller_contracts = contracts_store.borrow_mut();
-    //         let caller_contract = caller_contracts
-    //             .get_mut(&caller())
-    //             .ok_or("Caller has no contracts")?;
-    //
-    //         let contract = caller_contract
-    //             .get_mut(&self.contract_id) // Use updated_share.contract_id as the key
-    //             .ok_or("Contract not found")?;
-    //
-    //         // TODO if let StoredContract::SharesContract(existing_share_contract) = self {
-    //         if let StoredContract::SharesContract(ref mut existing_share_contract) = contract {
-    //             let mut share_contract = existing_share_contract.clone();
-    //             if let Some(existing_share) = existing_share_contract
-    //                 .shares
-    //                 .iter_mut()
-    //                 .find(|s| s.share_contract_id == updated_share.share_contract_id)
-    //             {
-    //                 if existing_share.confirmed {
-    //                     return Err("Share is confirmed and cannot be updated".to_string());
-    //                 }
-    //                 let original_value = existing_share.clone().share;
-    //                 existing_share.share = updated_share.share;
-    //
-    //                 if !share_contract.is_valid_shares() {
-    //                     // reset share value to original value.
-    //                     existing_share.share = original_value;
-    //                     return Err("Shares does not sum to 100%".to_string());
-    //                 };
-    //
-    //                 return Ok(());
-    //             }
-    //         }
-    //
-    //         Err("Share not found in contract".to_string())
-    //     })
-    // }
-
     pub fn conform(&mut self, user: Principal, share_contract_id: ShareContractId) -> Result<(), String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
@@ -373,29 +334,85 @@ impl SharesContract {
         })
     }
 
-    // pub fn request(&mut self, shares_request: Share) -> Result<(), String> {
+
+    // pub fn apply_request(&mut self, share_request_id: ShareRequestId) -> Result<ShareRequest, String> {
+    //     let request = self.shares_requests.get(&share_request_id);
+    //     let is_approved = request.unwrap().is_approved();
+    //     let is_applied = request.unwrap().is_applied.clone();
+    //
+    //     if !is_approved {
+    //         return Err("You can't apply a request before approving it from all the share holder".to_string());
+    //     };
+    //
+    //     if is_applied {
+    //         return Err("This request was already applied, You can't apply a request twice.".to_string());
+    //     };
+    //
+    //
     //     CONTRACTS_STORE.with(|contracts_store| {
     //         let mut caller_contracts = contracts_store.borrow_mut();
+    //         // for now only the author can apply the request, maybe later we can change the logic
     //         let caller_contract = caller_contracts
-    //             .get_mut(&caller())
-    //             .ok_or("Caller has no contracts")?;
+    //             .entry(caller())
+    //             .or_default();
     //
     //         let contract = caller_contract
-    //             .get_mut(&self.contract_id) // Use updated_share.contract_id as the key
+    //             .get_mut(&self.clone().contract_id)
     //             .ok_or("Contract not found")?;
     //
-    //         if let StoredContract::SharesContract(existing_share_contract) = contract {
-    //             // Find the corresponding share in the contract's shares list
-    //             existing_share_contract.clone().shares_requests.push(shares_request);
-    //         }
+    //         // set the shares =  to shares_request
+    //         if let StoredContract::SharesContract(existing_share) = contract {
+    //             let mut updated = existing_share.clone();
+    //
+    //
+    //             // ------------ set share.confirmed = true for all the req.shares ------------ \\
+    //             let req = updated.shares_requests.get(&share_request_id).unwrap().clone();
+    //             updated.shares = req.shares.clone().into_iter()
+    //                 .map(|mut s| {
+    //                     s.confirmed = true;
+    //                     s
+    //                 })
+    //                 .collect();
+    //
+    //             //------------ set is_applied= true of  shares_request with id of share_request_id ------------\\
+    //             updated.shares_requests = updated.shares_requests.into_iter()
+    //                 .map(|(id, mut s)| {
+    //                     if s.id == share_request_id {
+    //                         s.is_applied = true;
+    //                     }
+    //                     (id, s)
+    //                 })
+    //                 .collect();
+    //             updated.save().expect("TODO: panic message");
+    //             // *existing_share = updated.clone();
+    //
+    //             // ----------- Notify everyone in the contract except the caller ------------ \\
+    //             let original_share = self.shares.clone();
+    //             let new_shares = request.unwrap().shares.clone();
+    //             let mut receivers = new_shares.clone().into_iter().map(|s| s.receiver).collect::<Vec<Principal>>();
+    //             // add all the receiver from original_share that does not already exits in receivers
+    //             for s in original_share.clone() {
+    //                 if !receivers.contains(&s.receiver) {
+    //                     receivers.push(s.receiver);
+    //                 }
+    //             };
+    //             let note_content = NoteContent::ShareRequestApplied(self.clone());
+    //             for receiver in receivers {
+    //                 if receiver != caller() {
+    //                     let new_notification = Notification::new(receiver, note_content.clone());
+    //                     new_notification.save();
+    //                 }
+    //             }
+    //
+    //             return Ok(request.unwrap().clone());
+    //         };
     //
     //         Err("Share not found in contract".to_string())
     //     })
     // }
 
-    // first get the contract by share_contract_id
-    // then get the share_request from the share_contract.share_requests
-    pub fn apply_request(&mut self, share_request_id: ShareRequestId) -> Result<(), String> {
+    // mote this way shorter always use the save method no need to re use with everytime.
+    pub fn apply_request(&mut self, share_request_id: ShareRequestId) -> Result<ShareRequest, String> {
         let request = self.shares_requests.get(&share_request_id);
         let is_approved = request.unwrap().is_approved();
         let is_applied = request.unwrap().is_applied.clone();
@@ -408,68 +425,53 @@ impl SharesContract {
             return Err("This request was already applied, You can't apply a request twice.".to_string());
         };
 
+        let mut updated = self.clone();
 
-        CONTRACTS_STORE.with(|contracts_store| {
-            let mut caller_contracts = contracts_store.borrow_mut();
-            // for now only the author can apply the request, maybe later we can change the logic
-            let caller_contract = caller_contracts
-                .entry(caller())
-                .or_default();
+        // ------------ set share.confirmed = true for all the req.shares ------------ \\
+        let req = updated.shares_requests.get(&share_request_id).unwrap().clone();
+        updated.shares = req.shares.clone().into_iter()
+            .map(|mut s| {
+                s.confirmed = true;
+                s
+            })
+            .collect();
 
-            let contract = caller_contract
-                .get_mut(&self.clone().contract_id)
-                .ok_or("Contract not found")?;
-
-            // set the shares =  to shares_request
-            if let StoredContract::SharesContract(existing_share) = contract {
-                let mut updated = existing_share.clone();
-
-
-                // ------------ set share.confirmed = true for all the req.shares ------------ \\
-                let req = updated.shares_requests.get(&share_request_id).unwrap().clone();
-                updated.shares = req.shares.clone().into_iter()
-                    .map(|mut s| {
-                        s.confirmed = true;
-                        s
-                    })
-                    .collect();
-
-                //------------ set is_applied= true of  shares_request with id of share_request_id ------------\\
-                updated.shares_requests = updated.shares_requests.into_iter()
-                    .map(|(id, mut s)| {
-                        if s.id == share_request_id {
-                            s.is_applied = true;
-                        }
-                        (id, s)
-                    })
-                    .collect();
-
-                *existing_share = updated.clone();
-
-                // ----------- Notify everyone in the contract except the caller ------------ \\
-                let original_share = self.shares.clone();
-                let new_shares = request.unwrap().shares.clone();
-                let mut receivers = new_shares.clone().into_iter().map(|s| s.receiver).collect::<Vec<Principal>>();
-                // add all the receiver from original_share that does not already exits in receivers
-                for s in original_share.clone() {
-                    if !receivers.contains(&s.receiver) {
-                        receivers.push(s.receiver);
-                    }
-                };
-                let note_content = NoteContent::ShareRequestApplied(self.clone());
-                for receiver in receivers {
-                    if receiver != caller() {
-                        let new_notification = Notification::new(receiver, note_content.clone());
-                        new_notification.save();
-                    }
+        //------------ set is_applied= true of  shares_request with id of share_request_id ------------\\
+        updated.shares_requests = updated.shares_requests.into_iter()
+            .map(|(id, mut s)| {
+                if s.id == share_request_id {
+                    s.is_applied = true;
                 }
+                (id, s)
+            })
+            .collect();
 
-                return Ok(());
-            };
+        let res = updated.save();
+        if res.is_err() {
+            return Err(res.err().unwrap());
+        }
 
-            Err("Share not found in contract".to_string())
-        })
+        // ----------- Notify everyone in the contract except the caller ------------ \\
+        let original_share = self.shares.clone();
+        let new_shares = request.unwrap().shares.clone();
+        let mut receivers = new_shares.clone().into_iter().map(|s| s.receiver).collect::<Vec<Principal>>();
+        // add all the receiver from original_share that does not already exits in receivers
+        for s in original_share.clone() {
+            if !receivers.contains(&s.receiver) {
+                receivers.push(s.receiver);
+            }
+        };
+        let note_content = NoteContent::ShareRequestApplied(self.clone());
+        for receiver in receivers {
+            if receiver != caller() {
+                let new_notification = Notification::new(receiver, note_content.clone());
+                new_notification.save();
+            }
+        }
+
+        Ok(request.unwrap().clone())
     }
+
 
     pub fn approve_request(&mut self, author: Principal, share_request_id: ShareRequestId) -> Result<(), String> {
         let request = self.shares_requests.get(&share_request_id);
@@ -564,6 +566,27 @@ impl SharesContract {
 
             Ok(())
         })
+    }
+
+    pub fn get_payments(user: Principal) -> Vec<SharePayment> {
+        let mut payments: Vec<SharePayment> = vec![];
+        CONTRACTS_STORE.with(|contracts_store| {
+            let caller_contracts = contracts_store.borrow();
+            for (_, contracts) in caller_contracts.iter() {
+                for (_, contract) in contracts.iter() {
+                    if let StoredContract::SharesContract(existing_share) = contract {
+                        if existing_share.author == user.to_string() {
+                            for p in existing_share.payments.clone() {
+                                if p.sender != user {
+                                    payments.push(p);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        return payments;
     }
 }
 

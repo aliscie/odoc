@@ -1,3 +1,15 @@
+type ActionRating = record {
+  id : text;
+  action_type : ActionType;
+  date : nat64;
+  rating : float64;
+};
+type ActionType = variant {
+  ReleasePayment;
+  RejectShareChange;
+  AcceptShareChange;
+  CancelPayment;
+};
 type AppMessage = record {
   "text" : text;
   notification : opt Notification;
@@ -172,6 +184,20 @@ type PostUser = record {
   content_tree : vec ContentNode;
   votes_down : vec principal;
 };
+type Rating = record {
+  id : text;
+  date : nat64;
+  user_id : principal;
+  comment : text;
+  rating : float64;
+};
+type RatingFE = record {
+  id : text;
+  date : nat64;
+  user : UserFE;
+  comment : text;
+  rating : float64;
+};
 type RegisterUser = record {
   name : opt text;
   description : opt text;
@@ -179,7 +205,8 @@ type RegisterUser = record {
 };
 type Result = variant { Ok : User; Err : text };
 type Result_1 = variant { Ok; Err : text };
-type Result_10 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
+type Result_10 = variant { Ok; Err };
+type Result_11 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
 type Result_2 = variant { Ok : text; Err : text };
 type Result_3 = variant { Ok : nat64; Err : text };
 type Result_4 = variant { Ok : StoredContract; Err : text };
@@ -190,7 +217,7 @@ type Result_8 = variant {
   Ok : record { FileNode; vec ContentNode };
   Err : text;
 };
-type Result_9 = variant { Ok; Err };
+type Result_9 = variant { Ok : record { User; UserHistoryFE }; Err : text };
 type Row = record {
   id : text;
   contract : opt Contract;
@@ -249,6 +276,22 @@ type User = record {
   photo : vec nat8;
 };
 type UserFE = record { id : text; name : text };
+type UserHistoryFE = record {
+  id : principal;
+  users_interactions : nat64;
+  transactions_received : nat64;
+  rates_by_actions : vec ActionRating;
+  shares_changes_rejects : nat64;
+  received_shares_payments : nat64;
+  latest_payments_cancellation : vec PaymentContract;
+  shares_change_request : nat64;
+  total_rate : float64;
+  spent : nat64;
+  transactions_sent : nat64;
+  rates_by_others : vec RatingFE;
+  shares_changes_accepts : nat64;
+  total_payments_cancellation : nat64;
+};
 type Wallet = record {
   balance : nat64;
   owner : text;
@@ -290,14 +333,18 @@ service : () -> {
   get_initial_data : () -> (Result_5) query;
   get_my_chats : () -> (vec FEChat) query;
   get_notifications : () -> (vec Notification) query;
+  get_payment_cancellations : (principal, nat64, nat64) -> (
+      vec PaymentContract,
+    ) query;
   get_post : (text) -> (Result_6) query;
   get_posts : (nat64, nat64) -> (vec PostUser) query;
   get_share_file : (text) -> (Result_7) query;
   get_shared_file : (text) -> (Result_8);
   get_user : (text) -> (Result) query;
+  get_user_profile : (principal) -> (Result_9) query;
   make_new_chat_room : (Chat) -> (Result_2);
   message_is_seen : (Message) -> (Result_1);
-  move_file : (text, opt text) -> (Result_9);
+  move_file : (text, opt text) -> (Result_10);
   multi_updates : (
       vec FileNode,
       vec vec record { text; vec ContentNode },
@@ -305,6 +352,7 @@ service : () -> {
       vec text,
     ) -> (Result_2);
   pay_for_share_contract : (text, nat64, text) -> (Result_1);
+  rate_user : (principal, Rating) -> (Result_1);
   register : (RegisterUser) -> (Result);
   reject_friend_request : (text) -> (Result);
   release_payment : (text) -> (Result_1);
@@ -325,7 +373,7 @@ service : () -> {
   vote_up : (text) -> (Result_6);
   withdraw_usdt : (nat64) -> (Result_3);
   ws_close : (CanisterWsCloseArguments) -> (Result_1);
-  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_10) query;
+  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_11) query;
   ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_1);
   ws_open : (CanisterWsOpenArguments) -> (Result_1);
 }

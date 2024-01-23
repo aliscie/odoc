@@ -1,6 +1,16 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
+export interface ActionRating {
+  'id' : string,
+  'action_type' : ActionType,
+  'date' : bigint,
+  'rating' : number,
+}
+export type ActionType = { 'ReleasePayment' : null } |
+  { 'RejectShareChange' : null } |
+  { 'AcceptShareChange' : null } |
+  { 'CancelPayment' : null };
 export interface AppMessage {
   'text' : string,
   'notification' : [] | [Notification],
@@ -197,6 +207,20 @@ export interface PostUser {
   'content_tree' : Array<ContentNode>,
   'votes_down' : Array<Principal>,
 }
+export interface Rating {
+  'id' : string,
+  'date' : bigint,
+  'user_id' : Principal,
+  'comment' : string,
+  'rating' : number,
+}
+export interface RatingFE {
+  'id' : string,
+  'date' : bigint,
+  'user' : UserFE,
+  'comment' : string,
+  'rating' : number,
+}
 export interface RegisterUser {
   'name' : [] | [string],
   'description' : [] | [string],
@@ -206,7 +230,9 @@ export type Result = { 'Ok' : User } |
   { 'Err' : string };
 export type Result_1 = { 'Ok' : null } |
   { 'Err' : string };
-export type Result_10 = { 'Ok' : CanisterOutputCertifiedMessages } |
+export type Result_10 = { 'Ok' : null } |
+  { 'Err' : null };
+export type Result_11 = { 'Ok' : CanisterOutputCertifiedMessages } |
   { 'Err' : string };
 export type Result_2 = { 'Ok' : string } |
   { 'Err' : string };
@@ -222,8 +248,8 @@ export type Result_7 = { 'Ok' : ShareFile } |
   { 'Err' : string };
 export type Result_8 = { 'Ok' : [FileNode, Array<ContentNode>] } |
   { 'Err' : string };
-export type Result_9 = { 'Ok' : null } |
-  { 'Err' : null };
+export type Result_9 = { 'Ok' : [User, UserHistoryFE] } |
+  { 'Err' : string };
 export interface Row {
   'id' : string,
   'contract' : [] | [Contract],
@@ -284,6 +310,22 @@ export interface User {
   'photo' : Uint8Array | number[],
 }
 export interface UserFE { 'id' : string, 'name' : string }
+export interface UserHistoryFE {
+  'id' : Principal,
+  'users_interactions' : bigint,
+  'transactions_received' : bigint,
+  'rates_by_actions' : Array<ActionRating>,
+  'shares_changes_rejects' : bigint,
+  'received_shares_payments' : bigint,
+  'latest_payments_cancellation' : Array<PaymentContract>,
+  'shares_change_request' : bigint,
+  'total_rate' : number,
+  'spent' : bigint,
+  'transactions_sent' : bigint,
+  'rates_by_others' : Array<RatingFE>,
+  'shares_changes_accepts' : bigint,
+  'total_payments_cancellation' : bigint,
+}
 export interface Wallet {
   'balance' : bigint,
   'owner' : string,
@@ -331,14 +373,19 @@ export interface _SERVICE {
   'get_initial_data' : ActorMethod<[], Result_5>,
   'get_my_chats' : ActorMethod<[], Array<FEChat>>,
   'get_notifications' : ActorMethod<[], Array<Notification>>,
+  'get_payment_cancellations' : ActorMethod<
+    [Principal, bigint, bigint],
+    Array<PaymentContract>
+  >,
   'get_post' : ActorMethod<[string], Result_6>,
   'get_posts' : ActorMethod<[bigint, bigint], Array<PostUser>>,
   'get_share_file' : ActorMethod<[string], Result_7>,
   'get_shared_file' : ActorMethod<[string], Result_8>,
   'get_user' : ActorMethod<[string], Result>,
+  'get_user_profile' : ActorMethod<[Principal], Result_9>,
   'make_new_chat_room' : ActorMethod<[Chat], Result_2>,
   'message_is_seen' : ActorMethod<[Message], Result_1>,
-  'move_file' : ActorMethod<[string, [] | [string]], Result_9>,
+  'move_file' : ActorMethod<[string, [] | [string]], Result_10>,
   'multi_updates' : ActorMethod<
     [
       Array<FileNode>,
@@ -349,6 +396,7 @@ export interface _SERVICE {
     Result_2
   >,
   'pay_for_share_contract' : ActorMethod<[string, bigint, string], Result_1>,
+  'rate_user' : ActorMethod<[Principal, Rating], Result_1>,
   'register' : ActorMethod<[RegisterUser], Result>,
   'reject_friend_request' : ActorMethod<[string], Result>,
   'release_payment' : ActorMethod<[string], Result_1>,
@@ -370,7 +418,7 @@ export interface _SERVICE {
   'vote_up' : ActorMethod<[string], Result_6>,
   'withdraw_usdt' : ActorMethod<[bigint], Result_3>,
   'ws_close' : ActorMethod<[CanisterWsCloseArguments], Result_1>,
-  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_10>,
+  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_11>,
   'ws_message' : ActorMethod<
     [CanisterWsMessageArguments, [] | [AppMessage]],
     Result_1

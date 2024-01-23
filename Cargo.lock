@@ -401,6 +401,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "ic-stable-structures"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e1edc2c31d16b3065e5162cc019bdcec380b07294bcf865533f072ea92268621"
+dependencies = [
+ "ic_principal",
+]
+
+[[package]]
 name = "ic-websocket-cdk"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -429,6 +438,12 @@ name = "ic0"
 version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a54b5297861c651551676e8c43df805dad175cc33bc97dbd992edbbb85dcbcdf"
+
+[[package]]
+name = "ic_principal"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1762deb6f7c8d8c2bdee4b6c5a47b60195b74e9b5280faa5ba29692f8e17429c"
 
 [[package]]
 name = "indexmap"
@@ -787,6 +802,7 @@ dependencies = [
  "ic-cdk 0.11.3",
  "ic-cdk-macros 0.8.1",
  "ic-cdk-timers 0.5.1",
+ "ic-stable-structures",
  "ic-websocket-cdk",
  "serde",
  "serde_cbor",

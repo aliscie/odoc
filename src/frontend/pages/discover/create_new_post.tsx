@@ -42,7 +42,7 @@ function CreatePost(props: any) {
         setLoad(false)
         if ("Ok" in res) {
             // TODo Why new posts does not show up
-            props.setPosts((pre) => [post, ...(pre || [])]);
+            props.setPosts((pre) => [{...post, creator: {name: profile.name, id: profile.id}}, ...(pre || [])]);
             enqueueSnackbar("Post created", {variant: "success"});
             setChanges(null);
         } else {

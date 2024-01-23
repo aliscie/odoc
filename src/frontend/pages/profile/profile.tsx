@@ -16,6 +16,10 @@ import {handleRedux} from "../../redux/main";
 import BasicTabs from "./history";
 import TransactionHistory from "./transaction_history";
 import {actor} from "../../App";
+import {UserHistoryCom} from "../user";
+import {useEffect} from "react";
+import {User, UserHistoryFE} from "../../../declarations/user_canister/user_canister.did";
+import {Principal} from "@dfinity/principal";
 
 
 export default function ProfileComponent() {
@@ -24,8 +28,17 @@ export default function ProfileComponent() {
     const dispatch = useDispatch();
     const {profile, friends, contracts, wallet} = useSelector((state: any) => state.filesReducer);
 
-
+    const [user_history, setUserHistory] = React.useState<UserHistoryCom | null>(null);
     const [profileData, setProfileData] = React.useState(profile || {});
+    useEffect(() => {
+        (async () => {
+            let res: undefined | { Ok: [User, UserHistoryFE] } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(profile.id));
+            if ("Ok" in res) {
+                setUserHistory(res.Ok[1])
+            }
+
+        })()
+    }, [profile]);
     const handleSaveChanges = async () => {
         if (profileData.changed) {
             const res = await actor.update_user_profile({
@@ -125,6 +138,7 @@ export default function ProfileComponent() {
                     "Friends": <Friends friends={friends}/>,
                     "Contracts": <ContractsHistory/>,
                     "Transactions": <TransactionHistory items={wallet.exchanges}/>,
+                    "Reputation": user_history && <UserHistoryCom {...user_history}/>,
                 }}
             />}
         </Box>

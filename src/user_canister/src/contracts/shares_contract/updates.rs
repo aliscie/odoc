@@ -4,9 +4,10 @@ use candid::Principal;
 use ic_cdk::caller;
 use ic_cdk_macros::update;
 
-use crate::{ExchangeType, Share, SharesContract, Wallet, websocket};
+use crate::{ExchangeType, Share, ShareRequest, SharesContract, Wallet, websocket};
 use crate::COUNTER;
 use crate::storage_schema::{ContractId, ShareContractId};
+use crate::user_history::UserHistory;
 use crate::websocket::{NoteContent, Notification};
 
 #[update]
@@ -55,6 +56,7 @@ fn pay_for_share_contract(contract_id: ContractId, amount: u64, author: String) 
         };
         new_notification.save();
     }
+    // TODO UserHistory::get(author).pay_share();
     Ok(())
 }
 
@@ -116,7 +118,7 @@ fn approve_request(author: String, share_requests_id: ShareContractId, contract_
 fn apply_request(share_requests_id: ShareContractId, contract_id: ContractId, author: String) -> Result<(), String> {
     let author: Principal = author.parse().unwrap();
     let mut contract: SharesContract = SharesContract::get(contract_id, author)?;
-    contract.apply_request(share_requests_id)?;
+    let req: ShareRequest = contract.apply_request(share_requests_id)?;
     let content: NoteContent = NoteContent::ApplyShareRequest(contract.contract_id.clone());
 
     // ---------- Notify receivers ---------- \\
@@ -134,6 +136,16 @@ fn apply_request(share_requests_id: ShareContractId, contract_id: ContractId, au
             new_note.save();
         }
     }
-
+    // TODO
+    //   UserHistory::get(req.requester).apply_share();
     Ok(())
 }
+
+
+// #[update]
+// fn reject_request(share_requests_id: ShareContractId, contract_id: ContractId, author: String) -> Result<(), String> {
+//     // TODO
+//     //   UserHistory::get(req.requester).reject_share_req();
+//     Ok(())
+// }
+

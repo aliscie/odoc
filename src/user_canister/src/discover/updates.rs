@@ -7,7 +7,7 @@ use ic_cdk_macros::update;
 use crate::discover::{Post};
 
 // Move it to util
-fn time_diff(i: u64, f: u64) -> Duration {
+pub fn time_diff(i: u64, f: u64) -> Duration {
     let date_created_duration = Duration::from_nanos(f);
     let current_time_duration = Duration::from_nanos(i);
     current_time_duration - date_created_duration

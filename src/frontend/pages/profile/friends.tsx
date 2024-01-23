@@ -14,6 +14,7 @@ import {actor} from "../../App";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import {FriendSystem, User} from "../../../declarations/user_canister/user_canister.did";
 import {useState} from "react";
+import RateUser from "../../components/spesific/rate_user";
 
 interface FriendProps {
     id: string,
@@ -21,6 +22,7 @@ interface FriendProps {
     name: string,
     photo: any,
     labelId: string,
+    rate?: number,
 }
 
 export function Friend(props: FriendProps) {
@@ -132,9 +134,7 @@ export function Friend(props: FriendProps) {
         </ListItemAvatar>
         <ListItemText id={props.labelId} primary={props.name}/>
         <ListItem>
-            <Tooltip arrow title={"How much do you trust your fired"}>
-                <Rating name="half-rating" defaultValue={2.5} precision={0.5}/>
-            </Tooltip>
+            <RateUser rate={props.rate || 0} id={props.id}/>
         </ListItem>
     </ListItem>
 }

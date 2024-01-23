@@ -29,9 +29,20 @@ pub struct Post {
 
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
-pub struct UserFE { // FE === FrontEnd
+pub struct UserFE {
+    // FE === FrontEnd
     pub id: String,
     pub name: String,
+}
+
+impl UserFE {
+    pub fn from(id: Principal) -> Self {
+        let user = User::get_user_from_principal(id).unwrap();
+        UserFE {
+            id: user.id,
+            name: user.name,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, CandidType)]

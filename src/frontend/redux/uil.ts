@@ -64,6 +64,7 @@ export function uiReducer(state = initialState, action: any) {
             return {
                 ...state,
                 isLoggedIn: true,
+                Anonymous: false,
             };
         case 'SEARCH_TOOL':
             return {

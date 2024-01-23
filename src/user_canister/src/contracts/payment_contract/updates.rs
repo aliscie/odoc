@@ -15,6 +15,7 @@ use crate::storage_schema::ContentId;
 use crate::tables::{Column, ColumnTypes, Row, Table};
 
 use crate::user::User;
+use crate::user_history::UserHistory;
 use crate::websocket::{NoteContent, Notification};
 
 
@@ -59,7 +60,7 @@ fn create_payment_contract(file_name: String) -> Result<(), String> {
 
 #[update]
 fn cancel_payment(id: ContentId) -> Result<(), String> {
-    let payment = PaymentContract::get(id.clone())?;
+    let payment: PaymentContract = PaymentContract::get(id.clone())?;
     PaymentContract::cancel_payment(payment.receiver, id.clone())?;
 
     let content: NoteContent = NoteContent::PaymentCancelled(id.clone());
@@ -71,10 +72,10 @@ fn cancel_payment(id: ContentId) -> Result<(), String> {
         is_seen: false,
     };
     new_note.save();
-    PaymentContract::cancel_payment(payment.sender, id.clone())
-    // if payment.confirmed {
-    //TODO reduce the trust score
-    // }
+    PaymentContract::cancel_payment(payment.sender, id.clone());
+    let mut profile = UserHistory::get(payment.sender.clone());
+    profile.cancel_payment();
+    Ok(())
 }
 
 
@@ -103,16 +104,12 @@ fn release_payment(id: ContentId) -> Result<(), String> {
     let new_note = Notification {
         id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
         sender: caller(),
-        receiver: payment.receiver,
+        receiver: payment.receiver.clone(),
         content,
         is_seen: false,
     };
     new_note.save();
-    // if payment.confirmed {
-    //TODO increase the trust score
-    // }
-
-
+    UserHistory::get(payment.sender).release_payment();
     Ok(())
 }
 
