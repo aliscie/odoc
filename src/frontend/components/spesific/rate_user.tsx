@@ -1,13 +1,11 @@
-import {Rating, User} from "../../../declarations/user_canister/user_canister.did";
-import {Button, Input, Rating as RatingCom, Tooltip, Typography} from "@mui/material";
+import {Rating} from "../../../declarations/user_canister/user_canister.did";
+import {Input, Rating as RatingCom} from "@mui/material";
 import * as React from "react";
 import {Principal} from "@dfinity/principal";
 import {randomString} from "../../data_processing/data_samples";
 import {actor} from "../../App";
 import {useSnackbar} from "notistack";
-import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import DialogOver from "../genral/daiolog_over";
-import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 import {LoadingButton} from "@mui/lab";
 
 interface Props {
@@ -32,7 +30,7 @@ function RateUser(props: Props) {
         let rating: Rating = {
             'id': randomString(),
             'date': BigInt(Date.now() * 1e6),
-            'user_id': Principal.fromText(props.id),
+            'user_id': Principal.fromText(profile.id),
             'comment': commentRef.current,
             'rating': rate || 0,
         }
@@ -72,4 +70,4 @@ function RateUser(props: Props) {
     </DialogOver>
 }
 
-    export default RateUser;
+export default RateUser;

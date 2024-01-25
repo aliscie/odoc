@@ -1,34 +1,32 @@
-import configureStore from 'redux-mock-store';
-import {Provider} from "react-redux";
-import {render} from "@testing-library/react";
-import SharesContractComponent from "../../components/contracts/shares_contract";
 import * as React from "react";
-import App from "../../App";
-import store from "../../redux/main";
 import {StrictMode} from "react";
+import App from "../../App";
+import {render} from "@testing-library/react";
+import {Provider} from "react-redux";
+import configureStore from 'redux-mock-store';
+
+import {initialState} from "../../redux/files";
 
 const mockStore = configureStore([]);
-import redux_sample from "./redux_example.json";
-import share_contract_example from "./share_contract_example.json";
-import {logger} from "../../dev_utils/log_data";
-
-const container = document.createElement('div');
-document.body.appendChild(container);
 
 
-test('clicking on Login opens a new tab', () => {
-    const store = mockStore(redux_sample);
-    // render(
-    //     <StrictMode>
-    //         <Provider store={store}>
-    //             <SharesContractComponent {...share_contract_example} />
-    //         </Provider>
-    //     </StrictMode>
-    // )
+test("Test render app", async () => {
+    // let input: RegisterUser = {
+    //     'name': ["string"],
+    //     'description': ["Somthing"],
+    //     'photo': [[]],
+    // };
+    // let res = await global.actor.register(input);
+    // let store = mockStore(initialState);
+    // render(<Provider store={store}>
+    //         {/*<App/>*/}
+    //     </Provider>);
+    // const login = document.getElementsByClassName("login");
+    // expect(login.length).toBe(1);
 
 
-});
-
-afterEach(() => {
-    document.body.removeChild(container);
+    // let res2 = await global.actor.setIdentity(new AnonymousIdentity());
+    // render(<App/>);
+    // const login2 = document.getElementsByClassName("login");
+    // expect(login2.length).toBe(0);
 });

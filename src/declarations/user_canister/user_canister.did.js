@@ -126,6 +126,7 @@ export const idlFactory = ({ IDL }) => {
     'contract_id' : IDL.Text,
     'sender' : IDL.Principal,
     'released' : IDL.Bool,
+    'objected' : IDL.Opt(IDL.Text),
     'confirmed' : IDL.Bool,
     'amount' : IDL.Nat64,
     'receiver' : IDL.Principal,
@@ -224,6 +225,7 @@ export const idlFactory = ({ IDL }) => {
     'ContractUpdate' : ContractNotification,
     'FriendRequest' : IDL.Record({}),
     'AcceptFriendRequest' : IDL.Null,
+    'ObjectPayment' : IDL.Text,
     'ApproveShareRequest' : IDL.Text,
     'Unfriend' : IDL.Null,
     'PaymentCancelled' : IDL.Text,
@@ -451,6 +453,7 @@ export const idlFactory = ({ IDL }) => {
         [Result_2],
         [],
       ),
+    'object_payment' : IDL.Func([IDL.Text, IDL.Text], [Result_1], []),
     'pay_for_share_contract' : IDL.Func(
         [IDL.Text, IDL.Nat64, IDL.Text],
         [Result_1],

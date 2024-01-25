@@ -36,6 +36,7 @@ pub enum NoteContent {
     ApplyShareRequest(String),
     NewMessage(Message),
     RemovedFromChat(String),
+    ObjectPayment(String),
 }
 
 #[derive(Eq, Serialize, PartialEq, Clone, Debug, CandidType, Deserialize)]

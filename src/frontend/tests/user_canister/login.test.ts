@@ -1,9 +1,8 @@
-import * as React from "react";
 import {_SERVICE, RegisterUser, User} from "../../../declarations/user_canister/user_canister.did";
 import {AnonymousIdentity, Identity} from "@dfinity/agent";
 
 
-test("ICRC NFT", async () => {
+test("Test render login", async () => {
     let input: RegisterUser = {
         'name': ["string"],
         'description': ["Somthing"],

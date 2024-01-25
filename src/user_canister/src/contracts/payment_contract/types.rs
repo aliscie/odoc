@@ -20,9 +20,12 @@ pub struct PaymentContract {
     pub(crate) released: bool,
     pub(crate) confirmed: bool,
     pub(crate) extra_cells: HashMap<String, String>,
-    // pub(crate) objected: bool, // if confirmed && canceled {receiver can do objected=true}
+    pub(crate) objected: Option<String>,
     // pub(crate) date_created: u64,
     // pub(crate) date_updated: u64,
+    // pub(crate) date_conformed: u64,
+    // pub(crate) date_date_released: u64,
+    // pub(crate) date_date_canceled: u64,
 }
 
 // ------------ TODO study the imposable of make the PaymentContract like the shares contract ------------ \\
@@ -48,6 +51,7 @@ impl PaymentContract {
             released: false,
             confirmed: false,
             extra_cells: Default::default(),
+            objected: None,
         };
 
         // Update the contract storage with the new payment
@@ -174,28 +178,6 @@ impl PaymentContract {
         })
     }
 
-    pub fn update(payment: PaymentContract) -> Result<(), String> {
-        CONTRACTS_STORE.with(|contracts_store| {
-            let mut caller_contracts = contracts_store.borrow_mut();
-            let caller_contract = caller_contracts
-                .get_mut(&caller())
-                .ok_or("Caller has no contracts")?;
-            let contract = caller_contract
-                .get_mut(&payment.contract_id) // Use payment.contract_id as the key
-                .ok_or("Contract not found")?;
-
-            if let StoredContract::PaymentContract(existing_payment) = contract {
-                if existing_payment.confirmed {
-                    return Err("Payment contract is confirmed and cannot be updated".to_string());
-                }
-
-                *existing_payment = payment;
-                return Ok(());
-            }
-
-            Err("Payment not found in contract".to_string())
-        })
-    }
 
     // pub fn accept_for_both(sender: String, id: ContentId) -> Result<(), String> {
     //     let sender: Principal = sender.parse().unwrap();
@@ -203,99 +185,58 @@ impl PaymentContract {
     //     Payment::accept_payment(caller(), id)
     // }
 
-    pub fn accept_payment(sender: Principal, contract_id: ContentId) -> Result<(), String> {
-        CONTRACTS_STORE.with(|contracts_store| {
-            let mut caller_contracts = contracts_store.borrow_mut();
-            let caller_contract = caller_contracts
-                .get_mut(&sender)
-                .ok_or("Caller has no contracts")?;
-            let contract = caller_contract
-                .get_mut(&contract_id) // Use payment.contract_id as the key
-                .ok_or("Contract not found")?;
-
-            if let StoredContract::PaymentContract(existing_payment) = contract {
-                if existing_payment.confirmed {
-                    return Err("Payment contract is already confirmed.".to_string());
-                }
-                if existing_payment.receiver != caller() {
-                    return Err("Payment contract is not for this user.".to_string());
-                }
-                existing_payment.confirmed = true;
-                return Ok(());
-            }
-
-            Err("Payment not found in contract".to_string())
-        })
+    pub fn accept_payment(user: Principal, contract_id: ContentId) -> Result<(), String> {
+        let mut payment = PaymentContract::get(user, contract_id.clone())?;
+        if payment.receiver != caller() {
+            return Err("Payment contract is not for this user.".to_string());
+        }
+        if payment.confirmed {
+            return Err("Payment contract is already confirmed.".to_string());
+        }
+        payment.confirmed = true;
+        payment.save(user)?;
+        Ok(())
     }
 
 
     pub fn delete_for_both(contract_id: ContractId) -> Result<(), String> {
-        let payment = PaymentContract::get(contract_id.clone())?;
-        PaymentContract::delete_payment_contract(payment.receiver, contract_id.clone())?;
-        PaymentContract::delete_payment_contract(payment.sender, contract_id)
+        let payment = PaymentContract::get(caller(), contract_id.clone())?;
+        PaymentContract::delete(payment.receiver, contract_id.clone())?;
+        PaymentContract::delete(payment.sender, contract_id)
     }
     pub fn release(contract_id: ContractId, user: Principal) -> Result<PaymentContract, String> {
-        CONTRACTS_STORE.with(|contracts_store| {
-            let mut caller_contracts = contracts_store.borrow_mut();
-            let caller_contract = caller_contracts
-                .get_mut(&user)
-                .ok_or("Caller has no contracts")?;
-            let contract = caller_contract
-                .get_mut(&contract_id) // Use payment.contract_id as the key
-                .ok_or("Contract not found")?;
-
-            if let StoredContract::PaymentContract(existing_payment) = contract {
-                if existing_payment.released == true {
-                    return Err("Payment contract is already released".to_string());
-                }
-                // if existing_payment.canceled == true {
-                // TODO if payment.cancelled  { payment.cancelled= false
-                //     return Err("Payment contract is canceled and cannot be released".to_string());
-                // }
-                existing_payment.released = true;
-                return Ok(existing_payment.clone());
-            }
-            Err("Payment not found in contract".to_string())
-        })
+        let mut payment = PaymentContract::get(user.clone(), contract_id.clone())?;
+        if payment.released == true {
+            return Err("Payment contract is already released".to_string());
+        };
+        payment.released = true;
+        payment.canceled = false;
+        payment.save(user)
     }
     pub fn release_payment(contract_id: ContractId) -> Result<PaymentContract, String> { // release_for_both
-        let payment = PaymentContract::get(contract_id.clone())?;
+        let payment = PaymentContract::get(caller(), contract_id.clone())?;
         let sender = caller();
         PaymentContract::release(contract_id.clone(), sender)?;
         PaymentContract::release(contract_id, payment.receiver)
     }
 
     pub fn cancel_payment(user: Principal, contract_id: ContractId) -> Result<(), String> {
-        CONTRACTS_STORE.with(|contracts_store| {
-            let mut caller_contracts = contracts_store.borrow_mut();
-            let caller_contract = caller_contracts
-                .get_mut(&user)
-                .ok_or("Caller has no contracts")?;
-            let contract = caller_contract
-                .get_mut(&contract_id) // Use payment.contract_id as the key
-                .ok_or("Contract not found")?;
-
-            if let StoredContract::PaymentContract(existing_payment) = contract {
-                if existing_payment.confirmed {
-                    return Err("Payment contract is confirmed and cannot be updated".to_string());
-                }
-                if existing_payment.released {
-                    return Err("Payment contract is already released".to_string());
-                }
-
-                return if existing_payment.canceled == true {
-                    Err("Payment contract is already canceled".to_string())
-                } else {
-                    existing_payment.canceled = true;
-                    Ok(())
-                };
-            }
-
-            Err("Payment not found in contract".to_string())
-        })
+        let mut payment = PaymentContract::get(user.clone(), contract_id.clone())?;
+        if payment.canceled == true {
+            return Err("Payment contract is already canceled".to_string());
+        };
+        if payment.confirmed == true {
+            return Err("Payment contract is confirmed and cannot be canceled".to_string());
+        };
+        if payment.released == true {
+            return Err("Payment contract is released and cannot be canceled".to_string());
+        };
+        payment.canceled = true;
+        payment.save(user)?;
+        Ok(())
     }
 
-    pub fn delete_payment_contract(user: Principal, contract_id: ContractId) -> Result<(), String> {
+    pub fn delete(user: Principal, contract_id: ContractId) -> Result<(), String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contract = caller_contracts
@@ -315,14 +256,26 @@ impl PaymentContract {
             Ok(())
         })
     }
-    pub fn get(contract_id: ContractId) -> Result<PaymentContract, String> {
+
+    pub fn save(&self, user: Principal) -> Result<Self, String> {
         CONTRACTS_STORE.with(|contracts_store| {
-            let caller_contracts = contracts_store.borrow();
+            let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contract = caller_contracts
-                .get(&caller())
+                .get_mut(&user)
+                .ok_or("Caller has no contracts")?;
+            caller_contract.insert(self.contract_id.clone(), StoredContract::PaymentContract(self.clone()));
+            Ok(self.clone())
+        })
+    }
+
+    pub fn get(user: Principal, contract_id: ContractId) -> Result<PaymentContract, String> {
+        CONTRACTS_STORE.with(|contracts_store| {
+            let mut caller_contracts = contracts_store.borrow_mut(); // Use borrow_mut to get a mutable reference
+            let caller_contract = caller_contracts
+                .get_mut(&user)
                 .ok_or("Caller has no contracts")?;
             let contract = caller_contract
-                .get(&contract_id) // Use payment.contract_id as the key
+                .get(&contract_id)
                 .ok_or("Contract not found")?;
 
             if let StoredContract::PaymentContract(existing_payment) = contract {
@@ -332,11 +285,9 @@ impl PaymentContract {
             Err("Payment not found in contract".to_string())
         })
     }
-    pub fn get_contract_id(&self) -> ContractId {
-        self.contract_id.clone() // Return a reference to the contract_id
-    }
+
     // Helper function to get contracts for a user
-    fn get_contract_for_user(user: Principal) -> Vec<StoredContract> {
+    fn get_list(user: Principal) -> Vec<StoredContract> {
         let res = CONTRACTS_STORE.with(|contracts_store| {
             let caller_contracts = contracts_store.borrow();
             caller_contracts.get(&user).cloned()
@@ -349,7 +300,7 @@ impl PaymentContract {
     }
 
     pub fn get_released_payments(user: Principal) -> Vec<PaymentContract> {
-        let caller_contract = Self::get_contract_for_user(user);
+        let caller_contract = Self::get_list(user);
 
         let mut all_payments: Vec<PaymentContract> = Vec::new();
 
@@ -365,7 +316,7 @@ impl PaymentContract {
     }
 
     pub fn get_canceled_payments(user: Principal, from: u64, to: u64) -> Vec<PaymentContract> {
-        let caller_contract = Self::get_contract_for_user(user);
+        let caller_contract = Self::get_list(user);
 
         let mut canceled_payments: Vec<PaymentContract> = Vec::new();
         let mut count = 0;
@@ -392,7 +343,7 @@ impl PaymentContract {
     }
 
     pub fn get_latest_canceled_payments(user: Principal, from: u64, to: u64) -> Vec<PaymentContract> {
-        let caller_contract = Self::get_contract_for_user(user);
+        let caller_contract = Self::get_list(user);
 
         let mut canceled_payments: Vec<PaymentContract> = Vec::new();
         let mut count = 0;

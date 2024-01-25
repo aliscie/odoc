@@ -3,11 +3,12 @@ import {actor} from "../App";
 import {PaymentContract, RatingFE, User, UserHistoryFE} from "../../declarations/user_canister/user_canister.did";
 import {Friend} from "./profile/friends";
 import {Principal} from "@dfinity/principal";
-import {Rating as RatingCom, Typography} from "@mui/material";
+import {Rating as RatingCom, Tooltip, Typography} from "@mui/material";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from '@mui/material/Typography';
 import {useSelector} from "react-redux";
+import WarningIcon from '@mui/icons-material/Warning';
 
 export function PaymentContractComponent(contract: PaymentContract) {
     const {profile} = useSelector((state: any) => state.filesReducer);
@@ -54,6 +55,11 @@ export function UserHistoryCom(profile: UserHistoryFE) {
         {profile.latest_payments_cancellation.map((p: PaymentContract) => {
             return <>
                 {p.amount}
+                {p.objected.length > 0 && <Tooltip
+                    title={p.objected[0]}
+                >
+                    <WarningIcon color={"error"}/>
+                </Tooltip>}
                 {/*{p.date}*/}
             </>
         })}

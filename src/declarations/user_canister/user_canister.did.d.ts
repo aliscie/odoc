@@ -154,6 +154,7 @@ export interface Message {
 export type NoteContent = { 'ContractUpdate' : ContractNotification } |
   { 'FriendRequest' : {} } |
   { 'AcceptFriendRequest' : null } |
+  { 'ObjectPayment' : string } |
   { 'ApproveShareRequest' : string } |
   { 'Unfriend' : null } |
   { 'PaymentCancelled' : string } |
@@ -183,6 +184,7 @@ export interface PaymentContract {
   'contract_id' : string,
   'sender' : Principal,
   'released' : boolean,
+  'objected' : [] | [string],
   'confirmed' : boolean,
   'amount' : bigint,
   'receiver' : Principal,
@@ -395,6 +397,7 @@ export interface _SERVICE {
     ],
     Result_2
   >,
+  'object_payment' : ActorMethod<[string, string], Result_1>,
   'pay_for_share_contract' : ActorMethod<[string, bigint, string], Result_1>,
   'rate_user' : ActorMethod<[Principal, Rating], Result_1>,
   'register' : ActorMethod<[RegisterUser], Result>,

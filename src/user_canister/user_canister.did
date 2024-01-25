@@ -134,6 +134,7 @@ type NoteContent = variant {
   ContractUpdate : ContractNotification;
   FriendRequest : record {};
   AcceptFriendRequest;
+  ObjectPayment : text;
   ApproveShareRequest : text;
   Unfriend;
   PaymentCancelled : text;
@@ -161,6 +162,7 @@ type PaymentContract = record {
   contract_id : text;
   sender : principal;
   released : bool;
+  objected : opt text;
   confirmed : bool;
   amount : nat64;
   receiver : principal;
@@ -351,6 +353,7 @@ service : () -> {
       vec StoredContract,
       vec text,
     ) -> (Result_2);
+  object_payment : (text, text) -> (Result_1);
   pay_for_share_contract : (text, nat64, text) -> (Result_1);
   rate_user : (principal, Rating) -> (Result_1);
   register : (RegisterUser) -> (Result);

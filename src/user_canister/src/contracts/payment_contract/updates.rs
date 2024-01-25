@@ -60,7 +60,7 @@ fn create_payment_contract(file_name: String) -> Result<(), String> {
 
 #[update]
 fn cancel_payment(id: ContentId) -> Result<(), String> {
-    let payment: PaymentContract = PaymentContract::get(id.clone())?;
+    let payment: PaymentContract = PaymentContract::get(caller(), id.clone())?;
     PaymentContract::cancel_payment(payment.receiver, id.clone())?;
 
     let content: NoteContent = NoteContent::PaymentCancelled(id.clone());
@@ -81,7 +81,7 @@ fn cancel_payment(id: ContentId) -> Result<(), String> {
 
 #[update]
 fn release_payment(id: ContentId) -> Result<(), String> {
-    let payment = PaymentContract::get(id.clone())?;
+    let payment = PaymentContract::get(caller(), id.clone())?;
     let mut message = "".to_string();
     if payment.receiver.to_string() == "2vxsx-fae" {
         message.push_str("Payment is have no receiver. ");
@@ -120,7 +120,7 @@ fn delete_payment(id: String) -> Result<(), String> {
 
 #[update]
 fn accept_payment(id: ContentId) -> Result<(), String> {
-    let payment = PaymentContract::get(id.clone())?;
+    let payment = PaymentContract::get(caller(), id.clone())?;
     PaymentContract::accept_payment(payment.receiver, id.clone())?;
     let content: NoteContent = NoteContent::AcceptPayment(id.clone());
     let new_note = Notification {
@@ -132,4 +132,35 @@ fn accept_payment(id: ContentId) -> Result<(), String> {
     };
     new_note.save();
     PaymentContract::accept_payment(payment.sender, id.clone())
+}
+
+
+#[update]
+fn object_payment(id: ContentId, comment: String) -> Result<(), String> {
+    let mut payment = PaymentContract::get(caller(), id.clone())?;
+    let mut payment_2 = PaymentContract::get(payment.sender, id.clone())?;
+    if payment.receiver != caller() {
+        return Err("You are not the receiver of the payment".to_string());
+    }
+    if payment.released {
+        return Err("Payment is already released".to_string());
+    }
+    if !payment.confirmed {
+        return Err("Payment is not confirmed".to_string());
+    }
+
+    payment.objected = Some(comment.clone());
+    payment_2.objected = Some(comment);
+    payment.save(caller())?;
+    payment_2.save(payment.sender)?;
+    let content: NoteContent = NoteContent::ObjectPayment(id.clone());
+    let new_note = Notification {
+        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+        sender: caller(),
+        receiver: payment.sender.clone(), // Don't get confused the receiver of the payment is the caller()
+        content,
+        is_seen: false,
+    };
+    new_note.save();
+    Ok(())
 }

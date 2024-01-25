@@ -8,7 +8,7 @@ import {useTotalDept} from "./payment_contract/use_total_dept";
 import {Principal} from "@dfinity/principal";
 import {PaymentContract, Row, Table} from "../../../declarations/user_canister/user_canister.did";
 import useGetUser from "../../utils/get_user_by_principal";
-import {RenderConfirmed, RenderReceiver, RenderRelease} from "./payment_contract/renderers";
+import {RenderReceiver, RenderRelease} from "./payment_contract/renderers";
 import {updateTableContent} from "./utils/update_table";
 import {getFormula} from "./utils/parse_formula";
 import CustomDataGrid from "../datagrid";
@@ -82,8 +82,6 @@ export default function PaymentContract(props: any) {
     let {revoke_message} = useTotalDept();
 
 
-
-
     // const {dialog, handleClickOpen} = useFormulaDialog(handleColumnValidator);
 
     let custom_columns = initial_columns.map((column: any) => {
@@ -96,9 +94,9 @@ export default function PaymentContract(props: any) {
                 new_column['renderCell'] = RenderRelease
                 new_column['width'] = 150;
                 return new_column
-            case "confirmed":
-                new_column['renderCell'] = (props: any) => RenderConfirmed({...props, profile})
-                return new_column
+            // case "confirmed":
+            //     new_column['renderCell'] = (props: any) => RenderConfirmed({...props, profile})
+            //     return new_column
             case "amount":
                 return new_column
             default:
@@ -118,7 +116,8 @@ export default function PaymentContract(props: any) {
             confirmed: false,
             canceled: false,
             amount: BigInt(0),
-            extra_cells: []
+            extra_cells: [],
+            objected: false,
         };
         const newRow: Row = {
             id,
@@ -231,7 +230,8 @@ export default function PaymentContract(props: any) {
             "confirmed": newRow.confirmed || false,
             "amount": BigInt(newRow.amount || 0),
             "receiver": Principal.fromText(receiver.id),
-            extra_cells: []
+            extra_cells: [],
+            objected: false,
         }
 
         dispatch(handleRedux("UPDATE_CONTRACT", {contract: contract}));

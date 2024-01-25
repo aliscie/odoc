@@ -1,70 +1,35 @@
 use candid::{encode_one, Principal};
 use ic_cdk::api::management_canister::main::CanisterId;
+
 // use pocket_ic::PocketIc;
 
-// #[cfg(test)]
-// mod tests {
-//     use std::collections::HashMap;
-//     use crate::PaymentContract;
-//     use ring;
-//     use rand;
-//     use candid;
-//     use rand::{CryptoRng, RngCore, SeedableRng};
-//     use ic_cdk::api::call::call;
-//     use ic_cdk::api::trap;
-//
-//
-//
-//     //
-//     // pub fn create_test_identity() -> candid::Principal {
-//     //     let mut ed25519_seed = [0u8; 32];
-//     //     rand::thread_rng().fill(&mut ed25519_seed);
-//     //
-//     //     let public_key = ring::signature::Ed25519KeyPair::from_seed_unchecked(&ed25519_seed)
-//     //         .unwrap()
-//     //         .public_key()
-//     //         .as_ref()
-//     //         .to_vec();
-//     //
-//     //     candid::Principal::self_authenticating(&public_key)
-//     // }
-//
-//     pub async fn create_test_identity<T: SeedableRng + CryptoRng>() -> T
-//         where
-//         // raw_rand returns 32 bytes
-//             T: SeedableRng<Seed=[u8; 32]>,
-//     {
-//         let raw_rand: Vec<u8> = match call(candid::Principal::management_canister(), "raw_rand", ()).await {
-//             Ok((res, )) => res,
-//             Err((_, err)) => trap(&format!("failed to get seed: {}", err)),
-//         };
-//
-//
-//         let seed: <T as SeedableRng>::Seed = raw_rand[..].try_into().unwrap_or_else(|_| {
-//             trap(&format!(
-//                 "when creating seed from raw_rand output, expected raw randomness to be of length 32, got {}",
-//                 raw_rand.len()
-//             ));
-//         });
-//
-//
-//         T::from_seed(seed)
-//     }
-//
-//
-//     #[test]
-//     async fn test_one() {
-//         let payment: PaymentContract = PaymentContract {
-//             contract_id: "ContractId".to_string(),
-//             receiver:  create_test_identity().await,
-//             sender: create_test_identity().await,
-//             amount: 10,
-//             canceled: false,
-//             released: false,
-//             confirmed: false,
-//             extra_cells: HashMap::new(),
-//         };
-//
-//         // PaymentContract::update_or_create(caller(), payment.clone())?;
-//     }
-// }
+use crate::user_history::{Rating, UserHistory};
+
+#[test]
+fn test_calic() {
+    let rating: Rating = Rating {
+        id: "1".to_string(),
+        rating: 5.0,
+        comment: "good".to_string(),
+        user_id: Principal::anonymous(),
+        date: 0 as u64,
+    };
+    let total_rate: Vec<Rating> = vec![rating.clone(), rating.clone()];
+    let total__actions_rate: Vec<Rating> = vec![];
+
+    let total_rate_sum: f64 = total_rate.iter().map(|r| r.rating as f64).sum();
+    let total__actions_rate_sum: f64 = total__actions_rate.iter().map(|r| r.rating as f64).sum();
+
+    let others_rate = total_rate_sum / total_rate.len() as f64;
+
+    // Check if total__actions_rate is not empty before performing the division
+    let actions_rate = if total__actions_rate.is_empty() {
+        0.0
+    } else {
+        total__actions_rate_sum / total__actions_rate.len() as f64
+    };
+
+    println!("others_rate: {:?}", others_rate);
+    println!("total_rate: {:?}", (others_rate * 0.4) + (actions_rate * 0.6));
+    // user.save();
+}

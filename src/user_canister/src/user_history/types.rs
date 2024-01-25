@@ -148,18 +148,43 @@ impl UserHistory {
         //     self.rates_by_others.retain(|r| r.user_id != caller());
         // }
         self.rates_by_others.push(rating);
-        self.save();
         Ok(())
     }
 
     pub fn calc_total_rate(&mut self) {
-        let total_rate: f64 = self.rates_by_others.iter().map(|r| r.rating as f64).sum();
-        let total__actions_rate: f64 = self.rates_by_actions.iter().map(|r| r.rating as f64).sum();
+        let total_rate_sum: f64 = self.rates_by_others.iter().map(|r| r.rating as f64).sum();
+        let total_actions_rate_sum: f64 = self.rates_by_actions.iter().map(|r| r.rating as f64).sum();
 
-        let others_rate = total_rate / self.rates_by_others.len() as f64;
-        let actions_rate = total__actions_rate / self.rates_by_actions.len() as f64;
-        self.total_rate = (others_rate * 0.2) + (actions_rate * 0.3);
-        self.save();
+        let others_len = self.rates_by_others.len() as f64;
+        let actions_len = self.rates_by_actions.len() as f64;
+        let mut user_weight = 0.1;
+        let mut action_weight = 0.1;
+
+        let others_rate = if others_len > 0.0 {
+            total_rate_sum / others_len as f64
+        } else {
+            0.0
+        };
+
+        let actions_rate = if actions_len > 0.0 {
+            total_actions_rate_sum / actions_len as f64
+        } else {
+            0.0
+        };
+
+        if others_len > 10.0 {
+            user_weight = 0.5;
+        } else {
+            user_weight = others_len / 40.0;
+        }
+        if actions_len > 10.0 {
+            action_weight = 0.5;
+        } else {
+            action_weight = actions_len / 40.0;
+        }
+
+
+        self.total_rate = (others_rate * user_weight) + (actions_rate * action_weight);
     }
 
 

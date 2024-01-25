@@ -128,7 +128,7 @@ impl Row {
     pub fn new_payment(payment: PaymentContract) -> Self {
         Row {
             id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
-            contract: Option::from(Contract::PaymentContract(payment.get_contract_id())),
+            contract: Option::from(Contract::PaymentContract(payment.contract_id)),
             cells: None,
         }
     }

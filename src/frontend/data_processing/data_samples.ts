@@ -100,7 +100,7 @@ export let payment_contract = {
                         id: randomString(),
                         field: "released",
                     },
-                    {...column, id: randomString(), field: "confirmed",}
+                    // {...column, id: randomString(), field: "confirmed",}
                 ]
             }
         }]

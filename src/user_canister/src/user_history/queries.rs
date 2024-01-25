@@ -95,10 +95,10 @@ fn get_user_profile(user_id: Principal) -> Result<(User, UserHistoryFE), String>
             .cloned()
     });
     let mut user_profile = UserHistory::get(user_id);
-    let total_canceled_patents = PaymentContract::get_canceled_payments(user_id, 0, 99999999).len() as u64;
+    let total_canceled_payments = PaymentContract::get_canceled_payments(user_id, 0, 99999999).len() as u64;
     let latest_canceled_payments = PaymentContract::get_latest_canceled_payments(user_id, 0, 50);
     user_profile.latest_payments_cancellation = latest_canceled_payments;
-    user_profile.total_payments_cancellation = total_canceled_patents;
+    user_profile.total_payments_cancellation = total_canceled_payments;
     return Ok((user.unwrap(), UserHistoryFE::from(user_profile)));
 }
 
