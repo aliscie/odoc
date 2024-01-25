@@ -10,7 +10,6 @@ import DialogOver from "../../genral/daiolog_over";
 import CancelButton from "./cancel_button";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import ReleaseButton from "./release_button";
-import {comment} from "postcss";
 
 function PaymentOptions(payment: PaymentContract) {
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();

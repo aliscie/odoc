@@ -4,7 +4,7 @@ import {normalize_files} from "../data_processing/normalize/normalize_files";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
-import {FileNode, User} from "../../declarations/user_canister/user_canister.did";
+import {FileNode, StoredContract, User, Notification} from "../../declarations/user_canister/user_canister.did";
 import {actor} from "../App";
 import {logger} from "../dev_utils/log_data";
 
@@ -90,7 +90,7 @@ export async function get_initial_data() {
     if ("Ok" in data) {
         all_friends.forEach((item) => {
             item.receiver.id !== data.Ok.Profile.id && uniqueUsersSet.add(item.receiver);
-            item.sender.id !== data.Ok.Profile.id &&uniqueUsersSet.add(item.sender);
+            item.sender.id !== data.Ok.Profile.id && uniqueUsersSet.add(item.sender);
         });
 
         initialState["files"] = normalize_files(data.Ok.Files);
@@ -143,9 +143,20 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             // console.log("UPDATE_NOTIFY", {
             //     action
             // })
+            let contracts: Array<StoredContract> = [];
+            action.new_list.forEach((item: Notification) => {
+                // check if item.content is payment contract
+                if (item.content && item.content["PaymentContract"]) {
+                    let new_contract: StoredContract = {
+                        "PaymentContract": item.content.PaymentContract[0],
+                    }
+                    contracts.push(new_contract);
+                }
+            });
             return {
                 ...state,
                 notifications: action.new_list,
+                contracts,
             }
         case 'REMOVE':
             let file_id = action.id;

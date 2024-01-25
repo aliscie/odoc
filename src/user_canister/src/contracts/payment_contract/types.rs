@@ -8,6 +8,7 @@ use crate::{CONTRACTS_STORE, StoredContract, Wallet, websocket};
 use crate::contracts::Contract;
 use crate::COUNTER;
 use crate::storage_schema::{ContentId, ContractId};
+use crate::websocket::{NoteContent, Notification, PaymentAction};
 
 
 #[derive(PartialEq, Eq, Clone, Debug, CandidType, Deserialize)]
@@ -124,7 +125,15 @@ impl PaymentContract {
         for contract in contracts {
             if let StoredContract::PaymentContract(payment) = contract {
                 PaymentContract::update_or_create(caller(), payment.clone())?;
-                PaymentContract::update_or_create(payment.receiver.clone(), payment.clone())?;
+                let content = NoteContent::PaymentContract(payment.clone(), PaymentAction::Update);
+                let new_notification = Notification {
+                    id: payment.contract_id.clone(),
+                    sender: caller(),
+                    receiver: payment.receiver.clone(),
+                    content,
+                    is_seen: false,
+                };
+                new_notification.save();
                 websocket::contract_notification(payment.receiver.clone(), caller(), "payment".to_string(), payment.clone().contract_id);
             }
             // else {
@@ -185,43 +194,34 @@ impl PaymentContract {
     //     Payment::accept_payment(caller(), id)
     // }
 
-    pub fn accept_payment(user: Principal, contract_id: ContentId) -> Result<(), String> {
-        let mut payment = PaymentContract::get(user, contract_id.clone())?;
-        if payment.receiver != caller() {
+    pub fn conform(mut self) -> Result<Self, String> {
+        // let mut payment = PaymentContract::get(user, contract_id.clone())?;
+        if self.receiver != caller() {
             return Err("Payment contract is not for this user.".to_string());
         }
-        if payment.confirmed {
+        if self.confirmed {
             return Err("Payment contract is already confirmed.".to_string());
         }
-        payment.confirmed = true;
-        payment.save(user)?;
-        Ok(())
+        self.confirmed = true;
+        self.save()?;
+        Ok(self)
     }
 
 
-    pub fn delete_for_both(contract_id: ContractId) -> Result<(), String> {
-        let payment = PaymentContract::get(caller(), contract_id.clone())?;
-        PaymentContract::delete(payment.receiver, contract_id.clone())?;
-        PaymentContract::delete(payment.sender, contract_id)
-    }
-    pub fn release(contract_id: ContractId, user: Principal) -> Result<PaymentContract, String> {
-        let mut payment = PaymentContract::get(user.clone(), contract_id.clone())?;
-        if payment.released == true {
+    pub fn release(mut self) -> Result<PaymentContract, String> {
+        if self.released == true {
             return Err("Payment contract is already released".to_string());
         };
-        payment.released = true;
-        payment.canceled = false;
-        payment.save(user)
-    }
-    pub fn release_payment(contract_id: ContractId) -> Result<PaymentContract, String> { // release_for_both
-        let payment = PaymentContract::get(caller(), contract_id.clone())?;
-        let sender = caller();
-        PaymentContract::release(contract_id.clone(), sender)?;
-        PaymentContract::release(contract_id, payment.receiver)
+        self.released = true;
+        self.canceled = false;
+        self.save()
     }
 
-    pub fn cancel_payment(user: Principal, contract_id: ContractId) -> Result<(), String> {
-        let mut payment = PaymentContract::get(user.clone(), contract_id.clone())?;
+    pub fn cancel_payment(contract_id: ContractId) -> Result<(), String> {
+        let mut payment = PaymentContract::get(caller(), contract_id.clone())?;
+        if payment.sender != caller() {
+            return Err("Payment contract is not for this user.".to_string());
+        }
         if payment.canceled == true {
             return Err("Payment contract is already canceled".to_string());
         };
@@ -232,17 +232,17 @@ impl PaymentContract {
             return Err("Payment contract is released and cannot be canceled".to_string());
         };
         payment.canceled = true;
-        payment.save(user)?;
+        payment.save()?;
         Ok(())
     }
 
-    pub fn delete(user: Principal, contract_id: ContractId) -> Result<(), String> {
+    pub fn delete(&self) -> Result<(), String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contract = caller_contracts
-                .get_mut(&user)
+                .get_mut(&caller())
                 .ok_or("Caller has no contracts")?;
-            if let Some(contract) = caller_contract.remove(&contract_id) {
+            if let Some(contract) = caller_contract.remove(&self.contract_id) {
                 if let StoredContract::PaymentContract(payment) = contract {
                     if payment.confirmed {
                         return Err("Payment contract is confirmed and cannot be deleted, Hint: You can request a delete first.".to_string());
@@ -250,18 +250,18 @@ impl PaymentContract {
                     if payment.released {
                         return Err("Payment contract is already released".to_string());
                     }
-                    caller_contract.remove(&contract_id);
+                    caller_contract.remove(&self.contract_id);
                 }
             }
             Ok(())
         })
     }
 
-    pub fn save(&self, user: Principal) -> Result<Self, String> {
+    pub fn save(&self) -> Result<Self, String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contract = caller_contracts
-                .get_mut(&user)
+                .get_mut(&caller())
                 .ok_or("Caller has no contracts")?;
             caller_contract.insert(self.contract_id.clone(), StoredContract::PaymentContract(self.clone()));
             Ok(self.clone())

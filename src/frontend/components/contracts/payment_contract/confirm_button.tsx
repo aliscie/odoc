@@ -16,7 +16,7 @@ function ConfirmButton({
 
     const handleConfirm = async () => {
         let loader = enqueueSnackbar(<>Confirming...<span className="loader"/></>);
-        let res = await actor.accept_payment(id)
+        let res = actor && await actor.conform_payment(id)
         closeSnackbar(loader);
         if ('Ok' in res) {
             enqueueSnackbar("Confirmed successfully", {variant: "success"});

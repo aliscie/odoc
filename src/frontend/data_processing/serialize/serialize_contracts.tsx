@@ -50,7 +50,8 @@ export default function serialize_payment_contract(content: any[], data: Array<S
                         "confirmed": item.confirmed || false,
                         "canceled": item.canceled || false,
                         "amount": BigInt(item.amount || 0),
-                        extra_cells: item.extra_cells || []
+                        "extra_cells": item.extra_cells || [],
+                        "objected": item.objected || [], // Include the objected field
                     }
                 };
                 data.push(de_normal);

@@ -4,7 +4,7 @@ use std::time::Duration;
 use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::caller;
 
-use crate::{PaymentContract, PROFILE_HISOTYR, SharePayment, SharesContract};
+use crate::{PaymentContract, PROFILE_HISOTYR, SharePayment, SharesContract, Wallet};
 use crate::discover::time_diff;
 use crate::PROFILE_STORE;
 
@@ -59,6 +59,7 @@ pub struct UserHistory {
 
     // payments good mark
     pub spent: u64,
+    pub received: u64,
     pub users_interactions: u64,
     pub transactions_sent: u64,
     pub transactions_received: u64,
@@ -90,6 +91,7 @@ impl UserHistory {
             total_payments_cancellation: 0,
             latest_payments_cancellation: Vec::new(),
             spent: 0,
+            received: 0,
             users_interactions: 0,
             transactions_sent: 0,
             transactions_received: 0,
@@ -150,6 +152,48 @@ impl UserHistory {
         self.rates_by_others.push(rating);
         Ok(())
     }
+    pub fn calc_received(&mut self) -> Self {
+        // Create a HashSet to store unique users
+        let mut unique_users: HashSet<Principal> = HashSet::new();
+
+        let wallet: Wallet = Wallet::get(self.id.clone());
+
+        for exchange in &wallet.exchanges {
+            if let Ok(to) = Principal::from_text(exchange.from.clone()) {
+                if to == self.id {
+                    unique_users.insert(to);
+                    self.received += exchange.amount.clone();
+                }
+            }
+        }
+
+        // Set the number of unique users to self.users_interactions
+        self.users_interactions = unique_users.len() as u64;
+
+        self.clone()
+    }
+
+    pub fn calc_spent(&mut self) -> Self {
+        // Create a HashSet to store unique users
+        let mut unique_users: HashSet<Principal> = HashSet::new();
+
+        let wallet: Wallet = Wallet::get(self.id.clone());
+
+        for exchange in &wallet.exchanges {
+            if let Ok(to) = Principal::from_text(exchange.to.clone()) {
+                if to == self.id {
+                    unique_users.insert(to);
+                    self.spent += exchange.amount.clone();
+                }
+            }
+        }
+
+        // Set the number of unique users to self.users_interactions
+        self.users_interactions = unique_users.len() as u64;
+
+        self.clone()
+    }
+
 
     pub fn calc_total_rate(&mut self) {
         let total_rate_sum: f64 = self.rates_by_others.iter().map(|r| r.rating as f64).sum();

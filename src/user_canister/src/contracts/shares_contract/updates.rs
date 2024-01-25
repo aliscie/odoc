@@ -48,7 +48,7 @@ fn pay_for_share_contract(contract_id: ContractId, amount: u64, author: String) 
         wallet.deposit(share_value, from.clone(), ExchangeType::LocalReceive)?;
 
         let new_notification = Notification {
-            id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+            id: contract.contract_id.clone(),
             sender: caller(),
             receiver: share.receiver.clone(),
             content: NoteContent::SharePayment(contract.clone()),

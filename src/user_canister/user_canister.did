@@ -134,16 +134,13 @@ type NoteContent = variant {
   ContractUpdate : ContractNotification;
   FriendRequest : record {};
   AcceptFriendRequest;
-  ObjectPayment : text;
   ApproveShareRequest : text;
+  PaymentContract : record { PaymentContract; PaymentAction };
   Unfriend;
-  PaymentCancelled : text;
-  PaymentReleased : text;
   ShareRequestApplied : SharesContract;
   ShareRequestApproved : SharesContract;
   ConformShare : text;
   SharePayment : SharesContract;
-  AcceptPayment : text;
   ApplyShareRequest : text;
   NewMessage : Message;
   RemovedFromChat : text;
@@ -156,6 +153,13 @@ type Notification = record {
   receiver : principal;
 };
 type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
+type PaymentAction = variant {
+  Released;
+  Objected;
+  Accepted;
+  Update;
+  Cancelled;
+};
 type PaymentContract = record {
   extra_cells : vec record { text; text };
   canceled : bool;
@@ -308,16 +312,15 @@ type WebsocketMessage = record {
 };
 service : () -> {
   accept_friend_request : (text) -> (Result);
-  accept_payment : (text) -> (Result_1);
   apply_request : (text, text, text) -> (Result_1);
   approve_request : (text, text, text) -> (Result_1);
   cancel_friend_request : (text) -> (Result);
   cancel_payment : (text) -> (Result_1);
+  conform_payment : (text) -> (Result_1);
   conform_share : (text, text, text) -> (Result_1);
   content_updates : (text, opt text, text) -> (Result_2);
   counter : () -> (nat64) query;
   create_new_file : (text, opt text) -> (FileNode);
-  create_payment_contract : (text) -> (Result_1);
   create_share_contract : (vec Share) -> (Result_2);
   delete_file : (text) -> (opt FileNode);
   delete_payment : (text) -> (Result_1);

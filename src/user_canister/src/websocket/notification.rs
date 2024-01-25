@@ -4,7 +4,7 @@ use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::caller;
 use serde::Serialize;
 
-use crate::{NOTIFICATIONS, SharePayment, SharesContract, USER_FILES, websocket};
+use crate::{NOTIFICATIONS, PaymentContract, SharePayment, SharesContract, USER_FILES, websocket};
 use crate::chat::Message;
 use crate::COUNTER;
 use crate::websocket::{AppMessage, notification, send_app_message};
@@ -20,6 +20,16 @@ pub struct ContractNotification {
 }
 
 #[derive(Eq, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
+pub enum PaymentAction {
+    Cancelled,
+    Released,
+    Accepted,
+    Update,
+    Objected,
+    // ActionType(Principal), // if needed u can, action done by user with the Principal
+}
+
+#[derive(Eq, PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub enum NoteContent {
     FriendRequest(FriendRequestNotification),
     ContractUpdate(ContractNotification),
@@ -28,18 +38,16 @@ pub enum NoteContent {
     AcceptFriendRequest,
     ShareRequestApplied(SharesContract),
     ShareRequestApproved(SharesContract),
-    PaymentCancelled(String),
-    PaymentReleased(String),
-    AcceptPayment(String),
     ConformShare(String),
     ApproveShareRequest(String),
     ApplyShareRequest(String),
     NewMessage(Message),
     RemovedFromChat(String),
-    ObjectPayment(String),
+    PaymentContract(PaymentContract, PaymentAction),
+    // FilePermition(FileID,Vec<Contract>)
 }
 
-#[derive(Eq, Serialize, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(Eq, PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub struct Notification {
     pub(crate) id: String,
     pub(crate) sender: Principal,
@@ -67,6 +75,7 @@ impl Notification {
         NOTIFICATIONS.with(|notifications| {
             let mut user_notifications = notifications.borrow_mut();
             let user_notifications = user_notifications.entry(self.receiver.clone()).or_insert_with(Vec::new);
+            user_notifications.retain(|notification| notification.id != self.id);
             user_notifications.push(self.clone());
         });
         let msg: AppMessage = AppMessage {

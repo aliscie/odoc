@@ -1,78 +1,37 @@
 use std::collections::HashMap;
 use std::sync::atomic::Ordering;
 
-
 use candid::Principal;
 use ic_cdk::caller;
 use ic_cdk_macros::update;
 
-
-use crate::{COUNTER, ExchangeType, Wallet};
-use crate::contracts::PaymentContract;
+use crate::{COUNTER, ExchangeType, PaymentContract, Wallet};
 use crate::files::FileNode;
 use crate::files_content::{ContentData, ContentNode};
 use crate::storage_schema::ContentId;
 use crate::tables::{Column, ColumnTypes, Row, Table};
-
 use crate::user::User;
 use crate::user_history::UserHistory;
-use crate::websocket::{NoteContent, Notification};
-
+use crate::websocket::{NoteContent, Notification, PaymentAction};
 
 // #[update]
 // TODO fn create_payment_contract(table, contract) -> Result<(), String> {
 //  Remove this unnecessary mess
 
 #[update]
-fn create_payment_contract(file_name: String) -> Result<(), String> {
-    // fn create_payment_contract(file_name: String) -> Result<(FileNode, ContentNode, Contract), String> {
-    let user = User::user_profile();
-    if user.is_none() {
-        return Err("User not registered".to_string());
-    }
-    let user: Principal = user.unwrap().id.parse().unwrap();
-
-    let payment1 = PaymentContract::new(user.clone(), user.clone(), 100);
-    let payment2 = PaymentContract::new(user.clone(), user.clone(), 200);
-    let payment3 = PaymentContract::new(user.clone(), user.clone(), 150);
-    let mut row1 = Row::new_payment(payment1);
-    let mut row2 = Row::new_payment(payment2);
-    let mut row3 = Row::new_payment(payment3);
-    let mut table = Table::new();
-    row1.cells = Some(HashMap::from_iter(vec![("task".to_string(), "signup task".to_string())]));
-    row2.cells = Some(HashMap::from_iter(vec![("task".to_string(), "login task".to_string())]));
-    row3.cells = Some(HashMap::from_iter(vec![("task".to_string(), "dark mode".to_string())]));
-    table.rows = vec![row1.clone(), row2.clone(), row3.clone()];
-    table.columns = vec![Column::new("task".to_string(), ColumnTypes::Text)];
-
-    let file_node = FileNode::new(file_name, None);
-    let content_node = ContentNode::new(file_node.clone().id, None, "payment_contract".to_string(), "".to_string(), None);
-    let table_content = ContentNode::new(
-        file_node.clone().id,
-        Some(content_node.clone().unwrap().id),
-        "".to_string(),
-        "".to_string(),
-        Some(ContentData::Table(table)));
-    let _content = ContentNode::new(file_node.id, Some(table_content.clone().unwrap().id), "".to_string(), "".to_string(), None);
-    // Ok((file_node, content_node.unwrap(), contract))
-    Ok(())
-}
-
-#[update]
 fn cancel_payment(id: ContentId) -> Result<(), String> {
     let payment: PaymentContract = PaymentContract::get(caller(), id.clone())?;
-    PaymentContract::cancel_payment(payment.receiver, id.clone())?;
-
-    let content: NoteContent = NoteContent::PaymentCancelled(id.clone());
+    PaymentContract::cancel_payment(id.clone())?;
+    // note no need for caller() in Canceled because it is == payment.sender
+    let content: NoteContent = NoteContent::PaymentContract(payment.clone(), PaymentAction::Cancelled);
     let new_note = Notification {
-        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+        id: payment.contract_id,
         sender: caller(),
         receiver: payment.receiver,
         content,
         is_seen: false,
     };
     new_note.save();
-    PaymentContract::cancel_payment(payment.sender, id.clone());
     let mut profile = UserHistory::get(payment.sender.clone());
     profile.cancel_payment();
     Ok(())
@@ -93,16 +52,16 @@ fn release_payment(id: ContentId) -> Result<(), String> {
         return Err(message);
     }
 
-    let payment = PaymentContract::release_payment(id.clone())?;
+    let payment = payment.release()?;
 
     let mut receiver_wallet = Wallet::get(payment.receiver.clone());
     let mut sender_wallet = Wallet::get(caller());
     receiver_wallet.deposit(payment.amount.clone(), caller().to_string(), ExchangeType::LocalReceive)?;
-    sender_wallet.withdraw(payment.amount.clone(), payment.receiver.to_string(), ExchangeType::LocalSend)?;
+    sender_wallet.withdraw(payment.amount.clone(), payment.receiver.to_string().clone(), ExchangeType::LocalSend)?;
 
-    let content: NoteContent = NoteContent::PaymentReleased(id.clone());
+    let content: NoteContent = NoteContent::PaymentContract(payment.clone(), PaymentAction::Released);
     let new_note = Notification {
-        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+        id: payment.contract_id,
         sender: caller(),
         receiver: payment.receiver.clone(),
         content,
@@ -115,30 +74,32 @@ fn release_payment(id: ContentId) -> Result<(), String> {
 
 #[update]
 fn delete_payment(id: String) -> Result<(), String> {
-    PaymentContract::delete_for_both(id)
+    let payment = PaymentContract::get(caller(), id.clone())?;
+    payment.delete()?;
+    Ok(())
 }
 
 #[update]
-fn accept_payment(id: ContentId) -> Result<(), String> {
+fn conform_payment(id: ContentId) -> Result<(), String> {
     let payment = PaymentContract::get(caller(), id.clone())?;
-    PaymentContract::accept_payment(payment.receiver, id.clone())?;
-    let content: NoteContent = NoteContent::AcceptPayment(id.clone());
+    let payment = payment.conform()?;
+    // PaymentContract::accept_payment(payment.sender, id.clone())?;
+    let content: NoteContent = NoteContent::PaymentContract(payment.clone(), PaymentAction::Accepted);
     let new_note = Notification {
-        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+        id: payment.contract_id,
         sender: caller(),
         receiver: payment.sender.clone(), // Don't get confused the receiver of the payment is the caller()
         content,
         is_seen: false,
     };
     new_note.save();
-    PaymentContract::accept_payment(payment.sender, id.clone())
+    Ok(())
 }
 
 
 #[update]
 fn object_payment(id: ContentId, comment: String) -> Result<(), String> {
     let mut payment = PaymentContract::get(caller(), id.clone())?;
-    let mut payment_2 = PaymentContract::get(payment.sender, id.clone())?;
     if payment.receiver != caller() {
         return Err("You are not the receiver of the payment".to_string());
     }
@@ -150,12 +111,11 @@ fn object_payment(id: ContentId, comment: String) -> Result<(), String> {
     }
 
     payment.objected = Some(comment.clone());
-    payment_2.objected = Some(comment);
-    payment.save(caller())?;
-    payment_2.save(payment.sender)?;
-    let content: NoteContent = NoteContent::ObjectPayment(id.clone());
+    payment.save()?;
+    // Action done by payment.receiver, if needed PaymentAction::Objected(payment.receiver)
+    let content: NoteContent = NoteContent::PaymentContract(payment.clone(), PaymentAction::Objected);
     let new_note = Notification {
-        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+        id: payment.contract_id,
         sender: caller(),
         receiver: payment.sender.clone(), // Don't get confused the receiver of the payment is the caller()
         content,

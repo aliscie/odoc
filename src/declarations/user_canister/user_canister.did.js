@@ -221,20 +221,24 @@ export const idlFactory = ({ IDL }) => {
     'contract_type' : IDL.Text,
     'contract_id' : IDL.Text,
   });
+  const PaymentAction = IDL.Variant({
+    'Released' : IDL.Null,
+    'Objected' : IDL.Null,
+    'Accepted' : IDL.Null,
+    'Update' : IDL.Null,
+    'Cancelled' : IDL.Null,
+  });
   const NoteContent = IDL.Variant({
     'ContractUpdate' : ContractNotification,
     'FriendRequest' : IDL.Record({}),
     'AcceptFriendRequest' : IDL.Null,
-    'ObjectPayment' : IDL.Text,
     'ApproveShareRequest' : IDL.Text,
+    'PaymentContract' : IDL.Tuple(PaymentContract, PaymentAction),
     'Unfriend' : IDL.Null,
-    'PaymentCancelled' : IDL.Text,
-    'PaymentReleased' : IDL.Text,
     'ShareRequestApplied' : SharesContract,
     'ShareRequestApproved' : SharesContract,
     'ConformShare' : IDL.Text,
     'SharePayment' : SharesContract,
-    'AcceptPayment' : IDL.Text,
     'ApplyShareRequest' : IDL.Text,
     'NewMessage' : Message,
     'RemovedFromChat' : IDL.Text,
@@ -370,7 +374,6 @@ export const idlFactory = ({ IDL }) => {
   });
   return IDL.Service({
     'accept_friend_request' : IDL.Func([IDL.Text], [Result], []),
-    'accept_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'apply_request' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [Result_1], []),
     'approve_request' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text],
@@ -379,6 +382,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'cancel_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'cancel_payment' : IDL.Func([IDL.Text], [Result_1], []),
+    'conform_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'conform_share' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [Result_1], []),
     'content_updates' : IDL.Func(
         [IDL.Text, IDL.Opt(IDL.Text), IDL.Text],
@@ -387,7 +391,6 @@ export const idlFactory = ({ IDL }) => {
       ),
     'counter' : IDL.Func([], [IDL.Nat64], ['query']),
     'create_new_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [FileNode], []),
-    'create_payment_contract' : IDL.Func([IDL.Text], [Result_1], []),
     'create_share_contract' : IDL.Func([IDL.Vec(Share)], [Result_2], []),
     'delete_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], []),
     'delete_payment' : IDL.Func([IDL.Text], [Result_1], []),

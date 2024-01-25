@@ -154,16 +154,13 @@ export interface Message {
 export type NoteContent = { 'ContractUpdate' : ContractNotification } |
   { 'FriendRequest' : {} } |
   { 'AcceptFriendRequest' : null } |
-  { 'ObjectPayment' : string } |
   { 'ApproveShareRequest' : string } |
+  { 'PaymentContract' : [PaymentContract, PaymentAction] } |
   { 'Unfriend' : null } |
-  { 'PaymentCancelled' : string } |
-  { 'PaymentReleased' : string } |
   { 'ShareRequestApplied' : SharesContract } |
   { 'ShareRequestApproved' : SharesContract } |
   { 'ConformShare' : string } |
   { 'SharePayment' : SharesContract } |
-  { 'AcceptPayment' : string } |
   { 'ApplyShareRequest' : string } |
   { 'NewMessage' : Message } |
   { 'RemovedFromChat' : string };
@@ -178,6 +175,11 @@ export type Operation = { 'Equal' : null } |
   { 'Contains' : null } |
   { 'Bigger' : null } |
   { 'BiggerOrEqual' : null };
+export type PaymentAction = { 'Released' : null } |
+  { 'Objected' : null } |
+  { 'Accepted' : null } |
+  { 'Update' : null } |
+  { 'Cancelled' : null };
 export interface PaymentContract {
   'extra_cells' : Array<[string, string]>,
   'canceled' : boolean,
@@ -342,16 +344,15 @@ export interface WebsocketMessage {
 }
 export interface _SERVICE {
   'accept_friend_request' : ActorMethod<[string], Result>,
-  'accept_payment' : ActorMethod<[string], Result_1>,
   'apply_request' : ActorMethod<[string, string, string], Result_1>,
   'approve_request' : ActorMethod<[string, string, string], Result_1>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
   'cancel_payment' : ActorMethod<[string], Result_1>,
+  'conform_payment' : ActorMethod<[string], Result_1>,
   'conform_share' : ActorMethod<[string, string, string], Result_1>,
   'content_updates' : ActorMethod<[string, [] | [string], string], Result_2>,
   'counter' : ActorMethod<[], bigint>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
-  'create_payment_contract' : ActorMethod<[string], Result_1>,
   'create_share_contract' : ActorMethod<[Array<Share>], Result_2>,
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
   'delete_payment' : ActorMethod<[string], Result_1>,

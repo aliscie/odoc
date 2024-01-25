@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use ic_cdk::caller;
 
 use ic_cdk_macros::update;
 
@@ -66,10 +67,8 @@ fn multi_updates(
     };
 
     for contract_id in delete_contracts {
-        let message = PaymentContract::delete_for_both(contract_id);
-        if let Err(e) = message {
-            messages.push_str(&format!("Error deleting contract: {}", e));
-        }
+        let payment = PaymentContract::get(caller(), contract_id.clone())?;
+        payment.delete()?;
     }
 
     messages.push_str("Updates applied successfully.");

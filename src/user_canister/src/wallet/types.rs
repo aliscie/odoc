@@ -1,6 +1,6 @@
-
 use candid::{CandidType, Deserialize, Principal};
 use crate::{WALLETS_STORE};
+use crate::user_history::UserHistory;
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub enum ExchangeType {
@@ -72,6 +72,9 @@ impl Wallet {
                 wallet.exchanges.push(exchange);
             }
         });
+        let mut user_profile = UserHistory::get(self.owner.parse().unwrap());
+        let user_profile = user_profile.calc_spent();
+        user_profile.clone().save();
         Ok(())
     }
 
@@ -94,6 +97,9 @@ impl Wallet {
                     wallet.exchanges.push(exchange);
                 }
             });
+            let mut user_profile = UserHistory::get(self.owner.parse().unwrap());
+            let user_profile = user_profile.calc_received();
+            user_profile.clone().save();
             Ok(())
         } else {
             Err(String::from("Insufficient balance"))
