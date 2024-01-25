@@ -81,8 +81,19 @@ export default defineConfig({
         globals: true,
         threads: false,
         watch: true,
+        "compilerOptions": {
+            "types": ["vitest/globals"]
+        },
         // include: ['**/__tests__/*.{js,tsx,ts}', "App.test.tsx"],
-        setupFiles: './setup_tests.ts'
+        // globalSetup: ["./src/frontend/tests/React/setup.ts"],
+        setupFiles: './setup_tests.ts',
+        // reporters: ["default", {
+        //     async onWatcherRerun() {
+        //         await teardown();
+        //         await setup();
+        //     }
+        // }]
+
     },
     build: {
         outDir: "build",

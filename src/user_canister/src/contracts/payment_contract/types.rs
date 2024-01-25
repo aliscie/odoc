@@ -20,6 +20,7 @@ pub struct PaymentContract {
     pub(crate) released: bool,
     pub(crate) confirmed: bool,
     pub(crate) extra_cells: HashMap<String, String>,
+    // pub(crate) objected: bool, // if confirmed && canceled {receiver can do objected=true}
     // pub(crate) date_created: u64,
     // pub(crate) date_updated: u64,
 }

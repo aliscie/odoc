@@ -99,8 +99,11 @@ pub static COUNTER: AtomicU64 = AtomicU64::new(0);
 
 #[cfg(test)]
 mod tests {
+    use ic_cdk::caller;
+
     #[test]
     fn test_one() {
+        // println!("test_one {}", caller().to_string());
     }
 }
 
