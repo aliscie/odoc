@@ -179,18 +179,23 @@ export default function MultiAutoComplete(props: any) {
                     style={props.style}
                     onChange={props.onChange}
                     ref={setAnchorEl} className={focused ? 'focused' : ''}>
-                    {value.map((option: FilmOptionType, index: number) => (
+                    {value && props.multiple && value.map((option: FilmOptionType, index: number) => (
                         <StyledTag label={option.title} {...getTagProps({index})} />
                     ))}
+                    {value && !props.multiple && <StyledTag label={value.title} {...getTagProps({index: 0})} />}
                     <input {...getInputProps()} />
                 </InputWrapper>
             </div>
             {groupedOptions.length > 0 ? (
                 <Listbox {...getListboxProps()}>
                     {(groupedOptions as typeof top100Films).map((option, index) => {
-                        let is_in = value.find((v: any) => v.title === option.title)
-                        if (is_in) {
-                            return null;
+
+                        try {
+                            if (value.find((v: any) => v.title === option.title)) {
+                                return null;
+                            }
+                        } catch (e) {
+
                         }
                         return (
                             <li {...getOptionProps({option, index})}>

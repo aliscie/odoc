@@ -1,0 +1,341 @@
+import {
+    CCell,
+    CColumn,
+    CContract,
+    CPayment,
+    CRow,
+    CustomContract, PermissionType
+} from "../../../../declarations/user_canister/user_canister.did";
+import BasicMenu from "../../genral/drop_down";
+import CustomDataGrid from "../../datagrid";
+import * as React from "react";
+import {useEffect} from "react";
+import {custom_contract, payment_contract_sample, randomString} from "../../../data_processing/data_samples";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import EditorComponent from "../../editor_components/main";
+import AddIcon from '@mui/icons-material/Add';
+import {useDispatch} from "react-redux";
+import {handleRedux} from "../../../redux/main";
+import {updateCustomContractRows, updateContractColumn, updateCustomContractColumns} from "./utls";
+import {GridColumnMenuItemProps, GridColumnMenuProps} from "@mui/x-data-grid";
+import MenuItem from "@mui/material/MenuItem";
+import BasicPopover from "../../genral/pop_over";
+import ColumnPermission from "./column_permision";
+import ChangeColumnPermissions from "./column_permision";
+import ChangeColumnFormula from "./column_formula";
+
+
+function CustomContract(props: CustomContract) {
+    let dispatch = useDispatch();
+    const [contract, setContract] = React.useState(props);
+    const [view, setView] = React.useState<CContract | CPayment | undefined | any>()
+    const [data, setData] = React.useState({columns: [], rows: []})
+
+
+    useEffect(() => {
+
+        // save in local storage
+
+        let stringify_contract = JSON.stringify(contract);
+        localStorage.setItem("contract", stringify_contract);
+        // dispatch(handleRedux("UPDATE_CONTRACT", {contract: contract}))
+        // dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
+    }, [contract])
+
+
+    let columnMenuSlots = {
+        ChangeColumnPermissions: (props) => ChangeColumnPermissions({...props, setContract, view}),
+        ChangeColumnFormula: (props) => ChangeColumnFormula({...props, setContract, view}),
+    }
+    let columnMenuProps = (menuProps: GridColumnMenuProps) => {
+        return {
+            ChangeColumnPermissions: {
+                displayOrder: 2,
+                // onClick: () => ConvolverNode,
+                menuProps,
+            },
+            ChangeColumnFormula: {
+                displayOrder: 3,
+                // onClick: () => ConvolverNode,
+                menuProps,
+            }
+        }
+    }
+
+    function deleteColumn(columns, column_id) {
+        const updatedContract = updateCustomContractColumns(contract, columns, view);
+        setContract(updatedContract);
+    }
+
+    function addColumn(position: number): CColumn {
+        let new_column: CColumn = {
+            id: randomString(),
+            field: randomString(),
+            headerName: "Untitled",
+            'column_type': {'Text': null},
+            'filters': [],
+            'permissions': [{'AnyOneView': null}],
+            'data_validator': [],
+            'editable': true,
+            'formula': [],
+            deletable: true,
+        };
+
+        // Update the state with the new column
+        let new_columns = [...view.columns]
+        new_columns.splice(position, 0, new_column)
+        setContract((prevContract) => updateCustomContractColumns(prevContract, new_columns, view));
+
+
+        return new_column;
+    }
+
+
+    function addRow(position: number): CRow {
+        const new_row: CRow = {
+            id: randomString(),
+            cells: [],
+        };
+
+        let new_rows = [...view.rows]
+        new_rows.splice(position, 0, new_row)
+        // Update the state with the new rows
+        setContract((prevContract) => updateCustomContractRows(prevContract, new_rows, view));
+
+
+        return new_row;
+    }
+
+
+    function deleteRow(rows: any, rowId: number) {
+        const updatedContract = updateCustomContractRows(contract, rows, view);
+        setContract(updatedContract);
+    }
+
+    function updateRow(new_rows: any, newRow: any) {
+        const updatedContract = updateCustomContractRows(contract, new_rows, view);
+        setContract(updatedContract);
+    }
+
+    function renameColumn(id: string, value: string) {
+        let updated_column = {
+            id,
+            headerName: value
+        }
+        setContract((prevContract) => (updateContractColumn(prevContract, updated_column, view)));
+    }
+
+    useEffect(() => {
+        if (view && view.columns && view.columns.length == 0) {
+            let new_column: CColumn = {
+                id: randomString(),
+                field: randomString(),
+                headerName: "Untitled",
+                'column_type': {'Text': null},
+                'filters': [],
+                'permissions': [{'AnyOneView': null}],
+                'data_validator': [],
+                'editable': true,
+                'formula': [],
+                deletable: false,
+            }
+            setContract(updateCustomContractColumns(contract, new_column, view))
+        }
+    }, [view])
+
+    useEffect(() => {
+
+
+        if (contract.contracts.length === 0) {
+
+            let field = randomString();
+            let new_cell: CCell = {
+                id: randomString(),
+                field,
+                value: "",
+            }
+            let new_row: CRow = {
+                id: randomString(),
+                cells: [new_cell]
+
+            }
+
+
+            let new_column: CColumn = {
+                id: randomString(),
+                field,
+                headerName: "Untitled",
+                'column_type': {'Text': null},
+                'filters': [],
+                'permissions': [{'AnyOneView': null}],
+                'data_validator': [],
+                'editable': true,
+                'formula': [],
+                deletable: false,
+            }
+            let new_c_contract: CContract = {
+                id: randomString(),
+                name: "Untitled c contract",
+                'columns': [new_column],
+                'rows': [new_row],
+            }
+            setContract({...contract, contracts: [new_c_contract]});
+            setView(new_c_contract);
+            setData(new_c_contract)
+        } else {
+            setView(contract.contracts[0])
+            setData(contract.contracts[0])
+        }
+
+    }, [])
+
+
+    let SelectOption = async (option: string) => {
+        switch (option.type) {
+            case "payments":
+                if (contract.payments.length === 0) {
+                    let column = {
+                        id: randomString(),
+                        field: "amount",
+                        headerName: "Amount",
+                    }
+
+                    let column_2 = {
+                        id: randomString(),
+                        field: "sender",
+                        headerName: "Sender",
+                    }
+
+                    let column_3 = {
+                        id: randomString(),
+                        field: "receiver",
+                        headerName: "Receiver",
+                    }
+
+                    let column_4 = {
+                        id: randomString(),
+                        field: "release",
+                        headerName: "Release",
+                    }
+
+
+                    let row = {
+                        id: randomString(),
+                        cells: []
+                    }
+                    let columns = [column, column_2, column_3, column_4]
+                    let rows = [row]
+
+                    setView({
+                        name: option.content,
+                        columns,
+                        rows
+                    })
+
+                    setData({
+                        columns,
+                        rows,
+                    })
+
+                } else {
+                    // setView({
+                    //     name: option.content,
+                    //     // columns: contract.payments[0].columns,
+                    //     // rows: contract.payments[0].rows
+                    // })
+                    // setData({
+                    //     columns: contract.payments[0].columns,
+                    //     rows: contract.payments[0].rows
+                    // })
+                }
+                break
+            case "create contract":
+                break
+            case "contract":
+                setView({
+                    name: option.content,
+                    ...option
+                })
+                setData({
+                    columns: option.columns,
+                    rows: option.rows
+                })
+                break
+            default:
+                break
+        }
+
+    }
+
+    let options: any = [
+        {content: "Payments", type: "payments",},
+
+        ...contract.contracts.map((contract: CContract, index: number) => {
+            return {content: contract.name, type: "contract", id: contract.id, index, ...contract}
+        }),
+        {content: <div><AddIcon color={"info"}/>Create contract</div>, type: "create_contract",},
+        // {content: "Create view", type: "create view",},
+        // {content: "Create view", type: "create chart",},
+    ];
+
+    let main_options = [
+        {content: "Rename"},
+        {content: "Delete"},
+        // {content: "Delete"},
+    ];
+
+    return <CustomDataGrid
+        columnMenuSlots={columnMenuSlots}
+        columnMenuProps={columnMenuProps}
+        deleteColumn={deleteColumn}
+        data={data}
+        addRow={addRow}
+        deleteRow={deleteRow}
+        addColumn={addColumn}
+        updateRow={updateRow}
+        renameColumn={renameColumn}
+        tools={<>
+
+            <EditorComponent
+                preventSplit={true}
+                preventToolbar={true}
+                // onChange={handleTitleKeyDown}
+                // contentEditable={editable}
+                // editorKey={current_file.id}
+                placeholder={"Untitled"}
+                content={[{
+                    "type": "h2",
+                    "children": [{"text": view && view.name}]
+                }
+                ]}
+            />
+
+
+            <BasicMenu options={main_options}>
+                <MoreVertIcon/>
+            </BasicMenu>
+
+
+            <BasicMenu SelectOption={SelectOption} options={options}>
+                {view && view.name}
+            </BasicMenu>
+        </>}
+
+
+    />
+}
+
+export default function SlateCustomContract(props: any) {
+    // const {contracts, profile, wallet} = useSelector((state: any) => state.filesReducer);
+    // let contract: CustomContract = contracts[props.id];
+    let contract: CustomContract = custom_contract
+
+
+    let localContract = localStorage.getItem("contract");
+    let parsedContract = JSON.parse(localContract || "[]");
+    // console.log({parsedContract})
+    return <CustomContract {...parsedContract}/>
+}
+
+
+export {CustomContract};

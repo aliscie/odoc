@@ -16,6 +16,32 @@ export interface AppMessage {
   'notification' : [] | [Notification],
   'timestamp' : bigint,
 }
+export interface CCell { 'id' : string, 'field' : string, 'value' : string }
+export interface CColumn {
+  'id' : string,
+  'field' : string,
+  'column_type' : ColumnTypes,
+  'filters' : Array<Filter>,
+  'permissions' : Array<PermissionType>,
+  'headerName' : string,
+  'data_validator' : [] | [string],
+  'editable' : boolean,
+  'formula' : [] | [Formula],
+  'deletable' : boolean,
+}
+export interface CContract {
+  'id' : string,
+  'name' : string,
+  'rows' : Array<CRow>,
+  'columns' : Array<CColumn>,
+}
+export interface CPayment {
+  'date_created' : number,
+  'sender' : Principal,
+  'released' : boolean,
+  'amount' : number,
+}
+export interface CRow { 'id' : string, 'cells' : Array<CCell> }
 export interface CanisterOutputCertifiedMessages {
   'messages' : Array<CanisterOutputMessage>,
   'cert' : Uint8Array | number[],
@@ -51,14 +77,10 @@ export interface Column {
   '_type' : ColumnTypes,
   'field' : string,
   'filters' : Array<Filter>,
-  'permissions' : Array<ColumnPermission>,
+  'permissions' : Array<PermissionType>,
   'dataValidator' : [] | [string],
   'editable' : boolean,
   'formula' : [] | [Formula],
-}
-export interface ColumnPermission {
-  '_type' : PermissionType,
-  'granted_to' : Array<Principal>,
 }
 export type ColumnTypes = { 'Tag' : null } |
   { 'Date' : null } |
@@ -85,6 +107,15 @@ export interface ContractNotification {
   'contract_type' : string,
   'contract_id' : string,
 }
+export interface CustomContract {
+  'id' : string,
+  'creator' : Principal,
+  'date_created' : number,
+  'payments' : Array<CPayment>,
+  'name' : string,
+  'contracts' : Array<CContract>,
+  'date_updated' : number,
+}
 export interface Exchange {
   'to' : string,
   '_type' : ExchangeType,
@@ -99,7 +130,7 @@ export type ExchangeType = { 'Withdraw' : null } |
   { 'LocalReceive' : null };
 export type Execute = { 'TransferNft' : null } |
   { 'TransferToken' : null } |
-  { 'TransferUsdt' : null };
+  { 'TransferUsdt' : CPayment };
 export interface FEChat {
   'id' : string,
   'creator' : UserFE,
@@ -191,8 +222,10 @@ export interface PaymentContract {
   'amount' : bigint,
   'receiver' : Principal,
 }
-export type PermissionType = { 'CanRead' : null } |
-  { 'CanUpdate' : null };
+export type PermissionType = { 'Edit' : Principal } |
+  { 'View' : Principal } |
+  { 'AnyOneView' : null } |
+  { 'AnyOneEdite' : null };
 export interface Post {
   'id' : string,
   'creator' : string,
@@ -302,11 +335,12 @@ export interface SharesContract {
   'author' : string,
   'shares_requests' : Array<[string, ShareRequest]>,
 }
-export type StoredContract = { 'PaymentContract' : PaymentContract } |
+export type StoredContract = { 'CustomContract' : CustomContract } |
+  { 'PaymentContract' : PaymentContract } |
   { 'SharesContract' : SharesContract };
 export interface Table { 'rows' : Array<Row>, 'columns' : Array<Column> }
-export type Trigger = { 'Timer' : null } |
-  { 'Update' : null };
+export type Trigger = { 'Timer' : number } |
+  { 'Update' : string };
 export interface User {
   'id' : string,
   'name' : string,

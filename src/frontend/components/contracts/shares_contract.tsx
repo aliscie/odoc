@@ -139,7 +139,7 @@ export default function SharesContractComponent(props: any) {
                         "permissions": [],
                         "dataValidator": [],
                         "formula": [],
-                        "deleteable": true
+                        "deletable": true
 
                     })
                 })
@@ -169,7 +169,7 @@ export default function SharesContractComponent(props: any) {
         setData
     });
 
-    function deleteColumn(column: Column) {
+    function deleteColumn(new_columns: Array<Column>, column_id: string) {
 
         switch (view) {
             case "Shares":
@@ -182,17 +182,17 @@ export default function SharesContractComponent(props: any) {
                 //     return [key, newRow[key]]
                 // })
 
-                let updated_contract: SharesContract = {
-                    ...contracts[table_content.id],
-                    shares: contracts[table_content.id].shares.map((item: Share) => {
-                        return {
-                            ...item,
-                            extra_cells: item.extra_cells.filter((cell) => cell[0] === column.field),
-                        };
-                    }),
-                };
-                dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contract}));
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contract}));
+                // let updated_contract: SharesContract = {
+                //     ...contracts[table_content.id],
+                //     shares: contracts[table_content.id].shares.map((item: Share) => {
+                //         return {
+                //             ...item,
+                //             extra_cells: item.extra_cells.filter((cell) => cell[0] === column.field),
+                //         };
+                //     }),
+                // };
+                // dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contract}));
+                // dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contract}));
 
                 break
             default:

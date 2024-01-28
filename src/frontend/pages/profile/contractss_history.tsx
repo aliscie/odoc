@@ -5,9 +5,11 @@ import ListItemText from "@mui/material/ListItemText";
 import * as React from "react";
 import useGetUser from "../../utils/get_user_by_principal";
 import PaymentOptions from "../../components/contracts/payment_contract/payment_contract_options";
+import {PaymentContract, StoredContract} from "../../../declarations/user_canister/user_canister.did";
+import SharesContractComponent from "../../components/contracts/shares_contract";
 
 
-export function MyPaymentContract(props: any) {
+export function MyPaymentContract(props: PaymentContract) {
     let {getUser} = useGetUser();
 
     const {profile} = useSelector((state: any) => state.filesReducer);
@@ -25,14 +27,14 @@ export function MyPaymentContract(props: any) {
     }
     let normal_style = {}
 
-    return <ListItem key={props.id}>
+    return <ListItem key={props.contract_id}>
         <ListItemText
             primaryTypographyProps={{style: {}}}
             secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
             primary={`Sender: ${sender}`}
             secondary={`Receiver: ${receiver}, Amount: ${props.amount} USDTs`}
         />
-        <PaymentOptions {...props.contract}/>
+        <PaymentOptions {...props}/>
     </ListItem>
 }
 
@@ -44,8 +46,19 @@ function ContractsHistory(props: any) {
         <List dense
         >
             {Object.keys(contracts).map((key) => {
-                return <MyPaymentContract id={key} {...contracts[key]}/>
-            })}
+                let contract: StoredContract = contracts[key];
+                if (contract.PaymentContract) {
+                    return <MyPaymentContract id={key} {...contract}/>
+                } else if (contract.SharesContract) {
+                    return <div>render share contract</div>
+                    // return <SharesContractComponent id={key} {...contract}/>
+                } else if (contract.CustomContract) {
+                    return <div>render custom contract</div>
+                } else {
+                    return <div>Unknown</div>
+                }
+            })};
+
         </List>
     );
 }

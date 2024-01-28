@@ -4,17 +4,16 @@ import {handleRedux} from "../../redux/main";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar from "@mui/material/Avatar";
 import ListItemText from "@mui/material/ListItemText";
-import {Rating, Tooltip} from "@mui/material";
+import {Tooltip} from "@mui/material";
 import * as React from "react";
+import {useState} from "react";
 import LoaderButton from "../../components/genral/loader_button";
-import {convertToBlobLink} from "../../data_processing/image_to_vec";
 import {actor} from "../../App";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import {FriendSystem, User} from "../../../declarations/user_canister/user_canister.did";
-import {useState} from "react";
 import RateUser from "../../components/spesific/rate_user";
+import {UserAvatar} from "../../components/genral/post_component";
 
 interface FriendProps {
     id: string,
@@ -128,9 +127,7 @@ export function Friend(props: FriendProps) {
         }
     >
         <ListItemAvatar>
-            <Avatar
-                src={convertToBlobLink(props.photo)}
-            />
+            <UserAvatar {...props} />
         </ListItemAvatar>
         <ListItemText id={props.labelId} primary={props.name}/>
         <ListItem>

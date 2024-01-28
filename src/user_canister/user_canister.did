@@ -15,6 +15,32 @@ type AppMessage = record {
   notification : opt Notification;
   timestamp : nat64;
 };
+type CCell = record { id : text; field : text; value : text };
+type CColumn = record {
+  id : text;
+  field : text;
+  column_type : ColumnTypes;
+  filters : vec Filter;
+  permissions : vec PermissionType;
+  headerName : text;
+  data_validator : opt text;
+  editable : bool;
+  formula : opt Formula;
+  deletable : bool;
+};
+type CContract = record {
+  id : text;
+  name : text;
+  rows : vec CRow;
+  columns : vec CColumn;
+};
+type CPayment = record {
+  date_created : float64;
+  sender : principal;
+  released : bool;
+  amount : float64;
+};
+type CRow = record { id : text; cells : vec CCell };
 type CanisterOutputCertifiedMessages = record {
   messages : vec CanisterOutputMessage;
   cert : vec nat8;
@@ -47,14 +73,10 @@ type Column = record {
   _type : ColumnTypes;
   field : text;
   filters : vec Filter;
-  permissions : vec ColumnPermission;
+  permissions : vec PermissionType;
   dataValidator : opt text;
   editable : bool;
   formula : opt Formula;
-};
-type ColumnPermission = record {
-  _type : PermissionType;
-  granted_to : vec principal;
 };
 type ColumnTypes = variant { Tag; Date; File; Text; Person; Category; Number };
 type ContentData = variant { Comment : text; Image : vec nat64; Table : Table };
@@ -69,6 +91,15 @@ type ContentNode = record {
 };
 type Contract = variant { PaymentContract : text; SharesContract : text };
 type ContractNotification = record { contract_type : text; contract_id : text };
+type CustomContract = record {
+  id : text;
+  creator : principal;
+  date_created : float64;
+  payments : vec CPayment;
+  name : text;
+  contracts : vec CContract;
+  date_updated : float64;
+};
 type Exchange = record {
   to : text;
   _type : ExchangeType;
@@ -78,7 +109,7 @@ type Exchange = record {
   amount : nat64;
 };
 type ExchangeType = variant { Withdraw; Deposit; LocalSend; LocalReceive };
-type Execute = variant { TransferNft; TransferToken; TransferUsdt };
+type Execute = variant { TransferNft; TransferToken; TransferUsdt : CPayment };
 type FEChat = record {
   id : text;
   creator : UserFE;
@@ -171,7 +202,12 @@ type PaymentContract = record {
   amount : nat64;
   receiver : principal;
 };
-type PermissionType = variant { CanRead; CanUpdate };
+type PermissionType = variant {
+  Edit : principal;
+  View : principal;
+  AnyOneView;
+  AnyOneEdite;
+};
 type Post = record {
   id : text;
   creator : text;
@@ -270,11 +306,12 @@ type SharesContract = record {
   shares_requests : vec record { text; ShareRequest };
 };
 type StoredContract = variant {
+  CustomContract : CustomContract;
   PaymentContract : PaymentContract;
   SharesContract : SharesContract;
 };
 type Table = record { rows : vec Row; columns : vec Column };
-type Trigger = variant { Timer; Update };
+type Trigger = variant { Timer : float64; Update : text };
 type User = record {
   id : text;
   name : text;

@@ -3,25 +3,27 @@ use std::collections::HashMap;
 
 use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::{caller};
+use serde::Serialize;
 
-use crate::{CONTRACTS_STORE, SharesContract};
+use crate::{CONTRACTS_STORE, CustomContract, SharesContract};
 use crate::contracts::PaymentContract;
 
 use crate::storage_schema::ContractId;
 
 
-#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub enum Contract {
     PaymentContract(ContractId),
     SharesContract(ContractId),
     // CustomContract(Table),
 }
 
-#[derive(Eq, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub enum StoredContract {
+
     PaymentContract(PaymentContract),
     SharesContract(SharesContract),
-    // CustomContract(Table),
+    CustomContract(CustomContract),
 }
 
 impl Contract {

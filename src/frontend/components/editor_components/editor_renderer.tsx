@@ -1,9 +1,9 @@
-import SpreadSheet from "../spread_sheet";
 import * as React from "react";
 import MentionComponent from "./mention_component";
 import {Table, TableBody, TableCell, TableRow} from "@mui/material";
 import ContractView from "../views/contract_view";
 import SharesContractComponent from "../contracts/shares_contract";
+import SlateCustomContract from "../contracts/custom_contract/custom_contract";
 
 export function EditorRenderer(props: any) {
 
@@ -29,7 +29,7 @@ export function EditorRenderer(props: any) {
         case "shares_contract":
             return <SharesContractComponent {...props.element} />;
         case "custom_contract":
-            return <SpreadSheet {...props.element} />;
+            return <SlateCustomContract {...props.element} />;
 
     }
     return (<Tag

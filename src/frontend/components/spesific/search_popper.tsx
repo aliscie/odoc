@@ -20,6 +20,8 @@ import useSearchFiles from "./search_popper/search_files_content";
 import ResultFile from "./search_popper/result_file";
 import TitleIcon from '@mui/icons-material/Title';
 
+//TODO use this import CustomizedInputBase from "../genral/search_tools";
+
 export function OptionItem(props: any) {
     return (
         <Tooltip {...props} title={props.title}>
@@ -162,6 +164,7 @@ function SearchPopper() {
                 }
             }}
         >
+            {/*<CustomizedInputBase/>*/}
             <Popper
                 style={{
                     zIndex: 1000, // Increase the z-index to make it appear on top of everything

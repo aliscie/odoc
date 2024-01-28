@@ -7,11 +7,12 @@ use candid::{CandidType, Deserialize, Principal};
 
 use crate::contracts::Contract;
 
-use crate::{PaymentContract};
+use crate::{CPayment, PaymentContract};
+use serde::Serialize;
 
 static COUNTER: AtomicU64 = AtomicU64::new(0);
 
-#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub enum ColumnTypes {
     Text,
     Number,
@@ -22,7 +23,7 @@ pub enum ColumnTypes {
     Category,
 }
 
-#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 enum Operation {
     BiggerOrEqual,
     Bigger,
@@ -30,48 +31,46 @@ enum Operation {
     Contains,
 }
 
-#[derive(Eq, PartialEq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
+#[derive(Eq, PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub struct Filter {
     name: String,
     formula: Option<String>,
     operations: Vec<Operation>,
 }
 
-#[derive(Eq, PartialEq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
-enum PermissionType {
-    CanUpdate,
-    CanRead,
+#[derive(Eq, PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
+pub enum PermissionType {
+    Edit(Principal),
+    View(Principal),
+    AnyOneEdite,
+    AnyOneView,
 }
 
-#[derive(Eq, PartialEq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
-pub struct ColumnPermission {
-    _type: PermissionType,
-    granted_to: Vec<Principal>, // You can set the Principal to anonymous user (2vxsx-fae) to say any one have access. // also by setting the Principal to "2vxsx-fae" will empty the Vec in which the Vec will have only one item which is `["2vxsx-fae"]`
-}
-
-#[derive(Eq, PartialEq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
+#[derive(PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
 enum Trigger {
-    Timer,
-    Update,
+    Timer(f64),
+    //  f64 is time in nanoseconds from ic_cdk::api::time()
+    Update(String), // String ==  column id
 }
 
-#[derive(Eq, PartialEq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
+#[derive(PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
 enum Execute {
     // TransferToken(TransferToken)
     TransferToken,
-    TransferUsdt,
+    TransferUsdt(CPayment),
     TransferNft,
 }
 
-#[derive(Eq, PartialEq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
+#[derive(PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub struct Formula {
     trigger: Trigger,
     trigger_target: String,
+    // trigger_target is date like 2021-01-01 or column name
     operation: Operation,
     execute: Execute,
 }
 
-#[derive(Eq, PartialEq, PartialOrd, Clone, Debug, CandidType, Deserialize)]
+#[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub struct Column {
     pub id: String,
     pub(crate) editable: bool,
@@ -80,7 +79,7 @@ pub struct Column {
     pub(crate) formula: Option<Formula>,
     pub(crate) dataValidator: Option<String>,
     pub(crate) filters: Vec<Filter>,
-    pub(crate) permissions: Vec<ColumnPermission>,
+    pub(crate) permissions: Vec<PermissionType>,
 }
 
 impl Column {
@@ -101,7 +100,7 @@ impl Column {
 type ColumnName = String;
 type TableCellValue = String;
 
-#[derive(Eq, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub struct Table {
     pub(crate) columns: Vec<Column>,
     pub(crate) rows: Vec<Row>,
@@ -116,26 +115,11 @@ impl Table {
     }
 }
 
-#[derive(Eq, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(Eq, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub struct Row {
     pub id: String,
     contract: Option<Contract>,
     pub(crate) cells: Option<HashMap<ColumnName, TableCellValue>>,
 }
 
-
-impl Row {
-    pub fn new_payment(payment: PaymentContract) -> Self {
-        Row {
-            id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
-            contract: Option::from(Contract::PaymentContract(payment.contract_id)),
-            cells: None,
-        }
-    }
-}
-// pub enum Row {
-//     Contract(Contract),
-//     NormalCell(HashMap<ColumnName, TableCellValue>), // TODO this is for norma cells, for example you can add more colulmns for a note, or adtional data like users age, lastname etc.
-//     // Request(HashMap<ColumnName, TableCellValue>), // TODO people can request, change, or add contract and this request will show in form of a comment on the table.
-// }
 

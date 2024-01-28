@@ -1,9 +1,10 @@
 import {Principal} from "@dfinity/principal";
 import {
     Column,
+    CustomContract,
     PaymentContract,
-    PaymentContract,
-    Share, SharePayment, SharePaymentOption,
+    Share,
+    SharePaymentOption,
     SharesContract
 } from "../../declarations/user_canister/user_canister.did";
 
@@ -79,6 +80,26 @@ export let shares_contract = {
     "type": "shares_contract"
 }
 
+export let custom_contract: CustomContract = {
+    'id': randomString(),
+    "name": "Custom contract",
+    'creator': Principal.fromText("2vxsx-fae"),
+    'date_created': Date.now() * 1e6,
+    'payments': [],
+    'contracts': [],
+    'date_updated': 0,
+}
+
+export let slate_Custom_contract = {
+    "id": custom_contract.id,
+    "children": [{
+        "id": custom_contract.id,
+        "text": "",
+        "data": []
+    }],
+    "type": "custom_contract"
+}
+
 export let payment_contract = {
     "id": payment_contract_id,
     "children": [{
@@ -107,6 +128,7 @@ export let payment_contract = {
     }],
     "type": "payment_contract"
 }
+
 export let file_content_sample = [
     {type: "p", children: [{text: ""}]},
 ]

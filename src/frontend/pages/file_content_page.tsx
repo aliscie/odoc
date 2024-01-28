@@ -2,10 +2,11 @@ import {useDispatch, useSelector} from "react-redux";
 import * as React from "react";
 import {useCallback} from "react";
 import {handleRedux} from "../redux/main";
-import {payment_contract_sample, shares_contract_sample} from "../data_processing/data_samples";
+import {custom_contract, payment_contract_sample, shares_contract_sample} from "../data_processing/data_samples";
 import {FileNode} from "../../declarations/user_canister/user_canister.did";
 import EditorComponent from "../components/editor_components/main";
 import debounce from "../utils/debounce";
+import {Principal} from "@dfinity/principal";
 
 
 function FileContentPage() {
@@ -70,6 +71,11 @@ function FileContentPage() {
                 let new_contract = {...shares_contract_sample, author: profile.id};
                 dispatch(handleRedux("ADD_CONTRACT", {contract: new_contract}))
                 dispatch(handleRedux("CONTRACT_CHANGES", {changes: new_contract}));
+            case "custom_contract":
+                custom_contract.creator = Principal.fromText(profile.id)
+                custom_contract.date_created = BigInt(Date.now() * 1e6)
+                dispatch(handleRedux("ADD_CONTRACT", {contract: custom_contract}))
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: custom_contract}));
             case "data_grid":
                 return null;
             default:

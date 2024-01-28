@@ -65,18 +65,22 @@ export const idlFactory = ({ IDL }) => {
     'formula' : IDL.Opt(IDL.Text),
   });
   const PermissionType = IDL.Variant({
-    'CanRead' : IDL.Null,
-    'CanUpdate' : IDL.Null,
+    'Edit' : IDL.Principal,
+    'View' : IDL.Principal,
+    'AnyOneView' : IDL.Null,
+    'AnyOneEdite' : IDL.Null,
   });
-  const ColumnPermission = IDL.Record({
-    '_type' : PermissionType,
-    'granted_to' : IDL.Vec(IDL.Principal),
+  const Trigger = IDL.Variant({ 'Timer' : IDL.Float64, 'Update' : IDL.Text });
+  const CPayment = IDL.Record({
+    'date_created' : IDL.Float64,
+    'sender' : IDL.Principal,
+    'released' : IDL.Bool,
+    'amount' : IDL.Float64,
   });
-  const Trigger = IDL.Variant({ 'Timer' : IDL.Null, 'Update' : IDL.Null });
   const Execute = IDL.Variant({
     'TransferNft' : IDL.Null,
     'TransferToken' : IDL.Null,
-    'TransferUsdt' : IDL.Null,
+    'TransferUsdt' : CPayment,
   });
   const Formula = IDL.Record({
     'trigger_target' : IDL.Text,
@@ -89,7 +93,7 @@ export const idlFactory = ({ IDL }) => {
     '_type' : ColumnTypes,
     'field' : IDL.Text,
     'filters' : IDL.Vec(Filter),
-    'permissions' : IDL.Vec(ColumnPermission),
+    'permissions' : IDL.Vec(PermissionType),
     'dataValidator' : IDL.Opt(IDL.Text),
     'editable' : IDL.Bool,
     'formula' : IDL.Opt(Formula),
@@ -119,6 +123,39 @@ export const idlFactory = ({ IDL }) => {
     'seen_by' : IDL.Vec(IDL.Principal),
     'message' : IDL.Text,
     'chat_id' : IDL.Text,
+  });
+  const CCell = IDL.Record({
+    'id' : IDL.Text,
+    'field' : IDL.Text,
+    'value' : IDL.Text,
+  });
+  const CRow = IDL.Record({ 'id' : IDL.Text, 'cells' : IDL.Vec(CCell) });
+  const CColumn = IDL.Record({
+    'id' : IDL.Text,
+    'field' : IDL.Text,
+    'column_type' : ColumnTypes,
+    'filters' : IDL.Vec(Filter),
+    'permissions' : IDL.Vec(PermissionType),
+    'headerName' : IDL.Text,
+    'data_validator' : IDL.Opt(IDL.Text),
+    'editable' : IDL.Bool,
+    'formula' : IDL.Opt(Formula),
+    'deletable' : IDL.Bool,
+  });
+  const CContract = IDL.Record({
+    'id' : IDL.Text,
+    'name' : IDL.Text,
+    'rows' : IDL.Vec(CRow),
+    'columns' : IDL.Vec(CColumn),
+  });
+  const CustomContract = IDL.Record({
+    'id' : IDL.Text,
+    'creator' : IDL.Principal,
+    'date_created' : IDL.Float64,
+    'payments' : IDL.Vec(CPayment),
+    'name' : IDL.Text,
+    'contracts' : IDL.Vec(CContract),
+    'date_updated' : IDL.Float64,
   });
   const PaymentContract = IDL.Record({
     'extra_cells' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
@@ -159,6 +196,7 @@ export const idlFactory = ({ IDL }) => {
     'shares_requests' : IDL.Vec(IDL.Tuple(IDL.Text, ShareRequest)),
   });
   const StoredContract = IDL.Variant({
+    'CustomContract' : CustomContract,
     'PaymentContract' : PaymentContract,
     'SharesContract' : SharesContract,
   });
