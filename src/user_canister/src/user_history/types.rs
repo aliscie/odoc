@@ -138,6 +138,15 @@ impl UserHistory {
         if caller() == self.id {
             return Err("You can't rate yourself".to_string());
         }
+        let profiel = UserHistory::get(caller());
+
+        if profiel.total_rate < 2.0 {
+            return Err("You need to have at least 2 stars rating to be able to rate others".to_string());
+        }
+        if profiel.users_interactions < 3.0 {
+            return Err("You need to have at least 3 interactions to be able to rate others".to_string());
+        }
+
         if let Some(rating) = self.get_your_rating() {
             self.rates_by_others.retain(|r| r.user_id != caller());
             // return Err("You already rated this user short ago. Please, wait 5 minutes before you can relate them.".to_string());
