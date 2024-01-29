@@ -4,7 +4,7 @@ import type { ActorMethod } from '@dfinity/agent';
 export interface ActionRating {
   'id' : string,
   'action_type' : ActionType,
-  'date' : bigint,
+  'date' : number,
   'rating' : number,
 }
 export type ActionType = { 'ReleasePayment' : null } |
@@ -20,13 +20,12 @@ export interface CCell { 'id' : string, 'field' : string, 'value' : string }
 export interface CColumn {
   'id' : string,
   'field' : string,
+  'formula_string' : string,
   'column_type' : ColumnTypes,
   'filters' : Array<Filter>,
   'permissions' : Array<PermissionType>,
   'headerName' : string,
-  'data_validator' : [] | [string],
   'editable' : boolean,
-  'formula' : [] | [Formula],
   'deletable' : boolean,
 }
 export interface CContract {
@@ -36,10 +35,13 @@ export interface CContract {
   'columns' : Array<CColumn>,
 }
 export interface CPayment {
+  'id' : string,
   'date_created' : number,
+  'date_released' : number,
   'sender' : Principal,
   'released' : boolean,
   'amount' : number,
+  'receiver' : Principal,
 }
 export interface CRow { 'id' : string, 'cells' : Array<CCell> }
 export interface CanisterOutputCertifiedMessages {
@@ -113,16 +115,16 @@ export interface CustomContract {
   'date_created' : number,
   'payments' : Array<CPayment>,
   'name' : string,
+  'formulas' : Array<Formula>,
   'contracts' : Array<CContract>,
   'date_updated' : number,
 }
 export interface Exchange {
   'to' : string,
   '_type' : ExchangeType,
-  'date_created' : bigint,
-  'date' : string,
+  'date_created' : number,
   'from' : string,
-  'amount' : bigint,
+  'amount' : number,
 }
 export type ExchangeType = { 'Withdraw' : null } |
   { 'Deposit' : null } |
@@ -158,6 +160,7 @@ export interface Formula {
   'trigger_target' : string,
   'trigger' : Trigger,
   'operation' : Operation,
+  'column_id' : string,
   'execute' : Execute,
 }
 export interface Friend { 'sender' : User, 'receiver' : User }
@@ -246,14 +249,14 @@ export interface PostUser {
 }
 export interface Rating {
   'id' : string,
-  'date' : bigint,
+  'date' : number,
   'user_id' : Principal,
   'comment' : string,
   'rating' : number,
 }
 export interface RatingFE {
   'id' : string,
-  'date' : bigint,
+  'date' : number,
   'user' : UserFE,
   'comment' : string,
   'rating' : number,
@@ -273,7 +276,7 @@ export type Result_11 = { 'Ok' : CanisterOutputCertifiedMessages } |
   { 'Err' : string };
 export type Result_2 = { 'Ok' : string } |
   { 'Err' : string };
-export type Result_3 = { 'Ok' : bigint } |
+export type Result_3 = { 'Ok' : number } |
   { 'Err' : string };
 export type Result_4 = { 'Ok' : StoredContract } |
   { 'Err' : string };
@@ -340,7 +343,7 @@ export type StoredContract = { 'CustomContract' : CustomContract } |
   { 'SharesContract' : SharesContract };
 export interface Table { 'rows' : Array<Row>, 'columns' : Array<Column> }
 export type Trigger = { 'Timer' : number } |
-  { 'Update' : string };
+  { 'Update' : CColumn };
 export interface User {
   'id' : string,
   'name' : string,
@@ -350,24 +353,26 @@ export interface User {
 export interface UserFE { 'id' : string, 'name' : string }
 export interface UserHistoryFE {
   'id' : Principal,
-  'users_interactions' : bigint,
-  'transactions_received' : bigint,
+  'users_interactions' : number,
+  'transactions_received' : number,
   'rates_by_actions' : Array<ActionRating>,
-  'shares_changes_rejects' : bigint,
-  'received_shares_payments' : bigint,
+  'shares_changes_rejects' : number,
+  'received_shares_payments' : number,
   'latest_payments_cancellation' : Array<PaymentContract>,
-  'shares_change_request' : bigint,
+  'shares_change_request' : number,
   'total_rate' : number,
-  'spent' : bigint,
-  'transactions_sent' : bigint,
+  'spent' : number,
+  'transactions_sent' : number,
   'rates_by_others' : Array<RatingFE>,
-  'shares_changes_accepts' : bigint,
-  'total_payments_cancellation' : bigint,
+  'shares_changes_accepts' : number,
+  'total_payments_cancellation' : number,
 }
 export interface Wallet {
-  'balance' : bigint,
+  'balance' : number,
   'owner' : string,
+  'total_debt' : number,
   'exchanges' : Array<Exchange>,
+  'debts' : Array<[string, number]>,
 }
 export interface WebsocketMessage {
   'sequence_num' : bigint,
@@ -391,7 +396,7 @@ export interface _SERVICE {
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
   'delete_payment' : ActorMethod<[string], Result_1>,
   'delete_post' : ActorMethod<[string], Result_1>,
-  'deposit_usdt' : ActorMethod<[bigint], Result_3>,
+  'deposit_usdt' : ActorMethod<[number], Result_3>,
   'get_all_files' : ActorMethod<[], [] | [Array<[string, FileNode]>]>,
   'get_all_files_content' : ActorMethod<
     [],
@@ -411,7 +416,7 @@ export interface _SERVICE {
   'get_my_chats' : ActorMethod<[], Array<FEChat>>,
   'get_notifications' : ActorMethod<[], Array<Notification>>,
   'get_payment_cancellations' : ActorMethod<
-    [Principal, bigint, bigint],
+    [Principal, number, number],
     Array<PaymentContract>
   >,
   'get_post' : ActorMethod<[string], Result_6>,
@@ -454,7 +459,7 @@ export interface _SERVICE {
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
   'vote_down' : ActorMethod<[string], Result_6>,
   'vote_up' : ActorMethod<[string], Result_6>,
-  'withdraw_usdt' : ActorMethod<[bigint], Result_3>,
+  'withdraw_usdt' : ActorMethod<[number], Result_3>,
   'ws_close' : ActorMethod<[CanisterWsCloseArguments], Result_1>,
   'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_11>,
   'ws_message' : ActorMethod<

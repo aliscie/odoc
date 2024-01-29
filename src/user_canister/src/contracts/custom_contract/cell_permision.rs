@@ -79,7 +79,7 @@ pub fn check_cells_update_permissions(mut c_contract: CContract, old_contract: C
                     field: old_cell.field.clone(), // field can't be updated
                     id: old_cell.id.clone(), // id can't be updated
                 };
-                if let Some(column) = old_contract.get_column(cell.field.clone()) {
+                if let Some(column) = old_contract.get_column(&cell.field.clone()) {
                     if !column.can_update() {
                         // If the user does not have edit permission or it's AnyOneEdite,
                         // set the cell back to the old value

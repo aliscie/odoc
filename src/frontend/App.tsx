@@ -51,18 +51,17 @@ function App() {
 
     return (
         <Theme>
-            <SlateCustomContract/>
-            {/*{state && <BrowserRouter>*/}
-            {/*    <SearchPopper/>*/}
-            {/*    <SnackbarProvider maxSnack={3}>*/}
-            {/*        <RegistrationForm/>*/}
-            {/*        <MessagesDialog/>*/}
-            {/*        <NavAppBar/>*/}
-            {/*        <NavBar>*/}
-            {/*            <Pages/>*/}
-            {/*        </NavBar>*/}
-            {/*    </SnackbarProvider>*/}
-            {/*</BrowserRouter>}*/}
+            {state && <BrowserRouter>
+                <SearchPopper/>
+                <SnackbarProvider maxSnack={3}>
+                    <RegistrationForm/>
+                    <MessagesDialog/>
+                    <NavAppBar/>
+                    <NavBar>
+                        <Pages/>
+                    </NavBar>
+                </SnackbarProvider>
+            </BrowserRouter>}
         </Theme>
     )
         ;

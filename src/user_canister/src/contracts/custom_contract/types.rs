@@ -6,12 +6,12 @@ use ic_cdk::caller;
 use candid::{CandidType, Deserialize};
 use candid::Principal;
 
-use crate::{CONTRACTS_STORE, SharesContract, StoredContract};
+use crate::{CONTRACTS_STORE, ExchangeType, SharesContract, StoredContract, Wallet};
 use crate::contracts::custom_contract::cell_permision;
 use crate::contracts::PaymentContract;
 
 use crate::storage_schema::ContractId;
-use crate::tables::{ColumnTypes, Filter, Formula, PermissionType};
+use crate::tables::{ColumnTypes, Execute, Filter, Formula, PermissionType, Trigger};
 
 
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
@@ -22,8 +22,7 @@ pub struct CColumn {
     pub headerName: String,
     pub deletable: bool,
     pub column_type: ColumnTypes,
-    pub formula: Option<Formula>,
-    pub data_validator: Option<String>,
+    pub formula_string: String,
     pub filters: Vec<Filter>,
     pub permissions: Vec<PermissionType>,
 }
@@ -54,11 +53,33 @@ pub struct CContract {
 
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub struct CPayment {
+    pub id: String,
     pub amount: f64,
     pub sender: Principal,
+    pub receiver: Principal,
     pub date_created: f64,
+    pub date_released: f64,
+    // pub date_updated: f64,
     pub released: bool,
+    // Note if released == false then it is a promise not a payment
+    // Note if conformed == true then the receiver is claiming the promos
+    // Note if conformed == true the the promos should be protected and updatable.
 }
+
+impl CPayment {
+    pub fn pay(mut self) -> Self {
+        let mut sender_wallet = Wallet::get(self.sender.clone());
+        let mut receiver_wallet = Wallet::get(self.receiver.clone());
+        let withdraw = ExchangeType::LocalSend;
+        let deposit = ExchangeType::LocalSend;
+        sender_wallet.withdraw(self.amount.clone(), self.receiver.clone().to_string(), withdraw).expect("TODO: panic message");
+        sender_wallet.remove_debt(self.id.clone()).expect("TODO: remove_debt panic message");
+        receiver_wallet.deposit(self.amount, self.sender.clone().to_string(), deposit).expect("TODO: pay deposit panic message");
+        self.released = true;
+        return self.clone();
+    }
+}
+
 
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub struct CustomContract {
@@ -69,6 +90,7 @@ pub struct CustomContract {
     pub date_updated: f64,
     pub contracts: Vec<CContract>,
     pub payments: Vec<CPayment>,
+    pub formulas: Vec<Formula>,
 }
 
 impl CColumn {
@@ -79,8 +101,54 @@ impl CColumn {
 
 
 impl CustomContract {
+    pub fn exec(&self, formula: Formula, target_column: CColumn) {
+        match formula.execute {
+            Execute::TransferToken => {
+                // let transfer_token = TransferToken {
+                //     from: self.creator,
+                //     to: formula.trigger_target,
+                //     amount: 1,
+                // };
+            }
+            Execute::TransferUsdt(c_payment) => {
+                // handle CPayment
+                let target_contract = self.get_contract_of_column(formula.trigger_target).unwrap();
+                for row in target_contract.rows.clone() {
+                    let cell = row.cells.iter().find(|cell| cell.field == target_column.field).unwrap();
+                    // let payment_contract = PaymentContract::new(payment.clone());
+                    // payment_contract.transfer_usdt(cell.value.parse::<f64>().unwrap());
+                }
+                // let payment_contract = PaymentContract::new(payment);
+                // payment_contract.transfer_usdt();
+            }
+            Execute::TransferNft => {
+                // let transfer_token = TransferToken {
+                //     from: self.creator,
+                //     to: formula.trigger_target,
+                //     amount: 1,
+                // };
+            }
+        }
+    }
+
+    pub fn execute_formula(&mut self) {
+        for formula in self.formulas.clone() {
+            // let column_id: String = formula.trigger_target.clone();
+            // let trigger: Trigger = formula.trigger.clone();
+            // let trigger_target: String = formula.trigger_target.clone();
+            // let operation: Operation = formula.operation.clone();
+            let execute: Execute = formula.execute.clone();
+            if let Execute::TransferUsdt(c_payment) = execute {
+                let c_payment = c_payment.pay();
+                self.payments.retain(|payment| payment.id != c_payment.id);
+                self.payments.push(c_payment);
+                self.clone().save().expect("TODO: panic message");
+            }
+        }
+    }
+
     pub fn can_update_cell(&self, cell: &CCell) -> bool {
-        if let Some(column) = self.get_column(cell.field.clone()) {
+        if let Some(column) = self.get_column(&cell.field.clone()) {
             column.can_update()
         } else {
             true
@@ -109,13 +177,26 @@ impl CustomContract {
         }
         columns
     }
-    pub fn get_column(&self, field: String) -> Option<CColumn> {
+
+    pub fn get_contract_of_column(&self, field: String) -> Option<CContract> {
+        for contract in self.contracts.clone() {
+            let column = contract.columns.iter().find(|column| column.field == field).map(|column| column.clone());
+            if let Some(column) = column {
+                return Some(contract.clone());
+            }
+        }
+
+        None
+    }
+
+    pub fn get_column(&self, field: &String) -> Option<CColumn> {
         let mut columns = vec![];
         for contract in self.contracts.clone() {
             columns.extend(contract.columns);
         }
-        columns.iter().find(|column| column.field == field).map(|column| column.clone())
+        columns.iter().find(|column| &column.field == field).map(|column| column.clone())
     }
+
     pub fn get(id: String) -> Option<Self> {
         CONTRACTS_STORE.with(|contracts_store| {
             let caller_contracts = contracts_store.borrow();
@@ -136,11 +217,17 @@ impl CustomContract {
             self.contracts = self.contracts.iter().map(|contract| cell_permision::check_cells_update_permissions(contract.clone(), old_contract.clone())).collect();
             self.contracts = self.contracts.iter().map(|contract| cell_permision::check_cells_add_delete_permissions(contract.clone(), old_contract.clone())).collect();
         }
+        for payment in self.payments.clone() {
+            // let receiver_wallet = Wallet::get(payment.reciver.clone());
+            let sender_wallet = Wallet::get(payment.sender.clone());
+            sender_wallet.add_debt(payment.amount.clone(), payment.id.clone())?;
+        }
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contracts_map = caller_contracts.entry(caller()).or_insert_with(HashMap::new);
             caller_contracts_map.insert(self.id.clone(), StoredContract::CustomContract(self.clone()));
         });
+        // self.execute_formula();
         Ok(self)
     }
 

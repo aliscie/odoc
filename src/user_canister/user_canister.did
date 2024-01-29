@@ -1,7 +1,7 @@
 type ActionRating = record {
   id : text;
   action_type : ActionType;
-  date : nat64;
+  date : float64;
   rating : float64;
 };
 type ActionType = variant {
@@ -19,13 +19,12 @@ type CCell = record { id : text; field : text; value : text };
 type CColumn = record {
   id : text;
   field : text;
+  formula_string : text;
   column_type : ColumnTypes;
   filters : vec Filter;
   permissions : vec PermissionType;
   headerName : text;
-  data_validator : opt text;
   editable : bool;
-  formula : opt Formula;
   deletable : bool;
 };
 type CContract = record {
@@ -35,10 +34,13 @@ type CContract = record {
   columns : vec CColumn;
 };
 type CPayment = record {
+  id : text;
   date_created : float64;
+  date_released : float64;
   sender : principal;
   released : bool;
   amount : float64;
+  receiver : principal;
 };
 type CRow = record { id : text; cells : vec CCell };
 type CanisterOutputCertifiedMessages = record {
@@ -97,16 +99,16 @@ type CustomContract = record {
   date_created : float64;
   payments : vec CPayment;
   name : text;
+  formulas : vec Formula;
   contracts : vec CContract;
   date_updated : float64;
 };
 type Exchange = record {
   to : text;
   _type : ExchangeType;
-  date_created : nat64;
-  date : text;
+  date_created : float64;
   from : text;
-  amount : nat64;
+  amount : float64;
 };
 type ExchangeType = variant { Withdraw; Deposit; LocalSend; LocalReceive };
 type Execute = variant { TransferNft; TransferToken; TransferUsdt : CPayment };
@@ -137,6 +139,7 @@ type Formula = record {
   trigger_target : text;
   trigger : Trigger;
   operation : Operation;
+  column_id : text;
   execute : Execute;
 };
 type Friend = record { sender : User; receiver : User };
@@ -228,14 +231,14 @@ type PostUser = record {
 };
 type Rating = record {
   id : text;
-  date : nat64;
+  date : float64;
   user_id : principal;
   comment : text;
   rating : float64;
 };
 type RatingFE = record {
   id : text;
-  date : nat64;
+  date : float64;
   user : UserFE;
   comment : text;
   rating : float64;
@@ -250,7 +253,7 @@ type Result_1 = variant { Ok; Err : text };
 type Result_10 = variant { Ok; Err };
 type Result_11 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
 type Result_2 = variant { Ok : text; Err : text };
-type Result_3 = variant { Ok : nat64; Err : text };
+type Result_3 = variant { Ok : float64; Err : text };
 type Result_4 = variant { Ok : StoredContract; Err : text };
 type Result_5 = variant { Ok : InitialData; Err : text };
 type Result_6 = variant { Ok : Post; Err : text };
@@ -311,7 +314,7 @@ type StoredContract = variant {
   SharesContract : SharesContract;
 };
 type Table = record { rows : vec Row; columns : vec Column };
-type Trigger = variant { Timer : float64; Update : text };
+type Trigger = variant { Timer : float64; Update : CColumn };
 type User = record {
   id : text;
   name : text;
@@ -321,24 +324,26 @@ type User = record {
 type UserFE = record { id : text; name : text };
 type UserHistoryFE = record {
   id : principal;
-  users_interactions : nat64;
-  transactions_received : nat64;
+  users_interactions : float64;
+  transactions_received : float64;
   rates_by_actions : vec ActionRating;
-  shares_changes_rejects : nat64;
-  received_shares_payments : nat64;
+  shares_changes_rejects : float64;
+  received_shares_payments : float64;
   latest_payments_cancellation : vec PaymentContract;
-  shares_change_request : nat64;
+  shares_change_request : float64;
   total_rate : float64;
-  spent : nat64;
-  transactions_sent : nat64;
+  spent : float64;
+  transactions_sent : float64;
   rates_by_others : vec RatingFE;
-  shares_changes_accepts : nat64;
-  total_payments_cancellation : nat64;
+  shares_changes_accepts : float64;
+  total_payments_cancellation : float64;
 };
 type Wallet = record {
-  balance : nat64;
+  balance : float64;
   owner : text;
+  total_debt : float64;
   exchanges : vec Exchange;
+  debts : vec record { text; float64 };
 };
 type WebsocketMessage = record {
   sequence_num : nat64;
@@ -362,7 +367,7 @@ service : () -> {
   delete_file : (text) -> (opt FileNode);
   delete_payment : (text) -> (Result_1);
   delete_post : (text) -> (Result_1);
-  deposit_usdt : (nat64) -> (Result_3);
+  deposit_usdt : (float64) -> (Result_3);
   get_all_files : () -> (opt vec record { text; FileNode }) query;
   get_all_files_content : () -> (vec record { text; vec ContentNode }) query;
   get_all_users : () -> (vec record { text; User }) query;
@@ -375,7 +380,7 @@ service : () -> {
   get_initial_data : () -> (Result_5) query;
   get_my_chats : () -> (vec FEChat) query;
   get_notifications : () -> (vec Notification) query;
-  get_payment_cancellations : (principal, nat64, nat64) -> (
+  get_payment_cancellations : (principal, float64, float64) -> (
       vec PaymentContract,
     ) query;
   get_post : (text) -> (Result_6) query;
@@ -414,7 +419,7 @@ service : () -> {
   update_user_profile : (RegisterUser) -> (Result);
   vote_down : (text) -> (Result_6);
   vote_up : (text) -> (Result_6);
-  withdraw_usdt : (nat64) -> (Result_3);
+  withdraw_usdt : (float64) -> (Result_3);
   ws_close : (CanisterWsCloseArguments) -> (Result_1);
   ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_11) query;
   ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_1);

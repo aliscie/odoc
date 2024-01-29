@@ -1,6 +1,6 @@
 import * as React from "react";
 import {useState} from "react";
-import {Share, ShareRequest} from "../../../../declarations/user_canister/user_canister.did";
+import {Share, ShareRequest, StoredContract} from "../../../../declarations/user_canister/user_canister.did";
 import useGetUser from "../../../utils/get_user_by_principal";
 import {useDispatch, useSelector} from "react-redux";
 import {randomString} from "../../../data_processing/data_samples";
@@ -79,9 +79,11 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
             shares_requests,
         };
 
-
-        dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contracts[table_content.id]}));
-        dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contracts[table_content.id]}));
+        let stored_contract: StoredContract = {
+            "SharesContract": updated_contracts[table_content.id]
+        }
+        dispatch(handleRedux("CONTRACT_CHANGES", {changes: stored_contract}));
+        dispatch(handleRedux("UPDATE_CONTRACT", {contract: stored_contract}));
 
 
     }

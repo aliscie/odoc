@@ -232,14 +232,6 @@ impl SharesContract {
         })
     }
 
-    pub fn update_shares_contracts(contracts: Vec<StoredContract>) -> Result<(), String> {
-        for contract in contracts {
-            if let StoredContract::SharesContract(share_contract) = contract {
-                share_contract.save()?;
-            }
-        };
-        Ok(())
-    }
 
     pub fn get(contract_id: ContractId, author: Principal) -> Result<SharesContract, String> {
         CONTRACTS_STORE.with(|contracts_store| {

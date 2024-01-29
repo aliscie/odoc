@@ -34,7 +34,7 @@ export const idlFactory = ({ IDL }) => {
     'confirmed' : IDL.Bool,
     'receiver' : IDL.Principal,
   });
-  const Result_3 = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });
+  const Result_3 = IDL.Variant({ 'Ok' : IDL.Float64, 'Err' : IDL.Text });
   const Contract = IDL.Variant({
     'PaymentContract' : IDL.Text,
     'SharesContract' : IDL.Text,
@@ -70,12 +70,26 @@ export const idlFactory = ({ IDL }) => {
     'AnyOneView' : IDL.Null,
     'AnyOneEdite' : IDL.Null,
   });
-  const Trigger = IDL.Variant({ 'Timer' : IDL.Float64, 'Update' : IDL.Text });
+  const CColumn = IDL.Record({
+    'id' : IDL.Text,
+    'field' : IDL.Text,
+    'formula_string' : IDL.Text,
+    'column_type' : ColumnTypes,
+    'filters' : IDL.Vec(Filter),
+    'permissions' : IDL.Vec(PermissionType),
+    'headerName' : IDL.Text,
+    'editable' : IDL.Bool,
+    'deletable' : IDL.Bool,
+  });
+  const Trigger = IDL.Variant({ 'Timer' : IDL.Float64, 'Update' : CColumn });
   const CPayment = IDL.Record({
+    'id' : IDL.Text,
     'date_created' : IDL.Float64,
+    'date_released' : IDL.Float64,
     'sender' : IDL.Principal,
     'released' : IDL.Bool,
     'amount' : IDL.Float64,
+    'receiver' : IDL.Principal,
   });
   const Execute = IDL.Variant({
     'TransferNft' : IDL.Null,
@@ -86,6 +100,7 @@ export const idlFactory = ({ IDL }) => {
     'trigger_target' : IDL.Text,
     'trigger' : Trigger,
     'operation' : Operation,
+    'column_id' : IDL.Text,
     'execute' : Execute,
   });
   const Column = IDL.Record({
@@ -130,18 +145,6 @@ export const idlFactory = ({ IDL }) => {
     'value' : IDL.Text,
   });
   const CRow = IDL.Record({ 'id' : IDL.Text, 'cells' : IDL.Vec(CCell) });
-  const CColumn = IDL.Record({
-    'id' : IDL.Text,
-    'field' : IDL.Text,
-    'column_type' : ColumnTypes,
-    'filters' : IDL.Vec(Filter),
-    'permissions' : IDL.Vec(PermissionType),
-    'headerName' : IDL.Text,
-    'data_validator' : IDL.Opt(IDL.Text),
-    'editable' : IDL.Bool,
-    'formula' : IDL.Opt(Formula),
-    'deletable' : IDL.Bool,
-  });
   const CContract = IDL.Record({
     'id' : IDL.Text,
     'name' : IDL.Text,
@@ -154,6 +157,7 @@ export const idlFactory = ({ IDL }) => {
     'date_created' : IDL.Float64,
     'payments' : IDL.Vec(CPayment),
     'name' : IDL.Text,
+    'formulas' : IDL.Vec(Formula),
     'contracts' : IDL.Vec(CContract),
     'date_updated' : IDL.Float64,
   });
@@ -225,15 +229,16 @@ export const idlFactory = ({ IDL }) => {
   const Exchange = IDL.Record({
     'to' : IDL.Text,
     '_type' : ExchangeType,
-    'date_created' : IDL.Nat64,
-    'date' : IDL.Text,
+    'date_created' : IDL.Float64,
     'from' : IDL.Text,
-    'amount' : IDL.Nat64,
+    'amount' : IDL.Float64,
   });
   const Wallet = IDL.Record({
-    'balance' : IDL.Nat64,
+    'balance' : IDL.Float64,
     'owner' : IDL.Text,
+    'total_debt' : IDL.Float64,
     'exchanges' : IDL.Vec(Exchange),
+    'debts' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Float64)),
   });
   const InitialData = IDL.Record({
     'FilesContents' : IDL.Opt(
@@ -313,31 +318,31 @@ export const idlFactory = ({ IDL }) => {
   const ActionRating = IDL.Record({
     'id' : IDL.Text,
     'action_type' : ActionType,
-    'date' : IDL.Nat64,
+    'date' : IDL.Float64,
     'rating' : IDL.Float64,
   });
   const RatingFE = IDL.Record({
     'id' : IDL.Text,
-    'date' : IDL.Nat64,
+    'date' : IDL.Float64,
     'user' : UserFE,
     'comment' : IDL.Text,
     'rating' : IDL.Float64,
   });
   const UserHistoryFE = IDL.Record({
     'id' : IDL.Principal,
-    'users_interactions' : IDL.Nat64,
-    'transactions_received' : IDL.Nat64,
+    'users_interactions' : IDL.Float64,
+    'transactions_received' : IDL.Float64,
     'rates_by_actions' : IDL.Vec(ActionRating),
-    'shares_changes_rejects' : IDL.Nat64,
-    'received_shares_payments' : IDL.Nat64,
+    'shares_changes_rejects' : IDL.Float64,
+    'received_shares_payments' : IDL.Float64,
     'latest_payments_cancellation' : IDL.Vec(PaymentContract),
-    'shares_change_request' : IDL.Nat64,
+    'shares_change_request' : IDL.Float64,
     'total_rate' : IDL.Float64,
-    'spent' : IDL.Nat64,
-    'transactions_sent' : IDL.Nat64,
+    'spent' : IDL.Float64,
+    'transactions_sent' : IDL.Float64,
     'rates_by_others' : IDL.Vec(RatingFE),
-    'shares_changes_accepts' : IDL.Nat64,
-    'total_payments_cancellation' : IDL.Nat64,
+    'shares_changes_accepts' : IDL.Float64,
+    'total_payments_cancellation' : IDL.Float64,
   });
   const Result_9 = IDL.Variant({
     'Ok' : IDL.Tuple(User, UserHistoryFE),
@@ -354,7 +359,7 @@ export const idlFactory = ({ IDL }) => {
   const Result_10 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
   const Rating = IDL.Record({
     'id' : IDL.Text,
-    'date' : IDL.Nat64,
+    'date' : IDL.Float64,
     'user_id' : IDL.Principal,
     'comment' : IDL.Text,
     'rating' : IDL.Float64,
@@ -433,7 +438,7 @@ export const idlFactory = ({ IDL }) => {
     'delete_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], []),
     'delete_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'delete_post' : IDL.Func([IDL.Text], [Result_1], []),
-    'deposit_usdt' : IDL.Func([IDL.Nat64], [Result_3], []),
+    'deposit_usdt' : IDL.Func([IDL.Float64], [Result_3], []),
     'get_all_files' : IDL.Func(
         [],
         [IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Text, FileNode)))],
@@ -467,7 +472,7 @@ export const idlFactory = ({ IDL }) => {
     'get_my_chats' : IDL.Func([], [IDL.Vec(FEChat)], ['query']),
     'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
     'get_payment_cancellations' : IDL.Func(
-        [IDL.Principal, IDL.Nat64, IDL.Nat64],
+        [IDL.Principal, IDL.Float64, IDL.Float64],
         [IDL.Vec(PaymentContract)],
         ['query'],
       ),
@@ -525,7 +530,7 @@ export const idlFactory = ({ IDL }) => {
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
     'vote_down' : IDL.Func([IDL.Text], [Result_6], []),
     'vote_up' : IDL.Func([IDL.Text], [Result_6], []),
-    'withdraw_usdt' : IDL.Func([IDL.Nat64], [Result_3], []),
+    'withdraw_usdt' : IDL.Func([IDL.Float64], [Result_3], []),
     'ws_close' : IDL.Func([CanisterWsCloseArguments], [Result_1], []),
     'ws_get_messages' : IDL.Func(
         [CanisterWsGetMessagesArguments],

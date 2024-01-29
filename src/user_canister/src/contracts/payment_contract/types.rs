@@ -91,9 +91,9 @@ impl PaymentContract {
     }
 
     pub fn update_payment_contracts(contracts: Vec<StoredContract>) -> Result<(), String> {
-        let user_balance: u64 = Wallet::get(caller()).balance;
+        let user_balance: f64 = Wallet::get(caller()).balance;
 
-        let mut total_amount: u64 = 0;
+        let mut total_amount = 0.0;
         let mut visited = vec![];
 
         let all_contracts: HashMap<ContractId, StoredContract> = Contract::get_all_contracts().unwrap_or(HashMap::new());
@@ -102,7 +102,7 @@ impl PaymentContract {
             if let StoredContract::PaymentContract(payment) = contract {
                 if !payment.released && payment.receiver != caller() {
                     visited.push(payment.clone().contract_id);
-                    total_amount += payment.amount;
+                    total_amount += payment.amount as f64;
                 }
             }
         }
@@ -111,20 +111,21 @@ impl PaymentContract {
             if let StoredContract::PaymentContract(payment) = contract {
                 if !payment.released && payment.receiver != caller() && !visited.contains(&payment.contract_id) {
                     visited.push(payment.clone().contract_id);
-                    total_amount += payment.amount;
+                    total_amount += payment.amount as f64;
                 }
             }
         };
-
+        // TODO instead of this use wallet.total_debt
+        //     wallet.add_debt(payment.amount, payment.id)?;
         if total_amount > user_balance {
             let message = format!("Total non-released contracts exceeds your current balance of {}", user_balance).to_string();
             return Err(message);
         }
 
-
+        // save the payment
         for contract in contracts {
             if let StoredContract::PaymentContract(payment) = contract {
-                PaymentContract::update_or_create(caller(), payment.clone())?;
+                let payment = payment.update_or_create(caller())?;
                 let content = NoteContent::PaymentContract(payment.clone(), PaymentAction::Update);
                 let new_notification = Notification {
                     id: payment.contract_id.clone(),
@@ -153,38 +154,22 @@ impl PaymentContract {
         Ok(())
     }
 
-    pub fn update_or_create(owner: Principal, payment: PaymentContract) -> Result<PaymentContract, String> {
-        CONTRACTS_STORE.with(|contracts_store| {
-            let mut caller_contracts = contracts_store.borrow_mut();
-            let caller_contract = caller_contracts
-                .entry(owner)
-                .or_insert_with(HashMap::new);
-
-            // check if there are changes by comparing old and new payment
-            if let Some(old_contract) = caller_contract.get(&payment.contract_id) {
-                if let StoredContract::PaymentContract(old_payment) = old_contract {
-                    if old_payment == &payment {
-                        return Err("No changes detected in the payment contract.".to_string());
-                    }
-                }
+    pub fn update_or_create(mut self, owner: Principal) -> Result<PaymentContract, String> {
+        if let Ok(old_payment) = Self::get(owner, self.contract_id.clone()) {
+            if old_payment == self {
+                return Err("No changes detected in the payment contract.".to_string());
             }
-            let contract = caller_contract
-                .entry(payment.clone().contract_id)
-                .or_insert_with(|| StoredContract::PaymentContract(payment.clone()));
-
-            if let StoredContract::PaymentContract(existing_payment) = contract {
-                if existing_payment.confirmed {
-                    return Err("Payment contract is confirmed and cannot be updated".to_string());
-                }
-                if existing_payment.canceled == true {
-                    return Err("Payment contract is canceled and cannot be updated".to_string());
-                }
-                *existing_payment = payment.clone();
-                return Ok(payment);
+            if old_payment.released {
+                return Err("Payment contract is already realised".to_string());
             }
-
-            Err("Somthing went wrong.".to_string())
-        })
+            if old_payment.confirmed {
+                return Err("Payment contract is confirmed and cannot be updated".to_string());
+            }
+            if old_payment.canceled {
+                return Err("Payment contract is canceled and cannot be updated".to_string());
+            }
+        };
+        self.save()
     }
 
 

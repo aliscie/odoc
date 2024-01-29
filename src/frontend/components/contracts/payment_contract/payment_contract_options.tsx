@@ -85,7 +85,6 @@ function PaymentOptions(payment: PaymentContract) {
     }
 
     const {profile} = useSelector((state: any) => state.filesReducer);
-    console.log({payment});
     if (payment.receiver && profile.id == payment.receiver.toString()) {
         if (!payment.confirmed && !payment.released) {
             return <div>

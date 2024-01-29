@@ -12,7 +12,7 @@ fn test_calic() {
         rating: 5.0,
         comment: "good".to_string(),
         user_id: Principal::anonymous(),
-        date: 0 as u64,
+        date: 0.0,
     };
     let total_rate: Vec<Rating> = vec![rating.clone(), rating.clone()];
     let total__actions_rate: Vec<Rating> = vec![];

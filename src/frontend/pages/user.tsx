@@ -86,7 +86,6 @@ function UserPage() {
         (async () => {
 
             let user = Principal.fromText(user_id);
-            console.log({user});
             let res: undefined | { Ok: [User, UserHistoryFE] } | { Err: string } = actor && await actor.get_user_profile(user);
             if ("Ok" in res) {
                 setUser(res.Ok[0])

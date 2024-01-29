@@ -38,14 +38,14 @@ fn pay_for_share_contract(contract_id: ContractId, amount: u64, author: String) 
     let from = caller().to_string();
     let to = author.to_string();
 
-    wallet.withdraw(amount.clone(), to, ExchangeType::LocalSend)?;
+    wallet.withdraw(amount.clone() as f64, to, ExchangeType::LocalSend)?;
 
     contract.pay(amount.clone())?;
 
     for share in contract.clone().shares.iter() {
         let share_value = amount.clone() * (share.clone().share / 100);
         let mut wallet = Wallet::get(share.receiver.clone());
-        wallet.deposit(share_value, from.clone(), ExchangeType::LocalReceive)?;
+        wallet.deposit(share_value as f64, from.clone(), ExchangeType::LocalReceive)?;
 
         let new_notification = Notification {
             id: contract.contract_id.clone(),

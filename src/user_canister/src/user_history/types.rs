@@ -28,7 +28,7 @@ pub struct Rating {
     pub comment: String,
     pub user_id: Principal,
     // user_id==the user who did the rating
-    pub date: u64,
+    pub date: f64,
 }
 
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
@@ -36,7 +36,7 @@ pub struct ActionRating {
     pub id: String,
     pub rating: f64,
     pub action_type: ActionType,
-    pub date: u64,
+    pub date: f64,
 }
 
 // Function to calculate percentage
@@ -54,28 +54,28 @@ fn calculate_percentage(value: f64, total: f64) -> f64 {
 pub struct UserHistory {
     pub id: Principal,
     // payment bad marks
-    pub total_payments_cancellation: u64,
+    pub total_payments_cancellation: f64,
     pub latest_payments_cancellation: Vec<PaymentContract>,
 
     // payments good mark
-    pub spent: u64,
-    pub received: u64,
-    pub users_interactions: u64,
-    pub transactions_sent: u64,
-    pub transactions_received: u64,
+    pub spent: f64,
+    pub received: f64,
+    pub users_interactions: f64,
+    pub transactions_sent: f64,
+    pub transactions_received: f64,
 
     // shares bad marks
-    pub shares_changes_rejects: u64,
+    pub shares_changes_rejects: f64,
 
     // shares good marks
-    pub shares_changes_accepts: u64,
-    pub received_shares_payments: u64,
+    pub shares_changes_accepts: f64,
+    pub received_shares_payments: f64,
 
     // custom contracts good mark
     // custom contracts bad marks
 
 
-    pub shares_change_request: u64,
+    pub shares_change_request: f64,
 
     // only the shares between at least two people that got approved by both
     pub rates_by_others: Vec<Rating>,
@@ -88,17 +88,17 @@ impl UserHistory {
     pub fn new(id: Principal) -> Self {
         let new_profile_history = UserHistory {
             id,
-            total_payments_cancellation: 0,
+            total_payments_cancellation: 0.0,
             latest_payments_cancellation: Vec::new(),
-            spent: 0,
-            received: 0,
-            users_interactions: 0,
-            transactions_sent: 0,
-            transactions_received: 0,
-            received_shares_payments: 0,
-            shares_change_request: 0,
-            shares_changes_rejects: 0,
-            shares_changes_accepts: 0,
+            spent: 0.0,
+            received: 0.0,
+            users_interactions: 0.0,
+            transactions_sent: 0.0,
+            transactions_received: 0.0,
+            received_shares_payments: 0.0,
+            shares_change_request: 0.0,
+            shares_changes_rejects: 0.0,
+            shares_changes_accepts: 0.0,
             rates_by_others: vec![],
             rates_by_actions: vec![],
             total_rate: 0.0,
@@ -168,7 +168,7 @@ impl UserHistory {
         }
 
         // Set the number of unique users to self.users_interactions
-        self.users_interactions = unique_users.len() as u64;
+        self.users_interactions = unique_users.len() as f64;
 
         self.clone()
     }
@@ -189,7 +189,7 @@ impl UserHistory {
         }
 
         // Set the number of unique users to self.users_interactions
-        self.users_interactions = unique_users.len() as u64;
+        self.users_interactions = unique_users.len() as f64;
 
         self.clone()
     }
@@ -272,7 +272,7 @@ impl UserHistory {
             id: "".to_string(),
             rating,
             action_type: ActionType::ReleasePayment,
-            date: ic_cdk::api::time(),
+            date: ic_cdk::api::time() as f64,
         };
         self.rates_by_actions.push(new_rating);
         self.calc_total_rate()
@@ -284,7 +284,7 @@ impl UserHistory {
             id: "".to_string(),
             rating,
             action_type: ActionType::CancelPayment,
-            date: ic_cdk::api::time(),
+            date: ic_cdk::api::time() as f64,
         };
         self.rates_by_actions.push(new_rating);
         self.calc_total_rate()

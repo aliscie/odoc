@@ -6,7 +6,7 @@ import {handleRedux} from "../../redux/main";
 import {useSnackbar} from "notistack";
 import {useTotalDept} from "./payment_contract/use_total_dept";
 import {Principal} from "@dfinity/principal";
-import {PaymentContract, Row, Table} from "../../../declarations/user_canister/user_canister.did";
+import {PaymentContract, Row, StoredContract, Table} from "../../../declarations/user_canister/user_canister.did";
 import useGetUser from "../../utils/get_user_by_principal";
 import {RenderReceiver, RenderRelease} from "./payment_contract/renderers";
 import {updateTableContent} from "./utils/update_table";
@@ -233,9 +233,9 @@ export default function PaymentContract(props: any) {
             extra_cells: [],
             objected: [],
         }
-
-        dispatch(handleRedux("UPDATE_CONTRACT", {contract: contract}));
-        dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
+        let stored_contract: StoredContract = { 'PaymentContract' : contract }
+        dispatch(handleRedux("UPDATE_CONTRACT", {contract: stored_contract}));
+        dispatch(handleRedux("CONTRACT_CHANGES", {changes: stored_contract}));
         revoke_message();
 
 

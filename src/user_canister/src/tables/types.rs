@@ -7,7 +7,7 @@ use candid::{CandidType, Deserialize, Principal};
 
 use crate::contracts::Contract;
 
-use crate::{CPayment, PaymentContract};
+use crate::{CColumn, CPayment, PaymentContract};
 use serde::Serialize;
 
 static COUNTER: AtomicU64 = AtomicU64::new(0);
@@ -47,14 +47,14 @@ pub enum PermissionType {
 }
 
 #[derive(PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
-enum Trigger {
+pub enum Trigger {
     Timer(f64),
     //  f64 is time in nanoseconds from ic_cdk::api::time()
-    Update(String), // String ==  column id
+    Update(CColumn), // String ==  column id
 }
 
 #[derive(PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
-enum Execute {
+pub enum Execute {
     // TransferToken(TransferToken)
     TransferToken,
     TransferUsdt(CPayment),
@@ -63,11 +63,12 @@ enum Execute {
 
 #[derive(PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub struct Formula {
-    trigger: Trigger,
-    trigger_target: String,
+    pub column_id: String,
+    pub trigger: Trigger,
+    pub trigger_target: String,
     // trigger_target is date like 2021-01-01 or column name
-    operation: Operation,
-    execute: Execute,
+    pub operation: Operation,
+    pub execute: Execute,
 }
 
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]

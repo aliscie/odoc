@@ -4,7 +4,7 @@ import DialogOver from "../../genral/daiolog_over";
 import {LoadingButton} from "@mui/lab";
 import {actor} from "../../../App";
 import {useDispatch, useSelector} from "react-redux";
-import {Share, SharesContract} from "../../../../declarations/user_canister/user_canister.did";
+import {Share, SharesContract, StoredContract} from "../../../../declarations/user_canister/user_canister.did";
 import {handleRedux} from "../../../redux/main";
 import {useSnackbar} from "notistack";
 
@@ -52,7 +52,8 @@ function ApplyButton({setData, props, req, id, contract}: any) {
                 return item;
             }),
         };
-        dispatch(handleRedux("UPDATE_CONTRACT", {contract: new_contract}));
+        let stored_contract: StoredContract = {"SharesContract": new_contract}
+        dispatch(handleRedux("UPDATE_CONTRACT", {contract: stored_contract}));
     }
 
     let Dialog = (props: any) => {

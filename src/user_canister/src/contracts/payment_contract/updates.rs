@@ -56,8 +56,8 @@ fn release_payment(id: ContentId) -> Result<(), String> {
 
     let mut receiver_wallet = Wallet::get(payment.receiver.clone());
     let mut sender_wallet = Wallet::get(caller());
-    receiver_wallet.deposit(payment.amount.clone(), caller().to_string(), ExchangeType::LocalReceive)?;
-    sender_wallet.withdraw(payment.amount.clone(), payment.receiver.to_string().clone(), ExchangeType::LocalSend)?;
+    receiver_wallet.deposit(payment.amount.clone() as f64, caller().to_string(), ExchangeType::LocalReceive)?;
+    sender_wallet.withdraw(payment.amount.clone() as f64, payment.receiver.to_string().clone(), ExchangeType::LocalSend)?;
 
     let content: NoteContent = NoteContent::PaymentContract(payment.clone(), PaymentAction::Released);
     let new_note = Notification {

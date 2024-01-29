@@ -18,34 +18,34 @@ pub struct RatingFE {
     pub comment: String,
     pub user: UserFE,
     // user_id==the user who did the rating
-    pub date: u64,
+    pub date: f64,
 }
 
 #[derive(Clone, Debug, CandidType, Deserialize)]
 pub struct UserHistoryFE {
     pub id: Principal,
     // payment bad marks
-    pub total_payments_cancellation: u64,
+    pub total_payments_cancellation: f64,
     pub latest_payments_cancellation: Vec<PaymentContract>,
 
     // payments good mark
-    pub spent: u64,
-    pub users_interactions: u64,
-    pub transactions_sent: u64,
-    pub transactions_received: u64,
+    pub spent: f64,
+    pub users_interactions: f64,
+    pub transactions_sent: f64,
+    pub transactions_received: f64,
 
     // shares bad marks
-    pub shares_changes_rejects: u64,
+    pub shares_changes_rejects: f64,
 
     // shares good marks
-    pub shares_changes_accepts: u64,
-    pub received_shares_payments: u64,
+    pub shares_changes_accepts: f64,
+    pub received_shares_payments: f64,
 
     // custom contracts good mark
     // custom contracts bad marks
 
 
-    pub shares_change_request: u64,
+    pub shares_change_request: f64,
 
     // only the shares between at least two people that got approved by both
     pub rates_by_others: Vec<RatingFE>,
@@ -63,7 +63,7 @@ impl From<UserHistory> for UserHistoryFE {
                 rating: r.rating,
                 comment: r.comment.clone(),
                 user: UserFE::from(r.user_id),
-                date: r.date,
+                date: r.date as f64,
             }
         }).collect();
 
@@ -95,7 +95,7 @@ fn get_user_profile(user_id: Principal) -> Result<(User, UserHistoryFE), String>
             .cloned()
     });
     let mut user_profile = UserHistory::get(user_id);
-    let total_canceled_payments = PaymentContract::get_canceled_payments(user_id, 0, 99999999).len() as u64;
+    let total_canceled_payments = PaymentContract::get_canceled_payments(user_id, 0, 99999999).len() as f64;
     let latest_canceled_payments = PaymentContract::get_latest_canceled_payments(user_id, 0, 50);
     user_profile.latest_payments_cancellation = latest_canceled_payments;
     user_profile.total_payments_cancellation = total_canceled_payments;
@@ -103,6 +103,6 @@ fn get_user_profile(user_id: Principal) -> Result<(User, UserHistoryFE), String>
 }
 
 #[query]
-fn get_payment_cancellations(user: Principal, from: u64, to: u64) -> Vec<PaymentContract> {
-    PaymentContract::get_canceled_payments(user, from, to)
+fn get_payment_cancellations(user: Principal, from: f64, to: f64) -> Vec<PaymentContract> {
+    PaymentContract::get_canceled_payments(user, from as u64, to as u64)
 }

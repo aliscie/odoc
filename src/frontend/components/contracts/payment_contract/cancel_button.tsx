@@ -3,7 +3,7 @@ import {Button, Input, Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
-import {PaymentContract} from "../../../../declarations/user_canister/user_canister.did";
+import {PaymentContract, StoredContract} from "../../../../declarations/user_canister/user_canister.did";
 
 import CancelIcon from '@mui/icons-material/Cancel';
 import {handleRedux} from "../../../redux/main";
@@ -21,7 +21,13 @@ function CancelButton({contract}: { contract: PaymentContract }) {
         closeSnackbar(loader);
         if ('Ok' in res) {
             enqueueSnackbar("Canceled successfully", {variant: "success"});
-            dispatch(handleRedux("UPDATE_CONTRACT", {id: contract.contract_id, ...contract, canceled: true}))
+            let stored_shares_contract: StoredContract = {
+                'PaymentContract': {
+                    contract_id: contract.contract_id, ...contract,
+                    canceled: true
+                }
+            }
+            dispatch(handleRedux("UPDATE_CONTRACT", {contract: stored_shares_contract}))
         } else {
             enqueueSnackbar(res.Err, {variant: "error"});
         }

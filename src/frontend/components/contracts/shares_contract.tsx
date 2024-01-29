@@ -98,7 +98,7 @@ export default function SharesContractComponent(props: any) {
                     setData((pre: any) => {
                         return {...pre, rows: normalized_rows}
                     })
-                    dispatch(handleRedux("UPDATE_CONTRACT", {contract: contract.Ok["SharesContract"]}));
+                    dispatch(handleRedux("UPDATE_CONTRACT", {contract: contract.Ok}));
 
                     //TODO console.log("Why this runs 3 times?");
 
@@ -284,9 +284,9 @@ export default function SharesContractComponent(props: any) {
                         return item;
                     }),
                 };
-
-                dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contract}));
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contract}));
+                let stored_shares_contract: StoredContract = {'SharesContract': updated_contract}
+                dispatch(handleRedux("UPDATE_CONTRACT", {contract: stored_shares_contract}));
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: stored_shares_contract}));
 
                 break
             case "Payment options":
@@ -310,8 +310,9 @@ export default function SharesContractComponent(props: any) {
                     ...contracts[table_content.id],
                     payment_options
                 }
-                dispatch(handleRedux("UPDATE_CONTRACT", {contract: options_updated_contract}));
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: options_updated_contract}));
+                let to_store_shares: StoredContract = {"SharesContract": options_updated_contract}
+                dispatch(handleRedux("UPDATE_CONTRACT", {contract: to_store_shares}));
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: to_store_shares}));
 
                 break
             default:
@@ -340,9 +341,9 @@ export default function SharesContractComponent(props: any) {
                     ...contracts[table_content.id],
                     shares_requests
                 }
-
-                dispatch(handleRedux("UPDATE_CONTRACT", {contract: req_updated_contract}));
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: req_updated_contract}));
+                to_store_shares = {"SharesContract": req_updated_contract}
+                dispatch(handleRedux("UPDATE_CONTRACT", {contract: to_store_shares}));
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: to_store_shares}));
         }
     }
 
@@ -380,9 +381,9 @@ export default function SharesContractComponent(props: any) {
             default:
                 break;
         }
-
-        dispatch(handleRedux("UPDATE_CONTRACT", {contract: delete_updated_contract}));
-        dispatch(handleRedux("CONTRACT_CHANGES", {changes: delete_updated_contract}));
+        let to_store: StoredContract = {"SharesContract": delete_updated_contract}
+        dispatch(handleRedux("UPDATE_CONTRACT", {contract: to_store}));
+        dispatch(handleRedux("CONTRACT_CHANGES", {changes: to_store}));
 
     };
     const addRow = (position) => {
@@ -400,8 +401,8 @@ export default function SharesContractComponent(props: any) {
                     ...contracts[table_content.id],
                 }
                 updated_contract.payment_options.splice(position, 0, new_payment_option);
-
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: payment_options_updated_contract}));
+                let stored_payment: StoredContract = {"PaymentContract": payment_options_updated_contract}
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: stored_payment}));
 
                 return new_payment_option;
             case "Shares":
@@ -416,9 +417,9 @@ export default function SharesContractComponent(props: any) {
                     ...contracts[table_content.id],
                     shares: UpdatedContractFromRow(new_table_rows, contracts[table_content.id].shares),
                 };
-
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: shares_update_contract}));
-                dispatch(handleRedux("UPDATE_CONTRACT", {contract: shares_update_contract}));
+                let to_store: StoredContract = {"SharesContract": shares_update_contract}
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: to_store}));
+                dispatch(handleRedux("UPDATE_CONTRACT", {contract: to_store}));
                 return new_shares_row;
             default:
                 let new_share_request = {id: new_id, receiver: profile.name, share: 0n};
@@ -439,7 +440,8 @@ export default function SharesContractComponent(props: any) {
                     ...contracts[table_content.id],
                     shares_requests,
                 };
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: req_updated_contract}));
+                to_store = {"PaymentContract": req_updated_contract}
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: to_store}));
                 return new_share_request
             // default:
             //     return {};
@@ -509,9 +511,9 @@ export default function SharesContractComponent(props: any) {
                     ...contracts[table_content.id],
                     shares_requests,
                 };
-
-                dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contract}));
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contract}));
+                let updated_stored_contract: StoredContract = {"SharesContract": updated_contract}
+                dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_stored_contract}));
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_stored_contract}));
                 await handleClickReq(new_request);
                 // setView(new_request.id);
                 break;

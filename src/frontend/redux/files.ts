@@ -3,10 +3,9 @@ import {agent} from "../backend_connect/main";
 import {normalize_files} from "../data_processing/normalize/normalize_files";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
-import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
-import {FileNode, StoredContract, User, Notification} from "../../declarations/user_canister/user_canister.did";
+import {FileNode, Notification, StoredContract, User} from "../../declarations/user_canister/user_canister.did";
 import {actor} from "../App";
-import {logger} from "../dev_utils/log_data";
+import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
@@ -92,7 +91,6 @@ export async function get_initial_data() {
             item.receiver.id !== data.Ok.Profile.id && uniqueUsersSet.add(item.receiver);
             item.sender.id !== data.Ok.Profile.id && uniqueUsersSet.add(item.sender);
         });
-
         initialState["files"] = normalize_files(data.Ok.Files);
         initialState["denormalized_files_content"] = data.Ok.FilesContents; //[] | [Array<[string, Array<[string, ContentNode]>]>]
         initialState["files_content"] = normalize_files_contents(data.Ok.FilesContents[0]);
@@ -194,8 +192,12 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 ...state,
             }
         case 'ADD_CONTRACT':
-            // logger(state.contracts)
-            state.contracts[action.contract.contract_id] = action.contract;
+            if (action.contract.contract_id) {
+                state.contracts[action.contract.contract_id] = action.contract;
+            } else {
+                state.contracts[action.contract.id] = action.contract;
+            }
+
             return {
                 ...state,
             }
@@ -246,7 +248,22 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             }
 
         case 'CONTRACT_CHANGES':
-            state.changes.contracts[action.changes.contract_id] = action.changes;
+
+
+            let changes: StoredContract = action.changes;
+            let id;
+            if ('SharesContract' in changes) {
+                id = changes.SharesContract.contract_id;
+            } else if ('PaymentContract' in changes) {
+                id = changes.PaymentContract.contract_id;
+            } else if ('CustomContract' in changes) {
+                id = changes.CustomContract.id;
+            } else {
+                // handle the case when none of the types match
+                // you might want to provide a default value or throw an error
+            }
+            state.changes.contracts[id] = action.changes;
+
             return {
                 ...state,
             }

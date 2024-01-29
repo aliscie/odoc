@@ -5,7 +5,7 @@ import DialogOver from "../../genral/daiolog_over";
 import SendIcon from '@mui/icons-material/Send';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import {useSnackbar} from "notistack";
-import {PaymentContract} from "../../../../declarations/user_canister/user_canister.did";
+import {PaymentContract, StoredContract} from "../../../../declarations/user_canister/user_canister.did";
 import {useDispatch} from "react-redux";
 import {handleRedux} from "../../../redux/main";
 import {actor} from "../../../App";
@@ -21,11 +21,12 @@ function ReleaseButton({contract}: { contract: PaymentContract }) {
         setLoading(false)
         if ("Ok" in res) {
             let new_contract = {
-                contract_id: contract.contract_id,
                 canceled: false,
                 released: true,
+                ...contract,
             }
-            dispatch(handleRedux("UPDATE_CONTRACT", {contract: new_contract}))
+            let store_contract: StoredContract = {'PaymentContract': new_contract}
+            dispatch(handleRedux("UPDATE_CONTRACT", {contract: store_contract}))
         } else {
             enqueueSnackbar(res.Err, {variant: "error"})
         }

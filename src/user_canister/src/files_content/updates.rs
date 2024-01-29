@@ -49,14 +49,18 @@ fn multi_updates(
         file.save()?;
     }
 
+    for contract in contracts.clone() {
+        if let StoredContract::PaymentContract(payment_contract) = contract.clone() {
+            // payment_contract.save();
+        } else if let StoredContract::SharesContract(share_contract) = contract.clone() {
+            share_contract.save()?;
+        }
+        if let StoredContract::CustomContract(custom_contract) = contract {
+            custom_contract.save()?;
+        }
+    }
 
-    // Update payment contracts
-    // Note PaymentContract can be updated only if caller() == author/creator of the contract
     PaymentContract::update_payment_contracts(contracts.clone())?;
-
-
-    // Update shares contracts
-    SharesContract::update_shares_contracts(contracts)?;
 
 
     // Update FILE_CONTENTS

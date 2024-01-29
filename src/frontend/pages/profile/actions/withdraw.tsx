@@ -8,7 +8,7 @@ function Withdraw(props: any) {
     const dispatch = useDispatch();
 
     async function handleWithdraw() {
-        let res = await actor.withdraw_usdt(100);
+        let res = await actor.withdraw_usdt(Number(100));
         if ("Ok" in res) {
             dispatch(handleRedux("UPDATE_BALANCE", {balance: res.Ok}));
         }

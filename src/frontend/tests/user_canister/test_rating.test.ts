@@ -26,7 +26,7 @@ test("Test render login", async () => {
     // rate user 1
     let rating: Rating = {
         'id': randomString(),
-        'date': BigInt(Date.now() * 1e6),
+        'date': Date.now() * 1e6,
         'user_id': Principal.anonymous(),
         'comment': "He is a nice person",
         'rating': 0.4,
@@ -34,7 +34,6 @@ test("Test render login", async () => {
     let res3 = await global.actor.rate_user(Principal.fromText(res.Ok.id),rating)
     expect("Ok" in res3).toBeTruthy();
 
-
-    let res4 = await global.actor.get_user_profile(Principal.fromText(res.Ok.id))
-    logger({total_rate: res4.Ok[1].total_rate})
+    // let res4 = await global.actor.get_user_profile(Principal.fromText(res.Ok.id))
+    // logger({total_rate: res4.Ok[1].total_rate})
 });

@@ -1,125 +1,87 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {Input} from '@mui/material';
-import MultiAutoComplete from '../../genral/multi_autocompelte';
-import {CPayment, Execute, Formula, Operation, Trigger} from '../../../../declarations/user_canister/user_canister.did';
+import {
+    CColumn,
+    CPayment,
+    Execute,
+    Formula,
+    Operation,
+    Trigger
+} from '../../../../declarations/user_canister/user_canister.did';
 import {GridColumnMenuItemProps} from "@mui/x-data-grid";
-import {updateContractColumn} from "./utls";
 import MenuItem from "@mui/material/MenuItem";
 import BasicPopover from "../../genral/pop_over";
-import {logger} from "../../../dev_utils/log_data";
 import {Principal} from "@dfinity/principal";
+import {randomString} from "../../../data_processing/data_samples";
+import CodeEditor from "./formula_parser/code_editor";
+import {updateContractColumn} from "./utls";
+import useParser from "./formula_parser/parser";
 
-interface Props {
-    value: Formula;
-    onChange: (event: Formula) => any;
-}
-
-type MultiOptions = Array<{ title: string; id: string }>;
-
-interface AutoProps {
-    onChange: (event: Trigger) => any;
-    value: Trigger | Execute | Operation;
-    options: MultiOptions;
-}
-
-function AutoComp(props: AutoProps) {
-
-    const [value, setValue] = useState(props.value);
-    let key = value && value.formula && Object.keys(value.formula)[0];
-    let v = value && value.formula && Object.values(value.formula)[0];
-    if (!key && value) {
-        key = Object.keys(value)[0]
-        v = Object.values(value)[0]
-    }
-    return (
-        <MultiAutoComplete
-            onChange={(event, option: MultiOptions) => {
-                setValue(option);
-                props.onChange(option.formula);
-            }}
-            options={props.options}
-            multiple={false}
-            value={value ? {title: `${key}:${v}`} : []}
-        />
-    );
-}
-
-
-function FormulaCom(props: Props) {
-    const [trigger, setTrigger] = useState<Trigger>(props.value.trigger);
-    const [operation, setOperation] = useState<Operation>(props.value.operation);
-    const [target, setTarget] = useState<String>(props.value.trigger_target);
-    const [execute, setExecute] = useState<Execute>(props.value.execute);
-    useEffect(() => {
-        const formula: Formula = {
-            trigger_target: target, // Fill this with the appropriate value
-            trigger,
-            operation,
-            execute: execute,
-        };
-
-        props.onChange(formula);
-    }, [trigger, operation, target]);
-
-    const triggerOptions = [
-        {title: 'Timer', id: 'Timer', formula: {Timer: 0}},
-        {title: 'Update', id: 'Update', formula: {Update: ''}},
-    ];
-
-
-    const operationOptions = [
-        {title: 'Equal', id: 'Equal', formula: {Equal: null}},
-        {title: 'Contains', id: 'Contains', formula: {Contains: null}},
-        {title: 'Bigger', id: 'Bigger', formula: {Bigger: null}},
-        {title: 'BiggerOrEqual', id: 'BiggerOrEqual', formula: {BiggerOrEqual: null}},
-    ];
-
-    const execOptions = [
-        {title: 'Pay', id: 'Equal', formula: {Equal: null}},
-        {title: 'Send USDC', id: 'Contains', formula: {Contains: null}},
-        // {title: 'send USDC', id: 'Bigger', formula: {TransferUsdt: Payment}},
-
-    ];
-
-    // let pay: CPayment = {
-    //     'date_created': 0,
-    //     'sender': Principal.fromText("2vxsx-fae"),
-    //     'released': false,
-    //     'amount': 10,
-    // }
-    // let exic: Execute = {'TransferUsdt': pay}
-    let payments = props.view.payments;
-    return (
-        <>
-            {/*<AutoComp options={triggerOptions} value={trigger} onChange={(event) => setTrigger(event)}/>*/}
-            if this column
-            <AutoComp options={operationOptions} value={operation} onChange={(event) => setOperation(event)}/>
-
-            <Input defaultValue={target} onChange={(event) => setTarget(event.target.value)}/>
-            then execute
-            <AutoComp options={execOptions} value={execute} onChange={(event) => setExecute(event)}/>
-        </>
-    );
-}
 
 function ChangeColumnFormula(props: GridColumnMenuItemProps) {
-    const {menuProps} = props;
+
+    let column_id = props.colDef.id;
+    const {view, contract, menuProps} = props;
+
+    const {parser} = useParser({...props});
+
     const [value, setValue] = React.useState<Formula | undefined>(undefined);
-    const onChange = (formula: Formula) => {
-        setValue(formula);
+    console.log(props.colDef)
+    const [formatter, setFormatter] = React.useState<string>(String(props.colDef["formula_string"]))
+    const onFormatter = (code: string) => {
+        setFormatter(code);
+        // let formula: Formula = {
+        //     'trigger_target': column_id,
+        //     'trigger': Trigger,
+        //     'operation': Operation,
+        //     'column_id': string,
+        //     'execute': Execute,
+        // }
+        // setValue(formula);
     };
     const onCLickAway = () => {
-        if (value) {
-            let updated_column = {
-                id: menuProps.colDef.id,
-                formula: [value],
+
+
+        // if (value) {
+        //
+        //     //     props.setContract((prevContract) => {
+        //     //             let formulas;
+        //     //             let old_formula = prevContract.formulas.find((f) => f.column_id == value.column_id)
+        //     //             if (old_formula) {
+        //     //                 formulas = prevContract.formulas.map((f: Formula) => {
+        //     //                     if (f.column_id == value.column_id) {
+        //     //                         return value
+        //     //                     }
+        //     //                     return f
+        //     //                 })
+        //     //             } else {
+        //     //                 formulas = [...prevContract.formulas, value]
+        //     //             }
+        //     //             return {...prevContract, formulas}
+        //     //         }
+        //     //     )
+        //     //     ;
+        //     //     setValue(undefined)
+        //     // }
+        //     if (formatter) {
+        //         let updated_column: CColumn = {
+        //             ...props.colDef,
+        //             formula_string: String(formatter)
+        //         };
+        //         props.setContract((prevContract) => {
+        //             return updateContractColumn(prevContract, updated_column, props.view)
+        //         })
+        //     }
+        // }
+
+        if (formatter) {
+            let updated_column: CColumn = {
+                ...props.colDef,
+                formula_string: String(formatter)
             };
-            logger({value})
-            props.setContract((prevContract) =>
-                updateContractColumn(prevContract, updated_column, props.view)
-            );
-            setValue(undefined)
+            props.setContract((prevContract) => {
+                return updateContractColumn(prevContract, updated_column, props.view)
+            })
         }
     }
 
@@ -128,15 +90,11 @@ function ChangeColumnFormula(props: GridColumnMenuItemProps) {
             <BasicPopover
                 style={{minWidth: '500px'}}
                 onClickAway={onCLickAway}
-                content={
-                    <FormulaCom
-                        view={view}
-                        value={menuProps && menuProps.colDef.formula[0]}
-                        onChange={onChange}
-                    />}
+                content={<CodeEditor onChange={onFormatter} code={formatter}/>}
             >Formula</BasicPopover>
         </MenuItem>
     );
+
 }
 
 export default ChangeColumnFormula;

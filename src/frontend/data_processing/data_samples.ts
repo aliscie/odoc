@@ -87,13 +87,14 @@ export let custom_contract: CustomContract = {
     'date_created': Date.now() * 1e6,
     'payments': [],
     'contracts': [],
+    formulas: [],
     'date_updated': 0,
 }
 
 export let slate_Custom_contract = {
     "id": custom_contract.id,
     "children": [{
-        "id": custom_contract.id,
+        "id": randomString(),
         "text": "",
         "data": []
     }],
@@ -174,23 +175,18 @@ export let contracts_sample = {
     }
 }
 export let payment_contract_sample: PaymentContract = {
-    "contract_id": payment_contract_id,
-    "sender": Principal.fromText("2vxsx-fae"),
-    "receiver": Principal.fromText("2vxsx-fae"),
-    "released": false,
-    "confirmed": false,
-    "canceled": false,
-    "amount": BigInt(0),
-    extra_cells: []
+  "contract_id": payment_contract_id,
+  "sender": Principal.fromText("2vxsx-fae")!,
+  "receiver": Principal.fromText("2vxsx-fae")!,
+  "released": false,
+  "confirmed": false,
+  "canceled": false,
+  "amount": BigInt(0),
+  "objected": [], // or ["some string value"] if you want it to be non-empty
+  "extra_cells": [],
 }
 
 let share_sample: Share = {
-    //   'share_contract_id' : string,
-    // 'accumulation' : bigint,
-    // 'confirmed' : boolean,
-    // 'share' : bigint,
-    // 'receiver' : Principal,
-    // 'contractor' : [] | [Principal],
     'share_contract_id': first_share_id,
     'accumulation': BigInt(0),
     'confirmed': false,
@@ -207,10 +203,6 @@ let payment_option: SharePaymentOption = {
     'amount': BigInt(0),
 }
 export let shares_contract_sample: SharesContract = {
-    //  'shares' : Array<Share>,
-    // 'payments' : Array<SharePayment>,
-    // 'contract_id' : string,
-    // 'shares_requests' : Array<Share>,
     'shares': [share_sample],
     'payments': [],
     'contract_id': shares_contract_id,
@@ -221,28 +213,6 @@ export let shares_contract_sample: SharesContract = {
 
 export let contract_id_sample = {"Contract": {"PaymentContract": "18"}}
 
-// let payment_contract_sample = {
-//     "Table": {
-//         "rows": [{
-//             "contract": [{"PaymentContract": "4"}],
-//             "cells": [[["task", "signup task"]]],
-//             "requests": []
-//         }, {
-//             "contract": [{"PaymentContract": "5"}],
-//             "cells": [[["task", "login task"]]],
-//             "requests": []
-//         }, {"contract": [{"PaymentContract": "6"}], "cells": [[["task", "dark mode"]]], "requests": []}],
-//         "columns": [{
-//             "_type": {"Text": null},
-//             "field": "task",
-//             "filters": [],
-//             "permissions": [],
-//             "dataValidator": [],
-//             "editable": true,
-//             "formula": []
-//         }]
-//     }
-// }
 
 export function randomString() {
     return Math.random().toString(36).substring(2, 8);
