@@ -3,6 +3,8 @@ import {AnonymousIdentity, Identity} from "@dfinity/agent";
 
 
 test("Test render login", async () => {
+
+
     let input: RegisterUser = {
         'name': ["string"],
         'description': ["Somthing"],
@@ -11,6 +13,7 @@ test("Test render login", async () => {
 
 
     let res = await global.actor.register(input);
+    console.log({res})
 
     let input2: RegisterUser = {
         'name': ["user2"],

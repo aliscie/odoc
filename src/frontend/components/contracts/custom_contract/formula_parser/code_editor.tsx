@@ -14,7 +14,7 @@ interface Props {
 
 function CodeEditor(props: Props) {
     let onChange = (e: string) => {
-        console.log({e})
+        // console.log({e})
         props.onChange(e)
     }
     return (

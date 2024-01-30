@@ -66,7 +66,8 @@ export function UserAvatar(props: UserFE | User) {
         options.push({
             content: 'Message', icon: <ChatBubbleIcon/>, onClick: async () => {
                 let res = await getChats()
-                let chat = res.find((chat: FEChat) => chat.admins[0].id.toString() === creator.id || chat.creator.id.toString() === props.id)
+                let chat = res.find((chat: FEChat) => chat.admins[0].id.toString() === props.id || chat.creator.id.toString() === props.id)
+
                 dispatch(handleRedux("OPEN_CHAT", {
                     current_chat_id: chat && chat.id || "chat_id",
                     current_user: Principal.fromText(props.id)

@@ -26,7 +26,7 @@ test("Test render app", async () => {
 
 
     // let res2 = await global.actor.setIdentity(new AnonymousIdentity());
-    // render(<App/>);
+    render(<App/>);
     // const login2 = document.getElementsByClassName("login");
     // expect(login2.length).toBe(0);
 });

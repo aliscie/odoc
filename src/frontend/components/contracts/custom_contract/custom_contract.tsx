@@ -4,7 +4,8 @@ import {
     CContract,
     CPayment,
     CRow,
-    CustomContract, StoredContract
+    CustomContract,
+    StoredContract
 } from "../../../../declarations/user_canister/user_canister.did";
 import BasicMenu from "../../genral/drop_down";
 import CustomDataGrid from "../../datagrid";
@@ -20,7 +21,7 @@ import {updateContractColumn, updateCustomContractColumns, updateCustomContractR
 import {GridColumnMenuProps} from "@mui/x-data-grid";
 import ChangeColumnPermissions from "./column_permision";
 import ChangeColumnFormula from "./column_formula";
-import {logger} from "../../../dev_utils/log_data";
+import useParser from "./formula_parser/parser";
 
 
 function CustomContract(props: CustomContract) {
@@ -115,7 +116,7 @@ function CustomContract(props: CustomContract) {
         let updated_rows = view.rows.map((row: CRow) => {
             if (row.id === newRow.id) {
                 let non_key = ["id", "cells"]
-                let new_cells =  Object.keys(newRow).filter(k => !non_key.includes(k)).map((key: string) => {
+                let new_cells = Object.keys(newRow).filter(k => !non_key.includes(k)).map((key: string) => {
                     let value = newRow[key]
                     let c: CCell = {
                         'id': randomString(),
@@ -128,7 +129,7 @@ function CustomContract(props: CustomContract) {
             }
 
             return row
-        })
+        });
 
         const updatedContract = updateCustomContractRows(contract, updated_rows, view);
         setContract(updatedContract);
@@ -159,10 +160,9 @@ function CustomContract(props: CustomContract) {
         }
     }, [view])
 
+
     useEffect(() => {
-
-
-        if (contract.contracts.length === 0) {
+        if (contract.contracts && contract.contracts.length === 0) {
 
             let field = randomString();
             let new_cell: CCell = {
@@ -198,8 +198,8 @@ function CustomContract(props: CustomContract) {
             setView(new_c_contract);
             setData(new_c_contract)
         } else {
-            setView(contract.contracts[0])
-            setData(contract.contracts[0])
+            contract.contracts && setView(contract.contracts[0])
+            contract.contracts && setData(contract.contracts[0])
         }
 
     }, [props])
@@ -286,13 +286,17 @@ function CustomContract(props: CustomContract) {
     let options: any = [
         {content: "Payments", type: "payments",},
 
-        ...contract.contracts.map((contract: CContract, index: number) => {
-            return {content: contract.name, type: "contract", ...contract}
-        }),
+
         {content: <div><AddIcon color={"info"}/>Create contract</div>, type: "create_contract",},
         // {content: "Create view", type: "create view",},
         // {content: "Create view", type: "create chart",},
     ];
+    if (contract.contracts) {
+        let extra_options = contract.contracts.map((contract: CContract, index: number) => {
+            return {content: contract.name, type: "contract", ...contract}
+        });
+        options = [...options, ...extra_options]
+    }
 
     let main_options = [
         {content: "Rename"},
@@ -300,11 +304,34 @@ function CustomContract(props: CustomContract) {
         // {content: "Delete"},
     ];
 
+
+    const {parser, addVarsToParser} = useParser({...props});
+
     return <CustomDataGrid
         columnMenuSlots={columnMenuSlots}
         columnMenuProps={columnMenuProps}
         deleteColumn={deleteColumn}
-        data={data}
+        data={{
+            columns: data.columns.map((col: CColumn) => {
+                if (col.formula_string.length > 0) {
+                    col['valueGetter'] = (params: any) => {
+                        addVarsToParser(parser, params, view);
+                        return parser.parse(col.formula_string).result
+                    };
+                }
+                return col
+            }),
+            rows: data.rows.map((row: CRow) => {
+                let cells = {}
+                row.cells.map((cell: CCell) => {
+                    let c = {}
+                    cells[cell.field] = cell.value
+                    return c
+                });
+                let r = {id: row.id, ...cells};
+                return r
+            })
+        }}
         addRow={addRow}
         deleteRow={deleteRow}
         addColumn={addColumn}

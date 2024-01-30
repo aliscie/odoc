@@ -23,11 +23,13 @@ function ChangeColumnFormula(props: GridColumnMenuItemProps) {
     let column_id = props.colDef.id;
     const {view, contract, menuProps} = props;
 
-    const {parser} = useParser({...props});
+    const {parser, addVarsToParser, FORMULA} = useParser({...props});
 
     const [value, setValue] = React.useState<Formula | undefined>(undefined);
-    console.log(props.colDef)
+    // console.log(props.colDef)
     const [formatter, setFormatter] = React.useState<string>(String(props.colDef["formula_string"]))
+
+
     const onFormatter = (code: string) => {
         setFormatter(code);
         // let formula: Formula = {
@@ -41,6 +43,13 @@ function ChangeColumnFormula(props: GridColumnMenuItemProps) {
     };
     const onCLickAway = () => {
 
+        // props.colDef.valueGetter = (params: any) => {
+        //     addVarsToParser(parser, params, view);
+        //     return parser.parse(formatter).result
+        // };
+
+        let result = parser.parse(formatter).result
+        console.log({result, FORMULA})
 
         // if (value) {
         //

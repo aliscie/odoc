@@ -27,7 +27,7 @@ function CreatePost(props: any) {
     let post: Post = {
         'id': post_id,
         'creator': profile.id,
-        'date_created': BigInt(Date.now()*1e6),
+        'date_created': BigInt(0),
         'votes_up': [],
         'tags': [],
         'content_tree': [],

@@ -19,11 +19,13 @@ fn save_post(mut post: Post) -> Result<(), String> {
         return Err("Anonymous users not allowed to create posts".to_string());
     }
     let original_post = Post::get(post.id.clone());
-    if original_post.is_ok() {
-        post.votes_up = original_post.clone().unwrap().votes_up;
-        post.votes_down = original_post.unwrap().votes_down;
+    if let Ok(p) = original_post.clone() {
+        post.votes_up = p.votes_up;
+        post.votes_down = p.votes_down;
+        post.date_created = p.date_created.clone();
     } else {
         let posts = Post::get_latest_posts();
+        post.date_created = ic_cdk::api::time();
 
 
         if posts.len() >= 2 {

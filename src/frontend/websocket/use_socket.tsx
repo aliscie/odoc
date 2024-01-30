@@ -8,6 +8,7 @@ import React, {useEffect, useState} from "react";
 import {handleRedux} from "../redux/main";
 import {AuthClient} from "@dfinity/auth-client";
 import {actor} from "../App";
+import {Principal} from "@dfinity/principal";
 
 
 function useSocket() {
@@ -19,7 +20,7 @@ function useSocket() {
 
     const dispatch = useDispatch();
     const [ws, setWs] = useState<IcWebSocket | undefined>(undefined);
-
+    // let anonymuseIdenity = Principal.fromText("2vxsx-fae");
     useEffect(() => {
         (async () => {
             const authClient = await AuthClient.create();

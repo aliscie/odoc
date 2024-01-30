@@ -50,7 +50,9 @@ pub enum PermissionType {
 pub enum Trigger {
     Timer(f64),
     //  f64 is time in nanoseconds from ic_cdk::api::time()
-    Update(CColumn), // String ==  column id
+    Update(CColumn),
+    // String ==  column id
+    // TODO use String for id of column instead of CColumn
 }
 
 #[derive(PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]

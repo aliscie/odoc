@@ -1,6 +1,6 @@
 import {afterAll, beforeAll, vi} from "vitest";
 import '@testing-library/jest-dom/vitest'
-
+import dotenv from "dotenv";
 
 import {resolve} from "node:path";
 import {createIdentity, PocketIc} from "@hadronous/pic";
@@ -39,6 +39,7 @@ const WASM_PATH = resolve(
 
 
 beforeAll(async () => {
+
     const alice: Identity = createIdentity("1");
     let pic = await PocketIc.create();
     const fixture = await pic.setupCanister<_SERVICE>(idlFactory, WASM_PATH, undefined, undefined, undefined);
