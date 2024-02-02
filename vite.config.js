@@ -1,4 +1,4 @@
-import {defineConfig} from "vite";
+import { defineConfig, loadEnv } from "vite";
 import EnvironmentPlugin from "vite-plugin-environment";
 import path from "path";
 
@@ -75,6 +75,8 @@ const canisterDefinitions = Object.entries(canisters).reduce(
     {}
 );
 
+process.env = { ...process.env, ...loadEnv(process.env.NODE_ENV, process.cwd()) };
+
 export default defineConfig({
     test: {
         environment: 'jsdom',
@@ -111,7 +113,7 @@ export default defineConfig({
         proxy: {
             // This proxies all http requests made to /api to our running dfx instance
             "/api": {
-                target: "http://localhost:8080",
+                target: `http://localhost:${process.env.VITE_DFX_PORT}`,
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, "/api"),
             },
@@ -127,8 +129,8 @@ export default defineConfig({
         ),
     },
     plugins: [
-        EnvironmentPlugin("all", {prefix: "CANISTER_"}),
-        EnvironmentPlugin("all", {prefix: "DFX_"}),
-        EnvironmentPlugin({BACKEND_CANISTER_ID: ""}),
+        EnvironmentPlugin("all", { prefix: "CANISTER_" }),
+        EnvironmentPlugin("all", { prefix: "DFX_" }),
+        EnvironmentPlugin({ BACKEND_CANISTER_ID: "" }),
     ],
 });
