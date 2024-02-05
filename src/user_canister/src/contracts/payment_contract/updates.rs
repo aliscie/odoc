@@ -32,8 +32,8 @@ fn cancel_payment(id: ContentId) -> Result<(), String> {
         is_seen: false,
     };
     new_note.save();
-    let mut profile = UserHistory::get(payment.sender.clone());
-    profile.cancel_payment();
+    // let mut profile = UserHistory::get(payment.sender.clone());
+    // profile.cancel_payment(payment.clone());
     Ok(())
 }
 
@@ -61,14 +61,14 @@ fn release_payment(id: ContentId) -> Result<(), String> {
 
     let content: NoteContent = NoteContent::PaymentContract(payment.clone(), PaymentAction::Released);
     let new_note = Notification {
-        id: payment.contract_id,
+        id: payment.contract_id.clone(),
         sender: caller(),
         receiver: payment.receiver.clone(),
         content,
         is_seen: false,
     };
     new_note.save();
-    UserHistory::get(payment.sender).release_payment();
+    UserHistory::get(payment.sender).release_payment(payment.contract_id.clone());
     Ok(())
 }
 

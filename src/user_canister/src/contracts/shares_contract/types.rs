@@ -456,7 +456,7 @@ impl SharesContract {
         let note_content = NoteContent::ShareRequestApplied(self.clone());
         for receiver in receivers {
             if receiver != caller() {
-                let new_notification = Notification::new(receiver, note_content.clone());
+                let new_notification = Notification::new(self.contract_id.clone(), receiver, note_content.clone());
                 new_notification.save();
             }
         }
@@ -504,7 +504,7 @@ impl SharesContract {
                     let note_content = NoteContent::ShareRequestApproved(self.clone());
                     for receiver in receivers {
                         if receiver != caller() {
-                            let new_notification = Notification::new(receiver, note_content.clone());
+                            let new_notification = Notification::new(self.contract_id.clone(), receiver, note_content.clone());
                             new_notification.save();
                         }
                     }

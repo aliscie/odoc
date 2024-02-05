@@ -1,4 +1,4 @@
-import FormDialog from "../genral/dialog";
+import FormDialog from "../genral/fom_dialog";
 import * as React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {useSnackbar} from "notistack";

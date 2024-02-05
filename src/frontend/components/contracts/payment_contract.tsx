@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {useEffect} from 'react';
-import {GridValueGetterParams} from '@mui/x-data-grid';
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import {useSnackbar} from "notistack";
@@ -10,7 +9,6 @@ import {PaymentContract, Row, StoredContract, Table} from "../../../declarations
 import useGetUser from "../../utils/get_user_by_principal";
 import {RenderReceiver, RenderRelease} from "./payment_contract/renderers";
 import {updateTableContent} from "./utils/update_table";
-import {getFormula} from "./utils/parse_formula";
 import CustomDataGrid from "../datagrid";
 import {randomString} from "../../data_processing/data_samples";
 
@@ -100,7 +98,7 @@ export default function PaymentContract(props: any) {
             case "amount":
                 return new_column
             default:
-                new_column['valueGetter'] = (params: GridValueGetterParams) => getFormula(params, new_column['dataValidator'][0])
+                // new_column['valueGetter'] = (params: GridValueGetterParams) => getFormula(params, new_column['dataValidator'][0])
                 return new_column
 
         }

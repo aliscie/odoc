@@ -7,6 +7,7 @@ import {actor} from "../../App";
 import {useSnackbar} from "notistack";
 import DialogOver from "../genral/daiolog_over";
 import {LoadingButton} from "@mui/lab";
+import {useSelector} from "react-redux";
 
 interface Props {
     id: string,
@@ -15,6 +16,8 @@ interface Props {
 
 
 function RateUser(props: Props) {
+    const {profile} = useSelector((state: any) => state.filesReducer);
+
     // const [comment, setComment] = React.useState<string>("");
     const commentRef = React.useRef<string>("");
     const [rate, setRate] = React.useState<number | null>(props.rate);
@@ -29,7 +32,7 @@ function RateUser(props: Props) {
     const handleSubmit = async () => {
         let rating: Rating = {
             'id': randomString(),
-            'date': BigInt(Date.now() * 1e6),
+            'date': Date.now() * 1e6,
             'user_id': Principal.fromText(profile.id),
             'comment': commentRef.current,
             'rating': rate || 0,

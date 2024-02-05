@@ -3,7 +3,13 @@ import {agent} from "../backend_connect/main";
 import {normalize_files} from "../data_processing/normalize/normalize_files";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
-import {FileNode, Notification, StoredContract, User} from "../../declarations/user_canister/user_canister.did";
+import {
+    FileNode,
+    InitialData,
+    Notification,
+    StoredContract,
+    User
+} from "../../declarations/user_canister/user_canister.did";
 import {actor} from "../App";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 
@@ -66,7 +72,7 @@ function getCurrentFile(data: any) {
 
 export async function get_initial_data() {
     let isLoggedIn = await agent.is_logged() // TODO avoid repetition `isLoggedIn` is already used in ui.ts
-    let data = actor && await actor.get_initial_data();
+    let data: undefined | { Ok: InitialData } | { Err: string } = actor && await actor.get_initial_data();
 
     initialState["Anonymous"] = data.Err == "Anonymous user." && isLoggedIn;
     initialState["isLoggedIn"] = data.Err != "Anonymous user." && isLoggedIn
@@ -108,10 +114,9 @@ export async function get_initial_data() {
 }
 
 
-export function filesReducer(state = initialState, action: { data: any, type: FilesActions, id?: any, file?: any, name: any, content?: any, changes: any }) {
+export function filesReducer(state: any = initialState, action: any) {
     let friends = {...state.friends[0]};
     let friend_id = action.id;
-
     switch (action.type) {
         case 'ADD_CONTENT':
             let files_content = state.files_content
@@ -137,24 +142,9 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
                 notifications: [...state.notifications, action.new_notification],
             }
         case 'UPDATE_NOTIFY':
-            // --------- TODO why UPDATE_NOTIFY is called twice? --------- \\
-            // console.log("UPDATE_NOTIFY", {
-            //     action
-            // })
-            let contracts: Array<StoredContract> = [];
-            action.new_list.forEach((item: Notification) => {
-                // check if item.content is payment contract
-                if (item.content && item.content["PaymentContract"]) {
-                    let new_contract: StoredContract = {
-                        "PaymentContract": item.content.PaymentContract[0],
-                    }
-                    contracts.push(new_contract);
-                }
-            });
             return {
                 ...state,
                 notifications: action.new_list,
-                contracts,
             }
         case 'REMOVE':
             let file_id = action.id;
@@ -203,6 +193,7 @@ export function filesReducer(state = initialState, action: { data: any, type: Fi
             }
 
         case 'UPDATE_CONTRACT':
+
             let original_contract = {}
             try {
                 original_contract = state.contracts[action.contract.contract_id];

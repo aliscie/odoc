@@ -6,7 +6,7 @@ use candid::{CandidType, Deserialize, Principal};
 //     Principal,
 // }
 
-use crate::{ PROFILE_STORE};
+use crate::{PROFILE_STORE};
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, Default, CandidType, Deserialize)]
 pub struct User {
@@ -14,6 +14,8 @@ pub struct User {
     pub name: String,
     pub description: String,
     pub photo: Vec<u8>,
+    // pub total_promise: f64,
+    //  pub total_balance: f64
     // pub keywords: Vec<String>,
 }
 

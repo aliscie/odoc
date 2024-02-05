@@ -1,8 +1,8 @@
-import {Button, ButtonGroup, Input} from "@mui/material";
+import {Button, ButtonGroup} from "@mui/material";
 import {StyledDataGrid} from "./spread_sheet";
 import * as React from "react";
 import {useEffect} from "react";
-import {GridCell, GridColumnMenu, GridColumnMenuItemProps, GridColumnMenuProps, GridRowModel} from "@mui/x-data-grid";
+import {GridCell, GridColumnMenu, GridColumnMenuProps, GridRowModel} from "@mui/x-data-grid";
 import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
 import ArrowCircleDownIcon from "@mui/icons-material/ArrowCircleDown";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
@@ -10,6 +10,7 @@ import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContextMenu from "./genral/context_menu";
 import {Row} from "../../declarations/user_canister/user_canister.did";
+import {randomString} from "../data_processing/data_samples";
 
 interface Props {
     data: any,
@@ -19,7 +20,6 @@ interface Props {
     updateRow: any,
     deleteColumn?: any,
     slotProps?: any,
-    renameColumn?: any,
     columnMenuSlots?: any,
     columnMenuProps?: any,
     addColumn?: any,
@@ -32,7 +32,9 @@ function CustomDataGrid(props: Props) {
     const [data, setData] = React.useState(props.data);
     // TODO
     useEffect(() => {
-        setData(props.data)
+        let rows = props.data.rows.length > 0 ? props.data.rows : [{id: randomString()}];
+        let columns = props.data.columns
+        setData({rows, columns})
     }, [props.data]);
 
     const processRowUpdate = React.useCallback((newRow: GridRowModel, oldRow: GridRowModel) => {
@@ -45,9 +47,9 @@ function CustomDataGrid(props: Props) {
                     }
                     return row
                 });
-                props.updateRow(new_rows, newRow);
                 return {...pre, rows: new_rows}
             })
+            props.updateRow(data.rows, newRow);
             return Promise.resolve(newRow);
         },
         [props.data]
@@ -84,14 +86,12 @@ function CustomDataGrid(props: Props) {
 
         let step = before ? 0 : 1;
         let newRow = props.addRow(rowIndex + step);
-        // let new_table_rows = [...data.rows]
-        // new_table_rows.splice(rowIndex + step, 0, newRow)
 
-        // setData((pre) => {
-        //     let new_rows = [...pre.rows];
-        //     new_rows.splice(rowIndex + step, 0, newRow);
-        //     return {...pre, rows: new_rows}
-        // });
+        setData((pre) => {
+            let new_rows = [...pre.rows];
+            new_rows.splice(rowIndex + step, 0, newRow);
+            return {...pre, rows: new_rows}
+        });
 
     };
 
@@ -237,38 +237,16 @@ function CustomDataGrid(props: Props) {
     }
 
 
-    function RenameColumn(props: GridColumnMenuItemProps) {
-        const {onReName, columnName} = props;
-        return (
-            <Input style={{marginLeft: "25px"}} onBlur={onReName} disableUnderline
-                   defaultValue={columnName}/>
-        );
-    }
-
-
-    function handleRenameColumn(e: any, column_props: any) {
-        let id = column_props.colDef.id;
-        let value = e.target.value;
-        props.renameColumn(id, value);
-    }
-
-
     function CustomColumnMenu(menuProps: GridColumnMenuProps) {
         return (
             <GridColumnMenu
                 {...menuProps}
                 slots={{
-                    // Add new item
-                    RenameColumn,
                     ...props.columnMenuSlots,
 
                 }}
                 slotProps={{
-                    RenameColumn: {
-                        displayOrder: 1,
-                        columnName: menuProps.colDef.headerName,
-                        onReName: (e: any) => handleRenameColumn(e, menuProps)
-                    },
+
                     ...props.columnMenuProps(menuProps),
                 }}
             />

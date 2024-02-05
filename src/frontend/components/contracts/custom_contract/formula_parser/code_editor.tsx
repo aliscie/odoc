@@ -14,29 +14,28 @@ interface Props {
 
 function CodeEditor(props: Props) {
     let onChange = (e: string) => {
-        // console.log({e})
         props.onChange(e)
     }
     return (
         <AceEditor
             onChange={onChange}
             height="100px"
-            width="500%"
+            width="100%"
             value={props.code}
             mode="javascript"
             theme="monokai"
             fontSize="16px"
             highlightActiveLine={true}
-            options={{
-                inlineSuggest: true,
-                fontSize: "16px",
-                formatOnType: true,
-                autoClosingBrackets: true,
-                minimap: {scale: 5}
-            }}
+            // options={{
+            //     inlineSuggest: true,
+            //     fontSize: "16px",
+            //     formatOnType: true,
+            //     autoClosingBrackets: true,
+            //     minimap: {scale: 5}
+            // }}
 
             setOptions={{
-                enableLiveAutocompletion: true,
+                enableLiveAutocompletion: false,
                 showLineNumbers: true,
                 tabSize: 2
             }}

@@ -86,8 +86,9 @@ export let custom_contract: CustomContract = {
     'creator': Principal.fromText("2vxsx-fae"),
     'date_created': Date.now() * 1e6,
     'payments': [],
+    'promises': [],
     'contracts': [],
-    formulas: [],
+    'formulas': [],
     'date_updated': 0,
 }
 
@@ -175,15 +176,15 @@ export let contracts_sample = {
     }
 }
 export let payment_contract_sample: PaymentContract = {
-  "contract_id": payment_contract_id,
-  "sender": Principal.fromText("2vxsx-fae")!,
-  "receiver": Principal.fromText("2vxsx-fae")!,
-  "released": false,
-  "confirmed": false,
-  "canceled": false,
-  "amount": BigInt(0),
-  "objected": [], // or ["some string value"] if you want it to be non-empty
-  "extra_cells": [],
+    "contract_id": payment_contract_id,
+    "sender": Principal.fromText("2vxsx-fae")!,
+    "receiver": Principal.fromText("2vxsx-fae")!,
+    "released": false,
+    "confirmed": false,
+    "canceled": false,
+    "amount": BigInt(0),
+    "objected": [], // or ["some string value"] if you want it to be non-empty
+    "extra_cells": [],
 }
 
 let share_sample: Share = {

@@ -51,7 +51,6 @@ function MessageNotification(props: Message) {
                 props.seen_by.push(Principal.fromText(profile.id))
                 dispatch(handleRedux("UPDATE_NOTIFICATION", {message: props}))
                 let res = actor && await actor.message_is_seen(props)
-                console.log({res})
             }
         }}
         alignItems="flex-start">

@@ -10,6 +10,11 @@ import {actor} from "../../App";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import useGetUser from "../../utils/get_user_by_principal";
+import ShareIcon from "@mui/icons-material/Share";
+import DialogOver from "../genral/daiolog_over";
+import {Button, Input, Typography} from "@mui/material";
+import LoaderButton from "../genral/loader_button";
+import {CPayment} from "../../../declarations/user_canister/user_canister.did";
 
 function Notification({notification}: any) {
     // console.log("render Notification") // TODO this renders about 20 times.
@@ -23,10 +28,10 @@ function Notification({notification}: any) {
         })()
     }, [])
 
-    function renderNotification(notification: any): string {
-        let content = Object.keys(notification.content)[0];
+    function renderNotification(notification: any): string | JSX.Element {
+        let content = notification.content;
 
-        switch (content) {
+        switch (Object.keys(notification.content)[0]) {
             case "FriendRequest":
                 return `${sender} sent you a friend request`;
             case "ContractUpdate":
@@ -37,8 +42,67 @@ function Notification({notification}: any) {
                 return `${sender} unfriended you`;
             case "AcceptFriendRequest":
                 return `${sender} accepted your friend request.`;
+            case 'CPaymentContract':
+                let c_payment: CPayment = notification.content.CPaymentContract[0];
+
+                let actions = content.CPaymentContract ? Object.keys(content.CPaymentContract[1])[0].toLowerCase() : "";
+                let amount = c_payment.amount
+
+                let Dialog = (props: any) => {
+                    if (c_payment.status == {'RequestCancellation': null}) {
+                        return <>
+                            The payer want to to cancel this contract. you can confirm it to protect it from
+                            cancellation.
+                            <LoaderButton onClick={async () => {
+                                let res = actor && await actor.confirmed_cancellation(content.CPaymentContract[0])
+                                props.handleCancel()
+                                return res
+                            }}>Confirm Conciliation</LoaderButton>
+                        </>
+                    } else if (c_payment.status == {'HeighConformed': null}) {
+                        return <>
+                            You can confirmed this contract to protect it from cancellation. the sender set it to heigh
+                            confirm which mean he can't even withdraw his balance.
+                            <LoaderButton onClick={async () => {
+                                let res = actor && await actor.approve_heigh_conform(content.CPaymentContract[0])
+                                props.handleCancel()
+                                return res
+                            }}>High Confirm</LoaderButton>
+                        </>
+                    } else if (c_payment.status == {'Canceled': null}) {
+                        let reason = "";
+                        return <>
+                            If you thin the user should not cancile this payment write the resion here.
+                            <Input onChange={(e) => reason = e.target.value}/>
+                            <LoaderButton onClick={async () => {
+                                let res = actor && await actor.object_on_cancel(content.CPaymentContract[0], reason)
+                                props.handleCancel()
+                                return res
+                            }}>Object on cancellation</LoaderButton>
+                        </>
+                    } else {
+                        return <>
+                            You can confirmed this contract to protect it from cancellation.
+                            <LoaderButton onClick={async () => {
+                                let res = actor && await actor.confirmed_c_payment(content.CPaymentContract[0])
+                                props.handleCancel()
+                                return res
+                            }}>Confirm</LoaderButton>
+                        </>
+                    }
+
+                }
+
+
+                return <DialogOver
+                    variant="text"
+                    DialogContent={Dialog}
+                >
+                    <div>{sender} {actions} you {amount}</div>
+                </DialogOver>;
             default:
-                return `${sender} unknown action`;
+                console.log("unknown action", notification);
+                return `${sender} ${content} action`;
         }
     }
 
@@ -85,7 +149,8 @@ export function Notifications() {
                     ;
                     let item = {
                         content: <Notification notification={notification}/>,
-                        to: 'profile'
+                        pure: true,
+                        // to: 'profile'
                         // onClick: () => clickNotification(notification)
                     };
                     return item

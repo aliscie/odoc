@@ -1,13 +1,13 @@
-import {PermissionType, User} from "../../../../declarations/user_canister/user_canister.did";
+import {PermissionType, User} from "../../../../../declarations/user_canister/user_canister.did";
 import {Principal} from "@dfinity/principal";
-import MultiAutoComplete from "../../genral/multi_autocompelte";
+import MultiAutoComplete from "../../../genral/multi_autocompelte";
 import * as React from "react";
 import {useState} from "react";
 import {useSelector} from "react-redux";
 import {GridColumnMenuItemProps} from "@mui/x-data-grid";
-import {updateContractColumn} from "./utls";
+import {updateContractColumn} from "../utls";
 import MenuItem from "@mui/material/MenuItem";
-import BasicPopover from "../../genral/pop_over";
+import BasicPopover from "../../../genral/pop_over";
 
 interface Props {
     // column: CColumn,
@@ -94,9 +94,7 @@ function ChangeColumnPermissions(props: GridColumnMenuItemProps) {
             };
 
             // Use the updated state directly instead of relying on closure
-            props.setContract((prevContract) =>
-                updateContractColumn(prevContract, updated_column, props.view)
-            );
+            props.updateContract(updateContractColumn(props.contract, updated_column, props.view));
             setValue([])
         }
         // Use the previous state to ensure the correct update

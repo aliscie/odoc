@@ -1,4 +1,4 @@
-import FormDialog from "../genral/dialog";
+import FormDialog from "../genral/fom_dialog";
 import * as React from "react";
 import {TextField} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";

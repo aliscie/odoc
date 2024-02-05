@@ -9,6 +9,10 @@ import ListItemText from "@mui/material/ListItemText";
 import Typography from '@mui/material/Typography';
 import {useSelector} from "react-redux";
 import WarningIcon from '@mui/icons-material/Warning';
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import {SparkLineChart} from '@mui/x-charts/SparkLineChart';
+import {LineChart} from "@mui/x-charts/LineChart";
 
 export function PaymentContractComponent(contract: PaymentContract) {
     const {profile} = useSelector((state: any) => state.filesReducer);
@@ -63,6 +67,24 @@ export function UserHistoryCom(profile: UserHistoryFE) {
                 {/*{p.date}*/}
             </>
         })}
+
+        <Stack direction="row" sx={{width: '100%'}}>
+            <LineChart
+                xAxis={[{data: [1, 2, 3, 5, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]}]}
+                series={[
+                    {
+                        label: 'rating',
+                        data: [2, 5.5, 2, 8.5, 1.5, 5],
+                    },
+                    {
+                        label: 'promise/spent',
+                        data: [5, 4.5, 2, 3.5, 1.5, 5, 3.5, 1.5, 5],
+                    },
+                ]}
+                width={500}
+                height={300}
+            />
+        </Stack>
         {/*<div>Accepted shares changes:  {profile.shares_changes_accepts}</div>*/}
         {/*<div>Rejected shares changes:  {profile.shares_changes_rejects}</div>*/}
         {/*<div>custom contracts : 5</div>*/}

@@ -136,7 +136,7 @@ impl Chat {
         });
         let content = NoteContent::RemovedFromChat(self.id.clone());
         let new_notification = Notification {
-            id: "".to_string(),
+            id: self.id.clone(),
             sender: caller(),
             receiver: user,
             content,

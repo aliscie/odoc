@@ -18,7 +18,6 @@ function MessagesList(props: MessagesListProps) {
     useEffect(() => {
         if (chats && chats.length > 0 && current_chat_id !== "chat_id") {
             const currentChat = chats.find((chat: FEChat) => chat.id === current_chat_id);
-            // console.log({currentChat})
             currentChat && setMessages(currentChat.messages || [])
             currentChat && setNoM(false)
         }

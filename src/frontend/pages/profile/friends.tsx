@@ -75,7 +75,7 @@ export function Friend(props: FriendProps) {
         if (res.Ok) {
             dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
         }
-        let notification_list = actor && await actor.get_notifications();
+        let notification_list: undefined | Array<Notification> = actor && await actor.get_notifications();
         dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
         return res
     }
@@ -167,7 +167,7 @@ function Friends(props: any) {
 
             {friends && friends.map((value) => {
                 let user = value.receiver && value.receiver.id != profile.id ? value.receiver : value.sender
-                const labelId = `checkbox-list-secondary-label-${value.receiver.name}`;
+                const labelId = `checkbox-list-secondary-label-${value.receiver && value.receiver.name}`;
                 return (
                     <ListItem
                         key={value.receiver.name}

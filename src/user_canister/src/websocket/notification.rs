@@ -4,7 +4,7 @@ use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::caller;
 use serde::Serialize;
 
-use crate::{NOTIFICATIONS, PaymentContract, SharePayment, SharesContract, USER_FILES, websocket};
+use crate::{CPayment, NOTIFICATIONS, PaymentContract, SharePayment, SharesContract, USER_FILES, websocket};
 use crate::chat::Message;
 use crate::COUNTER;
 use crate::websocket::{AppMessage, notification, send_app_message};
@@ -26,10 +26,11 @@ pub enum PaymentAction {
     Accepted,
     Update,
     Objected,
+    Promise,
     // ActionType(Principal), // if needed u can, action done by user with the Principal
 }
 
-#[derive(Eq, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub enum NoteContent {
     FriendRequest(FriendRequestNotification),
     ContractUpdate(ContractNotification),
@@ -44,10 +45,12 @@ pub enum NoteContent {
     NewMessage(Message),
     RemovedFromChat(String),
     PaymentContract(PaymentContract, PaymentAction),
+    CPaymentContract(CPayment, PaymentAction),
+    CustomContract(String, CPayment),
     // FilePermition(FileID,Vec<Contract>)
 }
 
-#[derive(Eq, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub struct Notification {
     pub(crate) id: String,
     pub(crate) sender: Principal,
@@ -59,9 +62,9 @@ pub struct Notification {
 
 // impliemtn a function to Notification that get the id of friedn requst by importing reciveer and sender
 impl Notification {
-    pub fn new(user: Principal, content: NoteContent) -> Self {
+    pub fn new(id: String, user: Principal, content: NoteContent) -> Self {
         Notification {
-            id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+            id,
             content,
             sender: caller(),
             receiver: user,
@@ -71,7 +74,6 @@ impl Notification {
 
 
     pub fn save(&self) {
-        // let date_created = ic_cdk::api::time();
         NOTIFICATIONS.with(|notifications| {
             let mut user_notifications = notifications.borrow_mut();
             let user_notifications = user_notifications.entry(self.receiver.clone()).or_insert_with(Vec::new);

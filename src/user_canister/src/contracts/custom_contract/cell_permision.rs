@@ -59,13 +59,13 @@ fn remove_added_cells(mut c_contract: CContract, old_c_contract: &CContract, old
 }
 
 
-
 pub fn check_cells_add_delete_permissions(mut c_contract: CContract, old_contract: CustomContract) -> CContract {
-    let old_c_contract = old_contract.get_c_contract(&c_contract.id).unwrap();
-
-    c_contract = add_missing_cells(c_contract, &old_c_contract, &old_contract);
-    c_contract = remove_added_cells(c_contract, &old_c_contract, &old_contract);
-
+    if let Some(old_c_contract) = old_contract.get_c_contract(&c_contract.id) {
+        c_contract = add_missing_cells(c_contract, &old_c_contract, &old_contract);
+        c_contract = remove_added_cells(c_contract, &old_c_contract, &old_contract);
+    } else {
+        // if there is no contract just add the cells anyway
+    }
     c_contract
 }
 

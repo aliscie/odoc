@@ -46,14 +46,13 @@ pub enum PermissionType {
     AnyOneView,
 }
 
-#[derive(PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
-pub enum Trigger {
-    Timer(f64),
-    //  f64 is time in nanoseconds from ic_cdk::api::time()
-    Update(CColumn),
-    // String ==  column id
-    // TODO use String for id of column instead of CColumn
-}
+// #[derive(PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
+// pub enum Trigger {
+//     Timer(f64),
+//     //  f64 is time in nanoseconds from ic_cdk::api::time()
+//     Update(String),
+//     // String ==  column id
+// }
 
 #[derive(PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub enum Execute {
@@ -66,10 +65,10 @@ pub enum Execute {
 #[derive(PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub struct Formula {
     pub column_id: String,
-    pub trigger: Trigger,
-    pub trigger_target: String,
+    // pub trigger: Trigger,
+    // pub trigger_target: String,
     // trigger_target is date like 2021-01-01 or column name
-    pub operation: Operation,
+    // pub operation: Operation,
     pub execute: Execute,
 }
 

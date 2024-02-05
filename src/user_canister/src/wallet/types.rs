@@ -34,12 +34,14 @@ pub struct Wallet {
     pub debts: HashMap<String, f64>,
     // debts are promises ( unreleased payments )
     pub total_debt: f64,
+    // pub total_spent: f64,
     pub exchanges: Vec<Exchange>,
+    // pub exchanges: Vec<CPayment>,
 }
 
 impl Wallet {
 
-    pub fn add_debt(mut self, amount: f64, id: String) -> Result<(), String> {
+    pub fn add_dept(mut self, amount: f64, id: String) -> Result<(), String> {
         if self.balance >= self.total_debt + amount {
             let debt = self.debts.entry(id).or_insert(0.0);
             let wallet = self.calc_dept();
@@ -50,7 +52,7 @@ impl Wallet {
         }
     }
 
-    pub fn remove_debt(mut self, id: String) -> Result<(), String> {
+    pub fn remove_dept(mut self, id: String) -> Result<(), String> {
         if let Some(debt) = self.debts.get(&id) {
             let debt = debt.clone();
             self.debts.remove(&id);
@@ -100,7 +102,7 @@ impl Wallet {
         })
     }
 
-    pub fn deposit(&mut self, amount: f64, from: String, _type: ExchangeType) -> Result<(), String> {
+    pub fn deposit(&mut self, amount: f64, from: String, _type: ExchangeType) -> Result<Self, String> {
         let new_exchange = Exchange {
             from: from.clone(),
             to: self.owner.clone(),
@@ -109,13 +111,14 @@ impl Wallet {
             date_created: ic_cdk::api::time() as f64,
         };
         self.exchanges.push(new_exchange);
+        self.balance += amount.clone();
         self.save();
 
         // handle profile
         let mut user_profile = UserHistory::get(self.owner.parse().unwrap());
         let user_profile = user_profile.calc_spent();
         user_profile.clone().save();
-        Ok(())
+        Ok(self.clone())
     }
 
     pub fn withdraw(&mut self, amount: f64, to: String, _type: ExchangeType) -> Result<(), String> {
@@ -130,6 +133,7 @@ impl Wallet {
 
         if self.balance >= amount {
             self.exchanges.push(new_exchange);
+            self.balance -= amount.clone();
             self.save();
 
             // handle profile

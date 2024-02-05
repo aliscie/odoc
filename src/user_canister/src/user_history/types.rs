@@ -4,7 +4,7 @@ use std::time::Duration;
 use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::caller;
 
-use crate::{PaymentContract, PROFILE_HISOTYR, SharePayment, SharesContract, Wallet};
+use crate::{CPayment, PaymentContract, PROFILE_HISOTYR, SharePayment, SharesContract, Wallet};
 use crate::discover::time_diff;
 use crate::PROFILE_STORE;
 
@@ -13,12 +13,13 @@ use crate::PROFILE_STORE;
 //     Principal,
 // }
 
-#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
 enum ActionType {
     ReleasePayment,
     CancelPayment,
     RejectShareChange,
     AcceptShareChange,
+    PromosPayment(CPayment),
 }
 
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
@@ -54,6 +55,8 @@ fn calculate_percentage(value: f64, total: f64) -> f64 {
 pub struct UserHistory {
     pub id: Principal,
     // payment bad marks
+
+    pub total_debt: f64,
     pub total_payments_cancellation: f64,
     pub latest_payments_cancellation: Vec<PaymentContract>,
 
@@ -88,6 +91,7 @@ impl UserHistory {
     pub fn new(id: Principal) -> Self {
         let new_profile_history = UserHistory {
             id,
+            total_debt: 0.0,
             total_payments_cancellation: 0.0,
             latest_payments_cancellation: Vec::new(),
             spent: 0.0,
@@ -275,27 +279,64 @@ impl UserHistory {
         (released_percentage * 0.35) + (users_percentage * 0.15)
     }
 
-    pub fn release_payment(&mut self) {
+    pub fn release_payment(&mut self, id: String) {
         let rating = self.payment_actions_rate();
         let new_rating = ActionRating {
-            id: "".to_string(),
+            id: id.clone(),
             rating,
             action_type: ActionType::ReleasePayment,
+            date: ic_cdk::api::time() as f64,
+        };
+        self.rates_by_actions.retain(|action| action.id != id);
+        self.rates_by_actions.push(new_rating);
+        self.calc_total_rate()
+    }
+
+
+    pub fn promise_payment(&mut self, payment: CPayment) {
+        let old_action = self.rates_by_actions.iter().find(|action| action.id == payment.id);
+        if let Some(action) = old_action {
+            if let ActionType::PromosPayment(p) = action.action_type.clone() {
+                if p == payment {
+                    return;
+                }
+            }
+        }
+
+        let rating = self.payment_actions_rate();
+        let new_rating = ActionRating {
+            id: payment.id.clone(),
+            rating,
+            action_type: ActionType::PromosPayment(payment.clone()),
+            date: ic_cdk::api::time() as f64,
+        };
+        self.rates_by_actions.retain(|action| action.id != payment.id);
+        self.rates_by_actions.push(new_rating);
+        self.calc_total_rate()
+    }
+
+
+    pub fn cancel_payment(&mut self, payment:CPayment) {
+        let rating = self.payment_actions_rate();
+        let new_rating = ActionRating {
+            id: payment.id,
+            rating,
+            action_type: ActionType::CancelPayment,
             date: ic_cdk::api::time() as f64,
         };
         self.rates_by_actions.push(new_rating);
         self.calc_total_rate()
     }
 
-    pub fn cancel_payment(&mut self) {
-        let rating = self.payment_actions_rate();
-        let new_rating = ActionRating {
-            id: "".to_string(),
-            rating,
-            action_type: ActionType::CancelPayment,
-            date: ic_cdk::api::time() as f64,
-        };
-        self.rates_by_actions.push(new_rating);
+    pub fn confirm_cancellation(&mut self, payment:CPayment) {
+        // let rating = self.payment_actions_rate();
+        // let new_rating = ActionRating {
+        //     id: payment.id,
+        //     rating,
+        //     action_type: ActionType::CancelPayment,
+        //     date: ic_cdk::api::time() as f64,
+        // };
+        self.rates_by_actions.retain(|action| action.id != payment.id);
         self.calc_total_rate()
     }
 

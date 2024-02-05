@@ -7,7 +7,7 @@ use ic_websocket_cdk::{
 use crate::websocket::Notification;
 
 
-#[derive(CandidType, Clone, Debug, Deserialize, Eq, PartialEq)]
+#[derive(CandidType, Clone, Debug, Deserialize,  PartialEq)]
 pub struct AppMessage {
     pub notification: Option<Notification>,
     pub text: String,

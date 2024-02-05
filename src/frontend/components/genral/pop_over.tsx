@@ -44,11 +44,7 @@ export default function BasicPopover(props: Props) {
                 <span onClick={handleClick}>
                     {props.children}
                 </span>
-                {open ? (
-                    <Box sx={styles}>
-                        {props.content}
-                    </Box>
-                ) : null}
+                {open ? props.content : null}
             </Box>
         </ClickAwayListener>
     );

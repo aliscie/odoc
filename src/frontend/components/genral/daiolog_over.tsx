@@ -37,9 +37,9 @@ function DialogOver({DialogContent, ...props}: any) {
     return <HtmlTooltip arrow open={open} title={<Dialog/>}>
         <Button
             color={"inherit"}
+            // variant="text"
             {...props}
             onClick={handleClick}
-            variant="text"
         >
             {props.children}
         </Button>

@@ -4,7 +4,7 @@ use candid::types::principal::PrincipalError;
 
 use ic_cdk_macros::query;
 use candid::{CandidType, Deserialize, Principal};
-use crate::{PaymentContract, PROFILE_STORE};
+use crate::{PaymentContract, PROFILE_STORE, Wallet};
 use crate::discover::UserFE;
 use crate::user::User;
 use crate::user_history::{ActionRating, Rating, UserHistory};
@@ -25,6 +25,8 @@ pub struct RatingFE {
 pub struct UserHistoryFE {
     pub id: Principal,
     // payment bad marks
+
+    pub total_debt: f64,
     pub total_payments_cancellation: f64,
     pub latest_payments_cancellation: Vec<PaymentContract>,
 
@@ -69,6 +71,7 @@ impl From<UserHistory> for UserHistoryFE {
 
         Self {
             id: original.id,
+            total_debt: original.total_debt,
             total_payments_cancellation: original.total_payments_cancellation,
             latest_payments_cancellation: original.latest_payments_cancellation,
             spent: original.spent,
@@ -99,6 +102,12 @@ fn get_user_profile(user_id: Principal) -> Result<(User, UserHistoryFE), String>
     let latest_canceled_payments = PaymentContract::get_latest_canceled_payments(user_id, 0, 50);
     user_profile.latest_payments_cancellation = latest_canceled_payments;
     user_profile.total_payments_cancellation = total_canceled_payments;
+    let wallet = Wallet::get(user_id);
+    user_profile.total_debt = wallet.total_debt.clone();
+    user_profile.spent = wallet.total_debt;
+    // people should be able to check total debt relative to total spent over history
+    // old debts bad flags
+    // confirmed promises (confined are unreleased) also bad sign.
     return Ok((user.unwrap(), UserHistoryFE::from(user_profile)));
 }
 

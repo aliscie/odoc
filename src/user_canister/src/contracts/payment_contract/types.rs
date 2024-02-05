@@ -75,14 +75,14 @@ impl PaymentContract {
 
         payment
     }
-    pub fn get_total_dept(sender: Principal) -> u64 {
-        let mut total_dept: u64 = 0;
+    pub fn get_total_dept(sender: Principal) -> f64 {
+        let mut total_dept= 0.0;
         let all_contracts: HashMap<ContractId, StoredContract> = Contract::get_all_contracts().unwrap_or(HashMap::new());
 
         for contract in all_contracts.values() {
             if let StoredContract::PaymentContract(payment) = contract {
                 if (!payment.released && !payment.canceled) && payment.sender == sender {
-                    total_dept += payment.amount;
+                    total_dept += payment.amount as f64;
                 }
             }
         };

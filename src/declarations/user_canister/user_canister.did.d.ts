@@ -1,5 +1,6 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
+import type { IDL } from '@dfinity/candid';
 
 export interface ActionRating {
   'id' : string,
@@ -10,6 +11,7 @@ export interface ActionRating {
 export type ActionType = { 'ReleasePayment' : null } |
   { 'RejectShareChange' : null } |
   { 'AcceptShareChange' : null } |
+  { 'PromosPayment' : CPayment } |
   { 'CancelPayment' : null };
 export interface AppMessage {
   'text' : string,
@@ -36,10 +38,11 @@ export interface CContract {
 }
 export interface CPayment {
   'id' : string,
+  'status' : PaymentStatus,
   'date_created' : number,
   'date_released' : number,
+  'contract_id' : string,
   'sender' : Principal,
-  'released' : boolean,
   'amount' : number,
   'receiver' : Principal,
 }
@@ -118,6 +121,7 @@ export interface CustomContract {
   'formulas' : Array<Formula>,
   'contracts' : Array<CContract>,
   'date_updated' : number,
+  'promises' : Array<CPayment>,
 }
 export interface Exchange {
   'to' : string,
@@ -156,13 +160,7 @@ export interface Filter {
   'operations' : Array<Operation>,
   'formula' : [] | [string],
 }
-export interface Formula {
-  'trigger_target' : string,
-  'trigger' : Trigger,
-  'operation' : Operation,
-  'column_id' : string,
-  'execute' : Execute,
-}
+export interface Formula { 'column_id' : string, 'execute' : Execute }
 export interface Friend { 'sender' : User, 'receiver' : User }
 export interface FriendSystem {
   'friend_requests' : Array<Friend>,
@@ -185,11 +183,13 @@ export interface Message {
   'message' : string,
   'chat_id' : string,
 }
-export type NoteContent = { 'ContractUpdate' : ContractNotification } |
+export type NoteContent = { 'CustomContract' : [string, CPayment] } |
+  { 'ContractUpdate' : ContractNotification } |
   { 'FriendRequest' : {} } |
   { 'AcceptFriendRequest' : null } |
   { 'ApproveShareRequest' : string } |
   { 'PaymentContract' : [PaymentContract, PaymentAction] } |
+  { 'CPaymentContract' : [CPayment, PaymentAction] } |
   { 'Unfriend' : null } |
   { 'ShareRequestApplied' : SharesContract } |
   { 'ShareRequestApproved' : SharesContract } |
@@ -213,7 +213,8 @@ export type PaymentAction = { 'Released' : null } |
   { 'Objected' : null } |
   { 'Accepted' : null } |
   { 'Update' : null } |
-  { 'Cancelled' : null };
+  { 'Cancelled' : null } |
+  { 'Promise' : null };
 export interface PaymentContract {
   'extra_cells' : Array<[string, string]>,
   'canceled' : boolean,
@@ -225,6 +226,15 @@ export interface PaymentContract {
   'amount' : bigint,
   'receiver' : Principal,
 }
+export type PaymentStatus = { 'HeighConformed' : null } |
+  { 'None' : null } |
+  { 'RequestCancellation' : null } |
+  { 'ApproveHeighConformed' : null } |
+  { 'Released' : null } |
+  { 'Objected' : string } |
+  { 'Confirmed' : null } |
+  { 'ConfirmedCancellation' : null } |
+  { 'Canceled' : null };
 export type PermissionType = { 'Edit' : Principal } |
   { 'View' : Principal } |
   { 'AnyOneView' : null } |
@@ -342,8 +352,6 @@ export type StoredContract = { 'CustomContract' : CustomContract } |
   { 'PaymentContract' : PaymentContract } |
   { 'SharesContract' : SharesContract };
 export interface Table { 'rows' : Array<Row>, 'columns' : Array<Column> }
-export type Trigger = { 'Timer' : number } |
-  { 'Update' : CColumn };
 export interface User {
   'id' : string,
   'name' : string,
@@ -359,6 +367,7 @@ export interface UserHistoryFE {
   'shares_changes_rejects' : number,
   'received_shares_payments' : number,
   'latest_payments_cancellation' : Array<PaymentContract>,
+  'total_debt' : number,
   'shares_change_request' : number,
   'total_rate' : number,
   'spent' : number,
@@ -384,15 +393,19 @@ export interface WebsocketMessage {
 export interface _SERVICE {
   'accept_friend_request' : ActorMethod<[string], Result>,
   'apply_request' : ActorMethod<[string, string, string], Result_1>,
+  'approve_heigh_conform' : ActorMethod<[CPayment], Result_1>,
   'approve_request' : ActorMethod<[string, string, string], Result_1>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
   'cancel_payment' : ActorMethod<[string], Result_1>,
+  'confirmed_c_payment' : ActorMethod<[CPayment], Result_1>,
+  'confirmed_cancellation' : ActorMethod<[CPayment], Result_1>,
   'conform_payment' : ActorMethod<[string], Result_1>,
   'conform_share' : ActorMethod<[string, string, string], Result_1>,
   'content_updates' : ActorMethod<[string, [] | [string], string], Result_2>,
   'counter' : ActorMethod<[], bigint>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
   'create_share_contract' : ActorMethod<[Array<Share>], Result_2>,
+  'delete_custom_contract' : ActorMethod<[string], Result_1>,
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
   'delete_payment' : ActorMethod<[string], Result_1>,
   'delete_post' : ActorMethod<[string], Result_1>,
@@ -437,6 +450,7 @@ export interface _SERVICE {
     ],
     Result_2
   >,
+  'object_on_cancel' : ActorMethod<[CPayment, string], Result_1>,
   'object_payment' : ActorMethod<[string, string], Result_1>,
   'pay_for_share_contract' : ActorMethod<[string, bigint, string], Result_1>,
   'rate_user' : ActorMethod<[Principal, Rating], Result_1>,
@@ -468,3 +482,5 @@ export interface _SERVICE {
   >,
   'ws_open' : ActorMethod<[CanisterWsOpenArguments], Result_1>,
 }
+export declare const idlFactory: IDL.InterfaceFactory;
+export declare const init: ({ IDL }: { IDL: IDL }) => IDL.Type[];
