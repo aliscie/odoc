@@ -4,7 +4,7 @@ use std::time::Duration;
 use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::caller;
 
-use crate::{CPayment, PaymentContract, PROFILE_HISOTYR, SharePayment, SharesContract, Wallet};
+use crate::{CPayment, PROFILE_HISOTYR, SharePayment, SharesContract, Wallet};
 use crate::discover::time_diff;
 use crate::PROFILE_STORE;
 
@@ -58,7 +58,7 @@ pub struct UserHistory {
 
     pub total_debt: f64,
     pub total_payments_cancellation: f64,
-    pub latest_payments_cancellation: Vec<PaymentContract>,
+    pub latest_payments_cancellation: Vec<CPayment>,
 
     // payments good mark
     pub spent: f64,
@@ -247,36 +247,37 @@ impl UserHistory {
 
     pub fn payment_actions_rate(&mut self) -> f64 {
         // Get released and canceled payments
-        let released_payments: Vec<PaymentContract> = PaymentContract::get_released_payments(self.id);
-        let canceled_payments: Vec<PaymentContract> = PaymentContract::get_canceled_payments(self.id, 0, 9999);
+        // let released_payments: Vec<PaymentContract> = PaymentContract::get_released_payments(self.id);
+        // let canceled_payments: Vec<PaymentContract> = PaymentContract::get_canceled_payments(self.id, 0, 9999);
 
         // Calculate released percentage relative to total amount
-        let total_released_amount: f64 = released_payments.iter().map(|payment| payment.amount as f64).sum();
-        let total_canceled_amount: f64 = canceled_payments.iter().map(|payment| payment.amount as f64).sum();
+        // let total_released_amount: f64 = released_payments.iter().map(|payment| payment.amount as f64).sum();
+        // let total_canceled_amount: f64 = canceled_payments.iter().map(|payment| payment.amount as f64).sum();
 
-        let released_percentage = calculate_percentage(total_released_amount.clone(), total_canceled_amount + total_released_amount.clone());
+        // let released_percentage = calculate_percentage(total_released_amount.clone(), total_canceled_amount + total_released_amount.clone());
 
         // Calculate unique users percentage relative to the total number of released payments
-        let total_users_released: HashSet<Principal> = released_payments
-            .iter()
-            .map(|payment| payment.sender.clone())
-            .collect();
-        let users_percentage = calculate_percentage(total_users_released.len() as f64, released_payments.len() as f64);
+        // let total_users_released: HashSet<Principal> = released_payments
+        //     .iter()
+        //     .map(|payment| payment.sender.clone())
+        //     .collect();
+        // let users_percentage = calculate_percentage(total_users_released.len() as f64, released_payments.len() as f64);
+        //
+        // // Calculate weight based on the number of unique users released
+        // let mut weight = 1.0;
+        // if total_users_released.len() <= 4 {
+        //     weight = total_users_released.len() as f64;
+        // } else if total_released_amount < 25.0 {
+        //     weight = 0.1;
+        // } else if total_released_amount < 100.0 {
+        //     weight = total_released_amount / 25.0;
+        // } else {
+        //     weight = 5.0;
+        // }
 
-        // Calculate weight based on the number of unique users released
-        let mut weight = 1.0;
-        if total_users_released.len() <= 4 {
-            weight = total_users_released.len() as f64;
-        } else if total_released_amount < 25.0 {
-            weight = 0.1;
-        } else if total_released_amount < 100.0 {
-            weight = total_released_amount / 25.0;
-        } else {
-            weight = 5.0;
-        }
 
-
-        (released_percentage * 0.35) + (users_percentage * 0.15)
+        // (released_percentage * 0.35) + (users_percentage * 0.15)
+        0.0
     }
 
     pub fn release_payment(&mut self, id: String) {

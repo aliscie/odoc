@@ -7,7 +7,7 @@ use candid::{CandidType, Deserialize, Principal};
 
 use crate::contracts::Contract;
 
-use crate::{CColumn, CPayment, PaymentContract};
+use crate::{CColumn, CPayment};
 use serde::Serialize;
 
 static COUNTER: AtomicU64 = AtomicU64::new(0);

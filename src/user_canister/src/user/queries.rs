@@ -5,7 +5,7 @@ use candid::types::principal::PrincipalError;
 
 use ic_cdk_macros::query;
 
-use crate::{PaymentContract, PROFILE_STORE};
+use crate::{PROFILE_STORE};
 use crate::user::User;
 use crate::user_history::UserHistory;
 
@@ -69,9 +69,6 @@ fn get_all_users() -> HashMap<String, User> {
             .collect()
     })
 }
-
-
-
 
 
 #[query]

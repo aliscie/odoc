@@ -2,7 +2,7 @@ use ic_cdk::caller;
 use ic_cdk_macros::update;
 
 
-use crate::{ExchangeType, PaymentContract, Wallet};
+use crate::{ExchangeType, Wallet};
 
 //
 #[update]
@@ -16,13 +16,9 @@ fn deposit_usdt(amount: f64) -> Result<f64, String> {
 fn withdraw_usdt(amount: f64) -> Result<f64, String> {
     let mut wallet = Wallet::get(caller());
     let remaining = wallet.balance - amount;
-
-    let dept = PaymentContract::get_total_dept(caller());
-    if dept > 0.0 && dept >= remaining {
-        return Err(format!("Your total dept it{}, You can cancel some of the contract to withdraw which may effect your trust score.", dept).to_string());
-    }
-
+    let wallet = wallet.calc_dept();
     if wallet.total_debt.clone() > remaining {
+        let dept = wallet.total_debt.clone() - remaining;
         return Err(format!("Your total dept it{}, You can cancel some of the contract to withdraw which may effect your trust score.", dept).to_string());
     }
 

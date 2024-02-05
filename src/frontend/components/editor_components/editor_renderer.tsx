@@ -22,8 +22,6 @@ export function EditorRenderer(props: any) {
             return <TableCell {...attributes}>{children}</TableCell>
         case "mention":
             return <MentionComponent {...props}/>
-        case "payment_contract":
-            return <ContractView {...props.element} />;
         // case "data_grid":
         //     return <DataGrid {...props.element} />;
         case "shares_contract":

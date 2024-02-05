@@ -4,7 +4,7 @@ use candid::types::principal::PrincipalError;
 
 use ic_cdk_macros::query;
 use candid::{CandidType, Deserialize, Principal};
-use crate::{PaymentContract, PROFILE_STORE, Wallet};
+use crate::{CPayment, PROFILE_STORE, Wallet};
 use crate::discover::UserFE;
 use crate::user::User;
 use crate::user_history::{ActionRating, Rating, UserHistory};
@@ -28,7 +28,7 @@ pub struct UserHistoryFE {
 
     pub total_debt: f64,
     pub total_payments_cancellation: f64,
-    pub latest_payments_cancellation: Vec<PaymentContract>,
+    pub latest_payments_cancellation: Vec<CPayment>,
 
     // payments good mark
     pub spent: f64,
@@ -98,10 +98,10 @@ fn get_user_profile(user_id: Principal) -> Result<(User, UserHistoryFE), String>
             .cloned()
     });
     let mut user_profile = UserHistory::get(user_id);
-    let total_canceled_payments = PaymentContract::get_canceled_payments(user_id, 0, 99999999).len() as f64;
-    let latest_canceled_payments = PaymentContract::get_latest_canceled_payments(user_id, 0, 50);
-    user_profile.latest_payments_cancellation = latest_canceled_payments;
-    user_profile.total_payments_cancellation = total_canceled_payments;
+    // let total_canceled_payments = PaymentContract::get_canceled_payments(user_id, 0, 99999999).len() as f64;
+    // let latest_canceled_payments = PaymentContract::get_latest_canceled_payments(user_id, 0, 50);
+    // user_profile.latest_payments_cancellation = latest_canceled_payments;
+    // user_profile.total_payments_cancellation = total_canceled_payments;
     let wallet = Wallet::get(user_id);
     user_profile.total_debt = wallet.total_debt.clone();
     user_profile.spent = wallet.total_debt;
@@ -111,7 +111,7 @@ fn get_user_profile(user_id: Principal) -> Result<(User, UserHistoryFE), String>
     return Ok((user.unwrap(), UserHistoryFE::from(user_profile)));
 }
 
-#[query]
-fn get_payment_cancellations(user: Principal, from: f64, to: f64) -> Vec<PaymentContract> {
-    PaymentContract::get_canceled_payments(user, from as u64, to as u64)
-}
+// #[query]
+// fn get_payment_cancellations(user: Principal, from: f64, to: f64) -> Vec<PaymentContract> {
+//     PaymentContract::get_canceled_payments(user, from as u64, to as u64)
+// }

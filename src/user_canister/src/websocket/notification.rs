@@ -4,7 +4,7 @@ use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::caller;
 use serde::Serialize;
 
-use crate::{CPayment, NOTIFICATIONS, PaymentContract, SharePayment, SharesContract, USER_FILES, websocket};
+use crate::{CPayment, NOTIFICATIONS, SharePayment, SharesContract, USER_FILES, websocket};
 use crate::chat::Message;
 use crate::COUNTER;
 use crate::websocket::{AppMessage, notification, send_app_message};
@@ -44,7 +44,6 @@ pub enum NoteContent {
     ApplyShareRequest(String),
     NewMessage(Message),
     RemovedFromChat(String),
-    PaymentContract(PaymentContract, PaymentAction),
     CPaymentContract(CPayment, PaymentAction),
     CustomContract(String, CPayment),
     // FilePermition(FileID,Vec<Contract>)

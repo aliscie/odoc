@@ -1,9 +1,9 @@
 use std::collections::HashMap;
-use ic_cdk::caller;
 
+use ic_cdk::caller;
 use ic_cdk_macros::update;
 
-use crate::{PaymentContract, SharesContract, StoredContract};
+use crate::{SharesContract, StoredContract};
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
 use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId};
@@ -50,17 +50,13 @@ fn multi_updates(
     }
 
     for contract in contracts.clone() {
-        if let StoredContract::PaymentContract(payment_contract) = contract.clone() {
-            // payment_contract.save();
-        } else if let StoredContract::SharesContract(share_contract) = contract.clone() {
+        if let StoredContract::SharesContract(share_contract) = contract.clone() {
             share_contract.save()?;
         }
         if let StoredContract::CustomContract(custom_contract) = contract {
             custom_contract.save()?;
         }
     }
-
-    PaymentContract::update_payment_contracts(contracts.clone())?;
 
 
     // Update FILE_CONTENTS
@@ -71,8 +67,8 @@ fn multi_updates(
     };
 
     for contract_id in delete_contracts {
-        let payment = PaymentContract::get(caller(), contract_id.clone())?;
-        payment.delete()?;
+        // let contract = ...;
+        // contract.delete();
     }
 
     messages.push_str("Updates applied successfully.");

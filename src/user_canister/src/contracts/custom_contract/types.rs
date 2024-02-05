@@ -8,7 +8,6 @@ use serde::Serialize;
 use crate::{CONTRACTS_STORE, ExchangeType, SharesContract, StoredContract, Wallet};
 use crate::contracts::custom_contract::cell_permision;
 use crate::contracts::custom_contract::utils::{notify_about_promise, notify_custom_contract};
-use crate::contracts::PaymentContract;
 use crate::storage_schema::ContractId;
 use crate::tables::{ColumnTypes, Execute, Filter, Formula, PermissionType};
 use crate::user_history::UserHistory;
