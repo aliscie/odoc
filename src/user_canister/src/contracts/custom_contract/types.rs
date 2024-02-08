@@ -56,7 +56,6 @@ pub struct CContract {
 
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub enum PaymentStatus {
-    Canceled,
     Released,
     Confirmed,
     ConfirmedCancellation,
@@ -85,6 +84,18 @@ pub struct CPayment {
 }
 
 impl CPayment {
+    pub fn default() -> Self {
+        Self {
+            contract_id: ContractId::default(),
+            id: "".to_string(),
+            amount: 0.0,
+            sender: Principal::anonymous(),
+            receiver: Principal::anonymous(),
+            date_created: 0.0,
+            date_released: 0.0,
+            status: PaymentStatus::None,
+        }
+    }
     pub fn pay(mut self) -> Result<Self, String> {
         let mut sender_wallet = Wallet::get(self.sender.clone());
         if self.amount > sender_wallet.balance {
@@ -94,12 +105,19 @@ impl CPayment {
         let withdraw = ExchangeType::LocalSend;
         let deposit = ExchangeType::LocalSend;
         sender_wallet.withdraw(self.amount.clone(), self.receiver.clone().to_string(), withdraw)?;
-        sender_wallet.remove_dept(self.id.clone())?;
+        let _ = sender_wallet.remove_dept(self.id.clone());
         receiver_wallet.deposit(self.amount, self.sender.clone().to_string(), deposit)?;
+
+        // ----------------- UserHistory ----------------- \\
+        let mut user_history = UserHistory::get(self.sender.clone());
+        user_history.payment_action(self.clone());
+        user_history.save();
+        // ---------------------------------------------------
+
         self.status = PaymentStatus::Released;
 
         // ---------------- handle notifications ----------------\\
-        UserHistory::get(self.sender.clone()).release_payment(self.id.clone());
+        UserHistory::get(self.sender.clone()).payment_action(self.clone());
 
         let content = NoteContent::CPaymentContract(self.clone(), PaymentAction::Released);
         let new_notification = Notification {
@@ -303,7 +321,14 @@ impl CustomContract {
         });
         Ok(())
     }
-
+    pub fn pure_save(&self) -> Result<Self, String> {
+        CONTRACTS_STORE.with(|contracts_store| {
+            let mut caller_contracts = contracts_store.borrow_mut();
+            let caller_contracts_map = caller_contracts.entry(self.creator).or_insert_with(HashMap::new);
+            caller_contracts_map.insert(self.id.clone(), StoredContract::CustomContract(self.clone()));
+        });
+        Ok(self.clone())
+    }
 
     pub fn save(mut self) -> Result<Self, String> {
         if let Some(old_contract) = Self::get(self.id.clone()) {
@@ -318,23 +343,8 @@ impl CustomContract {
 
 
             // rerun odl promos if payment.status == PaymentStatus::Canceled. else promise
-            self.promises = self.promises.iter_mut().map(|promise| {
-                if let Some(old_promise) = old_contract.promises.iter().find(|p| p.id == promise.id) {
-                    promise.contract_id = self.id.clone();
-                    if promise.status == PaymentStatus::Canceled && old_promise.status == PaymentStatus::Confirmed {
-                        let text: String = "You can't cancel confirmed payment but you can request canalisation".to_string();
-                        notify_custom_contract(old_promise.clone(), text);
-                        old_promise.clone()
-                    } else if promise.clone().status == PaymentStatus::ConfirmedCancellation && PaymentStatus::ConfirmedCancellation != old_promise.status {
-                        let text: String = "Only receiver can confined cancellation".to_string();
-                        notify_custom_contract(old_promise.clone(), text);
-                        old_promise.clone()
-                    } else {
-                        promise.clone()
-                    }
-                } else {
-                    promise.clone()
-                }
+            self.promises = self.promises.iter().map(|promise| {
+                return self.clone().update_promise(promise.clone());
             }).collect();
 
 
@@ -344,6 +354,13 @@ impl CustomContract {
                     let text: String = "You can't delete confirmed payment".to_string();
                     notify_custom_contract(old_promise.clone(), text);
                     self.promises.push(old_promise.clone());
+
+                    // For deleted promises
+                    if !self.promises.iter().any(|p| p.id == old_promise.id) {
+                        let mut user_history = UserHistory::get(caller());
+                        user_history.confirm_cancellation(old_promise);
+                        user_history.save()
+                    }
                 }
             }
         }
@@ -381,7 +398,7 @@ impl CustomContract {
                 // TODO remove dept when cancel +  conform cancellation
                 // For now it seams fine to keep dept if not canceled
                 // remove dept only when cancel
-                UserHistory::get(caller()).promise_payment(payment.clone());
+                UserHistory::get(caller()).payment_action(payment.clone());
                 payment.contract_id = self.id.clone();
                 notify_about_promise(payment, PaymentAction::Promise);
             }
@@ -390,10 +407,74 @@ impl CustomContract {
         self.execute_formulas();
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
-            let caller_contracts_map = caller_contracts.entry(caller()).or_insert_with(HashMap::new);
+            let caller_contracts_map = caller_contracts.entry(self.creator).or_insert_with(HashMap::new);
             caller_contracts_map.insert(self.id.clone(), StoredContract::CustomContract(self.clone()));
         });
 
         Ok(self)
+    }
+
+    pub fn update_promise_permission(&self, promise: CPayment, old_promise: CPayment) -> Result<CPayment, String> {
+        if old_promise.status == PaymentStatus::None {
+            return Ok(promise);
+        }
+
+        if promise.status == PaymentStatus::HeighConformed
+            && old_promise.status != PaymentStatus::HeighConformed
+            && caller() != old_promise.sender
+        {
+            return Err("Only sender can set to high confirm".to_string());
+        }
+
+        if promise.status == PaymentStatus::ConfirmedCancellation
+            && old_promise.status != PaymentStatus::ConfirmedCancellation
+            && caller() != old_promise.receiver
+        {
+            return Err("Only receiver can confine".to_string());
+        }
+
+        if promise.status == PaymentStatus::ApproveHeighConformed
+            && old_promise.status != PaymentStatus::HeighConformed
+            && caller() != old_promise.receiver
+        {
+            return Err("Only receiver can confine".to_string());
+        }
+
+        if old_promise.status == PaymentStatus::ConfirmedCancellation
+            && promise.status != PaymentStatus::ConfirmedCancellation
+            && caller() != old_promise.receiver
+        {
+            return Err("Only receiver can confine".to_string());
+        }
+
+        // Check if all fields are equal except for the status.
+        if promise.status == PaymentStatus::Released
+            && old_promise.contract_id == promise.contract_id
+            && old_promise.id == promise.id
+            && old_promise.amount == promise.amount
+            && old_promise.sender == promise.sender
+            && old_promise.receiver == promise.receiver
+            && old_promise.date_created == promise.date_created
+            && old_promise.date_released == promise.date_released
+        {
+            return Ok(promise);
+        }
+
+        Err("Permission denied".to_string())
+    }
+
+    pub fn update_promise(&self, promise: CPayment) -> CPayment {
+        if let Some(old_promise) = self.promises.iter().find(|p| p.id == promise.id) {
+            let res = self.update_promise_permission(promise.clone(), old_promise.clone());
+            if let Ok(updated_promise) = res {
+                // Notify only when permission is denied.
+                return updated_promise;
+            } else if let Err(text) = res {
+                notify_custom_contract(old_promise.clone(), text);
+                return old_promise.clone();
+            }
+        }
+
+        promise
     }
 }

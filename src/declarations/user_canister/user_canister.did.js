@@ -16,7 +16,6 @@ export const idlFactory = ({ IDL }) => {
     'Objected' : IDL.Text,
     'Confirmed' : IDL.Null,
     'ConfirmedCancellation' : IDL.Null,
-    'Canceled' : IDL.Null,
   });
   const CPayment = IDL.Record({
     'id' : IDL.Text,
@@ -56,10 +55,7 @@ export const idlFactory = ({ IDL }) => {
     'receiver' : IDL.Principal,
   });
   const Result_3 = IDL.Variant({ 'Ok' : IDL.Float64, 'Err' : IDL.Text });
-  const Contract = IDL.Variant({
-    'PaymentContract' : IDL.Text,
-    'SharesContract' : IDL.Text,
-  });
+  const Contract = IDL.Variant({ 'SharesContract' : IDL.Text });
   const Row = IDL.Record({
     'id' : IDL.Text,
     'contract' : IDL.Opt(Contract),
@@ -167,17 +163,6 @@ export const idlFactory = ({ IDL }) => {
     'date_updated' : IDL.Float64,
     'promises' : IDL.Vec(CPayment),
   });
-  const PaymentContract = IDL.Record({
-    'extra_cells' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
-    'canceled' : IDL.Bool,
-    'contract_id' : IDL.Text,
-    'sender' : IDL.Principal,
-    'released' : IDL.Bool,
-    'objected' : IDL.Opt(IDL.Text),
-    'confirmed' : IDL.Bool,
-    'amount' : IDL.Nat64,
-    'receiver' : IDL.Principal,
-  });
   const SharePaymentOption = IDL.Record({
     'id' : IDL.Text,
     'title' : IDL.Text,
@@ -207,7 +192,6 @@ export const idlFactory = ({ IDL }) => {
   });
   const StoredContract = IDL.Variant({
     'CustomContract' : CustomContract,
-    'PaymentContract' : PaymentContract,
     'SharesContract' : SharesContract,
   });
   const Result_4 = IDL.Variant({ 'Ok' : StoredContract, 'Err' : IDL.Text });
@@ -284,7 +268,6 @@ export const idlFactory = ({ IDL }) => {
     'FriendRequest' : IDL.Record({}),
     'AcceptFriendRequest' : IDL.Null,
     'ApproveShareRequest' : IDL.Text,
-    'PaymentContract' : IDL.Tuple(PaymentContract, PaymentAction),
     'CPaymentContract' : IDL.Tuple(CPayment, PaymentAction),
     'Unfriend' : IDL.Null,
     'ShareRequestApplied' : SharesContract,
@@ -319,44 +302,39 @@ export const idlFactory = ({ IDL }) => {
     'Err' : IDL.Text,
   });
   const ActionType = IDL.Variant({
-    'ReleasePayment' : IDL.Null,
-    'RejectShareChange' : IDL.Null,
-    'AcceptShareChange' : IDL.Null,
-    'PromosPayment' : CPayment,
-    'CancelPayment' : IDL.Null,
+    'Share' : SharePayment,
+    'Payment' : CPayment,
   });
   const ActionRating = IDL.Record({
     'id' : IDL.Text,
     'action_type' : ActionType,
     'date' : IDL.Float64,
+    'received_promises' : IDL.Float64,
+    'spent' : IDL.Float64,
     'rating' : IDL.Float64,
+    'received' : IDL.Float64,
+    'promises' : IDL.Float64,
   });
-  const RatingFE = IDL.Record({
+  const Rating = IDL.Record({
     'id' : IDL.Text,
     'date' : IDL.Float64,
-    'user' : UserFE,
+    'user_id' : IDL.Principal,
     'comment' : IDL.Text,
     'rating' : IDL.Float64,
   });
-  const UserHistoryFE = IDL.Record({
+  const UserHistory = IDL.Record({
     'id' : IDL.Principal,
-    'users_interactions' : IDL.Float64,
-    'transactions_received' : IDL.Float64,
+    'actions_rate' : IDL.Float64,
     'rates_by_actions' : IDL.Vec(ActionRating),
-    'shares_changes_rejects' : IDL.Float64,
-    'received_shares_payments' : IDL.Float64,
-    'latest_payments_cancellation' : IDL.Vec(PaymentContract),
     'total_debt' : IDL.Float64,
-    'shares_change_request' : IDL.Float64,
-    'total_rate' : IDL.Float64,
     'spent' : IDL.Float64,
-    'transactions_sent' : IDL.Float64,
-    'rates_by_others' : IDL.Vec(RatingFE),
-    'shares_changes_accepts' : IDL.Float64,
-    'total_payments_cancellation' : IDL.Float64,
+    'rates_by_others' : IDL.Vec(Rating),
+    'users_rate' : IDL.Float64,
+    'users_interacted' : IDL.Float64,
+    'received' : IDL.Float64,
   });
   const Result_9 = IDL.Variant({
-    'Ok' : IDL.Tuple(User, UserHistoryFE),
+    'Ok' : IDL.Tuple(User, UserHistory),
     'Err' : IDL.Text,
   });
   const Chat = IDL.Record({
@@ -368,13 +346,6 @@ export const idlFactory = ({ IDL }) => {
     'admins' : IDL.Vec(IDL.Principal),
   });
   const Result_10 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
-  const Rating = IDL.Record({
-    'id' : IDL.Text,
-    'date' : IDL.Float64,
-    'user_id' : IDL.Principal,
-    'comment' : IDL.Text,
-    'rating' : IDL.Float64,
-  });
   const RegisterUser = IDL.Record({
     'name' : IDL.Opt(IDL.Text),
     'description' : IDL.Opt(IDL.Text),
@@ -436,10 +407,8 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'cancel_friend_request' : IDL.Func([IDL.Text], [Result], []),
-    'cancel_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'confirmed_c_payment' : IDL.Func([CPayment], [Result_1], []),
     'confirmed_cancellation' : IDL.Func([CPayment], [Result_1], []),
-    'conform_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'conform_share' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [Result_1], []),
     'content_updates' : IDL.Func(
         [IDL.Text, IDL.Opt(IDL.Text), IDL.Text],
@@ -451,7 +420,6 @@ export const idlFactory = ({ IDL }) => {
     'create_share_contract' : IDL.Func([IDL.Vec(Share)], [Result_2], []),
     'delete_custom_contract' : IDL.Func([IDL.Text], [Result_1], []),
     'delete_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], []),
-    'delete_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'delete_post' : IDL.Func([IDL.Text], [Result_1], []),
     'deposit_usdt' : IDL.Func([IDL.Float64], [Result_3], []),
     'get_all_files' : IDL.Func(
@@ -486,11 +454,6 @@ export const idlFactory = ({ IDL }) => {
     'get_initial_data' : IDL.Func([], [Result_5], ['query']),
     'get_my_chats' : IDL.Func([], [IDL.Vec(FEChat)], ['query']),
     'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
-    'get_payment_cancellations' : IDL.Func(
-        [IDL.Principal, IDL.Float64, IDL.Float64],
-        [IDL.Vec(PaymentContract)],
-        ['query'],
-      ),
     'get_post' : IDL.Func([IDL.Text], [Result_6], ['query']),
     'get_posts' : IDL.Func(
         [IDL.Nat64, IDL.Nat64],
@@ -515,7 +478,6 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'object_on_cancel' : IDL.Func([CPayment, IDL.Text], [Result_1], []),
-    'object_payment' : IDL.Func([IDL.Text, IDL.Text], [Result_1], []),
     'pay_for_share_contract' : IDL.Func(
         [IDL.Text, IDL.Nat64, IDL.Text],
         [Result_1],
@@ -524,7 +486,6 @@ export const idlFactory = ({ IDL }) => {
     'rate_user' : IDL.Func([IDL.Principal, Rating], [Result_1], []),
     'register' : IDL.Func([RegisterUser], [Result], []),
     'reject_friend_request' : IDL.Func([IDL.Text], [Result], []),
-    'release_payment' : IDL.Func([IDL.Text], [Result_1], []),
     'rename_file' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'save_post' : IDL.Func([Post], [Result_1], []),
     'search_files_content' : IDL.Func(

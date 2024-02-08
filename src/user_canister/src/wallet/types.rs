@@ -116,7 +116,7 @@ impl Wallet {
 
         // handle profile
         let mut user_profile = UserHistory::get(self.owner.parse().unwrap());
-        let user_profile = user_profile.calc_spent();
+        let user_profile = user_profile.calc_spent_and_received();
         user_profile.clone().save();
         Ok(self.clone())
     }
@@ -138,7 +138,7 @@ impl Wallet {
 
             // handle profile
             let mut user_profile = UserHistory::get(self.owner.parse().unwrap());
-            let user_profile = user_profile.calc_received();
+            let user_profile = user_profile.calc_spent_and_received();
             user_profile.clone().save();
             Ok(())
         } else {

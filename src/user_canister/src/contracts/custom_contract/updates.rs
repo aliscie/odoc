@@ -6,7 +6,6 @@ use crate::{CPayment, PaymentStatus, Wallet};
 use crate::CustomContract;
 use crate::user_history::UserHistory;
 
-
 // #[update]
 // fn release_c_payment(c_payment: CPayment) -> Result<(), String> {
 //     if self.promises.contains(&c_payment) {
@@ -19,24 +18,28 @@ use crate::user_history::UserHistory;
 //         Err("Payment not found".to_string())
 //     }
 // }
-
 #[update]
-fn confirmed_c_payment(c_payment: CPayment) -> Result<(), String> {
-    if let Some(mut contract) = CustomContract::get_for_user(c_payment.contract_id, c_payment.sender) {
-        contract.promises = contract.promises.iter_mut().map(|payment| {
-            if payment.id == c_payment.id && payment.receiver == caller() && payment.status == PaymentStatus::None {
+fn confirmed_c_payment(promise: CPayment) -> Result<(), String> {
+    if let Some(mut contract) = CustomContract::get_for_user(promise.contract_id, promise.sender) {
+        contract.promises = contract.promises.iter_mut().map(|mut payment| {
+            if payment.id == promise.id && payment.receiver == caller() && payment.status == PaymentStatus::None {
                 payment.status = PaymentStatus::Confirmed;
-                let wallet = Wallet::get(c_payment.sender);
+                let wallet = Wallet::get(promise.sender);
                 wallet.add_dept(payment.amount.clone(), payment.id.clone());
-                let mut user_history = UserHistory::get(c_payment.sender);
-                user_history.promise_payment(payment.clone());
-                user_history.save()
+                let mut user_history = UserHistory::get(promise.sender);
+                user_history.payment_action(payment.clone());
+                user_history.save();
             }
             payment.clone()
-        }).collect();
+        }).collect::<Vec<_>>();
 
-        contract.save()?;
-        Ok(())
+        // Check if any promise with matching ID and status was updated
+        if contract.promises.iter().any(|payment| payment.id == promise.id && payment.status == PaymentStatus::Confirmed) {
+            contract.pure_save()?;
+            Ok(())
+        } else {
+            Err("Promise not found or conditions not met".to_string())
+        }
     } else {
         Err("Contract not found".to_string())
     }
@@ -47,7 +50,7 @@ fn confirmed_c_payment(c_payment: CPayment) -> Result<(), String> {
 fn confirmed_cancellation(c_payment: CPayment) -> Result<(), String> {
     if let Some(mut contract) = CustomContract::get_for_user(c_payment.contract_id, c_payment.sender) {
         contract.promises = contract.promises.iter_mut().map(|payment| {
-            if payment.id == c_payment.id && payment.receiver == caller() &&( payment.status == PaymentStatus::Canceled  || payment.status == PaymentStatus::RequestCancellation) {
+            if payment.id == c_payment.id && payment.receiver == caller() && ( payment.status == PaymentStatus::RequestCancellation) {
                 payment.status = PaymentStatus::ConfirmedCancellation;
                 let wallet = Wallet::get(c_payment.sender);
                 wallet.remove_dept(payment.id.clone());
@@ -55,12 +58,11 @@ fn confirmed_cancellation(c_payment: CPayment) -> Result<(), String> {
                 let mut user_history = UserHistory::get(c_payment.sender);
                 user_history.confirm_cancellation(payment.clone());
                 user_history.save()
-
             }
             payment.clone()
         }).collect();
 
-        contract.save()?;
+        contract.pure_save()?;
         Ok(())
     } else {
         Err("Contract not found".to_string())
@@ -77,12 +79,12 @@ fn approve_heigh_conform(c_payment: CPayment) -> Result<(), String> {
                 let wallet = Wallet::get(c_payment.sender);
                 wallet.remove_dept(payment.id.clone());
                 let mut user_history = UserHistory::get(c_payment.sender);
-                user_history.promise_payment(payment.clone());
+                user_history.payment_action(payment.clone());
             }
             payment.clone()
         }).collect();
 
-        contract.save()?;
+        contract.pure_save()?;
         Ok(())
     } else {
         Err("Contract not found".to_string())
@@ -93,19 +95,19 @@ fn approve_heigh_conform(c_payment: CPayment) -> Result<(), String> {
 fn object_on_cancel(c_payment: CPayment, reason: String) -> Result<(), String> {
     if let Some(mut contract) = CustomContract::get_for_user(c_payment.contract_id, c_payment.sender) {
         contract.promises = contract.promises.iter_mut().map(|payment| {
-            if payment.id == c_payment.id && payment.receiver == caller() && payment.status == PaymentStatus::Canceled {
+            if payment.id == c_payment.id && payment.receiver == caller() {
                 payment.status = PaymentStatus::Objected(reason.clone());
-                  let wallet = Wallet::get(c_payment.sender);
+                let wallet = Wallet::get(c_payment.sender);
                 wallet.add_dept(payment.amount.clone(), payment.id.clone());
 
                 let mut user_history = UserHistory::get(c_payment.sender);
-                user_history.cancel_payment(payment.clone());
+                user_history.payment_action(payment.clone());
                 user_history.save()
             }
             payment.clone()
         }).collect();
 
-        contract.save()?;
+        contract.pure_save()?;
         Ok(())
     } else {
         Err("Contract not found".to_string())

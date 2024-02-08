@@ -6,13 +6,14 @@ export interface ActionRating {
   'id' : string,
   'action_type' : ActionType,
   'date' : number,
+  'received_promises' : number,
+  'spent' : number,
   'rating' : number,
+  'received' : number,
+  'promises' : number,
 }
-export type ActionType = { 'ReleasePayment' : null } |
-  { 'RejectShareChange' : null } |
-  { 'AcceptShareChange' : null } |
-  { 'PromosPayment' : CPayment } |
-  { 'CancelPayment' : null };
+export type ActionType = { 'Share' : SharePayment } |
+  { 'Payment' : CPayment };
 export interface AppMessage {
   'text' : string,
   'notification' : [] | [Notification],
@@ -106,8 +107,7 @@ export interface ContentNode {
   'language' : string,
   'parent' : [] | [string],
 }
-export type Contract = { 'PaymentContract' : string } |
-  { 'SharesContract' : string };
+export type Contract = { 'SharesContract' : string };
 export interface ContractNotification {
   'contract_type' : string,
   'contract_id' : string,
@@ -188,7 +188,6 @@ export type NoteContent = { 'CustomContract' : [string, CPayment] } |
   { 'FriendRequest' : {} } |
   { 'AcceptFriendRequest' : null } |
   { 'ApproveShareRequest' : string } |
-  { 'PaymentContract' : [PaymentContract, PaymentAction] } |
   { 'CPaymentContract' : [CPayment, PaymentAction] } |
   { 'Unfriend' : null } |
   { 'ShareRequestApplied' : SharesContract } |
@@ -215,17 +214,6 @@ export type PaymentAction = { 'Released' : null } |
   { 'Update' : null } |
   { 'Cancelled' : null } |
   { 'Promise' : null };
-export interface PaymentContract {
-  'extra_cells' : Array<[string, string]>,
-  'canceled' : boolean,
-  'contract_id' : string,
-  'sender' : Principal,
-  'released' : boolean,
-  'objected' : [] | [string],
-  'confirmed' : boolean,
-  'amount' : bigint,
-  'receiver' : Principal,
-}
 export type PaymentStatus = { 'HeighConformed' : null } |
   { 'None' : null } |
   { 'RequestCancellation' : null } |
@@ -233,8 +221,7 @@ export type PaymentStatus = { 'HeighConformed' : null } |
   { 'Released' : null } |
   { 'Objected' : string } |
   { 'Confirmed' : null } |
-  { 'ConfirmedCancellation' : null } |
-  { 'Canceled' : null };
+  { 'ConfirmedCancellation' : null };
 export type PermissionType = { 'Edit' : Principal } |
   { 'View' : Principal } |
   { 'AnyOneView' : null } |
@@ -261,13 +248,6 @@ export interface Rating {
   'id' : string,
   'date' : number,
   'user_id' : Principal,
-  'comment' : string,
-  'rating' : number,
-}
-export interface RatingFE {
-  'id' : string,
-  'date' : number,
-  'user' : UserFE,
   'comment' : string,
   'rating' : number,
 }
@@ -298,7 +278,7 @@ export type Result_7 = { 'Ok' : ShareFile } |
   { 'Err' : string };
 export type Result_8 = { 'Ok' : [FileNode, Array<ContentNode>] } |
   { 'Err' : string };
-export type Result_9 = { 'Ok' : [User, UserHistoryFE] } |
+export type Result_9 = { 'Ok' : [User, UserHistory] } |
   { 'Err' : string };
 export interface Row {
   'id' : string,
@@ -349,7 +329,6 @@ export interface SharesContract {
   'shares_requests' : Array<[string, ShareRequest]>,
 }
 export type StoredContract = { 'CustomContract' : CustomContract } |
-  { 'PaymentContract' : PaymentContract } |
   { 'SharesContract' : SharesContract };
 export interface Table { 'rows' : Array<Row>, 'columns' : Array<Column> }
 export interface User {
@@ -359,22 +338,16 @@ export interface User {
   'photo' : Uint8Array | number[],
 }
 export interface UserFE { 'id' : string, 'name' : string }
-export interface UserHistoryFE {
+export interface UserHistory {
   'id' : Principal,
-  'users_interactions' : number,
-  'transactions_received' : number,
+  'actions_rate' : number,
   'rates_by_actions' : Array<ActionRating>,
-  'shares_changes_rejects' : number,
-  'received_shares_payments' : number,
-  'latest_payments_cancellation' : Array<PaymentContract>,
   'total_debt' : number,
-  'shares_change_request' : number,
-  'total_rate' : number,
   'spent' : number,
-  'transactions_sent' : number,
-  'rates_by_others' : Array<RatingFE>,
-  'shares_changes_accepts' : number,
-  'total_payments_cancellation' : number,
+  'rates_by_others' : Array<Rating>,
+  'users_rate' : number,
+  'users_interacted' : number,
+  'received' : number,
 }
 export interface Wallet {
   'balance' : number,
@@ -396,10 +369,8 @@ export interface _SERVICE {
   'approve_heigh_conform' : ActorMethod<[CPayment], Result_1>,
   'approve_request' : ActorMethod<[string, string, string], Result_1>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
-  'cancel_payment' : ActorMethod<[string], Result_1>,
   'confirmed_c_payment' : ActorMethod<[CPayment], Result_1>,
   'confirmed_cancellation' : ActorMethod<[CPayment], Result_1>,
-  'conform_payment' : ActorMethod<[string], Result_1>,
   'conform_share' : ActorMethod<[string, string, string], Result_1>,
   'content_updates' : ActorMethod<[string, [] | [string], string], Result_2>,
   'counter' : ActorMethod<[], bigint>,
@@ -407,7 +378,6 @@ export interface _SERVICE {
   'create_share_contract' : ActorMethod<[Array<Share>], Result_2>,
   'delete_custom_contract' : ActorMethod<[string], Result_1>,
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
-  'delete_payment' : ActorMethod<[string], Result_1>,
   'delete_post' : ActorMethod<[string], Result_1>,
   'deposit_usdt' : ActorMethod<[number], Result_3>,
   'get_all_files' : ActorMethod<[], [] | [Array<[string, FileNode]>]>,
@@ -428,10 +398,6 @@ export interface _SERVICE {
   'get_initial_data' : ActorMethod<[], Result_5>,
   'get_my_chats' : ActorMethod<[], Array<FEChat>>,
   'get_notifications' : ActorMethod<[], Array<Notification>>,
-  'get_payment_cancellations' : ActorMethod<
-    [Principal, number, number],
-    Array<PaymentContract>
-  >,
   'get_post' : ActorMethod<[string], Result_6>,
   'get_posts' : ActorMethod<[bigint, bigint], Array<PostUser>>,
   'get_share_file' : ActorMethod<[string], Result_7>,
@@ -451,12 +417,10 @@ export interface _SERVICE {
     Result_2
   >,
   'object_on_cancel' : ActorMethod<[CPayment, string], Result_1>,
-  'object_payment' : ActorMethod<[string, string], Result_1>,
   'pay_for_share_contract' : ActorMethod<[string, bigint, string], Result_1>,
   'rate_user' : ActorMethod<[Principal, Rating], Result_1>,
   'register' : ActorMethod<[RegisterUser], Result>,
   'reject_friend_request' : ActorMethod<[string], Result>,
-  'release_payment' : ActorMethod<[string], Result_1>,
   'rename_file' : ActorMethod<[string, string], boolean>,
   'save_post' : ActorMethod<[Post], Result_1>,
   'search_files_content' : ActorMethod<

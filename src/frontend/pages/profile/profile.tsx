@@ -32,7 +32,7 @@ export default function ProfileComponent() {
     const [profileData, setProfileData] = React.useState(profile || {});
     useEffect(() => {
         (async () => {
-            let res: undefined | { Ok: [User, UserHistoryFE] } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(profile.id));
+            let res: undefined | { Ok: [User, UserHistory] } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(profile.id));
             if ("Ok" in res) {
                 setUserHistory(res.Ok[1])
             }

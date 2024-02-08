@@ -2,15 +2,13 @@ type ActionRating = record {
   id : text;
   action_type : ActionType;
   date : float64;
+  received_promises : float64;
+  spent : float64;
   rating : float64;
+  received : float64;
+  promises : float64;
 };
-type ActionType = variant {
-  ReleasePayment;
-  RejectShareChange;
-  AcceptShareChange;
-  PromosPayment : CPayment;
-  CancelPayment;
-};
+type ActionType = variant { Share : SharePayment; Payment : CPayment };
 type AppMessage = record {
   "text" : text;
   notification : opt Notification;
@@ -93,7 +91,7 @@ type ContentNode = record {
   language : text;
   parent : opt text;
 };
-type Contract = variant { PaymentContract : text; SharesContract : text };
+type Contract = variant { SharesContract : text };
 type ContractNotification = record { contract_type : text; contract_id : text };
 type CustomContract = record {
   id : text;
@@ -167,7 +165,6 @@ type NoteContent = variant {
   FriendRequest : record {};
   AcceptFriendRequest;
   ApproveShareRequest : text;
-  PaymentContract : record { PaymentContract; PaymentAction };
   CPaymentContract : record { CPayment; PaymentAction };
   Unfriend;
   ShareRequestApplied : SharesContract;
@@ -194,17 +191,6 @@ type PaymentAction = variant {
   Cancelled;
   Promise;
 };
-type PaymentContract = record {
-  extra_cells : vec record { text; text };
-  canceled : bool;
-  contract_id : text;
-  sender : principal;
-  released : bool;
-  objected : opt text;
-  confirmed : bool;
-  amount : nat64;
-  receiver : principal;
-};
 type PaymentStatus = variant {
   HeighConformed;
   None;
@@ -214,7 +200,6 @@ type PaymentStatus = variant {
   Objected : text;
   Confirmed;
   ConfirmedCancellation;
-  Canceled;
 };
 type PermissionType = variant {
   Edit : principal;
@@ -247,13 +232,6 @@ type Rating = record {
   comment : text;
   rating : float64;
 };
-type RatingFE = record {
-  id : text;
-  date : float64;
-  user : UserFE;
-  comment : text;
-  rating : float64;
-};
 type RegisterUser = record {
   name : opt text;
   description : opt text;
@@ -273,7 +251,7 @@ type Result_8 = variant {
   Ok : record { FileNode; vec ContentNode };
   Err : text;
 };
-type Result_9 = variant { Ok : record { User; UserHistoryFE }; Err : text };
+type Result_9 = variant { Ok : record { User; UserHistory }; Err : text };
 type Row = record {
   id : text;
   contract : opt Contract;
@@ -321,7 +299,6 @@ type SharesContract = record {
 };
 type StoredContract = variant {
   CustomContract : CustomContract;
-  PaymentContract : PaymentContract;
   SharesContract : SharesContract;
 };
 type Table = record { rows : vec Row; columns : vec Column };
@@ -332,22 +309,16 @@ type User = record {
   photo : vec nat8;
 };
 type UserFE = record { id : text; name : text };
-type UserHistoryFE = record {
+type UserHistory = record {
   id : principal;
-  users_interactions : float64;
-  transactions_received : float64;
+  actions_rate : float64;
   rates_by_actions : vec ActionRating;
-  shares_changes_rejects : float64;
-  received_shares_payments : float64;
-  latest_payments_cancellation : vec PaymentContract;
   total_debt : float64;
-  shares_change_request : float64;
-  total_rate : float64;
   spent : float64;
-  transactions_sent : float64;
-  rates_by_others : vec RatingFE;
-  shares_changes_accepts : float64;
-  total_payments_cancellation : float64;
+  rates_by_others : vec Rating;
+  users_rate : float64;
+  users_interacted : float64;
+  received : float64;
 };
 type Wallet = record {
   balance : float64;
@@ -369,10 +340,8 @@ service : () -> {
   approve_heigh_conform : (CPayment) -> (Result_1);
   approve_request : (text, text, text) -> (Result_1);
   cancel_friend_request : (text) -> (Result);
-  cancel_payment : (text) -> (Result_1);
   confirmed_c_payment : (CPayment) -> (Result_1);
   confirmed_cancellation : (CPayment) -> (Result_1);
-  conform_payment : (text) -> (Result_1);
   conform_share : (text, text, text) -> (Result_1);
   content_updates : (text, opt text, text) -> (Result_2);
   counter : () -> (nat64) query;
@@ -380,7 +349,6 @@ service : () -> {
   create_share_contract : (vec Share) -> (Result_2);
   delete_custom_contract : (text) -> (Result_1);
   delete_file : (text) -> (opt FileNode);
-  delete_payment : (text) -> (Result_1);
   delete_post : (text) -> (Result_1);
   deposit_usdt : (float64) -> (Result_3);
   get_all_files : () -> (opt vec record { text; FileNode }) query;
@@ -395,9 +363,6 @@ service : () -> {
   get_initial_data : () -> (Result_5) query;
   get_my_chats : () -> (vec FEChat) query;
   get_notifications : () -> (vec Notification) query;
-  get_payment_cancellations : (principal, float64, float64) -> (
-      vec PaymentContract,
-    ) query;
   get_post : (text) -> (Result_6) query;
   get_posts : (nat64, nat64) -> (vec PostUser) query;
   get_share_file : (text) -> (Result_7) query;
@@ -414,12 +379,10 @@ service : () -> {
       vec text,
     ) -> (Result_2);
   object_on_cancel : (CPayment, text) -> (Result_1);
-  object_payment : (text, text) -> (Result_1);
   pay_for_share_contract : (text, nat64, text) -> (Result_1);
   rate_user : (principal, Rating) -> (Result_1);
   register : (RegisterUser) -> (Result);
   reject_friend_request : (text) -> (Result);
-  release_payment : (text) -> (Result_1);
   rename_file : (text, text) -> (bool);
   save_post : (Post) -> (Result_1);
   search_files_content : (text, bool) -> (

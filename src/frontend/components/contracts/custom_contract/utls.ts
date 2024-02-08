@@ -10,7 +10,6 @@ import {
 import {randomString} from "../../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
 import {PaymentRow} from "./types";
-import {logger} from "../../../dev_utils/log_data";
 
 export function updateCContractColumn(contract, new_column): CContract {
     contract.columns = contract.columns.map((column: CColumn) => {

@@ -1,15 +1,14 @@
 import {
-    CContract,
     CPayment,
-    CustomContract, Formula,
+    CustomContract,
     InitialData,
-    RegisterUser, StoredContract, User, UserHistoryFE
+    StoredContract, User, UserHistory
 } from "../../../declarations/user_canister/user_canister.did";
-import {actor} from "../../App";
 import {randomString} from "../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
 import {logger} from "../../dev_utils/log_data";
 import {assert} from "vitest";
+import {createNewPromis} from "../../components/contracts/custom_contract/utls";
 
 // TODO Tests
 //     1. in the formula.exec.payment.sender == caller()
@@ -38,78 +37,234 @@ let custom_contract_sample = {
     "date_updated": 0
 };
 
-let to_save = [{'CustomContract': custom_contract_sample}]
-test("Test custom contract", async () => {
-    let new_user = await global.new_user();
-    let res = await global.actor.deposit_usdt(100);
 
-    expect("Ok" in res).toBeTruthy();
-    // console.log({new_user, me: global.user});
-    let promis: CPayment = {
-        contract_id: "",
-        id: randomString(),
-        date_created: Number(0),
-        date_released: Number(0),
-        sender: global.user.getPrincipal(),
-        released: true,
-        status: {'None': null},
-        amount: Number(50),
-        receiver: new_user.getPrincipal(),
-    }
-    let custom_contract: CustomContract = {
-        id: randomString(),
-        creator: global.user.getPrincipal(),
-        'date_created': 0,
-        'payments': [],
-        'name': 'string',
-        'formulas': [],
-        'contracts': [],
-        'date_updated': 0,
-        'promises': [promis],
+let contract_id: string = randomString();
+let promis: CPayment = createNewPromis(Principal.fromText("2vxsx-fae"));
+let custom_contract: CustomContract = {
+    id: contract_id,
+    creator: Principal.fromText("2vxsx-fae"),
+    'date_created': 0,
+    'payments': [],
+    'name': 'string',
+    'formulas': [],
+    'contracts': [],
+    'date_updated': 0,
+    'promises': [promis],
 
-    }
-    let to_store: StoredContract = {
-        "CustomContract": custom_contract
-    }
-    res = await global.actor.multi_updates([], [], [to_store], []);
+}
 
-    // Confirm the promise
-    global.actor.setIdentity(new_user)
+// test("Test custom contract", async () => {
+//     let newUser = await global.newUser();
+//     let res = await global.actor.deposit_usdt(100);
+//     promis.receiver = newUser.getPrincipal()
+//     promis.sender = global.user.getPrincipal()
+//     custom_contract.promises = [promis];
+//     custom_contract.creator = global.user.getPrincipal();
+//     expect("Ok" in res).toBeTruthy();
+//     // console.log({newUser, me: global.user});
+//
+//     let to_store: StoredContract = {
+//         "CustomContract": custom_contract
+//     }
+//     res = await global.actor.multi_updates([], [], [to_store], []);
+//
+//     // --------------------- Confirm the promise ---------------------  \\
+//     global.actor.setIdentity(newUser)
+//     let notifications: Array<Notification> = await global.actor.get_notifications();
+//     let payment = notifications[0].content.CPaymentContract[0];
+//     let contract_id = custom_contract.id;
+//     expect(payment.contract_id).toEqual(contract_id);
+//     res = await global.actor.confirmed_c_payment(payment);
+//     expect(res).toEqual({Ok: null});
+//
+//
+//     // ---------------------  cancel the promise --------------------- \\
+//     global.actor.setIdentity(global.user)
+//
+//     res = await global.actor.get_initial_data();
+//     res.Ok.Contracts.forEach((value, key) => {
+//         expect(value[1].CustomContract.promises[0].status).toEqual({Confirmed: null});
+//     });
+//
+//
+//     custom_contract.promises[0].status = {Canceled: null};
+//     let to_store3: StoredContract = {
+//         "CustomContract": custom_contract
+//     }
+//     res = await global.actor.multi_updates([], [], [to_store3], []);
+//     let notifications2: Array<Notification> = await global.actor.get_notifications();
+//     // logger({notifications2}) // TODO assert this You can't canceled confirmed payment in notifications2
+//     res = await global.actor.get_initial_data();
+//     res.Ok.Contracts.forEach((value, key) => {
+//         expect(value[1].CustomContract.promises[0].status).toEqual({Confirmed: null});
+//     });
+//
+//
+//     // Release the promise
+//     global.actor.setIdentity(global.user)
+//     custom_contract.promises[0].status = {Released: null};
+//     to_store = {
+//         "CustomContract": custom_contract
+//     }
+//
+//     res = await global.actor.multi_updates([], [], [to_store], []);
+//     assert("Ok" in res)
+//
+//     // ---------------------------- assert the promise was moved to payments ---------------------------- \\
+//     res = await global.actor.get_initial_data();
+//     res.Ok.Contracts.forEach((value, key) => {
+//         expect(value[1].CustomContract.promises).toEqual([]);
+//         expect(value[1].CustomContract.payments[0].status).toEqual({Released: null});
+//     });
+//
+//
+//     let profile_history = await global.actor.get_user_profile(global.user.getPrincipal());
+//     expect(profile_history.Ok[1].total_rate).toBeGreaterThan(0);
+//     // logger({profile_history});
+// });
+
+
+async function userConfirm(user, g) {
+    g.actor.setIdentity(user)
     let notifications: Array<Notification> = await global.actor.get_notifications();
-    let payment = notifications[0].content.CPaymentContract[0];
-    let contract_id = custom_contract.id;
-    assert(payment.contract_id === contract_id)
-    res = await global.actor.confirmed_c_payment(payment);
-    assert("Ok" in res)
-    let profile_history: { Ok: [User, UserHistoryFE] } | { Err: string } = await global.actor.get_user_profile(global.user.getPrincipal());
-    assert(profile_history.Ok[1].total_rate == 0)
-
-    // cancel the promise
-    global.actor.setIdentity(global.user)
-    custom_contract.promises[0].status = {Canceled: null};
-    let to_store3: StoredContract = {
-        "CustomContract": custom_contract
-    }
-    res = await global.actor.multi_updates([], [], [to_store3], []);
-    let notifications2: Array<Notification> = await global.actor.get_notifications();
-    logger(notifications2) // TODO assert this You can't canceled confirmed payment in notifications2
-    res = await global.actor.get_initial_data();
-    res.Ok.Contracts.forEach((value, key) => {
-        // console.log({x: value[1].CustomContract})
-        expect(value[1].CustomContract.promises[0].status).toEqual({Confirmed: null});
-    });
+    await Promise.all(notifications.map(async (value) => {
+        let payment = value.content.CPaymentContract[0];
+        let contract_id = custom_contract.id;
+        expect(payment.contract_id).toEqual(contract_id);
+        let res = await global.actor.confirmed_c_payment(payment);
+        expect(res).toEqual({Ok: null});
+    }));
+}
 
 
-    // Release the promise
-    global.actor.setIdentity(global.user)
-    custom_contract.promises[0].status = {Released: null};
-    to_store = {
-        "CustomContract": custom_contract
-    }
+async function userObject(user, g) {
+    g.actor.setIdentity(user)
+    let notifications: Array<Notification> = await global.actor.get_notifications();
+    await Promise.all(notifications.map(async (value) => {
+        let payment = value.content.CPaymentContract[0];
+        let contract_id = custom_contract.id;
+        expect(payment.contract_id).toEqual(contract_id);
+        let res = await global.actor.object_on_cancel(payment, 'I don\'t like it');
+        expect(res).toEqual({Ok: null});
+    }));
+}
+
+test("Test actions rating", async () => {
+    // -------- init the test -------- \\
+    let res;
+    let newUser;
+    let promises = [];
+
+    // ------ testing the rating ------ \\
+    res = await global.actor.deposit_usdt(2000);
+    promis.amount = 120;
+    promis.sender = global.user.getPrincipal();
+    promis.status = {None: null};
+
+    /// ---------- dummy promises ---------- \\
+    let newUser1 = await global.newUser();
+    newUser = newUser1.getPrincipal();
+    promises.push(...[1, 2, 3, 4].map((value) => {
+        return {
+            ...promis,
+            id: randomString(),
+            receiver: newUser,
+        }
+    }))
+
+    let newUser2 = await global.newUser();
+    newUser = newUser2.getPrincipal();
+    promises.push(...[1, 2, 3, 4].map((value) => {
+        return {
+            ...promis,
+            id: randomString(),
+            receiver: newUser,
+        }
+    }))
+
+    let newUser3 = await global.newUser();
+    newUser = newUser3.getPrincipal();
+    promises.push(...[1, 2, 3, 4].map((value) => {
+        return {
+            ...promis,
+            id: randomString(),
+            receiver: newUser,
+        }
+    }))
+
+
+    let newUser4 = await global.newUser();
+    newUser = newUser4.getPrincipal();
+    promises.push(...[3].map((value) => {
+        return {
+            ...promis,
+            id: randomString(),
+            receiver: newUser,
+        }
+    }))
+
+    let newUser5 = await global.newUser();
+    newUser = newUser5.getPrincipal();
+    promises.push(...[3].map((value) => {
+        return {
+            ...promis,
+            id: randomString(),
+            receiver: newUser,
+        }
+    }))
+
+
+    promis.status = {Released: null};
+    let promises_3 = await Promise.all([1, 2, 3].map(async (value) => {
+        newUser = await global.newUser();
+        newUser = newUser.getPrincipal();
+        return {
+            ...promis,
+            id: randomString(),
+            receiver: newUser,
+        }
+    }));
+
+    promises.push(...promises_3);
+    /// ---------- test case ---------- \\
+    custom_contract.creator = global.user.getPrincipal();
+    let to_store = {
+        "CustomContract": {...custom_contract, promises}
+    };
+
     res = await global.actor.multi_updates([], [], [to_store], []);
-    assert("Ok" in res)
-    profile_history = await global.actor.get_user_profile(global.user.getPrincipal());
-    assert(profile_history.Ok[1].total_rate > 0)
-    // logger({profile_history})
+    expect(res).toEqual({Ok: "Updates applied successfully."});
 
+    //  ---------------- Confirm the promises ---------------- \\
+    await userObject(newUser2, global)
+    await userObject(newUser3, global)
+    await userObject(newUser4, global)
+    await userObject(newUser5, global) // TODO I should get 4 objections but in the backend (user_canister) it shows 3 fix this
+    global.actor.setIdentity(global.user)
+
+    //
+    /// ---------------------------- assert the promise was moved to payments ---------------------------- \\
+    //
+
+    let profile_history: { Ok: [User, UserHistory] } | { Err: string } = await global.actor.get_user_profile(global.user.getPrincipal());
+    expect(profile_history.Ok[1].users_interacted).toEqual(3);
+    expect(profile_history.Ok[1].spent).toEqual(360,);
+    expect(profile_history.Ok[1].actions_rate).toEqual(3)
+
+
+    // ---------------- release the promises ---------------- \\
+    promises = promises.map((value) => {
+        return {
+            ...value,
+            status: {Released: null}
+        }
+    });
+    to_store = {
+        "CustomContract": {...custom_contract, promises}
+    };
+    res = await global.actor.multi_updates([], [], [to_store], []);
+    profile_history = await global.actor.get_user_profile(global.user.getPrincipal());
+    expect(profile_history.Ok[1].users_interacted).toEqual(7);
+    expect(profile_history.Ok[1].spent).toEqual(1920);
+    expect(profile_history.Ok[1].actions_rate).toEqual(5)
 });

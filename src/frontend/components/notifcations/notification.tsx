@@ -49,17 +49,7 @@ function Notification({notification}: any) {
                 let amount = c_payment.amount
 
                 let Dialog = (props: any) => {
-                    if (c_payment.status == {'RequestCancellation': null}) {
-                        return <>
-                            The payer want to to cancel this contract. you can confirm it to protect it from
-                            cancellation.
-                            <LoaderButton onClick={async () => {
-                                let res = actor && await actor.confirmed_cancellation(content.CPaymentContract[0])
-                                props.handleCancel()
-                                return res
-                            }}>Confirm Conciliation</LoaderButton>
-                        </>
-                    } else if (c_payment.status == {'HeighConformed': null}) {
+                    if (c_payment.status == {'HeighConformed': null}) {
                         return <>
                             You can confirmed this contract to protect it from cancellation. the sender set it to heigh
                             confirm which mean he can't even withdraw his balance.
@@ -69,7 +59,9 @@ function Notification({notification}: any) {
                                 return res
                             }}>High Confirm</LoaderButton>
                         </>
-                    } else if (c_payment.status == {'Canceled': null}) {
+                    } else {
+
+
                         let reason = "";
                         return <>
                             If you thin the user should not cancile this payment write the resion here.
@@ -79,15 +71,23 @@ function Notification({notification}: any) {
                                 props.handleCancel()
                                 return res
                             }}>Object on cancellation</LoaderButton>
-                        </>
-                    } else {
-                        return <>
+
+
                             You can confirmed this contract to protect it from cancellation.
                             <LoaderButton onClick={async () => {
                                 let res = actor && await actor.confirmed_c_payment(content.CPaymentContract[0])
                                 props.handleCancel()
                                 return res
                             }}>Confirm</LoaderButton>
+
+
+                            The payer want to to cancel this contract. you can confirm it to protect it from
+                            cancellation.
+                            <LoaderButton onClick={async () => {
+                                let res = actor && await actor.confirmed_cancellation(content.CPaymentContract[0])
+                                props.handleCancel()
+                                return res
+                            }}>Confirm Conciliation</LoaderButton>
                         </>
                     }
 
