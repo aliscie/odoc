@@ -14,7 +14,7 @@ type AppMessage = record {
   notification : opt Notification;
   timestamp : nat64;
 };
-type CCell = record { id : text; field : text; value : text };
+type CCell = record { field : text; value : text };
 type CColumn = record {
   id : text;
   field : text;
@@ -28,6 +28,8 @@ type CColumn = record {
 };
 type CContract = record {
   id : text;
+  creator : principal;
+  date_created : float64;
   name : text;
   rows : vec CRow;
   columns : vec CColumn;
@@ -93,8 +95,17 @@ type ContentNode = record {
 };
 type Contract = variant { SharesContract : text };
 type ContractNotification = record { contract_type : text; contract_id : text };
+type ContractPermissionType = variant {
+  Add : principal;
+  Edit : principal;
+  View : principal;
+  AnyOneView;
+  AnyOneEdite;
+  AnyOneAdd;
+};
 type CustomContract = record {
   id : text;
+  permissions : vec ContractPermissionType;
   creator : principal;
   date_created : float64;
   payments : vec CPayment;

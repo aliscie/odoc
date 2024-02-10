@@ -19,7 +19,7 @@ export interface AppMessage {
   'notification' : [] | [Notification],
   'timestamp' : bigint,
 }
-export interface CCell { 'id' : string, 'field' : string, 'value' : string }
+export interface CCell { 'field' : string, 'value' : string }
 export interface CColumn {
   'id' : string,
   'field' : string,
@@ -33,6 +33,8 @@ export interface CColumn {
 }
 export interface CContract {
   'id' : string,
+  'creator' : Principal,
+  'date_created' : number,
   'name' : string,
   'rows' : Array<CRow>,
   'columns' : Array<CColumn>,
@@ -112,8 +114,15 @@ export interface ContractNotification {
   'contract_type' : string,
   'contract_id' : string,
 }
+export type ContractPermissionType = { 'Add' : Principal } |
+  { 'Edit' : Principal } |
+  { 'View' : Principal } |
+  { 'AnyOneView' : null } |
+  { 'AnyOneEdite' : null } |
+  { 'AnyOneAdd' : null };
 export interface CustomContract {
   'id' : string,
+  'permissions' : Array<ContractPermissionType>,
   'creator' : Principal,
   'date_created' : number,
   'payments' : Array<CPayment>,

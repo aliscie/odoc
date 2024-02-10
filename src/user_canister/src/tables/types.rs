@@ -46,6 +46,16 @@ pub enum PermissionType {
     AnyOneView,
 }
 
+#[derive(Eq, PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
+pub enum ContractPermissionType {
+    Add(Principal),
+    Edit(Principal),
+    View(Principal),
+    AnyOneEdite,
+    AnyOneView,
+    AnyOneAdd,
+}
+
 // #[derive(PartialEq, PartialOrd, Clone, Debug, CandidType, Serialize, Deserialize)]
 // pub enum Trigger {
 //     Timer(f64),

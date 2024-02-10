@@ -54,7 +54,12 @@ fn multi_updates(
             share_contract.save()?;
         }
         if let StoredContract::CustomContract(custom_contract) = contract {
-            custom_contract.save()?;
+            let res = custom_contract.save();
+            if let Err(errors) = res {
+                for err in errors {
+                    messages.push_str(&err.message.to_string());
+                }
+            }
         }
     }
 

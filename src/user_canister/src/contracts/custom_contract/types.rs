@@ -5,11 +5,10 @@ use candid::Principal;
 use ic_cdk::{call, caller};
 use serde::Serialize;
 
-use crate::{CONTRACTS_STORE, ExchangeType, SharesContract, StoredContract, Wallet};
-use crate::contracts::custom_contract::cell_permision;
-use crate::contracts::custom_contract::utils::{notify_about_promise, notify_custom_contract};
+use crate::{CONTRACTS_STORE, ExchangeType, StoredContract, Wallet};
+use crate::contracts::custom_contract::utils::{notify_about_promise};
 use crate::storage_schema::ContractId;
-use crate::tables::{ColumnTypes, Execute, Filter, Formula, PermissionType};
+use crate::tables::{ColumnTypes, ContractPermissionType, Execute, Filter, Formula, PermissionType};
 use crate::user_history::UserHistory;
 use crate::websocket::{NoteContent, Notification, PaymentAction};
 
@@ -34,7 +33,6 @@ pub struct CColumn {
 pub(crate) struct CCell {
     pub value: String,
     pub field: String,
-    pub id: String,
 }
 
 
@@ -46,11 +44,20 @@ pub struct CRow {
 
 
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
+pub struct ContractError {
+    pub message: String,
+    // pub payment: CPayment,
+}
+
+
+#[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub struct CContract {
     pub id: String,
     pub name: String,
     pub columns: Vec<CColumn>,
     pub rows: Vec<CRow>,
+    pub creator: Principal,
+    pub date_created: f64,
     // pub rows: Vec<HashMap<String, String>>
 }
 
@@ -145,6 +152,7 @@ pub struct CustomContract {
     pub payments: Vec<CPayment>,
     pub promises: Vec<CPayment>,
     pub formulas: Vec<Formula>,
+    pub permissions: Vec<ContractPermissionType>,
 }
 
 impl CColumn {
@@ -224,21 +232,10 @@ impl CustomContract {
         }
     }
 
-    pub fn get_c_contract(&self, id: &str) -> Option<CContract> {
-        self.contracts.iter().find(|contract| contract.id == id).map(|contract| contract.clone())
+    pub fn get_c_contract(&self, contract_id: &str) -> Option<CContract> {
+        self.contracts.iter().find(|contract| contract.id == contract_id).map(|contract| contract.clone())
     }
-    pub fn get_cell_value(&self, id: &str) -> Option<CCell> {
-        for contract in self.contracts.clone() {
-            for row in contract.rows {
-                for cell in row.cells {
-                    if cell.id == id {
-                        return Some(cell);
-                    }
-                }
-            }
-        }
-        None
-    }
+
     pub fn get_columns(&self) -> Vec<CColumn> {
         let mut columns = vec![];
         for contract in self.contracts.clone() {
@@ -330,7 +327,9 @@ impl CustomContract {
         Ok(self.clone())
     }
 
-    pub fn save(mut self) -> Result<Self, String> {
+
+    pub fn save(mut self) -> Result<Self, Vec<ContractError>> {
+        let mut contract_errors: Vec<ContractError> = vec![];
         if let Some(old_contract) = Self::get(self.id.clone()) {
             self.date_created = old_contract.date_created;
             self.date_updated = ic_cdk::api::time() as f64;
@@ -338,21 +337,34 @@ impl CustomContract {
             // self.payments = old_contract.clone().update_payments(self.payments.clone());
             self.payments = old_contract.payments.clone();
 
-            self.contracts = self.contracts.iter().map(|contract| cell_permision::check_cells_update_permissions(contract.clone(), old_contract.clone())).collect();
-            self.contracts = self.contracts.iter().map(|contract| cell_permision::check_cells_add_delete_permissions(contract.clone(), old_contract.clone())).collect();
+
+            // let contracts: Vec<CContract> = vec![];
+            // for contract in self.contracts {
+            //     let old_contract = old_contract.clone().get_c_contract(&contract.id);
+            //     if old_contract.is_none() {
+            //         // case create new contract
+            //     } else {
+            //         // case update contract
+            //     }
+            // }
+            // for contract in old_contract.contracts {
+            //     let old_contract = self.contracts.clone().get_c_contract(&contract.id);
+            //     if old_contract.is_none() {
+            //         // case delete contract
+            //     }
+            // }
+            self.contracts = self.contracts.iter_mut().map(|mut contract| contract.update(&mut contract_errors, &old_contract)).collect();
 
 
             // rerun odl promos if payment.status == PaymentStatus::Canceled. else promise
-            self.promises = self.promises.iter().map(|promise| {
-                return self.clone().update_promise(promise.clone());
-            }).collect();
+            self.promises = self.promises.clone().iter().map(|promise| self.clone().update_promise(&mut contract_errors, promise.clone())).collect();
 
 
             // prevent delete if Confirmed
             for old_promise in old_contract.promises.clone() {
-                if old_promise.status == PaymentStatus::Confirmed && !self.promises.iter().find(|p| p.id == old_promise.id).is_none() {
-                    let text: String = "You can't delete confirmed payment".to_string();
-                    notify_custom_contract(old_promise.clone(), text);
+                if old_promise.status == PaymentStatus::Confirmed && self.promises.iter().any(|p| p.id == old_promise.id) {
+                    let message: String = "You can't delete confirmed payment".to_string();
+                    contract_errors.push(ContractError { message });
                     self.promises.push(old_promise.clone());
 
                     // For deleted promises
@@ -370,9 +382,10 @@ impl CustomContract {
             let old_formula: Option<&Formula> = self.formulas.iter().find(|f| f.column_id == formula.column_id);
             if let Some(old_formula) = old_formula {
                 if &formula != old_formula {
-                    if let Execute::TransferUsdt(p) = formula.execute {
-                        if caller() != p.sender {
-                            notify_custom_contract(p, "You can't save a formula for other people as senders".to_string());
+                    if let Execute::TransferUsdt(payment) = formula.execute {
+                        if caller() != payment.sender {
+                            let message = "You can't save a formula for other people as senders".to_string();
+                            contract_errors.push(ContractError { message });
                             self.formulas.retain(|f| f.column_id != formula.column_id);
                         }
                     }
@@ -380,40 +393,51 @@ impl CustomContract {
             }
         }
 
-        // ---------------- handle notifications ----------------\\
+        // ---------------- handle promise ----------------\\
         for mut payment in self.promises.clone() {
             // let receiver_wallet = Wallet::get(payment.reciver.clone());
-
-
             let wallet = Wallet::get(payment.sender);
-            if payment.status == PaymentStatus::Released && payment.sender == caller() && payment.amount <= wallet.balance {
-                let payment = payment.clone().pay()?;
-                self.promises.retain(|p| p.id != payment.id);
-                self.payments.push(payment.clone());
-            } else if wallet.total_debt > wallet.balance {
-                notify_custom_contract(payment.clone(), "Incipient palace fund this promises will be ignored".to_string());
-                self.promises.retain(|p| p.id != payment.id);
+            if payment.status == PaymentStatus::Released && payment.sender == caller() {
+                let res = payment.clone().pay();
+                if let Err(message) = res {
+                    contract_errors.push(ContractError { message });
+                    self.promises.retain(|p| p.id != payment.id);
+                } else if let Ok(payment) = res {
+                    self.promises.retain(|p| p.id != payment.id);
+                    self.payments.push(payment.clone());
+                }
             } else {
-                wallet.add_dept(payment.amount.clone(), payment.id.clone())?;
-                // TODO remove dept when cancel +  conform cancellation
-                // For now it seams fine to keep dept if not canceled
-                // remove dept only when cancel
-                UserHistory::get(caller()).payment_action(payment.clone());
-                payment.contract_id = self.id.clone();
-                notify_about_promise(payment, PaymentAction::Promise);
+                let res = wallet.add_dept(payment.amount.clone(), payment.id.clone());
+                if let Err(message) = res {
+                    contract_errors.push(ContractError { message });
+                    self.promises.retain(|p| p.id != payment.id);
+                } else {
+                    // TODO remove dept when cancel +  conform cancellation
+                    // For now it seams fine to keep dept if not canceled
+                    // remove dept only when cancel
+                    UserHistory::get(caller()).payment_action(payment.clone());
+                    payment.contract_id = self.id.clone();
+                    notify_about_promise(payment, PaymentAction::Promise);
+                }
             }
         }
 
-        self.execute_formulas();
+        // self.execute_formulas();
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
             let caller_contracts_map = caller_contracts.entry(self.creator).or_insert_with(HashMap::new);
             caller_contracts_map.insert(self.id.clone(), StoredContract::CustomContract(self.clone()));
         });
 
+        if contract_errors.len() > 0 {
+            return Err(contract_errors);
+        }
         Ok(self)
     }
 
+    //  ----------------------------------------------- Promise CRUD permissions -----------------------------------------------\\
+    // pub fn delete_promise_permission(
+    // pub fn create_promise_permission(
     pub fn update_promise_permission(&self, promise: CPayment, old_promise: CPayment) -> Result<CPayment, String> {
         if old_promise.status == PaymentStatus::None {
             return Ok(promise);
@@ -447,34 +471,42 @@ impl CustomContract {
             return Err("Only receiver can confine".to_string());
         }
 
-        // Check if all fields are equal except for the status.
-        if promise.status == PaymentStatus::Released
-            && old_promise.contract_id == promise.contract_id
-            && old_promise.id == promise.id
-            && old_promise.amount == promise.amount
+
+        // Check if all sender
+        if promise.sender != old_promise.sender
+            && promise.sender != caller()
             && old_promise.sender == promise.sender
             && old_promise.receiver == promise.receiver
-            && old_promise.date_created == promise.date_created
-            && old_promise.date_released == promise.date_released
         {
-            return Ok(promise);
+            return Err("You can't set others as senders. You can set only your self.".to_string());
         }
+
+        // You can't update amount or sender or receiver if the old_.status is not None nor HeighConformed
+
 
         Err("Permission denied".to_string())
     }
 
-    pub fn update_promise(&self, promise: CPayment) -> CPayment {
+    pub fn update_promise(&self, contract_errors: &mut Vec<ContractError>, mut promise: CPayment) -> CPayment {
+        // --------------------------------   handle update --------------------------------  \\
+
         if let Some(old_promise) = self.promises.iter().find(|p| p.id == promise.id) {
             let res = self.update_promise_permission(promise.clone(), old_promise.clone());
             if let Ok(updated_promise) = res {
                 // Notify only when permission is denied.
                 return updated_promise;
-            } else if let Err(text) = res {
-                notify_custom_contract(old_promise.clone(), text);
+            } else if let Err(message) = res {
+                contract_errors.push(ContractError { message });
                 return old_promise.clone();
             }
         }
-
+        // --------------------------------   handle create --------------------------------  \\
+        if promise.sender != caller() {
+            let message = "Only you can set your self as a sender".to_string();
+            contract_errors.push(ContractError { message });
+            promise.sender = caller();
+            promise.status = PaymentStatus::None;
+        }
         promise
     }
 }

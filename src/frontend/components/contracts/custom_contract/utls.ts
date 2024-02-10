@@ -234,7 +234,6 @@ export function serialize_payment_data(payments: Array<CPayment>, all_users?) {
 export function createCContract(): CContract {
     let field = randomString();
     let new_cell: CCell = {
-        id: randomString(),
         field,
         value: "",
     }
@@ -261,6 +260,8 @@ export function createCContract(): CContract {
         name: "New " + randomString(),
         'columns': [new_column],
         'rows': [new_row],
+        date_created:0,
+        creator: Principal.fromText("2vxsx-fae"),
     }
     return new_c_contract
 }

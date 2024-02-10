@@ -90,6 +90,7 @@ export let custom_contract: CustomContract = {
     'contracts': [],
     'formulas': [],
     'date_updated': 0,
+    'permissions': [],
 }
 
 export let slate_Custom_contract = {

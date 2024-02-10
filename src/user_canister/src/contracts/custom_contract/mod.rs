@@ -1,7 +1,7 @@
 mod types;
 mod queries;
 mod updates;
-mod cell_permision;
+mod permissions;
 mod utils;
 mod tests;
 

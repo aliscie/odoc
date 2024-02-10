@@ -129,11 +129,15 @@ export const idlFactory = ({ IDL }) => {
     'message' : IDL.Text,
     'chat_id' : IDL.Text,
   });
-  const CCell = IDL.Record({
-    'id' : IDL.Text,
-    'field' : IDL.Text,
-    'value' : IDL.Text,
+  const ContractPermissionType = IDL.Variant({
+    'Add' : IDL.Principal,
+    'Edit' : IDL.Principal,
+    'View' : IDL.Principal,
+    'AnyOneView' : IDL.Null,
+    'AnyOneEdite' : IDL.Null,
+    'AnyOneAdd' : IDL.Null,
   });
+  const CCell = IDL.Record({ 'field' : IDL.Text, 'value' : IDL.Text });
   const CRow = IDL.Record({ 'id' : IDL.Text, 'cells' : IDL.Vec(CCell) });
   const CColumn = IDL.Record({
     'id' : IDL.Text,
@@ -148,12 +152,15 @@ export const idlFactory = ({ IDL }) => {
   });
   const CContract = IDL.Record({
     'id' : IDL.Text,
+    'creator' : IDL.Principal,
+    'date_created' : IDL.Float64,
     'name' : IDL.Text,
     'rows' : IDL.Vec(CRow),
     'columns' : IDL.Vec(CColumn),
   });
   const CustomContract = IDL.Record({
     'id' : IDL.Text,
+    'permissions' : IDL.Vec(ContractPermissionType),
     'creator' : IDL.Principal,
     'date_created' : IDL.Float64,
     'payments' : IDL.Vec(CPayment),

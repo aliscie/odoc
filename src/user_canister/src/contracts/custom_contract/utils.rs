@@ -23,11 +23,4 @@ pub fn notify_about_promise(payment: CPayment, _type: PaymentAction) {
     }
 }
 
-pub fn notify_custom_contract(payment: CPayment, text: String) {
-    let content = NoteContent::CustomContract("Incipient palace fund this promises will be ignored".to_string(), payment.clone());
-    let mut new_notification = Notification::new(payment.id.clone(), caller(), content);
-    new_notification.save();
-}
-
-
 
