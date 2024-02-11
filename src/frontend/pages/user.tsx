@@ -1,6 +1,13 @@
 import React, {useEffect} from "react";
 import {actor} from "../App";
-import {PaymentContract, Rating, RatingFE, User, UserHistory} from "../../declarations/user_canister/user_canister.did";
+import {
+    PaymentContract,
+    Rating,
+    RatingFE,
+    User,
+    UserHistory,
+    UserProfile
+} from "../../declarations/user_canister/user_canister.did";
 import {Friend} from "./profile/friends";
 import {Principal} from "@dfinity/principal";
 import {Rating as RatingCom, Tooltip, Typography} from "@mui/material";
@@ -108,10 +115,10 @@ function UserPage() {
         (async () => {
 
             let user = Principal.fromText(user_id);
-            let res: undefined | { Ok: [User, UserHistory] } | { Err: string } = actor && await actor.get_user_profile(user);
+            let res: undefined | { Ok: UserProfile } | { Err: string } = actor && await actor.get_user_profile(user);
             if ("Ok" in res) {
-                setUser(res.Ok[0])
-                setUser_history(res.Ok[1])
+                setUser(res.Ok)
+                setUser_history(res.Ok)
             } else if ("Err" in res) {
                 console.log(res.Err)
             }

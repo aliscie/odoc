@@ -18,7 +18,7 @@ import TransactionHistory from "./transaction_history";
 import {actor} from "../../App";
 import {UserHistoryCom} from "../user";
 import {useEffect} from "react";
-import {User, UserHistoryFE} from "../../../declarations/user_canister/user_canister.did";
+import {User, UserHistoryFE, UserProfile} from "../../../declarations/user_canister/user_canister.did";
 import {Principal} from "@dfinity/principal";
 
 
@@ -32,9 +32,9 @@ export default function ProfileComponent() {
     const [profileData, setProfileData] = React.useState(profile || {});
     useEffect(() => {
         (async () => {
-            let res: undefined | { Ok: [User, UserHistory] } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(profile.id));
+            let res: undefined | { Ok: UserProfile } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(profile.id));
             if ("Ok" in res) {
-                setUserHistory(res.Ok[1])
+                setUserHistory(res.Ok)
             }
 
         })()

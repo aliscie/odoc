@@ -17,8 +17,6 @@ import {ActorSubclass} from "@dfinity/agent";
 import {_SERVICE} from "../declarations/user_canister/user_canister.did";
 import MessagesDialog from "./components/chat/messages_box_dialog";
 import useSocket from "./websocket/use_socket";
-import SlateCustomContract from "./components/contracts/custom_contract/custom_contract";
-import FormulaCom from "./components/contracts/custom_contract/column_menu/column_formula";
 
 export let actor: ActorSubclass<_SERVICE> | undefined; // TODo maybe set the actor in redux
 

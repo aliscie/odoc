@@ -234,8 +234,10 @@ export const idlFactory = ({ IDL }) => {
     'balance' : IDL.Float64,
     'owner' : IDL.Text,
     'total_debt' : IDL.Float64,
+    'spent' : IDL.Float64,
     'exchanges' : IDL.Vec(Exchange),
     'debts' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Float64)),
+    'received' : IDL.Float64,
   });
   const InitialData = IDL.Record({
     'FilesContents' : IDL.Opt(
@@ -329,21 +331,22 @@ export const idlFactory = ({ IDL }) => {
     'comment' : IDL.Text,
     'rating' : IDL.Float64,
   });
-  const UserHistory = IDL.Record({
+  const UserProfile = IDL.Record({
     'id' : IDL.Principal,
     'actions_rate' : IDL.Float64,
+    'balance' : IDL.Float64,
     'rates_by_actions' : IDL.Vec(ActionRating),
+    'name' : IDL.Text,
+    'description' : IDL.Text,
     'total_debt' : IDL.Float64,
     'spent' : IDL.Float64,
     'rates_by_others' : IDL.Vec(Rating),
     'users_rate' : IDL.Float64,
     'users_interacted' : IDL.Float64,
-    'received' : IDL.Float64,
+    'photo' : IDL.Vec(IDL.Nat8),
+    'debts' : IDL.Vec(IDL.Text),
   });
-  const Result_9 = IDL.Variant({
-    'Ok' : IDL.Tuple(User, UserHistory),
-    'Err' : IDL.Text,
-  });
+  const Result_9 = IDL.Variant({ 'Ok' : UserProfile, 'Err' : IDL.Text });
   const Chat = IDL.Record({
     'id' : IDL.Text,
     'creator' : IDL.Principal,

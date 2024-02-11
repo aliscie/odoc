@@ -1,6 +1,5 @@
-import {beforeAll, afterAll, vi} from "vitest";
+import {afterAll, beforeAll, vi} from "vitest";
 import '@testing-library/jest-dom/vitest';
-import dotenv from "dotenv";
 import {resolve} from "node:path";
 import {createIdentity, PocketIc} from "@hadronous/pic";
 import {idlFactory} from "./src/declarations/user_canister";

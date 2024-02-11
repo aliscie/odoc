@@ -331,9 +331,9 @@ impl CustomContract {
     pub fn save(mut self) -> Result<Self, Vec<ContractError>> {
         let mut contract_errors: Vec<ContractError> = vec![];
         if let Some(old_contract) = Self::get(self.id.clone()) {
-            self.date_created = old_contract.date_created;
+            self.date_created = old_contract.date_created.clone();
             self.date_updated = ic_cdk::api::time() as f64;
-            self.creator = old_contract.creator;
+            self.creator = old_contract.creator.clone();
             // self.payments = old_contract.clone().update_payments(self.payments.clone());
             self.payments = old_contract.payments.clone();
 
@@ -357,20 +357,20 @@ impl CustomContract {
 
 
             // rerun odl promos if payment.status == PaymentStatus::Canceled. else promise
-            self.promises = self.promises.clone().iter().map(|promise| self.clone().update_promise(&mut contract_errors, promise.clone())).collect();
+            self.promises = self.promises.clone().iter().map(|promise| self.clone().update_promise(&mut contract_errors, promise.clone(), old_contract.clone())).collect();
 
 
             // prevent delete if Confirmed
-            for old_promise in old_contract.promises.clone() {
-                if old_promise.status == PaymentStatus::Confirmed && self.promises.iter().any(|p| p.id == old_promise.id) {
+            for old_promise in old_contract.promises {
+                if old_promise.status == PaymentStatus::Confirmed && !self.promises.iter().any(|p| p.id == old_promise.id) {
                     let message: String = "You can't delete confirmed payment".to_string();
                     contract_errors.push(ContractError { message });
                     self.promises.push(old_promise.clone());
 
                     // For deleted promises
-                    if !self.promises.iter().any(|p| p.id == old_promise.id) {
+                    if !self.promises.iter().any(|p| p.id == old_promise.id.clone()) {
                         let mut user_history = UserHistory::get(caller());
-                        user_history.confirm_cancellation(old_promise);
+                        user_history.confirm_cancellation(old_promise.clone());
                         user_history.save()
                     }
                 }
@@ -438,59 +438,92 @@ impl CustomContract {
     //  ----------------------------------------------- Promise CRUD permissions -----------------------------------------------\\
     // pub fn delete_promise_permission(
     // pub fn create_promise_permission(
-    pub fn update_promise_permission(&self, promise: CPayment, old_promise: CPayment) -> Result<CPayment, String> {
-        if old_promise.status == PaymentStatus::None {
+    pub fn update_promise_permission(&self, mut promise: CPayment, old_promise: CPayment) -> Result<CPayment, String> {
+        if old_promise.status == PaymentStatus::None || old_promise.status == PaymentStatus::ApproveHeighConformed {
             return Ok(promise);
         }
 
-        if promise.status == PaymentStatus::HeighConformed
-            && old_promise.status != PaymentStatus::HeighConformed
-            && caller() != old_promise.sender
-        {
-            return Err("Only sender can set to high confirm".to_string());
+        promise.amount = old_promise.amount.clone();
+        promise.amount = old_promise.amount;
+        promise.receiver = old_promise.receiver;
+
+
+        if promise.sender == caller() && promise.status != old_promise.status {
+            match promise.status {
+                PaymentStatus::Confirmed => {
+                    let message = "Only receiver can confirm a promise".to_string();
+                    return Err(message);
+                }
+                PaymentStatus::ConfirmedCancellation => {
+                    let message = "Only receiver can confirm a promise cancellation".to_string();
+                    return Err(message);
+                }
+                PaymentStatus::Released => {
+                    return Ok(promise);
+                }
+                PaymentStatus::RequestCancellation => {
+                    return Ok(promise);
+                }
+                PaymentStatus::HeighConformed => {
+                    // TODO think about this
+                    let message = "You can't confirm a promise".to_string();
+                    return Err(message);
+                }
+                PaymentStatus::ApproveHeighConformed => {
+                    let message = "Only receiver can confirm a promise".to_string();
+                    return Err(message);
+                }
+                PaymentStatus::Objected(_) => {
+                    let message = "Only receiver can object a promise".to_string();
+                    return Err(message);
+                }
+                PaymentStatus::None => {
+                    let message = "You can't update a promise to None".to_string();
+                    return Err(message);
+                }
+            }
+        } else if promise.receiver == caller() && promise.status != old_promise.status {
+            match promise.status {
+                PaymentStatus::Confirmed => {
+                    return Err("Only sender can confirm a promise".to_string());
+                }
+                PaymentStatus::ConfirmedCancellation => {
+                    return Ok(promise);
+                }
+                PaymentStatus::Released => {
+                    let message = "Only sender can release a promise".to_string();
+                    return Err(message);
+                }
+                PaymentStatus::RequestCancellation => {
+                    return Err("Only sender can request a promise cancellation, You can directly ConfirmedCancellation".to_string());
+                }
+                PaymentStatus::HeighConformed => {
+                    return Err("Only sender can confirm a promise".to_string());
+                }
+                PaymentStatus::ApproveHeighConformed => {
+                    return if old_promise.status == PaymentStatus::HeighConformed {
+                        Ok(promise)
+                    } else {
+                        Err("This contract is not meant for high conformation".to_string())
+                    }
+                }
+                PaymentStatus::Objected(_) => {
+                    return Ok(promise);
+                }
+                PaymentStatus::None => {
+                    let message = "You can't update a promise to None".to_string();
+                    return Err(message);
+                }
+            }
         }
 
-        if promise.status == PaymentStatus::ConfirmedCancellation
-            && old_promise.status != PaymentStatus::ConfirmedCancellation
-            && caller() != old_promise.receiver
-        {
-            return Err("Only receiver can confine".to_string());
-        }
-
-        if promise.status == PaymentStatus::ApproveHeighConformed
-            && old_promise.status != PaymentStatus::HeighConformed
-            && caller() != old_promise.receiver
-        {
-            return Err("Only receiver can confine".to_string());
-        }
-
-        if old_promise.status == PaymentStatus::ConfirmedCancellation
-            && promise.status != PaymentStatus::ConfirmedCancellation
-            && caller() != old_promise.receiver
-        {
-            return Err("Only receiver can confine".to_string());
-        }
-
-
-        // Check if all sender
-        if promise.sender != old_promise.sender
-            && promise.sender != caller()
-            && old_promise.sender == promise.sender
-            && old_promise.receiver == promise.receiver
-        {
-            return Err("You can't set others as senders. You can set only your self.".to_string());
-        }
-
-        // You can't update amount or sender or receiver if the old_.status is not None nor HeighConformed
-
-
-        Err("Permission denied".to_string())
+        Ok(promise)
     }
 
-    pub fn update_promise(&self, contract_errors: &mut Vec<ContractError>, mut promise: CPayment) -> CPayment {
-        // --------------------------------   handle update --------------------------------  \\
+    pub fn update_promise(&self, contract_errors: &mut Vec<ContractError>, mut promise: CPayment, old_contract: CustomContract) -> CPayment {
 
-        if let Some(old_promise) = self.promises.iter().find(|p| p.id == promise.id) {
+        // --------------------------------   handle update --------------------------------  \\
+        if let Some(old_promise) = old_contract.promises.iter().find(|p| p.id == promise.id) {
             let res = self.update_promise_permission(promise.clone(), old_promise.clone());
             if let Ok(updated_promise) = res {
                 // Notify only when permission is denied.
@@ -499,7 +532,10 @@ impl CustomContract {
                 contract_errors.push(ContractError { message });
                 return old_promise.clone();
             }
+            // accept the update
+            return promise;
         }
+
         // --------------------------------   handle create --------------------------------  \\
         if promise.sender != caller() {
             let message = "Only you can set your self as a sender".to_string();

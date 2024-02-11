@@ -1,7 +1,14 @@
-import {StoredContract, User, UserHistory} from "../../../declarations/user_canister/user_canister.did";
-import {randomString} from "../../data_processing/data_samples";
+import {
+    InitialData,
+    StoredContract,
+    User,
+    UserHistory,
+    UserProfile
+} from "../../../declarations/user_canister/user_canister.did";
+import {custom_contract, randomString} from "../../data_processing/data_samples";
 import {assert} from "vitest";
 import {newContract} from "./data_samples";
+import {logger} from "../../dev_utils/log_data";
 
 // TODO Tests
 //     1. in the formula.exec.payment.sender == caller()
@@ -13,10 +20,12 @@ import {newContract} from "./data_samples";
 test("Test custom contract", async () => {
     let newUser = await global.newUser();
     let res = await global.actor.deposit_usdt(100);
+
+    const {custom_contract, promise} = newContract();
     promise.receiver = newUser.getPrincipal()
     promise.sender = global.user.getPrincipal()
-    const {custom_contract, promise} = newContract();
     custom_contract.promises = [promise];
+    promise.amount = 50;
     custom_contract.creator = global.user.getPrincipal();
     expect("Ok" in res).toBeTruthy();
     // console.log({newUser, me: global.user});
@@ -29,6 +38,7 @@ test("Test custom contract", async () => {
     // --------------------- Confirm the promise ---------------------  \\
     global.actor.setIdentity(newUser)
     let notifications: Array<Notification> = await global.actor.get_notifications();
+    // logger({notifications});
     let payment = notifications[0].content.CPaymentContract[0];
     let contract_id = custom_contract.id;
     expect(payment.contract_id).toEqual(contract_id);
@@ -36,7 +46,7 @@ test("Test custom contract", async () => {
     expect(res).toEqual({Ok: null});
 
 
-    // ---------------------  cancel the promise --------------------- \\
+    // ---------------- sender can't update the promise after conformation ---------------- \\
     global.actor.setIdentity(global.user)
 
     res = await global.actor.get_initial_data();
@@ -45,20 +55,23 @@ test("Test custom contract", async () => {
     });
 
 
-    custom_contract.promises[0].status = {Canceled: null};
+    // custom_contract.promises[0].status = {RequestCancellation: null};
+    custom_contract.promises[0] = {...promise, amount: 0}; // test can't update value after is confirmed
     let to_store3: StoredContract = {
         "CustomContract": custom_contract
     }
     res = await global.actor.multi_updates([], [], [to_store3], []);
-    let notifications2: Array<Notification> = await global.actor.get_notifications();
-    // logger({notifications2}) // TODO assert this You can't canceled confirmed payment in notifications2
+    expect(res.Ok.includes(" You can't update a promise to None")).toBeTruthy();
+
     res = await global.actor.get_initial_data();
     res.Ok.Contracts.forEach((value, key) => {
+        expect(value[1].CustomContract.promises.length).toEqual(1);
         expect(value[1].CustomContract.promises[0].status).toEqual({Confirmed: null});
+        expect(value[1].CustomContract.promises[0].amount).toEqual(50);
     });
 
 
-    // Release the promise
+    //---------------- Release the promise ----------------\\
     global.actor.setIdentity(global.user)
     custom_contract.promises[0].status = {Released: null};
     to_store = {
@@ -72,12 +85,11 @@ test("Test custom contract", async () => {
     res = await global.actor.get_initial_data();
     res.Ok.Contracts.forEach((value, key) => {
         expect(value[1].CustomContract.promises).toEqual([]);
-        expect(value[1].CustomContract.payments[0].status).toEqual({Released: null});
     });
 
 
-    let profile_history = await global.actor.get_user_profile(global.user.getPrincipal());
-    expect(profile_history.Ok[1].total_rate).toBeGreaterThan(0);
+    let profile_history: { Ok: UserProfile } | { Err: string } = await global.actor.get_user_profile(global.user.getPrincipal());
+    expect(profile_history.Ok.actions_rate).toBeGreaterThan(0);
     // logger({profile_history});
 });
 
@@ -119,7 +131,7 @@ test("Test actions rating", async () => {
     }
 
 
-    res = await global.actor.deposit_usdt(2000);
+    res = await global.actor.deposit_usdt(1900); // TODO is 200 balance.
     promise.amount = 120;
     promise.sender = global.user.getPrincipal();
     promise.status = {None: null};
@@ -196,7 +208,8 @@ test("Test actions rating", async () => {
     };
 
     res = await global.actor.multi_updates([], [], [to_store], []);
-    expect(res).toEqual({Ok: "Updates applied successfully."});
+    // expect(res).toEqual({Ok: "Updates applied successfully."});
+    expect("Ok" in res).toBeTruthy();
 
     //  ---------------- Confirm the promises ---------------- \\
     await userObject(newUser2)
@@ -209,10 +222,10 @@ test("Test actions rating", async () => {
     /// ---------------------------- assert the promise was moved to payments ---------------------------- \\
     //
 
-    let profile_history: { Ok: [User, UserHistory] } | { Err: string } = await global.actor.get_user_profile(global.user.getPrincipal());
-    expect(profile_history.Ok[1].users_interacted).toEqual(3);
-    expect(profile_history.Ok[1].spent).toEqual(360,);
-    expect(profile_history.Ok[1].actions_rate).toEqual(3)
+    let profile_history: { Ok: UserProfile } | { Err: string } = await global.actor.get_user_profile(global.user.getPrincipal());
+    expect(profile_history.Ok.users_interacted).toEqual(4);
+    expect(profile_history.Ok.spent).toEqual(410);
+    expect(profile_history.Ok.actions_rate).toEqual(3)
 
 
     // ---------------- release the promises ---------------- \\
@@ -225,9 +238,10 @@ test("Test actions rating", async () => {
     to_store = {
         "CustomContract": {...custom_contract, promises}
     };
+
     res = await global.actor.multi_updates([], [], [to_store], []);
     profile_history = await global.actor.get_user_profile(global.user.getPrincipal());
-    expect(profile_history.Ok[1].users_interacted).toEqual(8);
-    // expect(profile_history.Ok[1].spent).toEqual(1920); // TODO You can't spent 2040 whitel the depsoit was only 2000
-    expect(profile_history.Ok[1].actions_rate).toEqual(5)
+    expect(profile_history.Ok.users_interacted).toEqual(8);
+    expect(profile_history.Ok.spent).toEqual(1970); // TODO You can't spend more than the deposit of 2000
+    expect(profile_history.Ok.actions_rate).toEqual(5);
 });

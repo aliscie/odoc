@@ -57,7 +57,8 @@ fn multi_updates(
             let res = custom_contract.save();
             if let Err(errors) = res {
                 for err in errors {
-                    messages.push_str(&err.message.to_string());
+                    let formatted_err = format!("Error: {} ", err.message);
+                    messages.push_str(&formatted_err);
                 }
             }
         }

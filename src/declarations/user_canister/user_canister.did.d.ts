@@ -287,7 +287,7 @@ export type Result_7 = { 'Ok' : ShareFile } |
   { 'Err' : string };
 export type Result_8 = { 'Ok' : [FileNode, Array<ContentNode>] } |
   { 'Err' : string };
-export type Result_9 = { 'Ok' : [User, UserHistory] } |
+export type Result_9 = { 'Ok' : UserProfile } |
   { 'Err' : string };
 export interface Row {
   'id' : string,
@@ -347,23 +347,29 @@ export interface User {
   'photo' : Uint8Array | number[],
 }
 export interface UserFE { 'id' : string, 'name' : string }
-export interface UserHistory {
+export interface UserProfile {
   'id' : Principal,
   'actions_rate' : number,
+  'balance' : number,
   'rates_by_actions' : Array<ActionRating>,
+  'name' : string,
+  'description' : string,
   'total_debt' : number,
   'spent' : number,
   'rates_by_others' : Array<Rating>,
   'users_rate' : number,
   'users_interacted' : number,
-  'received' : number,
+  'photo' : Uint8Array | number[],
+  'debts' : Array<string>,
 }
 export interface Wallet {
   'balance' : number,
   'owner' : string,
   'total_debt' : number,
+  'spent' : number,
   'exchanges' : Array<Exchange>,
   'debts' : Array<[string, number]>,
+  'received' : number,
 }
 export interface WebsocketMessage {
   'sequence_num' : bigint,

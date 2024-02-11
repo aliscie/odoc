@@ -8,7 +8,7 @@ import React, {useEffect, useState} from "react";
 import {handleRedux} from "../redux/main";
 import {AuthClient} from "@dfinity/auth-client";
 import {actor} from "../App";
-import {Principal} from "@dfinity/principal";
+import {AppMessage} from "../../declarations/user_canister/user_canister.did";
 
 
 function useSocket() {
@@ -45,22 +45,22 @@ function useSocket() {
             };
 
             ws.onmessage = async (event) => {
-                // if (event.data.notification.length == 0) {
-                //     return
-                // }
-                console.log("Received message:", event.data);
+                let data: AppMessage = event.data;
+
+                console.log("Received message:", data);
 
 
                 // check if the key is `FriendRequest` or ContractUpdate in event.data.notification[0].content[key]
-                let keys = event.data.notification[0] && Object.keys(event.data.notification[0].content);
+                let keys = data.notification[0] && Object.keys(data.notification[0].content);
                 // NewMessage
                 if (keys[0] != "NewMessage") {
-                    console.log("Notification:", event.data.notification[0].content.NewMessage);
+                    console.log("Notification:", data.notification[0].content.NewMessage);
+                    return
                     // dispatch(handleRedux('ADD_NOTIFICATION', {message: event.data.notification[0]}));
                 }
                 switch (keys[0]) {
                     case "NewMessage":
-                        dispatch(handleRedux('ADD_NOTIFICATION', {message: event.data.notification[0].content.NewMessage }));
+                        dispatch(handleRedux('ADD_NOTIFICATION', {message: data.notification[0].content.NewMessage}));
                         break
                     case "FriendRequest":
                         // TODO this does not seams to update live.
@@ -72,7 +72,7 @@ function useSocket() {
                         // new_contracts && dispatch(handleRedux("UPDATE_CONTRACT", {contracts: new_contracts[0]}))
                         break
                     case"SharePayment":
-                        let share_payment = event.data.notification[0].content["SharePayment"];
+                        let share_payment = data.notification[0].content["SharePayment"];
                         dispatch(handleRedux("UPDATE_CONTRACT", {contract: share_payment}))
                         break
                     case "Unfriend":

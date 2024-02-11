@@ -22,6 +22,6 @@ fn withdraw_usdt(amount: f64) -> Result<f64, String> {
         return Err(format!("Your total dept it{}, You can cancel some of the contract to withdraw which may effect your trust score.", dept).to_string());
     }
 
-    wallet.withdraw(amount.clone(), "".to_string(), ExchangeType::Withdraw)?;
+    wallet.withdraw(amount.clone(), "ExternalWallet".to_string(), ExchangeType::Withdraw)?;
     Ok(remaining)
 }

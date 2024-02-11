@@ -58,10 +58,7 @@ pub struct UserHistory {
     pub id: Principal,
     // payment bad marks
 
-    pub total_debt: f64,
-    pub spent: f64,
-    pub received: f64,
-    pub users_interacted: f64,
+    pub users_interacted: HashSet<String>,
     // only the shares between at least two people that got approved by both
     pub rates_by_others: Vec<Rating>,
     pub rates_by_actions: Vec<ActionRating>,
@@ -74,10 +71,7 @@ impl UserHistory {
     pub fn new(id: Principal) -> Self {
         let new_profile_history = UserHistory {
             id,
-            total_debt: 0.0,
-            spent: 0.0,
-            received: 0.0,
-            users_interacted: 0.0,
+            users_interacted: HashSet::new(),
             rates_by_others: vec![],
             rates_by_actions: vec![],
             actions_rate: 0.0,
@@ -173,7 +167,7 @@ impl UserHistory {
         if profiel.actions_rate < 2.0 {
             return Err("You need to have at least 2 stars rating to be able to rate others".to_string());
         }
-        if profiel.users_interacted < 3.0 {
+        if profiel.users_interacted.len() < 3 {
             return Err("You need to have at least 3 interactions to be able to rate others".to_string());
         }
 
@@ -192,29 +186,29 @@ impl UserHistory {
         Ok(())
     }
 
-    pub fn calc_spent_and_received(&mut self) -> Self {
-        let mut unique_users: HashSet<String> = HashSet::new();
-        let wallet: Wallet = Wallet::get(self.id.clone());
-        let mut spent: f64 = 0.0;
-        let mut received: f64 = 0.0;
-        for exchange in &wallet.exchanges {
-            if let Ok(from) = Principal::from_text(exchange.from.clone()) {
-                if from == self.id {
-                    spent += exchange.amount.clone();
-                    unique_users.insert(exchange.to.clone());
-                } else {
-                    // Note: no need for this cuz let Ok(from) does that already // } else if from != "ExternalWallet".to_string() {
-                    received += exchange.amount.clone();
-                    unique_users.insert(exchange.from.clone());
-                }
-            }
-        }
-        self.spent = spent;
-        self.received = received;
-        self.users_interacted = unique_users.len() as f64;
-        self.total_debt = wallet.total_debt.clone();
-        self.clone()
-    }
+    // pub fn calc_spent_and_received(&mut self) -> Self {
+    //     let mut unique_users: HashSet<String> = HashSet::new();
+    //     let wallet: Wallet = Wallet::get(self.id.clone());
+    //     // let mut spent: f64 = 0.0;
+    //     // let mut received: f64 = 0.0;
+    //     for exchange in &wallet.exchanges {
+    //         if let Ok(from) = Principal::from_text(exchange.from.clone()) {
+    //             if from == self.id {
+    //                 // spent += exchange.amount.clone();
+    //                 unique_users.insert(exchange.to.clone());
+    //             } else {
+    //                 // Note: no need for this cuz let Ok(from) does that already // } else if from != "ExternalWallet".to_string() {
+    //                 // received += exchange.amount.clone();
+    //                 unique_users.insert(exchange.from.clone());
+    //             }
+    //         }
+    //     }
+    //     // self.spent = spent;
+    //     // self.received = received;
+    //     self.users_interacted = unique_users.len() as f64;
+    //     // self.total_debt = wallet.total_debt.clone();
+    //     self.clone()
+    // }
 
     pub fn calc_users_rate(&mut self) -> f64 {
         let total_rate_sum: f64 = self.rates_by_others.iter_mut().map(|r| r.rating).sum();
@@ -230,8 +224,9 @@ impl UserHistory {
     }
 
     pub fn calc_actions_rate(&mut self) -> f64 {
-        let users_interacted = self.users_interacted.clone();
-        let spent = self.spent.clone() + self.received.clone();
+        let wallet = Wallet::get(self.id.clone());
+        let users_interacted = self.users_interacted.clone().len() as f64;
+        let spent = wallet.spent.clone() + wallet.received.clone();
         let objections = self.get_objections().len() as f64;
         let mut w = 5.0;
 
@@ -254,7 +249,7 @@ impl UserHistory {
         }
 
         // let debt: f64 = self.get_promises_value();
-        let debt: f64 = self.total_debt.clone();
+        let debt: f64 = wallet.total_debt.clone();
         let rate = (debt - spent).abs() / (debt + spent).abs();
 
         self.actions_rate = rate * w;
@@ -266,18 +261,17 @@ impl UserHistory {
         let wallet = Wallet::get(self.id.clone());
         self.rates_by_actions.retain(|action| action.id != payment.id);
 
-        let total_promies: f64 = self.get_promises_value();
+        let total_promises: f64 = self.get_promises_value();
         let new_rating = ActionRating {
             id: payment.id.clone(),
             rating: self.calc_actions_rate(),
-            spent: self.spent.clone(),
-            received: self.received.clone(),
-            promises: total_promies,
+            spent: wallet.spent.clone(),
+            received: wallet.received.clone(),
+            promises: total_promises,
             received_promises: 0.0,
             action_type: ActionType::Payment(payment.clone()),
             date: ic_cdk::api::time() as f64,
         };
-
         self.rates_by_actions.push(new_rating);
     }
 

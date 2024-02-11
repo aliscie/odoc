@@ -36,11 +36,12 @@ pub struct Wallet {
     pub total_debt: f64,
     // pub total_spent: f64,
     pub exchanges: Vec<Exchange>,
+    pub received: f64,
+    pub spent: f64,
     // pub exchanges: Vec<CPayment>,
 }
 
 impl Wallet {
-
     pub fn add_dept(mut self, amount: f64, id: String) -> Result<(), String> {
         if self.balance >= self.total_debt + amount {
             let debt = self.debts.entry(id).or_insert(0.0);
@@ -94,6 +95,8 @@ impl Wallet {
                     debts: Default::default(),
                     total_debt: 0.0,
                     exchanges: vec![],
+                    received: 0.0,
+                    spent: 0.0,
                 };
 
                 store.insert(principal, new_wallet.clone());
@@ -112,34 +115,41 @@ impl Wallet {
         };
         self.exchanges.push(new_exchange);
         self.balance += amount.clone();
-        self.save();
+
 
         // handle profile
-        let mut user_profile = UserHistory::get(self.owner.parse().unwrap());
-        let user_profile = user_profile.calc_spent_and_received();
-        user_profile.clone().save();
+        if from != "ExternalWallet" {
+            let mut user_profile = UserHistory::get(self.owner.parse().unwrap());
+            user_profile.users_interacted.insert(from.clone());
+            user_profile.clone().save();
+            self.received += amount.clone();
+        }
+        self.save();
         Ok(self.clone())
     }
 
     pub fn withdraw(&mut self, amount: f64, to: String, _type: ExchangeType) -> Result<(), String> {
-        // let now = std::time::SystemTime::now();
-        let new_exchange = Exchange {
-            from: self.owner.clone(),
-            to: to.clone(),
-            amount,
-            _type,
-            date_created: ic_cdk::api::time() as f64,
-        };
 
         if self.balance >= amount {
+            let new_exchange = Exchange {
+                from: self.owner.clone(),
+                to: to.clone(),
+                amount,
+                _type,
+                date_created: ic_cdk::api::time() as f64,
+            };
+
             self.exchanges.push(new_exchange);
             self.balance -= amount.clone();
+            if to != "ExternalWallet" {
+                let mut user_profile = UserHistory::get(self.owner.parse().unwrap());
+                user_profile.users_interacted.insert(to.clone());
+                user_profile.clone().save();
+                self.spent += amount.clone();
+            }
+
             self.save();
 
-            // handle profile
-            let mut user_profile = UserHistory::get(self.owner.parse().unwrap());
-            let user_profile = user_profile.calc_spent_and_received();
-            user_profile.clone().save();
             Ok(())
         } else {
             Err(String::from("Insufficient balance"))

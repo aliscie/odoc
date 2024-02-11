@@ -262,7 +262,7 @@ type Result_8 = variant {
   Ok : record { FileNode; vec ContentNode };
   Err : text;
 };
-type Result_9 = variant { Ok : record { User; UserHistory }; Err : text };
+type Result_9 = variant { Ok : UserProfile; Err : text };
 type Row = record {
   id : text;
   contract : opt Contract;
@@ -320,23 +320,29 @@ type User = record {
   photo : vec nat8;
 };
 type UserFE = record { id : text; name : text };
-type UserHistory = record {
+type UserProfile = record {
   id : principal;
   actions_rate : float64;
+  balance : float64;
   rates_by_actions : vec ActionRating;
+  name : text;
+  description : text;
   total_debt : float64;
   spent : float64;
   rates_by_others : vec Rating;
   users_rate : float64;
   users_interacted : float64;
-  received : float64;
+  photo : vec nat8;
+  debts : vec text;
 };
 type Wallet = record {
   balance : float64;
   owner : text;
   total_debt : float64;
+  spent : float64;
   exchanges : vec Exchange;
   debts : vec record { text; float64 };
+  received : float64;
 };
 type WebsocketMessage = record {
   sequence_num : nat64;
