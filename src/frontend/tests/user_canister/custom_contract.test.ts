@@ -1,14 +1,7 @@
-import {
-    InitialData,
-    StoredContract,
-    User,
-    UserHistory,
-    UserProfile
-} from "../../../declarations/user_canister/user_canister.did";
+import {StoredContract, UserProfile} from "../../../declarations/user_canister/user_canister.did";
 import {custom_contract, randomString} from "../../data_processing/data_samples";
 import {assert} from "vitest";
 import {newContract} from "./data_samples";
-import {logger} from "../../dev_utils/log_data";
 
 // TODO Tests
 //     1. in the formula.exec.payment.sender == caller()
@@ -24,8 +17,9 @@ test("Test custom contract", async () => {
     const {custom_contract, promise} = newContract();
     promise.receiver = newUser.getPrincipal()
     promise.sender = global.user.getPrincipal()
-    custom_contract.promises = [promise];
     promise.amount = 50;
+    custom_contract.promises = [promise];
+
     custom_contract.creator = global.user.getPrincipal();
     expect("Ok" in res).toBeTruthy();
     // console.log({newUser, me: global.user});
@@ -91,6 +85,7 @@ test("Test custom contract", async () => {
     let profile_history: { Ok: UserProfile } | { Err: string } = await global.actor.get_user_profile(global.user.getPrincipal());
     expect(profile_history.Ok.actions_rate).toBeGreaterThan(0);
     // logger({profile_history});
+    global.pic.tearDown();
 });
 
 
@@ -244,4 +239,31 @@ test("Test actions rating", async () => {
     expect(profile_history.Ok.users_interacted).toEqual(8);
     expect(profile_history.Ok.spent).toEqual(1970); // TODO You can't spend more than the deposit of 2000
     expect(profile_history.Ok.actions_rate).toEqual(5);
+    global.pic.tearDown();
+});
+
+
+test("Basic contract action", async () => {
+    let contract_id: string = randomString();
+
+    // -------- init the test -------- \\
+    let res;
+    let new_user = await global.newUser();
+    res = await global.actor.deposit_usdt(100);
+    // ------ testing the rating ------ \\
+    const {custom_contract, promise} = newContract();
+    promise.amount = 5;
+    promise.sender = global.user.getPrincipal();
+    promise.status = {Released: null};
+    promise.receiver = new_user.getPrincipal();
+    let to_store = {
+        "CustomContract": {...custom_contract, promises: [promise]}
+    };
+
+    res = await global.actor.multi_updates([], [], [to_store], []);
+    expect("Ok" in res).toBeTruthy();
+    let profile_history = await global.actor.get_user_profile(global.user.getPrincipal());
+    expect(profile_history.Ok.users_interacted).toEqual(1);
+    expect(profile_history.Ok.spent).toEqual(5);
+    expect(profile_history.Ok.actions_rate).toEqual(1.5);
 });

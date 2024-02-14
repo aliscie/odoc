@@ -4,11 +4,10 @@
 //     3. prevent update a cell
 //     3. Allow update a cell
 
-
 import {newContract} from "./data_samples";
 import {createCContract} from "../../components/contracts/custom_contract/utls";
 import {
-    CCell,
+    CCell, CContract,
     CRow,
     CustomContract,
     InitialData,
@@ -18,43 +17,68 @@ import {logger} from "../../dev_utils/log_data";
 import {randomString} from "../../data_processing/data_samples";
 
 test("Test custom contract permissions", async () => {
-    let new_user = await global.newUser();
-    let {custom_contract, promise} = newContract();
-    let c_contract = createCContract()
-    custom_contract.contracts = [c_contract];
+    // -------------------------------------------------- Create contract  -------------------------------------------------- \\
+    let res = await global.actor.deposit_usdt(100);
+
+    const {custom_contract, promise} = newContract();
+    let new_c_contract: CContract = createCContract();
+    custom_contract.creator = global.user.getPrincipal();
+    new_c_contract.rows[0].cells[0].value = "INIT VALUE"
+    custom_contract.contracts = [new_c_contract];
+    expect("Ok" in res).toBeTruthy();
+
     let to_store: StoredContract = {
         "CustomContract": custom_contract
     }
-    let res = await global.actor.multi_updates([], [], [to_store], []);
-    expect("Ok" in res).toBeTruthy();
-
-    // -------------------------------------------------- other user -------------------------------------------------- \\
-    let test_value = 'MY_UPDATE_IS_HERE';
-    global.actor.setIdentity(new_user);
-    let cells: Array<CCell> = [];
-
-    c_contract.columns.forEach((column) => {
-        cells.push({
-            field: column.field,
-            value: test_value,
-        })
+    res = await global.actor.multi_updates([], [], [to_store], []);
+    let init_date: { Ok: InitialData } | { Err: string } = await global.actor.get_initial_data();
+    expect(init_date.Ok.Contracts.length).toBeGreaterThan(0);
+    init_date.Ok.Contracts.forEach((contract: CustomContract) => {
+        expect(contract[1].CustomContract.contracts[0].rows[0].cells[0].value).toBe("INIT VALUE");
     });
-    let new_row: CRow = {
-        id: randomString(),
-        cells
-    };
-    custom_contract.contracts[0].rows = [...custom_contract.contracts[0].rows, new_row]
+
+    // -------------------------- Other user try to update the cell -------------------------- \\
+    let newUser = await global.newUser();
+    global.actor.setIdentity(newUser);
+    custom_contract.contracts[0].rows[0].cells[0].value = "NEW VALUE";
     to_store = {
         "CustomContract": custom_contract
     }
     res = await global.actor.multi_updates([], [], [to_store], []);
-    expect("Ok" in res).toBeTruthy();
+    // expect({"Ok": "Some updates were not applied, Updates applied successfully."}).toStrictEqual(res);
+    // logger({res});
 
-    // -------------------------------------------------- Back to original user -------------------------------------------------- \\
+
+    // -------------------------- Check if the cell was not updated -------------------------- \\
     global.actor.setIdentity(global.user);
-    let init_date: { Ok: InitialData } | { Err: string } = await global.actor.get_initial_data();
-    let contracts: CustomContract = res.Ok.Contracts;
-    logger({contracts}) // TODO what the fuck why this is empty?
-    // TODO expect their is no new cell or new row with `MY_UPDATE_IS_HERE`
+
+    // init_date = await global.actor.get_initial_data();
+    // init_date.Ok.Contracts.forEach((contract: CustomContract) => {
+    //     expect(contract[1].CustomContract.contracts[0].rows[0].cells[0].value).toBe("INIT VALUE");
+    // });
+
+    custom_contract.contracts[0].columns[0].permissions = [{'AnyOneEdite': null}];
+    to_store = {
+        "CustomContract": custom_contract
+    }
+    res = await global.actor.multi_updates([], [], [to_store], []);
+
+
+    // -------------------------- Other user try to update the cell -------------------------- \\
+    global.actor.setIdentity(newUser);
+    custom_contract.contracts[0].rows[0].cells[0].value = "NEW VALUE";
+    to_store = {
+        "CustomContract": custom_contract
+    }
+    res = await global.actor.multi_updates([], [], [to_store], []);
+
+
+    // -------------------------- Check if the cell was updated -------------------------- \\
+    global.actor.setIdentity(global.user);
+    init_date = await global.actor.get_initial_data();
+    init_date.Ok.Contracts.forEach((contract: CustomContract) => {
+        expect(contract[1].CustomContract.contracts[0].rows[0].cells[0].value).toBe("NEW VALUE");
+    });
 
 });
+
