@@ -53,7 +53,7 @@ fn multi_updates(
         if let StoredContract::SharesContract(share_contract) = contract.clone() {
             share_contract.save()?;
         }
-        if let StoredContract::CustomContract(custom_contract) = contract {
+        if let StoredContract::CustomContract(mut custom_contract) = contract {
             let res = custom_contract.save();
             if let Err(errors) = res {
                 for err in errors {

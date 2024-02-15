@@ -114,12 +114,12 @@ fn object_on_cancel(c_payment: CPayment, reason: String) -> Result<(), String> {
     }
 }
 
-#[update]
-fn delete_custom_contract(id: String) -> Result<(), String> {
-    let contract = CustomContract::get(id);
-    if let Some(contract) = contract {
-        return contract.delete();
-    }
-    Err("Not found".to_string())
-}
+// #[update]
+// fn delete_custom_contract(id: String) -> Result<(), String> {
+//     let contract = CustomContract::get(id);
+//     if let Some(contract) = contract {
+//         return contract.delete();
+//     }
+//     Err("Not found".to_string())
+// }
 

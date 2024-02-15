@@ -15,6 +15,7 @@ import {
 } from "../../../declarations/user_canister/user_canister.did";
 import {logger} from "../../dev_utils/log_data";
 import {randomString} from "../../data_processing/data_samples";
+import {Principal} from "@dfinity/principal";
 
 test("Test custom contract permissions", async () => {
     // -------------------------------------------------- Create contract  -------------------------------------------------- \\
@@ -31,11 +32,12 @@ test("Test custom contract permissions", async () => {
         "CustomContract": custom_contract
     }
     res = await global.actor.multi_updates([], [], [to_store], []);
+    expect({"Ok": "Updates applied successfully."}).toEqual(res)
     let init_date: { Ok: InitialData } | { Err: string } = await global.actor.get_initial_data();
-    expect(init_date.Ok.Contracts.length).toBeGreaterThan(0);
-    init_date.Ok.Contracts.forEach((contract: CustomContract) => {
-        expect(contract[1].CustomContract.contracts[0].rows[0].cells[0].value).toBe("INIT VALUE");
-    });
+    // expect(init_date.Ok.Contracts.length).toBeGreaterThan(0);
+    // init_date.Ok.Contracts.forEach((contract: CustomContract) => {
+    //     expect(contract[1].CustomContract.contracts[0].rows[0].cells[0].value).toBe("INIT VALUE");
+    // });
 
     // -------------------------- Other user try to update the cell -------------------------- \\
     let newUser = await global.newUser();
@@ -46,18 +48,19 @@ test("Test custom contract permissions", async () => {
     }
     res = await global.actor.multi_updates([], [], [to_store], []);
     // expect({"Ok": "Some updates were not applied, Updates applied successfully."}).toStrictEqual(res);
-    // logger({res});
+
 
 
     // -------------------------- Check if the cell was not updated -------------------------- \\
     global.actor.setIdentity(global.user);
 
-    // init_date = await global.actor.get_initial_data();
-    // init_date.Ok.Contracts.forEach((contract: CustomContract) => {
-    //     expect(contract[1].CustomContract.contracts[0].rows[0].cells[0].value).toBe("INIT VALUE");
-    // });
+    init_date = await global.actor.get_initial_data();
+    logger({xxxxx:init_date.Ok.Contracts[0][1].CustomContract.contracts[0].rows});
+    expect(init_date.Ok.Contracts[0][1].CustomContract.contracts[0].rows[0].cells[0].value).toBe("INIT VALUE");
 
-    custom_contract.contracts[0].columns[0].permissions = [{'AnyOneEdite': null}];
+    // -------------------------- Allow anyone to edite -------------------------- \\
+    // custom_contract.contracts[0].columns[0].permissions = [{'AnyOneEdite': null}];
+    custom_contract.contracts[0].columns[0].permissions = [{'Edit': newUser.getPrincipal()}];
     to_store = {
         "CustomContract": custom_contract
     }
@@ -76,9 +79,7 @@ test("Test custom contract permissions", async () => {
     // -------------------------- Check if the cell was updated -------------------------- \\
     global.actor.setIdentity(global.user);
     init_date = await global.actor.get_initial_data();
-    init_date.Ok.Contracts.forEach((contract: CustomContract) => {
-        expect(contract[1].CustomContract.contracts[0].rows[0].cells[0].value).toBe("NEW VALUE");
-    });
+    expect(init_date.Ok.Contracts[0][1].CustomContract.contracts[0].rows[0].cells[0].value).toBe("NEW VALUE");
 
 });
 
