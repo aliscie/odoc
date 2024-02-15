@@ -46,13 +46,16 @@ impl CContract {
         self.creator == caller()
     }
 
-    fn update_row_permission(&self, new_row: &CRow, old_c_contract: &CContract) -> Result<CRow, String> {
+    fn update_row_permission(&self, new_row: &CRow, old_c_contract: &CContract, contract_errors: &mut Vec<ContractError>) -> Result<CRow, String> {
         let mut updated_cells: Vec<CCell> = new_row.cells.iter().map(|cell| {
             let is_permitted = self.has_cell_update_permission(cell, old_c_contract);
             if is_permitted {
                 return cell.clone();
             }
             if let Some(old_cell) = old_c_contract.rows.iter().find(|r| r.id == new_row.id).map(|r| r.cells.iter().find(|c| c.field == cell.field)) {
+                let column = old_c_contract.columns.iter().find(|c| c.field == old_cell.unwrap().field.clone()).unwrap();
+                let name = column.headerName.clone();
+                contract_errors.push(ContractError { message: format!("You don't have permission to update column: {}", name) });
                 return old_cell.unwrap().clone();
             }
             cell.clone()
@@ -83,7 +86,7 @@ impl CContract {
             // Rows CRUD permissions
             let mut updated_rows: Vec<CRow> = vec![];
             for row in self.rows.clone() {
-                let res = self.update_row_permission(&row, old_c_contract);
+                let res = self.update_row_permission(&row, old_c_contract, contract_errors);
                 if let Ok(updated_row) = res {
                     updated_rows.push(updated_row);
                 } else if let Err(err) = res {

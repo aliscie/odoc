@@ -47,7 +47,7 @@ test("Test custom contract permissions", async () => {
         "CustomContract": custom_contract
     }
     res = await global.actor.multi_updates([], [], [to_store], []);
-    // expect({"Ok": "Some updates were not applied, Updates applied successfully."}).toStrictEqual(res);
+    expect({"Ok": "Error: You don't have permission to update column: Untitled Updates applied successfully."}).toStrictEqual(res);
 
 
 
