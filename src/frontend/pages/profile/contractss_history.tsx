@@ -1,7 +1,9 @@
 import {useSelector} from "react-redux";
 import List from "@mui/material/List";
 import * as React from "react";
-import {StoredContract} from "../../../declarations/user_canister/user_canister.did";
+import {CustomContract, SharesContract, StoredContract} from "../../../declarations/user_canister/user_canister.did";
+import {logger} from "../../dev_utils/log_data";
+import {CustomContract} from "../../components/contracts/custom_contract/custom_contract";
 
 
 function ContractsHistory(props: any) {
@@ -9,19 +11,8 @@ function ContractsHistory(props: any) {
 
 
     return (
-        <List dense
-        >
-            {Object.keys(contracts).map((key) => {
-                let contract: StoredContract = contracts[key];
-                if (contract.SharesContract) {
-                    return <div>render share contract</div>
-                    // return <SharesContractComponent id={key} {...contract}/>
-                } else if (contract.CustomContract) {
-                    return <div>render custom contract</div>
-                } else {
-                    return <div>Unknown</div>
-                }
-            })};
+        <List dense>
+            {Object.values(contracts).map((contract: CustomContract) => <CustomContract contract={contract}/>)}
 
         </List>
     );

@@ -1,54 +1,50 @@
 import React, {useEffect} from "react";
 import {actor} from "../App";
 import {
-    PaymentContract,
-    Rating,
-    RatingFE,
+    Rating, StoredContract,
     User,
-    UserHistory,
     UserProfile
 } from "../../declarations/user_canister/user_canister.did";
 import {Friend} from "./profile/friends";
 import {Principal} from "@dfinity/principal";
-import {Rating as RatingCom, Tooltip, Typography} from "@mui/material";
+import {Rating as RatingCom, Typography} from "@mui/material";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from '@mui/material/Typography';
 import {useSelector} from "react-redux";
-import WarningIcon from '@mui/icons-material/Warning';
 import Stack from "@mui/material/Stack";
 import {LineChart} from "@mui/x-charts/LineChart";
 
-export function PaymentContractComponent(contract: PaymentContract) {
-    const {profile} = useSelector((state: any) => state.filesReducer);
+// export function PaymentContractComponent(contract: StoredContract) {
+//     const {profile} = useSelector((state: any) => state.filesReducer);
+//
+//     return <ListItem alignItems="flex-start">
+//         {/*{contract.contract_id}*/}
+//         <ListItemText
+//             primary={contract.amount}
+//             secondary={
+//                 <React.Fragment>
+//                     <Typography
+//                         sx={{display: 'inline'}}
+//                         component="span"
+//                         variant="body2"
+//                         color="text.primary"
+//                     >
+//                         {contract.confirmed ? "confirmed" : "not confirmed"}
+//                     </Typography>
+//                     Receiver: {profile.id == contract.receiver.toString() ? "You" : "Other"}
+//                 </React.Fragment>
+//             }
+//         />
+//     </ListItem>
+// }
 
-    return <ListItem alignItems="flex-start">
-        {/*{contract.contract_id}*/}
-        <ListItemText
-            primary={contract.amount}
-            secondary={
-                <React.Fragment>
-                    <Typography
-                        sx={{display: 'inline'}}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                    >
-                        {contract.confirmed ? "confirmed" : "not confirmed"}
-                    </Typography>
-                    Receiver: {profile.id == contract.receiver.toString() ? "You" : "Other"}
-                </React.Fragment>
-            }
-        />
-    </ListItem>
-}
-
-export function UserHistoryCom(profile: UserHistory) {
+export function UserHistoryCom(profile: UserProfile) {
     let actions_len = profile.rates_by_actions.length;
     // const series =
     return <>
         <div>spent: {profile.spent} USDT</div>
-        <div>USDT interactions : {profile.users_interacted} Users</div>
+        <div>Interacted with : {profile.users_interacted} users</div>
         <div>dept : {profile.total_debt} dept</div>
         {/*<div>rate : {profile.users_rate} rate</div>*/}
 

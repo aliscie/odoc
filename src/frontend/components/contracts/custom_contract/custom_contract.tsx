@@ -30,7 +30,7 @@ import ChangeColumnPermissions from "./column_menu/column_permision";
 import ChangeColumnFormula from "./column_menu/column_formula";
 import {actor} from "../../../App";
 
-function CustomContract({contract}: { contract: CustomContract }) {
+export function CustomContract({contract}: { contract: CustomContract }) {
     const {profile, all_friends, wallet} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar} = useSnackbar();
     const [view, setView] = useState<CContract | undefined>({rows: [], columns: []});
