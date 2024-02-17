@@ -39,13 +39,13 @@ function MessageComponent(message: FrontendMessage) {
             </ListItemAvatar> */}
         <ListItemText
             primary={<Typography
-                        sx={{display: 'inline'}}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                    >
-                        {message.sender.toString() === profile.id ? "You: " : `${other_user.name}: `}{message.message}{" "}
-                    </Typography>}
+                sx={{display: 'inline'}}
+                component="span"
+                variant="body2"
+                color="text.primary"
+            >
+                {message.sender.toString() === profile.id ? "You: " : `${other_user && other_user.name}: `}{message.message}{" "}
+            </Typography>}
             secondary={
                 <React.Fragment>
 
@@ -59,7 +59,7 @@ function MessageComponent(message: FrontendMessage) {
                             {formatRelativeTime(message.date)}
                         </Tooltip>
 
-                        {message.is_saving ? <DoneIcon fontSize="small"  /> : <DoneAllIcon fontSize="small" />}
+                        {message.is_saving ? <DoneIcon fontSize="small"/> : <DoneAllIcon fontSize="small"/>}
                     </Typography>
 
                 </React.Fragment>

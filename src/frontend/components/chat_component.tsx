@@ -34,7 +34,7 @@ function ChatsComponent(props: Props) {
                 setMessages(chats_notifications)
             }
         })()
-    }, [])
+    }, [chats_notifications])
     let options = loading ? [{content: <CircularProgress/>}] : messages.map((message: Message) => {
         return {content: <MessageNotification {...message}/>}
     })

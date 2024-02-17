@@ -35,7 +35,8 @@ export default function SendMessageBox() {
             'chat_id': current_chat_id == 'chat_id' ? new_chat_id : current_chat_id,
         }
 
-        dispatch(handleRedux("SEND_MESSAGE", {message: {...new_message, is_saving: true}}))
+        dispatch(handleRedux("SEND_MESSAGE", {message: {...new_message, is_saving: true}}));
+        dispatch(handleRedux('ADD_NOTIFICATION', {message: {...new_message, is_saving: true}}));
         setMessage('');
 
         // let notification: Notification = {

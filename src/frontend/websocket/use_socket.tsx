@@ -20,7 +20,7 @@ function useSocket() {
 
     const dispatch = useDispatch();
     const [ws, setWs] = useState<IcWebSocket | undefined>(undefined);
-    // let anonymuseIdenity = Principal.fromText("2vxsx-fae");
+    // let anonymousIdentity = Principal.fromText("2vxsx-fae");
     useEffect(() => {
         (async () => {
             const authClient = await AuthClient.create();
@@ -52,12 +52,7 @@ function useSocket() {
 
                 // check if the key is `FriendRequest` or ContractUpdate in event.data.notification[0].content[key]
                 let keys = data.notification[0] && Object.keys(data.notification[0].content);
-                // NewMessage
-                if (keys[0] != "NewMessage") {
-                    console.log("Notification:", data.notification[0].content.NewMessage);
-                    return
-                    // dispatch(handleRedux('ADD_NOTIFICATION', {message: event.data.notification[0]}));
-                }
+
                 switch (keys[0]) {
                     case "NewMessage":
                         dispatch(handleRedux('ADD_NOTIFICATION', {message: data.notification[0].content.NewMessage}));
