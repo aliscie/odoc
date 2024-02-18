@@ -107,7 +107,6 @@ export default function PostComponent(props: Props) {
     let content = normalize_content_tree(props.post.content_tree);
 
 
-    let avatar = <UserAvatar {...props.post.creator}/>
 
     let subheader = formatTimestamp(props.post.date_created)
     const [expanded, setExpanded] = React.useState(false);
@@ -121,7 +120,7 @@ export default function PostComponent(props: Props) {
         >
             <CardHeader
                 titleTypographyProps={{textAlign: "left"}}
-                avatar={avatar}
+                avatar={<UserAvatar {...props.post.creator}/>}
                 action={props.headerAction}
                 // title={props.user.name}
                 subheader={subheader}

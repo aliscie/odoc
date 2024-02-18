@@ -3,10 +3,12 @@ import {handleRedux} from "../../redux/main";
 import {useDispatch, useSelector} from "react-redux";
 import {Principal} from "@dfinity/principal";
 import {Chat, FEChat} from "../../../declarations/user_canister/user_canister.did";
+import React from "react";
 
 function useGetChats() {
-    const {profile} = useSelector((state: any) => state.filesReducer);
-    const {chats} = useSelector((state: any) => state.chatsReducer);
+
+    const profile = useSelector((state: any) => state.filesReducer.profile);
+    const chats = useSelector((state: any) => state.chatsReducer.chats);
 
     const dispatch = useDispatch();
 
@@ -16,33 +18,35 @@ function useGetChats() {
             user &&
             chats &&
             chats.length > 0 &&
-            chats.find((chat: Chat) => chat.admins[0].toString() === user.toString()))
-            ;
+            chats.find((chat: Chat) => chat.admins[0].toString() === user.toString())
+        );
     }
 
-    let getChats = async () => {
+    const getChats = React.useCallback(async () => {
         if (!chats || chats.length === 0) {
-            let res: undefined | Array<FEChat> = actor && await actor.get_my_chats();
-            res && dispatch(handleRedux("SET_CHATS", {chats: res}));
-            return res
+            try {
+                let res: undefined | Array<FEChat> = actor && await actor.get_my_chats();
+                res && dispatch(handleRedux("SET_CHATS", {chats: res}));
+                return res;
+            } catch (error) {
+                // Handle error
+                console.error("Error fetching chats:", error);
+                return undefined;
+            }
         } else {
-            return chats
+            return chats;
         }
+    }, [chats, dispatch]);
 
-    }
-
-
-    let getOther = (chat: FEChat) => {
+    const getOther = (chat: FEChat) => {
         if (chat.creator.id.toString() === profile.id) {
-            return chat.admins[0]
+            return chat.admins[0];
         } else {
-            return chat.creator
+            return chat.creator;
         }
-    }
+    };
 
-
-    return {getChats, getPrivateChat, getOther}
-
+    return {getChats, getPrivateChat, getOther};
 }
 
-export default useGetChats
+export default useGetChats;

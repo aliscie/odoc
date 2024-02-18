@@ -28,82 +28,92 @@ export const initialChatsState: InitialState = {
 
 };
 
-
 export function chatsReducer(state = initialChatsState, action: any) {
-    // const {profile} = useSelector((state: any) => state.filesReducer);
     switch (action.type) {
         case 'OPEN_CHAT':
-            state.current_chat_id = action.current_chat_id
-            state.current_user = action.current_user
-            break
+            return {
+                ...state,
+                current_chat_id: action.current_chat_id,
+                current_user: action.current_user,
+            };
 
         case 'SET_CHATS':
-            state.chats = action.chats
-            break
+            return {
+                ...state,
+                chats: action.chats,
+            };
 
         case 'SEND_MESSAGE':
-            let chat: FEChat | undefined = state.chats.find((chat: FEChat) => chat.id == action.message.chat_id)
+            let chat = state.chats.find((chat: FEChat) => chat.id === action.message.chat_id);
+
             if (!chat) {
                 let admin: UserFE = {
                     id: state.current_user.toString(),
-                    name: "other"
-                }
+                    name: "other",
+                };
                 chat = {
-                    'creator': {
+                    creator: {
                         id: "profile.id",
-                        name: "profile.name"
+                        name: "profile.name",
                     },
-                    'members': [],
-                    'name': "",
-                    'admins': [admin],
+                    members: [],
+                    name: "",
+                    admins: [admin],
                     id: action.message.chat_id,
                     messages: [action.message],
-                }
-                state.chats.push(chat)
-                state.current_chat_id = action.message.chat_id
-                break
+                };
+                return {
+                    ...state,
+                    chats: [...state.chats, chat],
+                    current_chat_id: action.message.chat_id,
+                };
             }
-            chat.messages.push(action.message)
-            state.chats = state.chats.map((_chat: FEChat) => {
-                if (chat && _chat.id == chat.id) {
-                    return chat
-                }
-                return _chat
-            });
-            break
+
+            chat.messages.push(action.message);
+            return {
+                ...state,
+                chats: state.chats.map((_chat: FEChat) => (_chat.id === chat.id ? chat : _chat)),
+            };
 
         case 'UPDATE_MESSAGE':
-            state.chats = state.chats && state.chats.map((chat: FEChat) => {
-                if (chat.id == action.message.chat_id) {
-                    chat.messages = chat.messages.map((message: Message) => {
-                        if (message.id == action.message.id) {
-                            message = action.message
-                        }
-                        return message
-                    })
-                }
-                return chat
-            })
-            break
+            return {
+                ...state,
+                chats: (state.chats || []).map((chat: FEChat) => {
+                    if (chat.id === action.message.chat_id) {
+                        return {
+                            ...chat,
+                            messages: (chat.messages || []).map((message: Message) =>
+                                message.id === action.message.id ? action.message : message
+                            ),
+                        };
+                    }
+                    return chat;
+                }),
+            };
 
         case 'ADD_NOTIFICATION':
-            state.chats_notifications = state.chats_notifications.filter((m: Message) => m.chat_id != action.message.chat_id)
-            state.chats_notifications.push(action.message)
-            break
+            return {
+                ...state,
+                chats_notifications: [...state.chats_notifications.filter((m: Message) => m.chat_id !== action.message.chat_id), action.message],
+            };
+
         case 'UPDATE_NOTIFICATION':
-            state.chats_notifications = state.chats_notifications.map((m: Message) => {
-                if (m.chat_id == action.message.chat_id) {
-                    return action.message
-                }
-                return m
-            })
-            break
+            return {
+                ...state,
+                chats_notifications: state.chats_notifications.map((m: Message) =>
+                    m.chat_id === action.message.chat_id ? action.message : m
+                ),
+            };
 
         case 'SET_CHATS_NOTIFICATIONS':
-            state.chats_notifications = action.messages
-            break
+            return {
+                ...state,
+                chats_notifications: action.messages,
+            };
+
         default:
-            console.error("chatsReducer Unknown action type: ", action.type);
+            // console.error("chatsReducer Unknown action type: ", action.type);
+            // console.log("chatsReducer Unknown action type: ");
+            return state;
     }
-    return {...state}
 }
