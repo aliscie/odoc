@@ -88,7 +88,7 @@ export default function ProfileComponent() {
 
                     <ListItem style={{display: "flex"}}>
                         <Typography>
-                            {Number(wallet.balance)} USDT
+                            {Number(wallet ? wallet.balance : 0)} USDT
                         </Typography>
 
                         <Deposit/>

@@ -170,7 +170,7 @@ export function serializePromisesData(payments: Array<CPayment>, all_users = [])
 
 
     let columns = [column, column_2, column_3, column_4]
-    let rows: Array<CRow> = payments.map((p: CPayment) => {
+    let rows: Array<CRow> = payments && payments.map((p: CPayment) => {
         let sender: undefined | User = all_users.find((user: User) => p.sender.toString() === String(user.id))
         let receiver: undefined | User = all_users.find((user: User) => p.receiver.toString() === String(user.id))
         return {
@@ -259,7 +259,7 @@ export function createCContract(): CContract {
         name: "New " + randomString(),
         'columns': [new_column],
         'rows': [new_row],
-        date_created:0,
+        date_created: 0,
         creator: Principal.fromText("2vxsx-fae"),
     }
     return new_c_contract

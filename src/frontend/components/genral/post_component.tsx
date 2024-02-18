@@ -51,6 +51,7 @@ interface Props {
 
 
 export function UserAvatar(props: UserFE | User) {
+
     let path = "/user?id=" + props.id
     let {getChats, getOther} = useGetChats()
     const dispatch = useDispatch();

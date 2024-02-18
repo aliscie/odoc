@@ -39,10 +39,10 @@ export function CustomContract({contract}: { contract: CustomContract }) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (contract.promises.length === 0) {
+        if (contract.promises && contract.promises.length === 0) {
             contract.promises.push(createNewPromise(Principal.fromText(profile.id)));
         }
-        const serializePaymentData = serializePromisesData(contract.promises, all_friends);
+        const serializePaymentData = serializePromisesData(contract.promises, [profile, ...all_friends]);
         const currentView = {
             type: PROMISES,
             ...serializePaymentData,
@@ -177,7 +177,7 @@ export function CustomContract({contract}: { contract: CustomContract }) {
                 if (newRow.released) {
                     enqueueSnackbar(`As you hit save button you will send ${newRow.amount}USDT to ${newRow.receiver}`, {variant: "info"})
                 }
-                let updated_promises: Array<CPayment> = deserialize_payment_data(new_rows, all_users);
+                let updated_promises: Array<CPayment> = deserialize_payment_data(newRow, [profile, ...all_friends]);
                 updateContract({...contract, promises: updated_promises})
                 break
             case CONTRACT:

@@ -32,7 +32,7 @@ function CustomDataGrid(props: Props) {
     const [data, setData] = React.useState(props.data);
     // TODO
     useEffect(() => {
-        let rows = props.data.rows.length > 0 ? props.data.rows : [{id: randomString()}];
+        let rows = props.data.rows && props.data.rows.length > 0 ? props.data.rows : [{id: randomString()}];
         let columns = props.data.columns
         setData({rows, columns})
     }, [props.data]);
