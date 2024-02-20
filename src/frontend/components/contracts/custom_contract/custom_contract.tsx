@@ -51,7 +51,7 @@ export function CustomContract({contract}: { contract: CustomContract }) {
         if (JSON.stringify(currentView) !== JSON.stringify(view)) {
             setView(currentView);
         }
-    }, [contract]);
+    }, []);
 
     const columnMenuProps = (menuProps: any) => {
         return {
@@ -250,31 +250,31 @@ export function CustomContract({contract}: { contract: CustomContract }) {
                 break;
         }
     };
-
+    let all_users = [profile, ...all_friends];
     const selectOption = async (option: any) => {
 
         switch (option.type) {
 
             case PROMISES:
-                let serialize_PaymentData = serialize_promises_data(contract.promises, all_users)
+                let serialize_PromisesData = serialize_payment_data(contract.promises, all_users)
 
                 setView({
                     type: PROMISES,
-                    ...serialize_PaymentData,
+                    ...serialize_PromisesData,
                 })
                 break
 
             case PAYMENTS:
-                if (contract.payments.length > 0) {
-                    let serialize_PaymentData = serialize_payment_data(contract.payments, all_users)
+                // if (contract.payments.length > 0) {
+                let serialize_PaymentData = serialize_payment_data(contract.payments, all_users)
 
-                    setView({
-                        type: PAYMENTS,
-                        ...serialize_PaymentData,
-                    })
+                setView({
+                    type: PAYMENTS,
+                    ...serialize_PaymentData,
+                })
 
-                } else {
-                }
+                // } else {
+                // }
                 break
             case CREATE_CONTRACT:
                 let new_c_contract = createCContract();

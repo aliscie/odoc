@@ -222,7 +222,7 @@ export function serialize_payment_data(payments: Array<CPayment>, all_users?) {
             id: p.id,
             amount: p.amount,
             sender: sender.name,
-            receiver: receiver.name,
+            receiver: receiver ? receiver.name : "null",
 
         })
     })

@@ -10,13 +10,12 @@ import {actor} from "../../App";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import useGetUser from "../../utils/get_user_by_principal";
-import ShareIcon from "@mui/icons-material/Share";
 import DialogOver from "../genral/daiolog_over";
-import {Button, Input, Typography} from "@mui/material";
+import {Input} from "@mui/material";
 import LoaderButton from "../genral/loader_button";
-import {CPayment} from "../../../declarations/user_canister/user_canister.did";
+import {CPayment, Notification} from "../../../declarations/user_canister/user_canister.did";
 
-function Notification({notification}: any) {
+function Notification({notification}: { notification: Notification }) {
     // console.log("render Notification") // TODO this renders about 20 times.
     let {getUser, getUserByName} = useGetUser();
     const [sender, setSender] = useState<string>("");
@@ -102,12 +101,22 @@ function Notification({notification}: any) {
                 </DialogOver>;
             default:
                 console.log("unknown action", notification);
-                return `${sender} ${content} action`;
+                return `${sender} ${JSON.stringify(content)} action`;
         }
     }
 
+    const [loading, setLoading] = useState(false);
     return <div
+        onClick={async () => {
+            if (actor && !notification.is_seen) {
+                setLoading(true);
+                let res = await actor.see_notifications(notification.id);
+                setLoading(false);
+                console.log(res)
+            }
+        }}
         style={{color: notification.is_seen ? "gray" : ""}}>
+        {loading && "loading..."}
         {renderNotification(notification)}
     </div>
 }
