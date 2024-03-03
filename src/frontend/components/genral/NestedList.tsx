@@ -34,14 +34,14 @@ const Item: React.FC<ItemProps> = ({data, item, index, openItems, handleClick, i
         handleClick(index);
     };
 
-    path = path ? path : item.name;
+    path = path ? path : item.id;
     path = path.replace(/\s+/g, '-').toLowerCase();
     return (
         <React.Fragment key={item.id}>
             <Link to={path}>
                 <ListItemButton onClick={handleItemClick} sx={{pl: isChild ? 2 : 0}}>
                     <ListItemIcon>{item.icon}</ListItemIcon>
-                    <ListItemText primary={item.name}/>
+                    <ListItemText primary={item.id}/>
                     {hasChildren && (isOpen ? <ExpandLess/> : <ExpandMore/>)}
                 </ListItemButton>
             </Link>

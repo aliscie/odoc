@@ -95,33 +95,32 @@ function CustomDataGrid(props: Props) {
 
     };
 
-    const handleAddColumn = (colId: number, before: boolean) => {
-        const columnIndex = data.columns.findIndex((col) => col.id === colId);
+    const handleAddColumn = (colId: string, before: boolean) => {
 
+
+        const columnIndex = data.columns.findIndex((col) => col.field === colId);
         if (columnIndex === -1) {
             console.error("Row not found, handle the error or return early");
             return;
         }
-
         let step = before ? 0 : 1;
-        // let newRow = props.addRow(columnIndex + step);
-        // let newColumn = {
-        //     field: randomString(),
-        //     id: randomString(),
-        //     headerName: "Untitled",
-        //     editable: true,
-        //     deletable: true,
-        // }
-        let newColumn = props.addColumn(columnIndex + step);
-        // let new_table_rows = [...data.rows]
-        // new_table_rows.splice(columnIndex + step, 0, newColumn)
-        //
-        // setData((pre) => {
-        //     let new_columns = [...pre.columns];
-        //     new_columns.splice(columnIndex + step, 0, newColumn);
-        //
-        //     return {...pre, columns: new_columns}
-        // });
+        const newColumn = props.addColumn(columnIndex + step);
+        const updatedColumns = [...data.columns];
+        updatedColumns.splice(columnIndex + step, 0, newColumn);
+
+
+        const updatedRows = data.rows.map(row => ({
+            ...row,
+            [newColumn.field]: '' // Initialize new column cells with a default value
+        }));
+
+        // Update the state with the new columns and updated rows
+        setData({
+            columns: updatedColumns,
+            rows: updatedRows,
+        });
+
+
     };
 
 
@@ -174,11 +173,11 @@ function CustomDataGrid(props: Props) {
         ];
 
         const add_column = [
-            <Button onClick={() => handleAddColumn(props.column.id, true)} key="two"><ArrowCircleLeftIcon/></Button>,
-            <Button onClick={() => handleAddColumn(props.column.id, false)}
+            <Button onClick={() => handleAddColumn(props.column.field, true)} key="two"><ArrowCircleLeftIcon/></Button>,
+            <Button onClick={() => handleAddColumn(props.column.field, false)}
                     key="three"><ArrowCircleRightIcon/></Button>,
             <span style={{width: "100px"}} key="one"
-                  onClick={() => handleAddColumn(props.column.id, false)}>Add column</span>,
+                  onClick={() => handleAddColumn(props.column.field, false)}>Add column</span>,
         ];
 
         let button_group_props: any = {

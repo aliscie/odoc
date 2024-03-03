@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import List from '@mui/material/List';
 import {ListSubheader} from "@mui/material";
-import ItemComponent from "./list_item";
+import DocComponent from "./list_item";
 import Draggable from "../../genral/draggable";
 
 
@@ -44,7 +44,7 @@ const NestedList: React.FC<NestedListProps> = ({title, data}) => {
             >
                 <Draggable preventDragUnder={true}><div style={{ height: '5px', width: '100%'}}></div></Draggable>
                 {Object.values(data).map((item, index) => (
-                    item.parent && item.parent.length == 0 && <ItemComponent
+                    item.parent && item.parent.length == 0 && <DocComponent
                         key={item.id}
                         data={data}
                         item={item}

@@ -23,7 +23,7 @@ interface ItemProps {
     isChild?: boolean;
 }
 
-const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handleClick, path = null, pl = 1}) => {
+const DocComponent: React.FC<ItemProps> = ({data, item, index, openItems, handleClick, path = null, pl = 1}) => {
     const {contracts, profile, wallet} = useSelector((state: any) => state.filesReducer);
 
     const dispatch = useDispatch();
@@ -37,7 +37,7 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
         dispatch(handleRedux("CURRENT_FILE", {file: item}));
     };
 
-    path = path ? path : item.name;
+    path = path ? path : item.id;
     path = path && path.replace(/\s+/g, '_').toLowerCase();
     path = path && path.replaceAll(".", "")
 
@@ -79,8 +79,8 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
                             const childItem = data[childId];
                             if (childItem) {
                                 return (
-                                    <ItemComponent
-                                        path={path + "/" + childItem.name}
+                                    <DocComponent
+                                        path={path + "/" + childItem.id}
                                         key={childItem.id}
                                         data={data}
                                         item={childItem}
@@ -99,4 +99,4 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
         </>
     );
 };
-export default ItemComponent;
+export default DocComponent;

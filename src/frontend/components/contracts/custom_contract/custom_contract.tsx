@@ -112,7 +112,7 @@ export function CustomContract({contract}: { contract: CustomContract }) {
         const newColumns = [...view.columns];
         newColumns.splice(position, 0, newColumn);
         updateContract(updateCustomContractColumns(contract, newColumns, view));
-        setView({...view, columns: newColumns});
+        // setView({...view, columns: newColumns});
         return newColumn;
     }
 
@@ -221,7 +221,7 @@ export function CustomContract({contract}: { contract: CustomContract }) {
     function updateContract(updatedContract: CustomContract) {
         if (updatedContract !== contract) {
             const storedContract: StoredContract = {CustomContract: updatedContract};
-            dispatch(handleRedux("UPDATE_CONTRACT", {contract: storedContract}));
+            // dispatch(handleRedux("UPDATE_CONTRACT", {contract: storedContract}));
             dispatch(handleRedux("CONTRACT_CHANGES", {changes: storedContract}));
         }
     }

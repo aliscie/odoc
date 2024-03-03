@@ -34,6 +34,6 @@ const CreateFile = () => {
 
 
     // return (<InputOption   title={"note page"} tooltip={"hit enter to create"} onEnter={handleCreateFile}/>)
-    return (<Button onClick={() => handleCreateFile()}>New file</Button>)
+    return (<Button onClick={() => handleCreateFile()}>+ New doc</Button>)
 }
 export default CreateFile

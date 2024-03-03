@@ -1,7 +1,7 @@
-import {AuthClient} from "@dfinity/auth-client";
 import {Actor, HttpAgent} from "@dfinity/agent";
 import {canisterId as userCanisterId, idlFactory} from "../../declarations/user_canister";
 import {canisterId as identityCanisterId} from "../../declarations/internet_identity";
+import {AuthClient} from "@dfinity/auth-client";
 
 let backendActor, loading = false
 
