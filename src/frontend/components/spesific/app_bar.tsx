@@ -13,7 +13,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Tooltip from "@mui/material/Tooltip";
-import {BreadPage} from "../genral/breadcrumbs";
+import BreadPage from "../genral/breadcrumbs";
 import CopyButton from "../genral/copy_link";
 import {agent} from "../../backend_connect/main";
 import MultiSaveButton from "../actions/multi_save";

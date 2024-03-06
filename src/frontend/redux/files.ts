@@ -34,7 +34,7 @@ export type FilesActions =
     | "CONTENT_CHANGES"
     | "CONTRACT_CHANGES"
     | "RESOLVE_CHANGES"
-    // | "DELETE_CONTRACT"
+    | "CURRENT_USER_HISTORY"
     | "REMOVE_CONTRACT"
     | "UPDATE_BALANCE"
     | "UPDATE_PROFILE"
@@ -54,12 +54,13 @@ export var initialState = {
     friends: [{friends: [], friend_requests: []}],
     changes: {files: {}, contents: {}, contracts: {}, delete_contracts: []},
     notifications: [],
+    profile_history: null,
 };
 
 
 function getCurrentFile(data: any) {
     let file = {id: null, name: null};
-    let dummy_file: FileNode | String = {id: "", name: "", share_id: [], children: [], parent: []};
+    let dummy_file: FileNode | String = {id: "", name: "", share_id: [], children: [], parent: []}
     dummy_file = JSON.stringify(dummy_file);
 
     let stored_file = JSON.parse(localStorage.getItem("current_file") || dummy_file)
@@ -321,6 +322,11 @@ export function filesReducer(state: any = initialState, action: any) {
                 ...state,
             };
 
+        case 'CURRENT_USER_HISTORY':
+            state.profile_history = action.profile_history
+            return {
+                ...state,
+            };
 
         default:
             return state;

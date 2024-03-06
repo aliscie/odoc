@@ -124,8 +124,8 @@ function UserPage() {
     return <>
         {user_history && user && <>
 
-            id: {user.id}
-            <Friend rate={user_history.users_rate} {...user} labelId={labelId}/>
+            id: {String(user.id)}
+            <Friend rate={user_history.users_rate} {...user} labelId={"labelId"}/>
             description: {user && user.description}
             <UserHistoryCom {...user_history}/>
 

@@ -6,6 +6,7 @@ import useParser from "../formula_parser/use_parser";
 import {useSnackbar} from "notistack";
 import {useSelector} from "react-redux";
 import CustomDialog from "../../../genral/custom_dialog";
+import {logger} from "../../../../dev_utils/log_data";
 
 interface Props {
     updateContract: (content: CustomContract) => void;
@@ -38,14 +39,15 @@ function ChangeColumnFormula(props: Props) {
         if (formatter !== colDef.formula_string) {
             const updatedColumn: CColumn = {...colDef, formula_string: String(formatter)};
             const updatedContract: CustomContract = updateContractColumn(contract, updatedColumn, view);
-            updatedContract.promises = updatedContract.promises.filter((p) => !ref.current.map((p) => p.id).includes(p.id));
-            updatedContract.promises.push(...ref.current);
-            updateContract(updatedContract);
-
-            const updatedView = updateCContractColumn(view, updatedColumn);
-            const serializedColumns = serialize_contract_column(updatedView, addVarsToParser, evaluate);
-            setView((prev) => ({...prev, columns: serializedColumns}));
+            let promises = [];
+            promises = [updatedContract.promises.filter((p) => !ref.current.map((p) => p.id).includes(p.id)), ...ref.current];
+            updateContract({...updatedContract, promises});
+            logger({promises, x: ref.current})
+            // const updatedView = updateCContractColumn(view, updatedColumn);
+            // const serializedColumns = serialize_contract_column(updatedView, addVarsToParser, evaluate);
+            // setView((prev) => ({...prev, columns: serializedColumns}));
         }
+
     };
 
     return (

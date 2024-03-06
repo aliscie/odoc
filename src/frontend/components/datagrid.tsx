@@ -47,9 +47,10 @@ function CustomDataGrid(props: Props) {
                     }
                     return row
                 });
-                return {...pre, rows: new_rows}
-            })
-            props.updateRow(data.rows, newRow);
+                props.updateRow(new_rows, newRow);
+                return {...pre, rows: new_rows};
+            });
+
             return Promise.resolve(newRow);
         },
         [props.data]

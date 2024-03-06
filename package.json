@@ -9,7 +9,7 @@
     "@babel/core": "^7.22.1",
     "@babel/preset-env": "^7.22.2",
     "@babel/preset-react": "^7.22.3",
-    "@dfinity/agent": "^0.20.2",
+    "@dfinity/agent": "^1.0.1",
     "@dfinity/auth-client": "^0.20.1",
     "@dfinity/candid": "^0.20.2",
     "@dfinity/identity": "^0.20.2",

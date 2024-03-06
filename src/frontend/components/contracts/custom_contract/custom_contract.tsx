@@ -14,7 +14,10 @@ import {
 import {
     createCContract,
     deserialize_contract_rows,
-    deserialize_payment_data, serialize_contract_column, serialize_contract_rows, serialize_payment_data,
+    deserialize_payment_data,
+    serialize_contract_column,
+    serialize_contract_rows,
+    serialize_payment_data,
     serializePromisesData,
     updateCustomContractColumns,
     updateCustomContractRows
@@ -30,15 +33,17 @@ import ChangeColumnPermissions from "./column_menu/column_permision";
 import ChangeColumnFormula from "./column_menu/column_formula";
 import {actor} from "../../../App";
 
+
 export function CustomContract({contract}: { contract: CustomContract }) {
     const {profile, all_friends, wallet} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar} = useSnackbar();
     const [view, setView] = useState<CContract | undefined>({rows: [], columns: []});
-    const {evaluate, addVarsToParser, ref} = useParser({contract: view});
-
+    const {evaluate, addVarsToParser} = useParser({contract: view});
     const dispatch = useDispatch();
 
     useEffect(() => {
+        let serialized_columns: CContract = serialize_contract_column(view, addVarsToParser, evaluate)
+
         if (contract.promises && contract.promises.length === 0) {
             contract.promises.push(createNewPromise(Principal.fromText(profile.id)));
         }
@@ -126,8 +131,20 @@ export function CustomContract({contract}: { contract: CustomContract }) {
     }
 
     function deleteRow(rows: any, rowId: number) {
-        const updatedContract = updateCustomContractRows(contract, rows, view);
-        updateContract(updatedContract);
+        switch (view.type) {
+            case PAYMENTS:
+                break;
+            case PROMISES:
+                // TODO check promises.status and make good frontend message to user
+                const updated_promises: Array<CPayment> = contract.promises.filter((p: CPayment) => p.id !== rowId);
+                updateContract({...contract, promises: updated_promises});
+                break;
+            case CONTRACT:
+                const updatedContract = updateCustomContractRows(contract, rows, view);
+                updateContract(updatedContract);
+                break;
+        }
+
     }
 
     function updateRow(newRows: any, newRow: any) {
@@ -181,34 +198,11 @@ export function CustomContract({contract}: { contract: CustomContract }) {
                 updateContract({...contract, promises: updated_promises})
                 break
             case CONTRACT:
-
-                let updated_rows = deserialize_contract_rows(newRows);
-                const updatedContract = updateCustomContractRows(contract, updated_rows, view);
-                updatedContract.promises = updatedContract.promises.filter((p) => !ref.current.map((p) => p.id).includes(p.id));
-                updatedContract.promises.push(...ref.current);
-                // logger({new_rows, updated_rows});
-                // TODo what the fuck the contract never have field  status nor amount nor sender the is PROMISES or PAYMENTS not CONTRACT
-                // let sample = {
-                //     "new_rows":
-                //         [{"id": "vo0vjg", "status": "None", "amount": 0, "sender": "Ali", "receiver": ""}],
-                //     "updated_rows":
-                //         [{
-                //             "id": "vo0vjg",
-                //             "cells": [{"id": "i5xnp0", "value": "None", "field": "status"}, {
-                //                 "id": "j999wv",
-                //                 "value": 0,
-                //                 "field": "amount"
-                //             }, {"id": "wgf4we", "value": "Ali", "field": "sender"}, {
-                //                 "id": "2vf1gp",
-                //                 "value": "",
-                //                 "field": "receiver"
-                //             }]
-                //         }]
-                // }
+                let updated_contract = {...view};
+                updated_contract.rows = deserialize_contract_rows(newRows);
+                const updatedContract = updateCustomContractRows(contract, updated_contract.rows, view);
                 updateContract(updatedContract);
 
-                // serialize_contract_column(updated_contract, addVarsToParser, evaluate)
-                // TODO  When update a row the value goes back to the previous value  despite the CustomDataGrid handle the update value correctly ?
                 break;
 
 
@@ -221,7 +215,7 @@ export function CustomContract({contract}: { contract: CustomContract }) {
     function updateContract(updatedContract: CustomContract) {
         if (updatedContract !== contract) {
             const storedContract: StoredContract = {CustomContract: updatedContract};
-            // dispatch(handleRedux("UPDATE_CONTRACT", {contract: storedContract}));
+            dispatch(handleRedux("UPDATE_CONTRACT", {contract: storedContract}));
             dispatch(handleRedux("CONTRACT_CHANGES", {changes: storedContract}));
         }
     }
@@ -368,6 +362,8 @@ export default function SlateCustomContract(props: any) {
     const dispatch = useDispatch();
     const [contract, setContract] = useState<CustomContract>(contracts[props.id]);
     useEffect(() => {
+
+
         (async () => {
             // if (window.location.pathname.split("/").pop() === "share") {
             if (!contract) {

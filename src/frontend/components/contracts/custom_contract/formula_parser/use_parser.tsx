@@ -1,20 +1,16 @@
 import {compile, EvalFunction} from "mathjs";
-import {
-    CColumn,
-    CContract,
-    CPayment,
-    CustomContract,
-    Formula,
-    User,
-} from "../../../../../declarations/user_canister/user_canister.did";
+import {CColumn, CContract, CPayment, User,} from "../../../../../declarations/user_canister/user_canister.did";
 import {useSelector} from "react-redux";
 import {Principal} from "@dfinity/principal";
 import React from "react";
-import {GridColumnMenuItemProps} from "@mui/x-data-grid";
-import {logger} from "../../../../dev_utils/log_data";
+import {randomString} from "../../../../data_processing/data_samples";
 
 interface ParserValues {
     [key: string]: any;
+}
+
+interface New {
+    tit
 }
 
 interface ParserReturnType {
@@ -52,6 +48,10 @@ function useParser(props: ParserProps) {
     }
 
     values["Promise"] = (to: User, amount: number) => {
+        // if (!values["row_id"]) {
+        //     return "Null"
+        // };
+
         const promise: CPayment = {
             id: values["row_id"],
             amount: Number(amount),
@@ -62,7 +62,7 @@ function useParser(props: ParserProps) {
             status: {None: null},
             contract_id: props.contract.id,
         };
-        // console.log({promise})
+
         updatePromise(promise);
         return `You promised ${amount} USDT to ${to.name}.`;
     };

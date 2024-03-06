@@ -5,7 +5,7 @@ import ListItem from '@mui/material/ListItem';
 import {useDispatch, useSelector} from "react-redux";
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import {Rating, TextField, Tooltip, Typography} from "@mui/material";
+import {CircularProgress, Rating, TextField, Tooltip, Typography} from "@mui/material";
 import Friends from "./friends";
 import Deposit from "./actions/deposit";
 import Withdraw from "./actions/withdraw";
@@ -26,15 +26,20 @@ export default function ProfileComponent() {
 
 
     const dispatch = useDispatch();
-    const {profile, friends, contracts, wallet} = useSelector((state: any) => state.filesReducer);
+    const {profile, friends, profile_history, wallet} = useSelector((state: any) => state.filesReducer);
 
     const [user_history, setUserHistory] = React.useState<UserHistoryCom | null>(null);
     const [profileData, setProfileData] = React.useState(profile || {});
+    // console.log({y:profile_history.actions_rate,x: profile_history.users_rate});
     useEffect(() => {
         (async () => {
             let res: undefined | { Ok: UserProfile } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(profile.id));
             if ("Ok" in res) {
                 setUserHistory(res.Ok)
+            }
+            if (!profile_history) {
+                let x: undefined | { Ok: UserProfile } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(profile.id))
+                "Ok" in x && dispatch(handleRedux('CURRENT_USER_HISTORY', {profile_history: x.Ok}));
             }
 
         })()
@@ -65,7 +70,6 @@ export default function ProfileComponent() {
 
     };
 
-
     return (
         <Box sx={{width: '80%'}}>
             {profile && (
@@ -81,9 +85,16 @@ export default function ProfileComponent() {
                         <input type="file" accept="image/*" onChange={handlePhotoChange}/>
                     </ListItem>
                     <ListItem>
-                        <Tooltip arrow title={"Your trust score"}>
-                            <Rating readOnly name="half-rating" defaultValue={2.5} precision={0.5}/>
-                        </Tooltip>
+                            {profile_history &&
+                                <Tooltip arrow title={"Your actions rate"}>
+                                <Rating readOnly name="half-rating" defaultValue={profile_history.actions_rate}
+                                        precision={0.5}/></Tooltip>}
+                    </ListItem>
+                    <ListItem>
+                        {profile_history &&
+                            <Tooltip arrow title={"Your users rate"}>
+                                <Rating readOnly name="half-rating" defaultValue={profile_history.users_rate}
+                                        precision={0.5}/></Tooltip>}
                     </ListItem>
 
                     <ListItem style={{display: "flex"}}>
