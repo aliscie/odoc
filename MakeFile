@@ -1,7 +1,7 @@
 run_fe:
 	npm start
 run_be:
-	dfx deploy backend
+	dfx deploy user_canister
 
 start:
 	chmod +x ./scripts/start.sh
