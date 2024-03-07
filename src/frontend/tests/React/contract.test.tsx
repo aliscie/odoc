@@ -2,9 +2,9 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
-import { CustomContract } from './CustomContract'; // Adjust the import path as needed
 import configureStore from 'redux-mock-store';
 import { SnackbarProvider } from 'notistack';
+import {CustomContract} from "../../components/contracts/custom_contract/custom_contract";
 
 // Mocks for any external dependencies
 jest.mock('../../../redux/main', () => ({
