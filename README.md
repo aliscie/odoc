@@ -1,4 +1,9 @@
 ## old version of Odoc can be found [here](https://github.com/aliscie/Odoc-old)
+## to get started first download the pocketic
+1. https://github.com/dfinity/pocketic/releases
+2. in your .env file add `POCKET_IC_BIN=/<path to>/pocket-ic`
+3. read this https://crates.io/crates/pocket-ic
+4. and read this https://www.npmjs.com/package/@hadronous/pic
 ## TO get started
   1. `dfx start --background --clean`
   2. `dfx deploy`

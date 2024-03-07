@@ -25,6 +25,6 @@ ic-stable-structures = "0.6.1"
 
 
 [dev-dependencies]
-pocket-ic = "2.0.1"
+#pocket-ic = "2.0.1"
 #rand = "0.8.5"
 #ring = "0.17.1"
