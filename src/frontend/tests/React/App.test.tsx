@@ -1,5 +1,4 @@
 import * as React from "react";
-import {StrictMode} from "react";
 import App from "../../App";
 import {render} from "@testing-library/react";
 import {Provider} from "react-redux";
@@ -17,7 +16,7 @@ test("Test render app", async () => {
     //     'photo': [[]],
     // };
     // let res = await global.actor.register(input);
-    // let store = mockStore(initialState);
+    let store = mockStore(initialState);
     // render(<Provider store={store}>
     //         {/*<App/>*/}
     //     </Provider>);
@@ -26,7 +25,9 @@ test("Test render app", async () => {
 
 
     // let res2 = await global.actor.setIdentity(new AnonymousIdentity());
-    // render(<App/>);
+    render(<Provider store={store}>
+      <App />
+    </Provider>);
     // const login2 = document.getElementsByClassName("login");
     // expect(login2.length).toBe(0);
 });
