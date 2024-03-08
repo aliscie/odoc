@@ -45,7 +45,7 @@ export const get_user_actor = async () => {
         backendActor = createActor(userCanisterId, {
             agentOptions: {
                 identity,
-                host: window.location.href,
+                host: "http://localhost:8000"
             }
         });
         // }
