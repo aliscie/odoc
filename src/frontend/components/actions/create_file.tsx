@@ -1,14 +1,12 @@
-import {backend} from "../../backend_connect/main";
 import {handleRedux} from "../../redux/main";
 import React from "react";
-import {useDispatch} from "react-redux";
-import {useSnackbar} from "notistack";
-import {file_content_sample, note_page_content, randomString} from "../../data_processing/data_samples";
-import InputOption from "../genral/input_option";
+import {useDispatch, useSelector} from "react-redux";
+import {file_content_sample, randomString} from "../../data_processing/data_samples";
 import {Button} from "@mui/material";
 import {FileNode} from "../../../declarations/user_canister/user_canister.did";
 
 const CreateFile = () => {
+    const {profile} = useSelector((state: any) => state.filesReducer);
     const dispatch = useDispatch();
     // const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
@@ -18,8 +16,16 @@ const CreateFile = () => {
         // let res = await backend.create_file(value)
 
         let id = randomString();
-        let file: FileNode = {id, name: "NewName", parent: [], children: [], share_id: []};
-        dispatch(handleRedux("ADD", {data: file}))
+        let file: FileNode = {
+            id, name: "Untitled",
+            parent: [],
+            children: [],
+            share_id: [],
+            author: profile.id,
+            users_permissions: [],
+            permission: {'None': null},
+        };
+        dispatch(handleRedux("ADD_FILE", {data: file}))
         dispatch(handleRedux("ADD_CONTENT", {id, content: file_content_sample}))
         dispatch(handleRedux("FILE_CHANGES", {changes: file}));
         // closeSnackbar(loading)
@@ -28,6 +34,6 @@ const CreateFile = () => {
 
 
     // return (<InputOption   title={"note page"} tooltip={"hit enter to create"} onEnter={handleCreateFile}/>)
-    return (<Button onClick={() => handleCreateFile()}>New file</Button>)
+    return (<Button onClick={() => handleCreateFile()}>+ New doc</Button>)
 }
 export default CreateFile

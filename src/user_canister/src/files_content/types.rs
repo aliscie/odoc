@@ -1,13 +1,15 @@
 use std::collections::HashMap;
-use std::fs::File;
+
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::time::{SystemTime, UNIX_EPOCH};
 
-use candid::{CandidType, Deserialize};
-use ic_cdk::caller;
 
-use crate::{FILE_CONTENTS, USER_FILES};
-use crate::contracts::Contract;
+use candid::{CandidType, Deserialize, Principal};
+use ic_cdk::{caller, print};
+
+
+use crate::{FILE_CONTENTS, ShareFile, USER_FILES};
+use crate::files::FileNode;
+
 use crate::storage_schema::{ContentId, ContentTree, FileId};
 use crate::tables::Table;
 
@@ -52,18 +54,35 @@ impl ContentNode {
 
 
     pub fn get_all_files_content() -> HashMap<FileId, ContentTree> {
-        FILE_CONTENTS.with(|file_contents| {
+        let mut res: HashMap<FileId, ContentTree> = FILE_CONTENTS.with(|file_contents| {
             let file_contents = file_contents.borrow();
-            let caller_principal = ic_cdk::api::caller();
-
-            if let Some(file_map) = file_contents.get(&caller_principal) {
+            if let Some(file_map) = file_contents.get(&caller()) {
                 file_map.clone()
             } else {
                 HashMap::new()
             }
-        })
-    }
+        });
 
+        // add content from shared files
+        let shared_files: Vec<ShareFile> = ShareFile::get_shared();
+        for file in shared_files {
+            let file_node: Result<(FileNode, ContentTree), String> = ShareFile::get_file(&file.id);
+            if let Ok((file_node, content)) = file_node {
+                res.insert(file.id.clone(), content);
+            } else {
+                let err = file_node.unwrap_err();
+                print(
+                    format!(
+                        "Error getting file {} from shared files: {}",
+                        file.id, err
+                    )
+                        .as_str(),
+                );
+            }
+        }
+
+        res
+    }
 
 
     pub fn new(file_id: FileId, content_parent_id: Option<ContentId>, node_type: String, text: String, data: Option<ContentData>) -> Option<ContentNode> {
@@ -103,11 +122,12 @@ impl ContentNode {
             let content_id: ContentId = COUNTER.fetch_add(1, Ordering::Relaxed).to_string();
             new_node.id = content_id.clone();
 
-            file_content_tree.insert(content_id.clone(), new_node.clone());
-
+            file_content_tree.push(new_node.clone());
             if let Some(parent_id) = content_parent_id {
-                if let Some(parent_node) = file_content_tree.get_mut(&parent_id) {
-                    parent_node.children.push(content_id.clone());
+                if let Some(parent_index) = file_content_tree.iter_mut().position(|node| node.id == parent_id) {
+                    if let Some(parent_node) = file_content_tree.get_mut(parent_index) {
+                        parent_node.children.push(content_id.clone());
+                    }
                 }
             }
         });
@@ -115,15 +135,12 @@ impl ContentNode {
         Some(new_node)
     }
 
+    //TODO The order comes incorrect after saving.
     pub fn update_file_contents(file_id: FileId, content_nodes: ContentTree) {
         FILE_CONTENTS.with(|file_contents| {
             let mut contents = file_contents.borrow_mut();
-
-            let caller_principal = ic_cdk::api::caller();
-            let file_contents_map = contents.entry(caller_principal).or_insert_with(HashMap::new);
-            let file_content_tree: &mut ContentTree = file_contents_map.entry(file_id).or_insert_with(ContentTree::new);
-            *file_content_tree = content_nodes;
-
+            let file_contents_map = contents.entry(caller()).or_insert_with(HashMap::new);
+            file_contents_map.insert(file_id, content_nodes);
         });
     }
 
@@ -131,8 +148,7 @@ impl ContentNode {
         FILE_CONTENTS.with(|file_contents| {
             let mut contents = file_contents.borrow_mut();
 
-            let caller_principal = ic_cdk::api::caller();
-            if let Some(file_contents_map) = contents.get_mut(&caller_principal) {
+            if let Some(file_contents_map) = contents.get_mut(&caller()) {
                 file_contents_map.remove(&file_id.clone());
             }
         });
@@ -140,8 +156,7 @@ impl ContentNode {
     pub fn delete_file_content(file_id: FileId) {
         FILE_CONTENTS.with(|file_contents| {
             let mut contents = file_contents.borrow_mut();
-            let caller_principal = ic_cdk::api::caller();
-            if let Some(file_contents_map) = contents.get_mut(&caller_principal) {
+            if let Some(file_contents_map) = contents.get_mut(&caller()) {
                 file_contents_map.remove(&file_id);
             }
         });

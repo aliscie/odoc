@@ -92,74 +92,9 @@ let x = [{
     "children": [{"id": "nvdd3i", "type": "", "data": [], "text": "test "}]
 }, {
     "id": "90luj2",
-    "type": "payment_contract",
+    "type": "p",
     "data": [],
-    "children": [{
-        "id": "002",
-        "type": "",
-        "data": [{
-            "Table": {
-                "rows": [{
-                    "id": "90luj2",
-                    "contract": [{"PaymentContract": "90luj2"}],
-                    "cells": [[["new_name", "any value"]]],
-                    "requests": []
-                }, {
-                    "id": "lhh2jh",
-                    "contract": [{"PaymentContract": "lhh2jh"}],
-                    "cells": [[["new_name", ""]]],
-                    "requests": []
-                }],
-                "columns": [{
-                    "id": "0oxxml",
-                    "_type": {"Text": null},
-                    "field": "receiver",
-                    "filters": [],
-                    "permissions": [],
-                    "dataValidator": [],
-                    "editable": true,
-                    "formula": []
-                }, {
-                    "id": "t8twba",
-                    "_type": {"Text": null},
-                    "field": "new_name",
-                    "filters": [],
-                    "permissions": [],
-                    "dataValidator": [],
-                    "editable": true,
-                    "formula": []
-                }, {
-                    "id": "ujmyal",
-                    "_type": {"Text": null},
-                    "field": "amount",
-                    "filters": [],
-                    "permissions": [],
-                    "dataValidator": [],
-                    "editable": true,
-                    "formula": []
-                }, {
-                    "id": "fgpip0",
-                    "_type": {"Text": null},
-                    "field": "released",
-                    "filters": [],
-                    "permissions": [],
-                    "dataValidator": [],
-                    "editable": true,
-                    "formula": []
-                }, {
-                    "id": "wsqlzr",
-                    "_type": {"Text": null},
-                    "field": "confirmed",
-                    "filters": [],
-                    "permissions": [],
-                    "dataValidator": [],
-                    "editable": true,
-                    "formula": []
-                }]
-            }
-        }],
-        "text": ""
-    }]
+    "children": [{text:"test"}]
 }, {"id": "z4cize", "type": "span", "data": [], "children": [{"id": "z4qif2", "type": "", "data": [], "text": " "}]}]
 
 
@@ -277,7 +212,7 @@ export default function EditorDemo() {
                 componentsOptions={[
                     table,
                     payment_contract,
-                    {type: "accumulative_contract"},
+                    {type: "shares_contract"},
                     {type: "custom_contract"},
                 ]}
                 mentionOptions={["Ali", "Alen", "Alice", "John,", "Jack", "James", "Mik", "Mathis"]}

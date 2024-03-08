@@ -1,70 +1,121 @@
-use ic_cdk::{api::call::ManualReply, caller, export::{
-    candid::{CandidType, Deserialize},
-    Principal,
-}};
+use ic_cdk::{caller};
+use candid::{CandidType, Deserialize, Principal};
 
-use crate::{FRIENDS_STORE, ID_STORE, PROFILE_STORE};
+use crate::{FRIENDS_STORE};
 use crate::user::User;
 
-#[derive(Clone, Debug, Default, CandidType, Deserialize)]
+
+#[derive(Clone, PartialEq, Debug, Default, CandidType, Deserialize)]
 pub struct Friend {
-    pub friend_requests: Vec<User>,
-    pub friends: Vec<User>,
+    pub sender: User,
+    pub receiver: User,
+}
+
+impl Friend {
+    pub fn new(sender: String, receiver: String) -> Self {
+        Self {
+            sender: User::get_user_from_text_principal(&sender).unwrap(),
+            receiver: User::get_user_from_text_principal(&receiver).unwrap(),
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Debug, Default, CandidType, Deserialize)]
+pub struct FriendSystem {
+    pub friend_requests: Vec<Friend>,
+    pub friends: Vec<Friend>,
 }
 
 //
-impl Friend {
+impl FriendSystem {
     // Get friends of the current caller
-    pub fn get_friends_of_caller() -> Option<Friend> {
+    pub fn get_friends_of_caller() -> Option<FriendSystem> {
         FRIENDS_STORE.with(|friends_store| {
             let store = friends_store.borrow();
             return store.get(&caller()).cloned();
         })
     }
+
+    pub fn get_friends_of_user(user: Principal) -> Option<FriendSystem> {
+        FRIENDS_STORE.with(|friends_store| {
+            let store = friends_store.borrow();
+            return store.get(&user).cloned();
+        })
+    }
+
     // Send a friend request
-    pub fn send_friend_request(&mut self, user: User) {
-        self.friend_requests.push(user.clone());
+    pub fn send_friend_request(&mut self, user: User) -> Result<(), String> {
+        // if self.clone().friend_requests.contains(&user.clone()) {
+        //     return Err("Friend request already sent.".to_string());
+        // }
+
+        // let caller = User::get_user_from_text_principal(caller().to_text()).unwrap();
         FRIENDS_STORE.with(|friends_store| {
             let mut store = friends_store.borrow_mut();
-            store.entry(user.id.parse().unwrap()).or_default().friend_requests.push(User::get_user_from_text_principal(caller().to_text()).unwrap());
+            // check if the user is already a friend
+            let friend: Friend = Friend::new(caller().to_text(), user.id.clone());
+            if store.entry(user.id.parse().unwrap()).or_default().friend_requests.contains(&friend) {
+                // if self.friend_requests.contains(&caller) {
+                // return Err("User is already a friend.".to_string());
+            } else {
+                store.entry(user.id.parse().unwrap()).or_default().friend_requests.push(friend.clone());
+                store.entry(caller()).or_default().friend_requests.push(friend);
+            }
+
+            // store.entry(caller()).or_default().friend_requests.push(User::get_user_from_text_principal(user.id).unwrap());
+            // self.friend_requests.push(user.clone());
         });
+        Ok(())
     }
 
     // Cancel a friend request
-    pub fn cancel_friend_request(&mut self, user: &User) {
-        self.friend_requests.retain(|request| request != user);
+    pub fn cancel_friend_request(&mut self, f: &Friend) {
+        // self.friend_requests.retain(|request| request != &friend);
         FRIENDS_STORE.with(|friends_store| {
             let mut store = friends_store.borrow_mut();
-            if let Some(friend) = store.get_mut(&caller()) {
-                friend.friend_requests.retain(|request| request != user);
+            if let Some(friend) = store.get_mut(&f.receiver.id.parse().unwrap()) {
+                friend.friend_requests.retain(|request| request != f);
+            }
+            if let Some(friend) = store.get_mut(&f.sender.id.parse().unwrap()) {
+                friend.friend_requests.retain(|request| request != f);
             }
         });
     }
 
     // Accept a friend request
-    pub fn accept_friend_request(&mut self, user: User) {
-        let caller_principal = caller();
-        // Remove the user from friend requests
-        self.friend_requests.retain(|request| request != &user);
+    // pub fn accept_friend_request(&mut self, user: User) {
+    //     let caller_principal = caller();
+    //     // Remove the user from friend requests
+    //     self.friend_requests.retain(|request| request != &user);
+    //
+    //     // Add the user to friends
+    //     self.friends.push(user.clone());
+    //
+    //     FRIENDS_STORE.with(|friends_store| {
+    //         let mut store = friends_store.borrow_mut();
+    //         store.entry(caller_principal).or_default().friend_requests.retain(|request| request != &user);
+    //         store.entry(caller_principal).or_default().friends.push(user);
+    //     });
+    // }
 
-        // Add the user to friends
-        self.friends.push(user.clone());
-
-        FRIENDS_STORE.with(|friends_store| {
-            let mut store = friends_store.borrow_mut();
-            store.entry(caller_principal).or_default().friend_requests.retain(|request| request != &user);
-            store.entry(caller_principal).or_default().friends.push(user);
-        });
-    }
 
     // Unfriend a user
-    pub fn unfriend(&mut self, user: &User) {
-        self.friends.retain(|friend| friend != user);
+    pub fn unfriend(&mut self, user: &User) -> Result<(), String> {
+        let f: Friend = Friend::new(caller().to_text(), user.id.clone());
+        let f2: Friend = Friend::new(user.id.clone(), caller().to_text());
+
         FRIENDS_STORE.with(|friends_store| {
             let mut store = friends_store.borrow_mut();
+
+            if let Some(friend) = store.get_mut(&user.id.parse().unwrap()) {
+                friend.friends.retain(|friend| friend != &f && friend != &f2);
+            }
+
             if let Some(friend) = store.get_mut(&caller()) {
-                friend.friends.retain(|friend| friend != user);
+                friend.friends.retain(|friend| friend != &f && friend != &f2);
             }
         });
+
+        Ok(())
     }
 }

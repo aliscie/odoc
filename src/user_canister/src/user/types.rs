@@ -1,9 +1,12 @@
-use ic_cdk::{api::call::ManualReply, caller, export::{
-    candid::{CandidType, Deserialize},
-    Principal,
-}};
+use ic_cdk::{caller};
+use candid::{CandidType, Deserialize, Principal};
 
-use crate::{ID_STORE, PROFILE_STORE};
+// export::{
+//     candid::{CandidType, Deserialize},
+//     Principal,
+// }
+
+use crate::{PROFILE_STORE};
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, Default, CandidType, Deserialize)]
 pub struct User {
@@ -11,6 +14,8 @@ pub struct User {
     pub name: String,
     pub description: String,
     pub photo: Vec<u8>,
+    // pub total_promise: f64,
+    //  pub total_balance: f64
     // pub keywords: Vec<String>,
 }
 
@@ -27,20 +32,22 @@ impl User {
         let user = User { id: caller().to_text(), name: profile.clone().name.unwrap().clone(), description: profile.description.unwrap().clone(), photo: profile.photo.unwrap() };
         let principal_id = ic_cdk::api::caller();
 
-        ID_STORE.with(|id_store| {
-            id_store
-                .borrow_mut()
-                .insert(profile.name.unwrap().clone(), principal_id);
-        });
+        // ID_STORE.with(|id_store| {
+        //     id_store
+        //         .borrow_mut()
+        //         .insert(profile.name.unwrap().clone(), principal_id);
+        // });
         PROFILE_STORE.with(|profile_store| {
             profile_store.borrow_mut().insert(principal_id, user.clone());
         });
 
         user
     }
-
+    pub fn principal(self: &Self) -> Principal {
+        Principal::from_text(self.id.clone()).unwrap()
+    }
     // Get a user from their principal
-    pub fn get_user_from_text_principal(principal_str: String) -> Option<User> {
+    pub fn get_user_from_text_principal(principal_str: &String) -> Option<User> {
         let principal = Principal::from_text(principal_str).ok()?;
         PROFILE_STORE.with(|profile_store| {
             let store = profile_store.borrow();
@@ -123,7 +130,7 @@ impl User {
             })
         })
     }
-    pub fn user_is_anonymous() -> bool {
+    pub fn is_anonymous() -> bool {
         let principal_id = ic_cdk::api::caller();
         principal_id.to_text() == *"2vxsx-fae"
     }

@@ -1,13 +1,15 @@
 use std::collections::HashMap;
+use candid::Principal;
+use candid::types::principal::PrincipalError;
 
-use candid::{candid_method, Principal};
-use ic_cdk::api::call::ManualReply;
+
 use ic_cdk_macros::query;
 
-use crate::{ID_STORE, PROFILE_STORE};
+use crate::{PROFILE_STORE};
 use crate::user::User;
+use crate::user_history::UserHistory;
 
-// #[candid_method(query)]
+//
 // #[query(name = "getSelf")]
 // fn get_self() -> Profile {
 //     let id = ic_cdk::api::caller();
@@ -19,7 +21,7 @@ use crate::user::User;
 //     })
 // }
 //
-// #[candid_method(query)]
+//
 // #[query]
 // fn get(name: String) -> Profile {
 //     ID_STORE.with(|id_store| {
@@ -32,7 +34,7 @@ use crate::user::User;
 //     })
 // }
 
-// #[candid_method(query)]
+//
 // #[query(manual_reply = true)]
 // fn search(text: String) -> ManualReply<Option<Profile>> {
 //     let text = text.to_lowercase();
@@ -55,7 +57,7 @@ use crate::user::User;
 
 // get all users
 
-#[candid_method(query)]
+
 #[query]
 fn get_all_users() -> HashMap<String, User> {
     PROFILE_STORE.with(|profile_store| {
@@ -67,3 +69,27 @@ fn get_all_users() -> HashMap<String, User> {
             .collect()
     })
 }
+
+
+#[query]
+fn get_user(usd_id: String) -> Result<User, String> {
+    let user: Result<Principal, PrincipalError> = Principal::from_text(usd_id);
+
+    if user.is_err() {
+        return Err("Invalid principal.".to_string());
+    };
+
+    let user: Option<User> = PROFILE_STORE.with(|profile_store| {
+        profile_store
+            .borrow()
+            .get(&user.unwrap())
+            .cloned()
+    });
+
+    if let Some(user) = user {
+        return Ok(user);
+    }
+    Err("User not found.".to_string())
+}
+
+

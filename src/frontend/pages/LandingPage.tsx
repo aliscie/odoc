@@ -25,7 +25,6 @@ const data = [
         title: "Plugins",
         content: "Plugins or extensions are customizations that you can add to your ODOC application. For example, you can add a grammar correction plugin like Grammarly or a machine learning plugin that helps you abbreviate your text."
     },
-
     {
         title: "Views",
         content: "You can view a table in the form of a chart or gallery, or in a custom view that allows you to see your data in different ways that are pleasant to the eye, more expressive, cleaner, or for input like quatrains and polls."
@@ -56,22 +55,17 @@ let roadMap = [
             "In the release column by default, they are false but when I click it, I should see a popup that asks me for confirmation, and then I can click conform"
     },
     {
-        is_done: false,
-        title: "USDC wallet",
-        content: "User can deposit USDC and withdraw to external wallets"
-    },
-    {
-        is_done: false,
-        title: "Dynamic user canisters",
-        content: "Each user will have their own canister to store their files and contents. However, contracts and friends will be stored and handed in the central canister."
-    },
-    {
-        is_done: false,
-        title: "Accumulative contract",
+        is_done: true,
+        title: "Shares contract",
         content: "When the user transfer to an accumulative contract part of the payment will go to one person and the other part will go to the other person\n" +
             "The creator of the accumulative contract can’t update the contract after it gets approved by any of the parties.\n" +
             "The creator of the accumulative contract/or any one of the parties can make changes but these changes will not be applied till the other party accept/approved them\n" +
             "Users will be notified when others release them a payment in the payment contract (note accumulative contract will not have transaction notification)\n"
+    },
+    {
+        is_done: false,
+        title: "USDC wallet",
+        content: "User can deposit USDC and withdraw to external wallets"
     },
     {
         is_done: false,
@@ -82,10 +76,14 @@ let roadMap = [
             "In the custom contract, people can write a formula that looks like this if ( now() == “2022-08-03” ) { transfer_USDT({from @ali, to:@john}}\n"
     },
     {
+        is_done: true,
+        title: "Notifications.",
+        content: "Users should be notified about their friend requests (WebSockets)\n",
+    },
+    {
         is_done: false,
-        title: "Live collaboration and notifications.",
-        content: "Users should be notified about their friend requests (WebSockets)\n" +
-            "as user edite the text others should see the updates live\n",
+        title: "Live collaboration on editor",
+        content: "as user edite the text others should see the updates live"
     },
     {
         is_done: false,
@@ -115,6 +113,9 @@ const LandingPage: React.FC = () => {
                 <p>Empowering Freelancers with Transparent and Liberating Smart Contracts on the Blockchain. Also, it is
                     all in one where you can manage your tasks, notes, documentation, and agreements/contracts. </p>
             </header>
+            {/*<TabsPanel*/}
+            {/*    items={[{label: "I'm hiring", value: <h1>You can create smart contract please watch the video</h1>}, {label: "I'm freelancer", value: <h1>You can receive payments</h1>}]}*/}
+            {/*/>*/}
             <section className="features">
                 {data.map((card, index) => (
                     <Card key={index} title={card.title}>

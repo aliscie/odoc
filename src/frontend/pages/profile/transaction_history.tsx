@@ -2,26 +2,34 @@ import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import * as React from "react";
-import {Button, Tooltip, Typography} from "@mui/material";
-import {Principal} from "@dfinity/principal";
-import DeleteIcon from "@mui/icons-material/Delete";
-import DialogOver from "../../components/genral/daiolog_over";
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import ConfirmButton from "../../components/contracts/payment_contract/confirm_button";
-import CancelButton from "../../components/contracts/payment_contract/cancel_button";
+import {useEffect} from "react";
+import {Button, Divider, Tooltip, Typography} from "@mui/material";
 import useGetUser from "../../utils/get_user_by_principal";
-import {logger} from "../../dev_utils/log_data";
 import {actor} from "../../App";
-
+import {Exchange} from "../../../declarations/user_canister/user_canister.did";
+import formatTimestamp from "../../utils/time";
 
 export function ContractItem(props: any) {
+    let date_created = formatTimestamp(props.date_created)
+    const {profile} = useSelector((state: any) => state.filesReducer);
+    const [users, setUsers] = React.useState<any>({sender: "Null", receiver: "Null"})
+
+    useEffect(() => {
+        (async () => {
+            let receiver = await getUser(props.receiver.toString());
+            let sender = "ExternalWallet" == props.sender ? {name: "ExternalWallet"} : await getUser(props.sender.toString());
+            setUsers({
+                sender: sender ? sender.name : "Null", receiver: receiver ? receiver.name : "Null"
+            })
+        })();
+    }, [props.receiver, props.sender]);
+
     let {getUser} = useGetUser();
 
-    const {profile} = useSelector((state: any) => state.filesReducer);
+
     let Report = () => {
         return <Tooltip
             title={"Reporting the cancellation of this contract means you are tinging that the cancellation is mnot fair"}>
@@ -29,9 +37,6 @@ export function ContractItem(props: any) {
         </Tooltip>
     }
 
-    let receiver = getUser(props.receiver.toString());
-    let sender = getUser(props.sender.toString());
-    console.log({})
 
     let canceled_style = {
         textDecoration: 'line-through',
@@ -77,36 +82,39 @@ export function ContractItem(props: any) {
     // let receiver_id = Principal.fromText(props.receiver.toString())
     let is_sender = profile.id == props.sender.toString();
     let is_receiver = profile.id == props.receiver.toString();
-    console.log({cdfadsfdsfsd: props})
+
     return <ListItem key={props.id}>
-        <ListItemText
-            primaryTypographyProps={{style: {}}}
-            secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
-            primary={`Sender: ${sender}`}
-            secondary={`Receiver: ${receiver}, Amount: ${props.amount} USDTs`}
-        />
+        <ListItem key={props.id}>
+            <ListItemText
+                primaryTypographyProps={{style: {}}}
+                secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
+                primary={`Sender: ${users.sender}`}
+                secondary={
+                    <div>
+                        <div>Receiver: {users.receiver}</div>
+                        <div>Amount: {Number(props.amount)} USDTs</div>
+                        <div>Date Created: {date_created}</div>
+                    </div>
+                }
+            />
+            {props.canceled && is_receiver && <Report/>}
+        </ListItem>
+
+        <Divider/>
         {props.canceled && is_receiver && <Report/>}
     </ListItem>
 }
 
-function TransactionHistory(props: any) {
-    const {profile, friends, contracts} = useSelector((state: any) => state.filesReducer);
-    let x = [
-        {
-            "to": "dzkul-tmusx-sms3w-yidq6-nn66u-4pikv-twz2h-yguim-g5suo-qrhmm-nae",
-            "_type": {"Deposit": null},
-            "date": "",
-            "from": "",
-            "amount": "100"
-        }
-    ];
+interface TranProps {
+    items: Array<Exchange>
+}
 
-
+function TransactionHistory(props: TranProps) {
     return (
         <List dense
         >
             {props.items.map((item: any, index: number) => {
-                return <ContractItem {...item} id={index} sender={item.from} receiver={item.to} />
+                return <ContractItem {...item} id={index} sender={item.from} receiver={item.to}/>
             })}
         </List>
     );

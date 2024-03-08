@@ -1,7 +1,16 @@
 import {Principal} from "@dfinity/principal";
-import {Column, Payment} from "../../declarations/user_canister/user_canister.did";
+import {
+    Column,
+    CustomContract,
+    PaymentContract,
+    Share,
+    SharePaymentOption,
+    SharesContract
+} from "../../declarations/user_canister/user_canister.did";
 
-let contract_id = randomString();
+let payment_contract_id = randomString();
+let shares_contract_id = randomString();
+let first_share_id = randomString();
 export let note_page_content = [{"id": 4, "children": [{"id": 5, "text": "", "type": "h1"}]}]
 export let file_data = {"id": "0000", "content": "0", "name": "NameTest", "children": {}, "parent": []}
 let column: Column = {
@@ -18,13 +27,13 @@ export let data_grid = {
 
     "id": randomString(),
     "children": [{
-        "id": "002", "text": "", "data": [{
+        "id": randomString(), "text": "", "data": [{
             "Table": {
                 "rows": [
                     {
-                        id: contract_id,
+                        id: randomString(),
                         contract: [],
-                        cells: [],
+                        cells: [[["name", ""], ["last_name", "x"], ["full_name", "xxxa"]]],
                         requests: [],
                     }
                 ],
@@ -42,15 +51,67 @@ export let data_grid = {
     }],
     "type": "data_grid"
 }
-export let payment_contract = {
-    "id": contract_id,
+
+
+export let shares_contract = {
+
+    "id": randomString(),
     "children": [{
-        "id": "002", "text": "", "data": [{
+        "id": shares_contract_id, "text": "", "data": [{
             "Table": {
                 "rows": [
                     {
-                        id: contract_id,
-                        contract: [{"PaymentContract": contract_id}],
+                        id: first_share_id,
+                        contract: [],
+                        contract: [{"SharesContract": first_share_id}],
+                        cells: [],
+                        requests: [],
+                    }
+                ],
+                "columns": [
+                    {...column, id: randomString(), field: "receiver"},
+                    {...column, id: randomString(), field: "accumulation", editable: false},
+                    {...column, id: randomString(), field: "share%",},
+                    {...column, id: randomString(), field: "confirmed", editable: false,},
+                ]
+            }
+        }]
+    }],
+    "type": "shares_contract"
+}
+
+export let custom_contract: CustomContract = {
+    'id': randomString(),
+    "name": "Custom contract",
+    'creator': Principal.fromText("2vxsx-fae"),
+    'date_created': Date.now() * 1e6,
+    'payments': [],
+    'promises': [],
+    'contracts': [],
+    'formulas': [],
+    'date_updated': 0,
+    'permissions': [],
+}
+
+export let slate_Custom_contract = {
+    "id": custom_contract.id,
+    "children": [{
+        "id": randomString(),
+        "text": "",
+        "data": []
+    }],
+    "type": "custom_contract"
+}
+
+export let payment_contract = {
+    "id": payment_contract_id,
+    "children": [{
+        "id": randomString(), "text": "", "data": [{
+            "Table": {
+                "rows": [
+                    {
+                        id: payment_contract_id,
+                        contract: [{"PaymentContract": payment_contract_id}],
                         cells: [],
                         requests: [],
                     }
@@ -63,13 +124,14 @@ export let payment_contract = {
                         id: randomString(),
                         field: "released",
                     },
-                    {...column, id: randomString(), field: "confirmed",}
+                    // {...column, id: randomString(), field: "confirmed",}
                 ]
             }
         }]
     }],
     "type": "payment_contract"
 }
+
 export let file_content_sample = [
     {type: "p", children: [{text: ""}]},
 ]
@@ -114,40 +176,45 @@ export let contracts_sample = {
         }
     }
 }
-export let contract_sample: Payment = {
-    "contract_id": contract_id,
-    "sender": Principal.fromText("2vxsx-fae"),
-    "receiver": Principal.fromText("2vxsx-fae"),
+export let payment_contract_sample: PaymentContract = {
+    "contract_id": payment_contract_id,
+    "sender": Principal.fromText("2vxsx-fae")!,
+    "receiver": Principal.fromText("2vxsx-fae")!,
     "released": false,
     "confirmed": false,
     "canceled": false,
     "amount": BigInt(0),
+    "objected": [], // or ["some string value"] if you want it to be non-empty
+    "extra_cells": [],
+}
+
+let share_sample: Share = {
+    'share_contract_id': first_share_id,
+    'accumulation': BigInt(0),
+    'confirmed': false,
+    'share': BigInt(100),
+    'receiver': Principal.fromText("2vxsx-fae"),
+    extra_cells: []
+}
+
+let payment_option: SharePaymentOption = {
+    'id': "",
+    'title': "",
+    'date': "",
+    'description': "",
+    'amount': BigInt(0),
+}
+export let shares_contract_sample: SharesContract = {
+    'shares': [share_sample],
+    'payments': [],
+    'contract_id': shares_contract_id,
+    'shares_requests': [],
+    "payment_options": [payment_option],
+    "author": "2vxsx-fae",
 }
 
 export let contract_id_sample = {"Contract": {"PaymentContract": "18"}}
 
-let payment_contract_sample = {
-    "Table": {
-        "rows": [{
-            "contract": [{"PaymentContract": "4"}],
-            "cells": [[["task", "signup task"]]],
-            "requests": []
-        }, {
-            "contract": [{"PaymentContract": "5"}],
-            "cells": [[["task", "login task"]]],
-            "requests": []
-        }, {"contract": [{"PaymentContract": "6"}], "cells": [[["task", "dark mode"]]], "requests": []}],
-        "columns": [{
-            "_type": {"Text": null},
-            "field": "task",
-            "filters": [],
-            "permissions": [],
-            "dataValidator": [],
-            "editable": true,
-            "formula": []
-        }]
-    }
-}
 
 export function randomString() {
     return Math.random().toString(36).substring(2, 8);

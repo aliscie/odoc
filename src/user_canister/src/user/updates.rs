@@ -1,13 +1,12 @@
 use ic_cdk_macros::update;
-use candid::candid_method;
-use ic_cdk::caller;
-use crate::{ID_STORE, PROFILE_STORE};
+
+
+
 use crate::user::{RegisterUser, User};
 
 #[update]
-#[candid_method(update)]
 fn register(profile: RegisterUser) -> Result<User, String> {
-    if User::user_is_anonymous() {
+    if User::is_anonymous() {
         return Err("Anonymous users are not allowed to register.".to_string());
     }
 
@@ -25,9 +24,8 @@ fn register(profile: RegisterUser) -> Result<User, String> {
 
 
 #[update]
-#[candid_method(update)]
 fn update_user_profile(updates: RegisterUser) -> Result<User, String> {
-    if User::user_is_anonymous() {
+    if User::is_anonymous() {
         return Err("Anonymous users are not allowed to register.".to_string());
     }
 

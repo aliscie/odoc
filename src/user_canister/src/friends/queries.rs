@@ -1,7 +1,7 @@
-use candid::candid_method;
+use crate::friends::FriendSystem;
 use ic_cdk_macros::query;
-use ic_cdk::api::call::ManualReply;
-use crate::{ID_STORE, PROFILE_STORE};
-use crate::user::User;
 
-
+#[query]
+pub fn get_friends() -> Option<FriendSystem> {
+    FriendSystem::get_friends_of_caller()
+}

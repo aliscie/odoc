@@ -1,18 +1,17 @@
 use std::collections::HashMap;
 
-use candid::candid_method;
-use ic_cdk::{api::call::ManualReply, caller, export::{
-    candid::{CandidType, Deserialize},
-    Principal,
-}};
+
+use ic_cdk::{caller};
+use candid::{CandidType, Deserialize, Principal};
+use candid::types::principal::PrincipalError;
 use ic_cdk_macros::query;
 
-use crate::{CONTRACTS_STORE, FRIENDS_STORE, ID_STORE, Payment, PROFILE_STORE, StoredContract, Wallet};
+use crate::{PROFILE_STORE, StoredContract, Wallet};
 use crate::contracts::Contract;
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
-use crate::friends::Friend;
-use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId, FriendsStore};
+use crate::friends::FriendSystem;
+use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId};
 use crate::user::User;
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
@@ -20,14 +19,27 @@ pub struct InitialData {
     Profile: User,
     FilesContents: Option<HashMap<FileId, ContentTree>>,
     Files: Option<HashMap<ContentId, FileNode>>,
-    Friends: Option<Friend>,
+    Friends: Option<FriendSystem>,
     DiscoverUsers: HashMap<String, User>,
     Contracts: HashMap<ContractId, StoredContract>,
     Wallet: Wallet,
 }
 
+
 #[query]
-#[candid_method(query)]
+fn get_contract(author: String, contract_id: String) -> Result<StoredContract, String> {
+    let author: Result<Principal, PrincipalError> = Principal::from_text(author);
+    if author.is_err() {
+        return Err("Invalid principal.".to_string());
+    };
+    let contract = Contract::get_contract(author.unwrap(), contract_id);
+    if let Some(contract) = contract {
+        return Ok(contract);
+    }
+    Err("Invalid principal.".to_string())
+}
+
+#[query]
 fn get_initial_data() -> Result<InitialData, String> {
     let profile = User::user_profile();
 
@@ -57,7 +69,7 @@ fn get_initial_data() -> Result<InitialData, String> {
         Profile: profile.unwrap(),
         FilesContents: Some(files_contents),
         Files: files,
-        Friends: Friend::get_friends_of_caller(),
+        Friends: FriendSystem::get_friends_of_caller(),
         DiscoverUsers: users,
         Contracts: contracts,
         Wallet: Wallet::get(caller()),

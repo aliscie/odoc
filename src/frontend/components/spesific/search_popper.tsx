@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useEffect} from 'react';
 import Draggable from 'react-draggable';
 import Popper from '@mui/material/Popper';
 import IconButton from '@mui/material/IconButton';
@@ -12,16 +13,19 @@ import {handleRedux} from "../../redux/main";
 import OpenWithIcon from '@mui/icons-material/OpenWith';
 import {Box, Card, CardContent, Tooltip} from '@mui/material';
 import AbcIcon from '@mui/icons-material/Abc';
-import FindInPageIcon from '@mui/icons-material/FindInPage';
-import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import MultiAutoComplete from "../genral/multi_autocompelte";
+import useSearchFiles from "./search_popper/search_files_content";
+import ResultFile from "./search_popper/result_file";
+import TitleIcon from '@mui/icons-material/Title';
+
+//TODO use this import CustomizedInputBase from "../genral/search_tools";
 
 export function OptionItem(props: any) {
     return (
         <Tooltip {...props} title={props.title}>
-            <IconButton color={"inherit"}>
+            <IconButton color={"secondary"}>
                 {props.icon}
             </IconButton>
         </Tooltip>
@@ -29,19 +33,48 @@ export function OptionItem(props: any) {
 }
 
 
-const options = [
-    <OptionItem title={"Case sensitive"} icon={<AbcIcon/>}/>,
-    <OptionItem title={"Search in current file"} icon={<FindInPageIcon/>}/>,
-    <OptionItem title={"Search in the Discover"} icon={<TravelExploreIcon/>}/>,
-    <OptionItem title={"Search with AI"} icon={<AutoFixHighIcon/>}/>,
-    <OptionItem title={"Search using regular expression"} icon={<AcUnitIcon/>}/>,
+const search_options = [
+    {
+        title: <OptionItem title={"Case sensitive"} icon={<AbcIcon/>}/>,
+        value: "case_sensitive",
+    },
+    {
+        title: <OptionItem title={"Files content"} icon={<TravelExploreIcon/>}/>,
+        value: "files_contents",
+    },
+    {
+        title: <OptionItem title={"Files titles"} icon={<TitleIcon/>}/>,
+        value: "files_titles",
+    },
+    // {
+    //     title: <OptionItem title={"Search in current file"} icon={<FindInPageIcon/>}/>,
+    //     value: "current_file",
+    // },
+    // {
+    //     title: <OptionItem title={"Search with AI"} icon={<AutoFixHighIcon/>}/>,
+    //     value: "ai",
+    // },
+    {
+        title: <OptionItem title={"Search using regular expression"} icon={<AcUnitIcon/>}/>,
+        value: "regex",
+    },
+    // {
+    //     title: <OptionItem title={"Global search"} icon={<OpenWithIcon/>}/>,
+    //     value: "global",
+    // },
 ];
 
-export default function SearchPopper() {
+function SearchPopper() {
     const dispatch = useDispatch();
+
+
     const {searchValue, searchTool} = useSelector((state: any) => state.uiReducer);
     const [width, setWidth] = React.useState(250);
+    const [currentOptions, setOptions] = React.useState([]);
     const anchorRef = React.useRef<HTMLDivElement | null>(null);
+    // const [searchRes, setSearchRes] = React.useState <undefined | Array<[string, Array<[string, ContentNode]>]>>(null);
+    const [searchRes, setSearchRes] = React.useState<Set<string>>(new Set());
+
 
     const handleShortcutKeyPress = React.useCallback(
         (event: KeyboardEvent) => {
@@ -71,6 +104,46 @@ export default function SearchPopper() {
             window.removeEventListener('keydown', handleShortcutKeyPress);
         };
     }, [handleShortcutKeyPress]);
+    const handleSelectSearchOption = (event: any, options: any) => {
+        setOptions(options.map((opt) => opt.value));
+    }
+    let {SearchFilesContent, SearchFilesTitles} = useSearchFiles();
+    useEffect(() => {
+        let case_sensitive = false;
+        if (currentOptions.includes("case_sensitive")) {
+            case_sensitive = true;
+        }
+        setSearchRes([]);
+        if (currentOptions.includes("files_contents")) {
+            // (async () => {
+            // let res: Array<[string, Array<[string, ContentNode]>]> = await actor.search_files_content(searchValue, true);
+            let res: [string] | undefined = SearchFilesContent(searchValue, case_sensitive);
+            if (res) {
+                setSearchRes((prevIds) => {
+                    const newIds = new Set(res);
+                    return new Set([...prevIds, ...newIds]);
+                });
+            }
+
+            // let normalized = normalize_files_contents(res);
+            // setSearchRes(normalized);
+            // })();
+        }
+        if (currentOptions.includes("files_titles")) {
+
+            let res: [string] | undefined = SearchFilesTitles(searchValue, case_sensitive);
+            if (res) {
+                setSearchRes((prevIds) => {
+                    const newIds = new Set(res);
+                    return new Set([...prevIds, ...newIds]);
+                });
+            }
+        }
+        if (searchValue === "") {
+            setSearchRes([]);
+        }
+    }, [searchValue]);
+
 
     return (
         <Draggable
@@ -91,6 +164,7 @@ export default function SearchPopper() {
                 }
             }}
         >
+            {/*<CustomizedInputBase/>*/}
             <Popper
                 style={{
                     zIndex: 1000, // Increase the z-index to make it appear on top of everything
@@ -110,9 +184,8 @@ export default function SearchPopper() {
                                     <OpenWithIcon/>
                                 </IconButton>
 
-                                <Box flex={1} display="flex" alignItems="center">
-                                    <MultiAutoComplete options={options} multiple={true}/>
-                                </Box>
+                                <MultiAutoComplete onChange={handleSelectSearchOption} options={search_options}
+                                                   multiple={true}/>
 
                                 <TextField
                                     size="small"
@@ -122,7 +195,7 @@ export default function SearchPopper() {
                                     id={'search_field'}
                                     autoFocus={true}
                                     placeholder="Enter text"
-                                    sx={{minWidth: "50px"}} // Adjust the width of the search field here
+                                    sx={{minWidth: "300px"}} // Adjust the width of the search_popper field here
                                 />
 
                                 <Box display="flex" alignItems="center">
@@ -140,7 +213,15 @@ export default function SearchPopper() {
                         </CardContent>
                     </Card>
                 </Resizable>
+
+                {searchRes && Array.from(searchRes).map((res) => {
+                    return <ResultFile file_id={res}/>
+                })
+                }
+
             </Popper>
         </Draggable>
     );
 }
+
+export default SearchPopper;

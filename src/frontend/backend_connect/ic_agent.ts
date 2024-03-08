@@ -1,7 +1,7 @@
-import {AuthClient} from "@dfinity/auth-client";
 import {Actor, HttpAgent} from "@dfinity/agent";
 import {canisterId as userCanisterId, idlFactory} from "../../declarations/user_canister";
 import {canisterId as identityCanisterId} from "../../declarations/internet_identity";
+import {AuthClient} from "@dfinity/auth-client";
 
 let backendActor, loading = false
 
@@ -13,7 +13,6 @@ const createActor = (canisterId, options = {}) => {
             "Detected both agent and agentOptions passed to createActor. Ignoring agentOptions and proceeding with the provided agent."
         );
     }
-
     // Fetch root key for certificate validation during development
     if (import.meta.env.VITE_DFX_NETWORK !== "ic") {
         agent.fetchRootKey().catch((err) => {
@@ -86,11 +85,11 @@ export async function is_logged() {
 }
 
 export async function logout() {
-    if (!(await is_logged())) {
+    // if (!(await is_logged())) {
         const authClient = await AuthClient.create();
         await authClient.logout()
         window.location.reload()
-    }
+    // }
 
 }
 

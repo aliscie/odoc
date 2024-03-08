@@ -1,6 +1,6 @@
 # Normalization: backend_data -> frontend_data
 
-# Denormalization (convert back to virginal structure): frontend_data -> backend_data
+# serialize (convert back to virginal structure): frontend_data -> backend_data
 
 # Data examples
 

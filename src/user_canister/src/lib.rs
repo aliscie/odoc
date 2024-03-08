@@ -1,32 +1,41 @@
+// use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
+// use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use std::cell::RefCell;
-use std::collections::{BTreeMap, HashMap};
 
-use ic_cdk::{
-    api::call::ManualReply,
-    export::{
-        candid::{CandidType, Deserialize},
-        Principal,
-    },
-};
-use ic_cdk::export::candid::{
-    candid_method, check_prog, export_service, IDLProg, TypeEnv,
-};
-use ic_cdk_macros::*;
+// type Memory = VirtualMemory<DefaultMemoryImpl>;
+
+use std::collections::HashMap;
+
+use ic_websocket_cdk::*;
 
 pub use contracts::*;
+use contracts::*;
+use discover::*;
 use files::*;
-use files::FileNode;
+use files_content::*;
 use friends::*;
 use queries::*;
 pub use share_files::*;
+use share_files::*;
 use storage_schema::*;
 use updates::*;
 use user::*;
-use user::*;
 pub use wallet::*;
+use websocket::*;
+// use pocket_ic::{
+//     common::rest::{BlobCompression, SubnetConfigSet, SubnetKind},
+//     PocketIc, PocketIcBuilder, WasmResult,
+// };
+use ic_cdk::api::management_canister::provisional::CanisterId;
+use candid::{decode_one, encode_one, Principal};
 
-use crate::files_content::ContentNode;
-use crate::user::User;
+// use ic_stable_structures::{
+//     memory_manager::{MemoryId, MemoryManager, VirtualMemory},
+//     BTreeMap,
+//     DefaultMemoryImpl,
+//     StableBTreeMap,
+// };
+
 
 mod user;
 mod media;
@@ -41,64 +50,113 @@ mod updates;
 mod friends;
 mod share_files;
 mod wallet;
+// mod timer;
+mod websocket;
+mod discover;
+mod timer;
+mod init;
+mod chat;
+mod user_history;
+
+use user_history::*;
+use chat::*;
+use init::*;
+use std::sync::atomic::AtomicU64;
+use timer::*;
 
 thread_local! {
+
+
+    // static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
+    //     RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
+    //
+    //
+    // static PROFILE_STORE: RefCell<ProfileStore> = RefCell::new(
+    //     StableBTreeMap::init(
+    //         MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
+    //     )
+    // );
+
     static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
-    static ID_STORE: RefCell<IdStore> = RefCell::default();
+    static PROFILE_HISOTYR: RefCell<ProfileHistoryStore> = RefCell::default();
+    // static ID_STORE: RefCell<IdStore> = RefCell::default();
     static USER_FILES: RefCell<FilesStore> = RefCell::default();
+    static SHARED_USER_FILES: RefCell<SharedUserFiles> = RefCell::default();
     static FILE_CONTENTS: RefCell<FileContentsStore> = RefCell::default();
     static FRIENDS_STORE: RefCell<FriendsStore> = RefCell::default();
     static CONTRACTS_STORE: RefCell<ContractStore> = RefCell::default();
     static FILES_SHARE_STORE: RefCell<FilesShareStore> = RefCell::default();
     static WALLETS_STORE: RefCell<WalletStore> = RefCell::default();
+    static NOTIFICATIONS: RefCell<UserNotifications> = RefCell::default();
+    static POSTS: RefCell<PostsStore> = RefCell::default();
+
+    static CHATS: RefCell<ChatsStore> = RefCell::default();
+    static MY_CHATS: RefCell<MyChatsStore> = RefCell::default();
+
+
 }
+pub static COUNTER: AtomicU64 = AtomicU64::new(0);
 
 #[cfg(test)]
 mod tests {
-    use std::borrow::Cow;
-    use std::env;
-    use std::fs::{create_dir_all, write};
-    use std::path::PathBuf;
-
-    use candid::Principal;
-    use ic_cdk::{api, update};
-    use ic_cdk::export::candid::{
-        candid_method, CandidType, check_prog, Deserialize, export_service, IDLProg, TypeEnv,
-    };
-    use serde::de::Unexpected::Str;
-
-    use super::*;
-
-// #[test]
-    // fn test_create() {
-    //     // Create a mock caller instance
-    //     let mock_caller = MockCaller;
-    //
-    //     // Set the mock caller as the current caller
-    //     ic_cdk::api::set_caller(Box::new(mock_caller));
-    //
-    //     let file = FileNode::new(String::from("hi"), None);
-    //     println!("----------------new file id is  {:#?}", "file.id");
-    // }
+    use ic_cdk::caller;
 
     #[test]
-    fn save_candid_2() {
-        #[ic_cdk_macros::query(name = "__get_candid_interface_tmp_hack")]
-        fn export_candid() -> String {
-            export_service!();
-            __export_service()
-        }
-
-        let dir: PathBuf = env::current_dir().unwrap();
-        let canister_name: Cow<str> = dir.file_name().unwrap().to_string_lossy();
-
-        match create_dir_all(&dir) {
-            Ok(_) => println!("Successfully created directory"),
-            Err(e) => println!("Failed to create directory: {}", e),
-        }
-
-        let res = write(dir.join(format!("{:?}.did", canister_name).replace("\"", "")), export_candid());
-        println!("-------- Wrote to {:?}", dir);
-        println!("-------- res {:?}", canister_name);
+    fn test_one() {
+        // println!("test_one {}", caller().to_string());
     }
 }
+
+fn user_canister_wasm() -> Vec<u8> {
+    let wasm_path = std::env::var_os("USER_CANISTER_WASM").expect("Missing counter wasm file");
+    std::fs::read(wasm_path).unwrap()
+}
+
+
+// fn call_counter_can(ic: &PocketIc, can_id: CanisterId, method: &str) -> WasmResult {
+//     ic.update_call(
+//         can_id,
+//         Principal::anonymous(),
+//         method,
+//         encode_one(()).unwrap(),
+//     )
+//         .expect("Failed to call counter canister")
+// }
+
+// #[test]
+// fn test_counter_canister() {
+//     dotenv::dotenv().ok();
+//
+//     println!("POCKET_IC_BIN: {:?}", std::env::var("POCKET_IC_BIN"));
+//
+//
+//     const INIT_CYCLES: u128 = 2_000_000_000_000;
+//
+//     let pic = PocketIc::new();
+//
+//     // Create a canister and charge it with 2T cycles.
+//     let can_id = pic.create_canister();
+//     pic.add_cycles(can_id, INIT_CYCLES);
+//     let user_canister_wasm = user_canister_wasm();
+//     pic.install_canister(can_id, user_canister_wasm, vec![], None);
+//     // Make some calls to the canister.
+//     let args: RegisterUser = RegisterUser {
+//         name: Some("AliSci".to_string()),
+//         description: None,
+//         photo: None,
+//     };
+//     let res_bytes: WasmResult = pic.update_call(
+//         can_id,
+//         Principal::anonymous(),
+//         "register",
+//         encode_one(args.clone()).unwrap(),
+//     )
+//         .expect("Failed to call counter canister");
+//     // let expected = Err("Anonymous users are not allowed to register.".to_string());
+//     // assert!(res_bytes == expected);
+//     println!("res_bytes: {:?}", res_bytes);
+//
+// }
+
+
+ic_cdk_macros::export_candid!();

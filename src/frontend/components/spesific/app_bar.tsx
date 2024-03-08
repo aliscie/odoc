@@ -13,14 +13,15 @@ import SearchIcon from "@mui/icons-material/Search";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Tooltip from "@mui/material/Tooltip";
-import {BreadPage} from "../genral/breadcrumbs";
+import BreadPage from "../genral/breadcrumbs";
 import CopyButton from "../genral/copy_link";
 import {agent} from "../../backend_connect/main";
 import MultiSaveButton from "../actions/multi_save";
 import Person2Icon from '@mui/icons-material/Person2';
 import SettingsIcon from '@mui/icons-material/Settings';
 import {convertToBlobLink} from "../../data_processing/image_to_vec";
-
+import {Notifications} from "../notifcations/notification";
+import ChatsComponent from "../chat_component";
 
 export function NavAppBar() {
     const dispatch = useDispatch();
@@ -41,6 +42,7 @@ export function NavAppBar() {
 
     async function handleLogin() {
         await agent.identify();
+        dispatch(handleRedux('LOGIN'));
     }
 
     async function handleLogout() {
@@ -77,7 +79,8 @@ export function NavAppBar() {
                         {searchTool ? <CloseIcon/> : <SearchIcon/>}
                     </IconButton>
                 </Tooltip>
-
+                {isLoggedIn && <Notifications/> }
+                {isLoggedIn && <ChatsComponent/> }
                 {isLoggedIn ? (
                     <BasicMenu
                         anchorOrigin={{
@@ -97,7 +100,7 @@ export function NavAppBar() {
                         <Avatar style={{display: 'inline'}} alt="Remy Sharp" src={image_link}/>
                     </BasicMenu>
                 ) : (
-                    <Button color={'inherit'} onClick={handleLogin}>Login</Button>
+                    <Button className={'login'} color={'inherit'} onClick={handleLogin}>Login</Button>
                 )}
 
                 {isLoggedIn && <MultiSaveButton/>}

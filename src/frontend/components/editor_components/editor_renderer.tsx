@@ -1,9 +1,9 @@
-import SpreadSheet from "../contracts/spread_sheet";
 import * as React from "react";
 import MentionComponent from "./mention_component";
 import {Table, TableBody, TableCell, TableRow} from "@mui/material";
 import ContractView from "../views/contract_view";
-import DataGrid from "../contracts/data_grid";
+import SharesContractComponent from "../contracts/shares_contract";
+import SlateCustomContract from "../contracts/custom_contract/custom_contract";
 
 export function EditorRenderer(props: any) {
 
@@ -22,19 +22,17 @@ export function EditorRenderer(props: any) {
             return <TableCell {...attributes}>{children}</TableCell>
         case "mention":
             return <MentionComponent {...props}/>
-        case "payment_contract":
-            return <ContractView {...props.element} />;
-        case "data_grid":
-            return <DataGrid {...props.element} />;
-        case "accumulate_contract":
-            return <SpreadSheet {...props.element} />;
+        // case "data_grid":
+        //     return <DataGrid {...props.element} />;
+        case "shares_contract":
+            return <SharesContractComponent {...props.element} />;
         case "custom_contract":
-            return <SpreadSheet {...props.element} />;
+            return <SlateCustomContract {...props.element} />;
 
     }
     return (<Tag
         style={{margin: 0}}
         {...props}
-        placeholder={"Enter somthing or hit @ for mentions or / for inserting components"}
+        placeholder={"Enter something or hit @ for mentions or / for inserting components"}
         {...attributes}>{children}</Tag>)
 }
