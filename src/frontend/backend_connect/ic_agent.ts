@@ -16,9 +16,10 @@ const createActor = (canisterId, options = {}) => {
     // Fetch root key for certificate validation during development
     if (import.meta.env.VITE_DFX_NETWORK !== "ic") {
         agent.fetchRootKey().catch((err) => {
-            console.warn(
-                "Unable to fetch root key. Check to ensure that your local replica is running"
-            );
+            // console.warn(
+            //     "Unable to fetch root key. Check to ensure that your local replica is running"
+            // );
+            console.error("------------------ root key error ------------------");
             console.error(err);
         });
     }
@@ -44,7 +45,8 @@ export const get_user_actor = async () => {
         backendActor = createActor(userCanisterId, {
             agentOptions: {
                 identity,
-                host: window.location.href,
+                host: "http://localhost:8000",
+                // host: window.location.href,// this is for ic network deployment.
             }
         });
         // }
