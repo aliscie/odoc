@@ -26,6 +26,7 @@ function MultiSaveButton(props: any) {
         let files: Array<FileNode> = Object.values(changes.files);
 
         let delete_contracts: Array<String> = changes.delete_contracts || [];
+        logger({serialized_contracts});
         let res = actor && await actor.multi_updates(files, serialized_content, serialized_contracts, delete_contracts);
         closeSnackbar(loading)
         if (res.Err) {

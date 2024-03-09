@@ -26,6 +26,7 @@ import useSharesRequests from "./shares_contract/use_shares_requests";
 import ApproveButton from "./shares_contract/approve_button";
 import ApplyButton from "./shares_contract/apply_button";
 import CustomDataGrid from "../datagrid";
+import {logger} from "../../dev_utils/log_data";
 
 // export type SharesContractViews = "Payments" | "Shares" | "SharesRequests" | "PaymentOptions";
 
@@ -258,31 +259,9 @@ export default function SharesContractComponent(props: any) {
     const updateRow = (new_rows: any, newRow: any) => {
         switch (view) {
             case "Shares":
-                let updated_share_id = newRow.contract && newRow.contract[0] && newRow.contract[0]["SharesContract"];
-                let receiver_name: string = newRow["receiver"];
-                let receiver: User | null = getUserByName(receiver_name);
-
-                let eliminate = ["accumulation", "share%", "receiver", "id", "contract"];
-                let extra_cells: Array<[string, string]> = Object.keys(newRow).filter((key) => !eliminate.includes(key)).map((key) => {
-                    return [key, newRow[key]]
-                })
-
                 let updated_contract: SharesContract = {
                     ...contracts[table_content.id],
-                    shares: contracts[table_content.id].shares.map((item: Share) => {
-                        if (item.share_contract_id === updated_share_id) {
-                            return {
-                                ...item,
-                                "accumulation": BigInt(item.accumulation || 0),
-                                "confirmed": Boolean(item.confirmed),
-                                "share_contract_id": updated_share_id,
-                                "share": newRow["share%"],
-                                "receiver": Principal.fromText(receiver ? receiver.id.toString() : "2vxsx-fae"),
-                                extra_cells,
-                            };
-                        }
-                        return item;
-                    }),
+                    shares: UpdatedContractFromRow(new_rows, contracts[table_content.id].shares),
                 };
                 let stored_shares_contract: StoredContract = {'SharesContract': updated_contract}
                 dispatch(handleRedux("UPDATE_CONTRACT", {contract: stored_shares_contract}));

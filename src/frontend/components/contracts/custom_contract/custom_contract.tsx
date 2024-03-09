@@ -97,7 +97,7 @@ export function CustomContract({contract}: { contract: CustomContract }) {
     }
 
     function deleteColumn(columns: any, columnId: string) {
-        console.log(columns, columnId);
+        // console.log(columns, columnId);
         const updatedContract = updateCustomContractColumns(contract, columns, view);
         updateContract(updatedContract);
         setView({...view, columns});
@@ -158,6 +158,7 @@ export function CustomContract({contract}: { contract: CustomContract }) {
     }
 
     function updateRow(newRows: any, newRow: any) {
+
         switch (view.type) {
             case PAYMENTS:
                 break
@@ -204,10 +205,11 @@ export function CustomContract({contract}: { contract: CustomContract }) {
                 if (newRow.released) {
                     enqueueSnackbar(`As you hit save button you will send ${newRow.amount}USDT to ${newRow.receiver}`, {variant: "info"})
                 }
-                let updated_promises: Array<CPayment> = deserialize_payment_data(newRow, [profile, ...all_friends]);
+                let updated_promises: Array<CPayment> = deserialize_payment_data([newRow], [profile, ...all_friends]);
                 updateContract({...contract, promises: updated_promises})
                 break
             case CONTRACT:
+                console.log({xxx: view.type});
                 let updated_contract = {...view};
                 updated_contract.rows = deserialize_contract_rows(newRows);
                 const updatedContract = updateCustomContractRows(contract, updated_contract.rows, view);

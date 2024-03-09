@@ -35,6 +35,7 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
             // find share.share_contract_id == item.id
             let share = shares.find((share: Share) => share.share_contract_id === item.id);
             return {
+                extra_cells: [],
                 accumulation: share ? BigInt(share.accumulation) : 0n,
                 confirmed: share ? Boolean(share.confirmed) : false,
                 // TODO accumulation and confirmed should come from the contracts[table_content.id].shares_requests
