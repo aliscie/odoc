@@ -285,7 +285,7 @@ export function updateCustomContractColumns(contract: CustomContract, new_column
         ...contract,
         contracts: contract.contracts.map((c: CContract) => {
             if (c.id === view.id) {
-                c.columns = new_columns;
+                return {...c, columns: new_columns}
             }
             return c;
         })

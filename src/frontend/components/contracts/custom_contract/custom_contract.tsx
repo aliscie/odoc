@@ -97,8 +97,11 @@ export function CustomContract({contract}: { contract: CustomContract }) {
     }
 
     function deleteColumn(columns: any, columnId: string) {
+        // console.log(columns, columnId);
         const updatedContract = updateCustomContractColumns(contract, columns, view);
         updateContract(updatedContract);
+        setView({...view, columns});
+        return columns;
     }
 
 
@@ -116,8 +119,9 @@ export function CustomContract({contract}: { contract: CustomContract }) {
         };
         const newColumns = [...view.columns];
         newColumns.splice(position, 0, newColumn);
-        updateContract(updateCustomContractColumns(contract, newColumns, view));
-        // setView({...view, columns: newColumns});
+        const updatedContract = updateCustomContractColumns(contract, newColumns, view);
+        updateContract(updatedContract);
+        setView({...view, columns: newColumns});
         return newColumn;
     }
 
@@ -126,6 +130,11 @@ export function CustomContract({contract}: { contract: CustomContract }) {
             id: randomString(),
             cells: [],
         };
+        const newRows = [...view.rows];
+        newRows.splice(position, 0, newRow);
+        const updatedContract = updateCustomContractRows(contract, newRows, view);
+        updateContract(updatedContract);
+        setView({...view, rows: newRows});
         // Additional logic based on the view type can be added here
         return newRow;
     }
@@ -142,12 +151,14 @@ export function CustomContract({contract}: { contract: CustomContract }) {
             case CONTRACT:
                 const updatedContract = updateCustomContractRows(contract, rows, view);
                 updateContract(updatedContract);
+                setView({...view, rows});
                 break;
         }
 
     }
 
     function updateRow(newRows: any, newRow: any) {
+
         switch (view.type) {
             case PAYMENTS:
                 break
@@ -194,10 +205,11 @@ export function CustomContract({contract}: { contract: CustomContract }) {
                 if (newRow.released) {
                     enqueueSnackbar(`As you hit save button you will send ${newRow.amount}USDT to ${newRow.receiver}`, {variant: "info"})
                 }
-                let updated_promises: Array<CPayment> = deserialize_payment_data(newRow, [profile, ...all_friends]);
+                let updated_promises: Array<CPayment> = deserialize_payment_data([newRow], [profile, ...all_friends]);
                 updateContract({...contract, promises: updated_promises})
                 break
             case CONTRACT:
+                console.log({xxx: view.type});
                 let updated_contract = {...view};
                 updated_contract.rows = deserialize_contract_rows(newRows);
                 const updatedContract = updateCustomContractRows(contract, updated_contract.rows, view);

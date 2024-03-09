@@ -195,12 +195,14 @@ export function filesReducer(state: any = initialState, action: any) {
 
         case 'UPDATE_CONTRACT':
 
-            let original_contract = {}
-            try {
-                original_contract = state.contracts[action.contract.contract_id];
-            } catch (e) {
+            if (action.contract.CustomContract) {
+                state.contracts[action.contract.CustomContract.id].CustomContract = action.contract;
+                state.contracts[action.contract.CustomContract.id].contracts = action.contract.CustomContract.contracts;
+            } else {
+                state.contracts[action.contract.contract_id] = {...state.contracts[action.contract.contract_id], ...action.contract}
             }
-            state.contracts[action.contract.contract_id] = {...original_contract, ...action.contract}
+
+
             return {
                 ...state,
             }
@@ -244,10 +246,9 @@ export function filesReducer(state: any = initialState, action: any) {
 
             let changes: StoredContract = action.changes;
             let id;
+            // console.log({xxx: changes.SharesContract})
             if ('SharesContract' in changes) {
                 id = changes.SharesContract.contract_id;
-            } else if ('PaymentContract' in changes) {
-                id = changes.PaymentContract.contract_id;
             } else if ('CustomContract' in changes) {
                 id = changes.CustomContract.id;
             } else {

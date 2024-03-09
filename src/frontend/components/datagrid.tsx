@@ -110,17 +110,19 @@ function CustomDataGrid(props: Props) {
         updatedColumns.splice(columnIndex + step, 0, newColumn);
 
 
-        const updatedRows = data.rows.map(row => ({
-            ...row,
-            [newColumn.field]: '' // Initialize new column cells with a default value
-        }));
+        // const updatedRows = data.rows.map(row => ({
+        //     ...row,
+        //     [newColumn.field]: '' // Initialize new column cells with a default value
+        // }));
 
         // Update the state with the new columns and updated rows
-        setData({
-            columns: updatedColumns,
-            rows: updatedRows,
+        // setData({
+        //     columns: updatedColumns,
+        //     rows: updatedRows,
+        // });
+        setData((pre) => {
+            return {...pre, columns: updatedColumns}
         });
-
 
     };
 

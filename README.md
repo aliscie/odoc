@@ -4,9 +4,6 @@
 2. in your .env file add `POCKET_IC_BIN=/<path to>/pocket-ic`
 3. read this https://crates.io/crates/pocket-ic
 4. and read this https://www.npmjs.com/package/@hadronous/pic
-### requirements
-1. v18.12.0
-2. dfx 0.17.0
 ## TO get started
   1. `dfx start --background --clean`
   2. `dfx deploy`
