@@ -1,7 +1,11 @@
 ## old version of Odoc can be found [here](https://github.com/aliscie/Odoc-old)
 ## to get started first download the pocketic
 1. https://github.com/dfinity/pocketic/releases
-2. in your .env file add `POCKET_IC_BIN=/<path to>/pocket-ic`
+2. in your .env file add
+   1. `POCKET_IC_BIN=/<path to>/pocket-ic`
+   2. `USER_CANISTER_WASM=/<ur dir>/odoc/target/wasm32-unknown-unknown/release/user_canister.wasm`
+   4. `VITE_DFX_NETWORK='local'`
+   5. `VITE_DFX_PORT=<the port from dfx deploy urls>`
 3. read this https://crates.io/crates/pocket-ic
 4. and read this https://www.npmjs.com/package/@hadronous/pic
 ## TO get started

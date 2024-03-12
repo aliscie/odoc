@@ -1,18 +1,22 @@
 #!/bin/bash
 
-if lsof -Pi :8080 -sTCP:LISTEN -t >/dev/null; then
-  echo "Port 8080 is in use. Killing the process..."
-  dfx stop
-  kill -INT $(lsof -t -i :8080)
-  while lsof -Pi :8080 -sTCP:LISTEN -t >/dev/null; do
-    sleep 1
-  done
-  echo "Process terminated."
+# Start dfx in the background
+echo "Starting dfx in the background..."
+dfx start --background --clean
+
+output=$(dfx canister status user_canister 2>&1)
+
+# Search for the specific error message in the output
+if echo "$output" | grep -q "Cannot find canister id. Please issue 'dfx canister create user_canister'"; then
+  echo "Canister 'user_canister' does not exist, creating and deploying..."
+  dfx canister create user_canister
+  dfx deploy user_canister
+  dfx deploy internet_identity
+else
+  echo "Canister 'user_canister' exists or another error occurred. No action taken."
+  echo "$output"
 fi
 
-echo "Starting the necessary commands..."
-dfx stop && dfx start --clean --background
-dfx deploy backend
-npm start
-
-echo "Script execution completed."
+# Start your project with yarn at the end
+echo "Starting project with yarn..."
+yarn start
