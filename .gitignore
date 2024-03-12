@@ -10,7 +10,7 @@
 
 # testing
 /coverage
-
+.env.development
 /target
 
 # production
