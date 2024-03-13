@@ -23,21 +23,19 @@ export interface CCell { 'field' : string, 'value' : string }
 export interface CColumn {
   'id' : string,
   'field' : string,
-  formula_string? : string,
+  'formula_string' : string,
   'column_type' : ColumnTypes,
   'filters' : Array<Filter>,
   'permissions' : Array<PermissionType>,
   'headerName' : string,
   'editable' : boolean,
-  deletable? : boolean,
-  
+  'deletable' : boolean,
 }
 export interface CContract {
-  id? : string,
-  creator? : Principal,
-  date_created? : number,
-  name? : string,
-  type? : string,
+  'id' : string,
+  'creator' : Principal,
+  'date_created' : number,
+  'name' : string,
   'rows' : Array<CRow>,
   'columns' : Array<CColumn>,
 }
