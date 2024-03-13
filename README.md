@@ -6,6 +6,7 @@
    2. `USER_CANISTER_WASM=/<ur dir>/odoc/target/wasm32-unknown-unknown/release/user_canister.wasm`
    4. `VITE_DFX_NETWORK='local'`
    5. `VITE_DFX_PORT=<the port from dfx deploy urls>`
+   6. `VITE_IC_HOST='http://localhost:<the porst of your host canisters>`
 3. read this https://crates.io/crates/pocket-ic
 4. and read this https://www.npmjs.com/package/@hadronous/pic
 ## TO get started

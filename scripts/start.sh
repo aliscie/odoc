@@ -2,7 +2,8 @@
 
 # Start dfx in the background
 echo "Starting dfx in the background..."
-dfx start --background --clean
+dfx start --background
+#dfx start --background --clean
 
 output=$(dfx canister status user_canister 2>&1)
 

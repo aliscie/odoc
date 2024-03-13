@@ -1,10 +1,11 @@
-import React from 'react';
+``import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { SnackbarProvider } from 'notistack';
 import {CustomContract} from "../../components/contracts/custom_contract/custom_contract";
+// import '@testing-library/jest-dom/extend-expect';
 
 // Mocks for any external dependencies
 jest.mock('../../../redux/main', () => ({
@@ -57,3 +58,4 @@ describe('CustomContract Component', () => {
     });
   });
 });
+``

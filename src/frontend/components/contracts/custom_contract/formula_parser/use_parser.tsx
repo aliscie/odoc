@@ -22,6 +22,7 @@ interface ParserReturnType {
 
 interface ParserProps {
     contract?: CContract;
+    // TODO^^^------------why u need this question mark here? useParser must lawyer has CContract
 }
 
 function useParser(props: ParserProps) {
@@ -51,9 +52,12 @@ function useParser(props: ParserProps) {
         // if (!values["row_id"]) {
         //     return "Null"
         // };
-
+        // console.log({x: values.row_id})
+        // if (!values.row_id) {
+        //     console.error("----------", {values})
+        // }
         const promise: CPayment = {
-            id: values["row_id"],
+            id: values.row_id,
             amount: Number(amount),
             receiver: Principal.fromText(to.id),
             sender: Principal.fromText(profile.id),

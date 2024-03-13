@@ -69,12 +69,12 @@ export function serialize_contract_rows(rows: Array<CRow>, columns: Array<CColum
             cells[cell.field] = cell.value || ""
             return c
         });
-        if(row.cells.length < 1){
-            for(let i = 0; i < columns.length; i++){
+        if (row.cells.length < 1) {
+            for (let i = 0; i < columns.length; i++) {
                 cells[columns[i].field] = "";
             }
         }
-        
+
         return {id: row.id, ...cells}
     })
 }
@@ -86,7 +86,7 @@ export function deserialize_contract_rows(rows: Array<any>): Array<CRow> {
         Object.keys(row).map((k: string) => {
             if (k != "id" && k != 'cells') {
                 cells.push({
-                    value: row[k] || '', 
+                    value: row[k] || '',
                     field: k
                 })
             }
@@ -138,7 +138,9 @@ export function serializePromisesData(payments: Array<CPayment>, all_users: any)
         headerName: "Amount",
         editable: true,
         type: 'number',
-        deletable: false,
+        // 'column_type': {'Text': null},
+        // 'filters': [],
+        // 'permissions': [],
     }
 
     let column_2 = {
@@ -176,10 +178,12 @@ export function serializePromisesData(payments: Array<CPayment>, all_users: any)
     }
 
 
-    let columns: Array<CColumn> = [column, column_2, column_3, column_4]
-    let rows: Array<CRow> = payments && payments.map((p: CPayment) => {
+    let columns: Array<CColumn | any> = [column, column_2, column_3, column_4]; //
+    let rows: undefined | Array<any> = payments && payments.map((p: CPayment) => {
         let sender: undefined | User = all_users.find((user: User) => p.sender.toString() === String(user.id))
         let receiver: undefined | User = all_users.find((user: User) => p.receiver.toString() === String(user.id))
+
+
         return {
 
             id: p.id,
