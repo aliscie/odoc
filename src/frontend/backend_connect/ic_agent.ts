@@ -4,6 +4,7 @@ import {canisterId as identityCanisterId} from "../../declarations/internet_iden
 import {AuthClient} from "@dfinity/auth-client";
 
 let backendActor, loading = false
+let host = import.meta.env.VITE_IC_HOST;
 
 const createActor = (canisterId, options = {}) => {
     const agent = options.agent || new HttpAgent({...options.agentOptions});
@@ -45,8 +46,7 @@ export const get_user_actor = async () => {
         backendActor = createActor(userCanisterId, {
             agentOptions: {
                 identity,
-                host: "http://localhost:8000",
-                // host: window.location.href,// this is for ic network deployment.
+                host,
             }
         });
         // }
@@ -88,9 +88,9 @@ export async function is_logged() {
 
 export async function logout() {
     // if (!(await is_logged())) {
-        const authClient = await AuthClient.create();
-        await authClient.logout()
-        window.location.reload()
+    const authClient = await AuthClient.create();
+    await authClient.logout()
+    window.location.reload()
     // }
 
 }

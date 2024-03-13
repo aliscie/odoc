@@ -6,8 +6,10 @@ import AddIcon from '@mui/icons-material/Add';
 import {randomString} from "../../../data_processing/data_samples";
 import {handleRedux} from "../../../redux/main";
 import {
+    CColumn,
     CContract,
     CPayment,
+    CRow,
     CustomContract,
     StoredContract
 } from "../../../../declarations/user_canister/user_canister.did";
@@ -54,6 +56,7 @@ export function CustomContract({contract}: { contract: CustomContract }) {
         };
 
         if (JSON.stringify(currentView) !== JSON.stringify(view)) {
+            console.log(currentView);
             setView(currentView);
         }
     }, []);
@@ -79,7 +82,7 @@ export function CustomContract({contract}: { contract: CustomContract }) {
 
 
     let columnMenuSlots = {}
-    if (view.type == CONTRACT) {
+    if (view?.type == CONTRACT) {
         columnMenuSlots["RenameColumn"] = (props) => RenameColumn({...props, contract, updateContract, view, setView});
         columnMenuSlots["ChangeColumnPermissions"] = (props) => ChangeColumnPermissions({
             ...props,
@@ -100,7 +103,7 @@ export function CustomContract({contract}: { contract: CustomContract }) {
         // console.log(columns, columnId);
         const updatedContract = updateCustomContractColumns(contract, columns, view);
         updateContract(updatedContract);
-        setView({...view, columns});
+        setView({...view, columns, rows: view?.rows ?? []});
         return columns;
     }
 
@@ -117,11 +120,11 @@ export function CustomContract({contract}: { contract: CustomContract }) {
             editable: true,
             deletable: true,
         };
-        const newColumns = [...view.columns];
+        const newColumns = [...(view?.columns ?? [])];
         newColumns.splice(position, 0, newColumn);
         const updatedContract = updateCustomContractColumns(contract, newColumns, view);
         updateContract(updatedContract);
-        setView({...view, columns: newColumns});
+        setView({...view, columns: newColumns, rows: view?.rows ?? []});
         return newColumn;
     }
 
@@ -130,17 +133,17 @@ export function CustomContract({contract}: { contract: CustomContract }) {
             id: randomString(),
             cells: [],
         };
-        const newRows = [...view.rows];
+        const newRows = [...view?.rows ?? []];
         newRows.splice(position, 0, newRow);
         const updatedContract = updateCustomContractRows(contract, newRows, view);
         updateContract(updatedContract);
-        setView({...view, rows: newRows});
+        setView({...view, rows: newRows, columns: view?.columns ?? []});
         // Additional logic based on the view type can be added here
         return newRow;
     }
 
     function deleteRow(rows: any, rowId: number) {
-        switch (view.type) {
+        switch (view?.type) {
             case PAYMENTS:
                 break;
             case PROMISES:
@@ -158,8 +161,7 @@ export function CustomContract({contract}: { contract: CustomContract }) {
     }
 
     function updateRow(newRows: any, newRow: any) {
-
-        switch (view.type) {
+        switch (view?.type) {
             case PAYMENTS:
                 break
             case PROMISES:
@@ -209,12 +211,13 @@ export function CustomContract({contract}: { contract: CustomContract }) {
                 updateContract({...contract, promises: updated_promises})
                 break
             case CONTRACT:
-                console.log({xxx: view.type});
                 let updated_contract = {...view};
+                console.log(newRows, view);
                 updated_contract.rows = deserialize_contract_rows(newRows);
                 const updatedContract = updateCustomContractRows(contract, updated_contract.rows, view);
                 updateContract(updatedContract);
-
+                console.log(updatedContract);
+                setView({...view, rows: newRows, columns: view?.columns ?? []});
                 break;
 
 
@@ -289,9 +292,10 @@ export function CustomContract({contract}: { contract: CustomContract }) {
                 setView({...new_c_contract, type: CREATE_CONTRACT});
                 break
             case CONTRACT:
-
-                let serialized_columns: CContract = serialize_contract_column(option, addVarsToParser, evaluate)
-                let serialized_rows = serialize_contract_rows(option.rows)
+                let serialized_columns: Array<CColumn> = serialize_contract_column(option, addVarsToParser, evaluate)
+                let serialized_rows = serialize_contract_rows(option.rows, option.columns)
+                console.log(option)
+                console.log(serialized_rows)
                 setView({
                     id: option.id,
                     type: CONTRACT,

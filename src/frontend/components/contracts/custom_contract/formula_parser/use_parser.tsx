@@ -21,7 +21,8 @@ interface ParserReturnType {
 
 
 interface ParserProps {
-    contract: CContract;
+    contract?: CContract;
+    // TODO^^^------------why u need this question mark here? useParser must lawyer has CContract
 }
 
 function useParser(props: ParserProps) {
@@ -60,7 +61,7 @@ function useParser(props: ParserProps) {
             date_created: 0,
             date_released: 0,
             status: {None: null},
-            contract_id: props.contract.id,
+            contract_id: props?.contract.id,
         };
 
         updatePromise(promise);
