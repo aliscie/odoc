@@ -335,8 +335,8 @@ export function CustomContract({contract}: { contract: CustomContract }) {
             columnMenuProps={columnMenuProps}
             deleteColumn={deleteColumn}
             data={{
-                columns: view.columns,
-                rows: view.rows,
+                columns: view?.columns,
+                rows: view?.rows,
             }}
             addRow={addRow}
             deleteRow={deleteRow}
@@ -344,7 +344,7 @@ export function CustomContract({contract}: { contract: CustomContract }) {
             updateRow={updateRow}
             tools={
                 <>
-                    {view.name && (
+                    {view?.name && (
                         <EditorComponent
                             preventSplit={true}
                             preventToolbar={true}
@@ -364,7 +364,7 @@ export function CustomContract({contract}: { contract: CustomContract }) {
                         <MoreVertIcon/>
                     </BasicMenu>
                     <BasicMenu SelectOption={selectOption} options={options}>
-                        {view && (view.name || view.type)}
+                        {view && (view.name || view?.type)}
                     </BasicMenu>
                 </>
             }

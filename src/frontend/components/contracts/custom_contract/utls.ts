@@ -129,7 +129,7 @@ export function deserialize_payment_data(rows: Array<PaymentRow>, all_users = []
 }
 
 
-export function serializePromisesData(payments: Array<CPayment>, all_users = []) {
+export function serializePromisesData(payments: Array<CPayment>, all_users: any) {
     let valueOptions = all_users ? all_users.map(user => user.name) : [];
     // console.log("valueOptions", valueOptions)
     let column = {
@@ -138,6 +138,7 @@ export function serializePromisesData(payments: Array<CPayment>, all_users = [])
         headerName: "Amount",
         editable: true,
         type: 'number',
+        deletable: false,
     }
 
     let column_2 = {
