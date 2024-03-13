@@ -61,26 +61,32 @@ export function serialize_contract_column(contract, addVarsToParser, evaluate) {
 }
 
 
-export function serialize_contract_rows(rows: Array<CRow>) {
+export function serialize_contract_rows(rows: Array<CRow>, columns: Array<CColumn>) {
     return rows.map((row: CRow) => {
-        let cells = {}
+        let cells: any = {}
         row.cells && row.cells.map((cell: CCell) => {
             let c = {}
             cells[cell.field] = cell.value || ""
             return c
         });
+        if(row.cells.length < 1){
+            for(let i = 0; i < columns.length; i++){
+                cells[columns[i].field] = "";
+            }
+        }
+        
         return {id: row.id, ...cells}
     })
 }
 
 
 export function deserialize_contract_rows(rows: Array<any>): Array<CRow> {
-    return rows.map((row: CRow) => {
-        let cells = [];
+    return rows.map((row) => {
+        let cells: Array<any> = [];
         Object.keys(row).map((k: string) => {
-            if (k != "id" & k != 'cells') {
+            if (k != "id" && k != 'cells') {
                 cells.push({
-                    value: row[k],
+                    value: row[k] || '', 
                     field: k
                 })
             }
@@ -169,7 +175,7 @@ export function serializePromisesData(payments: Array<CPayment>, all_users = [])
     }
 
 
-    let columns = [column, column_2, column_3, column_4]
+    let columns: Array<CColumn> = [column, column_2, column_3, column_4]
     let rows: Array<CRow> = payments && payments.map((p: CPayment) => {
         let sender: undefined | User = all_users.find((user: User) => p.sender.toString() === String(user.id))
         let receiver: undefined | User = all_users.find((user: User) => p.receiver.toString() === String(user.id))
@@ -247,11 +253,11 @@ export function createCContract(): CContract {
         id: randomString(),
         field,
         headerName: "Untitled",
-        'column_type': {'Text': null},
-        'filters': [],
-        'permissions': [{'AnyOneView': null}],
+        column_type: {'Text': null},
+        filters: [],
+        permissions: [{'AnyOneView': null}],
         formula_string: '',
-        'editable': true,
+        editable: true,
         deletable: false,
     }
     let new_c_contract: CContract = {
@@ -265,7 +271,7 @@ export function createCContract(): CContract {
     return new_c_contract
 }
 
-export function updateCustomContractRows(contract: CustomContract, new_rows, view: any): CustomContract {
+export function updateCustomContractRows(contract: CustomContract, new_rows: Array<CRow>, view: any): CustomContract {
 
     return {
         ...contract,

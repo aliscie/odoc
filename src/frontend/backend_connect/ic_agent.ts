@@ -45,8 +45,8 @@ export const get_user_actor = async () => {
         backendActor = createActor(userCanisterId, {
             agentOptions: {
                 identity,
-                host: "http://localhost:8000",
-                // host: window.location.href,// this is for ic network deployment.
+                // host: "http://localhost:8000",
+                host: window.location.href,// this is for ic network deployment.
             }
         });
         // }
