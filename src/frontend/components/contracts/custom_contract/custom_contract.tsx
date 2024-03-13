@@ -44,7 +44,6 @@ export function CustomContract({contract}: { contract: CustomContract }) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        let serialized_columns: CContract = serialize_contract_column(view, addVarsToParser, evaluate)
 
         if (contract.promises && contract.promises.length === 0) {
             contract.promises.push(createNewPromise(Principal.fromText(profile.id)));
@@ -294,8 +293,6 @@ export function CustomContract({contract}: { contract: CustomContract }) {
             case CONTRACT:
                 let serialized_columns: Array<CColumn> = serialize_contract_column(option, addVarsToParser, evaluate)
                 let serialized_rows = serialize_contract_rows(option.rows, option.columns)
-                console.log(option)
-                console.log(serialized_rows)
                 setView({
                     id: option.id,
                     type: CONTRACT,
