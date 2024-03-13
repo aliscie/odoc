@@ -1,4 +1,4 @@
-``import React from 'react';
+import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
@@ -57,5 +57,21 @@ describe('CustomContract Component', () => {
       // Perform and verify other interactions with the contract's columns and rows
     });
   });
+  test('addRow adds a new row', () => {
+    const { getByTestId, getAllByTestId } = render(
+      <Provider store={store}>
+        <SnackbarProvider>
+          <CustomContract contract={{ contracts: [], promises: [] }} />
+        </SnackbarProvider>
+      </Provider>
+    );
+    // renderCustomContract({
+    //   contract: { rows: [], columns: [] } // Mock initial contract props
+    // });
+  
+    fireEvent.click(getByTestId('Add row')); // Assuming you have a button to add a row
+    
+    const rows = getAllByTestId('row');
+    expect(rows.length).toBe(1); // Verify a new row has been added
+  });
 });
-``
