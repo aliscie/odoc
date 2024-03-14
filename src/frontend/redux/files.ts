@@ -3,13 +3,7 @@ import {agent} from "../backend_connect/main";
 import {normalize_files} from "../data_processing/normalize/normalize_files";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
-import {
-    FileNode,
-    InitialData,
-    Notification,
-    StoredContract,
-    User
-} from "../../declarations/user_canister/user_canister.did";
+import {FileNode, InitialData, StoredContract, User} from "../../declarations/user_canister/user_canister.did";
 import {actor} from "../App";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 

@@ -2,7 +2,6 @@ import {Principal} from "@dfinity/principal";
 import {
     Column,
     CustomContract,
-    PaymentContract,
     Share,
     SharePaymentOption,
     SharesContract

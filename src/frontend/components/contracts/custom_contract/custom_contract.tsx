@@ -36,7 +36,7 @@ import ChangeColumnFormula from "./column_menu/column_formula";
 import {actor} from "../../../App";
 
 
-export function CustomContract({contract}: { contract: CustomContract }) {
+export function CustomContractComponent({contract}: { contract: CustomContract }) {
     const {profile, all_friends, wallet} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar} = useSnackbar();
     const [view, setView] = useState<CContract | undefined>({rows: [], columns: []});
@@ -389,7 +389,7 @@ export default function SlateCustomContract(props: any) {
         })()
     }, [])
 
-    return (contract && <CustomContract contract={contract}/>);
+    return (contract && <CustomContractComponent contract={contract}/>);
 }
 
 function createNewPromise(sender: Principal): CPayment {

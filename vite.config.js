@@ -93,6 +93,11 @@ export default defineConfig({
         //         await setup();
         //     }
         // }]
+        setupFilesAfterEnv: [
+            '@testing-library/jest-dom/extend-expect', // Ensure jest-dom extensions are loaded
+            './src/frontend/setupTests.ts',
+        ],
+
 
     },
     build: {
