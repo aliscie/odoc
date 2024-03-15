@@ -197,7 +197,7 @@ export function serializePromisesData(payments: Array<CPayment>, all_users = [])
 }
 
 
-export function serialize_payment_data(payments: Array<CPayment>, all_users?) {
+export function serializePaymentData(payments: Array<CPayment>, all_users?) {
     let valueOptions = all_users ? all_users.map(user => user.name) : [];
 
     let column = {
@@ -276,12 +276,12 @@ export function createCContract(): CContract {
     return new_c_contract
 }
 
-export function updateCustomContractRows(contract: CustomContract, new_rows: Array<CRow>, view: any): CustomContract {
+export function updateCustomContractRows(contract: CustomContract, new_rows: Array<CRow>, view_id: string): CustomContract {
 
     return {
         ...contract,
         contracts: contract.contracts.map((c: CContract) => {
-            if (c.id === view.id) {
+            if (c.id === view_id) {
                 return {...c, rows: new_rows}
             }
             return c;
@@ -290,12 +290,12 @@ export function updateCustomContractRows(contract: CustomContract, new_rows: Arr
 }
 
 
-export function updateCustomContractColumns(contract: CustomContract, new_columns, view: any): CustomContract {
+export function updateCustomContractColumns(contract: CustomContract, new_columns, view_id: string): CustomContract {
 
     return {
         ...contract,
         contracts: contract.contracts.map((c: CContract) => {
-            if (c.id === view.id) {
+            if (c.id === view_id) {
                 return {...c, columns: new_columns}
             }
             return c;

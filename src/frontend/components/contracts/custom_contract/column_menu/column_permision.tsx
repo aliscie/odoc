@@ -11,7 +11,7 @@ import BasicPopover from "../../../genral/pop_over";
 
 interface Props {
     // column: CColumn,
-    // contract: CContract,
+    contract: CContract,
     value: Array<PermissionType>,
     onChange: (event: Array<PermissionType>) => any
 
@@ -94,7 +94,7 @@ function ChangeColumnPermissions(props: GridColumnMenuItemProps) {
             };
 
             // Use the updated state directly instead of relying on closure
-            props.updateContract(updateContractColumn(props.contract, updated_column, props.view));
+            props.updateContract(updateContractColumn(props.contract, updated_column, props.current_contract));
             setValue([])
         }
         // Use the previous state to ensure the correct update

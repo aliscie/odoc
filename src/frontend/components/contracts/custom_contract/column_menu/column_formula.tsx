@@ -10,8 +10,7 @@ import {logger} from "../../../../dev_utils/log_data";
 
 interface Props {
     updateContract: (content: CustomContract) => void;
-    setView: (view: any) => void;
-    view: CContract;
+    current_contract: CContract;
     colDef: CColumn;
     contract: CustomContract;
 
@@ -21,8 +20,8 @@ interface Props {
 function ChangeColumnFormula(props: Props) {
     const {enqueueSnackbar} = useSnackbar();
     const {wallet} = useSelector((state: any) => state.filesReducer);
-    const {view, colDef, contract, updateContract, setView} = props;
-    const {evaluate, addVarsToParser, ref} = useParser({contract: view});
+    const {current_contract, colDef, contract, updateContract} = props;
+    const {evaluate, addVarsToParser, ref} = useParser({contract: current_contract});
     const [formatter, setFormatter] = useState<string>(String(colDef["formula_string"]));
 
     const onFormatter = (code: string) => setFormatter(code);
@@ -38,7 +37,7 @@ function ChangeColumnFormula(props: Props) {
 
         if (formatter !== colDef.formula_string) {
             const updatedColumn: CColumn = {...colDef, formula_string: String(formatter)};
-            const updatedContract: CustomContract = updateContractColumn(contract, updatedColumn, view);
+            const updatedContract: CustomContract = updateContractColumn(contract, updatedColumn, current_contract);
             let promises = [];
             promises = [...updatedContract.promises.filter((p) => !ref.current.map((p) => p.id).includes(p.id)), ...ref.current];
             updateContract({...updatedContract, promises});

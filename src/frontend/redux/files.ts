@@ -192,6 +192,7 @@ export function filesReducer(state: any = initialState, action: any) {
             if (action.contract.CustomContract) {
                 state.contracts[action.contract.CustomContract.id].CustomContract = action.contract;
                 state.contracts[action.contract.CustomContract.id].contracts = action.contract.CustomContract.contracts;
+                state.contracts[action.contract.CustomContract.id].promises = action.contract.CustomContract.promises;
             } else {
                 state.contracts[action.contract.contract_id] = {...state.contracts[action.contract.contract_id], ...action.contract}
             }

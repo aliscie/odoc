@@ -19,7 +19,7 @@ import {
     deserialize_payment_data,
     serialize_contract_column,
     serialize_contract_rows,
-    serialize_payment_data,
+    serializePaymentData,
     serializePromisesData,
     updateCustomContractColumns,
     updateCustomContractRows
@@ -28,37 +28,24 @@ import {CONTRACT, CREATE_CONTRACT, PAYMENTS, PROMISES} from "./types";
 import BasicMenu from "../../genral/drop_down";
 import CustomDataGrid from "../../datagrid";
 import EditorComponent from "../../editor_components/main";
-import {Principal} from "@dfinity/principal";
 import useParser from "./formula_parser/use_parser";
 import RenameColumn from "./column_menu/rename_column";
 import ChangeColumnPermissions from "./column_menu/column_permision";
 import ChangeColumnFormula from "./column_menu/column_formula";
 import {actor} from "../../../App";
 
+interface VIEW {
+    id?: string,
+    name: string,
+    type: CONTRACT | CREATE_CONTRACT | PAYMENTS | PROMISES,
+}
 
 export function CustomContractComponent({contract}: { contract: CustomContract }) {
     const {profile, all_friends, wallet} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar} = useSnackbar();
-    const [view, setView] = useState<CContract | undefined>({rows: [], columns: []});
+    const [view, setView] = useState<VIEW>({id: "", name: PROMISES, type: PROMISES});
     const {evaluate, addVarsToParser} = useParser({contract: view});
     const dispatch = useDispatch();
-
-    useEffect(() => {
-
-        if (contract.promises && contract.promises.length === 0) {
-            contract.promises.push(createNewPromise(Principal.fromText(profile.id)));
-        }
-        const serializePaymentData = serializePromisesData(contract.promises, [profile, ...all_friends]);
-        const currentView = {
-            type: PROMISES,
-            ...serializePaymentData,
-        };
-
-        if (JSON.stringify(currentView) !== JSON.stringify(view)) {
-            console.log(currentView);
-            setView(currentView);
-        }
-    }, []);
 
     const columnMenuProps = (menuProps: any) => {
         return {
@@ -82,27 +69,25 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
 
     let columnMenuSlots = {}
     if (view?.type == CONTRACT) {
-        columnMenuSlots["RenameColumn"] = (props) => RenameColumn({...props, contract, updateContract, view, setView});
+        let current_contract = contract.contracts.find((c: CContract) => c.id === view.id);
+        columnMenuSlots["RenameColumn"] = (props) => RenameColumn({...props, contract, updateContract, view});
         columnMenuSlots["ChangeColumnPermissions"] = (props) => ChangeColumnPermissions({
             ...props,
             contract,
             updateContract,
-            view
+            current_contract
         });
         columnMenuSlots["ChangeColumnFormula"] = (props) => ChangeColumnFormula({
             ...props,
             updateContract,
-            setView,
-            view,
+            current_contract,
             contract
         });
     }
 
     function deleteColumn(columns: any, columnId: string) {
-        // console.log(columns, columnId);
-        const updatedContract = updateCustomContractColumns(contract, columns, view);
+        const updatedContract = updateCustomContractColumns(contract, columns, view.id);
         updateContract(updatedContract);
-        setView({...view, columns, rows: view?.rows ?? []});
         return columns;
     }
 
@@ -119,26 +104,58 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             editable: true,
             deletable: true,
         };
-        const newColumns = [...(view?.columns ?? [])];
+        let current_contract = contract.contracts.find((c: CContract) => c.id === view.id);
+        const newColumns = [...(current_contract?.columns ?? [])];
         newColumns.splice(position, 0, newColumn);
-        const updatedContract = updateCustomContractColumns(contract, newColumns, view);
+        const updatedContract = updateCustomContractColumns(contract, newColumns, view.id);
         updateContract(updatedContract);
-        setView({...view, columns: newColumns, rows: view?.rows ?? []});
         return newColumn;
     }
 
     function addRow(position: number) {
-        const newRow: CRow = {
-            id: randomString(),
-            cells: [],
-        };
-        const newRows = [...view?.rows ?? []];
-        newRows.splice(position, 0, newRow);
-        const updatedContract = updateCustomContractRows(contract, newRows, view);
-        updateContract(updatedContract);
-        setView({...view, rows: newRows, columns: view?.columns ?? []});
-        // Additional logic based on the view type can be added here
-        return newRow;
+        switch (view?.type) {
+            case PAYMENTS:
+                break
+            case PROMISES:
+                const new_payment: CPayment = {
+                    'date_created': 0,
+                    'date_released': 0,
+                    contract_id: contract.id,
+                    id: randomString(),
+                    amount: 0,
+                    sender: profile.name,
+                    receiver: profile.name,
+                    status: {'None': null},
+                    released: false,
+                    objected: false,
+                    confirmed: false,
+                };
+                const updated_promises = [...contract.promises, new_payment];
+                updateContract({...contract, promises: updated_promises});
+                return {
+                    id: new_payment.id,
+                    sender: "",
+                    receiver: "",
+                    amount: 0,
+                    status: "",
+                };
+                break
+            case CONTRACT:
+                let current_contract = contract.contracts.find((c: CContract) => c.id === view.id);
+                const newRow: CRow = {
+                    id: randomString(),
+                    cells: [],
+                };
+                const newRows = [...current_contract?.rows ?? []];
+                newRows.splice(position, 0, newRow);
+                const updatedContract = updateCustomContractRows(contract, newRows, view.id);
+                updateContract(updatedContract);
+                return newRow;
+            default:
+                break
+
+        }
+
     }
 
     function deleteRow(rows: any, rowId: number) {
@@ -151,9 +168,8 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 updateContract({...contract, promises: updated_promises});
                 break;
             case CONTRACT:
-                const updatedContract = updateCustomContractRows(contract, rows, view);
+                const updatedContract = updateCustomContractRows(contract, rows, view.id);
                 updateContract(updatedContract);
-                setView({...view, rows});
                 break;
         }
 
@@ -206,17 +222,15 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 if (newRow.released) {
                     enqueueSnackbar(`As you hit save button you will send ${newRow.amount}USDT to ${newRow.receiver}`, {variant: "info"})
                 }
-                let updated_promises: Array<CPayment> = deserialize_payment_data([newRow], [profile, ...all_friends]);
+                let updated_promises: Array<CPayment> = deserialize_payment_data(newRows, [profile, ...all_friends]);
                 updateContract({...contract, promises: updated_promises})
                 break
             case CONTRACT:
-                let updated_contract = {...view};
-                console.log(newRows, view);
+                console.log({newRow})
+                let updated_contract = contract.contracts.find((c: CContract) => c.id === view.id);
                 updated_contract.rows = deserialize_contract_rows(newRows);
-                const updatedContract = updateCustomContractRows(contract, updated_contract.rows, view);
+                const updatedContract = updateCustomContractRows(contract, updated_contract.rows, updated_contract.id);
                 updateContract(updatedContract);
-                console.log(updatedContract);
-                setView({...view, rows: newRows, columns: view?.columns ?? []});
                 break;
 
 
@@ -239,10 +253,8 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             case "Delete":
                 const updatedContracts = contract.contracts.filter((c: CContract) => c.id !== view.id);
                 updateContract({...contract, contracts: [...updatedContracts]});
-                const serializePaymentData = serializePromisesData(contract.promises, all_friends);
                 setView({
                     type: PROMISES,
-                    ...serializePaymentData,
                 });
                 break;
             case "Rename":
@@ -264,7 +276,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         switch (option.type) {
 
             case PROMISES:
-                let serialize_PromisesData = serialize_payment_data(contract.promises, all_users)
+                let serialize_PromisesData = serializePaymentData(contract.promises, all_users)
 
                 setView({
                     type: PROMISES,
@@ -274,11 +286,11 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
 
             case PAYMENTS:
                 // if (contract.payments.length > 0) {
-                let serialize_PaymentData = serialize_payment_data(contract.payments, all_users)
+                // let serialize_PaymentData = serialize_payment_data(contract.payments, all_users)
 
                 setView({
                     type: PAYMENTS,
-                    ...serialize_PaymentData,
+                    // ...serialize_PaymentData,
                 })
 
                 // } else {
@@ -288,17 +300,13 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 let new_c_contract = createCContract();
                 let contracts = [...contract.contracts, new_c_contract];
                 updateContract({...contract, contracts: [...contracts]});
-                setView({...new_c_contract, type: CREATE_CONTRACT});
+                setView({id: new_c_contract.id, type: CONTRACT, name: new_c_contract.name});
                 break
             case CONTRACT:
-                let serialized_columns: Array<CColumn> = serialize_contract_column(option, addVarsToParser, evaluate)
-                let serialized_rows = serialize_contract_rows(option.rows, option.columns)
                 setView({
                     id: option.id,
                     type: CONTRACT,
                     name: option.name,
-                    columns: serialized_columns,
-                    rows: serialized_rows,
                 })
                 break
 
@@ -325,16 +333,52 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         {content: "Rename"},
         {content: "Delete"},
     ];
+    // data if view.type == CONTRACT serizlie from contract using contract serizlie and if view.type == PROMISES and if view.type == PAYMENTS
+    let data = {};
+    switch (view?.type) {
+        case CONTRACT:
+            let current_contract: CContract | undefined = contract.contracts.find((c: CContract) => c.id === view.id);
+            if (!current_contract) {
+                data = view;
+                break
+            }
+            let serialized_columns: Array<CColumn> = serialize_contract_column(current_contract, addVarsToParser, evaluate)
+            let serialized_rows = serialize_contract_rows(current_contract.rows, current_contract.columns)
+            data = {columns: serialized_columns, rows: serialized_rows, name: view.name};
+            break;
+        // case PROMISES:
+        //     const serializedPromisesData = serializePromisesData(contract.promises, [profile, ...all_friends]);
+        //     data = {
+        //         type: PROMISES,
+        //         name: "Promises",
+        //         ...serializedPromisesData,
+        //     };
+        //     break;
+        case PAYMENTS:
+            const serializedPaymentData = serializePaymentData(contract.payments, [profile, ...all_friends]);
+            data = {
+                type: PAYMENTS,
+                name: PAYMENTS,
+                ...serializedPaymentData,
+            };
+            break
+        default:
+            const serializedPromiseData = serializePromisesData(contract.promises, [profile, ...all_friends]);
+            data = {
+                type: PROMISES,
+                name: PROMISES,
+                ...serializedPromiseData,
+            };
+            break
+    }
+    ;
 
     return (
         <CustomDataGrid
             columnMenuSlots={columnMenuSlots}
             columnMenuProps={columnMenuProps}
             deleteColumn={deleteColumn}
-            data={{
-                columns: view.columns,
-                rows: view.rows,
-            }}
+            data={data}
             addRow={addRow}
             deleteRow={deleteRow}
             addColumn={addColumn}
@@ -392,16 +436,3 @@ export default function SlateCustomContract(props: any) {
     return (contract && <CustomContractComponent contract={contract}/>);
 }
 
-function createNewPromise(sender: Principal): CPayment {
-    const status = {None: null};
-    return {
-        contract_id: "",
-        id: randomString(),
-        date_created: 0,
-        date_released: 0,
-        sender,
-        status,
-        amount: 0,
-        receiver: Principal.fromText("2vxsx-fae"),
-    };
-}

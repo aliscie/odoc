@@ -38,23 +38,31 @@ function CustomDataGrid(props: Props) {
     }, [props.data]);
 
     const processRowUpdate = React.useCallback((newRow: GridRowModel, oldRow: GridRowModel) => {
+            let new_rows = [...data.rows];
+            let rowFound = false; // Flag to check if the row is found
 
+            new_rows = new_rows.map((row: Row) => {
+                if (row.id === oldRow.id) {
+                    rowFound = true; // Mark as found
+                    return {...row, ...newRow};
+                }
+                return row;
+            });
+
+            // If oldRow.id was not found, append newRow to new_rows
+            if (!rowFound) {
+                new_rows.push(newRow);
+            }
+
+            props.updateRow(new_rows, newRow);
             setData((pre) => {
-                let new_rows = [...pre.rows];
-                new_rows = new_rows.map((row: Row) => {
-                    if (row.id === oldRow.id) {
-                        return {...row, ...newRow}
-                    }
-                    return row
-                });
-                props.updateRow(new_rows, newRow);
                 return {...pre, rows: new_rows};
             });
 
             return Promise.resolve(newRow);
         },
-        [props.data]
-    );
+        [data.rows]);
+
 
     const handleProcessRowUpdateError = React.useCallback(
         (params: any) => {

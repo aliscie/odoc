@@ -6,7 +6,7 @@ import {Input} from "@mui/material";
 
 function RenameColumn(props: GridColumnMenuItemProps) {
 
-    const {view, updateContract, contract, setView} = props;
+    const {view, updateContract, contract} = props;
 
 
     function renameColumn(id: string, value: string) {
@@ -16,16 +16,6 @@ function RenameColumn(props: GridColumnMenuItemProps) {
         }
         updateContract(updateContractColumn(contract, updated_column, view));
 
-        // update view with the new updated_column
-        setView({
-            ...view,
-            columns: view.columns.map((column) => {
-                if (column.id === id) {
-                    return updated_column;
-                }
-                return column;
-            })
-        });
     }
 
 
