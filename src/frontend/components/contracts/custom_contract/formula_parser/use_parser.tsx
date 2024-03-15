@@ -78,7 +78,7 @@ function useParser(props: ParserProps) {
     function addVarsToParser(params: any, view: CContract) {
         view.columns.forEach((column: CColumn) => {
             values[column.headerName] = params.row[column.field];
-            values["row_id"] = params.row.id;
+            values["row_id"] = params.id;
         });
     }
 

@@ -226,10 +226,10 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 updateContract({...contract, promises: updated_promises})
                 break
             case CONTRACT:
-                console.log({newRow})
+
                 let updated_contract = contract.contracts.find((c: CContract) => c.id === view.id);
-                updated_contract.rows = deserialize_contract_rows(newRows);
-                const updatedContract = updateCustomContractRows(contract, updated_contract.rows, updated_contract.id);
+                let rows = deserialize_contract_rows(newRows);
+                const updatedContract = updateCustomContractRows(contract, rows, updated_contract.id);
                 updateContract(updatedContract);
                 break;
 

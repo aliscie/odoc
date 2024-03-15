@@ -339,10 +339,11 @@ impl CustomContract {
             self.payments = old_contract.payments.clone();
 
 
-            let mut contracts: Vec<CContract> = vec![];
-            for contract in self.contracts.clone().iter_mut() {
-                contracts.push(contract.update(&mut contract_errors, &old_contract));
-            }
+            let contracts: Vec<CContract> = self.contracts.iter_mut().map(|contract| {
+                contract.update(&mut contract_errors, &old_contract)
+            }).collect();
+
+
             // for contract in old_contract.contracts {
             //     let old_contract = self.contracts.clone().get_c_contract(&contract.id, &contract.creator);
             //     if old_contract.is_none() {
@@ -418,7 +419,7 @@ impl CustomContract {
         }
 
         // self.execute_formulas();
-        self.pure_save();
+        self.pure_save().expect("TODO: panic message at pure_save");
         if !contract_errors.is_empty() {
             return Err(contract_errors);
         }

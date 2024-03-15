@@ -38,12 +38,8 @@ function ChangeColumnFormula(props: Props) {
         if (formatter !== colDef.formula_string) {
             const updatedColumn: CColumn = {...colDef, formula_string: String(formatter)};
             const updatedContract: CustomContract = updateContractColumn(contract, updatedColumn, current_contract);
-            let promises = [];
-            promises = [...updatedContract.promises.filter((p) => !ref.current.map((p) => p.id).includes(p.id)), ...ref.current];
+            const promises = [...updatedContract.promises.filter((p) => !ref.current.map((p) => p.id).includes(p.id)), ...ref.current];
             updateContract({...updatedContract, promises});
-            // const updatedView = updateCContractColumn(view, updatedColumn);
-            // const serializedColumns = serialize_contract_column(updatedView, addVarsToParser, evaluate);
-            // setView((prev) => ({...prev, columns: serializedColumns}));
         }
 
     };
