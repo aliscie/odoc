@@ -135,6 +135,7 @@ type FEChat = record {
 type FileNode = record {
   id : text;
   permission : ShareFilePermission;
+  content_id : opt text;
   share_id : opt text;
   name : text;
   children : vec text;
@@ -156,7 +157,7 @@ type FriendSystem = record {
 type InitialData = record {
   FilesContents : opt vec record { text; vec ContentNode };
   Contracts : vec record { text; StoredContract };
-  Files : opt vec record { text; FileNode };
+  Files : vec FileNode;
   Friends : opt FriendSystem;
   Profile : User;
   DiscoverUsers : vec record { text; User };
@@ -334,6 +335,7 @@ type UserProfile = record {
   users_interacted : float64;
   photo : vec nat8;
   debts : vec text;
+  received : float64;
 };
 type Wallet = record {
   balance : float64;
@@ -364,11 +366,10 @@ service : () -> {
   counter : () -> (nat64) query;
   create_new_file : (text, opt text) -> (FileNode);
   create_share_contract : (vec Share) -> (Result_2);
-  delete_custom_contract : (text) -> (Result_1);
   delete_file : (text) -> (opt FileNode);
   delete_post : (text) -> (Result_1);
   deposit_usdt : (float64) -> (Result_3);
-  get_all_files : () -> (opt vec record { text; FileNode }) query;
+  get_all_files : () -> (vec FileNode) query;
   get_all_files_content : () -> (vec record { text; vec ContentNode }) query;
   get_all_users : () -> (vec record { text; User }) query;
   get_chats_notifications : () -> (vec Message) query;
@@ -400,7 +401,6 @@ service : () -> {
   rate_user : (principal, Rating) -> (Result_1);
   register : (RegisterUser) -> (Result);
   reject_friend_request : (text) -> (Result);
-  rename_file : (text, text) -> (bool);
   save_post : (Post) -> (Result_1);
   search_files_content : (text, bool) -> (
       vec record { text; vec ContentNode },

@@ -157,6 +157,7 @@ export interface FEChat {
 export interface FileNode {
   'id' : string,
   'permission' : ShareFilePermission,
+  'content_id' : [] | [string],
   'share_id' : [] | [string],
   'name' : string,
   'children' : Array<string>,
@@ -178,7 +179,7 @@ export interface FriendSystem {
 export interface InitialData {
   'FilesContents' : [] | [Array<[string, Array<ContentNode>]>],
   'Contracts' : Array<[string, StoredContract]>,
-  'Files' : [] | [Array<[string, FileNode]>],
+  'Files' : Array<FileNode>,
   'Friends' : [] | [FriendSystem],
   'Profile' : User,
   'DiscoverUsers' : Array<[string, User]>,
@@ -361,6 +362,7 @@ export interface UserProfile {
   'users_interacted' : number,
   'photo' : Uint8Array | number[],
   'debts' : Array<string>,
+  'received' : number,
 }
 export interface Wallet {
   'balance' : number,
@@ -391,11 +393,10 @@ export interface _SERVICE {
   'counter' : ActorMethod<[], bigint>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
   'create_share_contract' : ActorMethod<[Array<Share>], Result_2>,
-  'delete_custom_contract' : ActorMethod<[string], Result_1>,
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
   'delete_post' : ActorMethod<[string], Result_1>,
   'deposit_usdt' : ActorMethod<[number], Result_3>,
-  'get_all_files' : ActorMethod<[], [] | [Array<[string, FileNode]>]>,
+  'get_all_files' : ActorMethod<[], Array<FileNode>>,
   'get_all_files_content' : ActorMethod<
     [],
     Array<[string, Array<ContentNode>]>
@@ -436,7 +437,6 @@ export interface _SERVICE {
   'rate_user' : ActorMethod<[Principal, Rating], Result_1>,
   'register' : ActorMethod<[RegisterUser], Result>,
   'reject_friend_request' : ActorMethod<[string], Result>,
-  'rename_file' : ActorMethod<[string, string], boolean>,
   'save_post' : ActorMethod<[Post], Result_1>,
   'search_files_content' : ActorMethod<
     [string, boolean],

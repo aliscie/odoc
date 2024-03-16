@@ -3,6 +3,8 @@ import List from '@mui/material/List';
 import {ListSubheader} from "@mui/material";
 import DocComponent from "./list_item";
 import Draggable from "../../genral/draggable";
+import {handleRedux} from "../../../redux/main";
+import {useDispatch} from "react-redux";
 
 
 export interface NestedDataItem {
@@ -14,10 +16,10 @@ export interface NestedDataItem {
 
 interface NestedListProps {
     title: string;
-    data: Record<number, NestedDataItem>; // Use Record<number, NestedDataItem> instead of any
+    files: Array<NestedDataItem>;
 }
 
-const NestedList: React.FC<NestedListProps> = ({title, data}) => {
+const NestedList: React.FC<NestedListProps> = ({files}) => {
     const [openItems, setOpenItems] = useState<number[]>([]);
 
     const handleClick = (index: number) => {
@@ -28,25 +30,29 @@ const NestedList: React.FC<NestedListProps> = ({title, data}) => {
         }
     };
 
+    const dispatch = useDispatch();
+    const handleDrop: any = async (dropped, droppedOver, type) => {
+        dispatch(handleRedux("CHANGE_FILE_PARENT", {id: dropped, parent: []}));
+    };
+
+    console.log(files);
     return (
         <div>
             <List
-                subheader={
-                    <ListSubheader
-                        style={{background: "none", color: "white"}} component="p"
-                        id="nested-list-subheader">
-                        {title}
-                    </ListSubheader>
-                }
+
                 sx={{width: '100%', maxWidth: 360, margin: '5px'}}
                 component="nav"
                 aria-labelledby="nested-list-subheader"
             >
-                <Draggable preventDragUnder={true}><div style={{ height: '5px', width: '100%'}}></div></Draggable>
-                {Object.values(data).map((item, index) => (
+                <Draggable preventDragUnder={true}
+                           onDrop={handleDrop}
+                >
+                    <div style={{height: '5px', width: '100%'}}></div>
+                </Draggable>
+                {files.map((item, index) => (
                     item.parent && item.parent.length == 0 && <DocComponent
                         key={item.id}
-                        data={data}
+                        data={files}
                         item={item}
                         index={index}
                         openItems={openItems}
@@ -54,7 +60,12 @@ const NestedList: React.FC<NestedListProps> = ({title, data}) => {
                         isChild={false}
                     />
                 ))}
-                <Draggable preventDragUnder={true}><div style={{ height: '5px', width: '100%'}}></div></Draggable>
+                <Draggable
+                    preventDragUnder={true}
+                    onDrop={handleDrop}
+                >
+                    <div style={{height: '5px', width: '100%'}}></div>
+                </Draggable>
             </List>
         </div>
     );

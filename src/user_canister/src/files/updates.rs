@@ -30,7 +30,7 @@ fn delete_file(id: FileId) -> Option<FileNode> {
 }
 
 
-#[update]
-fn rename_file(id: FileId, name: String) -> bool {
-    FileNode::rename_file(id, name)
-}
+// #[update]
+// fn rename_file(id: FileId, name: String) -> bool {
+//     FileNode::rename_file(id, name)
+// }

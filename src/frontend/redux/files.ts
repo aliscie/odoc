@@ -43,7 +43,7 @@ export var initialState = {
 
     current_file: {id: null, name: null},
     is_files_saved: true,
-    files: {},
+    files: [],
     files_content: {},
     friends: [{friends: [], friend_requests: []}],
     changes: {files: {}, contents: {}, contracts: {}, delete_contracts: []},
@@ -66,6 +66,7 @@ function getCurrentFile(data: any) {
 
 
 export async function get_initial_data() {
+
     let isLoggedIn = await agent.is_logged() // TODO avoid repetition `isLoggedIn` is already used in ui.ts
     let data: undefined | { Ok: InitialData } | { Err: string } = actor && await actor.get_initial_data();
 
@@ -92,7 +93,7 @@ export async function get_initial_data() {
             item.receiver.id !== data.Ok.Profile.id && uniqueUsersSet.add(item.receiver);
             item.sender.id !== data.Ok.Profile.id && uniqueUsersSet.add(item.sender);
         });
-        initialState["files"] = normalize_files(data.Ok.Files);
+        initialState["files"] = data.Ok.Files;
         initialState["denormalized_files_content"] = data.Ok.FilesContents; //[] | [Array<[string, Array<[string, ContentNode]>]>]
         initialState["files_content"] = normalize_files_contents(data.Ok.FilesContents[0]);
         initialState["contracts"] = normalize_contracts(data.Ok.Contracts);
@@ -124,13 +125,17 @@ export function filesReducer(state: any = initialState, action: any) {
         case 'ADD_FILE':
             return {
                 ...state,
-                files: {...state.files, [action.data.id]: action.data},
+                files: [...state.files, action.data],
             };
+
         case 'UPDATE':
             return {
                 ...state,
-                files: {...state.files, [action.id]: action.file},
-            }
+                files: state.files.map(file =>
+                    file.id === action.id ? {...file, ...action.file} : file
+                ),
+            };
+
         case 'NOTIFY':
             return {
                 ...state,
@@ -142,14 +147,11 @@ export function filesReducer(state: any = initialState, action: any) {
                 notifications: action.new_list,
             }
         case 'REMOVE':
-            let file_id = action.id;
-            let files = {...state.files};
-            delete state.files_content[file_id];
-            delete files[file_id];
             return {
                 ...state,
-                files: files,
-            }
+                files: state.files.filter(file => file.id !== action.id),
+            };
+
         case 'CURRENT_FILE':
             localStorage.setItem("current_file", JSON.stringify({...action.file}));
             return {
@@ -157,25 +159,58 @@ export function filesReducer(state: any = initialState, action: any) {
                 current_file: action.file,
             }
 
-        case 'CHANGE_FILE_PARENT':
-            state.files[action.id] = {...state.files[action.id], parent: action.parent}
-            state.changes.files[action.id] = {...state.files[action.id], parent: [action.parent]};
+        case 'CHANGE_FILE_PARENT': {
+            const fileIndex = state.files.findIndex(file => file.id === action.id);
+            if (fileIndex === -1) return state; // File not found, early return
 
-            if (!state.files[action.parent].children.includes(action.id)) {
-                state.files[action.parent].children.push(action.id)
-                state.changes.files[action.parent] = state.files[action.parent];
+            // Assuming the existence of the parent is already validated or is null (root level)
+            const updatedFile = {...state.files[fileIndex], parent: action.parent};
+            state.files[fileIndex] = updatedFile;
+
+            // Tracking the change
+            state.changes.files[action.id] = {...state.changes.files[action.id], parent: action.parent};
+
+            // Adjust parents' children list
+            // Remove from old parent
+            if (updatedFile.parent) {
+                const oldParentIndex = state.files.findIndex(file => file.children.includes(action.id));
+                if (oldParentIndex !== -1) {
+                    state.files[oldParentIndex].children = state.files[oldParentIndex].children.filter(childId => childId !== action.id);
+                    // Track this change too if necessary
+                    // Note: Depending on your logic, you might or might not want to track changes to the children list directly
+                }
             }
 
+            // Add to new parent
+            if (action.parent) {
+                const newParentIndex = state.files.findIndex(file => file.id === action.parent);
+                if (newParentIndex !== -1 && !state.files[newParentIndex].children.includes(action.id)) {
+                    state.files[newParentIndex].children = [...state.files[newParentIndex].children, action.id];
+                    // Similarly, decide if you need to track changes to the new parent's children list
+                }
+            }
 
             return {
                 ...state,
-            }
+                files: [...state.files], // Ensure we're triggering a state update
+                changes: {
+                    ...state.changes,
+                    files: {...state.changes.files}, // Ensure changes are captured
+                },
+            };
+        }
+
 
         case 'UPDATE_CONTENT':
-            state.files_content[action.id] = action.content;
+            // Assuming action.id is the file ID and action.content is the new content
             return {
                 ...state,
-            }
+                files: state.files.map(file =>
+                    file.id === action.id ? {...file, content: action.content} : file
+                ),
+            };
+
+
         case 'ADD_CONTRACT':
             if (action.contract.contract_id) {
                 state.contracts[action.contract.contract_id] = action.contract;
@@ -275,7 +310,13 @@ export function filesReducer(state: any = initialState, action: any) {
             };
 
         case 'UPDATE_FILE_TITLE':
-            state.files[action.id].name = action.title;
+            state.files = state.files.map((file: FileNode) => {
+                if (file.id == action.id) {
+                    file.name = action.title
+                }
+                return file
+            })
+            // state.files[action.id].name = action.title;
             return {
                 ...state,
             }

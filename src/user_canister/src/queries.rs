@@ -18,7 +18,7 @@ use crate::user::User;
 pub struct InitialData {
     Profile: User,
     FilesContents: Option<HashMap<FileId, ContentTree>>,
-    Files: Option<HashMap<ContentId, FileNode>>,
+    Files: Vec<FileNode>,
     Friends: Option<FriendSystem>,
     DiscoverUsers: HashMap<String, User>,
     Contracts: HashMap<ContractId, StoredContract>,

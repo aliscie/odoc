@@ -2,8 +2,9 @@ import {handleRedux} from "../../redux/main";
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {file_content_sample, randomString} from "../../data_processing/data_samples";
-import {Button} from "@mui/material";
+import {Button, Tooltip} from "@mui/material";
 import {FileNode} from "../../../declarations/user_canister/user_canister.did";
+import PostAddIcon from '@mui/icons-material/PostAdd';
 
 const CreateFile = () => {
     const {profile} = useSelector((state: any) => state.filesReducer);
@@ -17,13 +18,15 @@ const CreateFile = () => {
 
         let id = randomString();
         let file: FileNode = {
-            id, name: "Untitled",
+            id,
+            name: "Untitled",
             parent: [],
             children: [],
             share_id: [],
             author: profile.id,
             users_permissions: [],
             permission: {'None': null},
+            content_id: [],
         };
         dispatch(handleRedux("ADD_FILE", {data: file}))
         dispatch(handleRedux("ADD_CONTENT", {id, content: file_content_sample}))
@@ -34,6 +37,11 @@ const CreateFile = () => {
 
 
     // return (<InputOption   title={"note page"} tooltip={"hit enter to create"} onEnter={handleCreateFile}/>)
-    return (<Button onClick={() => handleCreateFile()}>+ New doc</Button>)
+    return (
+        <Tooltip title="Create a new document" arrow>
+            <Button onClick={() => handleCreateFile()}>
+                <PostAddIcon/>
+            </Button>
+        </Tooltip>)
 }
 export default CreateFile

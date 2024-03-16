@@ -87,53 +87,49 @@ impl ContentNode {
 
     pub fn new(file_id: FileId, content_parent_id: Option<ContentId>, node_type: String, text: String, data: Option<ContentData>) -> Option<ContentNode> {
         let caller_principal = ic_cdk::api::caller();
+
+        // Check if file with file_id exists
+        let file_exists = USER_FILES.with(|files| {
+            let files = files.borrow();
+            files.get(&caller_principal)
+                .and_then(|user_files_vec| user_files_vec.iter().find(|f| f.id == file_id))
+                .is_some()
+        });
+
+        if !file_exists {
+            return None;
+        }
+
+        // Proceed with creating the new node as before...
+        let content_id: ContentId = COUNTER.fetch_add(1, Ordering::Relaxed).to_string();
         let mut new_node = ContentNode {
-            id: 0.to_string(), // The actual ID will be assigned later
-            parent: content_parent_id.clone(),
-            _type: node_type, // Set the appropriate type
+            id: content_id, // Now directly using the new content ID
+            parent: content_parent_id,
+            _type: node_type,
             text,
             language: "".to_string(),
-            data, // Set the appropriate data
+            data,
             children: Vec::new(),
         };
 
-        // check if file with file_id exists
-        let file = USER_FILES.with(|files| {
-            let files = files.borrow();
-            if let Some(file) = files.get(&caller_principal) {
-                if let Some(file) = file.get(&file_id) {
-                    Some(file.clone())
-                } else {
-                    None
-                }
-            } else {
-                None
-            }
-        });
-
-        if file.is_none() {
-            return None;
-        }
         FILE_CONTENTS.with(|contents| {
             let mut content_tree = contents.borrow_mut();
             let file_contents = content_tree.entry(caller_principal).or_insert_with(HashMap::new);
-            let file_content_tree = file_contents.entry(file_id).or_insert_with(ContentTree::new);
-
-            let content_id: ContentId = COUNTER.fetch_add(1, Ordering::Relaxed).to_string();
-            new_node.id = content_id.clone();
+            let file_content_tree = file_contents.entry(file_id).or_insert_with(Vec::new);
 
             file_content_tree.push(new_node.clone());
-            if let Some(parent_id) = content_parent_id {
-                if let Some(parent_index) = file_content_tree.iter_mut().position(|node| node.id == parent_id) {
-                    if let Some(parent_node) = file_content_tree.get_mut(parent_index) {
-                        parent_node.children.push(content_id.clone());
-                    }
+
+            // If there's a parent ID, add this node to the parent's children list
+            if let Some(parent_id) = &new_node.parent {
+                if let Some(parent_node) = file_content_tree.iter_mut().find(|node| &node.id == parent_id) {
+                    parent_node.children.push(new_node.id.clone());
                 }
             }
         });
 
         Some(new_node)
     }
+
 
     //TODO The order comes incorrect after saving.
     pub fn update_file_contents(file_id: FileId, content_nodes: ContentTree) {

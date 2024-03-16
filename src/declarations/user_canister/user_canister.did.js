@@ -37,6 +37,7 @@ export const idlFactory = ({ IDL }) => {
   const FileNode = IDL.Record({
     'id' : IDL.Text,
     'permission' : ShareFilePermission,
+    'content_id' : IDL.Opt(IDL.Text),
     'share_id' : IDL.Opt(IDL.Text),
     'name' : IDL.Text,
     'children' : IDL.Vec(IDL.Text),
@@ -244,7 +245,7 @@ export const idlFactory = ({ IDL }) => {
       IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(ContentNode)))
     ),
     'Contracts' : IDL.Vec(IDL.Tuple(IDL.Text, StoredContract)),
-    'Files' : IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Text, FileNode))),
+    'Files' : IDL.Vec(FileNode),
     'Friends' : IDL.Opt(FriendSystem),
     'Profile' : User,
     'DiscoverUsers' : IDL.Vec(IDL.Tuple(IDL.Text, User)),
@@ -345,6 +346,7 @@ export const idlFactory = ({ IDL }) => {
     'users_interacted' : IDL.Float64,
     'photo' : IDL.Vec(IDL.Nat8),
     'debts' : IDL.Vec(IDL.Text),
+    'received' : IDL.Float64,
   });
   const Result_9 = IDL.Variant({ 'Ok' : UserProfile, 'Err' : IDL.Text });
   const Chat = IDL.Record({
@@ -428,15 +430,10 @@ export const idlFactory = ({ IDL }) => {
     'counter' : IDL.Func([], [IDL.Nat64], ['query']),
     'create_new_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [FileNode], []),
     'create_share_contract' : IDL.Func([IDL.Vec(Share)], [Result_2], []),
-    'delete_custom_contract' : IDL.Func([IDL.Text], [Result_1], []),
     'delete_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], []),
     'delete_post' : IDL.Func([IDL.Text], [Result_1], []),
     'deposit_usdt' : IDL.Func([IDL.Float64], [Result_3], []),
-    'get_all_files' : IDL.Func(
-        [],
-        [IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Text, FileNode)))],
-        ['query'],
-      ),
+    'get_all_files' : IDL.Func([], [IDL.Vec(FileNode)], ['query']),
     'get_all_files_content' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(ContentNode)))],
@@ -496,7 +493,6 @@ export const idlFactory = ({ IDL }) => {
     'rate_user' : IDL.Func([IDL.Principal, Rating], [Result_1], []),
     'register' : IDL.Func([RegisterUser], [Result], []),
     'reject_friend_request' : IDL.Func([IDL.Text], [Result], []),
-    'rename_file' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'save_post' : IDL.Func([Post], [Result_1], []),
     'search_files_content' : IDL.Func(
         [IDL.Text, IDL.Bool],

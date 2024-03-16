@@ -52,7 +52,7 @@ const DocComponent: React.FC<ItemProps> = ({data, item, index, openItems, handle
     const handleDrop: any = async (dropped, droppedOver, type) => {
         let id = dropped;
         let parent = droppedOver
-        dispatch(handleRedux("CHANGE_FILE_PARENT", {id, parent}));
+        dispatch(handleRedux("CHANGE_FILE_PARENT", {id, parent: [parent]}));
     };
     return (
         <>

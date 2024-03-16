@@ -133,12 +133,12 @@ impl ShareFile {
             files_share_store.get(share_id).cloned()
         }).ok_or("No such share id.")?;
 
-
         let file = USER_FILES.with(|files_store| {
-            let user_files = files_store.borrow();
-            let user_files_map = user_files.get(&shared_file.owner)?;
-            user_files_map.get(&shared_file.id).cloned()
-        }).ok_or("No such file.")?;
+            let user_files_vec = files_store.borrow();
+            // Assuming user_files_vec is a HashMap<Principal, Vec<FileNode>>
+            let user_files_vec = user_files_vec.get(&shared_file.owner).ok_or("Owner not found.")?;
+            user_files_vec.iter().find(|f| f.id == shared_file.id).cloned().ok_or("No such file.")
+        })?;
 
         let can_view = file.check_permission(ShareFilePermission::CanView);
         if !can_view {
@@ -147,7 +147,6 @@ impl ShareFile {
 
         let content_tree = FILE_CONTENTS.with(|file_contents| {
             let file_contents = file_contents.borrow();
-
             if let Some(file_map) = file_contents.get(&shared_file.owner) {
                 file_map.get(&shared_file.id).cloned()
             } else {

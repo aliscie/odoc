@@ -23,8 +23,8 @@ export default function CustomDialog(props: Props) {
     };
 
     return (
-        <React.Fragment>
-            <MenuItem  onClick={() => setOpen(true)}>
+        <div >
+            <MenuItem onClick={() => setOpen(true)}>
                 {props.children}
             </MenuItem>
             <Dialog
@@ -42,6 +42,6 @@ export default function CustomDialog(props: Props) {
                     <Button onClick={handleSave} autoFocus>Save</Button>
                 </DialogActions>
             </Dialog>
-        </React.Fragment>
+        </div>
     );
 }

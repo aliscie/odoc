@@ -7,7 +7,7 @@ use crate::storage_schema::FileId;
 
 
 #[query]
-fn get_all_files() -> Option<HashMap<FileId, FileNode>> {
+fn get_all_files() -> Vec<FileNode> {
     // let principal_id = ic_cdk::api::caller();
     FileNode::get_all_files()
 }

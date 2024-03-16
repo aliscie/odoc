@@ -38,7 +38,7 @@ const NavBar = (props: any) => {
                 <Divider/>
                 {isLoggedIn && (
                     <>
-                        <NestedList data={files}/>
+                        <NestedList files={files}/>
                         <Divider/>
                         <CreateFile/>
                     </>
