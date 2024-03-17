@@ -51,7 +51,7 @@ export function NavAppBar() {
     }
 
     let image_link = profile ? convertToBlobLink(profile.photo) : '';
-    let is_owner_current_file = current_file && Object.keys(files).includes(current_file.id);
+    let is_owner_current_file = current_file && files.find((file: any) => file.id === current_file.id);
 
     return (
         <AppBar position="fixed">

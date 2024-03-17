@@ -108,6 +108,10 @@ impl CPayment {
         if self.amount > sender_wallet.balance {
             return Err(String::from("Insufficient balance"));
         }
+        if self.sender == self.receiver {
+            return Err(String::from("You can't send to your self"));
+        };
+
         let mut receiver_wallet = Wallet::get(self.receiver.clone());
         let withdraw = ExchangeType::LocalSend;
         let deposit = ExchangeType::LocalSend;

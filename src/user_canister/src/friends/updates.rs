@@ -76,7 +76,7 @@ pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
                 note.clone().unwrap().seen();
             };
             let note_content = NoteContent::AcceptFriendRequest;
-            let new_id = COUNTER.fetch_add(1, Ordering::SeqCst).to_string();
+            let new_id = caller().to_string() + &user_principal.to_string() + "accept_friend_request";
             let new_note = Notification::new(new_id, user.clone().unwrap().principal(), note_content);
             new_note.save();
 

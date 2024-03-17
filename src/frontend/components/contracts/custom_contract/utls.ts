@@ -240,6 +240,19 @@ export function serializePaymentData(payments: Array<CPayment>, all_users?) {
     return {columns, rows}
 }
 
+export function createCColumn(field: string): CColumn {
+    return {
+        id: randomString(),
+        field,
+        headerName: "Untitled",
+        column_type: {'Text': null},
+        filters: [],
+        permissions: [{'AnyOneView': null}],
+        formula_string: '',
+        editable: true,
+        deletable: false,
+    }
+}
 
 export function createCContract(): CContract {
     let field = randomString();
@@ -251,35 +264,12 @@ export function createCContract(): CContract {
         id: randomString(),
         cells: [new_cell]
 
-    }
-
-
-    let new_column: CColumn = {
-        id: randomString(),
-        field,
-        headerName: "Untitled",
-        column_type: {'Text': null},
-        filters: [],
-        permissions: [{'AnyOneView': null}],
-        formula_string: '',
-        editable: true,
-        deletable: false,
-    }
-    let new_column_2: CColumn = {
-        id: randomString(),
-        field,
-        headerName: "Untitled",
-        column_type: {'Text': null},
-        filters: [],
-        permissions: [{'AnyOneView': null}],
-        formula_string: '',
-        editable: true,
-        deletable: false,
-    }
+    };
+    let new_column: CColumn = createCColumn(field);
     let new_c_contract: CContract = {
         id: randomString(),
         name: "New " + randomString(),
-        'columns': [new_column, new_column_2],
+        'columns': [new_column],
         'rows': [new_row],
         date_created: 0,
         creator: Principal.fromText("2vxsx-fae"),

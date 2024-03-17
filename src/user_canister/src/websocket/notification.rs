@@ -184,7 +184,7 @@ pub fn notify_friend_request(user_principal: Principal) {
     let friend_request_notification = FriendRequestNotification {};
     // Example of creating a new Notification with the FriendRequest content
     let new_notification = Notification {
-        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+        id: caller().to_string() + &user_principal.to_string() + "friend_request",
         sender: caller(),
         receiver: user_principal,
         content: NoteContent::FriendRequest(friend_request_notification),

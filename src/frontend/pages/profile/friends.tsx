@@ -33,7 +33,7 @@ export function Friend(props: FriendProps) {
     let FS = friends[0] && friends[0].friends || []
     let friend_requests = friends[0] && friends[0].friend_requests || []
     let is_friend_request = friend_requests.some((req) => req && req.sender.id === profile.id || req.receiver && req.receiver.id === profile.id)
-    let is_friend = FS.some((friend) => friend && friend.sender.id === profile.id || friend && friend.receiver && friend.receiver.id === profile.id)
+    let is_friend = FS.some((friend) => friend && friend.sender && friend.sender.id === profile.id || friend && friend.receiver && friend.receiver.id === profile.id)
     const [isFriend, setIsFriend] = useState(is_friend);
     const dispatch = useDispatch();
     const [isFriendReq, setIsFreindReq] = useState(is_friend_request);
@@ -170,7 +170,7 @@ function Friends(props: any) {
                 const labelId = `checkbox-list-secondary-label-${value.receiver && value.receiver.name}`;
                 return (
                     <ListItem
-                        key={value.receiver.name}
+                        key={value.receiver && value.receiver.name}
                         disablePadding
                     >
                         <Friend {...user} is_friend={true} labelId={labelId}/>

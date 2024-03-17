@@ -11,7 +11,7 @@ const LinkBehavior = React.forwardRef<any, Omit<RouterLink, 'to'> & { href: Rout
 const BreadPage: React.FC = () => {
     const {files} = useSelector((state: any) => state.filesReducer);
     const location = useLocation();
-    const pathNames = location.pathname.split('/').filter(Boolean).map(id => files[id]?.name || id);
+    const pathNames = location.pathname.split('/').filter(Boolean).map(id => files.find(f => f.id == id)?.name || id);
 
     return (
         <Breadcrumbs aria-label="breadcrumb">

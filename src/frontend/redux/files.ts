@@ -6,6 +6,7 @@ import {FriendsActions} from "./friends";
 import {FileNode, InitialData, StoredContract, User} from "../../declarations/user_canister/user_canister.did";
 import {actor} from "../App";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
+import {getCurrentFile} from "./utls";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
@@ -41,7 +42,7 @@ export type FilesActions =
 
 export var initialState = {
 
-    current_file: {id: null, name: null},
+    current_file: null,
     is_files_saved: true,
     files: [],
     files_content: {},
@@ -50,19 +51,6 @@ export var initialState = {
     notifications: [],
     profile_history: null,
 };
-
-
-function getCurrentFile(data: any) {
-    let file = {id: null, name: null};
-    let dummy_file: FileNode | String = {id: "", name: "", share_id: [], children: [], parent: []}
-    dummy_file = JSON.stringify(dummy_file);
-
-    let stored_file = JSON.parse(localStorage.getItem("current_file") || dummy_file)
-    if (data[stored_file.id]) {
-        file = stored_file;
-    }
-    return file;
-}
 
 
 export async function get_initial_data() {
@@ -105,7 +93,6 @@ export async function get_initial_data() {
         initialState["friends"] = data.Ok.Friends;
         initialState["all_friends"] = Array.from(uniqueUsersSet);
         initialState["wallet"] = data.Ok.Wallet;
-
     }
 }
 
