@@ -10,6 +10,7 @@ import {
 import {randomString} from "../../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
 import {PaymentRow} from "./types";
+import {logger} from "../../../dev_utils/log_data";
 
 export function updateCContractColumn(contract, new_column): CContract {
     contract.columns = contract.columns.map((column: CColumn) => {
@@ -34,7 +35,7 @@ export function updateContractColumn(contract: CustomContract, updated_column, v
     }
 }
 
-export function serialize_contract_column(contract, addVarsToParser, evaluate) {
+export function serialize_contract_column(contract, addVarsToParser, evaluate): Array<CColumn> {
     return contract.columns.map((col: CColumn) => {
         if (col.formula_string && col.formula_string.length > 0) {
             col['valueGetter'] = (params: any) => {
@@ -45,7 +46,6 @@ export function serialize_contract_column(contract, addVarsToParser, evaluate) {
                     addVarsToParser(params, contract);
                     ev = evaluate(col.formula_string)
 
-                    console.error("Error in formula", {params}, {ev})
                     return "Invalid formula"
                 }
                 // if (ev.formula) {
@@ -53,9 +53,10 @@ export function serialize_contract_column(contract, addVarsToParser, evaluate) {
                 // }
                 return ev.value
             };
-        } else {
-            delete col['valueGetter'];
         }
+        // else {
+        //     delete col['valueGetter'];
+        // }
         return col
     })
 }
@@ -265,6 +266,7 @@ export function createCContract(): CContract {
         cells: [new_cell]
 
     };
+
     let new_column: CColumn = createCColumn(field);
     let new_c_contract: CContract = {
         id: randomString(),

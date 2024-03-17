@@ -35,7 +35,6 @@ const NestedList: React.FC<NestedListProps> = ({files}) => {
         dispatch(handleRedux("CHANGE_FILE_PARENT", {id: dropped, parent: []}));
     };
 
-    console.log(files);
     return (
         <div>
             <List

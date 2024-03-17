@@ -1,9 +1,16 @@
 import {compile, EvalFunction} from "mathjs";
-import {CColumn, CContract, CPayment, User,} from "../../../../../declarations/user_canister/user_canister.did";
-import {useSelector} from "react-redux";
+import {
+    CColumn,
+    CContract,
+    CPayment,
+    CustomContract, StoredContract,
+    User,
+} from "../../../../../declarations/user_canister/user_canister.did";
+import {useDispatch, useSelector} from "react-redux";
 import {Principal} from "@dfinity/principal";
-import React from "react";
-import {randomString} from "../../../../data_processing/data_samples";
+import React, {useEffect} from "react";
+import {handleRedux} from "../../../../redux/main";
+import {logger} from "../../../../dev_utils/log_data";
 
 interface ParserValues {
     [key: string]: any;
@@ -16,37 +23,69 @@ interface New {
 interface ParserReturnType {
     formula: Array<CPayment>;
     value: any;
-    err?: boolean;
+    err?: string;
 }
 
 
 interface ParserProps {
     contract?: CContract;
+    main_contract?: CustomContract
     // TODO^^^------------why u need this question mark here? useParser must lawyer has CContract
 }
 
 function useParser(props: ParserProps) {
-
-    const {profile, all_friends, wallet} = useSelector(
+    const {profile, all_friends, wallet, contracts} = useSelector(
         (state: any) => state.filesReducer
     );
+    const {contract, main_contract} = props;
     const all_users: Array<User> = all_friends ? [profile, ...all_friends] : [profile];
-    const ref = React.useRef<Array<CPayment>>([]);
+    // const ref = React.useRef<Array<CPayment>>([]);
+    const ref = React.useRef<Map<String, CPayment>>(new Map());
     const values: ParserValues = {};
 
     all_users.forEach((user: User) => {
         values[user.name] = user;
     });
 
-    function updatePromise(promise: CPayment): Array<CPayment> {
-        const existingIndex = ref.current.findIndex(p => p.id === promise.id);
-        if (existingIndex === -1) {
-            ref.current.push(promise);
-        } else {
-            ref.current[existingIndex] = promise;
+    const dispatch = useDispatch();
+    let initial_promises = Array.from(ref.current.values())
+
+    function updatePromises() {
+        let changes = false;
+        let new_promises: Array<CPayment> = Array.from(ref.current.values());
+        // Initialize with current promises from main_contract to ensure any that aren't updated or added remain
+        let combinedPromises: Array<CPayment> = [...main_contract?.promises || []];
+
+        if (main_contract) {
+            // Check if there are new or updated promises
+            new_promises.forEach((newPromise) => {
+                const existingPromiseIndex = main_contract.promises.findIndex(p => p.id === newPromise.id);
+                if (existingPromiseIndex > -1) {
+                    // Check if the promise has been changed
+                    if (JSON.stringify(main_contract.promises[existingPromiseIndex]) !== JSON.stringify(newPromise)) {
+                        changes = true;
+                        // Update the existing promise with the new one
+                        combinedPromises[existingPromiseIndex] = newPromise;
+                    }
+                } else {
+                    // If the promise doesn't exist, it's a new promise
+                    changes = true;
+                    combinedPromises.push(newPromise);
+                }
+            });
         }
-        return ref.current;
+
+        // If there were changes, update the contract and dispatch actions
+        if (main_contract && changes) {
+            let updatedContract = {...main_contract, promises: combinedPromises};
+            let to_store: StoredContract = {
+                "CustomContract": updatedContract
+            };
+            dispatch(handleRedux("UPDATE_CONTRACT", {contract: to_store}));
+            dispatch(handleRedux("CONTRACT_CHANGES", {changes: to_store}));
+        }
     }
+
 
     values["Promise"] = (to: User, amount: number) => {
         // if (!values["row_id"]) {
@@ -64,12 +103,18 @@ function useParser(props: ParserProps) {
             date_created: 0,
             date_released: 0,
             status: {None: null},
-            contract_id: props?.contract.id,
+            contract_id: contract.id,
         };
-
-        updatePromise(promise);
+        ref.current.set(promise.id, promise);
+        updatePromises()
         return `You promised ${amount} USDT to ${to.name}.`;
     };
+
+
+    // useEffect(() => {
+    //
+    //     updatePromises()
+    // }, [ref.current]);
 
     // TODO values['Transfer'] = (to: string, amount: number) => {
     //     return `You will transfer ${amount}USDT to ${to.name}.`;
@@ -83,17 +128,18 @@ function useParser(props: ParserProps) {
     }
 
     function evaluate(code: string): ParserReturnType {
+        const formula = Array.from(ref.current.values());
         try {
             const parsedFormula: EvalFunction = compile(code);
             const value: any = parsedFormula.evaluate(values);
-            return {formula: ref.current, value};
+            return {formula, value};
         } catch (e) {
             const errorMessage: string = JSON.stringify(e);
-            return {formula: ref.current, value: errorMessage, err: true};
+            return {formula, value: "", err: errorMessage};
         }
     }
 
-    return {evaluate, addVarsToParser, ref};
+    return {evaluate, addVarsToParser, promises: Array.from(ref.current.values())};
 }
 
 export default useParser;

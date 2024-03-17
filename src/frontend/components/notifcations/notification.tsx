@@ -116,7 +116,7 @@ function Notification({notification}: { notification: Notification }) {
                 setLoading(true);
                 let res = await actor.see_notifications(notification.id);
                 setLoading(false);
-                console.log(res)
+                // console.log(res)
             }
         }}
         style={{color: notification.is_seen ? "gray" : ""}}>

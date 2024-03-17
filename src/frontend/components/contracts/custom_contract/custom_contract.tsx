@@ -44,7 +44,8 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
     const {profile, all_friends, wallet} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar} = useSnackbar();
     const [view, setView] = useState<VIEW>({id: "", name: PROMISES, type: PROMISES});
-    const {evaluate, addVarsToParser} = useParser({contract: view});
+    let current_contract = contract.contracts.find((c: CContract) => c.id === view.id);
+    const {evaluate, addVarsToParser} = useParser({contract: current_contract, main_contract: contract});
     const dispatch = useDispatch();
 
     const columnMenuProps = (menuProps: any) => {
@@ -390,7 +391,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                             preventSplit={true}
                             preventToolbar={true}
                             onChange={(value: any) => {
-                                console.log(value);
+                                // console.log(value);
                             }}
                             placeholder={"Untitled"}
                             content={[
