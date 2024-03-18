@@ -27,7 +27,9 @@ function MultiSaveButton(props: any) {
 
         let delete_contracts: Array<string> = changes.delete_contracts || [];
         let res = actor && await actor.multi_updates(files, serialized_content, serialized_contracts, delete_contracts);
-        console.log("res", res);
+        if (res.Ok.includes("Error") || res.Err) {
+            enqueueSnackbar(res.Ok, {variant: "error"});
+        }
         closeSnackbar(loading)
         if (res?.Err) {
             enqueueSnackbar(res.Err, {variant: "error"});

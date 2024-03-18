@@ -3,14 +3,15 @@ import {
     CColumn,
     CContract,
     CPayment,
-    CustomContract, StoredContract,
+    CustomContract,
+    StoredContract,
     User,
 } from "../../../../../declarations/user_canister/user_canister.did";
 import {useDispatch, useSelector} from "react-redux";
 import {Principal} from "@dfinity/principal";
-import React, {useEffect} from "react";
+import React from "react";
 import {handleRedux} from "../../../../redux/main";
-import {logger} from "../../../../dev_utils/log_data";
+import {useSnackbar} from "notistack";
 
 interface ParserValues {
     [key: string]: any;
@@ -34,6 +35,7 @@ interface ParserProps {
 }
 
 function useParser(props: ParserProps) {
+    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const {profile, all_friends, wallet, contracts} = useSelector(
         (state: any) => state.filesReducer
     );
@@ -55,6 +57,7 @@ function useParser(props: ParserProps) {
         let new_promises: Array<CPayment> = Array.from(ref.current.values());
         // Initialize with current promises from main_contract to ensure any that aren't updated or added remain
         let combinedPromises: Array<CPayment> = [...main_contract?.promises || []];
+
 
         if (main_contract) {
             // Check if there are new or updated promises
@@ -86,7 +89,7 @@ function useParser(props: ParserProps) {
         }
     }
 
-
+    let warning = false;
     values["Promise"] = (to: User, amount: number) => {
         // if (!values["row_id"]) {
         //     return "Null"
@@ -105,6 +108,13 @@ function useParser(props: ParserProps) {
             status: {None: null},
             contract_id: contract.id,
         };
+        // TODO why this was calling too many times.
+        // console.log({amount: promise.amount > wallet.balance})
+        if (promise.amount > wallet.balance && !warning) {
+            warning = true;
+            enqueueSnackbar("You don't have enough balance to make this promise.", {variant: "error"});
+        }
+
         ref.current.set(promise.id, promise);
         updatePromises()
         return `You promised ${amount} USDT to ${to.name}.`;
@@ -121,9 +131,28 @@ function useParser(props: ParserProps) {
     // };
 
     function addVarsToParser(params: any, view: CContract) {
+        // Temporary storage for evaluated formula results to avoid re-evaluation
+        let formulaResults = {};
+
         view.columns.forEach((column: CColumn) => {
-            values[column.headerName] = params.row[column.field];
+            // Check if this is a formula column that hasn't been processed yet
+            if (column.formula_string && formulaResults[column.field] === undefined) {
+                // Evaluate the formula and store the result
+                let result = evaluate(column.formula_string).value;
+                formulaResults[column.field] = result;
+                values[column.headerName] = result;
+            } else if (!column.formula_string) {
+                // For non-formula columns, directly use the value from params
+                values[column.headerName] = params.row[column.field];
+            }
+
+            // Ensure row_id is always set
             values["row_id"] = params.id;
+        });
+
+        // Optionally, if you need to update params.row with formula results for subsequent access
+        Object.keys(formulaResults).forEach(field => {
+            params.row[field] = formulaResults[field];
         });
     }
 

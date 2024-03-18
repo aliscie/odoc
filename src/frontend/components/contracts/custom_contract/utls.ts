@@ -38,25 +38,18 @@ export function updateContractColumn(contract: CustomContract, updated_column, v
 export function serialize_contract_column(contract, addVarsToParser, evaluate): Array<CColumn> {
     return contract.columns.map((col: CColumn) => {
         if (col.formula_string && col.formula_string.length > 0) {
+            col['width'] = 150;
             col['valueGetter'] = (params: any) => {
-                // let row_id = params.row.id;
                 addVarsToParser(params, contract);
                 let ev = evaluate(col.formula_string)
                 if (ev.err) {
-                    addVarsToParser(params, contract);
-                    ev = evaluate(col.formula_string)
-
                     return "Invalid formula"
                 }
-                // if (ev.formula) {
-                //     // promises.push({id: row_id, ...ev.formula})
-                // }
                 return ev.value
             };
+        } else {
+            delete col['valueGetter'];
         }
-        // else {
-        //     delete col['valueGetter'];
-        // }
         return col
     })
 }
@@ -172,6 +165,7 @@ export function serializePromisesData(payments: Array<CPayment>, all_users = [])
             "Confirmed",
             "Objected",
             "Cancelled",
+            // "HeighConformed",
             // Objected(String),
             "None",
         ],
