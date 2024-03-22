@@ -13,11 +13,14 @@ import {AppMessage} from "../../declarations/user_canister/user_canister.did";
 
 function useSocket() {
 
-    //  const gatewayUrl = "ws://127.0.0.1:8084";
-    // const icUrl = `http://127.0.0.1:${import.meta.env.VITE_DFX_PORT}`;
 
-    const gatewayUrl = "wss://gateway.icws.io";
-    const icUrl = `https://y43fd-5qaaa-aaaal-acbqa-cai.ic0.app`;
+    let gatewayUrl = "wss://gateway.icws.io";
+    let icUrl = `https://y43fd-5qaaa-aaaal-acbqa-cai.ic0.app`;
+    if (import.meta.env.VITE_DFX_NETWORK != "ic") {
+        gatewayUrl = "ws://127.0.0.1:8084";
+        icUrl = `http://127.0.0.1:${import.meta.env.VITE_DFX_PORT}`;
+    }
+    ;
 
 
     const dispatch = useDispatch();
