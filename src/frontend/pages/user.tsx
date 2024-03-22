@@ -1,19 +1,21 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {actor} from "../App";
 import {
+    ActionRating, ActionType, PaymentStatus,
     Rating, StoredContract,
     User,
     UserProfile
 } from "../../declarations/user_canister/user_canister.did";
 import {Friend} from "./profile/friends";
 import {Principal} from "@dfinity/principal";
-import {Rating as RatingCom, Typography} from "@mui/material";
+import {Divider, List, Rating as RatingCom, Typography} from "@mui/material";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from '@mui/material/Typography';
 import {useSelector} from "react-redux";
 import Stack from "@mui/material/Stack";
 import {LineChart} from "@mui/x-charts/LineChart";
+import useGetUser from "../utils/get_user_by_principal";
 
 // export function PaymentContractComponent(contract: StoredContract) {
 //     const {profile} = useSelector((state: any) => state.filesReducer);
@@ -40,6 +42,32 @@ import {LineChart} from "@mui/x-charts/LineChart";
 // }
 
 export function UserHistoryCom(profile: UserProfile) {
+    let {getUser, getUserByName} = useGetUser();
+
+    const [actionRatingsWithNames, setActionRatingsWithNames] = useState([]);
+    ``
+    useEffect(() => {
+        // Function to fetch names and update state
+        (async () => {
+            let values = await Promise.all(profile.rates_by_actions.map(async (i: ActionRating, index) => {
+                let type: ActionType = i.action_type;
+                if (Object.keys(type)[0] == "Payment") {
+                    let status: PaymentStatus = type['Payment'].status;
+                    if (Object.keys(status)[0] == "Objected") {
+                        let receiver: Principal = type['Payment'].receiver;
+                        let receiver_name = await getUser(receiver.toString());
+                        // todo add the type['Payment'].date
+                        return {name: receiver_name && receiver_name.name, objection: status['Objected']}
+
+                    }
+                }
+            }))
+
+            setActionRatingsWithNames(values);
+        })()
+
+    }, []);
+
     let actions_len = profile.rates_by_actions.length;
     // const series =
     return <>
@@ -62,10 +90,22 @@ export function UserHistoryCom(profile: UserProfile) {
             />
         })}
 
+        <List>
+            {actionRatingsWithNames.map((item, index) => {
+                return (
+                    <div key={index}>
+                        {item && <ListItemText
+                            primary={item.name}
+                            secondary={`Objection: ${item.objection}`}
+                        />}
+                    </div>
+                );
+            })}
+        </List>
 
         <Stack direction="row" sx={{width: '100%'}}>
             <LineChart
-                xAxis={[{data: profile.rates_by_actions.map((i, index) => index)}]}
+                xAxis={[{data: profile.rates_by_actions.map((i: ActionRating, index) => index)}]}
                 series={[
                     {
                         label: 'rating',

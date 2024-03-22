@@ -1,10 +1,11 @@
 import {Actor, HttpAgent} from "@dfinity/agent";
 import {canisterId as userCanisterId, idlFactory} from "../../declarations/user_canister";
-import {canisterId as identityCanisterId} from "../../declarations/internet_identity";
+// import {canisterId as identityCanisterId} from "../../declarations/internet_identity";
 import {AuthClient} from "@dfinity/auth-client";
 
 let backendActor, loading = false
-let host = import.meta.env.VITE_IC_HOST;
+// let host = import.meta.env.VITE_IC_HOST;
+let host = "https://ic0.app";
 
 const createActor = (canisterId, options = {}) => {
     const agent = options.agent || new HttpAgent({...options.agentOptions});
@@ -15,15 +16,15 @@ const createActor = (canisterId, options = {}) => {
         );
     }
     // Fetch root key for certificate validation during development
-    if (import.meta.env.VITE_DFX_NETWORK !== "ic") {
-        agent.fetchRootKey().catch((err) => {
-            // console.warn(
-            //     "Unable to fetch root key. Check to ensure that your local replica is running"
-            // );
-            console.error("------------------ root key error ------------------");
-            console.error(err);
-        });
-    }
+    // if (import.meta.env.VITE_DFX_NETWORK !== "ic") {
+    //     agent.fetchRootKey().catch((err) => {
+    //         // console.warn(
+    //         //     "Unable to fetch root key. Check to ensure that your local replica is running"
+    //         // );
+    //         console.error("------------------ root key error ------------------");
+    //         console.error(err);
+    //     });
+    // }
 
     // Creates an actor with using the candid interface and the HttpAgent
     return Actor.createActor(idlFactory, {
@@ -58,10 +59,10 @@ export const get_user_actor = async () => {
 
 function get_identity_url() {
     let identityProvider = "https://identity.ic0.app/#authorize";
-    if (import.meta.env.VITE_DFX_NETWORK != "ic") {
-        let port = import.meta.env.VITE_DFX_PORT;
-        identityProvider = `http://${identityCanisterId}.localhost:${port}/#authorize`
-    }
+    // if (import.meta.env.VITE_DFX_NETWORK != "ic") {
+    //     let port = import.meta.env.VITE_DFX_PORT;
+    //     identityProvider = `http://${identityCanisterId}.localhost:${port}/#authorize`
+    // }
     return identityProvider
 }
 

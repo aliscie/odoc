@@ -166,7 +166,7 @@ function Friends(props: any) {
             })}
 
             {friends && friends.map((value) => {
-                let user = value.receiver && value.receiver.id != profile.id ? value.receiver : value.sender
+                let user = value && value.receiver && value.receiver.id != profile.id ? value.receiver : value.sender
                 const labelId = `checkbox-list-secondary-label-${value.receiver && value.receiver.name}`;
                 return (
                     <ListItem
