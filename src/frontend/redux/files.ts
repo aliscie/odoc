@@ -47,6 +47,9 @@ export var initialState = {
     files: [],
     files_content: {},
     friends: [{friends: [], friend_requests: []}],
+    // TODO remove friends and make it like this.
+    //     friends: [],
+    //     friend_requests: [],
     changes: {files: {}, contents: {}, contracts: {}, delete_contracts: []},
     notifications: [],
     profile_history: null,
@@ -124,10 +127,23 @@ export function filesReducer(state: any = initialState, action: any) {
             };
 
         case 'NOTIFY':
-            return {
-                ...state,
-                notifications: [...state.notifications, action.new_notification],
+            let is_in = false;
+            state.notifications = state.notifications.map((n) => {
+                if (n.id == action.new_notification.id) {
+                    is_in = true
+                    return action.new_notification
+                }
+                return n
+            })
+            if (!is_in) {
+                return {
+                    ...state,
+                    notifications: [...state.notifications, action.new_notification],
+                }
+            } else {
+                return {...state}
             }
+
         case 'UPDATE_NOTIFY':
             return {
                 ...state,
@@ -284,10 +300,22 @@ export function filesReducer(state: any = initialState, action: any) {
             }
 
         case 'UPDATE_FRIEND':
-            return {
-                ...state,
-                friends: [action.friends],
-            };
+            if (action.friends) {
+                return {
+                    ...state,
+                    friends: [action.friends],
+                };
+            } else if (action.friend_request) {
+                return {
+                    ...state,
+                    friends: [{
+                        friends: [...friends.friends],
+                        friend_requests: [...friends.friend_requests, action.friend_request]
+                    }],
+                }
+            }
+            return {...state}
+
 
         case 'ADD_FRIEND':
             friends.friends.push(action.friend);

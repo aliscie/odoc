@@ -8,7 +8,7 @@ import React, {useEffect, useState} from "react";
 import {handleRedux} from "../redux/main";
 import {AuthClient} from "@dfinity/auth-client";
 import {actor} from "../App";
-import {AppMessage} from "../../declarations/user_canister/user_canister.did";
+import {AppMessage, Friend} from "../../declarations/user_canister/user_canister.did";
 
 
 function useSocket() {
@@ -52,21 +52,27 @@ function useSocket() {
             ws.onmessage = async (event) => {
                 let data: AppMessage = event.data;
 
-                console.log("Received message:", data);
+                // console.log("Received message:", data);
 
 
                 // check if the key is `FriendRequest` or ContractUpdate in event.data.notification[0].content[key]
-                let keys = data.notification[0] && Object.keys(data.notification[0].content);
+                let keys = data.notification[0] && data.notification[0].content && Object.keys(data.notification[0].content);
 
-                switch (keys[0]) {
+                switch (keys && keys[0]) {
                     case "NewMessage":
                         dispatch(handleRedux('ADD_NOTIFICATION', {message: data.notification[0].content.NewMessage}));
                         break
                     case "FriendRequest":
-                        // TODO this does not seams to update live.
-                        let new_friends = actor && await actor.get_friends();
-                        new_friends && dispatch(handleRedux("UPDATE_FRIEND", {friends: new_friends[0]}))
+                        let new_request: Friend = data.notification[0].content.FriendRequest.friend
+                        new_request && dispatch(handleRedux("UPDATE_FRIEND", {friend_request: new_request}))
+                        dispatch(handleRedux('NOTIFY', {new_notification: data.notification[0]}));
                         break
+                        // TODO
+                        //     case "CancleFriendRequest":
+                        //         let new_request: Friend = data.notification[0].content.FriendRequest.friend
+                        //         new_request && dispatch(handleRedux("UPDATE_FRIEND", {cancel_friend_request: new_request}))
+                        //         dispatch(handleRedux('NOTIFY', {new_notification: data.notification[0]}));
+                        //         break
                     case "ContractUpdate":
                         // let new_contracts = actor && await actor.get_contracts();
                         // new_contracts && dispatch(handleRedux("UPDATE_CONTRACT", {contracts: new_contracts[0]}))

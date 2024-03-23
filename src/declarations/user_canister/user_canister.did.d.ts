@@ -172,6 +172,7 @@ export interface Filter {
 }
 export interface Formula { 'column_id' : string, 'execute' : Execute }
 export interface Friend { 'sender' : User, 'receiver' : User }
+export interface FriendRequestNotification { 'friend' : Friend }
 export interface FriendSystem {
   'friend_requests' : Array<Friend>,
   'friends' : Array<Friend>,
@@ -195,7 +196,7 @@ export interface Message {
 }
 export type NoteContent = { 'CustomContract' : [string, CPayment] } |
   { 'ContractUpdate' : ContractNotification } |
-  { 'FriendRequest' : {} } |
+  { 'FriendRequest' : FriendRequestNotification } |
   { 'AcceptFriendRequest' : null } |
   { 'ApproveShareRequest' : string } |
   { 'CPaymentContract' : [CPayment, PaymentAction] } |

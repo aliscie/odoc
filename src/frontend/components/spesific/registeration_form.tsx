@@ -31,9 +31,15 @@ function RegistrationForm() {
 
     async function handleUploadPhoto(e: any) {
         let image = e.target.files[0];
-        let imageByteData = await convertToBytes(image);
-        photo = imageByteData
+        try {
+            let imageByteData = await convertToBytes(image);
+            photo = imageByteData;
+        } catch (error) {
+            // Display the error message using enqueueSnackbar
+            enqueueSnackbar(error.message, {variant: "error"});
+        }
     }
+
 
     const dispatch = useDispatch();
     const handleRegister = async () => {

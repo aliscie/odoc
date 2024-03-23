@@ -59,6 +59,9 @@ export function Friend(props: FriendProps) {
     const [isSent, setIsSent] = useState(is_sent);
 
     async function handleCancel(id: string) {
+        if (typeof id != 'string') {
+            id = id.toText();
+        }
         let res = actor && await actor.cancel_friend_request(id)
         if (res.Ok) {
             dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))

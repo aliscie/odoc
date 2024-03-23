@@ -7,10 +7,13 @@ use serde::Serialize;
 use crate::{CPayment, NOTIFICATIONS, SharePayment, SharesContract, USER_FILES, websocket};
 use crate::chat::Message;
 use crate::COUNTER;
+use crate::friends::Friend;
 use crate::websocket::{AppMessage, notification, send_app_message};
 
-#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
-pub struct FriendRequestNotification {}
+#[derive(PartialEq, Clone, Debug, CandidType, Deserialize)]
+pub struct FriendRequestNotification {
+    friend: Friend,
+}
 
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
@@ -180,13 +183,14 @@ pub fn get_friend_request_id(sender: Principal, receiver: Principal) -> Option<N
 }
 
 
-pub fn notify_friend_request(user_principal: Principal) {
-    let friend_request_notification = FriendRequestNotification {};
+pub fn notify_friend_request(f: Friend) {
+    let friend_request_notification = FriendRequestNotification { friend: f.clone() };
     // Example of creating a new Notification with the FriendRequest content
+    let receiver: Principal = Principal::from_text(&f.receiver.id).unwrap();
     let new_notification = Notification {
-        id: caller().to_string() + &user_principal.to_string() + "friend_request",
+        id: caller().to_string() + &f.receiver.id + "friend_request",
         sender: caller(),
-        receiver: user_principal,
+        receiver,
         content: NoteContent::FriendRequest(friend_request_notification),
         is_seen: false,
     };

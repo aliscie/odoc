@@ -150,6 +150,7 @@ type Filter = record {
 };
 type Formula = record { column_id : text; execute : Execute };
 type Friend = record { sender : User; receiver : User };
+type FriendRequestNotification = record { friend : Friend };
 type FriendSystem = record {
   friend_requests : vec Friend;
   friends : vec Friend;
@@ -174,7 +175,7 @@ type Message = record {
 type NoteContent = variant {
   CustomContract : record { text; CPayment };
   ContractUpdate : ContractNotification;
-  FriendRequest : record {};
+  FriendRequest : FriendRequestNotification;
   AcceptFriendRequest;
   ApproveShareRequest : text;
   CPaymentContract : record { CPayment; PaymentAction };

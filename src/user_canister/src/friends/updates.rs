@@ -22,7 +22,7 @@ pub fn send_friend_request(user_principal: String) -> Result<User, String> {
     }
 
 
-    let mut friend = if let Some(friend) = FriendSystem::get_friends_of_user(user_principal.parse().unwrap()) {
+    let mut friend: FriendSystem = if let Some(friend) = FriendSystem::get_friends_of_user(user_principal.parse().unwrap()) {
         friend
     } else {
         FriendSystem {
@@ -35,7 +35,7 @@ pub fn send_friend_request(user_principal: String) -> Result<User, String> {
     if !friend.friends.contains(&f) && !friend.friend_requests.contains(&f) {
         friend.send_friend_request(user.clone().unwrap())?;
         if let Ok(u) = Principal::from_text(user_principal) {
-            websocket::notify_friend_request(u);
+            websocket::notify_friend_request(f);
         }
 
         Ok(user.unwrap())

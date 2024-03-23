@@ -264,6 +264,7 @@ export const idlFactory = ({ IDL }) => {
     'contract_type' : IDL.Text,
     'contract_id' : IDL.Text,
   });
+  const FriendRequestNotification = IDL.Record({ 'friend' : Friend });
   const PaymentAction = IDL.Variant({
     'Released' : IDL.Null,
     'Objected' : IDL.Null,
@@ -275,7 +276,7 @@ export const idlFactory = ({ IDL }) => {
   const NoteContent = IDL.Variant({
     'CustomContract' : IDL.Tuple(IDL.Text, CPayment),
     'ContractUpdate' : ContractNotification,
-    'FriendRequest' : IDL.Record({}),
+    'FriendRequest' : FriendRequestNotification,
     'AcceptFriendRequest' : IDL.Null,
     'ApproveShareRequest' : IDL.Text,
     'CPaymentContract' : IDL.Tuple(CPayment, PaymentAction),
