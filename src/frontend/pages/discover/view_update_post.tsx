@@ -11,6 +11,7 @@ import {useSnackbar} from "notistack";
 import {LoadingButton} from "@mui/lab";
 import serialize_file_contents from "../../data_processing/serialize/serialize_file_contents";
 import PostTags from "./tags_component";
+import {normalize_content_tree} from "../../data_processing/normalize/normalize_contents";
 
 interface Props {
     post: PostUser
@@ -49,7 +50,8 @@ function ViewPost(props: Props) {
         } else {
             enqueueSnackbar("Error creating post. " + res.Err, {variant: "error"});
         }
-    }
+    };
+
     const handleDeletePost = async (post_id) => {
         let res = actor && await actor.delete_post(post_id);
         if (res) {
@@ -66,6 +68,14 @@ function ViewPost(props: Props) {
         new_change[''] = change;
         setChanges(new_change)
     }
+    let is_changed = false
+    if (changes) {
+
+        let data = normalize_content_tree(props.post.content_tree)
+        let new_changes = Object.values(changes)[0];
+        is_changed = JSON.stringify(new_changes) != JSON.stringify(data);
+    }
+
     return (
         <div>
             <PostComponent
@@ -100,10 +110,11 @@ function ViewPost(props: Props) {
                 // </IconButton>}
 
                 buttons={<><ActionsButtons post={props.post}/>
-                    {changes || tags.length > 0 &&
-                        < LoadingButton loading={loading} onClick={handleSave}> Save </LoadingButton>}
                     {profile && profile.id == props.post.creator.id &&
                         <PostTags post={props.post} tags={tags} setTags={setTags}/>}
+                    {is_changed &&
+                        < LoadingButton loading={loading} onClick={handleSave}> Save </LoadingButton>}
+
                 </>}
                 user={props.post.creator}
             />

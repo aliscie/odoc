@@ -46,7 +46,7 @@ export function normalize_content_tree(tree: Array<ContentNode>) {
     let nested_file_content: Array<SlateNode> = [];
     let visited = [];
     tree.map((node: ContentNode) => {
-        if (!visited.includes(node.id) && !node.parent.id) {
+        if (!visited.includes(node.id) && node.parent && !node.parent.id) {
             visited.push(node.id)
             let slate_node: SlateNode = nesting(node, tree, visited)
             nested_file_content.push(slate_node)
