@@ -59,6 +59,7 @@ pub struct Notification {
     pub(crate) receiver: Principal,
     pub(crate) content: NoteContent,
     pub(crate) is_seen: bool,
+    // pub(crate) time: f64,
 
 }
 
@@ -85,7 +86,7 @@ impl Notification {
         let msg: AppMessage = AppMessage {
             notification: Some(self.clone()),
             text: self.id.clone(),
-            timestamp: 0,
+            timestamp: ic_cdk::api::time(),
         };
         send_app_message(self.receiver, msg.clone());
     }
@@ -94,7 +95,7 @@ impl Notification {
         let msg: AppMessage = AppMessage {
             notification: Some(self.clone()),
             text: self.id.clone(),
-            timestamp: 0,
+            timestamp: ic_cdk::api::time(),
         };
         send_app_message(self.receiver, msg.clone());
     }
@@ -103,7 +104,7 @@ impl Notification {
         let msg: AppMessage = AppMessage {
             notification: Some(self.clone()),
             text: self.id.clone(),
-            timestamp: 0,
+            timestamp: ic_cdk::api::time(),
         };
         send_app_message(to, msg.clone());
     }
@@ -111,7 +112,7 @@ impl Notification {
     //     // let msg: AppMessage = AppMessage {
     //     //     notification: None,
     //     //     text: "Unfriend".to_string(),
-    //     //     timestamp: 0,
+    //     //     timestamp: ic_cdk::api::time(),
     //     // };
     //
     //     let notification = Notification::get(id);
@@ -126,6 +127,12 @@ impl Notification {
             let mut user_notifications = notifications.borrow_mut();
             let user_notifications = user_notifications.entry(caller()).or_insert_with(Vec::new);
             user_notifications.retain(|n| n.id != self.id);
+            let msg: AppMessage = AppMessage {
+                notification: Some(self.clone()),
+                text: "Delete".to_string(),
+                timestamp: ic_cdk::api::time(),
+            };
+            send_app_message(self.receiver, msg.clone());
         });
     }
 
@@ -167,7 +174,7 @@ impl Notification {
 }
 
 
-pub fn get_friend_request_id(sender: Principal, receiver: Principal) -> Option<Notification> {
+pub fn get_friend_request_note(sender: Principal, receiver: Principal) -> Option<Notification> {
     NOTIFICATIONS.with(|notifications| {
         let user_notifications = notifications.borrow();
         let user_notifications = user_notifications.get(&receiver);
@@ -188,7 +195,7 @@ pub fn notify_friend_request(f: Friend) {
     // Example of creating a new Notification with the FriendRequest content
     let receiver: Principal = Principal::from_text(&f.receiver.id).unwrap();
     let new_notification = Notification {
-        id: caller().to_string() + &f.receiver.id + "friend_request",
+        id: caller().to_string() + &f.receiver.id,
         sender: caller(),
         receiver,
         content: NoteContent::FriendRequest(friend_request_notification),

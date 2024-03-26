@@ -68,15 +68,13 @@ pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
             });
 
             // -------- notification seen ------ \\\
-            let note = websocket::get_friend_request_id(user.clone().unwrap().principal(), caller());
+            let note = Notification::get(user.clone().unwrap().id + &*caller().to_text());
             if let Some(notification) = note {
                 notification.seen();
-            } else {
-                let note = websocket::get_friend_request_id(caller(), user.clone().unwrap().principal());
-                note.clone().unwrap().seen();
-            };
+            }
             let note_content = NoteContent::AcceptFriendRequest;
-            let new_id = caller().to_string() + &user_principal.to_string() + "accept_friend_request";
+            // let new_id = caller().to_string() + &user_principal.to_string() + "accept_friend_request";
+            let new_id = caller().to_string() + &user_principal.to_string();
             let new_note = Notification::new(new_id, user.clone().unwrap().principal(), note_content);
             new_note.save();
 
@@ -100,15 +98,16 @@ pub fn unfriend(user_principal: String) -> Result<User, String> {
         friend.unfriend(&user.clone().unwrap())?;
 
         // -------- notification ------ \\\
-        let note = websocket::get_friend_request_id(user.clone().unwrap().principal(), caller());
+        let note = websocket::get_friend_request_note(user.clone().unwrap().principal(), caller());
         if let Some(notification) = note {
             notification.seen();
         } else {
-            let note = websocket::get_friend_request_id(caller(), user.clone().unwrap().principal());
+            let note = websocket::get_friend_request_note(caller(), user.clone().unwrap().principal());
             note.unwrap().seen();
         };
         let new_note = Notification {
-            id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+            // id: caller().to_string() + &user.clone().unwrap().id + "Unfriend",
+            id: caller().to_string() + &user.clone().unwrap().id,
             content: NoteContent::Unfriend,
             sender: caller(),
             receiver: user.clone().unwrap().principal(),
@@ -135,11 +134,11 @@ pub fn cancel_friend_request(user_principal: String) -> Result<User, String> {
             friend.cancel_friend_request(&f);
 
             //------------ Get the id of the notification with receiver caller() and sender user ------------\\
-            let note = websocket::get_friend_request_id(caller(), user.clone().unwrap().principal());
+            let note = websocket::get_friend_request_note(caller(), user.clone().unwrap().principal());
             if let Some(notification) = note {
                 notification.delete();
             } else {
-                let note = websocket::get_friend_request_id(user.clone().unwrap().principal(), caller());
+                let note = websocket::get_friend_request_note(user.clone().unwrap().principal(), caller());
                 if let Some(notification) = note {
                     notification.delete();
                     // rais error if id is not found
@@ -165,11 +164,11 @@ pub fn reject_friend_request(user_principal: String) -> Result<User, String> {
             friend.cancel_friend_request(&f);
 
             //------------ Get the id of the notification with receiver caller() and sender user ------------\\
-            let note = websocket::get_friend_request_id(caller(), user.clone().unwrap().principal());
+            let note = websocket::get_friend_request_note(caller(), user.clone().unwrap().principal());
             if let Some(notification) = note {
                 notification.delete();
             } else {
-                let note = websocket::get_friend_request_id(user.clone().unwrap().principal(), caller());
+                let note = websocket::get_friend_request_note(user.clone().unwrap().principal(), caller());
                 if let Some(notification) = note {
                     notification.delete();
                     // rais error if id is not found

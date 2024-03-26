@@ -14,6 +14,7 @@ import DialogOver from "../genral/daiolog_over";
 import {Input} from "@mui/material";
 import LoaderButton from "../genral/loader_button";
 import {CPayment, Notification} from "../../../declarations/user_canister/user_canister.did";
+import formatTimestamp from "../../utils/time";
 
 function Notification({notification}: { notification: Notification }) {
     // console.log("render Notification") // TODO this renders about 20 times.
@@ -29,18 +30,20 @@ function Notification({notification}: { notification: Notification }) {
 
     function renderNotification(notification: any): string | JSX.Element {
         let content = notification.content;
-
+        console.log({notification})
+        let time = notification.time && formatTimestamp(notification.time);
         switch (Object.keys(notification.content)[0]) {
+
             case "FriendRequest":
-                return `${sender} sent you a friend request`;
+                return `${time}: ${sender} sent you a friend request`;
             case "ContractUpdate":
-                return `${sender} accepted your friend request`;
+                return `${time}: ${sender} accepted your friend request`;
             case "SharePayment":
-                return `${sender} have paid for your share contract`;
+                return `${time}: ${sender} have paid for your share contract`;
             case "Unfriend":
-                return `${sender} unfriended you`;
+                return `${time}: ${sender} unfriended you`;
             case "AcceptFriendRequest":
-                return `${sender} accepted your friend request.`;
+                return `${time}: ${sender} accepted your friend request.`;
             case 'CPaymentContract':
                 let c_payment: CPayment = notification.content.CPaymentContract[0];
 

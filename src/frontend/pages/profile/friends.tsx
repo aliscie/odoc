@@ -38,15 +38,23 @@ export function Friend(props: FriendProps) {
     const dispatch = useDispatch();
     const [isFriendReq, setIsFreindReq] = useState(is_friend_request);
 
-    async function handleCLickConfirm(id: string) {
+    async function handleConfirm(id: string) {
+        if (typeof id != 'string') {
+            id = id.toText();
+        }
         let res = actor && await actor.accept_friend_request(id)
         dispatch(handleRedux("ADD_FRIEND", {id: id, friend: res.Ok}));
-        dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}));
-        actor && dispatch(handleRedux('UPDATE_NOTIFY', {new_list: await actor.get_notifications()}));
+        dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {friend_id: id}));
+        dispatch(handleRedux("UPDATE_NOTE", {id: id + profile.id, is_seen: true}));
+        // dispatch(handleRedux('DELETE_NOTIFY', {id: id + profile.id }));
+        // actor && dispatch(handleRedux('UPDATE_NOTIFY', {new_list: await actor.get_notifications()}));
         return res
     }
 
     async function handleUnfriend(id: string) {
+        if (typeof id != 'string') {
+            id = id.toText();
+        }
         let res = actor && await actor.unfriend(id)
         if (res.Ok) {
             dispatch(handleRedux("REMOVE_FRIEND", {id: id}))
@@ -74,19 +82,26 @@ export function Friend(props: FriendProps) {
     }
 
     async function handleReject(id: string) {
+        if (typeof id != 'string') {
+            id = id.toText();
+        }
         let res = actor && await actor.reject_friend_request(id)
         if (res.Ok) {
-            dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
+            dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {friend_id: id}))
+            dispatch(handleRedux('DELETE_NOTIFY', {id: data.notification[0].id}));
         }
-        let notification_list: undefined | Array<Notification> = actor && await actor.get_notifications();
-        dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
+        // let notification_list: undefined | Array<Notification> = actor && await actor.get_notifications();
+        // dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
         return res
     }
 
     async function handleFriedReq(user) {
+        if (typeof user != 'string') {
+            user = user.toText();
+        }
         let loading = enqueueSnackbar(<span>sending friend request... <span
             className={"loader"}/></span>, {variant: "info"});
-        let friend_request = actor && await actor.send_friend_request(user.toText())
+        let friend_request = actor && await actor.send_friend_request(user)
         closeSnackbar(loading)
         if (friend_request.Err) {
             enqueueSnackbar(friend_request.Err, {variant: "error"});
@@ -107,7 +122,7 @@ export function Friend(props: FriendProps) {
         secondaryAction={
             <>
                 {isFriendReq && !isSent && <Tooltip title={"Friend request pending"}> <LoaderButton
-                    onClick={async () => await handleCLickConfirm(props.id)}
+                    onClick={async () => await handleConfirm(props.id)}
                 >Confirm</LoaderButton></Tooltip>}
 
                 {isFriendReq && !isSent && <LoaderButton

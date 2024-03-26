@@ -1,6 +1,5 @@
 import {normalize_files_contents} from "../data_processing/normalize/normalize_contents";
 import {agent} from "../backend_connect/main";
-import {normalize_files} from "../data_processing/normalize/normalize_files";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
 import {FileNode, InitialData, StoredContract, User} from "../../declarations/user_canister/user_canister.did";
@@ -36,7 +35,9 @@ export type FilesActions =
     | "CHANGE_FILE_PARENT"
     | "NOTIFY"
     | "UPDATE_FRIEND"
-    | "UPDATE_NOTIFY"
+    | "UPDATE_NOT_LIST"
+    | "DELETE_NOTIFY"
+    |"UPDATE_NOTE"
     | FriendsActions;
 
 
@@ -144,11 +145,30 @@ export function filesReducer(state: any = initialState, action: any) {
                 return {...state}
             }
 
-        case 'UPDATE_NOTIFY':
+        case 'UPDATE_NOT_LIST':
             return {
                 ...state,
                 notifications: action.new_list,
             }
+
+        case 'UPDATE_NOTE':
+            return {
+                ...state,
+                notifications: state.notifications.map((n: Notification) => {
+                    if (n.id == action.id) {
+                        return {...n, ...action}
+                    }
+                    return n
+                })
+            }
+
+
+        case 'DELETE_NOTIFY':
+            return {
+                ...state,
+                notifications: state.notifications.filter((n) => n.id !== action.id)
+            }
+
         case 'REMOVE':
             return {
                 ...state,
@@ -323,6 +343,7 @@ export function filesReducer(state: any = initialState, action: any) {
                 ...state,
                 friends: [friends],
             };
+
 
         case 'UPDATE_FILE_TITLE':
             state.files = state.files.map((file: FileNode) => {

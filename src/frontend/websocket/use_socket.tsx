@@ -57,7 +57,12 @@ function useSocket() {
 
                 // check if the key is `FriendRequest` or ContractUpdate in event.data.notification[0].content[key]
                 let keys = data.notification[0] && data.notification[0].content && Object.keys(data.notification[0].content);
-
+                if (data.text == "Delete") {
+                    let new_request: Friend = data.notification[0].content.FriendRequest.friend
+                    dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {friend_id: new_request.sender.id}))
+                    dispatch(handleRedux('DELETE_NOTIFY', {id: data.notification[0].id}));
+                    return;
+                }
                 switch (keys && keys[0]) {
                     case "NewMessage":
                         dispatch(handleRedux('ADD_NOTIFICATION', {message: data.notification[0].content.NewMessage}));
@@ -67,12 +72,12 @@ function useSocket() {
                         new_request && dispatch(handleRedux("UPDATE_FRIEND", {friend_request: new_request}))
                         dispatch(handleRedux('NOTIFY', {new_notification: data.notification[0]}));
                         break
-                        // TODO
-                        //     case "CancleFriendRequest":
-                        //         let new_request: Friend = data.notification[0].content.FriendRequest.friend
-                        //         new_request && dispatch(handleRedux("UPDATE_FRIEND", {cancel_friend_request: new_request}))
-                        //         dispatch(handleRedux('NOTIFY', {new_notification: data.notification[0]}));
-                        //         break
+                    // TODO
+                    //     case "CancleFriendRequest":
+                    //         let new_request: Friend = data.notification[0].content.FriendRequest.friend
+                    //         new_request && dispatch(handleRedux("UPDATE_FRIEND", {cancel_friend_request: new_request}))
+                    //         dispatch(handleRedux('NOTIFY', {new_notification: data.notification[0]}));
+                    //         break
                     case "ContractUpdate":
                         // let new_contracts = actor && await actor.get_contracts();
                         // new_contracts && dispatch(handleRedux("UPDATE_CONTRACT", {contracts: new_contracts[0]}))
