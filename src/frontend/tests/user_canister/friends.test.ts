@@ -29,5 +29,13 @@ test("test friends requests", async () => {
     let init3 = await global.actor.get_initial_data()
     logger({init3});
 
+
+    let unfriend = await global.actor.unfriend(newUser.getPrincipal().toText())
+    logger({unfriend});
+
+
+    let init4 = await global.actor.get_initial_data()
+    logger({init4});
+
 });
 
