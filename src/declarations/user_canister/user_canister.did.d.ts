@@ -171,17 +171,17 @@ export interface Filter {
   'formula' : [] | [string],
 }
 export interface Formula { 'column_id' : string, 'execute' : Execute }
-export interface Friend { 'sender' : User, 'receiver' : User }
-export interface FriendRequestNotification { 'friend' : Friend }
-export interface FriendSystem {
-  'friend_requests' : Array<Friend>,
-  'friends' : Array<Friend>,
+export interface Friend {
+  'sender' : User,
+  'confirmed' : boolean,
+  'receiver' : User,
 }
+export interface FriendRequestNotification { 'friend' : Friend }
 export interface InitialData {
   'FilesContents' : [] | [Array<[string, Array<ContentNode>]>],
   'Contracts' : Array<[string, StoredContract]>,
   'Files' : Array<FileNode>,
-  'Friends' : [] | [FriendSystem],
+  'Friends' : Array<Friend>,
   'Profile' : User,
   'DiscoverUsers' : Array<[string, User]>,
   'Wallet' : Wallet,
@@ -411,7 +411,7 @@ export interface _SERVICE {
     [[] | [Array<string>], [] | [string]],
     Array<PostUser>
   >,
-  'get_friends' : ActorMethod<[], [] | [FriendSystem]>,
+  'get_friends' : ActorMethod<[], Array<Friend>>,
   'get_initial_data' : ActorMethod<[], Result_5>,
   'get_my_chats' : ActorMethod<[], Array<FEChat>>,
   'get_notifications' : ActorMethod<[], Array<Notification>>,

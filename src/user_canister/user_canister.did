@@ -149,17 +149,13 @@ type Filter = record {
   formula : opt text;
 };
 type Formula = record { column_id : text; execute : Execute };
-type Friend = record { sender : User; receiver : User };
+type Friend = record { sender : User; confirmed : bool; receiver : User };
 type FriendRequestNotification = record { friend : Friend };
-type FriendSystem = record {
-  friend_requests : vec Friend;
-  friends : vec Friend;
-};
 type InitialData = record {
   FilesContents : opt vec record { text; vec ContentNode };
   Contracts : vec record { text; StoredContract };
   Files : vec FileNode;
-  Friends : opt FriendSystem;
+  Friends : vec Friend;
   Profile : User;
   DiscoverUsers : vec record { text; User };
   Wallet : Wallet;
@@ -378,7 +374,7 @@ service : () -> {
   get_file : (text) -> (opt FileNode) query;
   get_file_content : (text) -> (opt vec ContentNode) query;
   get_filtered_posts : (opt vec text, opt text) -> (vec PostUser) query;
-  get_friends : () -> (opt FriendSystem) query;
+  get_friends : () -> (vec Friend) query;
   get_initial_data : () -> (Result_5) query;
   get_my_chats : () -> (vec FEChat) query;
   get_notifications : () -> (vec Notification) query;

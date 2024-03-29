@@ -213,10 +213,10 @@ export const idlFactory = ({ IDL }) => {
     'content_tree' : IDL.Vec(ContentNode),
     'votes_down' : IDL.Vec(IDL.Principal),
   });
-  const Friend = IDL.Record({ 'sender' : User, 'receiver' : User });
-  const FriendSystem = IDL.Record({
-    'friend_requests' : IDL.Vec(Friend),
-    'friends' : IDL.Vec(Friend),
+  const Friend = IDL.Record({
+    'sender' : User,
+    'confirmed' : IDL.Bool,
+    'receiver' : User,
   });
   const ExchangeType = IDL.Variant({
     'Withdraw' : IDL.Null,
@@ -246,7 +246,7 @@ export const idlFactory = ({ IDL }) => {
     ),
     'Contracts' : IDL.Vec(IDL.Tuple(IDL.Text, StoredContract)),
     'Files' : IDL.Vec(FileNode),
-    'Friends' : IDL.Opt(FriendSystem),
+    'Friends' : IDL.Vec(Friend),
     'Profile' : User,
     'DiscoverUsers' : IDL.Vec(IDL.Tuple(IDL.Text, User)),
     'Wallet' : Wallet,
@@ -458,7 +458,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(PostUser)],
         ['query'],
       ),
-    'get_friends' : IDL.Func([], [IDL.Opt(FriendSystem)], ['query']),
+    'get_friends' : IDL.Func([], [IDL.Vec(Friend)], ['query']),
     'get_initial_data' : IDL.Func([], [Result_5], ['query']),
     'get_my_chats' : IDL.Func([], [IDL.Vec(FEChat)], ['query']),
     'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),

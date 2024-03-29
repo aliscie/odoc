@@ -10,7 +10,7 @@ use crate::{PROFILE_STORE, StoredContract, Wallet};
 use crate::contracts::Contract;
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
-use crate::friends::FriendSystem;
+use crate::friends::Friend;
 use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId};
 use crate::user::User;
 
@@ -19,7 +19,7 @@ pub struct InitialData {
     Profile: User,
     FilesContents: Option<HashMap<FileId, ContentTree>>,
     Files: Vec<FileNode>,
-    Friends: Option<FriendSystem>,
+    Friends: Vec<Friend>,
     DiscoverUsers: HashMap<String, User>,
     Contracts: HashMap<ContractId, StoredContract>,
     Wallet: Wallet,
@@ -69,7 +69,7 @@ fn get_initial_data() -> Result<InitialData, String> {
         Profile: profile.unwrap(),
         FilesContents: Some(files_contents),
         Files: files,
-        Friends: FriendSystem::get_friends_of_caller(),
+        Friends: Friend::get_list(caller()),
         DiscoverUsers: users,
         Contracts: contracts,
         Wallet: Wallet::get(caller()),
