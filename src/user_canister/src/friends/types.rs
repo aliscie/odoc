@@ -88,9 +88,10 @@ impl Friend {
 
     // Unfriend a user
     pub fn unfriend(user: &User) -> Result<(), String> {
-        let f: Friend = Friend::new(caller().to_text(), user.id.clone());
-        let f2: Friend = Friend::new(user.id.clone(), caller().to_text());
-
+        let mut f: Friend = Friend::new(caller().to_text(), user.id.clone());
+        f.confirmed = true;
+        let mut f2: Friend = Friend::new(user.id.clone(), caller().to_text());
+        f2.confirmed = true;
         FRIENDS_STORE.with(|friends_store| {
             let mut store = friends_store.borrow_mut();
 

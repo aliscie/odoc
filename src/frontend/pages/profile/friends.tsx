@@ -7,11 +7,10 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import {Tooltip} from "@mui/material";
 import * as React from "react";
-import {useState} from "react";
 import LoaderButton from "../../components/genral/loader_button";
 import {actor} from "../../App";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import {FriendSystem, User} from "../../../declarations/user_canister/user_canister.did";
+import {Friend} from "../../../declarations/user_canister/user_canister.did";
 import RateUser from "../../components/spesific/rate_user";
 import {UserAvatar} from "../../components/genral/post_component";
 
@@ -22,31 +21,48 @@ interface FriendProps {
     photo: any,
     labelId: string,
     rate?: number,
+    confirmed?: boolean
 }
 
-export function Friend(props: FriendProps) {
+export function FriendCom(props: FriendProps) {
     const {
+        all_friends,
         friends,
         profile
-    }: { friends: FriendSystem, profile: User } = useSelector((state: any) => state.filesReducer);
+    } = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    let FS = friends[0] && friends[0].friends || []
-    let friend_requests = friends[0] && friends[0].friend_requests || []
-    let is_friend_request = friend_requests.some((req) => req && req.sender.id === profile.id || req.receiver && req.receiver.id === profile.id)
-    let is_friend = FS.some((friend) => friend && friend.sender && friend.sender.id === profile.id || friend && friend.receiver && friend.receiver.id === profile.id)
-    const [isFriend, setIsFriend] = useState(is_friend);
+
     const dispatch = useDispatch();
-    const [isFriendReq, setIsFreindReq] = useState(is_friend_request);
+
+    let is_sender = false;
+    let confirmed = props.confirmed;
+    let isFriend = friends.find((f: Friend) => {
+        confirmed = f.confirmed;
+        if (f.sender.id == props.id) {
+            is_sender = true;
+            return true;
+        } else if (f.receiver.id == props.id) {
+            return true
+        }
+
+        return false
+    })
+
 
     async function handleConfirm(id: string) {
         if (typeof id != 'string') {
             id = id.toText();
         }
         let res = actor && await actor.accept_friend_request(id)
-        dispatch(handleRedux("ADD_FRIEND", {id: id, friend: res.Ok}));
-        dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {friend_id: id}));
         dispatch(handleRedux("UPDATE_NOTE", {id: id + profile.id, is_seen: true}));
-        // dispatch(handleRedux('DELETE_NOTIFY', {id: id + profile.id }));
+        dispatch(handleRedux("ADD_FRIEND", {
+            friend: {
+                confirmed: true,
+                sender: props,
+                receiver: profile
+            }
+        }));
+
         // actor && dispatch(handleRedux('UPDATE_NOTIFY', {new_list: await actor.get_notifications()}));
         return res
     }
@@ -55,16 +71,20 @@ export function Friend(props: FriendProps) {
         if (typeof id != 'string') {
             id = id.toText();
         }
-        let res = actor && await actor.unfriend(id)
+        let res = actor && await actor.unfriend(id);
         if (res.Ok) {
-            dispatch(handleRedux("REMOVE_FRIEND", {id: id}))
-            setIsFriend(false);
+            dispatch(handleRedux("REMOVE_FRIEND", {id: id}));
+            if (is_sender) {
+                dispatch(handleRedux("UPDATE_NOTE", {id: profile.id + id, is_seen: true}));
+            } else {
+                dispatch(handleRedux("UPDATE_NOTE", {id: id + profile.id, is_seen: true}));
+            }
+
+
         }
         return res
     }
 
-    let is_sent = friend_requests.some((req) => req && req.sender.id === profile.id)
-    const [isSent, setIsSent] = useState(is_sent);
 
     async function handleCancel(id: string) {
         if (typeof id != 'string') {
@@ -72,12 +92,9 @@ export function Friend(props: FriendProps) {
         }
         let res = actor && await actor.cancel_friend_request(id)
         if (res.Ok) {
-            dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {id: id}))
-            setIsSent(false);
-            setIsFreindReq(false)
+            dispatch(handleRedux("REMOVE_FRIEND", {id: id}))
+            dispatch(handleRedux('DELETE_NOTIFY', {id: profile.id + id}));
         }
-        let notification_list = actor && await actor.get_notifications();
-        dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
         return res
     }
 
@@ -87,11 +104,9 @@ export function Friend(props: FriendProps) {
         }
         let res = actor && await actor.reject_friend_request(id)
         if (res.Ok) {
-            dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {friend_id: id}))
-            dispatch(handleRedux('DELETE_NOTIFY', {id: data.notification[0].id}));
+            dispatch(handleRedux("REMOVE_FRIEND", {id: id}))
+            dispatch(handleRedux('DELETE_NOTIFY', {id: id + profile.id}));
         }
-        // let notification_list: undefined | Array<Notification> = actor && await actor.get_notifications();
-        // dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
         return res
     }
 
@@ -108,36 +123,32 @@ export function Friend(props: FriendProps) {
         }
         if (friend_request.Ok) {
             enqueueSnackbar("Friend request sent", {variant: "success"});
-            setIsSent(true)
-            setIsFreindReq(true)
         }
         return friend_request
 
     }
 
-    // ToDo prevent the friend request sender from accepting the request
-    //  Only the request receiver can accept_friend_request
 
     return <ListItem
         secondaryAction={
             <>
-                {isFriendReq && !isSent && <Tooltip title={"Friend request pending"}> <LoaderButton
+                {!is_sender && !confirmed && <Tooltip title={"Friend request pending"}> <LoaderButton
                     onClick={async () => await handleConfirm(props.id)}
                 >Confirm</LoaderButton></Tooltip>}
 
-                {isFriendReq && !isSent && <LoaderButton
+                {!is_sender && !confirmed && <LoaderButton
                     onClick={async () => await handleReject(props.id)}
                 >Reject</LoaderButton>}
 
-                {isSent && <LoaderButton
+                {is_sender || !confirmed && <LoaderButton
                     onClick={async () => await handleCancel(props.id)}
                 >Cancel</LoaderButton>}
 
-                {isFriend && !isFriendReq && <LoaderButton
+                {isFriend && confirmed && <LoaderButton
                     onClick={async () => await handleUnfriend(props.id)}
                 >Unfriend</LoaderButton>}
 
-                {!isFriend && !isFriendReq && <Tooltip title={"Send friend request"}> < LoaderButton
+                {!isFriend && !confirmed && <Tooltip title={"Send friend request"}> < LoaderButton
                     onClick={async () => await handleFriedReq(props.id)}
                 ><GroupAddIcon/> </LoaderButton></Tooltip>}
 
@@ -160,38 +171,30 @@ function Friends(props: any) {
         profile,
     } = useSelector((state: any) => state.filesReducer);
 
-    if (!props.friends[0]) {
+    if (!props.friends) {
         return <></>
     }
-    let friend_requests = props.friends[0].friend_requests || [];
-    let friends = props.friends[0].friends || [];
-
 
     return (
         <List dense>
 
-            {friend_requests && friend_requests.map((value) => {
+            {props.friends.map((value) => {
                 let user = value.receiver.id != profile.id ? value.receiver : value.sender
                 const labelId = `checkbox-list-secondary-label-${value.receiver.name}`;
+                if (value.confirmed) {
+                    return (<ListItem
+                        key={value.receiver && value.receiver.name}
+                        disablePadding
+                    >
+                        <FriendCom {...user} {...value} is_friend={true} labelId={labelId}/>
+                    </ListItem>)
+                }
                 return (
                     <ListItem
                         key={value.receiver.name}
                         disablePadding
                     >
-                        <Friend labelId={labelId} {...user}/>
-                    </ListItem>
-                );
-            })}
-
-            {friends && friends.map((value) => {
-                let user = value && value.receiver && value.receiver.id != profile.id ? value.receiver : value.sender
-                const labelId = `checkbox-list-secondary-label-${value.receiver && value.receiver.name}`;
-                return (
-                    <ListItem
-                        key={value.receiver && value.receiver.name}
-                        disablePadding
-                    >
-                        <Friend {...user} is_friend={true} labelId={labelId}/>
+                        <FriendCom labelId={labelId} {...user} {...value}/>
                     </ListItem>
                 );
             })}

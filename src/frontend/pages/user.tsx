@@ -6,7 +6,7 @@ import {
     User,
     UserProfile
 } from "../../declarations/user_canister/user_canister.did";
-import {Friend} from "./profile/friends";
+import {FriendCom} from "./profile/friends";
 import {Principal} from "@dfinity/principal";
 import {Divider, List, Rating as RatingCom, Typography} from "@mui/material";
 import ListItem from "@mui/material/ListItem";
@@ -165,7 +165,7 @@ function UserPage() {
         {user_history && user && <>
 
             id: {String(user.id)}
-            <Friend rate={user_history.users_rate} {...user} labelId={"labelId"}/>
+            <FriendCom rate={user_history.users_rate} {...user} labelId={"labelId"}/>
             description: {user && user.description}
             <UserHistoryCom {...user_history}/>
 

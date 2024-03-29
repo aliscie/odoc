@@ -59,7 +59,7 @@ function useSocket() {
                 let keys = data.notification[0] && data.notification[0].content && Object.keys(data.notification[0].content);
                 if (data.text == "Delete") {
                     let new_request: Friend = data.notification[0].content.FriendRequest.friend
-                    dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {friend_id: new_request.sender.id}))
+                    // dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {friend_id: new_request.sender.id}))
                     dispatch(handleRedux('DELETE_NOTIFY', {id: data.notification[0].id}));
                     return;
                 }

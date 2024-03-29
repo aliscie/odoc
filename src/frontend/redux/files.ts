@@ -2,7 +2,7 @@ import {normalize_files_contents} from "../data_processing/normalize/normalize_c
 import {agent} from "../backend_connect/main";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
-import {FileNode, InitialData, StoredContract, User} from "../../declarations/user_canister/user_canister.did";
+import {FileNode, Friend, InitialData, StoredContract, User} from "../../declarations/user_canister/user_canister.did";
 import {actor} from "../App";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {getCurrentFile} from "./utls";
@@ -37,7 +37,7 @@ export type FilesActions =
     | "UPDATE_FRIEND"
     | "UPDATE_NOT_LIST"
     | "DELETE_NOTIFY"
-    |"UPDATE_NOTE"
+    | "UPDATE_NOTE"
     | FriendsActions;
 
 
@@ -47,10 +47,7 @@ export var initialState = {
     is_files_saved: true,
     files: [],
     files_content: {},
-    friends: [{friends: [], friend_requests: []}],
-    // TODO remove friends and make it like this.
-    //     friends: [],
-    //     friend_requests: [],
+    friends: [],
     changes: {files: {}, contents: {}, contracts: {}, delete_contracts: []},
     notifications: [],
     profile_history: null,
@@ -69,22 +66,7 @@ export async function get_initial_data() {
 
     const authClient = await AuthClient.create();
     const userPrincipal = authClient.getIdentity().getPrincipal().toString();
-    let all_friends = []
-
-    if ("Ok" in data && data.Ok.Friends) {
-        let friend_requests = data.Ok.Friends[0] && data.Ok.Friends[0].friend_requests || []
-        let confirmed_friends = data.Ok.Friends[0] && data.Ok.Friends[0].friends || []
-        all_friends = [...friend_requests.map((i: User) => i), ...confirmed_friends.map((i: any) => i)]
-    }
-
-    const uniqueUsersSet = new Set<string>();
-
-
     if ("Ok" in data) {
-        all_friends.forEach((item) => {
-            item.receiver.id !== data.Ok.Profile.id && uniqueUsersSet.add(item.receiver);
-            item.sender.id !== data.Ok.Profile.id && uniqueUsersSet.add(item.sender);
-        });
         initialState["files"] = data.Ok.Files;
         initialState["denormalized_files_content"] = data.Ok.FilesContents; //[] | [Array<[string, Array<[string, ContentNode]>]>]
         initialState["files_content"] = normalize_files_contents(data.Ok.FilesContents[0]);
@@ -95,14 +77,16 @@ export async function get_initial_data() {
         initialState["users"] = data.Ok.DiscoverUsers;
         initialState["id"] = userPrincipal;
         initialState["friends"] = data.Ok.Friends;
-        initialState["all_friends"] = Array.from(uniqueUsersSet);
+        initialState["all_friends"] = data.Ok.Friends.map((f: Friend) => {
+            return f.sender.id != data.Ok.Profile.id ? f.sender : f.receiver
+        });
         initialState["wallet"] = data.Ok.Wallet;
     }
 }
 
 
 export function filesReducer(state: any = initialState, action: any) {
-    let friends = {...state.friends[0]};
+    let friends = {...state.friends};
     let friend_id = action.id;
     switch (action.type) {
         case 'ADD_CONTENT':
@@ -323,25 +307,21 @@ export function filesReducer(state: any = initialState, action: any) {
             if (action.friends) {
                 return {
                     ...state,
-                    friends: [action.friends],
+                    friends: [...action.friends],
                 };
             } else if (action.friend_request) {
                 return {
                     ...state,
-                    friends: [{
-                        friends: [...friends.friends],
-                        friend_requests: [...friends.friend_requests, action.friend_request]
-                    }],
+                    friends: [...friends],
                 }
             }
             return {...state}
 
 
         case 'ADD_FRIEND':
-            friends.friends.push(action.friend);
+            state.friends.push(action.friend);
             return {
                 ...state,
-                friends: [friends],
             };
 
 
@@ -366,27 +346,30 @@ export function filesReducer(state: any = initialState, action: any) {
 
 
         case 'REMOVE_FRIEND':
-            friends.friends = friends.friends.filter((friend) => friend.id !== friend_id);
-            friends.friends = friends.friends.length > 0 ? friends.friends : [];
+            friends = state.friends.filter((f: Friend) => f.sender.id !== action.id || f.receiver.id !== action.id);
+            friends = friends.length > 0 ? friends : [];
             return {
                 ...state,
-                friends: [friends],
+                friends: [...friends],
             };
 
 
         case 'ADD_FRIEND_REQUEST':
-            friends.friend_requests.push(action.friend);
+            friends.push(action.friend);
             return {
                 ...state,
-                friends: [friends],
+                friends: [...friends],
             };
 
         case 'REMOVE_FRIEND_REQUEST':
-            friends.friend_requests = friends.friend_requests.filter((request) => request.id !== friend_id);
-            friends.friend_requests = friends.friend_requests.length > 0 ? friends.friend_requests : [];
+
+            // TODO instead of this make
+            //     Confirm or cancel friend request
+
+            // friends = state.friends.filter((request) => request.id !== friend_id);
+            // friends = state.friends.length > 0 ? friends : [];
             return {
                 ...state,
-                friends: [friends],
             };
 
         case 'UPDATE_PROFILE':
