@@ -79,7 +79,7 @@ impl Notification {
     pub fn save(&self) {
         NOTIFICATIONS.with(|notifications| {
             let mut user_notifications = notifications.borrow_mut();
-            let user_notifications = user_notifications.entry(self.receiver.clone()).or_insert_with(Vec::new);
+            let user_notifications = user_notifications.entry(self.receiver).or_default();
             user_notifications.retain(|notification| notification.id != self.id);
             user_notifications.push(self.clone());
         });
@@ -195,7 +195,7 @@ pub fn notify_friend_request(f: Friend) {
     // Example of creating a new Notification with the FriendRequest content
     let receiver: Principal = Principal::from_text(&f.receiver.id).unwrap();
     let new_notification = Notification {
-        id: caller().to_string() + &f.receiver.id,
+        id: caller().to_string() + &f.receiver.id.clone(),
         sender: caller(),
         receiver,
         content: NoteContent::FriendRequest(friend_request_notification),

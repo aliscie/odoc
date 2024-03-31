@@ -24,7 +24,9 @@ interface FriendProps {
     confirmed?: boolean
 }
 
-export function FriendCom(props: FriendProps) {
+
+function secondaryActionSwitch(props) {
+    let {id, confirmed} = props;
     const {
         all_friends,
         friends,
@@ -35,18 +37,21 @@ export function FriendCom(props: FriendProps) {
     const dispatch = useDispatch();
 
     let is_sender = false;
-    let confirmed = props.confirmed;
+    let is_receiver = false;
     let isFriend = friends.find((f: Friend) => {
         confirmed = f.confirmed;
-        if (f.sender.id == props.id) {
+        if (f.sender.id == profile.id) {
             is_sender = true;
             return true;
-        } else if (f.receiver.id == props.id) {
+        } else if (f.receiver.id == profile.id) {
+            is_receiver = true;
             return true
         }
 
         return false
     })
+
+    const state = `${is_sender ? 'sender' : ''}${is_receiver ? 'is_receiver' : ''}${confirmed ? 'confirmed' : ''}${isFriend ? 'friend' : ''}`;
 
 
     async function handleConfirm(id: string) {
@@ -55,7 +60,7 @@ export function FriendCom(props: FriendProps) {
         }
         let res = actor && await actor.accept_friend_request(id)
         dispatch(handleRedux("UPDATE_NOTE", {id: id + profile.id, is_seen: true}));
-        dispatch(handleRedux("ADD_FRIEND", {
+        dispatch(handleRedux("CONFIRM_FRIEND", {
             friend: {
                 confirmed: true,
                 sender: props,
@@ -117,6 +122,13 @@ export function FriendCom(props: FriendProps) {
         let loading = enqueueSnackbar(<span>sending friend request... <span
             className={"loader"}/></span>, {variant: "info"});
         let friend_request = actor && await actor.send_friend_request(user)
+        dispatch(handleRedux("ADD_FRIEND", {
+            friend: {
+                confirmed: false,
+                sender: profile,
+                receiver: {id: props.id.toString(), ...props}
+            }
+        }));
         closeSnackbar(loading)
         if (friend_request.Err) {
             enqueueSnackbar(friend_request.Err, {variant: "error"});
@@ -125,35 +137,51 @@ export function FriendCom(props: FriendProps) {
             enqueueSnackbar("Friend request sent", {variant: "success"});
         }
         return friend_request
+    };
 
+    switch (state) {
+        case 'senderfriend':
+            return (
+                <LoaderButton onClick={async () => await handleCancel(id)}>Cancel</LoaderButton>
+            );
+        case 'senderconfirmedfriend':
+            return (
+                <LoaderButton onClick={async () => await handleUnfriend(id)}>Unfriend</LoaderButton>
+            );
+        case 'is_receiverconfirmedfriend':
+            return (
+                <LoaderButton onClick={async () => await handleUnfriend(id)}>Unfriend</LoaderButton>
+            );
+        case '':
+            return (
+                <>
+                    <Tooltip title={"Send friend request"}>
+                        <LoaderButton onClick={async () => await handleFriedReq(id)}><GroupAddIcon/></LoaderButton>
+                    </Tooltip>
+                </>
+            );
+        default:
+            return (
+                <>
+                    {!confirmed && !is_sender && (
+                        <>
+                            <Tooltip title={"Friend request pending"}>
+                                <LoaderButton onClick={async () => await handleConfirm(id)}>Confirm</LoaderButton>
+                            </Tooltip>
+                            <LoaderButton onClick={async () => await handleReject(id)}>Reject</LoaderButton>
+                        </>
+                    )}
+                </>
+            );
     }
+}
+
+
+export function FriendCom(props: FriendProps) {
 
 
     return <ListItem
-        secondaryAction={
-            <>
-                {!is_sender && !confirmed && <Tooltip title={"Friend request pending"}> <LoaderButton
-                    onClick={async () => await handleConfirm(props.id)}
-                >Confirm</LoaderButton></Tooltip>}
-
-                {!is_sender && !confirmed && <LoaderButton
-                    onClick={async () => await handleReject(props.id)}
-                >Reject</LoaderButton>}
-
-                {is_sender || !confirmed && <LoaderButton
-                    onClick={async () => await handleCancel(props.id)}
-                >Cancel</LoaderButton>}
-
-                {isFriend && confirmed && <LoaderButton
-                    onClick={async () => await handleUnfriend(props.id)}
-                >Unfriend</LoaderButton>}
-
-                {!isFriend && !confirmed && <Tooltip title={"Send friend request"}> < LoaderButton
-                    onClick={async () => await handleFriedReq(props.id)}
-                ><GroupAddIcon/> </LoaderButton></Tooltip>}
-
-            </>
-        }
+        secondaryAction={secondaryActionSwitch(props)}
     >
         <ListItemAvatar>
             <UserAvatar {...props} />
@@ -163,6 +191,7 @@ export function FriendCom(props: FriendProps) {
             <RateUser rate={props.rate || 0} id={props.id}/>
         </ListItem>
     </ListItem>
+
 }
 
 function Friends(props: any) {

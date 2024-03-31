@@ -23,12 +23,10 @@ pub fn send_friend_request(user_principal: String) -> Result<User, String> {
 
     let friends = Friend::get_list(user_principal.parse().unwrap());
 
-    let mut f: Friend = Friend::new(caller().to_string(), user_principal.clone());
-    if !friends.contains(&f) && !friends.contains(&f) {
+    let f: Friend = Friend::new(caller().to_string(), user_principal.clone());
+    if !friends.contains(&f) {
         Friend::send_friend_request(user.clone().unwrap())?;
-        if let Ok(u) = Principal::from_text(user_principal) {
-            websocket::notify_friend_request(f);
-        }
+        websocket::notify_friend_request(f.clone());
 
         Ok(user.unwrap())
     } else {

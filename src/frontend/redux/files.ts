@@ -38,6 +38,7 @@ export type FilesActions =
     | "UPDATE_NOT_LIST"
     | "DELETE_NOTIFY"
     | "UPDATE_NOTE"
+    | "CONFIRM_FRIEND"
     | FriendsActions;
 
 
@@ -324,6 +325,18 @@ export function filesReducer(state: any = initialState, action: any) {
                 ...state,
             };
 
+        case 'CONFIRM_FRIEND':
+            friends = state.friends.map((f: Friend) => {
+                if (f.sender.id == action.sender.id && f.receiver.id == action.receiver.id) {
+                    f.confirmed = true;
+                }
+                return f;
+            })
+            return {
+                ...state,
+                friends
+            };
+
 
         case 'UPDATE_FILE_TITLE':
             state.files = state.files.map((file: FileNode) => {
@@ -346,11 +359,10 @@ export function filesReducer(state: any = initialState, action: any) {
 
 
         case 'REMOVE_FRIEND':
-            friends = state.friends.filter((f: Friend) => f.sender.id !== action.id || f.receiver.id !== action.id);
-            friends = friends.length > 0 ? friends : [];
+            friends = state.friends.filter((f) => f.sender.id !== action.id && f.receiver.id !== action.id);
             return {
                 ...state,
-                friends: [...friends],
+                friends: friends,
             };
 
 
