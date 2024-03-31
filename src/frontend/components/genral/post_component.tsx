@@ -101,19 +101,10 @@ export function UserAvatar(props: UserFE | User) {
 export default function PostComponent(props: Props) {
 
 
-    let creator = props.post.creator;
-
-
     let content = normalize_content_tree(props.post.content_tree);
 
 
-
     let subheader = formatTimestamp(props.post.date_created)
-    const [expanded, setExpanded] = React.useState(false);
-
-    // const handleExpandClick = () => {
-    //     setExpanded(!expanded);
-    // };
 
     return (
         <Card
@@ -145,11 +136,11 @@ export default function PostComponent(props: Props) {
                 {/*    <ExpandMoreIcon/>*/}
                 {/*</ExpandMore>*/}
             </CardActions>
-            <Collapse in={expanded} timeout="auto" unmountOnExit>
-                <CardContent>
-                    {props.full_description}
-                </CardContent>
-            </Collapse>
+            {/*<Collapse in={expanded} timeout="auto" unmountOnExit>*/}
+            {/*    <CardContent>*/}
+            {/*        {props.full_description}*/}
+            {/*    </CardContent>*/}
+            {/*</Collapse>*/}
         </Card>
     );
 }

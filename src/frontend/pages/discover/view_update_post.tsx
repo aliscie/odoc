@@ -22,6 +22,7 @@ interface Props {
 function ViewPost(props: Props) {
     const [changes, setChanges] = React.useState<undefined | any>(null);
     const [tags, setTags] = React.useState([]);
+    const [is_changed, setChange] = React.useState(false);
     const [loading, setLoad] = React.useState(false);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     let post: Post = {
@@ -50,6 +51,7 @@ function ViewPost(props: Props) {
         } else {
             enqueueSnackbar("Error creating post. " + res.Err, {variant: "error"});
         }
+        setChange(false)
     };
 
     const handleDeletePost = async (post_id) => {
@@ -68,14 +70,16 @@ function ViewPost(props: Props) {
         new_change[''] = change;
         setChanges(new_change)
     }
-    let is_changed = false
     if (changes) {
 
         let data = normalize_content_tree(props.post.content_tree)
         let new_changes = Object.values(changes)[0];
-        is_changed = JSON.stringify(new_changes) != JSON.stringify(data);
-    }
+        let is_changes = JSON.stringify(new_changes) != JSON.stringify(data);
+        if (is_changes != is_changed) {
+            setChange(is_changes)
+        }
 
+    }
     return (
         <div>
             <PostComponent
@@ -105,13 +109,13 @@ function ViewPost(props: Props) {
                     </BasicMenu>
 
                 }
-                // headerAction={<IconButton aria-label="settings">
-                //     <MoreVertIcon/>
-                // </IconButton>}
 
                 buttons={<><ActionsButtons post={props.post}/>
                     {profile && profile.id == props.post.creator.id &&
-                        <PostTags post={props.post} tags={tags} setTags={setTags}/>}
+                        <PostTags post={props.post} tags={tags} setTags={(op) => {
+                            setChange(true)
+                            setTags(op)
+                        }}/>}
                     {is_changed &&
                         < LoadingButton loading={loading} onClick={handleSave}> Save </LoadingButton>}
 

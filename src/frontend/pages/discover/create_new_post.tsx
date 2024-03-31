@@ -18,6 +18,7 @@ export const init_content = [
 ]
 
 function CreatePost(props: any) {
+    const [tags, setTags] = React.useState([]);
     const {profile,} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     let [isEnter, setEnter] = React.useState(false);
@@ -29,7 +30,7 @@ function CreatePost(props: any) {
         'creator': profile.id,
         'date_created': BigInt(0),
         'votes_up': [],
-        'tags': [],
+        'tags': tags.map((tag) => tag.title),
         'content_tree': [],
         'votes_down': [],
     }
@@ -56,8 +57,9 @@ function CreatePost(props: any) {
             onClick={handleCreatePost}
         ><AddCircleOutlineIcon/></LoadingButton>
         <IconButton><MoreTimeIcon/></IconButton>
-
-        <PostTags/>
+        <PostTags  tags={tags} setTags={(op) => {
+            setTags(op)
+        }}/>
     </>;
 
     function handleOnInsertComponent(e: any, component: any) {
