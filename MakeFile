@@ -24,5 +24,5 @@ run_gateway_on_special_port:
 	cargo run -- --gateway-address 0.0.0.0:8084 --ic-network-url http://127.0.0.1:8080
 
 generate_candid_file:
-	sh ./scripts/generate_candid.sh
+	sh scripts/did.sh
 	dfx generate

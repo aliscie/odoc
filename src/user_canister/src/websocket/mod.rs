@@ -61,16 +61,11 @@ fn ws_get_messages(args: CanisterWsGetMessagesArguments) -> CanisterWsGetMessage
 
 
 #[query]
-fn get_notifications() -> Vec<Notification> {
-    NOTIFICATIONS.with(|notifications| {
-        let notifications = notifications.borrow();
-        if let Some(notifications) = notifications.get(&caller()) {
-            // Convert the reference to a Vec<Notification>
-            return notifications.to_vec();
-        } else {
-            // Return an empty Vec<Notification>
-            return Vec::new();
-        }
+fn get_user_notifications() -> Vec<Notification> {
+        NOTIFICATIONS.with(|notifications| {
+        notifications.borrow()
+            .get(&caller())
+            .map_or_else(Vec::new, |notifications_for_user| notifications_for_user.clone())
     })
 }
 

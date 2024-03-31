@@ -82,6 +82,9 @@ export async function get_initial_data() {
             return f.sender.id != data.Ok.Profile.id ? f.sender : f.receiver
         });
         initialState["wallet"] = data.Ok.Wallet;
+        let notifications: undefined | Array<Notification> = actor && await actor.get_user_notifications();
+        initialState["notifications"] = notifications
+
     }
 }
 
@@ -305,18 +308,13 @@ export function filesReducer(state: any = initialState, action: any) {
             }
 
         case 'UPDATE_FRIEND':
-            if (action.friends) {
-                return {
-                    ...state,
-                    friends: [...action.friends],
-                };
-            } else if (action.friend_request) {
-                return {
-                    ...state,
-                    friends: [...friends],
+            friends = state.friends.map((f: Friend) => {
+                if (f.receiver.id == action.receiver) {
+                    f.confirmed = true
                 }
-            }
-            return {...state}
+                return f
+            });
+            return {...state, friends}
 
 
         case 'ADD_FRIEND':
@@ -327,7 +325,7 @@ export function filesReducer(state: any = initialState, action: any) {
 
         case 'CONFIRM_FRIEND':
             friends = state.friends.map((f: Friend) => {
-                if (f.sender.id == action.sender.id && f.receiver.id == action.receiver.id) {
+                if (f.sender.id == action.friend.sender.id && f.receiver.id == action.friend.receiver.id) {
                     f.confirmed = true;
                 }
                 return f;
@@ -359,30 +357,23 @@ export function filesReducer(state: any = initialState, action: any) {
 
 
         case 'REMOVE_FRIEND':
-            friends = state.friends.filter((f) => f.sender.id !== action.id && f.receiver.id !== action.id);
+            friends = state.friends.filter((f) => {
+                let sender = f.sender.id;
+                let receiver = f.receiver.id
+                // TODO REMOVE THIS UNESSERY CHECKING
+                if (typeof sender != 'string') {
+                    sender = sender.toText();
+                }
+                if (typeof receiver != 'string') {
+                    receiver = receiver.toText();
+                }
+                return sender !== action.id && receiver !== action.id
+            });
             return {
                 ...state,
                 friends: friends,
             };
 
-
-        case 'ADD_FRIEND_REQUEST':
-            friends.push(action.friend);
-            return {
-                ...state,
-                friends: [...friends],
-            };
-
-        case 'REMOVE_FRIEND_REQUEST':
-
-            // TODO instead of this make
-            //     Confirm or cancel friend request
-
-            // friends = state.friends.filter((request) => request.id !== friend_id);
-            // friends = state.friends.length > 0 ? friends : [];
-            return {
-                ...state,
-            };
 
         case 'UPDATE_PROFILE':
             state.profile = {...state.profile, ...action.profile}

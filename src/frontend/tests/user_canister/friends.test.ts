@@ -12,14 +12,14 @@ test("test friends requests", async () => {
 
     let confirm = await global.actor.accept_friend_request(newUser.getPrincipal().toText())
     logger({confirm});
-    // let notifications = global.actor.get_notifications()
-    // expect(Object.values(notifications).length).toEqual(1)
+    let notifications = global.actor.get_user_notifications()
+    expect(Object.values(notifications).length).toEqual(0)
     // -----------------\\
     global.actor.setIdentity(newUser);
     let confirm2 = await global.actor.accept_friend_request(newUser.getPrincipal().toText())
     logger({confirm2});
-    let notifications2 = global.actor.get_notifications()
-    expect(Object.values(notifications2).length).toEqual(1)
+    let notifications2: Array<Notification> = global.actor.get_user_notifications()
+    expect(notifications2.length).toEqual(1)
 
     let confirm3 = await global.actor.accept_friend_request(initial_user.getPrincipal().toText())
     logger({confirm3});

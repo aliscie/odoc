@@ -188,6 +188,7 @@ type Notification = record {
   id : text;
   is_seen : bool;
   content : NoteContent;
+  time : float64;
   sender : principal;
   receiver : principal;
 };
@@ -377,12 +378,12 @@ service : () -> {
   get_friends : () -> (vec Friend) query;
   get_initial_data : () -> (Result_5) query;
   get_my_chats : () -> (vec FEChat) query;
-  get_notifications : () -> (vec Notification) query;
   get_post : (text) -> (Result_6) query;
   get_posts : (nat64, nat64) -> (vec PostUser) query;
   get_share_file : (text) -> (Result_7) query;
   get_shared_file : (text) -> (Result_8);
   get_user : (text) -> (Result) query;
+  get_user_notifications : () -> (vec Notification) query;
   get_user_profile : (principal) -> (Result_9) query;
   make_new_chat_room : (Chat) -> (Result_2);
   message_is_seen : (Message) -> (Result_1);

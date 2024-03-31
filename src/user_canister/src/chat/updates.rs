@@ -23,6 +23,7 @@ fn send_message(user: Option<Principal>, mut message: Message) -> Result<String,
         receiver: caller(),
         content: NoteContent::NewMessage(message.clone()),
         is_seen: false,
+        time: ic_cdk::api::time() as f64,
     };
 
     if User::is_anonymous() {

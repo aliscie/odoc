@@ -15,11 +15,11 @@ pub fn send_friend_request(user_principal: String) -> Result<User, String> {
     let user = User::get_user_from_text_principal(&user_principal);
     if user.clone().is_none() {
         return Err("User does not exist".to_string());
-    }
+    };
 
     if caller() == user.clone().unwrap().principal() {
         return Err("You can't send a friend request to yourself.".to_string());
-    }
+    };
 
     let friends = Friend::get_list(user_principal.parse().unwrap());
 
@@ -113,6 +113,7 @@ pub fn unfriend(user_principal: String) -> Result<User, String> {
         sender: caller(),
         receiver: user.clone().unwrap().principal(),
         is_seen: false,
+        time: ic_cdk::api::time() as f64,
     };
     new_note.save();
 

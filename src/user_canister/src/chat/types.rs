@@ -141,6 +141,7 @@ impl Chat {
             receiver: user,
             content,
             is_seen: false,
+            time: ic_cdk::api::time() as f64,
         };
         new_notification.save();
     }

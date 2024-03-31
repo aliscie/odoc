@@ -136,17 +136,6 @@ export function Notifications() {
     const new_notifications = notifications && notifications.filter((notification: any) => notification && notification.is_seen == false);
 
 
-    useEffect(() => {
-        (async () => {
-            if (actor) {
-                let notification_list = await actor.get_notifications();
-
-                dispatch(handleRedux('UPDATE_NOTIFY', {new_list: notification_list}));
-            }
-        })();
-    }, []);
-
-
     return (
         <>
             <BasicMenu

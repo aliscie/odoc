@@ -98,3 +98,15 @@ export async function logout() {
 
 }
 
+export async function get_id() {
+    const authClient = await AuthClient.create();
+
+    if (await authClient.isAuthenticated()) {
+        const identity = await authClient.getIdentity();
+        return identity.getPrincipal().toText(); // Convert Principal to string
+    }
+
+    // Handle the case where the user is not authenticated
+    console.error("User is not authenticated.");
+    return null;
+}

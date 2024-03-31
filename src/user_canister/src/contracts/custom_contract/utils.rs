@@ -18,6 +18,7 @@ pub fn notify_about_promise(payment: CPayment, _type: PaymentAction) {
             receiver: payment.receiver.clone(),
             content,
             is_seen: false,
+            time: ic_cdk::api::time() as f64,
         };
         new_notification.save();
     }

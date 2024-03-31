@@ -53,6 +53,7 @@ fn pay_for_share_contract(contract_id: ContractId, amount: u64, author: String) 
             receiver: share.receiver.clone(),
             content: NoteContent::SharePayment(contract.clone()),
             is_seen: false,
+            time: ic_cdk::api::time() as f64,
         };
         new_notification.save();
     }
@@ -71,6 +72,7 @@ fn conform_share(user: String, share_contract_id: ShareContractId, contract_id: 
         receiver: user,
         content,
         is_seen: false,
+        time: ic_cdk::api::time() as f64,
     };
     new_note.save();
     contract.conform(user, share_contract_id)
@@ -108,6 +110,7 @@ fn approve_request(author: String, share_requests_id: ShareContractId, contract_
             receiver: author,
             content,
             is_seen: false,
+            time: ic_cdk::api::time() as f64,
         };
         new_note.save();
     }
@@ -128,6 +131,7 @@ fn apply_request(share_requests_id: ShareContractId, contract_id: ContractId, au
         receiver: author,
         content,
         is_seen: false,
+        time: ic_cdk::api::time() as f64,
     };
 
     for share in contract.clone().shares.iter() {

@@ -1,18 +1,17 @@
 import {canisterId, user_canister} from "../../declarations/user_canister";
 import IcWebSocket, {createWsConfig} from "ic-websocket-js";
 import {SignIdentity} from "@dfinity/agent";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 
 
 import React, {useEffect, useState} from "react";
 import {handleRedux} from "../redux/main";
 import {AuthClient} from "@dfinity/auth-client";
-import {actor} from "../App";
 import {AppMessage, Friend} from "../../declarations/user_canister/user_canister.did";
+import {get_id} from "../backend_connect/ic_agent";
 
 
 function useSocket() {
-
 
     let gatewayUrl = "wss://gateway.icws.io";
     let icUrl = `https://y43fd-5qaaa-aaaal-acbqa-cai.ic0.app`;
@@ -50,17 +49,22 @@ function useSocket() {
             };
 
             ws.onmessage = async (event) => {
+
+                console.log({event});
+
                 let data: AppMessage = event.data;
 
                 // console.log("Received message:", data);
 
 
-                // check if the key is `FriendRequest` or ContractUpdate in event.data.notification[0].content[key]
                 let keys = data.notification[0] && data.notification[0].content && Object.keys(data.notification[0].content);
                 if (data.text == "Delete") {
-                    let new_request: Friend = data.notification[0].content.FriendRequest.friend
-                    // dispatch(handleRedux("REMOVE_FRIEND_REQUEST", {friend_id: new_request.sender.id}))
                     dispatch(handleRedux('DELETE_NOTIFY', {id: data.notification[0].id}));
+                    let user_id = await get_id()
+                    let sender = event.data.notification[0].sender.toText();
+                    let receiver = event.data.notification[0].receiver.toText();
+                    let remove_id = sender !== user_id ? sender : receiver;
+                    dispatch(handleRedux('REMOVE_FRIEND', {id: remove_id}));
                     return;
                 }
                 switch (keys && keys[0]) {
@@ -68,8 +72,8 @@ function useSocket() {
                         dispatch(handleRedux('ADD_NOTIFICATION', {message: data.notification[0].content.NewMessage}));
                         break
                     case "FriendRequest":
-                        let new_request: Friend = data.notification[0].content.FriendRequest.friend
-                        new_request && dispatch(handleRedux("UPDATE_FRIEND", {friend_request: new_request}))
+                        let friend: Friend = data.notification[0].content.FriendRequest.friend
+                        dispatch(handleRedux("ADD_FRIEND", {friend}));
                         dispatch(handleRedux('NOTIFY', {new_notification: data.notification[0]}));
                         break
                     // TODO
@@ -87,10 +91,25 @@ function useSocket() {
                         dispatch(handleRedux("UPDATE_CONTRACT", {contract: share_payment}))
                         break
                     case "Unfriend":
-                        actor && dispatch(handleRedux('UPDATE_NOTIFY', {new_list: await actor.get_notifications()}));
-                        let new_friends_list = actor && await actor.get_friends();
-                        new_friends && dispatch(handleRedux("UPDATE_FRIEND", {friends: new_friends_list[0]}))
+                        let id = event.data.notification[0].id;
+
+                        dispatch(handleRedux('DELETE_NOTIFY', {id: id}));
+                        let user_id = await get_id()
+                        let sender = event.data.notification[0].sender.toText();
+                        let receiver = event.data.notification[0].receiver.toText();
+                        let remove_id = sender == user_id ? receiver : sender;
+                        dispatch(handleRedux('REMOVE_FRIEND', {id: remove_id}));
                         break
+                    case 'AcceptFriendRequest':
+                        // dispatch(handleRedux("CONFIRM_FRIEND", {
+                        //     friend: {
+                        //         confirmed: true,
+                        //         sender: props,
+                        //         receiver: profile
+                        //     }
+                        // }));
+                        dispatch(handleRedux("UPDATE_FRIEND", {receiver: event.data.notification[0].sender.toText()}));
+                        dispatch(handleRedux("UPDATE_NOTE", event.data.notification[0]));
                     default:
                         console.log("No match")
 

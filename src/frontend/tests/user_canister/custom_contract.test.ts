@@ -31,7 +31,7 @@ test("Test custom contract", async () => {
 
     // --------------------- Confirm the promise ---------------------  \\
     global.actor.setIdentity(newUser)
-    let notifications: Array<Notification> = await global.actor.get_notifications();
+    let notifications: Array<Notification> = await global.actor.get_user_notifications();
     // logger({notifications});
     let payment = notifications[0].content.CPaymentContract[0];
     let contract_id = custom_contract.id;
@@ -91,7 +91,7 @@ test("Test custom contract", async () => {
 
 async function userConfirm(user, g) {
     g.actor.setIdentity(user)
-    let notifications: Array<Notification> = await global.actor.get_notifications();
+    let notifications: Array<Notification> = await global.actor.get_user_notifications();
     await Promise.all(notifications.map(async (value) => {
         let payment = value.content.CPaymentContract[0];
         let contract_id = custom_contract.id;
@@ -115,7 +115,7 @@ test("Test actions rating", async () => {
 
     async function userObject(user) {
         global.actor.setIdentity(user)
-        let notifications: Array<Notification> = await global.actor.get_notifications();
+        let notifications: Array<Notification> = await global.actor.get_user_notifications();
         await Promise.all(notifications.map(async (value) => {
             let payment = value.content.CPaymentContract[0];
             let contract_id = custom_contract.id;

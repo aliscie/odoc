@@ -59,8 +59,7 @@ pub struct Notification {
     pub(crate) receiver: Principal,
     pub(crate) content: NoteContent,
     pub(crate) is_seen: bool,
-    // pub(crate) time: f64,
-
+    pub(crate) time: f64,
 }
 
 // impliemtn a function to Notification that get the id of friedn requst by importing reciveer and sender
@@ -72,6 +71,7 @@ impl Notification {
             sender: caller(),
             receiver: user,
             is_seen: false,
+            time: ic_cdk::api::time() as f64,
         }
     }
 
@@ -200,6 +200,7 @@ pub fn notify_friend_request(f: Friend) {
         receiver,
         content: NoteContent::FriendRequest(friend_request_notification),
         is_seen: false,
+        time: ic_cdk::api::time() as f64,
     };
     new_notification.save();
 }
@@ -217,6 +218,7 @@ pub fn contract_notification(receiver: Principal, sender: Principal, contract_ty
             contract_id,
         }),
         is_seen: false,
+        time: ic_cdk::api::time() as f64,
     };
     new_notification.save();
 }

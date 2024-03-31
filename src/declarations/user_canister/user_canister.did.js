@@ -260,6 +260,22 @@ export const idlFactory = ({ IDL }) => {
     'name' : IDL.Text,
     'admins' : IDL.Vec(UserFE),
   });
+  const Post = IDL.Record({
+    'id' : IDL.Text,
+    'creator' : IDL.Text,
+    'date_created' : IDL.Nat64,
+    'votes_up' : IDL.Vec(IDL.Principal),
+    'tags' : IDL.Vec(IDL.Text),
+    'content_tree' : IDL.Vec(ContentNode),
+    'votes_down' : IDL.Vec(IDL.Principal),
+  });
+  const Result_6 = IDL.Variant({ 'Ok' : Post, 'Err' : IDL.Text });
+  const ShareFile = IDL.Record({ 'id' : IDL.Text, 'owner' : IDL.Principal });
+  const Result_7 = IDL.Variant({ 'Ok' : ShareFile, 'Err' : IDL.Text });
+  const Result_8 = IDL.Variant({
+    'Ok' : IDL.Tuple(FileNode, IDL.Vec(ContentNode)),
+    'Err' : IDL.Text,
+  });
   const ContractNotification = IDL.Record({
     'contract_type' : IDL.Text,
     'contract_id' : IDL.Text,
@@ -293,24 +309,9 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Text,
     'is_seen' : IDL.Bool,
     'content' : NoteContent,
+    'time' : IDL.Float64,
     'sender' : IDL.Principal,
     'receiver' : IDL.Principal,
-  });
-  const Post = IDL.Record({
-    'id' : IDL.Text,
-    'creator' : IDL.Text,
-    'date_created' : IDL.Nat64,
-    'votes_up' : IDL.Vec(IDL.Principal),
-    'tags' : IDL.Vec(IDL.Text),
-    'content_tree' : IDL.Vec(ContentNode),
-    'votes_down' : IDL.Vec(IDL.Principal),
-  });
-  const Result_6 = IDL.Variant({ 'Ok' : Post, 'Err' : IDL.Text });
-  const ShareFile = IDL.Record({ 'id' : IDL.Text, 'owner' : IDL.Principal });
-  const Result_7 = IDL.Variant({ 'Ok' : ShareFile, 'Err' : IDL.Text });
-  const Result_8 = IDL.Variant({
-    'Ok' : IDL.Tuple(FileNode, IDL.Vec(ContentNode)),
-    'Err' : IDL.Text,
   });
   const ActionType = IDL.Variant({
     'Share' : SharePayment,
@@ -461,7 +462,6 @@ export const idlFactory = ({ IDL }) => {
     'get_friends' : IDL.Func([], [IDL.Vec(Friend)], ['query']),
     'get_initial_data' : IDL.Func([], [Result_5], ['query']),
     'get_my_chats' : IDL.Func([], [IDL.Vec(FEChat)], ['query']),
-    'get_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
     'get_post' : IDL.Func([IDL.Text], [Result_6], ['query']),
     'get_posts' : IDL.Func(
         [IDL.Nat64, IDL.Nat64],
@@ -471,6 +471,7 @@ export const idlFactory = ({ IDL }) => {
     'get_share_file' : IDL.Func([IDL.Text], [Result_7], ['query']),
     'get_shared_file' : IDL.Func([IDL.Text], [Result_8], []),
     'get_user' : IDL.Func([IDL.Text], [Result], ['query']),
+    'get_user_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
     'get_user_profile' : IDL.Func([IDL.Principal], [Result_9], ['query']),
     'make_new_chat_room' : IDL.Func([Chat], [Result_2], []),
     'message_is_seen' : IDL.Func([Message], [Result_1], []),
