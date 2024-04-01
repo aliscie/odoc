@@ -9,9 +9,8 @@ import {useSelector} from "react-redux";
 import {actor} from "../../App";
 import {useSnackbar} from "notistack";
 import {LoadingButton} from "@mui/lab";
-import serialize_file_contents from "../../data_processing/serialize/serialize_file_contents";
 import PostTags from "./tags_component";
-import {normalize_content_tree} from "../../data_processing/normalize/normalize_contents";
+import serialize_file_contents from "../../data_processing/serialize/serialize_file_contents";
 
 interface Props {
     post: PostUser
@@ -20,66 +19,63 @@ interface Props {
 }
 
 function ViewPost(props: Props) {
-    const [changes, setChanges] = React.useState<undefined | any>(null);
-    const [tags, setTags] = React.useState([]);
-    const [is_changed, setChange] = React.useState(false);
-    const [loading, setLoad] = React.useState(false);
-    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    let post: Post = {
-        'id': props.post.id,
-        'creator': props.post.creator.id,
-        'date_created': BigInt(Date.now()),
-        'votes_up': [],
-        'tags': tags.map((tag) => tag.title),
-        'content_tree': [],
-        'votes_down': [],
-    }
-    const handleSave = async () => {
-        if (changes) {
-            let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> = serialize_file_contents(changes)
-            let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1]
-            post.content_tree = content_tree
-        }
+    const [post, setPost] = React.useState(() => {
+        const initialPost: Post = {
+            id: props.post.id,
+            creator: props.post.creator.id,
+            date_created: props.post.date_created,
+            votes_up: props.post.votes_up,
+            tags: props.post.tags,
+            content_tree: props.post.content_tree,
+            votes_down: props.post.votes_down,
+        };
+        return initialPost;
+    });
 
-        setLoad(true)
-        let res = actor && await actor.save_post(post);
-        setLoad(false)
-        if ("Ok" in res) {
-            // TODo Why new posts does not show up
-            enqueueSnackbar("Post created", {variant: "success"});
-            setChanges(null);
+    const [isChanged, setChanged] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
+    const {enqueueSnackbar} = useSnackbar();
+
+    const handleSave = async () => {
+
+        let new_change = {};
+        new_change[''] = post.content_tree;
+        const de_changes = serialize_file_contents(new_change);
+        let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1]
+        const res = await actor?.save_post({...post, content_tree});
+        setLoading(false);
+        if (res && "Ok" in res) {
+            enqueueSnackbar("Post saved", {variant: "success"});
+            // Optionally, update the post list in the parent component here.
         } else {
-            enqueueSnackbar("Error creating post. " + res.Err, {variant: "error"});
+            enqueueSnackbar("Error saving post. " + res?.Err, {variant: "error"});
         }
-        setChange(false)
+        setChanged(false);
     };
 
-    const handleDeletePost = async (post_id) => {
-        let res = actor && await actor.delete_post(post_id);
+    const handleDeletePost = async (post_id: string) => {
+        const res = await actor?.delete_post(post_id);
         if (res) {
             enqueueSnackbar('Post deleted successfully', {variant: 'success'});
-            props.setPosts(props.posts.filter((post) => post.id != post_id))
+            props.setPosts(prevPosts => prevPosts.filter(post => post.id !== post_id));
         } else {
             enqueueSnackbar('Error deleting post', {variant: 'error'});
         }
+    };
 
-    }
-    const {profile, users, isLoggedIn, Anonymous} = useSelector((state: any) => state.filesReducer);
-    const onChange = (change) => {
-        let new_change = {};
-        new_change[''] = change;
-        setChanges(new_change)
-    }
-    if (changes) {
+    const {profile, isLoggedIn, Anonymous} = useSelector((state: any) => state.filesReducer);
 
-        let data = normalize_content_tree(props.post.content_tree)
-        let new_changes = Object.values(changes)[0];
-        let is_changes = JSON.stringify(new_changes) != JSON.stringify(data);
-        if (is_changes != is_changed) {
-            setChange(is_changes)
-        }
+    const onChange = (changes: any) => {
 
-    }
+        // let new_change = {};
+        // new_change[''] = changes;
+
+        // const normalizedChanges = serialize_file_contents(new_change);
+        // console.log({normalizedChanges})
+        setPost(prevPost => ({...prevPost, content_tree: changes}));
+        setChanged(true);
+    };
+
     return (
         <div>
             <PostComponent
@@ -87,7 +83,7 @@ function ViewPost(props: Props) {
                 onChange={onChange}
                 post={props.post}
                 headerAction={
-                    profile && props.post.creator.id == profile.id && <BasicMenu
+                    profile && props.post.creator.id === profile.id && <BasicMenu
                         anchorOrigin={{
                             vertical: 'bottom',
                             horizontal: 'right',
@@ -101,29 +97,31 @@ function ViewPost(props: Props) {
                             {
                                 content: 'Delete',
                                 icon: <DeleteIcon/>,
-                                onClick: async () => await handleDeletePost(post.id)
+                                onClick: () => handleDeletePost(props.post.id)
                             },
                         ]}
                     >
                         <MoreVertIcon/>
                     </BasicMenu>
-
                 }
+                buttons={<>
+                    <ActionsButtons post={props.post}/>
+                    {profile && profile.id === props.post.creator.id &&
+                        <PostTags
+                            post={props.post}
 
-                buttons={<><ActionsButtons post={props.post}/>
-                    {profile && profile.id == props.post.creator.id &&
-                        <PostTags post={props.post} tags={tags} setTags={(op) => {
-                            setChange(true)
-                            setTags(op)
-                        }}/>}
-                    {is_changed &&
-                        < LoadingButton loading={loading} onClick={handleSave}> Save </LoadingButton>}
-
+                            setTags={(updatedTags) => {
+                                setPost(prevPost => ({...prevPost, tags: updatedTags.map(tag => tag.title)}));
+                                setChanged(true);
+                            }}/>}
+                    {isChanged &&
+                        <LoadingButton loading={loading} onClick={handleSave}>Save</LoadingButton>
+                    }
                 </>}
                 user={props.post.creator}
             />
         </div>
-    )
+    );
 }
 
 export default ViewPost;

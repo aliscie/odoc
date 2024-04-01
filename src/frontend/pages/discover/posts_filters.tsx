@@ -1,37 +1,33 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {actor} from "../../App";
 import {useSelector} from "react-redux";
-import {Button} from "@mui/material";
-import MultiAutoComplete from "../../components/genral/multi_autocompelte";
+import {Box, Button} from "@mui/material";
+import {PostUser} from "../../../declarations/user_canister/user_canister.did";
+import PostTags from "./tags_component";
 
 interface Props {
     setPosts: React.Dispatch<React.SetStateAction<any>>;
     setPage: React.Dispatch<React.SetStateAction<number>>;
+    initPosts: Array<PostUser>
 }
 
+let init_posts = []
+
 function FilterPosts(props: Props) {
+    if (props.initPosts.length > init_posts.length) {
+        init_posts = props.initPosts;
+    }
+
     const {profile} = useSelector((state: any) => state.filesReducer);
     const [tags, setTags] = useState<[] | [Array<string>]>([]);
     const [userIds, setUserIds] = useState<[] | [string]>([profile ? profile.id : ""]);
-    useEffect(() => {
-
-        if (tags.length > 0) {
-            (async () => {
-                const response = actor && (await actor.get_filtered_posts([tags.map((opt) => opt.title)], []));
-                props.setPosts(response || []);
-                props.setPage(0);
-            })()
-
-        }
-
-    }, [tags]);
     const handleFilter = async () => {
 
         // Constructing Option<Vec<String>> for tags
         const tagsOption: [] | [Array<string>] = tags
 
         // Constructing Option<String> for creator (user ID)
-        const creatorOption = userIds.length > 0 ? {Some: userIds[0]} : {None: null};
+        // const creatorOption = userIds.length > 0 ? {Some: userIds[0]} : {None: null};
 
         try {
             const response = actor && (await actor.get_filtered_posts(tagsOption, userIds));
@@ -42,14 +38,26 @@ function FilterPosts(props: Props) {
             console.error('Error filtering posts:', error);
         }
     };
-    let initial_tags = [
-        {title: "hiring"}, {title: "seeking"}
-    ];
-    const onTagChange = (event: any, options: any) => {
-        setTags(options);
+    // let initial_tags = [
+    //     {title: "hiring"}, {title: "seeking"}
+    // ];
+    const onTagChange = async (options: any) => {
+        options && setTags(options);
+
+        if (options && options.length > 0) {
+            const response = actor && await actor.get_filtered_posts([options.map((opt) => opt.title)], []);
+            console.log({response, t: options.map((opt) => opt.title)})
+            response && props.setPosts(response || []);
+            response && props.setPage(0);
+        } else {
+            props.setPosts(init_posts || []);
+            props.setPage(0);
+        }
+
+
     }
     return (
-        <div>
+        <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
             {/*<div>*/}
             {/*    <label>Add Tags:</label>*/}
             {/*    <input*/}
@@ -67,14 +75,13 @@ function FilterPosts(props: Props) {
             {/*    />*/}
             {/*</div>*/}
             {profile && <Button onClick={handleFilter}>Only my posts</Button>}
-            <MultiAutoComplete
-                style={{backgroundColor: "gray", display: "flex", justifyContent: "center" }}
-                onChange={onTagChange}
-                value={tags}
-                options={initial_tags}
-                multiple={true}/>
-
-        </div>
+            <PostTags
+                style={{backgroundColor: "lightblue"}}
+                tags={tags}
+                setTags={(op) => {
+                    onTagChange(op)
+                }}/>
+        </Box>
     );
 }
 

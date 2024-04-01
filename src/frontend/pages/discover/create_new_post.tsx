@@ -13,9 +13,6 @@ import serialize_file_contents from "../../data_processing/serialize/serialize_f
 import {LoadingButton} from "@mui/lab";
 import PostTags from "./tags_component";
 
-export const init_content = [
-    {type: "p", children: [{text: ""}]},
-]
 
 function CreatePost(props: any) {
     const [tags, setTags] = React.useState([]);
@@ -37,13 +34,13 @@ function CreatePost(props: any) {
     const handleCreatePost = async () => {
         let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> = serialize_file_contents(changes)
         let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1]
-        post.content_tree = content_tree
+        let new_post = {...post, content_tree: content_tree,};
         setLoad(true)
-        let res = actor && await actor.save_post(post)
+        let res = actor && await actor.save_post(new_post)
         setLoad(false)
         if ("Ok" in res) {
             // TODo Why new posts does not show up
-            props.setPosts((pre) => [{...post, creator: {name: profile.name, id: profile.id}}, ...(pre || [])]);
+            props.setPosts((pre) => [{...new_post, creator: {name: profile.name, id: profile.id}}, ...(pre || [])]);
             enqueueSnackbar("Post created", {variant: "success"});
             setChanges(null);
         } else {
@@ -57,7 +54,7 @@ function CreatePost(props: any) {
             onClick={handleCreatePost}
         ><AddCircleOutlineIcon/></LoadingButton>
         <IconButton><MoreTimeIcon/></IconButton>
-        <PostTags  tags={tags} setTags={(op) => {
+        <PostTags tags={tags} setTags={(op) => {
             setTags(op)
         }}/>
     </>;
@@ -99,7 +96,7 @@ function CreatePost(props: any) {
 
             }}
         >
-            <PostComponent
+            < PostComponent
                 key={changes?.key} // Use the key to force a re-render
                 buttons={<CreateButtons/>}
                 post={post}

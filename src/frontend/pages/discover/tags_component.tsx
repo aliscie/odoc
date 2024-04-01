@@ -7,48 +7,43 @@ interface Props {
     onChange: any,
     setTags: any,
     tags: [],
-    post: PostUser
+    post: PostUser,
+    style?: any
 }
 
 function PostTags(props: Props) {
     let init = [
         {title: "hiring"}, {title: "seeking"}
     ];
-    const [initial_tags, setInitTags] = React.useState(init);
+    const [tags_options, setTagsOptions] = React.useState(init);
+    const [tags, setTags] = React.useState(props.post ? props.post.tags.map((tag) => {
+        return {title: tag}
+    }) : []);
 
 
     function handleChange(event: any, options: any) {
-        let is_title_in = initial_tags.some((item) => item.title.includes(event.target.value));
+        let is_title_in = tags_options.some((item) => item.title.includes(event.target.value));
         let is_text = typeof event.target.value === "string";
 
         if (!is_title_in && is_text) {
-            setInitTags((pre) => {
+            setTagsOptions((pre) => {
                 return [{title: String(event.target.value)}, ...pre];
             });
         } else if (options) {
             props.setTags(options);
-            // props.onChange(options);
+            setTags(options)
         } else {
-            setInitTags(init);
+            setTagsOptions(init);
         }
     }
 
     const debouncedHandleChange = React.useMemo(() => debounce(handleChange, 300), []);
 
-
-    let tags: any = props.tags || [];
-    if (props.post) {
-        tags = [
-            ...tags,
-            ...props.post.tags.map((tag) => {
-                return {title: tag}
-            })
-        ]
-    }
     return <MultiAutoComplete
+        style={props.style}
         onChange={debouncedHandleChange}
         value={tags}
-        options={initial_tags}
+        options={tags_options}
         multiple={true}/>
 }
 

@@ -1,13 +1,12 @@
 import React, {useEffect} from 'react';
 import './styles/LandingPage.css';
-import {Button, Grid} from "@mui/material";
+import {Button, Divider, Grid} from "@mui/material";
 import {useSelector} from "react-redux";
 import CreatePost from "./discover/create_new_post";
 import {actor} from "../App";
 import {PostUser} from "../../declarations/user_canister/user_canister.did";
 import {useSnackbar} from "notistack";
 import FilterPosts from "./discover/posts_filters";
-import {logger} from "../dev_utils/log_data";
 import ViewPost from "./discover/view_update_post";
 
 const Discover = () => {
@@ -17,7 +16,6 @@ const Discover = () => {
         const [posts, setPosts] = React.useState<| Array<PostUser>>([]); //TODO use redux for this
         const [current_page, setPage] = React.useState<number>(0);
         const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-
         useEffect(() => {
             let timeoutId: NodeJS.Timeout;
 
@@ -81,7 +79,8 @@ const Discover = () => {
                 }}
             >
                 {isLoggedIn && !Anonymous && <CreatePost setPosts={setPosts}/>}
-                <FilterPosts setPage={setPage} setPosts={setPosts}/>
+                <Divider/>
+                <FilterPosts initPosts={posts} setPage={setPage} setPosts={setPosts}/>
                 {
                     posts && posts.map((post: PostUser) => {
 
