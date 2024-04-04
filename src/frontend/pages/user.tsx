@@ -1,48 +1,24 @@
 import React, {useEffect, useState} from "react";
 import {actor} from "../App";
 import {
-    ActionRating, ActionType, PaymentStatus,
-    Rating, StoredContract,
+    ActionRating,
+    ActionType,
+    PaymentStatus,
+    Rating,
     User,
     UserProfile
 } from "../../declarations/user_canister/user_canister.did";
 import {FriendCom} from "./profile/friends";
 import {Principal} from "@dfinity/principal";
-import {Divider, List, Rating as RatingCom, Typography} from "@mui/material";
-import ListItem from "@mui/material/ListItem";
+import {List, Rating as RatingCom} from "@mui/material";
 import ListItemText from "@mui/material/ListItemText";
-import Typography from '@mui/material/Typography';
-import {useSelector} from "react-redux";
 import Stack from "@mui/material/Stack";
 import {LineChart} from "@mui/x-charts/LineChart";
 import useGetUser from "../utils/get_user_by_principal";
-
-// export function PaymentContractComponent(contract: StoredContract) {
-//     const {profile} = useSelector((state: any) => state.filesReducer);
-//
-//     return <ListItem alignItems="flex-start">
-//         {/*{contract.contract_id}*/}
-//         <ListItemText
-//             primary={contract.amount}
-//             secondary={
-//                 <React.Fragment>
-//                     <Typography
-//                         sx={{display: 'inline'}}
-//                         component="span"
-//                         variant="body2"
-//                         color="text.primary"
-//                     >
-//                         {contract.confirmed ? "confirmed" : "not confirmed"}
-//                     </Typography>
-//                     Receiver: {profile.id == contract.receiver.toString() ? "You" : "Other"}
-//                 </React.Fragment>
-//             }
-//         />
-//     </ListItem>
-// }
+import {logger} from "../dev_utils/log_data";
 
 export function UserHistoryCom(profile: UserProfile) {
-    let {getUser, getUserByName} = useGetUser();
+    let {getUser} = useGetUser();
 
     const [actionRatingsWithNames, setActionRatingsWithNames] = useState([]);
     ``
@@ -69,18 +45,12 @@ export function UserHistoryCom(profile: UserProfile) {
     }, []);
 
     let actions_len = profile.rates_by_actions.length;
-    // const series =
+
     return <>
         <div>spent: {profile.spent} USDT</div>
+        <div>received: {profile.received} USDT</div>
         <div>Interacted with : {profile.users_interacted} users</div>
         <div>dept : {profile.total_debt} dept</div>
-        {/*<div>rate : {profile.users_rate} rate</div>*/}
-
-        {/*<div>payment cancellations : {profile.total_payments_cancellation} </div>*/}
-        {/*<div>Received payments from shares : {profile.received_shares_payments}</div>*/}
-        {/*{profile.latest_payments_cancellation.map((contract: PaymentContract) => {*/}
-        {/*    return <PaymentContractComponent {...contract} />*/}
-        {/*})}*/}
 
         {profile.rates_by_others.map((rate: Rating) => {
             return <ListItemText
@@ -109,7 +79,7 @@ export function UserHistoryCom(profile: UserProfile) {
                 series={[
                     {
                         label: 'rating',
-                        data: profile.rates_by_actions.map((i, index) => i.rating),
+                        data: profile.rates_by_actions.map((i, index) => i.rating || 0),
                     },
                     {
                         label: 'spent',
@@ -128,10 +98,6 @@ export function UserHistoryCom(profile: UserProfile) {
                 height={300}
             />
         </Stack>
-        {/*<div>Accepted shares changes:  {profile.shares_changes_accepts}</div>*/}
-        {/*<div>Rejected shares changes:  {profile.shares_changes_rejects}</div>*/}
-        {/*<div>custom contracts : 5</div>*/}
-        {/*<div>custom contracts changes : 1</div>*/}
     </>
 }
 

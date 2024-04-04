@@ -220,20 +220,21 @@ export type Operation = { 'Equal' : null } |
   { 'Contains' : null } |
   { 'Bigger' : null } |
   { 'BiggerOrEqual' : null };
-export type PaymentAction = { 'Released' : null } |
+export type PaymentAction = { 'RequestCancellation' : CPayment } |
+  { 'Released' : null } |
   { 'Objected' : null } |
   { 'Accepted' : null } |
   { 'Update' : null } |
   { 'Cancelled' : null } |
   { 'Promise' : null };
-export type PaymentStatus = { 'HeighConformed' : null } |
-  { 'None' : null } |
+export type PaymentStatus = { 'None' : null } |
   { 'RequestCancellation' : null } |
-  { 'ApproveHeighConformed' : null } |
   { 'Released' : null } |
   { 'Objected' : string } |
   { 'Confirmed' : null } |
-  { 'ConfirmedCancellation' : null };
+  { 'ConfirmedCancellation' : null } |
+  { 'ApproveHighPromise' : null } |
+  { 'HighPromise' : null };
 export type PermissionType = { 'Edit' : Principal } |
   { 'View' : Principal } |
   { 'AnyOneView' : null } |
@@ -385,7 +386,7 @@ export interface WebsocketMessage {
 export interface _SERVICE {
   'accept_friend_request' : ActorMethod<[string], Result>,
   'apply_request' : ActorMethod<[string, string, string], Result_1>,
-  'approve_heigh_conform' : ActorMethod<[CPayment], Result_1>,
+  'approve_high_promise' : ActorMethod<[CPayment], Result_1>,
   'approve_request' : ActorMethod<[string, string, string], Result_1>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
   'confirmed_c_payment' : ActorMethod<[CPayment], Result_1>,
@@ -395,6 +396,7 @@ export interface _SERVICE {
   'counter' : ActorMethod<[], bigint>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
   'create_share_contract' : ActorMethod<[Array<Share>], Result_2>,
+  'delete_custom_contract' : ActorMethod<[string], Result_1>,
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
   'delete_post' : ActorMethod<[string], Result_1>,
   'deposit_usdt' : ActorMethod<[number], Result_3>,

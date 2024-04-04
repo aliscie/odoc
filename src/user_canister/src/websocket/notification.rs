@@ -22,7 +22,7 @@ pub struct ContractNotification {
     pub(crate) contract_id: String,
 }
 
-#[derive(Eq, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
+#[derive(PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub enum PaymentAction {
     Cancelled,
     Released,
@@ -30,6 +30,7 @@ pub enum PaymentAction {
     Update,
     Objected,
     Promise,
+    RequestCancellation(CPayment),
     // ActionType(Principal), // if needed u can, action done by user with the Principal
 }
 
@@ -73,6 +74,26 @@ impl Notification {
             is_seen: false,
             time: ic_cdk::api::time() as f64,
         }
+    }
+    pub fn get_list(user: &Principal) -> Vec<Self> {
+        NOTIFICATIONS.with(|notifications| {
+            let user_notifications = notifications.borrow();
+            user_notifications.get(user).map_or_else(Vec::new, |notifications_for_user| notifications_for_user.clone())
+        })
+    }
+    pub fn get_list_promises(user: &Principal) -> Vec<CPayment> {
+        NOTIFICATIONS.with(|notifications| {
+            let user_notifications = notifications.borrow();
+            user_notifications.get(user).map_or_else(Vec::new, |notifications_for_user| {
+                notifications_for_user.iter().filter_map(|notification| {
+                    if let NoteContent::CPaymentContract(payment, _) = &notification.content {
+                        Some(payment.clone())
+                    } else {
+                        None
+                    }
+                }).collect()
+            })
+        })
     }
 
 

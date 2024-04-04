@@ -38,15 +38,11 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }));
 
 interface Props {
-    // user: User,
-    // content?: any,
     buttons?: any
     headerAction?: any,
-    // subheader?: string,
     post: PostUser,
     onChange?: any,
     editable?: boolean,
-    // avatar?: any,
 }
 
 

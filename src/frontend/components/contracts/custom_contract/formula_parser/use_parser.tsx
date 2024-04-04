@@ -91,13 +91,10 @@ function useParser(props: ParserProps) {
 
     let warning = false;
     values["Promise"] = (to: User, amount: number) => {
-        // if (!values["row_id"]) {
-        //     return "Null"
-        // };
-        // console.log({x: values.row_id})
-        // if (!values.row_id) {
-        //     console.error("----------", {values})
-        // }
+        if (!values.row_id) {
+            console.error("----------", {values})
+            return "Err"
+        }
         const promise: CPayment = {
             id: values.row_id,
             amount: Number(amount),

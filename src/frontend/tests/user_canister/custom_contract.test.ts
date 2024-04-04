@@ -32,7 +32,6 @@ test("Test custom contract", async () => {
     // --------------------- Confirm the promise ---------------------  \\
     global.actor.setIdentity(newUser)
     let notifications: Array<Notification> = await global.actor.get_user_notifications();
-    // logger({notifications});
     let payment = notifications[0].content.CPaymentContract[0];
     let contract_id = custom_contract.id;
     expect(payment.contract_id).toEqual(contract_id);
@@ -84,7 +83,6 @@ test("Test custom contract", async () => {
 
     let profile_history: { Ok: UserProfile } | { Err: string } = await global.actor.get_user_profile(global.user.getPrincipal());
     expect(profile_history.Ok.actions_rate).toBeGreaterThan(0);
-    // logger({profile_history});
     global.pic.tearDown();
 });
 

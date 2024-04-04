@@ -34,13 +34,20 @@ function CreatePost(props: any) {
     const handleCreatePost = async () => {
         let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> = serialize_file_contents(changes)
         let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1]
-        let new_post = {...post, content_tree: content_tree,};
+        let new_post = {...post, content_tree: content_tree};
         setLoad(true)
         let res = actor && await actor.save_post(new_post)
         setLoad(false)
         if ("Ok" in res) {
             // TODo Why new posts does not show up
-            props.setPosts((pre) => [{...new_post, creator: {name: profile.name, id: profile.id}}, ...(pre || [])]);
+            props.setPosts((pre) => {
+                let new_posts = [];
+                if (pre.length > 0) {
+                    new_posts = pre
+                }
+                new_post = {...new_post, creator: {name: profile.name, id: profile.id}};
+                return [new_post, ...new_posts];
+            });
             enqueueSnackbar("Post created", {variant: "success"});
             setChanges(null);
         } else {
@@ -59,22 +66,11 @@ function CreatePost(props: any) {
         }}/>
     </>;
 
-    function handleOnInsertComponent(e: any, component: any) {
-        // console.log("handleOnInsertComponent", e, component)
-        // if (component.type == "payment_component") {
-        //     dispatch(handleRedux("ADD_CONTENT", {id: file_data.id, content: file_content_sample}))
-        // }
-
-    }
 
     function onChange(changes: any) {
         let new_change = {};
         new_change[''] = changes;
         setChanges(new_change)
-        // if (files_content[current_file.id] !== changes) {
-        //     dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: changes}));
-        //     dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: changes}));
-        // }
     }
 
 
@@ -97,16 +93,10 @@ function CreatePost(props: any) {
             }}
         >
             < PostComponent
-                key={changes?.key} // Use the key to force a re-render
+                key={changes} // Use the key to force a re-render
                 buttons={<CreateButtons/>}
                 post={post}
                 onChange={onChange}
-                // content={<EditorComponent
-                //     key={changes?.key} // Use the key to force a re-render
-                //     handleOnInsertComponent={handleOnInsertComponent}
-                //     onChange={onChange}
-                //     content={init_content || []}
-                // />}
             />
 
 

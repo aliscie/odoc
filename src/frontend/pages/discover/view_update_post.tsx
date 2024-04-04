@@ -42,6 +42,7 @@ function ViewPost(props: Props) {
         new_change[''] = post.content_tree;
         const de_changes = serialize_file_contents(new_change);
         let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1]
+        setLoading(true)
         const res = await actor?.save_post({...post, content_tree});
         setLoading(false);
         if (res && "Ok" in res) {

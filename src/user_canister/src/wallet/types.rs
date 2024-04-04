@@ -42,27 +42,30 @@ pub struct Wallet {
 }
 
 impl Wallet {
-    pub fn add_dept(mut self, amount: f64, id: String) -> Result<(), String> {
-        if self.balance >= self.total_debt + amount {
-            let debt = self.debts.entry(id).or_insert(0.0);
-            let wallet = self.calc_dept();
-            wallet.save();
-            Ok(())
-        } else {
-            Err(String::from("Insufficient balance"))
+    pub fn check_dept(&self, amount: f64) -> Result<(), String> {
+        if self.balance.clone() < self.total_debt + amount.clone() {
+            return Err(String::from("Insufficient balance"));
         }
+        Ok(())
+    }
+    pub fn add_dept(mut self, amount: f64, id: String) -> Result<(), String> {
+        if self.balance.clone()  < self.total_debt + amount.clone() {
+            return Err(String::from("Insufficient balance"));
+        }
+        self.debts.insert(id, amount);
+        let wallet = self.calc_dept();
+        wallet.save();
+        Ok(())
     }
 
     pub fn remove_dept(mut self, id: String) -> Result<(), String> {
-        if let Some(debt) = self.debts.get(&id) {
-            let debt = debt.clone();
-            self.debts.remove(&id);
-            let wallet = self.calc_dept();
-            wallet.save();
-            Ok(())
-        } else {
-            Err(String::from("Debt not found"))
+        if !self.debts.contains_key(&id) {
+            return Err(String::from("Debt not found"));
         }
+        self.debts.remove(&id);
+        let wallet = self.calc_dept();
+        wallet.save();
+        Ok(())
     }
 
     pub fn calc_dept(&mut self) -> &mut Self {
@@ -129,7 +132,6 @@ impl Wallet {
     }
 
     pub fn withdraw(&mut self, amount: f64, to: String, _type: ExchangeType) -> Result<(), String> {
-
         if self.balance >= amount {
             let new_exchange = Exchange {
                 from: self.owner.clone(),

@@ -1,0 +1,43 @@
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import * as React from "react";
+import {useSelector} from "react-redux";
+import {useEffect} from "react";
+
+function TopDialog() {
+    const {top_dialog} = useSelector((state: any) => state.filesReducer);
+    console.log({top_dialog});
+    const [open, setOpen] = React.useState(top_dialog && top_dialog.open);
+    useEffect(() => {
+        setOpen(top_dialog && top_dialog.open);
+    }, [top_dialog]);
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleSave = () => {
+        top_dialog.handleSave();
+        setOpen(false);
+    };
+
+    return (
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            PaperProps={{
+                sx: {width: '100%'}, // Adjust the width as needed
+            }}
+        >
+            {top_dialog && top_dialog.content}
+            <DialogActions>
+                <Button onClick={handleClose}>Cancel</Button>
+                <Button onClick={handleSave} autoFocus>Save</Button>
+            </DialogActions>
+        </Dialog>
+    );
+}
+
+export default TopDialog;

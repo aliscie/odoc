@@ -42,7 +42,7 @@ interface VIEW {
 
 export function CustomContractComponent({contract}: { contract: CustomContract }) {
     const {profile, all_friends, wallet} = useSelector((state: any) => state.filesReducer);
-    const {enqueueSnackbar} = useSnackbar();
+    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const [view, setView] = useState<VIEW>({id: "", name: PROMISES, type: PROMISES});
     let current_contract = contract.contracts.find((c: CContract) => c.id === view.id);
     const {evaluate, addVarsToParser} = useParser({contract: current_contract, main_contract: contract});
@@ -131,7 +131,8 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                     objected: false,
                     confirmed: false,
                 };
-                const updated_promises = [...contract.promises, new_payment];
+                const updated_promises = [...contract.promises];
+                updated_promises.splice(position, 0, new_payment);
                 updateContract({...contract, promises: updated_promises});
                 return {
                     id: new_payment.id,
@@ -251,6 +252,18 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
 
     const mainSelectOption = async (option: any) => {
         switch (option.content) {
+            case 'Delete_contract':
+                let loading = enqueueSnackbar(<span><span className={"loader"}/></span>);
+                let res = actor && await actor.delete_custom_contract(contract.id);
+
+                closeSnackbar(loading);
+                if ("Ok" in res) {
+                    enqueueSnackbar("Contract is deleted", {variant: "success"})
+                    dispatch(handleRedux("REMOVE_CONTRACT", {id: contract.id}));
+                } else {
+                    enqueueSnackbar(res.Err, {variant: "error"})
+                }
+
             case "Delete":
                 const updatedContracts = contract.contracts.filter((c: CContract) => c.id !== view.id);
                 updateContract({...contract, contracts: [...updatedContracts]});
@@ -333,6 +346,8 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
     const mainOptions: any[] = [
         {content: "Rename"},
         {content: "Delete"},
+        {content: "Delete_contract"},
+
     ];
     // data if view.type == CONTRACT serizlie from contract using contract serizlie and if view.type == PROMISES and if view.type == PAYMENTS
     let data = {};

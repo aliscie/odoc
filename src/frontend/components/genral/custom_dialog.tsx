@@ -1,8 +1,7 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
 import MenuItem from "@mui/material/MenuItem";
+import {useDispatch} from "react-redux";
+import {handleRedux} from "../../redux/main";
 
 interface Props {
     children: React.ReactNode,
@@ -12,36 +11,38 @@ interface Props {
 
 export default function CustomDialog(props: Props) {
     const [open, setOpen] = React.useState(false);
+    const dispatch = useDispatch();
 
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleSave = () => {
-        props.handleSave();
-        setOpen(false);
-    };
+    // const handleClose = () => {
+    //     setOpen(false);
+    // };
+    //
+    // const handleSave = () => {
+    //     props.handleSave();
+    //     setOpen(false);
+    // };
+    // TOP_DIALOG
 
     return (
         <div >
-            <MenuItem onClick={() => setOpen(true)}>
+            <MenuItem onClick={() => dispatch(handleRedux("TOP_DIALOG", {open: true, content: props.content, handleSave: props.handleSave}))}>
                 {props.children}
             </MenuItem>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-                PaperProps={{
-                    sx: {width: '100%'}, // Adjust the width as needed
-                }}
-            >
-                {props.content}
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleSave} autoFocus>Save</Button>
-                </DialogActions>
-            </Dialog>
+            {/*<Dialog*/}
+            {/*    open={open}*/}
+            {/*    onClose={handleClose}*/}
+            {/*    aria-labelledby="alert-dialog-title"*/}
+            {/*    aria-describedby="alert-dialog-description"*/}
+            {/*    PaperProps={{*/}
+            {/*        sx: {width: '100%'}, // Adjust the width as needed*/}
+            {/*    }}*/}
+            {/*>*/}
+            {/*    {props.content}*/}
+            {/*    <DialogActions>*/}
+            {/*        <Button onClick={handleClose}>Cancel</Button>*/}
+            {/*        <Button onClick={handleSave} autoFocus>Save</Button>*/}
+            {/*    </DialogActions>*/}
+            {/*</Dialog>*/}
         </div>
     );
 }

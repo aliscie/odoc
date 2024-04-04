@@ -7,6 +7,7 @@ use ic_cdk::caller;
 use crate::{CPayment, PaymentStatus, PROFILE_HISOTYR, SharePayment, SharesContract, Wallet};
 use crate::discover::time_diff;
 use crate::PROFILE_STORE;
+use crate::websocket::Notification;
 
 // export::{
 //     candid::{CandidType, Deserialize},
@@ -125,17 +126,16 @@ impl UserHistory {
 
 
     pub fn get_promises_value(&self) -> f64 {
-        let promises = self.get_promises();
-        let promises: Vec<CPayment> = promises.iter().map(|r| {
+        let mut promises: Vec<CPayment> = vec![];
+        self.get_promises().iter().for_each(|r| {
             if let ActionType::Payment(payment) = &r.action_type {
-                payment.clone()
-            } else {
-                CPayment::default()
+                if payment.sender == caller() {
+                    promises.push(payment.clone());
+                }
             }
-        }).collect();
+        });
         promises.iter().map(|p| p.amount).sum()
     }
-
 
     pub fn get(id: Principal) -> Self {
         let res = PROFILE_HISOTYR.with(|h| {
@@ -256,25 +256,27 @@ impl UserHistory {
         self.actions_rate.clone()
     }
 
-
     pub fn payment_action(&mut self, payment: CPayment) {
         let wallet = Wallet::get(self.id.clone());
         self.rates_by_actions.retain(|action| action.id != payment.id);
 
         let total_promises: f64 = self.get_promises_value();
+        // get received promises from notifications
+        let promises: Vec<CPayment> = Notification::get_list_promises(&caller());
+        let received_promises = promises.iter().map(|p| p.amount).sum();
+        // TODO received_promises are included all statuses the released and not released once
         let new_rating = ActionRating {
             id: payment.id.clone(),
             rating: self.calc_actions_rate(),
             spent: wallet.spent.clone(),
             received: wallet.received.clone(),
-            promises: total_promises,
-            received_promises: 0.0,
+            promises: total_promises + payment.amount.clone(),// employer profile.
+            received_promises, // This will be important for the employee profile.
             action_type: ActionType::Payment(payment.clone()),
             date: ic_cdk::api::time() as f64,
         };
         self.rates_by_actions.push(new_rating);
     }
-
 
     pub fn confirm_cancellation(&mut self, payment: CPayment) {
         self.rates_by_actions.retain(|action| action.id != payment.id);

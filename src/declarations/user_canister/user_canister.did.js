@@ -8,14 +8,14 @@ export const idlFactory = ({ IDL }) => {
   const Result = IDL.Variant({ 'Ok' : User, 'Err' : IDL.Text });
   const Result_1 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Text });
   const PaymentStatus = IDL.Variant({
-    'HeighConformed' : IDL.Null,
     'None' : IDL.Null,
     'RequestCancellation' : IDL.Null,
-    'ApproveHeighConformed' : IDL.Null,
     'Released' : IDL.Null,
     'Objected' : IDL.Text,
     'Confirmed' : IDL.Null,
     'ConfirmedCancellation' : IDL.Null,
+    'ApproveHighPromise' : IDL.Null,
+    'HighPromise' : IDL.Null,
   });
   const CPayment = IDL.Record({
     'id' : IDL.Text,
@@ -282,6 +282,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const FriendRequestNotification = IDL.Record({ 'friend' : Friend });
   const PaymentAction = IDL.Variant({
+    'RequestCancellation' : CPayment,
     'Released' : IDL.Null,
     'Objected' : IDL.Null,
     'Accepted' : IDL.Null,
@@ -414,7 +415,7 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     'accept_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'apply_request' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [Result_1], []),
-    'approve_heigh_conform' : IDL.Func([CPayment], [Result_1], []),
+    'approve_high_promise' : IDL.Func([CPayment], [Result_1], []),
     'approve_request' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text],
         [Result_1],
@@ -432,6 +433,7 @@ export const idlFactory = ({ IDL }) => {
     'counter' : IDL.Func([], [IDL.Nat64], ['query']),
     'create_new_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [FileNode], []),
     'create_share_contract' : IDL.Func([IDL.Vec(Share)], [Result_2], []),
+    'delete_custom_contract' : IDL.Func([IDL.Text], [Result_1], []),
     'delete_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], []),
     'delete_post' : IDL.Func([IDL.Text], [Result_1], []),
     'deposit_usdt' : IDL.Func([IDL.Float64], [Result_3], []),

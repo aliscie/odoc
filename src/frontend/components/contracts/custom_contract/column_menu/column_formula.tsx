@@ -28,14 +28,11 @@ interface Props {
 }
 
 function ChangeColumnFormula(props: Props) {
-    const {enqueueSnackbar} = useSnackbar();
-    const {wallet} = useSelector((state: any) => state.filesReducer);
     const {current_contract, colDef, contract, updateContract} = props;
     // const {evaluate, addVarsToParser} = useParser({contract: current_contract});
     const dispatch = useDispatch();
-    const [formatter, setFormatter] = useState<string>(String(colDef["formula_string"]));
-
-    const onFormatter = (code: string) => setFormatter(code);
+    const formatter = String(colDef["formula_string"]);
+    let code = "";
     const handleSave = () => {
         // let [_, promises]: [Array<CColumn>, Array<CPayment>] = serialize_contract_column(current_contract, addVarsToParser, evaluate)
         // TODO
@@ -45,8 +42,8 @@ function ChangeColumnFormula(props: Props) {
         //         return;
         //     }
         // console.log({promises});
-        if (formatter !== colDef.formula_string) {
-            const updatedColumn: CColumn = {...colDef, formula_string: String(formatter)};
+        if (code !== colDef.formula_string) {
+            const updatedColumn: CColumn = {...colDef, formula_string: String(code)};
             const updatedContract: CustomContract = updateContractColumn(contract, updatedColumn, current_contract);
             // const updated_promises = [...updatedContract.promises.filter((p) => !promises.map((p) => p.id).includes(p.id)), ...promises];
             // console.log({promises});
@@ -59,9 +56,15 @@ function ChangeColumnFormula(props: Props) {
         }
 
     };
+    const content = <CodeEditor onChange={(c) => {
+        code = c;
+        // console.log("code is here:  "+code);
+        // setFormatter(code);
+        // dispatch(handleRedux("TOP_DIALOG", {...top_dialog, code: code}));
+    }} code={formatter}/>;
 
     return (
-        <CustomDialog handleSave={handleSave} content={<CodeEditor onChange={onFormatter} code={formatter}/>}>
+        <CustomDialog handleSave={handleSave} content={content}>
             Formula
         </CustomDialog>
     );

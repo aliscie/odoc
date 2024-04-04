@@ -68,7 +68,7 @@ let roadMap = [
         content: "User can deposit USDC and withdraw to external wallets"
     },
     {
-        is_done: false,
+        is_done: true,
         title: "Custom contract",
         content: "Custom contract where people can have a formula that automatically executes a transaction\n" +
             "From the left sidebar, As the user clicks on create button, they can select the option custom contract\n" +

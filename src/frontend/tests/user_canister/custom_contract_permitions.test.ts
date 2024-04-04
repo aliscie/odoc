@@ -55,7 +55,6 @@ test("Test custom contract permissions", async () => {
     global.actor.setIdentity(global.user);
 
     init_date = await global.actor.get_initial_data();
-    logger({xxxxx:init_date.Ok.Contracts[0][1].CustomContract.contracts[0].rows});
     expect(init_date.Ok.Contracts[0][1].CustomContract.contracts[0].rows[0].cells[0].value).toBe("INIT VALUE");
 
     // -------------------------- Allow anyone to edite -------------------------- \\

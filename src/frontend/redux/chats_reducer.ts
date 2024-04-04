@@ -92,6 +92,12 @@ export function chatsReducer(state = initialChatsState, action: any) {
             };
 
         case 'ADD_NOTIFICATION':
+            state.chats = state.chats.map((chat: FEChat) => {
+                if (action.message.chat_id == chat.id) {
+                    chat.messages.push(action.message)
+                }
+                return chat
+            })
             return {
                 ...state,
                 chats_notifications: [...state.chats_notifications.filter((m: Message) => m.chat_id !== action.message.chat_id), action.message],

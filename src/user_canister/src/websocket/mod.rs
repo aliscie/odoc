@@ -62,11 +62,7 @@ fn ws_get_messages(args: CanisterWsGetMessagesArguments) -> CanisterWsGetMessage
 
 #[query]
 fn get_user_notifications() -> Vec<Notification> {
-        NOTIFICATIONS.with(|notifications| {
-        notifications.borrow()
-            .get(&caller())
-            .map_or_else(Vec::new, |notifications_for_user| notifications_for_user.clone())
-    })
+    Notification::get_list(&caller())
 }
 
 #[update]

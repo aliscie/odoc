@@ -11,7 +11,7 @@ function formatTimestamp(timestampNanoseconds: bigint) {
     return formattedDate;
 }
 
-export function formatRelativeTime(timestampNanoseconds: bigint): string {
+export function formatRelativeTime(timestampNanoseconds: number): string {
     const timestampMilliseconds = Number(timestampNanoseconds) / 1e6;
     const currentTimestamp = Date.now();
     const timeDifference = currentTimestamp - timestampMilliseconds;

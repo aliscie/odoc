@@ -52,8 +52,6 @@ test("Update cell", async () => {
         "CustomContract": custom_contract
     }
     res = await global.actor.multi_updates([], [], [to_store], []);
-    logger({res})
-
 
     // -------------------------- Check if the cell was not updated -------------------------- \\
     init_date = await global.actor.get_initial_data();

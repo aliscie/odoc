@@ -15,14 +15,14 @@ function MessagesList(props: MessagesListProps) {
     const {current_chat_id, chats} = useSelector((state: any) => state.chatsReducer);
     const [messages, setMessages] = useState<Message[]>([]);
     const [noMessages, setNoM] = useState<boolean>(current_chat_id === "chat_id");
+    const currentChat = chats.find((chat: FEChat) => chat.id === current_chat_id);
     useEffect(() => {
         if (chats && chats.length > 0 && current_chat_id !== "chat_id") {
-            const currentChat = chats.find((chat: FEChat) => chat.id === current_chat_id);
+
             currentChat && setMessages(currentChat.messages || [])
             currentChat && setNoM(false)
         }
     }, [chats, current_chat_id]);
-
     return (
         <div>
             {noMessages && <div>No messages, yet.</div>}

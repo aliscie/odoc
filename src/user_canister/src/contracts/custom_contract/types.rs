@@ -67,9 +67,9 @@ pub enum PaymentStatus {
     Confirmed,
     ConfirmedCancellation,
     RequestCancellation,
-    HeighConformed,
-    ApproveHeighConformed,
-    // when ApproveHeighConformed the user can't withdraw the payment at all
+    HighPromise,
+    ApproveHighPromise,
+    // when ApproveHighPromise the user can't withdraw the payment at all
     Objected(String),
     None,
 }
@@ -121,6 +121,13 @@ impl CPayment {
 
         // ----------------- UserHistory ----------------- \\
         let mut user_history = UserHistory::get(self.sender.clone());
+        user_history.payment_action(self.clone());
+        user_history.save();
+
+        // TODO think about this later again, maybey other people should not be effect by others actions
+        //  see how people respond to this
+        //  Alos, we are already storing the same payment object in notifications for this users, so this can be stipulation issue in our DS
+        let mut user_history = UserHistory::get(self.receiver.clone());
         user_history.payment_action(self.clone());
         user_history.save();
         // ---------------------------------------------------
@@ -408,19 +415,27 @@ impl CustomContract {
                     self.payments.push(payment.clone());
                 }
             } else {
-                let res = wallet.add_dept(payment.amount.clone(), payment.id.clone());
-                if let Err(message) = res {
+                if let Err(message) = wallet.check_dept(payment.amount.clone()) {
                     contract_errors.push(ContractError { message });
                     self.promises.retain(|p| p.id != payment.id);
-                } else {
-                    // TODO remove dept when cancel +  conform cancellation
-                    // For now it seams fine to keep dept if not canceled
-                    // remove dept only when cancel
-                    UserHistory::get(caller()).payment_action(payment.clone());
-                    payment.contract_id = self.id.clone();
-                    notify_about_promise(payment, PaymentAction::Promise);
                 }
+                UserHistory::get(caller()).payment_action(payment.clone());
+                payment.contract_id = self.id.clone();
+                notify_about_promise(payment, PaymentAction::Promise);
             }
+            // else if payment.status == PaymentStatus::ApproveHighPromise {
+            //     if let Err(message) = wallet.add_dept(payment.amount.clone(), payment.id.clone()) {
+            //         contract_errors.push(ContractError { message });
+            //         self.promises.retain(|p| p.id != payment.id);
+            //     } else {
+            //         // TODO remove dept when cancel +  conform cancellation
+            //         // For now it seams fine to keep dept if not canceled
+            //         // remove dept only when cancel
+            //         UserHistory::get(caller()).payment_action(payment.clone());
+            //         payment.contract_id = self.id.clone();
+            //         notify_about_promise(payment, PaymentAction::Promise);
+            //     }
+            // }
         }
 
         // self.execute_formulas();
@@ -435,7 +450,7 @@ impl CustomContract {
     // pub fn delete_promise_permission(
     // pub fn create_promise_permission(
     pub fn update_promise_permission(&self, mut promise: CPayment, old_promise: CPayment) -> Result<CPayment, String> {
-        if old_promise.status == PaymentStatus::None || old_promise.status == PaymentStatus::ApproveHeighConformed {
+        if old_promise.status == PaymentStatus::None || old_promise.status == PaymentStatus::ApproveHighPromise {
             return Ok(promise);
         }
 
@@ -460,12 +475,12 @@ impl CustomContract {
                 PaymentStatus::RequestCancellation => {
                     return Ok(promise);
                 }
-                PaymentStatus::HeighConformed => {
+                PaymentStatus::HighPromise => {
                     // TODO think about this
                     let message = "You can't confirm a promise".to_string();
                     return Err(message);
                 }
-                PaymentStatus::ApproveHeighConformed => {
+                PaymentStatus::ApproveHighPromise => {
                     let message = "Only receiver can confirm a promise".to_string();
                     return Err(message);
                 }
@@ -493,11 +508,11 @@ impl CustomContract {
                 PaymentStatus::RequestCancellation => {
                     return Err("Only sender can request a promise cancellation, You can directly ConfirmedCancellation".to_string());
                 }
-                PaymentStatus::HeighConformed => {
+                PaymentStatus::HighPromise => {
                     return Err("Only sender can confirm a promise".to_string());
                 }
-                PaymentStatus::ApproveHeighConformed => {
-                    return if old_promise.status == PaymentStatus::HeighConformed {
+                PaymentStatus::ApproveHighPromise => {
+                    return if old_promise.status == PaymentStatus::HighPromise {
                         Ok(promise)
                     } else {
                         Err("This contract is not meant for high conformation".to_string())
@@ -517,7 +532,7 @@ impl CustomContract {
     }
 
     pub fn update_promise(&self, contract_errors: &mut Vec<ContractError>, mut promise: CPayment, old_contract: CustomContract) -> CPayment {
-
+        promise.contract_id = self.id.clone();
         // --------------------------------   handle update --------------------------------  \\
         if let Some(old_promise) = old_contract.promises.iter().find(|p| p.id == promise.id) {
             let res = self.update_promise_permission(promise.clone(), old_promise.clone());
@@ -538,6 +553,13 @@ impl CustomContract {
             contract_errors.push(ContractError { message });
             promise.sender = caller();
             promise.status = PaymentStatus::None;
+        }
+        // if status's request cancellation notify the receiver
+        if promise.status == PaymentStatus::RequestCancellation {
+            let not = Notification::get(promise.id.clone());
+            if not.is_none() || not.unwrap().content != NoteContent::CPaymentContract(promise.clone(), PaymentAction::RequestCancellation(promise.clone())) {
+                notify_about_promise(promise.clone(), PaymentAction::RequestCancellation(promise.clone()));
+            }
         }
         promise
     }

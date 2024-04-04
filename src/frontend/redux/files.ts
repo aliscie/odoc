@@ -39,6 +39,7 @@ export type FilesActions =
     | "DELETE_NOTIFY"
     | "UPDATE_NOTE"
     | "CONFIRM_FRIEND"
+    | "TOP_DIALOG"
     | FriendsActions;
 
 
@@ -52,6 +53,7 @@ export var initialState = {
     changes: {files: {}, contents: {}, contracts: {}, delete_contracts: []},
     notifications: [],
     profile_history: null,
+    top_dialog: {open: false, content: null, title: null},
 };
 
 
@@ -249,7 +251,7 @@ export function filesReducer(state: any = initialState, action: any) {
             }
         case 'REMOVE_CONTRACT':
             delete state.contracts[action.id]
-            delete state.changes.delete_contracts.push(action.id)
+            state.changes.delete_contracts.push(action.id)
             return {
                 ...state,
             }
@@ -260,6 +262,12 @@ export function filesReducer(state: any = initialState, action: any) {
                 ...state,
                 is_files_saved: true
             }
+        case "TOP_DIALOG":
+            return {
+                ...state,
+                top_dialog: action
+            }
+
         // case 'FILES_CHANGED':
         //     return {
         //         ...state,

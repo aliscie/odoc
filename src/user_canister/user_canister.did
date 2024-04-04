@@ -194,6 +194,7 @@ type Notification = record {
 };
 type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
 type PaymentAction = variant {
+  RequestCancellation : CPayment;
   Released;
   Objected;
   Accepted;
@@ -202,14 +203,14 @@ type PaymentAction = variant {
   Promise;
 };
 type PaymentStatus = variant {
-  HeighConformed;
   None;
   RequestCancellation;
-  ApproveHeighConformed;
   Released;
   Objected : text;
   Confirmed;
   ConfirmedCancellation;
+  ApproveHighPromise;
+  HighPromise;
 };
 type PermissionType = variant {
   Edit : principal;
@@ -354,7 +355,7 @@ type WebsocketMessage = record {
 service : () -> {
   accept_friend_request : (text) -> (Result);
   apply_request : (text, text, text) -> (Result_1);
-  approve_heigh_conform : (CPayment) -> (Result_1);
+  approve_high_promise : (CPayment) -> (Result_1);
   approve_request : (text, text, text) -> (Result_1);
   cancel_friend_request : (text) -> (Result);
   confirmed_c_payment : (CPayment) -> (Result_1);
@@ -364,6 +365,7 @@ service : () -> {
   counter : () -> (nat64) query;
   create_new_file : (text, opt text) -> (FileNode);
   create_share_contract : (vec Share) -> (Result_2);
+  delete_custom_contract : (text) -> (Result_1);
   delete_file : (text) -> (opt FileNode);
   delete_post : (text) -> (Result_1);
   deposit_usdt : (float64) -> (Result_3);

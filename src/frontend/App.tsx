@@ -17,6 +17,8 @@ import {ActorSubclass} from "@dfinity/agent";
 import {_SERVICE} from "../declarations/user_canister/user_canister.did";
 import MessagesDialog from "./components/chat/messages_box_dialog";
 import useSocket from "./websocket/use_socket";
+import {CircularProgress} from "@mui/material";
+import TopDialog from "./components/genral/TopDialog";
 
 export let actor: ActorSubclass<_SERVICE> | undefined; // TODo maybe set the actor in redux
 
@@ -49,17 +51,20 @@ function App() {
 
     return (
         <Theme>
-            {state && <BrowserRouter>
+            {state ? <BrowserRouter>
                 <SearchPopper/>
                 <SnackbarProvider maxSnack={3}>
                     <RegistrationForm/>
                     <MessagesDialog/>
                     <NavAppBar/>
+                    <TopDialog/>
                     <NavBar>
                         <Pages/>
                     </NavBar>
                 </SnackbarProvider>
-            </BrowserRouter>}
+            </BrowserRouter> : <CircularProgress
+                size="100px"
+                style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}/>}
         </Theme>
     )
         ;

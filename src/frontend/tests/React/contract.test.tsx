@@ -1,9 +1,10 @@
 import React from 'react';
-import TestRapper from "../utls/tests_wrapper";
+import TestWrapper from "../utls/tests_wrapper";
 import {render} from "@testing-library/react";
 import {Principal} from "@dfinity/principal";
 import {randomString} from "../../data_processing/data_samples";
 import {CustomContract} from "../../../declarations/user_canister/user_canister.did";
+import {CustomContractComponent} from "../../components/contracts/custom_contract/custom_contract";
 // import {custom_contract} from "../../data_processing/data_samples";
 
 const custom_contract: CustomContract = {
@@ -22,9 +23,9 @@ const custom_contract: CustomContract = {
 
 it('creates and updates a contract, then interacts with rows and columns', () => {
     const {getByText} = render(
-        <TestRapper>
-            {/*<CustomContractComponent contract={custom_contract}/>*/}
-        </TestRapper>
+        <TestWrapper>
+            <CustomContractComponent contract={custom_contract}/>
+        </TestWrapper>
     );
 
     // expect(getByText("hello world")).toBeInTheDocument();

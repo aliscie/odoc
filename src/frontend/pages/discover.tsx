@@ -84,14 +84,7 @@ const Discover = () => {
                 {
                     posts && posts.map((post: PostUser) => {
 
-                        return (<Grid item
-                                      sx={{
-                                          my: 1,
-                                          // mx: 'auto',
-                                      }}
-                        >
-                            <ViewPost posts={posts} setPosts={setPosts} post={post}/>
-                        </Grid>)
+                        return (<ViewPost posts={posts} setPosts={setPosts} post={post}/>)
                     })
                 }
 

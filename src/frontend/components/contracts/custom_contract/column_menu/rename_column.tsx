@@ -28,10 +28,19 @@ function RenameColumn(props: GridColumnMenuItemProps) {
         renameColumn(id, value);
     }
 
+    const handleKeyDown = (event) => {
+            event.stopPropagation();
+    };
+
 
     return (
-        <Input style={{marginLeft: "25px"}} onBlur={handleRenameColumn} disableUnderline
-               defaultValue={columnName}/>
+        <Input
+            onKeyDown={handleKeyDown}
+            style={{marginLeft: "25px"}}
+            onBlur={handleRenameColumn}
+            disableUnderline
+            defaultValue={columnName}
+        />
     );
 
 }
