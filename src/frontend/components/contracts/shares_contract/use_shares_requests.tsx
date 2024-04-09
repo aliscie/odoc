@@ -32,6 +32,7 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
 
         return new_rows.map((item: ShareReqRow) => {
             let receiver = getUserByName(item.receiver);
+            // console.log("receiver", receiver);
             // find share.share_contract_id == item.id
             let share = shares.find((share: Share) => share.share_contract_id === item.id);
             return {

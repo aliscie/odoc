@@ -182,8 +182,10 @@ impl SharesContract {
                 };
 
                 for old_share in old_share.shares.iter() {
-                    if old_share.clone().confirmed && old_share != self.clone().shares.iter().find(|s| s.share_contract_id == old_share.share_contract_id).unwrap() {
-                        return Err("You can't update a confirmed shares".to_string());
+                    if let Some(new_share) = self.clone().shares.iter().find(|s| s.share_contract_id == old_share.share_contract_id) {
+                        if old_share != new_share {
+                            return Err("You can't update shares".to_string());
+                        }
                     }
                 };
                 // check if share_requests != old_share_requests

@@ -1,11 +1,7 @@
 import React, {useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {handleRedux} from '../redux/main';
-import {
-    custom_contract,
-    payment_contract_sample,
-    shares_contract_sample
-} from '../data_processing/data_samples';
+import {custom_contract, shares_contract_sample} from '../data_processing/data_samples';
 import {FileNode, StoredContract} from '../../declarations/user_canister/user_canister.did';
 import EditorComponent from '../components/editor_components/main';
 import debounce from '../utils/debounce';
@@ -57,20 +53,35 @@ const FileContentPage: React.FC<Props> = () => {
     };
 
     function handleOnInsertComponent(e: any, component: any) {
+        const insertText = () => {
+            e.apply({
+                type: 'insert_text',
+                path: [0, 0],
+                offset: 15,
+                text: ' ',
+            });
+        }
+
         switch (component.type) {
             case "shares_contract":
                 let new_contract = {...shares_contract_sample, author: profile.id};
                 let stored_shares: StoredContract = {"SharesContract": new_contract}
                 dispatch(handleRedux("ADD_CONTRACT", {contract: new_contract}))
                 dispatch(handleRedux("CONTRACT_CHANGES", {changes: stored_shares}));
+                insertText();
+                return null
             case "custom_contract":
                 custom_contract.creator = Principal.fromText(profile.id)
                 custom_contract.date_created = Date.now() * 1e6
                 let stored_custom: StoredContract = {"CustomContract": custom_contract}
                 dispatch(handleRedux("ADD_CONTRACT", {contract: custom_contract}))
                 dispatch(handleRedux("CONTRACT_CHANGES", {changes: stored_custom}));
-            case "data_grid":
+                insertText();
                 return null;
+
+
+            case "data_grid":
+                return null
             default:
                 return null;
             // case "data_grid":

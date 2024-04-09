@@ -80,7 +80,7 @@ export function deserialize_contract_rows(rows: Array<any>): Array<CRow> {
         Object.keys(row).map((k: string) => {
             if (k != "id" && k != 'cells') {
                 cells.push({
-                    value: row[k] || '',
+                    value: String(row[k]) || '',
                     field: k
                 })
             }

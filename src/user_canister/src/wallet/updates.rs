@@ -19,7 +19,7 @@ fn withdraw_usdt(amount: f64) -> Result<f64, String> {
     let wallet = wallet.calc_dept();
     if wallet.total_debt.clone() > remaining {
         let dept = wallet.total_debt.clone() - remaining;
-        return Err(format!("Your total dept it{}, You can cancel some of the contract to withdraw which may effect your trust score.", dept).to_string());
+        return Err(format!("Your total dept is {}, You can cancel some of the contract to withdraw which may effect your trust score.", dept).to_string());
     }
 
     wallet.withdraw(amount.clone(), "ExternalWallet".to_string(), ExchangeType::Withdraw)?;

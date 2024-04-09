@@ -7,7 +7,8 @@ import {useEffect} from "react";
 
 function TopDialog() {
     const {top_dialog} = useSelector((state: any) => state.filesReducer);
-    console.log({top_dialog});
+    // TODO why this keep re-rendring every time there are changes in the Editor?
+    //     console.log({top_dialog});
     const [open, setOpen] = React.useState(top_dialog && top_dialog.open);
     useEffect(() => {
         setOpen(top_dialog && top_dialog.open);

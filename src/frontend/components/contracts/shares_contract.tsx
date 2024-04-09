@@ -320,9 +320,9 @@ export default function SharesContractComponent(props: any) {
                     ...contracts[table_content.id],
                     shares_requests
                 }
-                to_store_shares = {"SharesContract": req_updated_contract}
-                dispatch(handleRedux("UPDATE_CONTRACT", {contract: to_store_shares}));
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: to_store_shares}));
+                let re_to_store_shares = {"SharesContract": req_updated_contract}
+                dispatch(handleRedux("UPDATE_CONTRACT", {contract: re_to_store_shares}));
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: re_to_store_shares}));
         }
     }
 
@@ -419,8 +419,8 @@ export default function SharesContractComponent(props: any) {
                     ...contracts[table_content.id],
                     shares_requests,
                 };
-                to_store = {"PaymentContract": req_updated_contract}
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: to_store}));
+                let re_to_store = {"SharesContract": req_updated_contract}
+                dispatch(handleRedux("CONTRACT_CHANGES", {changes: re_to_store}));
                 return new_share_request
             // default:
             //     return {};

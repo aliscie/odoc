@@ -89,8 +89,13 @@ function useParser(props: ParserProps) {
         }
     }
 
-    let warning = false;
     values["Promise"] = (to: User, amount: number) => {
+        if (typeof to === "string") {
+            to = evaluate(to).value;
+        };
+        if (typeof amount === "string") {
+            amount = evaluate(amount).value;
+        };
         if (!values.row_id) {
             console.error("----------", {values})
             return "Err"
@@ -106,11 +111,9 @@ function useParser(props: ParserProps) {
             contract_id: contract.id,
         };
         // TODO why this was calling too many times.
-        // console.log({amount: promise.amount > wallet.balance})
-        if (promise.amount > wallet.balance && !warning) {
-            warning = true;
-            enqueueSnackbar("You don't have enough balance to make this promise.", {variant: "error"});
-        }
+        if (promise.amount > wallet.balance) {
+            return "Insufficient balance";
+        };
 
         ref.current.set(promise.id, promise);
         updatePromises()
