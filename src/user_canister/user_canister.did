@@ -19,7 +19,7 @@ type CColumn = record {
   id : text;
   field : text;
   formula_string : text;
-  column_type : ColumnTypes;
+  column_type : text;
   filters : vec Filter;
   permissions : vec PermissionType;
   headerName : text;
@@ -74,7 +74,7 @@ type Chat = record {
 type ClientKey = record { client_principal : principal; client_nonce : nat64 };
 type Column = record {
   id : text;
-  _type : ColumnTypes;
+  _type : text;
   field : text;
   filters : vec Filter;
   permissions : vec PermissionType;
@@ -82,7 +82,6 @@ type Column = record {
   editable : bool;
   formula : opt Formula;
 };
-type ColumnTypes = variant { Tag; Date; File; Text; Person; Category; Number };
 type ContentData = variant { Comment : text; Image : vec nat64; Table : Table };
 type ContentNode = record {
   id : text;

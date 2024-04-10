@@ -33,6 +33,7 @@ import RenameColumn from "./column_menu/rename_column";
 import ChangeColumnPermissions from "./column_menu/column_permision";
 import ChangeColumnFormula from "./column_menu/column_formula";
 import {actor} from "../../../App";
+import ChangeType from "./column_menu/column_type";
 
 interface VIEW {
     id?: string,
@@ -63,6 +64,12 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 menuProps,
                 view,
                 contract,
+            },
+            ChangeColumnType: {
+                displayOrder: 4,
+                menuProps,
+                view,
+                contract,
             }
         };
     };
@@ -84,6 +91,14 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             current_contract,
             contract
         });
+
+
+        columnMenuSlots["ChangeColumnType"] = (props) => ChangeType({
+            ...props,
+            updateContract,
+            current_contract,
+            contract
+        });
     }
 
     function deleteColumn(columns: any, columnId: string) {
@@ -98,7 +113,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             id: randomString(),
             field: randomString(),
             headerName: "Untitled",
-            column_type: {Text: null},
+            column_type: 'string',
             filters: [],
             permissions: [{AnyOneView: null}],
             formula_string: '',
@@ -358,9 +373,10 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 data = view;
                 break
             }
-            let serialized_columns: Array<CColumn> = serialize_contract_column(current_contract, addVarsToParser, evaluate)
+            let serialized_columns: Array<CColumn> = serialize_contract_column(current_contract, addVarsToParser, evaluate, all_users)
             let serialized_rows = serialize_contract_rows(current_contract.rows, current_contract.columns)
             data = {columns: serialized_columns, rows: serialized_rows, name: view.name};
+
             break;
         // case PROMISES:
         //     const serializedPromisesData = serializePromisesData(contract.promises, [profile, ...all_friends]);

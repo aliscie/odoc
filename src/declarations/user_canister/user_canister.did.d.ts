@@ -24,7 +24,7 @@ export interface CColumn {
   'id' : string,
   'field' : string,
   'formula_string' : string,
-  'column_type' : ColumnTypes,
+  'column_type' : string,
   'filters' : Array<Filter>,
   'permissions' : Array<PermissionType>,
   'headerName' : string,
@@ -82,7 +82,7 @@ export interface ClientKey {
 }
 export interface Column {
   'id' : string,
-  '_type' : ColumnTypes,
+  '_type' : string,
   'field' : string,
   'filters' : Array<Filter>,
   'permissions' : Array<PermissionType>,
@@ -90,13 +90,6 @@ export interface Column {
   'editable' : boolean,
   'formula' : [] | [Formula],
 }
-export type ColumnTypes = { 'Tag' : null } |
-  { 'Date' : null } |
-  { 'File' : null } |
-  { 'Text' : null } |
-  { 'Person' : null } |
-  { 'Category' : null } |
-  { 'Number' : null };
 export type ContentData = { 'Comment' : string } |
   { 'Image' : BigUint64Array | bigint[] } |
   { 'Table' : Table };

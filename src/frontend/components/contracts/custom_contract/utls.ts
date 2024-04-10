@@ -10,7 +10,6 @@ import {
 import {randomString} from "../../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
 import {PaymentRow} from "./types";
-import {logger} from "../../../dev_utils/log_data";
 
 export function updateCContractColumn(contract, new_column): CContract {
     contract.columns = contract.columns.map((column: CColumn) => {
@@ -35,7 +34,7 @@ export function updateContractColumn(contract: CustomContract, updated_column, v
     }
 }
 
-export function serialize_contract_column(contract, addVarsToParser, evaluate): Array<CColumn> {
+export function serialize_contract_column(contract, addVarsToParser, evaluate, all_users?): Array<CColumn> {
     return contract.columns.map((col: CColumn) => {
         if (col.formula_string && col.formula_string.length > 0) {
             col['width'] = 150;
@@ -50,6 +49,12 @@ export function serialize_contract_column(contract, addVarsToParser, evaluate): 
         } else {
             delete col['valueGetter'];
         }
+        col['type'] = col.column_type;
+        if (col.column_type == 'user') {
+            col['type'] = 'singleSelect';
+            console.log("all_users", all_users)
+            col['valueOptions'] = all_users ? all_users.map(user => user.name) : [];
+        };
         return col
     })
 }
@@ -84,7 +89,7 @@ export function deserialize_contract_rows(rows: Array<any>): Array<CRow> {
                     field: k
                 })
             }
-        })
+        });
         let de_row: CRow = {
             id: row['id'],
             cells
@@ -241,7 +246,7 @@ export function createCColumn(field: string): CColumn {
         id: randomString(),
         field,
         headerName: "Untitled",
-        column_type: {'Text': null},
+        column_type:"string",
         filters: [],
         permissions: [{'AnyOneView': null}],
         formula_string: '',

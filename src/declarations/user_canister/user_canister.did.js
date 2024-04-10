@@ -62,15 +62,6 @@ export const idlFactory = ({ IDL }) => {
     'contract' : IDL.Opt(Contract),
     'cells' : IDL.Opt(IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))),
   });
-  const ColumnTypes = IDL.Variant({
-    'Tag' : IDL.Null,
-    'Date' : IDL.Null,
-    'File' : IDL.Null,
-    'Text' : IDL.Null,
-    'Person' : IDL.Null,
-    'Category' : IDL.Null,
-    'Number' : IDL.Null,
-  });
   const Operation = IDL.Variant({
     'Equal' : IDL.Null,
     'Contains' : IDL.Null,
@@ -96,7 +87,7 @@ export const idlFactory = ({ IDL }) => {
   const Formula = IDL.Record({ 'column_id' : IDL.Text, 'execute' : Execute });
   const Column = IDL.Record({
     'id' : IDL.Text,
-    '_type' : ColumnTypes,
+    '_type' : IDL.Text,
     'field' : IDL.Text,
     'filters' : IDL.Vec(Filter),
     'permissions' : IDL.Vec(PermissionType),
@@ -144,7 +135,7 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Text,
     'field' : IDL.Text,
     'formula_string' : IDL.Text,
-    'column_type' : ColumnTypes,
+    'column_type' : IDL.Text,
     'filters' : IDL.Vec(Filter),
     'permissions' : IDL.Vec(PermissionType),
     'headerName' : IDL.Text,

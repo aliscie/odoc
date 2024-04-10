@@ -12,16 +12,16 @@ use serde::Serialize;
 
 static COUNTER: AtomicU64 = AtomicU64::new(0);
 
-#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
-pub enum ColumnTypes {
-    Text,
-    Number,
-    Date,
-    File,
-    Person,
-    Tag,
-    Category,
-}
+// #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
+// pub enum ColumnTypes {
+//     Text,
+//     Number,
+//     Date,
+//     File,
+//     Person,
+//     Tag,
+//     Category,
+// }
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 enum Operation {
@@ -87,27 +87,27 @@ pub struct Column {
     pub id: String,
     pub(crate) editable: bool,
     pub(crate) field: String,
-    pub(crate) _type: ColumnTypes,
+    pub(crate) _type: String,
     pub(crate) formula: Option<Formula>,
     pub(crate) dataValidator: Option<String>,
     pub(crate) filters: Vec<Filter>,
     pub(crate) permissions: Vec<PermissionType>,
 }
 
-impl Column {
-    pub fn new(field: String, _type: ColumnTypes) -> Self {
-        Column {
-            id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
-            editable: true,
-            field,
-            _type,
-            formula: None,
-            dataValidator: None,
-            filters: Vec::new(),
-            permissions: Vec::new(),
-        }
-    }
-}
+// impl Column {
+//     pub fn new(field: String, _type: ColumnTypes) -> Self {
+//         Column {
+//             id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+//             editable: true,
+//             field,
+//             _type,
+//             formula: None,
+//             dataValidator: None,
+//             filters: Vec::new(),
+//             permissions: Vec::new(),
+//         }
+//     }
+// }
 
 type ColumnName = String;
 type TableCellValue = String;

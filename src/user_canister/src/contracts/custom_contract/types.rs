@@ -8,7 +8,7 @@ use serde::Serialize;
 use crate::{CONTRACTS_STORE, ExchangeType, StoredContract, Wallet};
 use crate::contracts::custom_contract::utils::{notify_about_promise};
 use crate::storage_schema::ContractId;
-use crate::tables::{ColumnTypes, ContractPermissionType, Execute, Filter, Formula, PermissionType};
+use crate::tables::{ContractPermissionType, Execute, Filter, Formula, PermissionType};
 use crate::user_history::UserHistory;
 use crate::websocket::{NoteContent, Notification, PaymentAction};
 
@@ -22,7 +22,7 @@ pub struct CColumn {
     pub field: String,
     pub headerName: String,
     pub deletable: bool,
-    pub column_type: ColumnTypes,
+    pub column_type: String,
     pub formula_string: String,
     pub filters: Vec<Filter>,
     pub permissions: Vec<PermissionType>,
@@ -346,7 +346,7 @@ impl CustomContract {
         if let Some(old_contract) = Self::get(&self.id, &self.creator) {
             self.date_created = old_contract.date_created.clone();
             self.date_updated = ic_cdk::api::time() as f64;
-            self.creator = old_contract.creator.clone();
+            // self.creator = old_contract.creator.clone(); // no need for this cuz Self::get() already check for this
             // self.payments = old_contract.clone().update_payments(self.payments.clone());
             self.payments = old_contract.payments.clone();
 
@@ -383,6 +383,10 @@ impl CustomContract {
                     }
                 }
             }
+        } else {
+            self.date_created = ic_cdk::api::time() as f64;
+            self.payments = vec![];
+            self.creator = caller();
         }
 
         // ------- handle formulas security ------- \\
