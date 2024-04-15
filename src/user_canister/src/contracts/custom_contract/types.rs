@@ -205,6 +205,34 @@ impl CustomContract {
     //     }
     // }
 
+    pub fn check_view_permission(&self) -> Self {
+        if self.creator == caller() {
+            return self.clone();
+        };
+        let mut new_contract = self.clone();
+        new_contract.contracts = new_contract.contracts.iter().map(|contract| {
+            let mut new_contract = contract.clone();
+            new_contract.columns = new_contract.columns.iter().filter(|column| {
+                column.permissions.iter().any(|permission| {
+                    match permission {
+                        PermissionType::View(principal) => principal == &caller(),
+                        PermissionType::AnyOneView => true,
+                        _ => false
+                    }
+                })
+            }).cloned().collect();
+            new_contract.rows = new_contract.rows.iter().map(|row| {
+                let mut new_row = row.clone();
+                new_row.cells = new_row.cells.iter().filter(|cell| {
+                    new_contract.columns.iter().any(|column| column.field == cell.field)
+                }).cloned().collect();
+                new_row
+            }).collect();
+            new_contract
+        }).collect();
+        new_contract
+    }
+
     pub fn execute_formulas(&mut self) -> Result<Self, String> {
         for formula in self.formulas.clone() {
             // let column_id: String = formula.trigger_target.clone();

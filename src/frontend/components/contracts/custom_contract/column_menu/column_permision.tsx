@@ -13,7 +13,8 @@ interface Props {
     // column: CColumn,
     contract: CContract,
     value: Array<PermissionType>,
-    onChange: (event: Array<PermissionType>) => any
+    onChange: (event: Array<PermissionType>) => any,
+    onBlur?: () => any,
 
 }
 
@@ -35,15 +36,19 @@ function ColumnPermission(props: Props) {
         {title: "AnyOne Can View", id: "AnyOneView", permission: {'AnyOneView': null}},
         {title: "AnyOne Can Edit", id: "AnyOneEdite", permission: {'AnyOneEdite': null}},
     ];
+
     all_friends && all_friends.map((f: User) => {
         let new_options: MultiOptions = [
             {title: f.name + " Can View", id: f.id, permission: {'View': Principal.fromText(f.id)}},
             {title: f.name + " Can edite", id: f.id, permission: {'Edit': Principal.fromText(f.id)}},
         ]
         multi_options = [...multi_options, ...new_options]
-    })
+    });
 
     return <MultiAutoComplete
+        onBlur={(e) => {
+            e && props.onBlur && props.onBlur(e)
+        }}
         onChange={(event, options: MultiOptions) => {
 
             let perm: Array<PermissionType> = options.map((option) => {
@@ -83,37 +88,31 @@ function ChangeColumnPermissions(props: GridColumnMenuItemProps) {
     const {menuProps} = props;
     const [value, setValue] = React.useState<PermissionType[]>([]);
     const onChange = async (perm: Array<PermissionType>) => {
+        console.log(perm)
         setValue(perm);
     };
-    const onCLickAway = () => {
-        if (value.length > 0) {
-            console.log("onCLickAway")
+    const onCLickAway = (e) => {
+        // TODO let value = typeof e.target.value === 'string' ? [] : e.target.value
+        // console.log({value: e.target.value, x: menuProps.colDef.permissions})
+        if (value != menuProps.colDef.permissions) {
             let updated_column = {
                 id: menuProps.colDef.id,
                 permissions: value,
             };
-
-            // Use the updated state directly instead of relying on closure
             props.updateContract(updateContractColumn(props.contract, updated_column, props.current_contract));
-            setValue([])
         }
-        // Use the previous state to ensure the correct update
-        // setData((prevData) => ({
-        //     ...prevData,
-        //     columns: prevData.columns.map((column: CColumn) => {
-        //         if (column.id === updated_column.id) {
-        //             return {...column, permission: updated_column.permission};
-        //         }
-        //         return column;
-        //     }),
-        // }));
+
+
     }
 
 
     return (
         <MenuItem>
-            <BasicPopover onClickAway={onCLickAway} content={<ColumnPermission value={menuProps.colDef.permissions}
-                                                                               onChange={onChange}/>}>Permissions</BasicPopover>
+            <ColumnPermission
+                onBlur={onCLickAway}
+                value={menuProps.colDef.permissions}
+                onChange={onChange}
+            />
         </MenuItem>
     );
 }

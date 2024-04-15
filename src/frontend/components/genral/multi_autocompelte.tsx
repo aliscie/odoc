@@ -183,7 +183,7 @@ export default function MultiAutoComplete(props: any) {
                         <StyledTag label={option.title} {...getTagProps({index})} />
                     ))}
                     {value && !props.multiple && <StyledTag label={value.title} {...getTagProps({index: 0})} />}
-                    <input {...getInputProps()} />
+                    <input {...getInputProps()} onBlur={props.onBlur}/>
                 </InputWrapper>
             </div>
             {groupedOptions.length > 0 ? (

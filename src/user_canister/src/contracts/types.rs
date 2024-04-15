@@ -18,7 +18,6 @@ pub enum Contract {
 
 #[derive(PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub enum StoredContract {
-
     SharesContract(SharesContract),
     CustomContract(CustomContract),
 }
@@ -36,7 +35,10 @@ impl Contract {
         CONTRACTS_STORE.with(|contracts_store| {
             let caller_contracts = contracts_store.borrow();
             let caller_contracts_map = caller_contracts.get(&author)?;
-            let contract = caller_contracts_map.get(&contract_id)?;
+            let contract: StoredContract = caller_contracts_map.get(&contract_id)?.clone();
+            if let StoredContract::CustomContract(custom_contract) = contract {
+                return Some(StoredContract::CustomContract(custom_contract.check_view_permission()));
+            }
             Some(contract.clone())
         })
     }

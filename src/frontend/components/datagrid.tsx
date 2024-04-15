@@ -263,27 +263,28 @@ function CustomDataGrid(props: Props) {
         );
     }
 
-    return <StyledDataGrid
-        {...props}
-        rows={data.rows}
-        columns={data.columns}
-        // disableColumnSelector
-        hideFooterPagination
-        editMode="row"
-        processRowUpdate={processRowUpdate}
-        onProcessRowUpdateError={handleProcessRowUpdateError}
+    return <div  contentEditable={false}>
+        <StyledDataGrid
+            {...props}
+            rows={data.rows}
+            columns={data.columns}
+            // disableColumnSelector
+            hideFooterPagination
+            editMode="row"
+            processRowUpdate={processRowUpdate}
+            onProcessRowUpdateError={handleProcessRowUpdateError}
 
-        slots={{
-            columnMenu: CustomColumnMenu,
-            cell: CustomCell,
-            columnMenuUserItem: <div>xx</div>,
-            toolbar: () => <ButtonGroup variant="text" size={'small'}>
-                {props.tools}
-            </ButtonGroup>
-        }}
+            slots={{
+                columnMenu: CustomColumnMenu,
+                cell: CustomCell,
+                columnMenuUserItem: <div>xx</div>,
+                toolbar: () => <ButtonGroup variant="text" size={'small'}>
+                    {props.tools}
+                </ButtonGroup>
+            }}
 
-
-    />
+        />
+    </div>
 }
 
 export default CustomDataGrid

@@ -270,7 +270,7 @@ export function createCContract(): CContract {
     let new_column: CColumn = createCColumn(field);
     let new_c_contract: CContract = {
         id: randomString(),
-        name: "New " + randomString(),
+        name: "Untitled",
         'columns': [new_column],
         'rows': [new_row],
         date_created: 0,

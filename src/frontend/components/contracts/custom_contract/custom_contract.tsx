@@ -27,13 +27,13 @@ import {
 import {CONTRACT, CREATE_CONTRACT, PAYMENTS, PROMISES} from "./types";
 import BasicMenu from "../../genral/drop_down";
 import CustomDataGrid from "../../datagrid";
-import EditorComponent from "../../editor_components/main";
 import useParser from "./formula_parser/use_parser";
 import RenameColumn from "./column_menu/rename_column";
 import ChangeColumnPermissions from "./column_menu/column_permision";
 import ChangeColumnFormula from "./column_menu/column_formula";
 import {actor} from "../../../App";
 import ChangeType from "./column_menu/column_type";
+import {Input} from "@mui/material";
 
 interface VIEW {
     id?: string,
@@ -359,15 +359,32 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
     ];
 
     const mainOptions: any[] = [
-        {content: "Rename"},
-        {content: "Delete"},
-        {content: "Delete_contract"},
-
+        {content: "Delete_contract"}
     ];
-    // data if view.type == CONTRACT serizlie from contract using contract serizlie and if view.type == PROMISES and if view.type == PAYMENTS
+    const renameColumn = (name: string) => {
+        let updatedContracts = contract.contracts.map((c: CContract) => {
+            if (c.id === view.id) {
+                c.name = name;
+            }
+            return c;
+        });
+        updateContract({...contract, contracts: updatedContracts});
+        setView({...view, name: name});
+    }
     let data = {};
     switch (view?.type) {
         case CONTRACT:
+
+            mainOptions.push({
+                content: <Input
+                    onKeyDown={(event) => event.stopPropagation()}
+                    defaultValue={view.name || "Untitled"}
+                    onBlur={(e) => renameColumn(e.target.value)}
+                />
+            });
+            mainOptions.push({content: "Delete"});
+
+
             let current_contract: CContract | undefined = contract.contracts.find((c: CContract) => c.id === view.id);
             if (!current_contract) {
                 data = view;
@@ -417,27 +434,11 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             updateRow={updateRow}
             tools={
                 <>
-                    {view.name && (
-                        <EditorComponent
-                            preventSplit={true}
-                            preventToolbar={true}
-                            onChange={(value: any) => {
-                                // console.log(value);
-                            }}
-                            placeholder={"Untitled"}
-                            content={[
-                                {
-                                    type: "h2",
-                                    children: [{text: view.name}],
-                                },
-                            ]}
-                        />
-                    )}
-                    <BasicMenu SelectOption={mainSelectOption} options={mainOptions}>
-                        <MoreVertIcon/>
-                    </BasicMenu>
                     <BasicMenu SelectOption={selectOption} options={options}>
                         {view && (view.name || view.type)}
+                    </BasicMenu>
+                    <BasicMenu SelectOption={mainSelectOption} options={mainOptions}>
+                        <MoreVertIcon/>
                     </BasicMenu>
                 </>
             }
