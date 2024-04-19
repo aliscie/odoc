@@ -1,16 +1,14 @@
-## old version of Odoc can be found [here](https://github.com/aliscie/Odoc-old)
+
 ## TO get started
   1. `dfx start --background --clean`
   2. `dfx deploy backend`
   3. `npm start`
   4. open http://127.0.0.1:5173/
-  5. You should see this page <img width="1280" alt="Screenshot 2023-06-06 at 10 36 20 AM" src="https://github.com/aliscie/Odoc/assets/58806996/301e5cc2-3be0-44b4-92ba-05a565e169e9">
-<hr/>
+  5. [watch video intro](https://www.youtube.com/embed/z3L_pdmDMe8)
+<img style="width:100px" src="https://github.com/aliscie/odoc/assets/58806996/604acd01-325a-4bb3-b75c-b7ada8b445f0"/>
 
 <h1 align="center">Odoc</h1>
 <h3 align="center">SAVES YOUR TIME</h3>
-
-
 
 <img align="left" src="https://i.ibb.co/xzJXxWK/logo2.png" style="width:100%">
 Odoc
@@ -113,3 +111,4 @@ This app is Notion.so clone, roam research clone and obsidian clone. The main pu
 `sudo port uninstall rustup`
 ` history | grep cargo`
 
+* old version of Odoc can be found [here](https://github.com/aliscie/Odoc-old)
