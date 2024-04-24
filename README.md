@@ -3,7 +3,7 @@
   1. `dfx start --background --clean`
   2. `dfx deploy backend`
   3. `npm start`
-  4. open http://127.0.0.1:5173/
+  4. open https://lwdq3-vqaaa-aaaal-acwda-cai.icp0.io
   5. [watch video intro](https://www.youtube.com/embed/z3L_pdmDMe8)
 <img style="width:100px" src="https://github.com/aliscie/odoc/assets/58806996/604acd01-325a-4bb3-b75c-b7ada8b445f0"/>
 
