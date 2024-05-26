@@ -35,8 +35,6 @@ function App() {
     useEffect(() => {
 
         (async () => {
-
-
             // actor = user_canister;
             actor = await get_user_actor();
             await get_initial_data();

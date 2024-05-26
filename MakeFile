@@ -30,3 +30,4 @@ generate_candid_file:
 add_balance:
 	dfx wallet --network ic redeem-faucet-coupon <your-coupon-code>
 	dfx ledger --network ic balance
+	dfx wallet --network ic balance

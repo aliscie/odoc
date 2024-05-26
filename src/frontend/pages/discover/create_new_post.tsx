@@ -15,22 +15,23 @@ import PostTags from "./tags_component";
 
 
 function CreatePost(props: any) {
-    const [tags, setTags] = React.useState([]);
-    const {profile,} = useSelector((state: any) => state.filesReducer);
-    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    let [isEnter, setEnter] = React.useState(false);
-    let [loading, setLoad] = React.useState(false);
-    let [changes, setChanges] = React.useState<any>(null);
     let post_id = randomId();
-    let post: Post = {
+    const {profile} = useSelector((state: any) => state.filesReducer);
+    const [post, setPost] = React.useState<Post>({
         'id': post_id,
         'creator': profile.id,
         'date_created': BigInt(0),
         'votes_up': [],
-        'tags': tags.map((tag) => tag.title),
+        'tags': [],
         'content_tree': [],
         'votes_down': [],
-    }
+    });
+
+    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+    let [isEnter, setEnter] = React.useState(false);
+    let [loading, setLoad] = React.useState(false);
+    let [changes, setChanges] = React.useState<any>(null);
+
     const handleCreatePost = async () => {
         let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> = serialize_file_contents(changes)
         let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1]
@@ -61,9 +62,11 @@ function CreatePost(props: any) {
             onClick={handleCreatePost}
         ><AddCircleOutlineIcon/></LoadingButton>
         <IconButton><MoreTimeIcon/></IconButton>
-        <PostTags tags={tags} setTags={(op) => {
-            setTags(op)
-        }}/>
+        <PostTags
+            post={post}
+            setTags={(updatedTags) => {
+                setPost(prevPost => ({...prevPost, tags: updatedTags.map(tag => tag.title)}));
+            }}/>
     </>;
 
 

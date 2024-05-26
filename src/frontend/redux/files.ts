@@ -2,7 +2,14 @@ import {normalize_files_contents} from "../data_processing/normalize/normalize_c
 import {agent} from "../backend_connect/main";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
-import {FileNode, Friend, InitialData, StoredContract, User} from "../../declarations/user_canister/user_canister.did";
+import {
+    CPayment, CustomContract,
+    FileNode,
+    Friend,
+    InitialData, SharesContract,
+    StoredContract,
+    User
+} from "../../declarations/user_canister/user_canister.did";
 import {actor} from "../App";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {getCurrentFile} from "./utls";
@@ -310,9 +317,44 @@ export function filesReducer(state: any = initialState, action: any) {
                 ...state,
             }
         case 'RESOLVE_CHANGES':
-            state.changes = {files: {}, contents: {}, contracts: {}}
+            // for each contract check promises if .status === {Released:null} remove it from cusom_contract.promises and appened it to cusom_contract.payments
+            let contracts: Array<StoredContract> = Object.values(state.changes.contracts);
+            // state.contracts =
+
+            contracts = contracts.map((contract: StoredContract) => {
+                if (contract.CustomContract) {
+                    let promises = contract.CustomContract.promises;
+                    let payments = contract.CustomContract.payments;
+                    promises = promises.filter((promise: any) => {
+
+                        if (Object.keys(promise.status)[0] === 'Released') {
+                            console.log({promise})
+                            payments.push(promise);
+                            return false
+                        }
+                        return true
+                    })
+                    contract.CustomContract.promises = promises;
+                    contract.CustomContract.payments = payments;
+                }
+                return contract
+            });
+            let converted_contracts :  Array<[string, StoredContract]> = contracts.map((c) => {
+                let id;
+                if ('SharesContract' in c) {
+                    id = c.SharesContract.contract_id;
+                } else if ('CustomContract' in c) {
+                    id = c.CustomContract.id;
+                } else {
+                    // handle the case when none of the types match
+                    // you might want to provide a default value or throw an error
+                }
+                return [id, c]
+            });
             return {
                 ...state,
+                changes: {files: {}, contents: {}, contracts: {}},
+                contracts: normalize_contracts(converted_contracts)
             }
 
         case 'UPDATE_FRIEND':

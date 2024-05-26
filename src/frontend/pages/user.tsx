@@ -78,10 +78,6 @@ export function UserHistoryCom(profile: UserProfile) {
                 xAxis={[{data: profile.rates_by_actions.map((i: ActionRating, index) => index)}]}
                 series={[
                     {
-                        label: 'rating',
-                        data: profile.rates_by_actions.map((i, index) => i.rating || 0),
-                    },
-                    {
                         label: 'spent',
                         data: profile.rates_by_actions.map((i, index) => i.spent),
                     },
@@ -92,6 +88,22 @@ export function UserHistoryCom(profile: UserProfile) {
                     {
                         label: 'received',
                         data: profile.rates_by_actions.map((i, index) => i.received),
+                    },
+                ]}
+                width={500}
+                height={300}
+            />
+
+            <LineChart
+                xAxis={[{data: profile.rates_by_actions.map((i: ActionRating, index) => index)}]}
+                series={[
+                    {
+                        label: 'Actions rating',
+                        data: profile.rates_by_actions.map((i, index) => i.rating || 0),
+                    },
+                    {
+                        label: 'Users rating',
+                        data: profile.rates_by_others.map((i, index) => i.rating || 0),
                     },
                 ]}
                 width={500}

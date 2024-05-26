@@ -8,6 +8,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../redux/main";
 import {actor} from "../App";
 import {Badge} from "@mui/base";
+import Button from "@mui/material/Button";
 
 
 interface Props {
@@ -34,10 +35,18 @@ function ChatsComponent(props: Props) {
                 setMessages(chats_notifications)
             }
         })()
-    }, [chats_notifications])
-    let options = loading ? [{content: <CircularProgress/>}] : messages.map((message: Message) => {
-        return {content: <MessageNotification {...message}/>}
-    })
+    }, [chats_notifications]);
+    let options: any = [{content: "Create New group", onClick: () => console.log("xx")}]
+
+    if (loading) {
+        options.push({content: <CircularProgress/>})
+    } else if (messages) {
+        messages.map((message: Message) => {
+            options.push({content: <MessageNotification {...message}/>})
+        })
+    } else {
+        options.push({content: "You have no messages yet!"})
+    }
 
     let not_seen_message = messages.filter((m: Message) => !m.seen_by.some(u => u.toString() === profile.id))
 

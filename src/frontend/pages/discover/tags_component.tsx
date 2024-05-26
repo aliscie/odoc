@@ -40,6 +40,7 @@ function PostTags(props: Props) {
     const debouncedHandleChange = React.useMemo(() => debounce(handleChange, 300), []);
 
     return <MultiAutoComplete
+        {...props}
         style={props.style}
         onChange={debouncedHandleChange}
         value={tags}

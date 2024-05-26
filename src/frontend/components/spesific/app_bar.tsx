@@ -22,6 +22,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import {convertToBlobLink} from "../../data_processing/image_to_vec";
 import {Notifications} from "../notifcations/notification";
 import ChatsComponent from "../chat_component";
+import Workspaces from "./work_spaces";
 
 export function NavAppBar() {
     const dispatch = useDispatch();
@@ -79,8 +80,8 @@ export function NavAppBar() {
                         {searchTool ? <CloseIcon/> : <SearchIcon/>}
                     </IconButton>
                 </Tooltip>
-                {isLoggedIn && <Notifications/> }
-                {isLoggedIn && <ChatsComponent/> }
+                {isLoggedIn && <Notifications/>}
+                {isLoggedIn && <ChatsComponent/>}
                 {isLoggedIn ? (
                     <BasicMenu
                         anchorOrigin={{
@@ -102,6 +103,8 @@ export function NavAppBar() {
                 ) : (
                     <Button className={'login'} color={'inherit'} onClick={handleLogin}>Login</Button>
                 )}
+
+                {isLoggedIn && <Workspaces/>}
 
                 {isLoggedIn && <MultiSaveButton/>}
             </Toolbar>

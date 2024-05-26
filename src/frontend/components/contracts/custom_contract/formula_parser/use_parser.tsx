@@ -92,10 +92,12 @@ function useParser(props: ParserProps) {
     values["Promise"] = (to: User, amount: number) => {
         if (typeof to === "string") {
             to = evaluate(to).value;
-        };
+        }
+        ;
         if (typeof amount === "string") {
             amount = evaluate(amount).value;
-        };
+        }
+        ;
         if (!values.row_id) {
             console.error("----------", {values})
             return "Err"
@@ -110,11 +112,15 @@ function useParser(props: ParserProps) {
             status: {None: null},
             contract_id: contract.id,
         };
-        // TODO why this was calling too many times.
+
+        // check if promise.id == payment.id in main_contract?.payments
+        let is_in: boolean = main_contract?.payments?.some((payment) => payment.id === promise.id);
+        if (is_in) {
+            return `${amount} already released to ${to.name}.`;
+        };
         if (promise.amount > wallet.balance) {
             return "Insufficient balance";
         };
-
         ref.current.set(promise.id, promise);
         updatePromises()
         return `You promised ${amount} USDT to ${to.name}.`;

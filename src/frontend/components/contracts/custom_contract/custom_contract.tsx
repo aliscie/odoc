@@ -462,10 +462,13 @@ export default function SlateCustomContract(props: any) {
                     setContract(contract.Ok.CustomContract);
                     dispatch(handleRedux("UPDATE_CONTRACT", {contract: contract.Ok}));
                 }
+            } else {
+                setContract(contracts[props.id]);
+
             }
         })()
-    }, [])
+    }, [contracts])
 
-    return (contract && <CustomContractComponent contract={contract}/>);
+    return (contracts && <CustomContractComponent contract={contract}/>);
 }
 

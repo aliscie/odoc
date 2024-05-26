@@ -18,7 +18,7 @@ import TransactionHistory from "./transaction_history";
 import {actor} from "../../App";
 import {UserHistoryCom} from "../user";
 import {useEffect} from "react";
-import {User, UserHistoryFE, UserProfile} from "../../../declarations/user_canister/user_canister.did";
+import {User, UserProfile} from "../../../declarations/user_canister/user_canister.did";
 import {Principal} from "@dfinity/principal";
 
 
