@@ -45,6 +45,7 @@ export const idlFactory = ({ IDL }) => {
     'users_permissions' : IDL.Vec(
       IDL.Tuple(IDL.Principal, ShareFilePermission)
     ),
+    'workspace' : IDL.Text,
     'parent' : IDL.Opt(IDL.Text),
   });
   const Share = IDL.Record({
@@ -350,6 +351,7 @@ export const idlFactory = ({ IDL }) => {
     'messages' : IDL.Vec(Message),
     'name' : IDL.Text,
     'admins' : IDL.Vec(IDL.Principal),
+    'workspace' : IDL.Text,
   });
   const Result_10 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
   const RegisterUser = IDL.Record({

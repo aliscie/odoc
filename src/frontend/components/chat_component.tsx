@@ -9,13 +9,14 @@ import {handleRedux} from "../redux/main";
 import {actor} from "../App";
 import {Badge} from "@mui/base";
 import Button from "@mui/material/Button";
+import useCreateChatGroup from "./chat/create_new_group";
 
 
 interface Props {
 }
 
 function ChatsComponent(props: Props) {
-
+    let chat_group = useCreateChatGroup();
     // console.log({"messages"})// TODO this render like 30 times
     const {profile} = useSelector((state: any) => state.filesReducer);
     let dispatch = useDispatch();
@@ -36,7 +37,10 @@ function ChatsComponent(props: Props) {
             }
         })()
     }, [chats_notifications]);
-    let options: any = [{content: "Create New group", onClick: () => console.log("xx")}]
+
+    let options: any = [
+        {...chat_group}
+    ]
 
     if (loading) {
         options.push({content: <CircularProgress/>})

@@ -39,6 +39,7 @@ impl Chat {
             let mut chats = store.borrow_mut();
             let chat = Chat {
                 id,
+                workspace: "".to_string(),
                 name: "private_chat".to_string(),
                 admins: vec![user],
                 members: vec![],
@@ -152,7 +153,9 @@ impl Chat {
         let mut messages = vec![];
         let my_chats = Chat::get_my_chats();
         for chat in my_chats {
-            messages.push(chat.messages.last().unwrap().clone())
+            if let Some(message) = chat.messages.last() {
+                messages.push(message.clone());
+            }
         };
         messages
     }

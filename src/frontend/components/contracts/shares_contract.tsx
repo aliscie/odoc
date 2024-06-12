@@ -11,8 +11,7 @@ import {
     SharePaymentOption,
     ShareRequest,
     SharesContract,
-    StoredContract,
-    User
+    StoredContract
 } from "../../../declarations/user_canister/user_canister.did";
 import PayButton from "./shares_contract/pay_button";
 import {RenderReceiver} from "./payment_contract/renderers";
@@ -26,18 +25,16 @@ import useSharesRequests from "./shares_contract/use_shares_requests";
 import ApproveButton from "./shares_contract/approve_button";
 import ApplyButton from "./shares_contract/apply_button";
 import CustomDataGrid from "../datagrid";
-import {logger} from "../../dev_utils/log_data";
 
 // export type SharesContractViews = "Payments" | "Shares" | "SharesRequests" | "PaymentOptions";
 
 export default function SharesContractComponent(props: any) {
 
     let [view, setView] = useState("Shares");
-    let {getUser, getUserByName} = useGetUser();
+    let {getUser} = useGetUser();
     const dispatch = useDispatch();
 
     const {
-        files_content,
         current_file,
         all_friends,
         profile,

@@ -13,6 +13,7 @@ import {handleRedux} from "../../../redux/main";
 import DeleteFile from "../../actions/delete_file";
 import Draggable from "../../genral/draggable";
 import ShareIcon from '@mui/icons-material/Share';
+import ChangeWorkSpace from "../../actions/change_work_space_file";
 
 interface ItemProps {
     data: Record<number, NestedDataItem>; // Use Record<number, NestedDataItem> instead of any
@@ -46,7 +47,8 @@ const DocComponent: React.FC<ItemProps> = ({data, item, index, openItems, handle
         //     content: <RenameFile item={item}/>,
         //     preventClose: true,
         // },
-        {content: <DeleteFile item={item}/>},
+        {content: <DeleteFile item={item}/>,preventClose: true,},
+        {content: <ChangeWorkSpace item={item}/>},
     ]
 
     const handleDrop: any = async (dropped, droppedOver, type) => {

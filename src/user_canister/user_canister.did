@@ -70,6 +70,7 @@ type Chat = record {
   messages : vec Message;
   name : text;
   admins : vec principal;
+  workspace : text;
 };
 type ClientKey = record { client_principal : principal; client_nonce : nat64 };
 type Column = record {
@@ -140,6 +141,7 @@ type FileNode = record {
   children : vec text;
   author : text;
   users_permissions : vec record { principal; ShareFilePermission };
+  workspace : text;
   parent : opt text;
 };
 type Filter = record {

@@ -31,6 +31,7 @@ impl FileNode {
         // Similar ID generation
         let id: FileId = COUNTER.fetch_add(1, Ordering::Relaxed).to_string();
         let file = FileNode {
+            workspace: "".to_string(),
             id: id.clone(),
             parent,
             name,

@@ -1,12 +1,14 @@
 import BasicMenu from "../genral/basic_menu";
 import React, {useState} from "react";
 import {Tooltip} from "@mui/material";
+import useCreateWorkSpace from "../chat/create_new_workspace";
 
 interface Props {
 
 }
 
 let workspaces = [
+
     "Default",
     "Isha developers",
     "Isha video editors",
@@ -14,7 +16,12 @@ let workspaces = [
 ]
 
 function Workspaces(props: Props) {
+    const createWorkspace = useCreateWorkSpace();
+
     const [state, setState] = useState("My work space")
+    let options = [createWorkspace, ...workspaces.map((item: string) => {
+        return {content: item, onClick: () => setState(item)}
+    })]
     return <BasicMenu
         anchorOrigin={{
             vertical: 'bottom',
@@ -25,12 +32,11 @@ function Workspaces(props: Props) {
             horizontal: 'right',
         }}
         options={
-            workspaces.map((item: string) => {
-                return {content: item, onClick: () => setState(item)}
-            })}
+            options
+        }
     >
         <Tooltip arrow title={"Chose your workspace"}>
-        {state}
+            {state}
         </Tooltip>
         {/*<Avatar style={{display: 'inline'}} alt="Remy Sharp" src={image_link}/>*/}
         {/*Each work spaces has its own chats and its won files,*/}

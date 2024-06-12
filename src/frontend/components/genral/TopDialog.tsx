@@ -4,6 +4,7 @@ import Dialog from "@mui/material/Dialog";
 import * as React from "react";
 import {useSelector} from "react-redux";
 import {useEffect} from "react";
+import {LoadingButton} from "@mui/lab";
 
 function TopDialog() {
     const {top_dialog} = useSelector((state: any) => state.filesReducer);
@@ -16,9 +17,12 @@ function TopDialog() {
     const handleClose = () => {
         setOpen(false);
     };
+    const [loading, setLoading] = React.useState(false);
+    const handleSave = async () => {
+        setLoading(true);
 
-    const handleSave = () => {
-        top_dialog.handleSave();
+        let res = await top_dialog.handleSave();
+        setLoading(false);
         setOpen(false);
     };
 
@@ -35,7 +39,12 @@ function TopDialog() {
             {top_dialog && top_dialog.content}
             <DialogActions>
                 <Button onClick={handleClose}>Cancel</Button>
-                <Button onClick={handleSave} autoFocus>Save</Button>
+                <LoadingButton
+                    // style={{color: "var(--color)"}}
+                    loading={loading}
+                    onClick={handleSave}
+                >SAVE</LoadingButton>
+                {/*<Button onClick={handleSave} autoFocus>Save</Button>*/}
             </DialogActions>
         </Dialog>
     );
