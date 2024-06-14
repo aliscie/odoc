@@ -1,7 +1,7 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
 import useGetChats from "../components/chat/use_get_chats";
-import {FEChat} from "../../declarations/user_canister/user_canister.did";
+import {FEChat} from "../../declarations/backend/backend.did";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';

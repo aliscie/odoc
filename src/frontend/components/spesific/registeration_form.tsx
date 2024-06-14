@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
 import {convertToBytes} from "../../data_processing/image_to_vec";
 import {actor} from "../../App";
-import {RegisterUser, User} from "../../../declarations/user_canister/user_canister.did";
+import {RegisterUser, User} from "../../../declarations/backend/backend.did";
 import {handleRedux} from "../../redux/main";
 
 const inputs = [

@@ -9,7 +9,7 @@ import {useEffect} from "react";
 import {Button, Divider, Tooltip, Typography} from "@mui/material";
 import useGetUser from "../../utils/get_user_by_principal";
 import {actor} from "../../App";
-import {Exchange} from "../../../declarations/user_canister/user_canister.did";
+import {Exchange} from "../../../declarations/backend/backend.did";
 import formatTimestamp from "../../utils/time";
 
 export function ContractItem(props: any) {

@@ -7,7 +7,7 @@ import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
 import IconButton, {IconButtonProps} from '@mui/material/IconButton';
 import {normalize_content_tree} from "../../data_processing/normalize/normalize_contents";
-import {FEChat, PostUser, UserFE} from "../../../declarations/user_canister/user_canister.did";
+import {FEChat, PostUser, UserFE} from "../../../declarations/backend/backend.did";
 import formatTimestamp from "../../utils/time";
 import EditorComponent from "../editor_components/main";
 import {useDispatch, useSelector} from "react-redux";
@@ -20,7 +20,7 @@ import useGetChats from "../chat/use_get_chats";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import {convertToBlobLink} from "../../data_processing/image_to_vec";
-import {User} from "../../../../.dfx/local/canisters/user_canister/service.did";
+import {User} from "../../../../.dfx/local/canisters/backend/service.did";
 
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;

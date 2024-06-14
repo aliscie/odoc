@@ -1,7 +1,7 @@
 import IconButton from "@mui/material/IconButton";
 import ShareIcon from "@mui/icons-material/Share";
 import React, {useEffect} from "react";
-import {Post, PostUser} from "../../../declarations/user_canister/user_canister.did";
+import {Post, PostUser} from "../../../declarations/backend/backend.did";
 import {actor} from "../../App";
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';

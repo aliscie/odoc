@@ -2,10 +2,10 @@ import {afterAll, beforeAll, vi} from "vitest";
 import '@testing-library/jest-dom/vitest';
 import {resolve} from "node:path";
 import {createIdentity, PocketIc} from "@hadronous/pic";
-import {idlFactory} from "./src/declarations/user_canister";
-import {_SERVICE} from ".dfx/local/canisters/user_canister/service.did";
+import {idlFactory} from "./src/declarations/backend";
+import {_SERVICE} from ".dfx/local/canisters/backend/service.did";
 import {Identity} from "@dfinity/agent";
-import {RegisterUser, User} from "./src/declarations/user_canister/user_canister.did";
+import {RegisterUser, User} from "./src/declarations/backend/backend.did";
 import {randomString} from "./src/frontend/data_processing/data_samples";
 
 vi.stubGlobal('matchMedia', () => ({
@@ -13,7 +13,7 @@ vi.stubGlobal('matchMedia', () => ({
     }
 }));
 
-const WASM_PATH = resolve(__dirname, "target", "wasm32-unknown-unknown", "release", "user_canister.wasm");
+const WASM_PATH = resolve(__dirname, "target", "wasm32-unknown-unknown", "release", "backend.wasm");
 
 const setupTestEnvironment = async () => {
     const alice = createIdentity("1");

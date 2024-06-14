@@ -1,4 +1,4 @@
-import {FileNode} from "../../declarations/user_canister/user_canister.did";
+import {FileNode} from "../../declarations/backend/backend.did";
 
 export function getCurrentFile(files: Array<FileNode>): FileNode | null {
     let current_file = localStorage.getItem("current_file");

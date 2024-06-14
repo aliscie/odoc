@@ -107,8 +107,8 @@ mod tests {
     }
 }
 
-fn user_canister_wasm() -> Vec<u8> {
-    let wasm_path = std::env::var_os("USER_CANISTER_WASM").expect("Missing counter wasm file");
+fn backend_wasm() -> Vec<u8> {
+    let wasm_path = std::env::var_os("backend_WASM").expect("Missing counter wasm file");
     std::fs::read(wasm_path).unwrap()
 }
 
@@ -137,8 +137,8 @@ fn user_canister_wasm() -> Vec<u8> {
 //     // Create a canister and charge it with 2T cycles.
 //     let can_id = pic.create_canister();
 //     pic.add_cycles(can_id, INIT_CYCLES);
-//     let user_canister_wasm = user_canister_wasm();
-//     pic.install_canister(can_id, user_canister_wasm, vec![], None);
+//     let backend_wasm = backend_wasm();
+//     pic.install_canister(can_id, backend_wasm, vec![], None);
 //     // Make some calls to the canister.
 //     let args: RegisterUser = RegisterUser {
 //         name: Some("AliSci".to_string()),

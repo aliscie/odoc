@@ -6,7 +6,7 @@ import {
     CustomContract,
     StoredContract,
     User,
-} from "../../../../../declarations/user_canister/user_canister.did";
+} from "../../../../../declarations/backend/backend.did";
 import {useDispatch, useSelector} from "react-redux";
 import {Principal} from "@dfinity/principal";
 import React from "react";

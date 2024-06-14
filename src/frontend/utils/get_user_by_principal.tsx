@@ -1,5 +1,5 @@
 import {useSelector} from "react-redux";
-import {User} from "../../declarations/user_canister/user_canister.did";
+import {User} from "../../declarations/backend/backend.did";
 import {actor} from "../App";
 
 function useGetUser() {

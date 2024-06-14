@@ -1,6 +1,6 @@
 import {useSelector} from "react-redux";
 import useGetChats from "./use_get_chats";
-import {FEChat, UserFE} from "../../../declarations/user_canister/user_canister.did";
+import {FEChat, UserFE} from "../../../declarations/backend/backend.did";
 import {ListItem, ListItemText, Tooltip, Typography} from "@mui/material";
 import React from "react";
 import formatTimestamp, {formatRelativeTime} from "../../utils/time";

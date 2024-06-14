@@ -9,7 +9,7 @@
 //     // let canister_id = pic.create_canister();
 //     // pic.add_cycles(canister_id, 2_000_000_000_000);
 //
-//     // let wasm_bytes = load_counter_wasm("/Users/ahmed/Desktop/odoc/target/wasm32-unknown-unknown/release/user_canister.wasm");
+//     // let wasm_bytes = load_counter_wasm("/Users/ahmed/Desktop/odoc/target/wasm32-unknown-unknown/release/backend.wasm");
 //     // pic.install_canister(canister_id, wasm_bytes, vec![], None);
 //     // // 'inc' is a counter canister method.
 //     // call_counter_canister(&pic, canister_id, "inc");

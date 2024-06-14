@@ -1,4 +1,4 @@
-import {Column, ColumnTypes, Table} from "../../../../declarations/user_canister/user_canister.did";
+import {Column, ColumnTypes, Table} from "../../../../declarations/backend/backend.did";
 import {handleRedux} from "../../../redux/main";
 import {useDispatch, useSelector} from "react-redux";
 import {randomString} from "../../../data_processing/data_samples";

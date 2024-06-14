@@ -1,5 +1,5 @@
 import React from 'react';
-import {CColumn, CContract, CustomContract} from '../../../../../declarations/user_canister/user_canister.did';
+import {CColumn, CContract, CustomContract} from '../../../../../declarations/backend/backend.did';
 import {updateContractColumn} from "../utls";
 import BasicMenu from "../../../genral/drop_down";
 

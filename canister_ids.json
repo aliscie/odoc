@@ -2,7 +2,7 @@
   "frontend": {
     "ic": "lwdq3-vqaaa-aaaal-acwda-cai"
   },
-  "user_canister": {
+  "backend": {
     "ic": "lrcwp-yiaaa-aaaal-acwdq-cai"
   }
 }

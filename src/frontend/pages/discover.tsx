@@ -4,7 +4,7 @@ import {Button, Divider, Grid} from "@mui/material";
 import {useSelector} from "react-redux";
 import CreatePost from "./discover/create_new_post";
 import {actor} from "../App";
-import {PostUser} from "../../declarations/user_canister/user_canister.did";
+import {PostUser} from "../../declarations/backend/backend.did";
 import {useSnackbar} from "notistack";
 import FilterPosts from "./discover/posts_filters";
 import ViewPost from "./discover/view_update_post";

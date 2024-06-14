@@ -2,7 +2,7 @@ import React, {useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {handleRedux} from '../redux/main';
 import {custom_contract, shares_contract_sample} from '../data_processing/data_samples';
-import {FileNode, StoredContract} from '../../declarations/user_canister/user_canister.did';
+import {FileNode, StoredContract} from '../../declarations/backend/backend.did';
 import EditorComponent from '../components/editor_components/main';
 import debounce from '../utils/debounce';
 import {Principal} from '@dfinity/principal';

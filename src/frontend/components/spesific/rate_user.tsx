@@ -1,4 +1,4 @@
-import {Rating} from "../../../declarations/user_canister/user_canister.did";
+import {Rating} from "../../../declarations/backend/backend.did";
 import {Input, Rating as RatingCom} from "@mui/material";
 import * as React from "react";
 import {Principal} from "@dfinity/principal";

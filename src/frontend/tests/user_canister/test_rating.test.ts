@@ -1,4 +1,4 @@
-import {Rating, RegisterUser} from "../../../declarations/user_canister/user_canister.did";
+import {Rating, RegisterUser} from "../../../declarations/backend/backend.did";
 import {Identity} from "@dfinity/agent";
 import {createIdentity} from "@hadronous/pic";
 import {randomString} from "../../data_processing/data_samples";

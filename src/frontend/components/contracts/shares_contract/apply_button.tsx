@@ -4,7 +4,7 @@ import DialogOver from "../../genral/daiolog_over";
 import {LoadingButton} from "@mui/lab";
 import {actor} from "../../../App";
 import {useDispatch, useSelector} from "react-redux";
-import {Share, SharesContract, StoredContract} from "../../../../declarations/user_canister/user_canister.did";
+import {Share, SharesContract, StoredContract} from "../../../../declarations/backend/backend.did";
 import {handleRedux} from "../../../redux/main";
 import {useSnackbar} from "notistack";
 

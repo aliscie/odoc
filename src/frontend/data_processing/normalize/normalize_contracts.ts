@@ -3,7 +3,7 @@ import {
     PaymentContract,
     SharesContract,
     StoredContract
-} from "../../../declarations/user_canister/user_canister.did";
+} from "../../../declarations/backend/backend.did";
 
 type ContractType = CustomContract | PaymentContract | SharesContract;
 

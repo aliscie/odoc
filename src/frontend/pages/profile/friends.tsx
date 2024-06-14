@@ -10,7 +10,7 @@ import * as React from "react";
 import LoaderButton from "../../components/genral/loader_button";
 import {actor} from "../../App";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import {Friend} from "../../../declarations/user_canister/user_canister.did";
+import {Friend} from "../../../declarations/backend/backend.did";
 import RateUser from "../../components/spesific/rate_user";
 import {UserAvatar} from "../../components/genral/post_component";
 

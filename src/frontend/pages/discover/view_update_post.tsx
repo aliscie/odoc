@@ -4,7 +4,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ActionsButtons from "./actions_buttons";
 import PostComponent from "../../components/genral/post_component";
 import React from "react";
-import {ContentNode, Post, PostUser} from "../../../declarations/user_canister/user_canister.did";
+import {ContentNode, Post, PostUser} from "../../../declarations/backend/backend.did";
 import {useSelector} from "react-redux";
 import {actor} from "../../App";
 import {useSnackbar} from "notistack";

@@ -14,7 +14,7 @@ import {agent} from "./backend_connect/main";
 import {get_initial_data} from "./redux/files";
 import {get_user_actor} from "./backend_connect/ic_agent";
 import {ActorSubclass} from "@dfinity/agent";
-import {_SERVICE} from "../declarations/user_canister/user_canister.did";
+import {_SERVICE} from "../declarations/backend/backend.did";
 import MessagesDialog from "./components/chat/messages_box_dialog";
 import useSocket from "./websocket/use_socket";
 import {CircularProgress} from "@mui/material";
@@ -35,7 +35,7 @@ function App() {
     useEffect(() => {
 
         (async () => {
-            // actor = user_canister;
+            // actor = backend;
             actor = await get_user_actor();
             await get_initial_data();
 

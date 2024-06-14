@@ -1,4 +1,4 @@
-import {_SERVICE, RegisterUser, User} from "../../../declarations/user_canister/user_canister.did";
+import {_SERVICE, RegisterUser, User} from "../../../declarations/backend/backend.did";
 import {AnonymousIdentity, Identity} from "@dfinity/agent";
 
 

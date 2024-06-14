@@ -3,7 +3,7 @@ import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import {useSnackbar} from "notistack";
-import {ContentNode, CPayment, FileNode, StoredContract} from "../../../declarations/user_canister/user_canister.did";
+import {ContentNode, CPayment, FileNode, StoredContract} from "../../../declarations/backend/backend.did";
 import serialize_file_contents from "../../data_processing/serialize/serialize_file_contents";
 import {actor} from "../../App";
 import {LoadingButton} from "@mui/lab";

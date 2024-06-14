@@ -1,4 +1,4 @@
-import {StoredContract, UserProfile} from "../../../declarations/user_canister/user_canister.did";
+import {StoredContract, UserProfile} from "../../../declarations/backend/backend.did";
 import {custom_contract, randomString} from "../../data_processing/data_samples";
 import {assert} from "vitest";
 import {newContract} from "./data_samples";
@@ -208,7 +208,7 @@ test("Test actions rating", async () => {
     await userObject(newUser2)
     await userObject(newUser3)
     await userObject(newUser4)
-    await userObject(newUser5) // TODO I should get 4 objections but in the backend (user_canister) it shows 3 fix this
+    await userObject(newUser5) // TODO I should get 4 objections but in the backend (backend) it shows 3 fix this
     global.actor.setIdentity(global.user)
 
     //

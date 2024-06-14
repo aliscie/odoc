@@ -12,7 +12,7 @@ import {
     ShareRequest,
     SharesContract,
     StoredContract
-} from "../../../declarations/user_canister/user_canister.did";
+} from "../../../declarations/backend/backend.did";
 import PayButton from "./shares_contract/pay_button";
 import {RenderReceiver} from "./payment_contract/renderers";
 import BasicMenu from "../genral/drop_down";

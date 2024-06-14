@@ -17,7 +17,7 @@
    ```
 3. in your .env file add
     1. `POCKET_IC_BIN=/<path to>/pocket-ic`
-    2. `USER_CANISTER_WASM=/<ur dir>/odoc/target/wasm32-unknown-unknown/release/user_canister.wasm`
+    2. `BACKEND_WASM=/<ur dir>/odoc/target/wasm32-unknown-unknown/release/backend.wasm`
     3. `VITE_DFX_NETWORK='local'`
     4. `VITE_DFX_PORT=<the port from dfx deploy urls>`
     5. `VITE_IC_HOST='http://localhost:<the porst of your host canisters>`

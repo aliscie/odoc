@@ -3,7 +3,7 @@ import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import {convertToBlobLink} from "../../data_processing/image_to_vec";
-import {User} from "../../../declarations/user_canister/user_canister.did";
+import {User} from "../../../declarations/backend/backend.did";
 
 interface Props {
     user: User,

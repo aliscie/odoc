@@ -1,4 +1,4 @@
-import {FEChat, Message, UserFE} from "../../declarations/user_canister/user_canister.did";
+import {FEChat, Message, UserFE} from "../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import {useSelector} from "react-redux";
 

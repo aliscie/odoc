@@ -1,4 +1,4 @@
-import {PermissionType, User} from "../../../../../declarations/user_canister/user_canister.did";
+import {PermissionType, User} from "../../../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import MultiAutoComplete from "../../../genral/multi_autocompelte";
 import * as React from "react";

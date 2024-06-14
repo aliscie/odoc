@@ -3,7 +3,7 @@ import React, {useEffect} from "react";
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import MessageNotification from "./chat/message_notification";
 import CircularProgress from '@mui/material/CircularProgress';
-import {Message} from "../../declarations/user_canister/user_canister.did";
+import {Message} from "../../declarations/backend/backend.did";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../redux/main";
 import {actor} from "../App";

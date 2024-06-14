@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {MenuItem, Select, TextField} from "@mui/material";
 import MultiAutoComplete from "../genral/multi_autocompelte";
 import {actor} from "../../App";
-import {Chat, Message} from "../../../declarations/user_canister/user_canister.did";
+import {Chat, Message} from "../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import {useSnackbar} from "notistack";
 import {randomString} from "../../data_processing/data_samples";

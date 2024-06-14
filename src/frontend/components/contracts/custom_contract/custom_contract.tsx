@@ -12,7 +12,7 @@ import {
     CRow,
     CustomContract,
     StoredContract
-} from "../../../../declarations/user_canister/user_canister.did";
+} from "../../../../declarations/backend/backend.did";
 import {
     createCContract,
     deserialize_contract_rows,

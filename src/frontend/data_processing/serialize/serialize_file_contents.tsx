@@ -1,5 +1,5 @@
 import {randomString} from "../data_samples";
-import {ContentNode} from "../../../declarations/user_canister/user_canister.did";
+import {ContentNode} from "../../../declarations/backend/backend.did";
 
 function de_nesting(nested: any[]) {
     let queue = []

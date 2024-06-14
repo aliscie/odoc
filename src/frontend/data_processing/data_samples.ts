@@ -5,7 +5,7 @@ import {
     Share,
     SharePaymentOption,
     SharesContract
-} from "../../declarations/user_canister/user_canister.did";
+} from "../../declarations/backend/backend.did";
 
 let payment_contract_id = randomString();
 let shares_contract_id = randomString();

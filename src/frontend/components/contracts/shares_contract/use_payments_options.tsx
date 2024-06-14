@@ -1,5 +1,5 @@
 // create a useState hook
-import {ShareRequest} from "../../../../declarations/user_canister/user_canister.did";
+import {ShareRequest} from "../../../../declarations/backend/backend.did";
 import {useSelector} from "react-redux";
 
 function usePaymentsOptions({setView, setData}) {

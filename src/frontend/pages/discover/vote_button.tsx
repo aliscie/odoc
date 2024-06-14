@@ -2,7 +2,7 @@ import {Badge} from "@mui/base";
 import React from "react";
 import {useSnackbar} from "notistack";
 import {LoadingButton} from "@mui/lab";
-import {Post} from "../../../declarations/user_canister/user_canister.did";
+import {Post} from "../../../declarations/backend/backend.did";
 import {handleRedux} from "../../redux/main";
 import {useDispatch} from "react-redux";
 

@@ -5,7 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
 import {actor} from "../../App";
-import {ContentNode, Post} from "../../../declarations/user_canister/user_canister.did";
+import {ContentNode, Post} from "../../../declarations/backend/backend.did";
 import {randomId} from "@mui/x-data-grid-generator";
 import {useSelector} from "react-redux";
 import {useSnackbar} from "notistack";

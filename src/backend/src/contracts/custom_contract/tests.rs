@@ -6,5 +6,5 @@
 // fn test_make_contract() {
 //     dotenv().ok();
 //     let pic = PocketIc::new();
-//     // let wasm_bytes = load_counter_wasm("/Users/ahmed/Desktop/odoc/target/wasm32-unknown-unknown/release/user_canister.wasm");
+//     // let wasm_bytes = load_counter_wasm("/Users/ahmed/Desktop/odoc/target/wasm32-unknown-unknown/release/backend.wasm");
 // }*/

@@ -1,5 +1,5 @@
 import {useSelector} from "react-redux";
-import {ContentNode, FileNode} from "../../../../declarations/user_canister/user_canister.did";
+import {ContentNode, FileNode} from "../../../../declarations/backend/backend.did";
 
 function useSearchFiles() {
     const {files} = useSelector((state: any) => state.filesReducer);

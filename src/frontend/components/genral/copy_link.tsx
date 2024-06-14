@@ -11,7 +11,7 @@ import {
     ShareFileInput,
     ShareFilePermission,
     User
-} from "../../../declarations/user_canister/user_canister.did";
+} from "../../../declarations/backend/backend.did";
 import ShareIcon from "@mui/icons-material/Share";
 import {actor} from "../../App";
 import {Principal} from "@dfinity/principal";

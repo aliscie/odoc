@@ -3,7 +3,7 @@ import TestWrapper from "../utls/tests_wrapper";
 import {render} from "@testing-library/react";
 import {Principal} from "@dfinity/principal";
 import {randomString} from "../../data_processing/data_samples";
-import {CustomContract} from "../../../declarations/user_canister/user_canister.did";
+import {CustomContract} from "../../../declarations/backend/backend.did";
 import {CustomContractComponent} from "../../components/contracts/custom_contract/custom_contract";
 // import {custom_contract} from "../../data_processing/data_samples";
 

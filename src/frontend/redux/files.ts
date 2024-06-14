@@ -9,7 +9,7 @@ import {
     InitialData, SharesContract,
     StoredContract,
     User
-} from "../../declarations/user_canister/user_canister.did";
+} from "../../declarations/backend/backend.did";
 import {actor} from "../App";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {getCurrentFile} from "./utls";

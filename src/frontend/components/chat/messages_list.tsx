@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {useSelector} from "react-redux";
-import {FEChat, Message} from "../../../declarations/user_canister/user_canister.did";
+import {FEChat, Message} from "../../../declarations/backend/backend.did";
 import CircularProgress from '@mui/material/CircularProgress';
 import SendMessageBox from "./send_message";
 import MessageComponent, {FrontendMessage} from "./message";

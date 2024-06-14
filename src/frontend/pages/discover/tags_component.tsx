@@ -1,6 +1,6 @@
 import MultiAutoComplete from "../../components/genral/multi_autocompelte";
 import React from "react";
-import {PostUser} from "../../../declarations/user_canister/user_canister.did";
+import {PostUser} from "../../../declarations/backend/backend.did";
 import debounce from "../../utils/debounce";
 
 interface Props {

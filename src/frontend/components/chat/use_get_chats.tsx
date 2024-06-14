@@ -2,7 +2,7 @@ import {actor} from "../../App";
 import {handleRedux} from "../../redux/main";
 import {useDispatch, useSelector} from "react-redux";
 import {Principal} from "@dfinity/principal";
-import {Chat, FEChat} from "../../../declarations/user_canister/user_canister.did";
+import {Chat, FEChat} from "../../../declarations/backend/backend.did";
 import React from "react";
 
 function useGetChats() {

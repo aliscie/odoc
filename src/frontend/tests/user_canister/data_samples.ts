@@ -1,5 +1,5 @@
 import {randomString} from "../../data_processing/data_samples";
-import {CPayment, CustomContract} from "../../../declarations/user_canister/user_canister.did";
+import {CPayment, CustomContract} from "../../../declarations/backend/backend.did";
 import {createNewPromis} from "../../components/contracts/custom_contract/utls";
 import {Principal} from "@dfinity/principal";
 

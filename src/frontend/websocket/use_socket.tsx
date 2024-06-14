@@ -1,4 +1,4 @@
-import {canisterId, user_canister} from "../../declarations/user_canister";
+import {canisterId, backend} from "../../declarations/backend";
 import IcWebSocket, {createWsConfig} from "ic-websocket-js";
 import {SignIdentity} from "@dfinity/agent";
 import {useDispatch, useSelector} from "react-redux";
@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import React, {useEffect, useState} from "react";
 import {handleRedux} from "../redux/main";
 import {AuthClient} from "@dfinity/auth-client";
-import {AppMessage, Friend} from "../../declarations/user_canister/user_canister.did";
+import {AppMessage, Friend} from "../../declarations/backend/backend.did";
 import {get_id} from "../backend_connect/ic_agent";
 
 
@@ -32,7 +32,7 @@ function useSocket() {
             if (await authClient.isAuthenticated() && !ws) {
                 const wsConfig = createWsConfig({
                     canisterId: canisterId,
-                    canisterActor: user_canister,
+                    canisterActor: backend,
                     identity: _identity as SignIdentity,
                     networkUrl: icUrl,
                 });

@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 import Button from '@mui/material/Button';
 import {useDispatch, useSelector} from "react-redux";
-import {Message} from "../../../declarations/user_canister/user_canister.did";
+import {Message} from "../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import {randomString} from "../../data_processing/data_samples";
 import {actor} from "../../App";

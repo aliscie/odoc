@@ -4,7 +4,7 @@ import {
     CContract,
     CPayment,
     CustomContract, StoredContract
-} from '../../../../../declarations/user_canister/user_canister.did';
+} from '../../../../../declarations/backend/backend.did';
 import CodeEditor from "../formula_parser/code_editor";
 import {
     serialize_contract_column,

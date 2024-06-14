@@ -4,7 +4,7 @@ import {Avatar} from "@mui/material";
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
-import {FEChat, Message, User} from "../../../declarations/user_canister/user_canister.did";
+import {FEChat, Message, User} from "../../../declarations/backend/backend.did";
 import useGetChats from "./use_get_chats";
 import {Principal} from "@dfinity/principal";
 import {convertToBlobLink} from "../../data_processing/image_to_vec";

@@ -1,7 +1,7 @@
 import {Divider, Typography} from "@mui/material";
 import EditorComponent from "../../editor_components/main";
 import * as React from "react";
-import {FileNode} from "../../../../declarations/user_canister/user_canister.did";
+import {FileNode} from "../../../../declarations/backend/backend.did";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../../redux/main";
 

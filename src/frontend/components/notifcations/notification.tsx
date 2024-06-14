@@ -12,7 +12,7 @@ import useGetUser from "../../utils/get_user_by_principal";
 import DialogOver from "../genral/daiolog_over";
 import {Divider, Input} from "@mui/material";
 import LoaderButton from "../genral/loader_button";
-import {CPayment, Notification} from "../../../declarations/user_canister/user_canister.did";
+import {CPayment, Notification} from "../../../declarations/backend/backend.did";
 import {formatRelativeTime} from "../../utils/time";
 //
 

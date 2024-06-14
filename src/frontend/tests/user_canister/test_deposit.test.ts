@@ -1,4 +1,4 @@
-import {InitialData, RegisterUser} from "../../../declarations/user_canister/user_canister.did";
+import {InitialData, RegisterUser} from "../../../declarations/backend/backend.did";
 
 
 test("Test deposit", async () => {

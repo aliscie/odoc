@@ -4,7 +4,7 @@ import Editor from "odoc-editor";
 import {table} from "../components/genral/editor_demo";
 import {payment_contract} from "../data_processing/data_samples";
 import {EditorRenderer} from "../components/editor_components/editor_renderer";
-import {ContentNode, FileNode} from "../../declarations/user_canister/user_canister.did";
+import {ContentNode, FileNode} from "../../declarations/backend/backend.did";
 import {normalize_content_tree, SlateNode} from "../data_processing/normalize/normalize_contents";
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";

@@ -6,7 +6,7 @@ import {
     CRow,
     CustomContract,
     User
-} from "../../../../declarations/user_canister/user_canister.did";
+} from "../../../../declarations/backend/backend.did";
 import {randomString} from "../../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
 import {PaymentRow} from "./types";

@@ -1,4 +1,4 @@
-import {ContentNode} from "../../../declarations/user_canister/user_canister.did";
+import {ContentNode} from "../../../declarations/backend/backend.did";
 
 
 export interface SlateNode {
