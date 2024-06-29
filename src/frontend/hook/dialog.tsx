@@ -11,10 +11,8 @@ export function useFormulaDialog(saveFormula) {
     const [open, setOpen] = React.useState(false);
     const [formula, setFormula] = React.useState('');
     const [columnId, setColId] = React.useState('');
-    // console.log({formula})
 
     const handleClickOpen = (column) => {
-        console.log({column})
         setColId(column.id);
         setFormula(column.dataValidator)
         setOpen(true);

@@ -1,5 +1,4 @@
 [workspace]
 members = [
-    "src/user_canister",
-    "src/central_canister",
+    "src/backend",
 ]

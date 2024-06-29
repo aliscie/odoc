@@ -1,5 +1,0 @@
-type Result = variant { Ok : text; Err : text };
-service : {
-  create_canister : () -> (Result);
-  get_user_canister : () -> (Result) query;
-}

@@ -1,4 +1,4 @@
-import {Column, ColumnTypes, Table} from "../../../../declarations/user_canister/user_canister.did";
+import {Column, ColumnTypes, Table} from "../../../../declarations/backend/backend.did";
 import {handleRedux} from "../../../redux/main";
 import {useDispatch, useSelector} from "react-redux";
 import {randomString} from "../../../data_processing/data_samples";
@@ -7,10 +7,10 @@ import {updateTableContent} from "../utils/update_table";
 
 function useColumnManager(props: any) {
     const {files_content, current_file} = useSelector((state: any) => state.filesReducer);
-    let content = files_content[current_file.id];
+    let content = current_file && files_content[current_file.id];
 
-    let [columns, setColumns] = React.useState(props.initial_columns)
-    let {setRows} = props;
+    let [columns, setColumns]: any = React.useState(props.initial_columns)
+    // let {setRows} = props;
     const dispatch = useDispatch();
 
     const handleDeleteColumn = (colId: string) => {
@@ -23,7 +23,7 @@ function useColumnManager(props: any) {
                 }
             });
             // newTable.columns = newTable.columns.filter((col: Column, index: number) => index !== colIndex);
-            setRows(newTable.rows);
+            // setRows(newTable.rows);
             setColumns((pre: any) => {
                 let new_columns: Array<Column> = pre.filter((item: any, index: number) => index !== colIndex);
                 // let remove_contract_column = new_columns.filter((item: any, index: number) => !["receiver", "amount", "release", "confined"].includes(item.field.toLowerCase()));
@@ -52,7 +52,8 @@ function useColumnManager(props: any) {
             };
             return newColumns;
         });
-dfx
+        dfx
+
         function renameColumn(newTable: Table) {
             newTable.columns[index]["dataValidator"] = [formula];
             return newTable;
@@ -99,7 +100,7 @@ dfx
         const newColumn: Column = {
             id,
             _type: column_type,
-            field: `column${columns.length + 1}`,
+            field: `column${columns && (columns.length + 1)}`,
             filters: [],
             permissions: [],
             dataValidator: [],
@@ -125,7 +126,6 @@ dfx
         const newContent = updateTableContent(props.props, content, updateColumn);
 
         // TODO: Dispatch relevant actions or update state as needed
-        console.log({newContent})
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
         // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
         // dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));

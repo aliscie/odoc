@@ -46,7 +46,8 @@ export default function ContextMenu(props: any) {
                         : undefined
                 }
             >
-                {props.options.map((item: any) => <MenuItem
+                {props.options.map((item: any, index: number) => <MenuItem
+                        key={index}
                         onClick={() => {
                             !item.preventClose && handleClose()
                             item.onClick && item.onClick()

@@ -8,7 +8,26 @@ start:
 	./scripts/start.sh
 
 kill:
-	kill -INT $(lsof -t -i :4943)
+	kill -INT $(lsof -t -i :8080)
 
 kill_dfx:
 	killall dfx replica
+
+
+get_all_localhost:
+	lsof -i 4 -P -n | grep '127.0.0.1'
+
+get_any_port:
+	lsof -i :8080
+
+run_gateway_on_special_port:
+	cargo run -- --gateway-address 0.0.0.0:8084 --ic-network-url http://127.0.0.1:8080
+
+generate_candid_file:
+	sh scripts/did.sh
+	dfx generate
+
+add_balance:
+	dfx wallet --network ic redeem-faucet-coupon <your-coupon-code>
+	dfx ledger --network ic balance
+	dfx wallet --network ic balance

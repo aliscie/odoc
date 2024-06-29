@@ -7,7 +7,6 @@ const filter = createFilterOptions<any>();
 
 export default function FreeSoloCreateOption(props: any) {
     const [value, setValue] = React.useState<any | null>(props.value);
-
     return (
         <Autocomplete
             value={value}

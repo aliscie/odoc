@@ -1,18 +1,23 @@
 #!/bin/bash
 
-if lsof -Pi :4943 -sTCP:LISTEN -t >/dev/null; then
-  echo "Port 4943 is in use. Killing the process..."
-  dfx stop
-  kill -INT $(lsof -t -i :4943)
-  while lsof -Pi :4943 -sTCP:LISTEN -t >/dev/null; do
-    sleep 1
-  done
-  echo "Process terminated."
+# Start dfx in the background
+echo "Starting dfx in the background..."
+dfx start --background
+#dfx start --background --clean
+
+output=$(dfx canister status backend 2>&1)
+
+# Search for the specific error message in the output
+if echo "$output" | grep -q "Cannot find canister id. Please issue 'dfx canister create backend'"; then
+  echo "Canister 'backend' does not exist, creating and deploying..."
+  dfx canister create backend
+  dfx deploy backend
+  dfx deploy internet_identity
+else
+  echo "Canister 'backend' exists or another error occurred. No action taken."
+  echo "$output"
 fi
 
-echo "Starting the necessary commands..."
-dfx stop && dfx start --clean --background
-dfx deploy backend
-npm start
-
-echo "Script execution completed."
+# Start your project with yarn at the end
+echo "Starting project with yarn..."
+yarn start

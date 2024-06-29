@@ -1,10 +1,12 @@
-import FormDialog from "../genral/dialog";
+import FormDialog from "../genral/fom_dialog";
 import * as React from "react";
 import {TextField} from "@mui/material";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
 import {convertToBytes} from "../../data_processing/image_to_vec";
 import {actor} from "../../App";
+import {RegisterUser, User} from "../../../declarations/backend/backend.did";
+import {handleRedux} from "../../redux/main";
 
 const inputs = [
     {id: "username", label: "Username", type: "text", required: true},
@@ -26,22 +28,32 @@ function RegistrationForm() {
         setFormValues((prevValues) => ({...prevValues, [id]: value}));
     };
     var photo = [];
+
     async function handleUploadPhoto(e: any) {
         let image = e.target.files[0];
-        let imageByteData = await convertToBytes(image);
-        photo = imageByteData
+        try {
+            let imageByteData = await convertToBytes(image);
+            photo = imageByteData;
+        } catch (error) {
+            // Display the error message using enqueueSnackbar
+            enqueueSnackbar(error.message, {variant: "error"});
+        }
     }
 
+
+    const dispatch = useDispatch();
     const handleRegister = async () => {
         setOpen(false)
 
         let loader_message = <span>Creating agreement... <span className={"loader"}/></span>;
         let loading = enqueueSnackbar(loader_message, {variant: "info"});
-        let register = await actor.register({
-            name: [formValues.username],
+        let input: RegisterUser = {
+            name: [formValues.username || ""],
             description: [formValues.bio],
             photo: [photo]
-        });
+        };
+        let register: undefined | { Ok: User } | { Err: string } = actor && await actor.register(input);
+        register && dispatch(handleRedux("UPDATE_PROFILE", {profile: register.Ok}))
         closeSnackbar(loading)
 
         if (register.Ok) {
