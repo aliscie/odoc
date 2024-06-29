@@ -8,7 +8,8 @@
   "dependencies": {
     "@babel/core": "^7.22.1",
     "@babel/preset-env": "^7.22.2",
-    "@babel/preset-react": "^7.22.3",
+    "@babel/preset-react": "^7.24.7",
+    "@babel/preset-typescript": "^7.24.7",
     "@dfinity/agent": "^0.15.6",
     "@dfinity/auth-client": "^0.15.6",
     "@dfinity/candid": "^0.15.6",
@@ -23,7 +24,9 @@
     "@mui/styles": "^5.13.2",
     "@mui/x-data-grid": "^6.11.0",
     "@mui/x-data-grid-generator": "^6.8.0",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.5.2",
     "@types/hot-formula-parser": "^4.0.0",
     "@types/react-dom": "^18.2.4",
     "@types/react-syntax-highlighter": "^15.5.7",
@@ -62,6 +65,14 @@
       "react-app/jest"
     ]
   },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.tsx?$": "babel-jest"
+    },
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -84,6 +95,8 @@
     "@types/redux-thunk": "^2.1.0",
     "autoprefixer": "^10.4.14",
     "jest": "^29.5.0",
+    "ts-jest": "^29.5.0",
+
     "postcss": "^8.4.23",
     "vite-plugin-environment": "^1.1.3"
   }
