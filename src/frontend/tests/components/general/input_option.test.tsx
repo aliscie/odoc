@@ -10,6 +10,11 @@ describe('InputOption Component', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
+
+    /**
+     * Test case: Renders delete option initially.
+     * Verifies that the InputOption component renders with the delete icon and title initially visible.
+     */
     it('should render delete option initially', () => {
         render(
             <InputOption
@@ -24,6 +29,12 @@ describe('InputOption Component', () => {
         const deleteMenuItem = screen.getByText('Delete File');
         expect(deleteMenuItem).toBeInTheDocument();
     });
+
+    /**
+     * Test case: Renders input field on click and handles file creation.
+     * Verifies that clicking on the delete option displays an input field where a file name can be entered,
+     * and confirms that the `onEnter` callback is called with the entered file name upon pressing Enter.
+     */
     it('should render input field on click and handle create file', async () => {
         render(
             <InputOption
