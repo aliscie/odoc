@@ -25,7 +25,7 @@ interface ItemProps {
 }
 
 const DocComponent: React.FC<ItemProps> = ({data, item, index, openItems, handleClick, path = null, pl = 1}) => {
-    const {contracts, profile, wallet} = useSelector((state: any) => state.filesReducer);
+    const {profile} = useSelector((state: any) => state.filesReducer);
 
     const dispatch = useDispatch();
 
@@ -47,7 +47,7 @@ const DocComponent: React.FC<ItemProps> = ({data, item, index, openItems, handle
         //     content: <RenameFile item={item}/>,
         //     preventClose: true,
         // },
-        {content: <DeleteFile item={item}/>,preventClose: true,},
+        {content: <DeleteFile item={item}/>, preventClose: true,},
         {content: <ChangeWorkSpace item={item}/>},
     ]
 

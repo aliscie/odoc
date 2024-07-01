@@ -1,4 +1,4 @@
-import {Tooltip} from "@mui/material";
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tooltip} from "@mui/material";
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
@@ -7,8 +7,6 @@ import {ContentNode, CPayment, FileNode, StoredContract} from "../../../declarat
 import serialize_file_contents from "../../data_processing/serialize/serialize_file_contents";
 import {actor} from "../../App";
 import {LoadingButton} from "@mui/lab";
-import {Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@mui/material';
-import {logger} from "../../dev_utils/log_data";
 
 function MultiSaveButton(props: any) {
 

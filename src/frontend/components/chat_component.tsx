@@ -8,7 +8,6 @@ import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../redux/main";
 import {actor} from "../App";
 import {Badge} from "@mui/base";
-import Button from "@mui/material/Button";
 import useCreateChatGroup from "./chat/create_new_group";
 
 
@@ -26,7 +25,7 @@ function ChatsComponent(props: Props) {
     const [messages, setMessages] = React.useState(chats_notifications);
     useEffect(() => {
         (async () => {
-            if (!chats_notifications || chats_notifications.length === 0) {
+            if (chats_notifications.length === 0) {
                 setLoading(true)
                 let res = actor && await actor.get_chats_notifications();
                 res && setMessages(res)
@@ -36,7 +35,7 @@ function ChatsComponent(props: Props) {
                 setMessages(chats_notifications)
             }
         })()
-    }, [chats_notifications]);
+    }, []);
 
     let options: any = [
         {...chat_group}
@@ -52,7 +51,7 @@ function ChatsComponent(props: Props) {
         options.push({content: "You have no messages yet!"})
     }
 
-    let not_seen_message = messages.filter((m: Message) => !m.seen_by.some(u => u.toString() === profile.id))
+    let not_seen_message = profile ? messages.filter((m: Message) => !m.seen_by.some(u => u.toString() === profile.id)) : []
 
     return <BasicMenu
         anchorOrigin={{

@@ -270,7 +270,9 @@ export type Result_1 = { 'Ok' : null } |
   { 'Err' : string };
 export type Result_10 = { 'Ok' : null } |
   { 'Err' : null };
-export type Result_11 = { 'Ok' : CanisterOutputCertifiedMessages } |
+export type Result_11 = { 'Ok' : WorkSpace } |
+  { 'Err' : string };
+export type Result_12 = { 'Ok' : CanisterOutputCertifiedMessages } |
   { 'Err' : string };
 export type Result_2 = { 'Ok' : string } |
   { 'Err' : string };
@@ -378,6 +380,15 @@ export interface WebsocketMessage {
   'timestamp' : bigint,
   'is_service_message' : boolean,
 }
+export interface WorkSpace {
+  'id' : string,
+  'files' : Array<string>,
+  'creator' : Principal,
+  'members' : Array<Principal>,
+  'chats' : Array<string>,
+  'name' : string,
+  'admins' : Array<Principal>,
+}
 export interface _SERVICE {
   'accept_friend_request' : ActorMethod<[string], Result>,
   'apply_request' : ActorMethod<[string, string, string], Result_1>,
@@ -419,6 +430,7 @@ export interface _SERVICE {
   'get_user' : ActorMethod<[string], Result>,
   'get_user_notifications' : ActorMethod<[], Array<Notification>>,
   'get_user_profile' : ActorMethod<[Principal], Result_9>,
+  'get_work_spaces' : ActorMethod<[], Array<WorkSpace>>,
   'make_new_chat_room' : ActorMethod<[Chat], Result_2>,
   'message_is_seen' : ActorMethod<[Message], Result_1>,
   'move_file' : ActorMethod<[string, [] | [string]], Result_10>,
@@ -437,6 +449,7 @@ export interface _SERVICE {
   'register' : ActorMethod<[RegisterUser], Result>,
   'reject_friend_request' : ActorMethod<[string], Result>,
   'save_post' : ActorMethod<[Post], Result_1>,
+  'save_work_space' : ActorMethod<[WorkSpace], Result_11>,
   'search_files_content' : ActorMethod<
     [string, boolean],
     Array<[string, Array<ContentNode>]>
@@ -453,7 +466,7 @@ export interface _SERVICE {
   'vote_up' : ActorMethod<[string], Result_6>,
   'withdraw_usdt' : ActorMethod<[number], Result_3>,
   'ws_close' : ActorMethod<[CanisterWsCloseArguments], Result_1>,
-  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_11>,
+  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_12>,
   'ws_message' : ActorMethod<
     [CanisterWsMessageArguments, [] | [AppMessage]],
     Result_1

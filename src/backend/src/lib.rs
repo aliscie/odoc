@@ -1,33 +1,38 @@
 // use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
 // use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use std::cell::RefCell;
-
-// type Memory = VirtualMemory<DefaultMemoryImpl>;
-
 use std::collections::HashMap;
+use std::sync::atomic::AtomicU64;
 
+use candid::{decode_one, encode_one, Principal};
+// use pocket_ic::{
+//     common::rest::{BlobCompression, SubnetConfigSet, SubnetKind},
+//     PocketIc, PocketIcBuilder, WasmResult,
+// };
+use ic_cdk::api::management_canister::provisional::CanisterId;
 use ic_websocket_cdk::*;
 
+use chat::*;
 pub use contracts::*;
 use contracts::*;
 use discover::*;
 use files::*;
 use files_content::*;
 use friends::*;
+use init::*;
 use queries::*;
 pub use share_files::*;
 use share_files::*;
 use storage_schema::*;
+use timer::*;
 use updates::*;
 use user::*;
+use user_history::*;
 pub use wallet::*;
 use websocket::*;
-// use pocket_ic::{
-//     common::rest::{BlobCompression, SubnetConfigSet, SubnetKind},
-//     PocketIc, PocketIcBuilder, WasmResult,
-// };
-use ic_cdk::api::management_canister::provisional::CanisterId;
-use candid::{decode_one, encode_one, Principal};
+
+
+// type Memory = VirtualMemory<DefaultMemoryImpl>;
 
 // use ic_stable_structures::{
 //     memory_manager::{MemoryId, MemoryManager, VirtualMemory},
@@ -57,12 +62,8 @@ mod timer;
 mod init;
 mod chat;
 mod user_history;
-
-use user_history::*;
-use chat::*;
-use init::*;
-use std::sync::atomic::AtomicU64;
-use timer::*;
+mod workspaces;
+use workspaces::*;
 
 thread_local! {
 
@@ -92,9 +93,11 @@ thread_local! {
 
     static CHATS: RefCell<ChatsStore> = RefCell::default();
     static MY_CHATS: RefCell<MyChatsStore> = RefCell::default();
-
-
+    static WORK_SPACES: RefCell<WorkSpacesStore> = RefCell::default();
+    // static My_WorkSpaces: RefCell<MyChatsStore> = RefCell::default();
 }
+
+
 pub static COUNTER: AtomicU64 = AtomicU64::new(0);
 
 #[cfg(test)]

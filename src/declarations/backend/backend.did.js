@@ -344,6 +344,15 @@ export const idlFactory = ({ IDL }) => {
     'received' : IDL.Float64,
   });
   const Result_9 = IDL.Variant({ 'Ok' : UserProfile, 'Err' : IDL.Text });
+  const WorkSpace = IDL.Record({
+    'id' : IDL.Text,
+    'files' : IDL.Vec(IDL.Text),
+    'creator' : IDL.Principal,
+    'members' : IDL.Vec(IDL.Principal),
+    'chats' : IDL.Vec(IDL.Text),
+    'name' : IDL.Text,
+    'admins' : IDL.Vec(IDL.Principal),
+  });
   const Chat = IDL.Record({
     'id' : IDL.Text,
     'creator' : IDL.Principal,
@@ -359,6 +368,7 @@ export const idlFactory = ({ IDL }) => {
     'description' : IDL.Opt(IDL.Text),
     'photo' : IDL.Opt(IDL.Vec(IDL.Nat8)),
   });
+  const Result_11 = IDL.Variant({ 'Ok' : WorkSpace, 'Err' : IDL.Text });
   const ShareFileInput = IDL.Record({
     'id' : IDL.Text,
     'permission' : ShareFilePermission,
@@ -384,7 +394,7 @@ export const idlFactory = ({ IDL }) => {
     'tree' : IDL.Vec(IDL.Nat8),
     'is_end_of_queue' : IDL.Bool,
   });
-  const Result_11 = IDL.Variant({
+  const Result_12 = IDL.Variant({
     'Ok' : CanisterOutputCertifiedMessages,
     'Err' : IDL.Text,
   });
@@ -468,6 +478,7 @@ export const idlFactory = ({ IDL }) => {
     'get_user' : IDL.Func([IDL.Text], [Result], ['query']),
     'get_user_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
     'get_user_profile' : IDL.Func([IDL.Principal], [Result_9], ['query']),
+    'get_work_spaces' : IDL.Func([], [IDL.Vec(WorkSpace)], ['query']),
     'make_new_chat_room' : IDL.Func([Chat], [Result_2], []),
     'message_is_seen' : IDL.Func([Message], [Result_1], []),
     'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_10], []),
@@ -491,6 +502,7 @@ export const idlFactory = ({ IDL }) => {
     'register' : IDL.Func([RegisterUser], [Result], []),
     'reject_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'save_post' : IDL.Func([Post], [Result_1], []),
+    'save_work_space' : IDL.Func([WorkSpace], [Result_11], []),
     'search_files_content' : IDL.Func(
         [IDL.Text, IDL.Bool],
         [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(ContentNode)))],
@@ -514,7 +526,7 @@ export const idlFactory = ({ IDL }) => {
     'ws_close' : IDL.Func([CanisterWsCloseArguments], [Result_1], []),
     'ws_get_messages' : IDL.Func(
         [CanisterWsGetMessagesArguments],
-        [Result_11],
+        [Result_12],
         ['query'],
       ),
     'ws_message' : IDL.Func(

@@ -3,16 +3,18 @@ import {agent} from "../backend_connect/main";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
 import {
-    CPayment, CustomContract,
     FileNode,
     Friend,
-    InitialData, SharesContract,
+    InitialData,
+    SharesContract,
     StoredContract,
-    User
+    UserProfile,
+    WorkSpace
 } from "../../declarations/backend/backend.did";
 import {actor} from "../App";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {getCurrentFile} from "./utls";
+import {Principal} from "@dfinity/principal";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
@@ -47,6 +49,7 @@ export type FilesActions =
     | "UPDATE_NOTE"
     | "CONFIRM_FRIEND"
     | "TOP_DIALOG"
+    | "ADD_WORKSPACE"
     | FriendsActions;
 
 
@@ -61,6 +64,7 @@ export var initialState = {
     notifications: [],
     profile_history: null,
     top_dialog: {open: false, content: null, title: null},
+    workspaces: [],
 };
 
 
@@ -74,14 +78,21 @@ export async function get_initial_data() {
 
     data = actor && await actor.get_initial_data();
 
+
     const authClient = await AuthClient.create();
     const userPrincipal = authClient.getIdentity().getPrincipal().toString();
     if ("Ok" in data) {
+        let profile_history: any | { Ok: UserProfile } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(data.Ok.Profile.id));
+        let workspaces: undefined | Array<WorkSpace> = actor && await actor.get_work_spaces();
+
         initialState["files"] = data.Ok.Files;
         initialState["denormalized_files_content"] = data.Ok.FilesContents; //[] | [Array<[string, Array<[string, ContentNode]>]>]
         initialState["files_content"] = normalize_files_contents(data.Ok.FilesContents[0]);
         initialState["contracts"] = normalize_contracts(data.Ok.Contracts);
         initialState["current_file"] = getCurrentFile(initialState["files"]);
+        initialState['profile_history'] = profile_history.Ok && profile_history.Ok;
+        initialState['workspaces'] = workspaces || [];
+
 
         initialState["profile"] = data.Ok.Profile;
         initialState["users"] = data.Ok.DiscoverUsers;
@@ -339,7 +350,7 @@ export function filesReducer(state: any = initialState, action: any) {
                 }
                 return contract
             });
-            let converted_contracts :  Array<[string, StoredContract]> = contracts.map((c) => {
+            let converted_contracts: Array<[string, StoredContract]> = contracts.map((c) => {
                 let id;
                 if ('SharesContract' in c) {
                     id = c.SharesContract.contract_id;
@@ -433,6 +444,13 @@ export function filesReducer(state: any = initialState, action: any) {
 
         case 'CURRENT_USER_HISTORY':
             state.profile_history = action.profile_history
+            return {
+                ...state,
+            };
+
+
+        case 'ADD_WORKSPACE':
+            state.workspaces = [...state.workspaces, action.new_workspace]
             return {
                 ...state,
             };

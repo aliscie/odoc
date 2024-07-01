@@ -36,7 +36,6 @@ export default function SendMessageBox() {
         }
 
         dispatch(handleRedux("SEND_MESSAGE", {message: {...new_message, is_saving: true}}));
-        dispatch(handleRedux('ADD_NOTIFICATION', {message: {...new_message, is_saving: true}}));
         setMessage('');
 
         // let notification: Notification = {

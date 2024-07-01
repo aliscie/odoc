@@ -1,12 +1,14 @@
 import React from 'react';
 import "./style/nav_bar.css";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import NestedList from "./nested_list/nest_list";
 import {Button, Divider, Drawer, List, ListItemButton, ListItemText} from "@mui/material";
 import {Link} from "react-router-dom";
 import CreateFile from "../actions/create_file";
+import {handleRedux} from "../../redux/main";
 
 const NavBar = (props: any) => {
+    const dispatch = useDispatch();
     const {isNavOpen, isLoggedIn} = useSelector((state: any) => state.uiReducer);
     const {files} = useSelector((state: any) => state.filesReducer);
 
@@ -30,7 +32,12 @@ const NavBar = (props: any) => {
             >
                 <List>
                     {navLinks.map((link) => (
-                        <ListItemButton component={Link} to={link.to} key={link.label}>
+                        <ListItemButton
+                            onClick={() => {
+                                // TODO find a genaric way to hid the <CopyButton/> (Share Button) when window.location.pathname not a file id.
+                                dispatch(handleRedux("CURRENT_FILE", {file: null}));
+                            }}
+                            component={Link} to={link.to} key={link.label}>
                             <ListItemText primary={link.label}/>
                         </ListItemButton>
                     ))}

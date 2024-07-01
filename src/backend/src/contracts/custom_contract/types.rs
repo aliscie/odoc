@@ -85,6 +85,7 @@ pub struct CPayment {
     pub date_released: f64,
     // pub date_updated: f64,
     pub status: PaymentStatus,
+    //TODO  pub other_columns: Vec<Column>,
     // Note if released == false then it is a promise not a payment
     // Note if conformed == true then the receiver is claiming the promos
     // Note if conformed == true the the promos should be protected and updatable.
