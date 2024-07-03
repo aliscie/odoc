@@ -3,6 +3,7 @@ import './styles/LandingPage.css';
 import Card from "../components/genral/card";
 import CustomizedAccordions from "../components/genral/acordoin";
 import {Divider} from "@mui/material";
+import FullWidthTabs from "./welcome";
 
 const data = [
     {
@@ -75,7 +76,7 @@ let roadMap = [
         title: "Notifications",
         content: "Users should be notified about their friend requests (WebSockets)\n",
     },
-     {
+    {
         is_done: false,
         title: "USDC wallet",
         content: "User can deposit USDC and withdraw to external wallets"
@@ -104,7 +105,7 @@ let roadMap = [
         is_done: false,
         title: "Workspaces",
         content: "If you are working with different contentpanes, you can categorize your files and chat groups into different spaces.",
-    //     not just files and chats but also groups names should not be accessible from different workspaces
+        //     not just files and chats but also groups names should not be accessible from different workspaces
     },
     {
         is_done: false,
@@ -142,12 +143,17 @@ const LandingPage: React.FC = () => {
         <div className="landing-page">
             <header>
                 <h1>Welcome to ODOC</h1>
-                <p>Empowering freelancers, employers and employees with transparent and liberating Smart-Contracts on the Blockchain. Odoc is
-                    all in one where you can manage your teams, tasks, notes, documentation, agreements, contracts and transactions. </p>
+                <p>Empowering freelancers, employers and employees with transparent and liberating Smart-Contracts on
+                    the Blockchain. Odoc is
+                    all in one where you can manage your teams, tasks, notes, documentation, agreements, contracts and
+                    transactions. </p>
             </header>
             {/*<TabsPanel*/}
             {/*    items={[{label: "I'm hiring", value: <h1>You can create smart contract please watch the video</h1>}, {label: "I'm freelancer", value: <h1>You can receive payments</h1>}]}*/}
             {/*/>*/}
+            <FullWidthTabs/>
+            <Divider/>
+            <h3>List of features we are offering.</h3>
             <section className="features">
                 {data.map((card, index) => (
                     <Card key={index} title={card.title}>

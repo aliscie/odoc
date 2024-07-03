@@ -8,7 +8,7 @@ use serde::Serialize;
 use crate::{CONTRACTS_STORE, ExchangeType, StoredContract, Wallet};
 use crate::contracts::custom_contract::utils::{notify_about_promise};
 use crate::storage_schema::ContractId;
-use crate::tables::{ContractPermissionType, Execute, Filter, Formula, PermissionType};
+use crate::tables::{Column, ContractPermissionType, Execute, Filter, Formula, PermissionType};
 use crate::user_history::UserHistory;
 use crate::websocket::{NoteContent, Notification, PaymentAction};
 
@@ -85,7 +85,9 @@ pub struct CPayment {
     pub date_released: f64,
     // pub date_updated: f64,
     pub status: PaymentStatus,
-    //TODO  pub other_columns: Vec<Column>,
+    pub cells: Vec<CCell>,
+    //TODO
+    // pub other_columns: Vec<Column>,
     // Note if released == false then it is a promise not a payment
     // Note if conformed == true then the receiver is claiming the promos
     // Note if conformed == true the the promos should be protected and updatable.
