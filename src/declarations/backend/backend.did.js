@@ -17,11 +17,13 @@ export const idlFactory = ({ IDL }) => {
     'ApproveHighPromise' : IDL.Null,
     'HighPromise' : IDL.Null,
   });
+  const CCell = IDL.Record({ 'field' : IDL.Text, 'value' : IDL.Text });
   const CPayment = IDL.Record({
     'id' : IDL.Text,
     'status' : PaymentStatus,
     'date_created' : IDL.Float64,
     'date_released' : IDL.Float64,
+    'cells' : IDL.Vec(CCell),
     'contract_id' : IDL.Text,
     'sender' : IDL.Principal,
     'amount' : IDL.Float64,
@@ -130,7 +132,6 @@ export const idlFactory = ({ IDL }) => {
     'AnyOneEdite' : IDL.Null,
     'AnyOneAdd' : IDL.Null,
   });
-  const CCell = IDL.Record({ 'field' : IDL.Text, 'value' : IDL.Text });
   const CRow = IDL.Record({ 'id' : IDL.Text, 'cells' : IDL.Vec(CCell) });
   const CColumn = IDL.Record({
     'id' : IDL.Text,

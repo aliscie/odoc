@@ -39,6 +39,7 @@ type CPayment = record {
   status : PaymentStatus;
   date_created : float64;
   date_released : float64;
+  cells : vec CCell;
   contract_id : text;
   sender : principal;
   amount : float64;

@@ -44,6 +44,7 @@ export interface CPayment {
   'status' : PaymentStatus,
   'date_created' : number,
   'date_released' : number,
+  'cells' : Array<CCell>,
   'contract_id' : string,
   'sender' : Principal,
   'amount' : number,

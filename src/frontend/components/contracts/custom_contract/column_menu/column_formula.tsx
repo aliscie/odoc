@@ -29,6 +29,10 @@ interface Props {
 
 function ChangeColumnFormula(props: Props) {
     const {current_contract, colDef, contract, updateContract} = props;
+
+    if (['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
+        return null
+    }
     // const {evaluate, addVarsToParser} = useParser({contract: current_contract});
     const dispatch = useDispatch();
     const formatter = String(colDef["formula_string"]);

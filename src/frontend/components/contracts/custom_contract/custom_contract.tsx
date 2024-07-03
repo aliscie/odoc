@@ -76,14 +76,18 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
 
 
     let columnMenuSlots = {}
-    if (view?.type == CONTRACT) {
+    if ([CONTRACT, PROMISES].includes(view?.type)) {
+        // TODO if view?.type == PROMISES and ['amount', 'sender', 'reciver', 'status',].includes(column.name) then allow rename and delete.
         let current_contract = contract.contracts.find((c: CContract) => c.id === view.id);
         columnMenuSlots["RenameColumn"] = (props) => RenameColumn({...props, contract, updateContract, view});
+        //TODO columnMenuSlots["DeleteColumn"] = (props) => DeleteColumn({...props, contract, updateContract, view});
+        // TODO
+        //     if (view?.type == PROMISES && !['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
         columnMenuSlots["ChangeColumnPermissions"] = (props) => ChangeColumnPermissions({
             ...props,
             contract,
             updateContract,
-            current_contract
+            current_contract,
         });
         columnMenuSlots["ChangeColumnFormula"] = (props) => ChangeColumnFormula({
             ...props,
@@ -99,6 +103,8 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             current_contract,
             contract
         });
+        //TODO }
+
     }
 
     function deleteColumn(columns: any, columnId: string) {
@@ -145,6 +151,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                     released: false,
                     objected: false,
                     confirmed: false,
+                    cells: [],
                 };
                 const updated_promises = [...contract.promises];
                 updated_promises.splice(position, 0, new_payment);
@@ -370,8 +377,10 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         });
         updateContract({...contract, contracts: updatedContracts});
         setView({...view, name: name});
-    }
+    };
+
     let data = {};
+
     switch (view?.type) {
         case CONTRACT:
 

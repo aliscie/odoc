@@ -85,7 +85,10 @@ function ColumnPermission(props: Props) {
 }
 
 function ChangeColumnPermissions(props: GridColumnMenuItemProps) {
-    const {menuProps} = props;
+    const {menuProps, colDef} = props;
+    if (['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
+        return null
+    }
     const [value, setValue] = React.useState<PermissionType[]>([]);
     const onChange = async (perm: Array<PermissionType>) => {
         console.log(perm)

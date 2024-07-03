@@ -104,6 +104,7 @@ impl CPayment {
             date_created: 0.0,
             date_released: 0.0,
             status: PaymentStatus::None,
+            cells: vec![],
         }
     }
     pub fn pay(mut self) -> Result<Self, String> {
