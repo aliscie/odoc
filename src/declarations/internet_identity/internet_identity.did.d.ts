@@ -177,7 +177,6 @@ export type IdentityRegisterError = { 'BadCaptcha' : null } |
   { 'CanisterFull' : null } |
   { 'InvalidMetadata' : string };
 export interface InternetIdentityInit {
-  'max_num_latest_delegation_origins' : [] | [bigint],
   'assigned_user_number_range' : [] | [[bigint, bigint]],
   'max_inflight_captchas' : [] | [bigint],
   'archive_config' : [] | [ArchiveConfig],
@@ -187,11 +186,10 @@ export interface InternetIdentityInit {
 export interface InternetIdentityStats {
   'storage_layout_version' : number,
   'users_registered' : bigint,
-  'max_num_latest_delegation_origins' : bigint,
   'assigned_user_number_range' : [bigint, bigint],
-  'latest_delegation_origins' : Array<FrontendHostname>,
   'archive_info' : ArchiveInfo,
   'canister_creation_cycles_cost' : bigint,
+  'event_aggregations' : Array<[string, Array<[string, bigint]>]>,
 }
 export type KeyType = { 'platform' : null } |
   { 'seed_phrase' : null } |
@@ -389,4 +387,4 @@ export interface _SERVICE {
   >,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
-export declare const init: ({ IDL }: { IDL: IDL }) => IDL.Type[];
+export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];

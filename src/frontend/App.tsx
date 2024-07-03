@@ -8,7 +8,7 @@ import SearchPopper from "./components/spesific/search_popper";
 import Theme from "./components/genral/theme_provider";
 import {SnackbarProvider} from "notistack";
 import RegistrationForm from "./components/spesific/registeration_form";
-import {handleRedux} from "./redux/main";
+import {handleRedux} from "./redux/main"; 
 import {useDispatch} from "react-redux";
 import {agent} from "./backend_connect/main";
 import {get_initial_data} from "./redux/files";
