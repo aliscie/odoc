@@ -126,10 +126,13 @@ fn update_chat(chat: Chat) -> Result<String, String> {
 
 
 #[update]
-fn make_new_chat_room(chat: Chat) -> Result<String, String> {
+fn make_new_chat_room(mut chat: Chat) -> Result<String, String> {
+
     if User::is_anonymous() {
         return Err("You are anonymous".to_string());
-    }
+    };
+    chat.creator = caller();
+
     for member in chat.members.clone() {
         chat.add_to_my_chats(member);
     };

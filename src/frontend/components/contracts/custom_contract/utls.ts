@@ -52,9 +52,9 @@ export function serialize_contract_column(contract, addVarsToParser, evaluate, a
         col['type'] = col.column_type;
         if (col.column_type == 'user') {
             col['type'] = 'singleSelect';
-            console.log("all_users", all_users)
             col['valueOptions'] = all_users ? all_users.map(user => user.name) : [];
-        };
+        }
+        ;
         return col
     })
 }
@@ -113,6 +113,20 @@ export function deserialize_payment_data(rows: Array<PaymentRow>, all_users = []
         // }
         let status: any = {};
         status[row.status] = null;
+
+
+        let cells: Array<CCell> = [];
+        let other_keys = ["id", "released", "sender", "receiver", "amount"]
+        Object.keys(row).forEach((key: string) => {
+            if (!other_keys.includes(key)){
+                cells.push({
+                    field: key,
+                    value: row[key]
+                })
+            }
+        });
+
+
         let payment: CPayment = {
             contract_id: "",// the backend will handle this.
             amount: row.amount,
@@ -122,6 +136,7 @@ export function deserialize_payment_data(rows: Array<PaymentRow>, all_users = []
             status,
             date_created: 0,
             date_released: 0,
+            cells
         }
         return payment
     })
@@ -200,7 +215,6 @@ export function serializePromisesData(payments: Array<CPayment>, all_users = [])
 
 export function serializePaymentData(payments: Array<CPayment>, all_users?) {
     let valueOptions = all_users ? all_users.map(user => user.name) : [];
-
     let column = {
         id: randomString(),
         field: "amount",
@@ -225,18 +239,27 @@ export function serializePaymentData(payments: Array<CPayment>, all_users?) {
     }
 
 
-    let columns = [column, column_2, column_3]
-    let rows = []
+    let columns: any = [column, column_2, column_3];
+    let rows = [];
     payments.forEach((p: CPayment) => {
         let sender = all_users.find((user: User) => p.sender.toString() === String(user.id))
         let receiver = all_users.find((user: User) => p.receiver.toString() === String(user.id))
+        let extras = {};
+        p.cells.forEach((c: CCell) => {
+            extras[c.field] = c.value;
+            columns.map({
+                field: c.field,
+                headerName: c.field,
+            })
+        });
+
         rows.push({
             id: p.id,
             amount: p.amount,
             sender: sender.name,
             receiver: receiver ? receiver.name : "null",
-
-        })
+            ...extras,
+        });
     })
     return {columns, rows}
 }
@@ -246,7 +269,7 @@ export function createCColumn(field: string): CColumn {
         id: randomString(),
         field,
         headerName: "Untitled",
-        column_type:"string",
+        column_type: "string",
         filters: [],
         permissions: [{'AnyOneView': null}],
         formula_string: '',

@@ -27,6 +27,7 @@ const CreateFile = () => {
             users_permissions: [],
             permission: {'None': null},
             content_id: [],
+            workspace:"Default",
         };
         dispatch(handleRedux("ADD_FILE", {data: file}))
         dispatch(handleRedux("ADD_CONTENT", {id, content: file_content_sample}))

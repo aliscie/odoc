@@ -10,12 +10,12 @@ import FilterPosts from "./discover/posts_filters";
 import ViewPost from "./discover/view_update_post";
 
 const Discover = () => {
-        const {searchValue, searchTool} = useSelector((state: any) => state.uiReducer);
-        const {profile, users, isLoggedIn, Anonymous} = useSelector((state: any) => state.filesReducer);
+        const {searchValue} = useSelector((state: any) => state.uiReducer);
+        const {isLoggedIn, Anonymous} = useSelector((state: any) => state.filesReducer);
 
         const [posts, setPosts] = React.useState<| Array<PostUser>>([]); //TODO use redux for this
         const [current_page, setPage] = React.useState<number>(0);
-        const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+        const {enqueueSnackbar} = useSnackbar();
         useEffect(() => {
             let timeoutId: NodeJS.Timeout;
 

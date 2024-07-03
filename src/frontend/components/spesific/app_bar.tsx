@@ -14,7 +14,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Tooltip from "@mui/material/Tooltip";
 import BreadPage from "../genral/breadcrumbs";
-import CopyButton from "../genral/copy_link";
+import ShareFileButton from "../genral/copy_link";
 import {agent} from "../../backend_connect/main";
 import MultiSaveButton from "../actions/multi_save";
 import Person2Icon from '@mui/icons-material/Person2';
@@ -52,7 +52,6 @@ export function NavAppBar() {
     }
 
     let image_link = profile ? convertToBlobLink(profile.photo) : '';
-    let is_owner_current_file = current_file && files.find((file: any) => file.id === current_file.id);
 
     return (
         <AppBar position="fixed">
@@ -64,9 +63,7 @@ export function NavAppBar() {
                 <Routes>
                     <Route path="*" element={<BreadPage/>}/>
                 </Routes>
-
-                {is_owner_current_file && <CopyButton/>}
-
+                <ShareFileButton/>
                 <IconButton color={'inherit'} onClick={() => dispatch(handleRedux('TOGGLE_DARK'))}>
                     {isDarkMode ? <LightModeIcon/> : <DarkModeIcon/>}
                 </IconButton>

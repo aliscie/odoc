@@ -31,19 +31,19 @@ export default function ProfileComponent() {
     const [user_history, setUserHistory] = React.useState<UserHistoryCom | null>(null);
     const [profileData, setProfileData] = React.useState(profile || {});
     // console.log({y:profile_history.actions_rate,x: profile_history.users_rate});
-    useEffect(() => {
-        (async () => {
-            let res: undefined | { Ok: UserProfile } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(profile.id));
-            if ("Ok" in res) {
-                setUserHistory(res.Ok)
-            }
-            if (!profile_history) {
-                let x: undefined | { Ok: UserProfile } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(profile.id))
-                "Ok" in x && dispatch(handleRedux('CURRENT_USER_HISTORY', {profile_history: x.Ok}));
-            }
-
-        })()
-    }, [profile]);
+    // useEffect(() => {
+    //     (async () => {
+    //         let res: undefined | { Ok: UserProfile } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(profile.id));
+    //         if ("Ok" in res) {
+    //             setUserHistory(res.Ok)
+    //         }
+    //         if (!profile_history) {
+    //             let x: undefined | { Ok: UserProfile } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(profile.id))
+    //             "Ok" in x && dispatch(handleRedux('CURRENT_USER_HISTORY', {profile_history: x.Ok}));
+    //         }
+    //
+    //     })()
+    // }, [profile]);
     const handleSaveChanges = async () => {
         if (profileData.changed) {
             const res = await actor.update_user_profile({

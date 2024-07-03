@@ -6,12 +6,7 @@ import DialogOver from "./daiolog_over";
 import MultiAutoComplete from "./multi_autocompelte";
 import List from "@mui/material/List";
 import CheckIcon from '@mui/icons-material/Check';
-import {
-    ShareFile,
-    ShareFileInput,
-    ShareFilePermission,
-    User
-} from "../../../declarations/backend/backend.did";
+import {ShareFile, ShareFileInput, ShareFilePermission, User} from "../../../declarations/backend/backend.did";
 import ShareIcon from "@mui/icons-material/Share";
 import {actor} from "../../App";
 import {Principal} from "@dfinity/principal";
@@ -161,16 +156,20 @@ let Dialog = (props: any) => {
     </List>
 }
 
-const CopyButton = () => {
+const ShareFileButton = () => {
 
-    return (
-        <DialogOver
-            variant="text"
-            DialogContent={Dialog}
-        >
-            <ShareIcon/>
-        </DialogOver>
+    // const {current_file, files} = useSelector((state: any) => state.filesReducer);
+    // let is_owner_current_file = current_file && files.find((file: any) => file.id === current_file.id);
+
+    return (<>
+            { <DialogOver
+                variant="text"
+                DialogContent={Dialog}
+            >
+                <ShareIcon/>
+            </DialogOver>}
+        </>
     );
 };
 
-export default CopyButton;
+export default ShareFileButton;

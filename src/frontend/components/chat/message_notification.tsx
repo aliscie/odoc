@@ -10,6 +10,7 @@ import {Principal} from "@dfinity/principal";
 import {convertToBlobLink} from "../../data_processing/image_to_vec";
 import {actor} from "../../App";
 import MessageComponent from "./message";
+import GroupIcon from "@mui/icons-material/Group"
 
 // interface MessageNotificationProp {
 //
@@ -22,8 +23,7 @@ function MessageNotification(props: Message) {
     const {profile} = useSelector((state: any) => state.filesReducer);
     const {current_chat_id, chats} = useSelector((state: any) => state.chatsReducer);
     let chat = chats.find((chat: FEChat) => chat.id === props.chat_id);
-
-
+    let is_group = chat && chat.name != "private_chat"
     const [sender, setSender] = React.useState<User | null>(null);
     React.useEffect(() => {
         (async () => {
@@ -54,7 +54,8 @@ function MessageNotification(props: Message) {
             }
         }}
         alignItems="flex-start">
-        {sender && <ListItemAvatar>
+        {is_group && <GroupIcon/>}
+        {sender && !is_group && <ListItemAvatar>
             <Avatar alt={sender.name} src={convertToBlobLink(sender.photo)}/>
         </ListItemAvatar>}
         <MessageComponent current_chat_id={props.chat_id}  {...props}/>

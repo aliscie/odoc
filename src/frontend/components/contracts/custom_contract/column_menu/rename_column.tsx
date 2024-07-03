@@ -6,8 +6,11 @@ import {Input} from "@mui/material";
 
 function RenameColumn(props: GridColumnMenuItemProps) {
 
-    const {view, updateContract, contract} = props;
-
+    const {view, updateContract, contract, colDef} = props;
+    // TODO maybe we should try to find a better way than this?
+    if (['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
+        return null
+    }
 
     function renameColumn(id: string, value: string) {
         let updated_column = {

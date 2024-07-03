@@ -20,7 +20,7 @@ pub struct Chat {
     // this used only for groups
     pub messages: Vec<Message>,
     pub creator: Principal,
-    pub workspace: String,
+    pub workspace: String, // TODO We may not need this field
 }
 
 #[derive(Eq, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]

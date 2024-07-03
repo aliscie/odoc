@@ -173,6 +173,7 @@ export default function MultiAutoComplete(props: any) {
         <Root>
             <div {...getRootProps()}>
                 <InputWrapper
+
                     // style={{
                     //     width: '100px'
                     // }}
@@ -183,7 +184,7 @@ export default function MultiAutoComplete(props: any) {
                         <StyledTag label={option.title} {...getTagProps({index})} />
                     ))}
                     {value && !props.multiple && <StyledTag label={value.title} {...getTagProps({index: 0})} />}
-                    <input {...getInputProps()} onBlur={props.onBlur}/>
+                    <input placeholder={props.label} {...getInputProps()} onBlur={props.onBlur}/>
                 </InputWrapper>
             </div>
             {groupedOptions.length > 0 ? (

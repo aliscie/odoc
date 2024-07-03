@@ -23,7 +23,7 @@ pub struct FileNode {
     pub permission: ShareFilePermission,
     pub users_permissions: HashMap<Principal, ShareFilePermission>,
     pub content_id: Option<String>,
-    pub workspace: String,
+    pub workspace: String, // TODO we may not need this Field
 }
 
 impl FileNode {

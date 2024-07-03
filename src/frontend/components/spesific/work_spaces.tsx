@@ -2,26 +2,25 @@ import BasicMenu from "../genral/basic_menu";
 import React, {useState} from "react";
 import {Tooltip} from "@mui/material";
 import useCreateWorkSpace from "../chat/create_new_workspace";
+import {useSelector} from "react-redux";
+import {WorkSpace} from "../../../declarations/backend/backend.did";
 
 interface Props {
 
 }
 
-let workspaces = [
-
-    "Default",
-    "Isha developers",
-    "Isha video editors",
-    "Sounds of Isha",
-]
 
 function Workspaces(props: Props) {
+    const {workspaces} = useSelector((state: any) => state.filesReducer);
+
     const createWorkspace = useCreateWorkSpace();
 
     const [state, setState] = useState("My work space")
-    let options = [createWorkspace, ...workspaces.map((item: string) => {
-        return {content: item, onClick: () => setState(item)}
-    })]
+
+    let options = [createWorkspace, ...workspaces.map((item: WorkSpace) => {
+        return {content: item.name, onClick: () => setState(item.name)}
+    })];
+
     return <BasicMenu
         anchorOrigin={{
             vertical: 'bottom',

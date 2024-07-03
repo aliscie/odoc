@@ -14,6 +14,7 @@ use crate::friends::Friend;
 use crate::user::User;
 use crate::user_history::UserHistory;
 use crate::websocket::Notification;
+use crate::workspaces::types::WorkSpace;
 
 // use candid::{CandidType, Decode, Deserialize, Encode};
 // use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
@@ -95,3 +96,4 @@ pub type SharedUserFiles = BTreeMap<Principal, Vec<ShareFile>>;
 pub type ChatsStore = Vec<Chat>;
 pub type ChatsNotificationStore = BTreeMap<Principal, Vec<Message>>;
 pub type MyChatsStore = BTreeMap<Principal, Vec<String>>;
+pub type WorkSpacesStore = Vec<WorkSpace>;
