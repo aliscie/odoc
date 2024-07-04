@@ -110,3 +110,15 @@ export async function get_id() {
     console.error("User is not authenticated.");
     return null;
 }
+
+export async function get_identity() {
+    const authClient = await AuthClient.create();
+
+    if (await authClient.isAuthenticated()) {
+        return authClient.getIdentity();
+    }
+
+    // Handle the case where the user is not authenticated
+    console.error("User is not authenticated.");
+    return null;
+}
