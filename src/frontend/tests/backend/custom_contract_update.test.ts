@@ -55,7 +55,6 @@ test("Update cell", async () => {
 
     // -------------------------- Check if the cell was not updated -------------------------- \\
     init_date = await global.actor.get_initial_data();
-    // logger({xxxxx: init_date.Ok.Contracts[0][1].CustomContract.contracts[0].rows});
     expect(init_date.Ok.Contracts[0][1].CustomContract.contracts[0].rows[0].cells[0].value).toBe("NEW VALUE");
 
 // -------------------------- Update formula -------------------------- \\
@@ -76,7 +75,6 @@ test("Update cell", async () => {
 
     // -------------------------- Check if the cell was not updated -------------------------- \\
     init_date = await global.actor.get_initial_data();
-    // logger({xxxxx: init_date.Ok.Contracts[0][1].CustomContract.contracts[0].rows});
     expect(init_date.Ok.Contracts[0][1].CustomContract.contracts[0].rows[0].cells[0].value).toBe("NEW VALUE 2");
 
 });

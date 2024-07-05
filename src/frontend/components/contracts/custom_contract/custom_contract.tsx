@@ -79,21 +79,26 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
     if ([CONTRACT, PROMISES].includes(view?.type)) {
         // TODO if view?.type == PROMISES and ['amount', 'sender', 'reciver', 'status',].includes(column.name) then allow rename and delete.
         let current_contract = contract.contracts.find((c: CContract) => c.id === view.id);
-        columnMenuSlots["RenameColumn"] = (props) => RenameColumn({...props, contract, updateContract, view});
+
         //TODO columnMenuSlots["DeleteColumn"] = (props) => DeleteColumn({...props, contract, updateContract, view});
         // TODO
         //     if (view?.type == PROMISES && !['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
+
+        columnMenuSlots["RenameColumn"] = (props) => RenameColumn({...props, contract, updateContract, view});
+
         columnMenuSlots["ChangeColumnPermissions"] = (props) => ChangeColumnPermissions({
             ...props,
             contract,
             updateContract,
             current_contract,
+            view,
         });
         columnMenuSlots["ChangeColumnFormula"] = (props) => ChangeColumnFormula({
             ...props,
             updateContract,
             current_contract,
-            contract
+            contract,
+            view
         });
 
 
@@ -101,7 +106,8 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             ...props,
             updateContract,
             current_contract,
-            contract
+            contract,
+            view
         });
         //TODO }
 

@@ -15,6 +15,7 @@ import {actor} from "../App";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {getCurrentFile} from "./utls";
 import {Principal} from "@dfinity/principal";
+import {logger} from "../dev_utils/log_data";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
@@ -33,7 +34,6 @@ export type FilesActions =
     | "UPDATE_FILE_TITLE"
     | "ADD_CONTRACT"
     | "UPDATE_CONTRACT"
-    | "FILE_CHANGES"
     | "CONTENT_CHANGES"
     | "CONTRACT_CHANGES"
     | "RESOLVE_CHANGES"
@@ -60,7 +60,7 @@ export var initialState = {
     files: [],
     files_content: {},
     friends: [],
-    changes: {files: {}, contents: {}, contracts: {}, delete_contracts: []},
+    changes: {files: [], contents: {}, contracts: {}, delete_contracts: []},
     notifications: [],
     profile_history: null,
     top_dialog: {open: false, content: null, title: null},
@@ -122,9 +122,10 @@ export function filesReducer(state: any = initialState, action: any) {
             };
 
         case 'ADD_FILE':
+            state.changes.files = [...state.changes.files, action.new_file]
+            state.files = [...state.files, action.new_file]
             return {
                 ...state,
-                files: [...state.files, action.data],
             };
 
         case 'UPDATE':
@@ -191,43 +192,48 @@ export function filesReducer(state: any = initialState, action: any) {
             }
 
         case 'CHANGE_FILE_PARENT': {
-            const fileIndex = state.files.findIndex(file => file.id === action.id);
-            if (fileIndex === -1) return state; // File not found, early return
+            // const index = action.index;
+            const childIndex = state.files.findIndex(file => file.id === action.id);
+            const parentIndex = state.files.findIndex(file => file.id === action.parent[0]);
+            const child: FileNode = state.files[childIndex];
+            const parent: FileNode | undefined = state.files[parentIndex];
 
-            // Assuming the existence of the parent is already validated or is null (root level)
-            const updatedFile = {...state.files[fileIndex], parent: action.parent};
-            state.files[fileIndex] = updatedFile;
-
-            // Tracking the change
-            state.changes.files[action.id] = {...state.changes.files[action.id], parent: action.parent};
-
-            // Adjust parents' children list
-            // Remove from old parent
-            if (updatedFile.parent) {
-                const oldParentIndex = state.files.findIndex(file => file.children.includes(action.id));
-                if (oldParentIndex !== -1) {
-                    state.files[oldParentIndex].children = state.files[oldParentIndex].children.filter(childId => childId !== action.id);
-                    // Track this change too if necessary
-                    // Note: Depending on your logic, you might or might not want to track changes to the children list directly
-                }
+            // remove the child
+            if (parentIndex == -1) {
+                let oldParentIndex = state.files.findIndex(file => file.id === child.parent[0]);
+                let oldParent = state.files[oldParentIndex]
+                state.files[oldParentIndex].children = oldParent.children.filter(id => id !== action.id)
+                state.changes.files.push(oldParent)
             }
 
-            // Add to new parent
-            if (action.parent) {
-                const newParentIndex = state.files.findIndex(file => file.id === action.parent);
-                if (newParentIndex !== -1 && !state.files[newParentIndex].children.includes(action.id)) {
-                    state.files[newParentIndex].children = [...state.files[newParentIndex].children, action.id];
-                    // Similarly, decide if you need to track changes to the new parent's children list
+            // update the files
+            state.files = state.files.map((file: FileNode, index: number) => {
+                if (index == parentIndex) {
+                    file.children = [...file.children, child.id]
+                    state.changes.files.push(file)
                 }
-            }
+                if (index == childIndex) {
+                    file.parent = parent ? [parent.id] : []
+                    state.changes.files.push(file)
+                }
+                return file
+            });
+
+
+            // TODO Re-indexing
+            //     For this we may need to change the backend
+            //     Note we will also need pagination which mean we can't now the order of the file
+            //     because, we will get small part of the files
+            //     if (index !== undefined && index !== childIndex) {
+            //         // Adjust the position of the child file in the array
+            //         const newArray = [...state.files];
+            //         const [removed] = newArray.splice(childIndex, 1);
+            //         newArray.splice(index, 0, removed);
+            //         state.files = newArray;
+            //     }
 
             return {
                 ...state,
-                files: [...state.files], // Ensure we're triggering a state update
-                changes: {
-                    ...state.changes,
-                    files: {...state.changes.files}, // Ensure changes are captured
-                },
             };
         }
 
@@ -291,11 +297,6 @@ export function filesReducer(state: any = initialState, action: any) {
         //         ...state,
         //         is_files_saved: false
         //     }
-        case 'FILE_CHANGES':
-            state.changes.files[action.changes.id] = action.changes;
-            return {
-                ...state,
-            }
         // case 'DELETE_CONTRACT':
         //     state.changes.delete_contracts.push(action.id);
         //     return {

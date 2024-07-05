@@ -2,13 +2,14 @@ import * as React from 'react';
 import {GridColumnMenuItemProps} from "@mui/x-data-grid";
 import {updateContractColumn} from "../utls";
 import {Input} from "@mui/material";
+import {PROMISES} from "../types";
 
 
 function RenameColumn(props: GridColumnMenuItemProps) {
 
     const {view, updateContract, contract, colDef} = props;
     // TODO maybe we should try to find a better way than this?
-    if (['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
+    if (view?.type == PROMISES && ['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
         return null
     }
 

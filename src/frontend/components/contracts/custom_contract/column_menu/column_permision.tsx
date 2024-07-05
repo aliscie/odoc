@@ -8,6 +8,7 @@ import {GridColumnMenuItemProps} from "@mui/x-data-grid";
 import {updateContractColumn} from "../utls";
 import MenuItem from "@mui/material/MenuItem";
 import BasicPopover from "../../../genral/pop_over";
+import {PROMISES} from "../types";
 
 interface Props {
     // column: CColumn,
@@ -85,10 +86,11 @@ function ColumnPermission(props: Props) {
 }
 
 function ChangeColumnPermissions(props: GridColumnMenuItemProps) {
-    const {menuProps, colDef} = props;
-    if (['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
+    const {view, menuProps, colDef} = props;
+    if (view?.type == PROMISES && ['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
         return null
     }
+
     const [value, setValue] = React.useState<PermissionType[]>([]);
     const onChange = async (perm: Array<PermissionType>) => {
         console.log(perm)

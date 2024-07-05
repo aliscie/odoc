@@ -7,7 +7,7 @@ import FullWidthTabs from "./welcome";
 
 const data = [
     {
-        title: "freelance contracts",
+        title: "Smart contracts",
         content: "At ODOC, we are driven to address the struggles faced by freelancers worldwide, including those in war-affected regions like Iraq or even Russia nowadays, and individuals burdened by high commissions and taxes in countries like India. Our mission is to decentralize freelance contracts, making them transparent and liberating through the power of smart contracts. We envision a platform that provides unparalleled freedom and trust for freelancers."
     },
     {
@@ -33,10 +33,6 @@ const data = [
     {
         title: "social platform",
         content: "Users can post about jobs or plugins they created or seek jobs."
-    },
-    {
-        title: "custom contracts",
-        content: "With formulas, you can create custom contracts."
     },
     {
         title: "Desktop version",

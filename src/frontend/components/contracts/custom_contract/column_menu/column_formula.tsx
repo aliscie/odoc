@@ -17,6 +17,7 @@ import {useDispatch, useSelector} from "react-redux";
 import CustomDialog from "../../../genral/custom_dialog";
 import {logger} from "../../../../dev_utils/log_data";
 import {handleRedux} from "../../../../redux/main";
+import {PROMISES} from "../types";
 
 interface Props {
     updateContract: (content: CustomContract) => void;
@@ -28,11 +29,11 @@ interface Props {
 }
 
 function ChangeColumnFormula(props: Props) {
-    const {current_contract, colDef, contract, updateContract} = props;
-
-    if (['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
+    const {view, current_contract, colDef, contract, updateContract} = props;
+    if (view?.type == PROMISES && ['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
         return null
     }
+
     // const {evaluate, addVarsToParser} = useParser({contract: current_contract});
     const dispatch = useDispatch();
     const formatter = String(colDef["formula_string"]);

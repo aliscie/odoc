@@ -15,13 +15,16 @@
    "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
    },
    ```
+
 3. in your .env file add
-    1. `POCKET_IC_BIN=/<path to>/pocket-ic`
-    2. `BACKEND_WASM=/<ur dir>/odoc/target/wasm32-unknown-unknown/release/backend.wasm`
-    3. `VITE_DFX_NETWORK='local'`
-    4. `VITE_DFX_PORT=<the port from dfx deploy urls>`
-    5. `VITE_IC_HOST='http://localhost:<the porst of your host canisters>`
-    6. `VITE_INTERNET_IDENTITY=<internet_identity id>` you can get this after runing `dfx deploy`
+    1. When you run `dfx deploy` you will get 3 links, frontend, backend and internet_identity copy the value with localhost and the port after it
+    2. `VITE_IC_HOST='http://localhost:<the port of your host canisters eg localhost:4943 or 127.0.0.1:5000 etc>`
+    3. `VITE_INTERNET_IDENTITY=<internet_identity id at the end of link after ?id=.....>`
+    4. `POCKET_IC_BIN=/<path to>/pocket-ic`
+    5. `BACKEND_WASM=/<ur dir>/odoc/target/wasm32-unknown-unknown/release/backend.wasm`
+    6. `VITE_DFX_NETWORK='local'`
+    7. `VITE_DFX_PORT=<the port from dfx deploy urls>`
+   
 4. read this https://crates.io/crates/pocket-ic
 5. and read this https://www.npmjs.com/package/@hadronous/pic
 

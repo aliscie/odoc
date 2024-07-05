@@ -31,8 +31,8 @@ const NestedList: React.FC<NestedListProps> = ({files}) => {
     };
 
     const dispatch = useDispatch();
-    const handleDrop: any = async (dropped, droppedOver, type) => {
-        dispatch(handleRedux("CHANGE_FILE_PARENT", {id: dropped, parent: []}));
+    const handleDrop: any = async (dropped, droppedOver, type, index) => {
+        dispatch(handleRedux("CHANGE_FILE_PARENT", {index, id: dropped, parent: []}));
     };
 
     return (

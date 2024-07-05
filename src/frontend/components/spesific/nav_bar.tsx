@@ -14,8 +14,6 @@ const NavBar = (props: any) => {
 
     const navLinks = [
         {label: "Discover", to: "/discover"},
-        {label: "Editor demo", to: "/editor_demo"},
-        {label: "Blog", to: "/blog"},
         {label: "About us", to: "/"},
     ];
 

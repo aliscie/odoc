@@ -1,5 +1,5 @@
 import {Actor, HttpAgent} from "@dfinity/agent";
-import {canisterId as userCanisterId, idlFactory} from "../../declarations/backend";
+import {canisterId as backendCanisterId, idlFactory} from "../../declarations/backend";
 import {AuthClient} from "@dfinity/auth-client";
 
 let backendActor, loading = false
@@ -13,12 +13,13 @@ const createActor = (canisterId, options = {}) => {
             "Detected both agent and agentOptions passed to createActor. Ignoring agentOptions and proceeding with the provided agent."
         );
     }
+
     // Fetch root key for certificate validation during development
     if (import.meta.env.VITE_DFX_NETWORK !== "ic") {
         agent.fetchRootKey().catch((err) => {
-            // console.warn(
-            //     "Unable to fetch root key. Check to ensure that your local replica is running"
-            // );
+            console.error(
+                "Unable to fetch root key. Check to ensure that your local replica is running"
+            );
             console.error("------------------ root key error ------------------");
             console.error(err);
         });
@@ -46,12 +47,12 @@ export const get_user_actor = async () => {
     if (!backendActor) {
         const authClient = await AuthClient.create();
         const identity = await authClient.getIdentity();
-        backendActor = createActor(userCanisterId, {
+        backendActor = createActor(backendCanisterId, {
             agentOptions: {
                 identity,
                 host,
             }
-        });
+        });``
         // }
     }
 

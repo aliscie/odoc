@@ -1,4 +1,3 @@
-import {table} from "../genral/editor_demo";
 import {data_grid, payment_contract, shares_contract, slate_Custom_contract} from "../../data_processing/data_samples";
 import {EditorRenderer} from "./editor_renderer";
 import Editor from "odoc-editor";
@@ -28,7 +27,6 @@ function EditorComponent(props: Props) {
                 contentEditable={props.contentEditable}
                 insertFooter={true}
                 componentsOptions={[
-                    {...table},
                     {
                         "type": "code-block",
                         "language": "typescript",

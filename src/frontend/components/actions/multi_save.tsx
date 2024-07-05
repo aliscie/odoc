@@ -19,7 +19,7 @@ function MultiSaveButton(props: any) {
 
     let serialized_content: Array<Array<[string, Array<ContentNode>]>> = serialize_file_contents(changes.contents)
     let serialized_contracts: Array<StoredContract> = Object.values(changes.contracts);
-    let files: Array<FileNode> = Object.values(changes.files);
+    // let files: Array<FileNode> = Object.values(changes.files);
     let delete_contracts: Array<string> = changes.delete_contracts || [];
 
 
@@ -27,7 +27,7 @@ function MultiSaveButton(props: any) {
         setOpenDialog(0);
         setLoading(true);
         let loading = enqueueSnackbar(<span>Process saving... <span className={"loader"}/></span>,);
-        let res = actor && await actor.multi_updates(files, serialized_content, serialized_contracts, delete_contracts);
+        let res = actor && await actor.multi_updates(changes.files, serialized_content, serialized_contracts, delete_contracts);
         setLoading(false);
         if (res.Ok.includes("Error") || res.Err) {
             enqueueSnackbar(res.Ok, {variant: "error"});
