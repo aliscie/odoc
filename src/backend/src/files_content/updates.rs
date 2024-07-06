@@ -46,6 +46,7 @@ fn multi_updates(
     let mut messages = "".to_string();
     // Update file names and parents or create
     for file in files {
+        // TODO handle files reordering
         file.save()?;
     }
 

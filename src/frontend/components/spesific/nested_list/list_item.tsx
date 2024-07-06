@@ -51,16 +51,16 @@ const DocComponent: React.FC<ItemProps> = ({data, item, index, openItems, handle
         {content: <ChangeWorkSpace item={item}/>},
     ]
 
-    const handleDrop: any = async (dropped, droppedOver, type) => {
-        let id = dropped;
-        let parent = droppedOver
-        dispatch(handleRedux("CHANGE_FILE_PARENT", {id, parent: [parent]}));
+    const handleDrop: any = async ({draggedId, id, dragOverPosition, type, index}) => {
+        dispatch(handleRedux("CHANGE_FILE_PARENT", {position: dragOverPosition, id: draggedId, parent: [id], index}));
     };
+
     return (
         <>
             <Link to={path}>
                 <ContextMenu options={options}>
                     <Draggable
+                        index={index}
                         id={item.id}
                         onDrop={handleDrop}
                     >

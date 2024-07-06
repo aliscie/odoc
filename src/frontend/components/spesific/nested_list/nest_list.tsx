@@ -31,8 +31,14 @@ const NestedList: React.FC<NestedListProps> = ({files}) => {
     };
 
     const dispatch = useDispatch();
-    const handleDrop: any = async (dropped, droppedOver, type, index) => {
-        dispatch(handleRedux("CHANGE_FILE_PARENT", {index, id: dropped, parent: []}));
+    const handleDrop: any = async ({draggedId, id, dragOverPosition, type, index}) => {
+        dispatch(handleRedux("CHANGE_FILE_PARENT", {
+            position: dragOverPosition,
+            index,
+            id: draggedId,
+            parent: [],
+            index
+        }));
     };
 
     return (
@@ -44,6 +50,7 @@ const NestedList: React.FC<NestedListProps> = ({files}) => {
                 aria-labelledby="nested-list-subheader"
             >
                 <Draggable preventDragUnder={true}
+                           index={0}
                            onDrop={handleDrop}
                 >
                     <div style={{height: '5px', width: '100%'}}></div>
@@ -59,12 +66,13 @@ const NestedList: React.FC<NestedListProps> = ({files}) => {
                         isChild={false}
                     />
                 ))}
-                <Draggable
-                    preventDragUnder={true}
-                    onDrop={handleDrop}
-                >
-                    <div style={{height: '5px', width: '100%'}}></div>
-                </Draggable>
+                {/*<Draggable*/}
+                {/*    preventDragUnder={true}*/}
+                {/*    index={-1}*/}
+                {/*    onDrop={handleDrop}*/}
+                {/*>*/}
+                {/*    <div style={{height: '5px', width: '100%'}}></div>*/}
+                {/*</Draggable>*/}
             </List>
         </div>
     );

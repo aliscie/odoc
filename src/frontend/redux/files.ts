@@ -192,45 +192,61 @@ export function filesReducer(state: any = initialState, action: any) {
             }
 
         case 'CHANGE_FILE_PARENT': {
-            // const index = action.index;
+            const index = action.index;
             const childIndex = state.files.findIndex(file => file.id === action.id);
             const parentIndex = state.files.findIndex(file => file.id === action.parent[0]);
             const child: FileNode = state.files[childIndex];
             const parent: FileNode | undefined = state.files[parentIndex];
+            const unChild = () => {
+                let oldParentIndex = state.files.findIndex(file => file.id === child.parent[0]);
+                let oldParent = state.files[oldParentIndex]
+                if (state.files[oldParentIndex]) {
+                    state.files[oldParentIndex].children = oldParent.children.filter(id => id !== action.id)
+                    state.files[childIndex].parent = []
+                    state.changes.files.push(oldParent)
+                }
+
+            }
 
             // remove the child
             if (parentIndex == -1) {
-                let oldParentIndex = state.files.findIndex(file => file.id === child.parent[0]);
-                let oldParent = state.files[oldParentIndex]
-                state.files[oldParentIndex].children = oldParent.children.filter(id => id !== action.id)
-                state.changes.files.push(oldParent)
+                unChild()
             }
 
             // update the files
-            state.files = state.files.map((file: FileNode, index: number) => {
-                if (index == parentIndex) {
-                    file.children = [...file.children, child.id]
-                    state.changes.files.push(file)
-                }
-                if (index == childIndex) {
-                    file.parent = parent ? [parent.id] : []
-                    state.changes.files.push(file)
-                }
-                return file
-            });
+            console.log({action})
+            if (action.position === "under" | action.index === 0 | action.index == -1) {
+                let actualParent = state.files.find(i => i.id == action.parent[0]);
+                if (actualParent && actualParent.parent[0]) {
 
+                } else if (actualParent) {
+                    unChild()
+                }
 
-            // TODO Re-indexing
-            //     For this we may need to change the backend
-            //     Note we will also need pagination which mean we can't now the order of the file
-            //     because, we will get small part of the files
-            //     if (index !== undefined && index !== childIndex) {
-            //         // Adjust the position of the child file in the array
-            //         const newArray = [...state.files];
-            //         const [removed] = newArray.splice(childIndex, 1);
-            //         newArray.splice(index, 0, removed);
-            //         state.files = newArray;
-            //     }
+                const newArray = [...state.files];
+                const [removed] = newArray.splice(childIndex, 1);
+                newArray.splice(index , 0, removed);
+                state.files = newArray;
+
+                // TODO this is too much data to send to the backend
+                //  we need to send just the indexes
+                //  state.changes.files = newArray;
+
+            } else if (action.position == "middle") {
+                console.log('middle')
+                state.files = state.files.map((file: FileNode, index: number) => {
+                    if (index == parentIndex) {
+                        file.children = [...file.children, child.id]
+                        state.changes.files.push(file)
+                    }
+                    if (index == childIndex) {
+                        file.parent = parent ? [parent.id] : []
+                        state.changes.files.push(file)
+                    }
+                    return file
+                });
+            }
+
 
             return {
                 ...state,
