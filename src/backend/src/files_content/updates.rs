@@ -45,10 +45,14 @@ fn multi_updates(
 ) -> Result<String, String> {
     let mut messages = "".to_string();
     // Update file names and parents or create
-    for file in files {
-        // TODO handle files reordering
+    for file in files.clone() {
         file.save()?;
     }
+    // let ids: Vec<String> = files.iter().map(|file_node| file_node.id.clone()).collect();
+
+    // TODO handle files reordering more effectinetly
+    //  this request sending too much data to the backend
+    // let _ = FileNode::save_file_nodes(files);
 
     for contract in contracts.clone() {
         if let StoredContract::SharesContract(share_contract) = contract.clone() {

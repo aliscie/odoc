@@ -192,48 +192,17 @@ export function filesReducer(state: any = initialState, action: any) {
             }
 
         case 'CHANGE_FILE_PARENT': {
+
             const index = action.index;
             const childIndex = state.files.findIndex(file => file.id === action.id);
             const parentIndex = state.files.findIndex(file => file.id === action.parent[0]);
             const child: FileNode = state.files[childIndex];
             const parent: FileNode | undefined = state.files[parentIndex];
-            const unChild = () => {
-                let oldParentIndex = state.files.findIndex(file => file.id === child.parent[0]);
-                let oldParent = state.files[oldParentIndex]
-                if (state.files[oldParentIndex]) {
-                    state.files[oldParentIndex].children = oldParent.children.filter(id => id !== action.id)
-                    state.files[childIndex].parent = []
-                    state.changes.files.push(oldParent)
-                }
+            const oldParentIndex = state.files.findIndex(file => file.id === child.parent[0]);
+            const oldParent = state.files[oldParentIndex]
 
-            }
 
-            // remove the child
-            if (parentIndex == -1) {
-                unChild()
-            }
-
-            // update the files
-            console.log({action})
-            if (action.position === "under" | action.index === 0 | action.index == -1) {
-                let actualParent = state.files.find(i => i.id == action.parent[0]);
-                if (actualParent && actualParent.parent[0]) {
-
-                } else if (actualParent) {
-                    unChild()
-                }
-
-                const newArray = [...state.files];
-                const [removed] = newArray.splice(childIndex, 1);
-                newArray.splice(index , 0, removed);
-                state.files = newArray;
-
-                // TODO this is too much data to send to the backend
-                //  we need to send just the indexes
-                //  state.changes.files = newArray;
-
-            } else if (action.position == "middle") {
-                console.log('middle')
+            if (action.position == "middle" && index !== 0) {
                 state.files = state.files.map((file: FileNode, index: number) => {
                     if (index == parentIndex) {
                         file.children = [...file.children, child.id]
@@ -245,6 +214,21 @@ export function filesReducer(state: any = initialState, action: any) {
                     }
                     return file
                 });
+            } else {
+                if (state.files[oldParentIndex]) {
+                    state.files[oldParentIndex].children = oldParent.children.filter(id => id !== action.id)
+                    state.files[childIndex].parent = []
+                    state.changes.files.push(oldParent)
+                }
+
+                const newArray = [...state.files];
+                const [removed] = newArray.splice(childIndex, 1);
+                newArray.splice(index, 0, removed);
+                state.files = newArray;
+
+                // TODO this is too much data to send to the backend
+                //  we need to send just the indexes
+                state.changes.files = newArray;
             }
 
 

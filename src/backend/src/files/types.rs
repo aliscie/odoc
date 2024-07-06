@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use std::sync::atomic::{AtomicU64, Ordering};
 
@@ -79,6 +79,35 @@ impl FileNode {
     //         user_files_map.get_mut(&file_id)
     //     })
     // }
+
+
+    pub fn save_file_nodes(file_nodes: Vec<FileNode>) -> Result<(), String> {
+        USER_FILES.with(|files_store| {
+            let mut user_files_vec = files_store.borrow_mut();
+            let principal_id = caller();
+
+            // Ensure there's a vector for the current user
+            let user_files = user_files_vec.entry(principal_id).or_insert_with(Vec::new);
+
+            // Create a map for quick lookup of new nodes by ID
+            let new_files_map: HashMap<String, FileNode> = file_nodes.into_iter()
+                .map(|node| (node.id.clone(), node))
+                .collect();
+
+            // Remove any existing nodes with IDs that are in the new files map
+            user_files.retain(|file| !new_files_map.contains_key(&file.id));
+
+            // Add the new nodes
+            for (_, new_node) in new_files_map {
+                user_files.push(new_node);
+            }
+
+            // Sort the user files by ID to ensure correct order (or any other order you need)
+            user_files.sort_by(|a, b| a.id.cmp(&b.id));
+
+            Ok(())
+        })
+    }
 
 
     pub fn save(&self) -> Result<Self, String> {
