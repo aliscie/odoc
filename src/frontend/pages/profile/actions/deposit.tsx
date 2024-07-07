@@ -4,7 +4,7 @@ import LoaderButton from "../../../components/genral/loader_button";
 import {handleRedux} from "../../../redux/main";
 import {actor} from "../../../App";
 
-function Deposit(props: any) {
+function Deposit (props: any) {
     const dispatch = useDispatch();
 
     async function handleDeposit() {

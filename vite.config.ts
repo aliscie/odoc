@@ -76,30 +76,30 @@ const canisterDefinitions = Object.entries(canisters).reduce(
 );
 
 export default defineConfig({
-    test: {
-        environment: 'jsdom',
-        globals: true,
-        threads: false,
-        watch: true,
-        "compilerOptions": {
-            "types": ["vitest/globals"]
-        },
-        // include: ['**/__tests__/*.{js,tsx,ts}', "App.test.tsx"],
-        // globalSetup: ["./src/frontend/tests/React/setup.ts"],
-        setupFiles: './setup_tests.ts',
-        // reporters: ["default", {
-        //     async onWatcherRerun() {
-        //         await teardown();
-        //         await setup();
-        //     }
-        // }]
-        setupFilesAfterEnv: [
-            '@testing-library/jest-dom/extend-expect', // Ensure jest-dom extensions are loaded
-            './src/frontend/setupTests.ts',
-        ],
+    // test: {
+    //     environment: 'jsdom',
+    //     globals: true,
+    //     threads: false,
+    //     watch: true,
+    //     "compilerOptions": {
+    //         "types": ["vitest/globals"]
+    //     },
+    //     // include: ['**/__tests__/*.{js,tsx,ts}', "App.test.tsx"],
+    //     // globalSetup: ["./src/frontend/tests/React/setup.ts"],
+    //     setupFiles: './setup_tests.ts',
+    //     // reporters: ["default", {
+    //     //     async onWatcherRerun() {
+    //     //         await teardown();
+    //     //         await setup();
+    //     //     }
+    //     // }]
+    //     setupFilesAfterEnv: [
+    //         '@testing-library/jest-dom/extend-expect', // Ensure jest-dom extensions are loaded
+    //         './src/frontend/setupTests.ts',
+    //     ],
 
 
-    },
+    // },
     build: {
         outDir: "build",
     },

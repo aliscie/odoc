@@ -4,7 +4,7 @@ import {render} from "@testing-library/react";
 import configureStore from 'redux-mock-store';
 
 import {initialState} from "../../redux/files";
-import TestRapper from "../utls/tests_wrapper";
+import TestRapper from "../utils/tests_wrapper";
 
 const mockStore = configureStore([]);
 
