@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use ic_cdk::caller;
 use ic_cdk_macros::update;
+use candid::{CandidType, Deserialize, Principal};
 
 use crate::{SharesContract, StoredContract};
 use crate::files::FileNode;
@@ -35,6 +36,12 @@ fn content_updates(file_id: FileId, content_parent_id: Option<ContentId>, new_te
 //     }
 //     Ok(())
 // }
+#[derive(Clone, Debug, Deserialize, CandidType)]
+pub struct FileIndexing {
+    pub id: FileId,
+    pub new_index: usize,
+    pub parent: Option<FileId>,
+}
 
 #[update]
 fn multi_updates(
@@ -42,11 +49,19 @@ fn multi_updates(
     content_trees: Vec<HashMap<FileId, ContentTree>>,
     contracts: Vec<StoredContract>,
     delete_contracts: Vec<ContractId>,
+    files_indexing: Vec<FileIndexing>,
 ) -> Result<String, String> {
     let mut messages = "".to_string();
     // Update file names and parents or create
     for file in files.clone() {
         file.save()?;
+    }
+    for indexing in files_indexing {
+        if let Some(parent) = indexing.parent {
+            let _ = FileNode::rearrange_child(parent, indexing.id, indexing.new_index);
+        } else {
+            let _ = FileNode::rearrange_file(indexing.id, indexing.new_index);
+        }
     }
     // let ids: Vec<String> = files.iter().map(|file_node| file_node.id.clone()).collect();
 

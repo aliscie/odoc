@@ -69,43 +69,56 @@ impl FileNode {
         false
     }
 
-    // pub fn get_file_mut<'a>(file_id: u64) -> Option<&'a mut FileNode> {
-    //     USER_FILES.with(|files_store| {
-    //         let principal_id = ic_cdk::api::caller();
-    //
-    //         let mut user_files = files_store.borrow_mut();
-    //         let user_files_map = user_files.get_mut(&principal_id)?;
-    //
-    //         user_files_map.get_mut(&file_id)
-    //     })
-    // }
-
-
-    pub fn save_file_nodes(file_nodes: Vec<FileNode>) -> Result<(), String> {
+    pub fn rearrange_child(parent_id: FileId, child_id: FileId, new_index: usize) -> Result<(), String> {
         USER_FILES.with(|files_store| {
+            let principal_id = ic_cdk::api::caller();
             let mut user_files_vec = files_store.borrow_mut();
-            let principal_id = caller();
-
-            // Ensure there's a vector for the current user
             let user_files = user_files_vec.entry(principal_id).or_insert_with(Vec::new);
 
-            // Create a map for quick lookup of new nodes by ID
-            let new_files_map: HashMap<String, FileNode> = file_nodes.into_iter()
-                .map(|node| (node.id.clone(), node))
-                .collect();
+            // Find the parent node
+            if let Some(parent_node) = user_files.iter_mut().find(|f| f.id == parent_id) {
+                // Find the position of the child node
+                if let Some(old_index) = parent_node.children.iter().position(|id| id == &child_id) {
+                    // Remove the child ID from its current position
+                    let child_id = parent_node.children.remove(old_index);
 
-            // Remove any existing nodes with IDs that are in the new files map
-            user_files.retain(|file| !new_files_map.contains_key(&file.id));
-
-            // Add the new nodes
-            for (_, new_node) in new_files_map {
-                user_files.push(new_node);
+                    // Insert the child ID at the new position
+                    if new_index >= parent_node.children.len() {
+                        parent_node.children.push(child_id);
+                    } else {
+                        parent_node.children.insert(new_index, child_id);
+                    }
+                    Ok(())
+                } else {
+                    Err("Child ID not found in parent's children".to_string())
+                }
+            } else {
+                Err("Parent ID not found".to_string())
             }
+        })
+    }
+    
+    pub fn rearrange_file(file_id: FileId, new_index: usize) -> Result<(), String> {
+        USER_FILES.with(|files_store| {
+            let principal_id = ic_cdk::api::caller();
+            let mut user_files_vec = files_store.borrow_mut();
+            let user_files = user_files_vec.entry(principal_id).or_insert_with(Vec::new);
 
-            // Sort the user files by ID to ensure correct order (or any other order you need)
-            user_files.sort_by(|a, b| a.id.cmp(&b.id));
+            // Find the position of the file node to be moved
+            if let Some(old_index) = user_files.iter().position(|f| f.id == file_id) {
+                // Remove the file node from its current position
+                let file_node = user_files.remove(old_index);
 
-            Ok(())
+                // Insert the file node at the new position
+                if new_index >= user_files.len() {
+                    user_files.push(file_node);
+                } else {
+                    user_files.insert(new_index, file_node);
+                }
+                Ok(())
+            } else {
+                Err("File ID not found".to_string())
+            }
         })
     }
 

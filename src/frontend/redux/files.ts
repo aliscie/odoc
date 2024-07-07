@@ -3,6 +3,7 @@ import {agent} from "../backend_connect/main";
 import {AuthClient} from "@dfinity/auth-client";
 import {FriendsActions} from "./friends";
 import {
+    FileIndexing,
     FileNode,
     Friend,
     InitialData,
@@ -60,7 +61,7 @@ export var initialState = {
     files: [],
     files_content: {},
     friends: [],
-    changes: {files: [], contents: {}, contracts: {}, delete_contracts: []},
+    changes: {files: [], contents: {}, contracts: {}, delete_contracts: [], files_indexing: []},
     notifications: [],
     profile_history: null,
     top_dialog: {open: false, content: null, title: null},
@@ -201,7 +202,6 @@ export function filesReducer(state: any = initialState, action: any) {
             const oldParentIndex = state.files.findIndex(file => file.id === child.parent[0]);
             const oldParent = state.files[oldParentIndex]
 
-
             if (action.position == "middle" && index !== 0) {
                 state.files = state.files.map((file: FileNode, index: number) => {
                     if (index == parentIndex) {
@@ -218,7 +218,7 @@ export function filesReducer(state: any = initialState, action: any) {
                 if (state.files[oldParentIndex]) {
                     state.files[oldParentIndex].children = oldParent.children.filter(id => id !== action.id)
                     state.files[childIndex].parent = []
-                    state.changes.files.push(oldParent)
+                    // state.changes.files.push(oldParent)
                 }
 
                 const newArray = [...state.files];
@@ -226,9 +226,12 @@ export function filesReducer(state: any = initialState, action: any) {
                 newArray.splice(index, 0, removed);
                 state.files = newArray;
 
-                // TODO this is too much data to send to the backend
-                //  we need to send just the indexes
-                state.changes.files = newArray;
+                let files_indexing: FileIndexing = {
+                    id: child.id,
+                    parent: action.parent[0] ? [String(action.parent[0])] : [],
+                    new_index: BigInt(index)
+                }
+                state.changes.files_indexing.push(files_indexing)
             }
 
 

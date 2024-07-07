@@ -364,6 +364,11 @@ export const idlFactory = ({ IDL }) => {
     'workspace' : IDL.Text,
   });
   const Result_10 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
+  const FileIndexing = IDL.Record({
+    'id' : IDL.Text,
+    'new_index' : IDL.Nat64,
+    'parent' : IDL.Opt(IDL.Text),
+  });
   const RegisterUser = IDL.Record({
     'name' : IDL.Opt(IDL.Text),
     'description' : IDL.Opt(IDL.Text),
@@ -489,6 +494,7 @@ export const idlFactory = ({ IDL }) => {
           IDL.Vec(IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(ContentNode)))),
           IDL.Vec(StoredContract),
           IDL.Vec(IDL.Text),
+          IDL.Vec(FileIndexing),
         ],
         [Result_2],
         [],

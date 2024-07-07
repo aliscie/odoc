@@ -149,6 +149,11 @@ export interface FEChat {
   'name' : string,
   'admins' : Array<UserFE>,
 }
+export interface FileIndexing {
+  'id' : string,
+  'new_index' : bigint,
+  'parent' : [] | [string],
+}
 export interface FileNode {
   'id' : string,
   'permission' : ShareFilePermission,
@@ -441,6 +446,7 @@ export interface _SERVICE {
       Array<Array<[string, Array<ContentNode>]>>,
       Array<StoredContract>,
       Array<string>,
+      Array<FileIndexing>,
     ],
     Result_2
   >,

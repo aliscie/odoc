@@ -133,6 +133,7 @@ type FEChat = record {
   name : text;
   admins : vec UserFE;
 };
+type FileIndexing = record { id : text; new_index : nat64; parent : opt text };
 type FileNode = record {
   id : text;
   permission : ShareFilePermission;
@@ -408,6 +409,7 @@ service : () -> {
       vec vec record { text; vec ContentNode },
       vec StoredContract,
       vec text,
+      vec FileIndexing,
     ) -> (Result_2);
   object_on_cancel : (CPayment, text) -> (Result_1);
   pay_for_share_contract : (text, nat64, text) -> (Result_1);

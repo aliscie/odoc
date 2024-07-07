@@ -13,7 +13,7 @@ function MultiSaveButton(props: any) {
     const dispatch = useDispatch();
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     let {changes} = useSelector((state: any) => state.filesReducer);
-    let is_files_saved = Object.keys(changes.contents).length === 0 && Object.keys(changes.files).length === 0 && Object.keys(changes.contracts).length === 0;
+    let is_files_saved = Object.keys(changes.contents).length === 0 && changes.files.length === 0 && Object.keys(changes.contracts).length === 0&&changes.files_indexing.length === 0;
     const [loading, setLoading] = React.useState(false);
     const [openDialog, setOpenDialog] = React.useState(0);
 
@@ -27,7 +27,7 @@ function MultiSaveButton(props: any) {
         setOpenDialog(0);
         setLoading(true);
         let loading = enqueueSnackbar(<span>Process saving... <span className={"loader"}/></span>,);
-        let res = actor && await actor.multi_updates(changes.files, serialized_content, serialized_contracts, delete_contracts);
+        let res = actor && await actor.multi_updates(changes.files, serialized_content, serialized_contracts, delete_contracts, changes.files_indexing || []);
         setLoading(false);
         if (res.Ok.includes("Error") || res.Err) {
             enqueueSnackbar(res.Ok, {variant: "error"});
