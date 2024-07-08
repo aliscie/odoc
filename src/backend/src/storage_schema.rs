@@ -16,54 +16,34 @@ use crate::user_history::UserHistory;
 use crate::websocket::Notification;
 use crate::workspaces::types::WorkSpace;
 
-// use candid::{CandidType, Decode, Deserialize, Encode};
-// use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
-// use ic_stable_structures::{
-//     storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
-// };
-//
-// use std::{borrow::Cow, cell::RefCell};
-//
-//
-// type Memory = VirtualMemory<DefaultMemoryImpl>;
-//
-// const MAX_VALUE_SIZE: u32 = 100;
-//
-//
-// impl Storable for User {
-//     fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
-//         Cow::Owned(Encode!(self).unwrap())
-//     }
-//
-//     fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
-//         Decode!(bytes.as_ref(), Self).unwrap()
-//     }
-//
-//     const BOUND: Bound = Bound::Bounded {
-//         max_size: MAX_VALUE_SIZE,
-//         is_fixed_size: false,
-//     };
-//
-// }
-//
-// #[derive(Ord, Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
-// pub struct MyPrincipalWrapper(Principal);
-//
-// impl Storable for MyPrincipalWrapper {
-//   fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
-//         Cow::Owned(Encode!(self).unwrap())
-//     }
-//
-//     fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
-//         Decode!(bytes.as_ref(), Self).unwrap()
-//     }
-//
-//     const BOUND: Bound = Bound::Bounded {
-//         max_size: MAX_VALUE_SIZE,
-//         is_fixed_size: false,
-//     };
-//
-// }
+use candid::{CandidType, Decode, Deserialize, Encode};
+use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
+use ic_stable_structures::{
+    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
+};
+
+use std::{borrow::Cow, cell::RefCell};
+
+
+type Memory = VirtualMemory<DefaultMemoryImpl>;
+
+const MAX_VALUE_SIZE: u32 = 200000;
+
+
+impl Storable for User {
+    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Bounded {
+        max_size: MAX_VALUE_SIZE,
+        is_fixed_size: false,
+    };
+}
 
 
 //---------- TODO Maybe  no need for FileId, ShareContractId, ShareRequestId,... etc ---------- \\

@@ -82,8 +82,7 @@ fn get_user(usd_id: String) -> Result<User, String> {
     let user: Option<User> = PROFILE_STORE.with(|profile_store| {
         profile_store
             .borrow()
-            .get(&user.unwrap())
-            .cloned()
+            .get(&user.unwrap().to_string())
     });
 
     if let Some(user) = user {

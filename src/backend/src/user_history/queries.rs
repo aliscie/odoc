@@ -29,8 +29,7 @@ impl UserProfile {
         let user: Option<User> = PROFILE_STORE.with(|profile_store| {
             profile_store
                 .borrow()
-                .get(&user_id)
-                .cloned()
+                .get(&user_id.to_string())
         });
         let mut user_profile = UserHistory::get(user_id);
         let wallet = Wallet::get(user_id);

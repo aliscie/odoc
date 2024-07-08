@@ -1,5 +1,7 @@
+use std::borrow::Cow;
+use std::collections::Bound;
 use ic_cdk::{caller};
-use candid::{CandidType, Deserialize, Principal};
+use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 
 // export::{
 //     candid::{CandidType, Deserialize},
@@ -18,6 +20,7 @@ pub struct User {
     //  pub total_balance: f64
     // pub keywords: Vec<String>,
 }
+
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
 pub struct RegisterUser {
@@ -38,7 +41,7 @@ impl User {
         //         .insert(profile.name.unwrap().clone(), principal_id);
         // });
         PROFILE_STORE.with(|profile_store| {
-            profile_store.borrow_mut().insert(principal_id, user.clone());
+            profile_store.borrow_mut().insert(principal_id.to_text(), user.clone());
         });
 
         user
@@ -51,7 +54,7 @@ impl User {
         let principal = Principal::from_text(principal_str).ok()?;
         PROFILE_STORE.with(|profile_store| {
             let store = profile_store.borrow();
-            store.get(&principal).cloned()
+            store.get(&principal.to_string())
         })
     }
 
@@ -59,7 +62,7 @@ impl User {
     pub fn get_user_from_principal(id: Principal) -> Option<User> {
         PROFILE_STORE.with(|profile_store| {
             let store = profile_store.borrow();
-            store.get(&id).cloned()
+            store.get(&id.to_string())
         })
     }
 
@@ -79,8 +82,7 @@ impl User {
         let user: Option<User> = PROFILE_STORE.with(|profile_store| {
             profile_store
                 .borrow()
-                .get(&principal_id)
-                .cloned()
+                .get(&principal_id.to_string())
         });
         // if user.is_none() {
         //     let user = User::new(RegisterUser {
@@ -107,7 +109,7 @@ impl User {
         }
 
         PROFILE_STORE.with(|profile_store| {
-            profile_store.borrow_mut().insert(caller(), user.clone());
+            profile_store.borrow_mut().insert(caller().to_string(), user.clone());
         });
         user
     }
@@ -117,19 +119,18 @@ impl User {
         let user: Option<User> = PROFILE_STORE.with(|profile_store| {
             profile_store
                 .borrow()
-                .get(&principal_id)
-                .cloned()
+                .get(&principal_id.to_string())
         });
         user.is_some()
     }
 
     pub fn user_name_is_duplicate(name: String) -> bool {
         PROFILE_STORE.with(|profile_store| {
-            profile_store.borrow().values().any(|user| {
-                user.id != caller().to_text() && user.name == name
-            })
+            let store = profile_store.borrow();
+            store.iter().any(|(_, user)| user.name == name)
         })
     }
+
     pub fn is_anonymous() -> bool {
         let principal_id = ic_cdk::api::caller();
         principal_id.to_text() == *"2vxsx-fae"

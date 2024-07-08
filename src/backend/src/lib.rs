@@ -31,6 +31,9 @@ use user_history::*;
 pub use wallet::*;
 use websocket::*;
 
+use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
+use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
+
 
 // type Memory = VirtualMemory<DefaultMemoryImpl>;
 
@@ -63,22 +66,31 @@ mod init;
 mod chat;
 mod user_history;
 mod workspaces;
+
 use workspaces::*;
+
+
+type Memory = VirtualMemory<DefaultMemoryImpl>;
+
+
 
 thread_local! {
 
 
-    // static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
-    //     RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
-    //
-    //
-    // static PROFILE_STORE: RefCell<ProfileStore> = RefCell::new(
-    //     StableBTreeMap::init(
-    //         MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
-    //     )
-    // );
+    // return a memory that can be used by stable structures.
+    static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
+        RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
 
-    static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
+    // Initialize a `StableBTreeMap` with `MemoryId(0)`.
+    static PROFILE_STORE: RefCell<StableBTreeMap<String, User, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
+        )
+    );
+
+
+
+    // static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
     static PROFILE_HISOTYR: RefCell<ProfileHistoryStore> = RefCell::default();
     // static ID_STORE: RefCell<IdStore> = RefCell::default();
     static USER_FILES: RefCell<FilesStore> = RefCell::default();
