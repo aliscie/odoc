@@ -200,7 +200,7 @@ test("Test actions rating", async () => {
         "CustomContract": {...custom_contract, promises}
     };
 
-    res = await global.actor.multi_updates([], [], [to_store], []);
+    res = await global.actor.multi_updates([], [], [to_store], [],[]);
     // expect(res).toEqual({Ok: "Updates applied successfully."});
     expect("Ok" in res).toBeTruthy();
 

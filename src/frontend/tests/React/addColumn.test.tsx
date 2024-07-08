@@ -1,7 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { addColumnUtils } from '../../units/addColumnUtils';
-import { CColumn, Contract } from '../../../declarations/backend/backend.did';
-import { randomString } from '../../data_processing/data_samples';
+import {describe, expect, it} from 'vitest';
+import {addColumnUtils} from '../../units/addColumnUtils';
+import {CColumn, Contract} from '../../../declarations/backend/backend.did';
 
 const updateCustomContractColumns = (contract: Contract, columns: CColumn[], viewId: string): Contract => {
     

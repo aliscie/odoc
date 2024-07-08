@@ -118,7 +118,7 @@ export function deserialize_payment_data(rows: Array<PaymentRow>, all_users = []
         let cells: Array<CCell> = [];
         let other_keys = ["id", "released", "sender", "receiver", "amount"]
         Object.keys(row).forEach((key: string) => {
-            if (!other_keys.includes(key)){
+            if (!other_keys.includes(key)) {
                 cells.push({
                     field: key,
                     value: row[key]
@@ -144,7 +144,7 @@ export function deserialize_payment_data(rows: Array<PaymentRow>, all_users = []
 
 
 export function serializePromisesData(payments: Array<CPayment>, all_users = []) {
-    let valueOptions = all_users ? all_users.map(user => user.name) : [];
+    let valueOptions = all_users ? all_users.map(user => user && user.name) : [];
     // console.log("valueOptions", valueOptions)
     let column = {
         id: randomString(),
@@ -341,6 +341,7 @@ export function createNewPromis(sender): CPayment {
         status,
         'amount': 0,
         'receiver': Principal.fromText("2vxsx-fae"),
+        cells: []
     }
     return new_promise
 }
