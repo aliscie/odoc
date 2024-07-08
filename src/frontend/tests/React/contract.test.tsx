@@ -1,31 +1,42 @@
 import React from 'react';
 import {render} from '@testing-library/react';
-import {Principal} from '@dfinity/principal';
-import {randomString} from '../../data_processing/data_samples';
-import {CustomContract} from '../../../declarations/backend/backend.did';
-import CustomContractComponent from '../../components/contracts/custom_contract/custom_contract';
-import TestWrapper from "../utls/tests_wrapper";
+import {CContract} from '../../../declarations/backend/backend.did';
+import TestWrapper from "../utils/tests_wrapper";
+import {newContract} from "../backend/data_samples";
+import {createCContract} from "../../components/contracts/custom_contract/utls";
+import {logger} from "../../dev_utils/log_data";
+import store, {handleRedux} from "../../redux/main";
+import {CustomContractComponent} from "../../components/contracts/custom_contract/custom_contract";
+import {identify} from "../../backend_connect/ic_agent";
+import {AuthClient} from "@dfinity/auth-client";
 
-const custom_contract: CustomContract = {
-    id: randomString(),
-    name: "Custom contract",
-    creator: Principal.fromText("2vxsx-fae"),
-    date_created: Date.now() * 1e6,
-    payments: [],
-    promises: [],
-    contracts: [],
-    formulas: [],
-    date_updated: 0,
-    permissions: [],
-};
 
-it('creates and updates a contract, then interacts with rows and columns', () => {
-    const { getByText } = render(
-        <TestWrapper>
-            <CustomContractComponent contract={custom_contract} />
+it('creates and updates a contract, then interacts with rows and columns', async () => {
+
+
+    // create a new contract
+    const {custom_contract, promise} = newContract();
+
+    custom_contract.creator = global.user.getPrincipal();
+    let new_c_contract: CContract = createCContract();
+    custom_contract.creator = global.user.getPrincipal();
+    new_c_contract.rows[0].cells[0].value = "INIT VALUE"
+    custom_contract.contracts = [new_c_contract];
+
+    store.dispatch(handleRedux("ADD_CONTRACT", {contract: custom_contract}))
+    // Mock login
+    //  TODO this way dies not give us create results we need to mock the login without using this  function
+    store.dispatch(handleRedux("UPDATE_PROFILE", {
+        name: 'any',
+        description: 'any',
+    }))
+
+    const {getByText} = render(
+        <TestWrapper store={store}>
+            <CustomContractComponent contract={custom_contract}/>
         </TestWrapper>
     );
+    // expect text user in component
+    expect(getByText('promises')).toBeInTheDocument();
 
-    // Add your test expectations here
-    // expect(getByText("hello world")).toBeInTheDocument();
 });

@@ -12,6 +12,7 @@ import {Principal} from "@dfinity/principal";
 import React from "react";
 import {handleRedux} from "../../../../redux/main";
 import {useSnackbar} from "notistack";
+import {logger} from "../../../../dev_utils/log_data";
 
 interface ParserValues {
     [key: string]: any;
@@ -40,11 +41,11 @@ function useParser(props: ParserProps) {
         (state: any) => state.filesReducer
     );
     const {contract, main_contract} = props;
+
     const all_users: Array<User> = all_friends ? [profile, ...all_friends] : [profile];
     // const ref = React.useRef<Array<CPayment>>([]);
     const ref = React.useRef<Map<String, CPayment>>(new Map());
     const values: ParserValues = {};
-
     all_users.forEach((user: User) => {
         values[user.name] = user;
     });
@@ -117,10 +118,12 @@ function useParser(props: ParserProps) {
         let is_in: boolean = main_contract?.payments?.some((payment) => payment.id === promise.id);
         if (is_in) {
             return `${amount} already released to ${to.name}.`;
-        };
+        }
+        ;
         if (promise.amount > wallet.balance) {
             return "Insufficient balance";
-        };
+        }
+        ;
         ref.current.set(promise.id, promise);
         updatePromises()
         return `You promised ${amount} USDT to ${to.name}.`;

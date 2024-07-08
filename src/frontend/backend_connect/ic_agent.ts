@@ -4,6 +4,7 @@ import {AuthClient} from "@dfinity/auth-client";
 
 let backendActor, loading = false
 
+// console.log("Backend cnaister Id: ", userCanisterId);
 
 const createActor = (canisterId, options = {}) => {
     const agent = options.agent || new HttpAgent({...options.agentOptions});
@@ -64,7 +65,7 @@ function get_identity_url() {
     let identityProvider = "https://identity.ic0.app/#authorize";
     if (import.meta.env.VITE_DFX_NETWORK != "ic") {
         let port = import.meta.env.VITE_DFX_PORT;
-        identityProvider = `http://${import.meta.env.VITE_INTERNET_IDENTITY}.localhost:${port}/#authorize`
+        identityProvider = `http://${import.meta.env.VITE_INTERNET_IDENTITY}.localhost:${port}`
     }
     return identityProvider
 }

@@ -66,6 +66,9 @@ export var initialState = {
     profile_history: null,
     top_dialog: {open: false, content: null, title: null},
     workspaces: [],
+    contracts: {},
+    all_friends: [],
+    all_users: [],
 };
 
 

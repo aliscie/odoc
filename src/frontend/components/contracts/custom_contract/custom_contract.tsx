@@ -34,6 +34,7 @@ import ChangeColumnFormula from "./column_menu/column_formula";
 import {actor} from "../../../App";
 import ChangeType from "./column_menu/column_type";
 import {Input} from "@mui/material";
+import {logger} from "../../../dev_utils/log_data";
 
 interface VIEW {
     id?: string,
@@ -462,6 +463,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
 }
 
 export default function SlateCustomContract(props: any) {
+    logger({props})
     const {contracts, current_file} = useSelector((state: any) => state.filesReducer);
     // const contract: CustomContract = contracts[props.id];
     const dispatch = useDispatch();
