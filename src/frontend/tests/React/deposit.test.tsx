@@ -1,4 +1,3 @@
-import React from 'react';
 import { vi } from 'vitest';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { useDispatch } from 'react-redux';
