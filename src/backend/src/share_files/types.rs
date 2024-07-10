@@ -1,10 +1,14 @@
-use candid::Principal;
 use ic_cdk::{caller};
 use crate::{FILE_CONTENTS, FILES_SHARE_STORE, USER_FILES, SHARED_USER_FILES};
 use crate::files::FileNode;
 
-use candid::{CandidType, Deserialize};
 use crate::storage_schema::{ContentTree};
+use candid::{CandidType, Decode, Deserialize, Encode, Principal};
+
+use ic_stable_structures::{
+    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
+};
+use std::{borrow::Cow, cell::RefCell};
 
 
 #[derive(PartialEq, Clone, Debug, Deserialize, CandidType)]
@@ -36,6 +40,24 @@ pub struct ShareFile {
     //  children
     //  contracts
 }
+
+
+
+impl Storable for ShareFile {
+    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Bounded {
+        max_size: 200000,
+        is_fixed_size: false,
+    };
+}
+
 
 impl ShareFile {
     // pub fn new(file_id: FileId, share_id: String) -> Result<String, String> {
@@ -106,7 +128,7 @@ impl ShareFile {
     pub fn add_to_my_shared(share_id: &String) -> Result<(), String> {
         let share_file = FILES_SHARE_STORE.with(|files_share_store| {
             let files_share_store = files_share_store.borrow();
-            files_share_store.get(share_id).cloned()
+            files_share_store.get(share_id)
         }).ok_or("No such share id.")?;
 
 
@@ -130,7 +152,7 @@ impl ShareFile {
     pub fn get_file(share_id: &String) -> Result<(FileNode, ContentTree), String> {
         let shared_file: ShareFile = FILES_SHARE_STORE.with(|files_share_store| {
             let files_share_store = files_share_store.borrow();
-            files_share_store.get(share_id).cloned()
+            files_share_store.get(share_id)
         }).ok_or("No such share id.")?;
 
         let file = USER_FILES.with(|files_store| {

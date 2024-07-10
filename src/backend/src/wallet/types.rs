@@ -1,7 +1,13 @@
 use std::collections::HashMap;
-use candid::{CandidType, Deserialize, Principal};
 use crate::{WALLETS_STORE};
 use crate::user_history::UserHistory;
+use candid::{CandidType, Decode, Deserialize, Encode, Principal};
+
+use ic_stable_structures::{
+    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
+};
+use std::{borrow::Cow, cell::RefCell};
+
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub enum ExchangeType {
@@ -40,6 +46,24 @@ pub struct Wallet {
     pub spent: f64,
     // pub exchanges: Vec<CPayment>,
 }
+
+
+
+
+// impl Storable for Wallet {
+//     fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+//         Cow::Owned(Encode!(self).unwrap())
+//     }
+//
+//     fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
+//         Decode!(bytes.as_ref(), Self).unwrap()
+//     }
+//
+//     const BOUND: Bound = Bound::Bounded {
+//         max_size: 200000,
+//         is_fixed_size: false,
+//     };
+// }
 
 impl Wallet {
     pub fn check_dept(&self, amount: f64) -> Result<(), String> {
@@ -87,7 +111,7 @@ impl Wallet {
     pub fn get(principal: Principal) -> Wallet {
         WALLETS_STORE.with(|store| {
             let mut store = store.borrow_mut();
-            if let Some(wallet) = store.get(&principal) {
+            if let Some(wallet) = store.get(&principal.to_string()) {
                 // User already has a wallet, return the existing one
                 wallet.clone()
             } else {
@@ -102,7 +126,7 @@ impl Wallet {
                     spent: 0.0,
                 };
 
-                store.insert(principal, new_wallet.clone());
+                store.insert(principal.to_string(), new_wallet.clone());
                 new_wallet
             }
         })

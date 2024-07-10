@@ -32,17 +32,10 @@ pub use wallet::*;
 use websocket::*;
 
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
-use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 
-
-// type Memory = VirtualMemory<DefaultMemoryImpl>;
-
-// use ic_stable_structures::{
-//     memory_manager::{MemoryId, MemoryManager, VirtualMemory},
-//     BTreeMap,
-//     DefaultMemoryImpl,
-//     StableBTreeMap,
-// };
+use ic_stable_structures::{
+    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
+};
 
 
 mod user;
@@ -67,10 +60,12 @@ mod chat;
 mod user_history;
 mod workspaces;
 
+
 use workspaces::*;
 
 
 type Memory = VirtualMemory<DefaultMemoryImpl>;
+
 
 
 
@@ -89,6 +84,46 @@ thread_local! {
     );
 
 
+    // static PROFILE_HISOTYR: RefCell<StableBTreeMap<String, UserHistory, Memory>> = RefCell::new(
+    //     StableBTreeMap::init(
+    //         MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
+    //     )
+    // );
+
+
+    static FILES_SHARE_STORE: RefCell<StableBTreeMap<String, ShareFile, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
+        )
+    );
+
+    //  static WALLETS_STORE: RefCell<StableBTreeMap<String, Wallet, Memory>> = RefCell::new(
+    //     StableBTreeMap::init(
+    //         MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
+    //     )
+    // );
+
+
+    // static POSTS: RefCell<StableBTreeMap<String, Post, Memory>> = RefCell::new(
+    //     StableBTreeMap::init(
+    //         MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
+    //     )
+    // );
+
+
+
+
+
+
+
+    //  static USER_FILES: RefCell<StableBTreeMap<String, Vec<FileNode>, Memory>> = RefCell::new(
+    //     StableBTreeMap::init(
+    //         MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
+    //     )
+    // );
+
+
+
 
     // static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
     static PROFILE_HISOTYR: RefCell<ProfileHistoryStore> = RefCell::default();
@@ -98,7 +133,7 @@ thread_local! {
     static FILE_CONTENTS: RefCell<FileContentsStore> = RefCell::default();
     static FRIENDS_STORE: RefCell<FriendsStore> = RefCell::default();
     static CONTRACTS_STORE: RefCell<ContractStore> = RefCell::default();
-    static FILES_SHARE_STORE: RefCell<FilesShareStore> = RefCell::default();
+    // static FILES_SHARE_STORE: RefCell<FilesShareStore> = RefCell::default();
     static WALLETS_STORE: RefCell<WalletStore> = RefCell::default();
     static NOTIFICATIONS: RefCell<UserNotifications> = RefCell::default();
     static POSTS: RefCell<PostsStore> = RefCell::default();

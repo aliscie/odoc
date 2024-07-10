@@ -27,7 +27,6 @@ use std::{borrow::Cow, cell::RefCell};
 
 type Memory = VirtualMemory<DefaultMemoryImpl>;
 
-const MAX_VALUE_SIZE: u32 = 200000;
 
 
 impl Storable for User {
@@ -40,7 +39,7 @@ impl Storable for User {
     }
 
     const BOUND: Bound = Bound::Bounded {
-        max_size: MAX_VALUE_SIZE,
+        max_size: 200000,
         is_fixed_size: false,
     };
 }
@@ -60,15 +59,15 @@ pub type ShareId = String;
 
 // Stores types
 // pub type IdStore = BTreeMap<String, Principal>;
-pub type ProfileStore = BTreeMap<Principal, User>;
-pub type ProfileHistoryStore = BTreeMap<Principal, UserHistory>;
+// pub type ProfileStore = BTreeMap<Principal, User>;
+pub type ProfileHistoryStore = BTreeMap<String, UserHistory>;
 pub type FriendsStore = BTreeMap<Principal, Vec<Friend>>;
 // pub type FilesStore = BTreeMap<Principal, HashMap<FileId, FileNode>>;
 pub type FilesStore = BTreeMap<Principal, Vec<FileNode>>;
 pub type FileContentsStore = BTreeMap<Principal, HashMap<FileId, ContentTree>>;
 pub type ContractStore = BTreeMap<Principal, HashMap<ContractId, StoredContract>>;
-pub type FilesShareStore = BTreeMap<ShareId, ShareFile>;
-pub type WalletStore = BTreeMap<Principal, Wallet>;
+// pub type FilesShareStore = BTreeMap<ShareId, ShareFile>;
+pub type WalletStore = BTreeMap<String, Wallet>;
 pub type UserNotifications = BTreeMap<Principal, Vec<Notification>>;
 pub type PostsStore = BTreeMap<PostId, Post>;
 pub type SharedUserFiles = BTreeMap<Principal, Vec<ShareFile>>;

@@ -1,13 +1,18 @@
 use std::collections::HashSet;
 use std::time::Duration;
 
-use candid::{CandidType, Deserialize, Principal};
+use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 use ic_cdk::caller;
 
 use crate::{CPayment, PaymentStatus, PROFILE_HISOTYR, SharePayment, SharesContract, Wallet};
 use crate::discover::time_diff;
 use crate::PROFILE_STORE;
 use crate::websocket::Notification;
+use ic_stable_structures::{
+    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
+};
+use std::{borrow::Cow, cell::RefCell};
+
 
 // export::{
 //     candid::{CandidType, Deserialize},
@@ -68,6 +73,23 @@ pub struct UserHistory {
     // CUSTOm contract field will be calculated later
 }
 
+//
+// impl Storable for UserHistory {
+//     fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+//         Cow::Owned(Encode!(self).unwrap())
+//     }
+//
+//     fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
+//         Decode!(bytes.as_ref(), Self).unwrap()
+//     }
+//
+//     const BOUND: Bound = Bound::Bounded {
+//         max_size: 200000,
+//         is_fixed_size: false,
+//     };
+// }
+
+
 impl UserHistory {
     pub fn new(id: Principal) -> Self {
         let new_profile_history = UserHistory {
@@ -79,7 +101,7 @@ impl UserHistory {
             users_rate: 0.0,
         };
         PROFILE_HISOTYR.with(|h| {
-            h.borrow_mut().insert(id, new_profile_history.clone());
+            h.borrow_mut().insert(id.to_string(), new_profile_history.clone());
         });
         new_profile_history
     }
@@ -136,10 +158,25 @@ impl UserHistory {
         });
         promises.iter().map(|p| p.amount).sum()
     }
-
+    // Stable structure
+    // pub fn get(id: Principal) -> Self {
+    //     let res = PROFILE_HISOTYR.with(|h| {
+    //         // Borrow the inner value mutably
+    //         let mut map = h.borrow_mut();
+    //
+    //         // Use get_mut() on the borrowed map
+    //         map.get(&id.to_string())
+    //     });
+    //
+    //     if let Some(res) = res {
+    //         res
+    //     } else {
+    //         UserHistory::new(id)
+    //     }
+    // }
     pub fn get(id: Principal) -> Self {
         let res = PROFILE_HISOTYR.with(|h| {
-            h.borrow_mut().get_mut(&id).cloned()
+            h.borrow_mut().get_mut(&id.to_string()).cloned()
         });
         if let Some(res) = res {
             res
@@ -148,9 +185,10 @@ impl UserHistory {
         }
     }
 
+
     pub fn save(&mut self) {
         PROFILE_HISOTYR.with(|h| {
-            h.borrow_mut().insert(self.id.clone(), self.clone());
+            h.borrow_mut().insert(self.id.to_string(), self.clone());
         });
     }
 

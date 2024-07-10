@@ -2,6 +2,9 @@ use std::borrow::Cow;
 use std::collections::Bound;
 use ic_cdk::{caller};
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
+//
+// #[macro_use]
+// extern crate macros; // This imports the macro for use
 
 // export::{
 //     candid::{CandidType, Deserialize},
@@ -9,6 +12,7 @@ use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 // }
 
 use crate::{PROFILE_STORE};
+
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, Default, CandidType, Deserialize)]
 pub struct User {

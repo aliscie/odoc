@@ -34,6 +34,7 @@ import ChangeColumnFormula from "./column_menu/column_formula";
 import {actor} from "../../../App";
 import ChangeType from "./column_menu/column_type";
 import {Input} from "@mui/material";
+import {is_logged} from "../../../backend_connect/ic_agent";
 import {logger} from "../../../dev_utils/log_data";
 
 interface VIEW {
@@ -43,6 +44,14 @@ interface VIEW {
 }
 
 export function CustomContractComponent({contract}: { contract: CustomContract }) {
+    // useEffect(() => {
+    //     (async () => {
+    //             let is_loggedin = await is_logged()
+    //             logger({is_loggedin})
+    //         }
+    //     )()
+    //
+    // }, [])
     const {profile, all_friends, wallet} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const [view, setView] = useState<VIEW>({id: "", name: PROMISES, type: PROMISES});
@@ -463,7 +472,6 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
 }
 
 export default function SlateCustomContract(props: any) {
-    logger({props})
     const {contracts, current_file} = useSelector((state: any) => state.filesReducer);
     // const contract: CustomContract = contracts[props.id];
     const dispatch = useDispatch();
@@ -472,6 +480,7 @@ export default function SlateCustomContract(props: any) {
 
 
         (async () => {
+
             // if (window.location.pathname.split("/").pop() === "share") {
             if (!contract) {
                 let contract: undefined | { Ok: StoredContract } | { Err: string } = actor && current_file && await actor.get_contract(current_file.author, props.id);

@@ -153,7 +153,7 @@ function RenderNotification(props: { notification: Notification }): string | JSX
 }
 
 
-function Notification({notification}: { notification: Notification }) {
+function NotificationComponent({notification}: { notification: Notification }) {
     // console.log("render Notification") // TODO this renders about 20 times.
 
 
@@ -198,7 +198,7 @@ export function Notifications() {
                     }
                     ;
                     let item = {
-                        content: <Notification notification={notification}/>,
+                        content: <NotificationComponent notification={notification}/>,
                         pure: true,
                         // to: 'profile'
                         // onClick: () => clickNotification(notification)

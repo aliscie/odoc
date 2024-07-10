@@ -3,12 +3,16 @@ use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 
-use candid::{CandidType, Deserialize, Principal};
+use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 use ic_cdk::{caller, print};
 
 use crate::{COUNTER, ShareFile, ShareFilePermission, USER_FILES};
 
 use crate::storage_schema::{ContentTree, FileId};
+use ic_stable_structures::{
+    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
+};
+use std::{borrow::Cow, cell::RefCell};
 
 // #[derive(Debug, Serialize, Deserialize)]
 #[derive(Clone, Debug, Deserialize, CandidType)]
@@ -25,6 +29,25 @@ pub struct FileNode {
     pub content_id: Option<String>,
     pub workspace: String, // TODO we may not need this Field
 }
+
+
+impl Storable for FileNode {
+    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Bounded {
+        max_size: 200000,
+        is_fixed_size: false,
+    };
+}
+
+
+
 
 impl FileNode {
     pub fn new(name: String, parent: Option<FileId>) -> Self {
@@ -97,7 +120,7 @@ impl FileNode {
             }
         })
     }
-    
+
     pub fn rearrange_file(file_id: FileId, new_index: usize) -> Result<(), String> {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();
