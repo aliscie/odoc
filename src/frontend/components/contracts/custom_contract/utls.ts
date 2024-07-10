@@ -9,7 +9,7 @@ import {
 } from "../../../../declarations/backend/backend.did";
 import {randomString} from "../../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
-import {PaymentRow} from "./types";
+import {PaymentRow, PROMISES} from "./types";
 
 export function updateCContractColumn(contract, new_column): CContract {
     contract.columns = contract.columns.map((column: CColumn) => {
@@ -142,6 +142,35 @@ export function deserialize_payment_data(rows: Array<PaymentRow>, all_users = []
     })
 }
 
+function ExtendColumnsRows(all_users, payments: Array<CPayment>, columns: Array<CColumn>, rows: Array<any>) {
+    payments.forEach((p: CPayment) => {
+        let sender = all_users.find((user: User) => p.sender.toString() === String(user.id))
+        let receiver = all_users.find((user: User) => p.receiver.toString() === String(user.id))
+        let extras = {};
+        p.cells.forEach((c: CCell) => {
+            extras[c.field] = c.value;
+            if (!columns.find((col: any) => col.field === c.field)) {
+                columns.push({
+                    id: c.field,
+                    field: c.field,
+                    headerName: c.field,
+                    editable: true,
+                    type: 'string',
+                })
+            }
+        });
+
+        rows.push({
+            id: p.id,
+            amount: p.amount,
+            sender: sender.name,
+            receiver: receiver ? receiver.name : "null",
+            ...extras,
+        });
+    });
+    return {columns, rows}
+
+}
 
 export function serializePromisesData(payments: Array<CPayment>, all_users = []) {
     let valueOptions = all_users ? all_users.map(user => user && user.name) : [];
@@ -209,7 +238,9 @@ export function serializePromisesData(payments: Array<CPayment>, all_users = [])
             receiver: receiver ? receiver.name : "",
         }
     })
-    return {columns, rows}
+
+
+    return ExtendColumnsRows(all_users, payments, columns, rows)
 }
 
 
@@ -241,27 +272,7 @@ export function serializePaymentData(payments: Array<CPayment>, all_users?) {
 
     let columns: any = [column, column_2, column_3];
     let rows = [];
-    payments.forEach((p: CPayment) => {
-        let sender = all_users.find((user: User) => p.sender.toString() === String(user.id))
-        let receiver = all_users.find((user: User) => p.receiver.toString() === String(user.id))
-        let extras = {};
-        p.cells.forEach((c: CCell) => {
-            extras[c.field] = c.value;
-            columns.map({
-                field: c.field,
-                headerName: c.field,
-            })
-        });
-
-        rows.push({
-            id: p.id,
-            amount: p.amount,
-            sender: sender.name,
-            receiver: receiver ? receiver.name : "null",
-            ...extras,
-        });
-    })
-    return {columns, rows}
+    return ExtendColumnsRows(all_users, payments, columns, rows)
 }
 
 export function createCColumn(field: string): CColumn {
@@ -316,12 +327,11 @@ export function updateCustomContractRows(contract: CustomContract, new_rows: Arr
 }
 
 
-export function updateCustomContractColumns(contract: CustomContract, new_columns, view_id: string): CustomContract {
-
+export function updateCustomContractColumns(contract: CustomContract, new_columns, view: any): CustomContract {
     return {
         ...contract,
         contracts: contract.contracts.map((c: CContract) => {
-            if (c.id === view_id) {
+            if (c.id === view.id) {
                 return {...c, columns: new_columns}
             }
             return c;

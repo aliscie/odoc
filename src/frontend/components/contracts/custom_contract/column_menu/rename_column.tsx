@@ -9,6 +9,7 @@ function RenameColumn(props: GridColumnMenuItemProps) {
 
     const {view, updateContract, contract, colDef} = props;
     // TODO maybe we should try to find a better way than this?
+
     if (view?.type == PROMISES && ['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
         return null
     }

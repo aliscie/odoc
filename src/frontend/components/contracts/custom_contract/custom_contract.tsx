@@ -34,8 +34,9 @@ import ChangeColumnFormula from "./column_menu/column_formula";
 import {actor} from "../../../App";
 import ChangeType from "./column_menu/column_type";
 import {Input} from "@mui/material";
-import {is_logged} from "../../../backend_connect/ic_agent";
 import {logger} from "../../../dev_utils/log_data";
+import {CCell} from "../../../../../.dfx/ic/canisters/backend/service.did";
+import {Principal} from "@dfinity/principal";
 
 interface VIEW {
     id?: string,
@@ -44,14 +45,7 @@ interface VIEW {
 }
 
 export function CustomContractComponent({contract}: { contract: CustomContract }) {
-    // useEffect(() => {
-    //     (async () => {
-    //             let is_loggedin = await is_logged()
-    //             logger({is_loggedin})
-    //         }
-    //     )()
-    //
-    // }, [])
+
     const {profile, all_friends, wallet} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const [view, setView] = useState<VIEW>({id: "", name: PROMISES, type: PROMISES});
@@ -124,13 +118,14 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
     }
 
     function deleteColumn(columns: any, columnId: string) {
-        const updatedContract = updateCustomContractColumns(contract, columns, view.id);
+        const updatedContract = updateCustomContractColumns(contract, columns, view);
         updateContract(updatedContract);
         return columns;
     }
 
 
     function addColumn(position: number) {
+        let updatedContract = {...contract};
         const newColumn: CColumn = {
             id: randomString(),
             field: randomString(),
@@ -142,11 +137,40 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             editable: true,
             deletable: true,
         };
-        let current_contract = contract.contracts.find((c: CContract) => c.id === view.id);
-        const newColumns = [...(current_contract?.columns ?? [])];
-        newColumns.splice(position, 0, newColumn);
-        const updatedContract = updateCustomContractColumns(contract, newColumns, view.id);
-        updateContract(updatedContract);
+        if (view.type === PROMISES) {
+
+            if (updatedContract.promises.length === 0) {
+                let new_promise: CPayment = {
+
+                    'id': randomString(),
+                    'status': {'None': null},
+                    'date_created': 0,
+                    'date_released': 0,
+                    'cells': [],
+                    'contract_id': contract.id,
+                    'sender': Principal.fromText(profile.id),
+                    'amount': 0,
+                    'receiver': Principal.fromText("2vxsx-fae"),
+                }
+                updatedContract.promises = [new_promise];
+            }
+            updatedContract.promises = updatedContract.promises.map((p: CPayment) => {
+                let new_cell: CCell = {
+                    field: newColumn.field,
+                    value: "",
+                }
+                p.cells.push(new_cell);
+                return p;
+            });
+            updateContract(updatedContract);
+        } else {
+            let current_contract = contract.contracts.find((c: CContract) => c.id === view.id);
+            const newColumns = [...(current_contract?.columns ?? [])];
+            newColumns.splice(position, 0, newColumn);
+            updatedContract = updateCustomContractColumns(contract, newColumns, view);
+            updateContract(updatedContract);
+        }
+
         return newColumn;
     }
 
@@ -306,6 +330,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 const updatedContracts = contract.contracts.filter((c: CContract) => c.id !== view.id);
                 updateContract({...contract, contracts: [...updatedContracts]});
                 setView({
+                    id: contract.contracts[0].id,
                     type: PROMISES,
                 });
                 break;
@@ -331,6 +356,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 let serialize_PromisesData = serializePaymentData(contract.promises, all_users)
 
                 setView({
+                    id: contract.contracts.find((c: CContract) => c.name === "Promises")?.id,
                     type: PROMISES,
                     ...serialize_PromisesData,
                 })
@@ -429,6 +455,15 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         //     };
         //     break;
         case PAYMENTS:
+            if (contract.payments.length === 0) {
+                // set to promises
+                setView({
+                    id: contract.contracts.find((c: CContract) => c.name === "Promises")?.id,
+                    type: PROMISES,
+                });
+                enqueueSnackbar("No payments yet, redirecting to promises", {variant: "info"});
+                break
+            }
             const serializedPaymentData = serializePaymentData(contract.payments, [profile, ...all_friends]);
             data = {
                 type: PAYMENTS,
@@ -437,6 +472,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             };
             break
         default:
+            logger({xxxx: contract.promises})
             const serializedPromiseData = serializePromisesData(contract.promises, [profile, ...all_friends]);
             data = {
                 type: PROMISES,

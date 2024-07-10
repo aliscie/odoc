@@ -1,7 +1,7 @@
 import {Principal} from "@dfinity/principal";
 import {
     Column,
-    CustomContract,
+    CustomContract, Filter, Formula, PermissionType,
     Share,
     SharePaymentOption,
     SharesContract
@@ -13,7 +13,7 @@ let first_share_id = randomString();
 export let note_page_content = [{"id": 4, "children": [{"id": 5, "text": "", "type": "h1"}]}]
 export let file_data = {"id": "0000", "content": "0", "name": "NameTest", "children": {}, "parent": []}
 let column: Column = {
-    _type: {Text: null},
+    _type: "",
     field: "receiver",
     filters: [],
     permissions: [],
