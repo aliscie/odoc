@@ -184,7 +184,7 @@ function CustomDataGrid(props: Props) {
         ];
 
         const add_column = [
-            <Button onClick={() => handleAddColumn(props.column.field, true)} key="two"><ArrowCircleLeftIcon/></Button>,
+            <Button className={'add-column-left'} onClick={() => handleAddColumn(props.column.field, true)} key="two"><ArrowCircleLeftIcon/></Button>,
             <Button onClick={() => handleAddColumn(props.column.field, false)}
                     key="three"><ArrowCircleRightIcon/></Button>,
             <span style={{width: "100px"}} key="one"

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {render} from '@testing-library/react';
+import {createEvent, render} from '@testing-library/react';
 import {CContract} from '../../../declarations/backend/backend.did';
 import TestWrapper from "../utils/tests_wrapper";
 import {newContract} from "../backend/data_samples";
@@ -34,14 +34,30 @@ it('creates and updates a contract, then interacts with rows and columns', async
     }));
 
 
-    const {getByText} = render(
+    const items = render(
         <TestWrapper store={store}>
             <CustomContractComponent contract={custom_contract}/>
         </TestWrapper>
     );
 
-    // expect text user in component
-    expect(getByText('promises')).toBeInTheDocument();
-    logger({"test_done": true})
+
+    const cellElement = items.container.querySelector(`[role="cell"]`);
+    let rows = items.container.querySelectorAll(`[role="row"]`);
+    expect(rows.length).toBe(2);
+    if (cellElement) {
+        // select item by class name add-column-left
+        let addCol = document.querySelector('.add-column-left');
+        expect(addCol).toBeNull();
+        const contextMenuEvent = createEvent.contextMenu(cellElement);
+        let addCol2 = document.querySelector('.add-column-left');
+        expect(addCol2).not.toBeNull();
+        createEvent.click(addCol2)
+        let rows2 = items.container.querySelectorAll(`[role="row"]`);
+        expect(rows2.length).toBe(3);
+
+    } else {
+        console.error(`Element with role "${role}" not found.`);
+    }
+
 
 });
