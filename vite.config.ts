@@ -1,6 +1,7 @@
 import {defineConfig} from "vite";
 import EnvironmentPlugin from "vite-plugin-environment";
 import path from "path";
+import babel from 'vite-plugin-babel';
 
 import dfxJson from "./dfx.json";
 

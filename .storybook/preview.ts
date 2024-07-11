@@ -1,8 +1,8 @@
-import type { Preview } from "@storybook/react";
+import { Preview } from "@storybook/react";
 // import '../setup_tests.ts';
 
-const preview: Preview = {
-
+/** @type {import('@storybook/react').Preview} */
+const preview = {
   parameters: {
     // setupFiles: '../setup_tests.ts',
     controls: {
@@ -12,6 +12,7 @@ const preview: Preview = {
       },
     },
   },
+  tags: ["autodocs"]
 };
 
 export default preview;
