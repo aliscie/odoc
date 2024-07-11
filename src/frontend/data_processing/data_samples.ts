@@ -61,7 +61,6 @@ export let shares_contract = {
                 "rows": [
                     {
                         id: first_share_id,
-                        contract: [],
                         contract: [{"SharesContract": first_share_id}],
                         cells: [],
                         requests: [],
