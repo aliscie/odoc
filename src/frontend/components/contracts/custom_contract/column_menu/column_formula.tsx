@@ -1,21 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {
-    CColumn,
-    CContract,
-    CPayment,
-    CustomContract, StoredContract
-} from '../../../../../declarations/backend/backend.did';
+import React from 'react';
+import {CColumn, CContract, CustomContract, StoredContract} from '../../../../../declarations/backend/backend.did';
 import CodeEditor from "../formula_parser/code_editor";
-import {
-    serialize_contract_column,
-    updateCContractColumn,
-    updateContractColumn
-} from "../utls";
-import useParser from "../formula_parser/use_parser";
-import {useSnackbar} from "notistack";
-import {useDispatch, useSelector} from "react-redux";
+import {PROMISES_CONTRACT_FIELDS, updateContractColumn} from "../utls";
+import {useDispatch} from "react-redux";
 import CustomDialog from "../../../genral/custom_dialog";
-import {logger} from "../../../../dev_utils/log_data";
 import {handleRedux} from "../../../../redux/main";
 import {PROMISES} from "../types";
 
@@ -30,7 +18,7 @@ interface Props {
 
 function ChangeColumnFormula(props: Props) {
     const {view, current_contract, colDef, contract, updateContract} = props;
-    if (view?.type == PROMISES && ['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
+    if (view?.type == PROMISES && PROMISES_CONTRACT_FIELDS.includes(colDef.field)) {
         return null
     }
 

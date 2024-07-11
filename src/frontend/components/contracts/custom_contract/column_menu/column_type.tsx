@@ -1,8 +1,7 @@
 import React from 'react';
 import {CColumn, CContract, CustomContract} from '../../../../../declarations/backend/backend.did';
-import {updateContractColumn} from "../utls";
+import {PROMISES_CONTRACT_FIELDS, updateContractColumn} from "../utls";
 import BasicMenu from "../../../genral/drop_down";
-import {logger} from "../../../../dev_utils/log_data";
 import {PROMISES} from "../types";
 
 enum ColumnType {
@@ -24,7 +23,7 @@ interface Props {
 function ChangeType(props: Props) {
     const {view, colDef, updateContract, current_contract, contract} = props;
 
-    if (view?.type == PROMISES && ['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
+    if (view?.type == PROMISES && PROMISES_CONTRACT_FIELDS.includes(colDef.field)) {
         return null
     }
 

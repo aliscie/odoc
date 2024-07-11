@@ -18,21 +18,25 @@ const data = [
         title: "Task managements",
         content: "In addition to empowering freelancers, we are creating a note-taking and task-management app, prioritizing privacy by encrypting user data. This ensures that organizations like hospitals and research teams can confidently use our app. Initially, we offer simple functionalities like spreadsheets, text styling, and grammar correction. Users can choose to upload data to the blockchain for added security, with local storage capabilities. Our permission system based on internet identity enhances privacy and data access control."
     },
+    // {
+    //     title: "Formula and tables",
+    //     content: "Similar to Microsoft Excel, you will have a spreadsheet where you can store your data and implement formulas. Also, with plugins, you can implement custom formulas like a Google translator. Last but not least, you can use these spreadsheets as a backend for your services. In other words, the components will act as a frontend that interacts with this spreadsheet."
+    // },
     {
         title: "Formula and tables",
-        content: "Similar to Microsoft Excel, you will have a spreadsheet where you can store your data and implement formulas. Also, with plugins, you can implement custom formulas like a Google translator. Last but not least, you can use these spreadsheets as a backend for your services. In other words, the components will act as a frontend that interacts with this spreadsheet."
+        content: "Similar to Microsoft Excel, you will have a spreadsheet where you can store your data and implement formulas. Also, you can implement custom formulas like a Google translator. Last but not least, you can use these spreadsheets as a backend for your services. In other words, the components will act as a frontend that interacts with this spreadsheet."
     },
-    {
-        title: "Plugins",
-        content: "Plugins or extensions are customizations that you can add to your ODOC application. For example, you can add a grammar correction plugin like Grammarly or a machine learning plugin that helps you abbreviate your text."
-    },
+    // {
+    //     title: "Plugins",
+    //     content: "Plugins or extensions are customizations that you can add to your ODOC application. For example, you can add a grammar correction plugin like Grammarly or a machine learning plugin that helps you abbreviate your text."
+    // },
     {
         title: "Views",
         content: "You can view a table in the form of a chart or gallery, or in a custom view that allows you to see your data in different ways that are pleasant to the eye, more expressive, cleaner, or for input like quatrains and polls."
     },
     {
         title: "social platform",
-        content: "Users can post about jobs or plugins they created or seek jobs."
+        content: "Users can post about jobs they created or seek jobs."
     },
     {
         title: "Desktop version",
@@ -118,14 +122,14 @@ let roadMap = [
         title: "Custom views",
         content: "You can customize your video with simple css editor."
     },
-    {
-        is_done: false,
-        title: "Plugins",
-        content: "You can install, 3 types of plugins\n" +
-            "1. Components plugins\n" +
-            "2. Formula plugins\n" +
-            "3. View plugins\n" + "For example you can install google translator formula and use it in the table. Or pi char plugins for the views or a grammar correction plugin for the text editor. etc..."
-    },
+    // {
+    //     is_done: false,
+    //     title: "Plugins",
+    //     content: "You can install, 3 types of plugins\n" +
+    //         "1. Components plugins\n" +
+    //         "2. Formula plugins\n" +
+    //         "3. View plugins\n" + "For example you can install google translator formula and use it in the table. Or pi char plugins for the views or a grammar correction plugin for the text editor. etc..."
+    // },
     {
         is_done: false,
         title: "Rich editor",

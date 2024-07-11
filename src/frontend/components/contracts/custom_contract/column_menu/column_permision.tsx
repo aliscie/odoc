@@ -1,13 +1,12 @@
-import {PermissionType, User} from "../../../../../declarations/backend/backend.did";
+import {CContract, PermissionType, User} from "../../../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import MultiAutoComplete from "../../../genral/multi_autocompelte";
 import * as React from "react";
 import {useState} from "react";
 import {useSelector} from "react-redux";
 import {GridColumnMenuItemProps} from "@mui/x-data-grid";
-import {updateContractColumn} from "../utls";
+import {PROMISES_CONTRACT_FIELDS, updateContractColumn} from "../utls";
 import MenuItem from "@mui/material/MenuItem";
-import BasicPopover from "../../../genral/pop_over";
 import {PROMISES} from "../types";
 
 interface Props {
@@ -87,7 +86,7 @@ function ColumnPermission(props: Props) {
 
 function ChangeColumnPermissions(props: GridColumnMenuItemProps) {
     const {view, menuProps, colDef} = props;
-    if (view?.type == PROMISES && ['amount', 'sender', 'receiver', 'status'].includes(colDef.field)) {
+    if (view?.type == PROMISES && PROMISES_CONTRACT_FIELDS.includes(colDef.field)) {
         return null
     }
 

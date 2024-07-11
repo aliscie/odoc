@@ -9,7 +9,6 @@ import {
 } from "../../../../declarations/backend/backend.did";
 import {randomString} from "../../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
-import {PaymentRow, PROMISES} from "./types";
 
 export function updateCContractColumn(contract, new_column): CContract {
     contract.columns = contract.columns.map((column: CColumn) => {
@@ -98,59 +97,43 @@ export function deserialize_contract_rows(rows: Array<any>): Array<CRow> {
     })
 }
 
-export function deserialize_payment_data(rows: Array<PaymentRow>, all_users = []): Array<CPayment> {
+export const PROMISES_CONTRACT_FIELDS = ['amount', 'sender', 'status', 'receiver', 'id'];
 
-    return rows.map((row: PaymentRow) => {
+export function serializeRowToPromise(row: any, all_users: any[], contract): CPayment {
 
-        let sender = all_users.find((user: any) => user.name === row.sender);
-        let receiver = all_users.find((user: any) => user.name === row.receiver);
+    let cells: Array<CCell> = Object.keys(row)
+        .filter(key => !PROMISES_CONTRACT_FIELDS.includes(key))
+        .map(key => ({field: key, value: row[key] || ""}));
+    let status: any = {};
+    status[row.status] = null;
+    let sender = all_users.find((user: any) => user.name === row.sender);
+    let receiver = all_users.find((user: any) => user.name === row.receiver);
 
-        // if (!receiver) {
-        //     console.error("Receiver not found", row.receiver)
-        // }
-        // if (!sender) {
-        //     console.error("Sender not found", row.sender)
-        // }
-        let status: any = {};
-        status[row.status] = null;
-
-
-        let cells: Array<CCell> = [];
-        let other_keys = ["id", "released", "sender", "receiver", "amount"]
-        Object.keys(row).forEach((key: string) => {
-            if (!other_keys.includes(key)) {
-                cells.push({
-                    field: key,
-                    value: row[key]
-                })
-            }
-        });
+    let promes: CPayment = {
+        'id': row.id,
+        'status': status,
+        'date_created': 0,
+        'date_released': 0,
+        cells,
+        'contract_id': contract.id,
+        'sender': Principal.fromText(sender.id),
+        "amount": Number(row.amount),
+        'receiver': receiver ? Principal.fromText(receiver.id) : Principal.fromText("2vxsx-fae"),
+    }
+    return promes
 
 
-        let payment: CPayment = {
-            contract_id: "",// the backend will handle this.
-            amount: row.amount,
-            id: row.id,
-            sender: sender ? Principal.fromText(sender.id) : Principal.fromText("2vxsx-fae"),
-            receiver: receiver ? Principal.fromText(receiver.id) : Principal.fromText("2vxsx-fae"),
-            status,
-            date_created: 0,
-            date_released: 0,
-            cells
-        }
-        return payment
-    })
 }
 
-function ExtendColumnsRows(all_users, payments: Array<CPayment>, columns: Array<CColumn>, rows: Array<any>) {
+
+function ExtendColumnsRows(payments: Array<CPayment>, columns: Array<CColumn>, rows: Array<any>) {
     payments.forEach((p: CPayment) => {
-        let sender = all_users.find((user: User) => p.sender.toString() === String(user.id))
-        let receiver = all_users.find((user: User) => p.receiver.toString() === String(user.id))
         let extras = {};
         p.cells.forEach((c: CCell) => {
             extras[c.field] = c.value;
             if (!columns.find((col: any) => col.field === c.field)) {
                 columns.push({
+                    deletable: true,
                     id: c.field,
                     field: c.field,
                     headerName: c.field,
@@ -159,14 +142,14 @@ function ExtendColumnsRows(all_users, payments: Array<CPayment>, columns: Array<
                 })
             }
         });
+        console.log({extras})
+        rows = rows.map((r: any) => {
+            if (r.id === p.id) {
+                r = {...r, ...extras}
+            }
+            return r
+        })
 
-        rows.push({
-            id: p.id,
-            amount: p.amount,
-            sender: sender.name,
-            receiver: receiver ? receiver.name : "null",
-            ...extras,
-        });
     });
     return {columns, rows}
 
@@ -174,7 +157,6 @@ function ExtendColumnsRows(all_users, payments: Array<CPayment>, columns: Array<
 
 export function serializePromisesData(payments: Array<CPayment>, all_users = []) {
     let valueOptions = all_users ? all_users.map(user => user && user.name) : [];
-    // console.log("valueOptions", valueOptions)
     let column = {
         id: randomString(),
         field: "amount",
@@ -240,7 +222,7 @@ export function serializePromisesData(payments: Array<CPayment>, all_users = [])
     })
 
 
-    return ExtendColumnsRows(all_users, payments, columns, rows)
+    return ExtendColumnsRows(payments, columns, rows)
 }
 
 
@@ -272,7 +254,7 @@ export function serializePaymentData(payments: Array<CPayment>, all_users?) {
 
     let columns: any = [column, column_2, column_3];
     let rows = [];
-    return ExtendColumnsRows(all_users, payments, columns, rows)
+    return ExtendColumnsRows(payments, columns, rows)
 }
 
 export function createCColumn(field: string): CColumn {

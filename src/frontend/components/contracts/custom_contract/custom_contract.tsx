@@ -16,11 +16,11 @@ import {
 import {
     createCContract,
     deserialize_contract_rows,
-    deserialize_payment_data,
     serialize_contract_column,
     serialize_contract_rows,
     serializePaymentData,
     serializePromisesData,
+    serializeRowToPromise,
     updateCustomContractColumns,
     updateCustomContractRows
 } from "./utls";
@@ -34,7 +34,6 @@ import ChangeColumnFormula from "./column_menu/column_formula";
 import {actor} from "../../../App";
 import ChangeType from "./column_menu/column_type";
 import {Input} from "@mui/material";
-import {logger} from "../../../dev_utils/log_data";
 import {CCell} from "../../../../../.dfx/ic/canisters/backend/service.did";
 import {Principal} from "@dfinity/principal";
 
@@ -45,7 +44,6 @@ interface VIEW {
 }
 
 export function CustomContractComponent({contract}: { contract: CustomContract }) {
-
     const {profile, all_friends, wallet} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const [view, setView] = useState<VIEW>({id: "", name: PROMISES, type: PROMISES});
@@ -118,9 +116,19 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
     }
 
     function deleteColumn(columns: any, columnId: string) {
-        const updatedContract = updateCustomContractColumns(contract, columns, view);
-        updateContract(updatedContract);
-        return columns;
+        if (view.type === PROMISES) {
+            let updatedContract = {...contract};
+            updatedContract.promises = updatedContract.promises.map((p: CPayment) => {
+                p.cells = p.cells.filter((c: CCell) => c.field !== columnId);
+                return p;
+            });
+            updateContract(updatedContract);
+        } else {
+            const updatedContract = updateCustomContractColumns(contract, columns, view);
+            updateContract(updatedContract);
+            return columns;
+        }
+
     }
 
 
@@ -163,15 +171,17 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 return p;
             });
             updateContract(updatedContract);
+            return newColumn;
         } else {
             let current_contract = contract.contracts.find((c: CContract) => c.id === view.id);
             const newColumns = [...(current_contract?.columns ?? [])];
             newColumns.splice(position, 0, newColumn);
             updatedContract = updateCustomContractColumns(contract, newColumns, view);
             updateContract(updatedContract);
+            return newColumn;
         }
 
-        return newColumn;
+
     }
 
     function addRow(position: number) {
@@ -180,18 +190,29 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 break
             case PROMISES:
                 const new_payment: CPayment = {
+
+                    'id' : randomString(),
+                    'status': {'None': null},
                     'date_created': 0,
                     'date_released': 0,
-                    contract_id: contract.id,
-                    id: randomString(),
-                    amount: 0,
-                    sender: profile.name,
-                    receiver: profile.name,
-                    status: {'None': null},
-                    released: false,
-                    objected: false,
-                    confirmed: false,
-                    cells: [],
+                    'cells': [],
+                    'contract_id': contract.id,
+                    'sender': Principal.fromText(profile.id),
+                    'amount': 0,
+                    'receiver': Principal.fromText("2vxsx-fae"),
+  //
+  //                   'date_created': 0,
+  //                   'date_released': 0,
+  //                   contract_id: contract.id,
+  //                   id: randomString(),
+  //                   amount: 0,
+  //                   sender: Principal.fromText(profile.id),
+  //                   receiver: Principal.fromText("2vxsx-fae"),
+  //                   status: {'None': null},
+  //                   released: false,
+  //                   objected: false,
+  //                   confirmed: false,
+  //                   cells: [],
                 };
                 const updated_promises = [...contract.promises];
                 updated_promises.splice(position, 0, new_payment);
@@ -286,8 +307,14 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 if (newRow.released) {
                     enqueueSnackbar(`As you hit save button you will send ${newRow.amount}USDT to ${newRow.receiver}`, {variant: "info"})
                 }
-                let updated_promises: Array<CPayment> = deserialize_payment_data(newRows, [profile, ...all_friends]);
-                updateContract({...contract, promises: updated_promises})
+                let updatedContractPromeses = {...contract};
+                updatedContractPromeses.promises = updatedContractPromeses.promises.map((p: CPayment) => {
+                    if (p.id === newRow.id) {
+                        return serializeRowToPromise(newRow, all_users, contract);
+                    }
+                    return p;
+                });
+                updateContract(updatedContractPromeses)
                 break
             case CONTRACT:
 
@@ -471,8 +498,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 ...serializedPaymentData,
             };
             break
-        default:
-            logger({xxxx: contract.promises})
+        case PROMISES:
             const serializedPromiseData = serializePromisesData(contract.promises, [profile, ...all_friends]);
             data = {
                 type: PROMISES,
@@ -480,9 +506,10 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 ...serializedPromiseData,
             };
             break
-    }
-    ;
 
+        default:
+            break
+    }
     return (
         <CustomDataGrid
             columnMenuSlots={columnMenuSlots}
