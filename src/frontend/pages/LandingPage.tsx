@@ -2,7 +2,7 @@ import React from 'react';
 import './styles/LandingPage.css';
 import Card from "../components/genral/card";
 import CustomizedAccordions from "../components/genral/acordoin";
-import {Divider, Typography, Container, Grid } from "@mui/material";
+import {Divider, Typography, Container, Grid, Box } from "@mui/material";
 import FullWidthTabs from "./welcome"; 
 import StyledAccordion from '../components/genral/styled_accordion';
 
@@ -142,16 +142,31 @@ let roadMap = [
 const LandingPage: React.FC = () => {
     return (
         <Container maxWidth="lg" className="landing-page">
-            <header className="landing-header">
-                <Typography variant="h2" align="left" gutterBottom>
-                    Welcome to ODOC
-                </Typography>
-                <Typography variant="body1" align="left" paragraph>
-                    Empowering freelancers, employers, and employees with transparent and liberating smart contracts...
-                </Typography>
-            </header>
+            <Grid container spacing={4}>
+                <Grid item xs={12} md={6}>
+                    <header className="landing-header">
+                        <Typography variant="h2" align="left" gutterBottom>
+                            Welcome to ODOC
+                        </Typography>
+                        <Typography variant="body1" align="left" paragraph>
+                            Empowering freelancers, employers, and employees with transparent and liberating smart contracts...
+                        </Typography>
+                    </header>
 
-            <FullWidthTabs />
+                    <FullWidthTabs />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <Box component="iframe" 
+                         src="https://www.youtube.com/embed/z3L_pdmDMe8" 
+                         width="100%" 
+                         height="88%" 
+                         title="What is Odoc" 
+                         frameBorder="0" 
+                         allowFullScreen 
+                         sx={{ my: 2 }}
+                    />
+                </Grid>
+            </Grid>
             <Divider sx={{ my: 4 }} />
 
             <Typography variant="h4" align="center" gutterBottom>

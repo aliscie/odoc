@@ -1,6 +1,7 @@
-import * as React from 'react';
-import { Box, AppBar, Tabs, Tab, Typography } from '@mui/material';
+import React from 'react';
+import { Box, AppBar, Tabs, Tab, Typography, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
 import SwipeableViews from 'react-swipeable-views';
+import { Search, Chat, CheckCircle, Description, Work, Notifications } from '@mui/icons-material';
 
 const FullWidthTabs = () => {
     const [value, setValue] = React.useState(0);
@@ -25,24 +26,54 @@ const FullWidthTabs = () => {
             </AppBar>
             <SwipeableViews index={value}>
                 <div>
-                    <Typography>1. Find people on discover, or post about your job offer</Typography>
-                    <Typography>2. Meet them and chat</Typography>
-                    <Typography>3. Agree with them</Typography>
-                    <Typography>4. Create file and smart contract in file</Typography>
-                    <Box component="iframe" 
-                         src="https://www.youtube.com/embed/z3L_pdmDMe8" 
-                         width="100%" 
-                         height="450" 
-                         title="What is Odoc" 
-                         frameBorder="0" 
-                         allowFullScreen 
-                         sx={{ my: 2 }}
-                    />
+                    <List>
+                        <ListItem>
+                            <ListItemIcon>
+                                <Search />
+                            </ListItemIcon>
+                            <ListItemText primary="Find people on Discover, or post about your job offer" />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon>
+                                <Chat />
+                            </ListItemIcon>
+                            <ListItemText primary="Meet them and chat" />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon>
+                                <CheckCircle />
+                            </ListItemIcon>
+                            <ListItemText primary="Agree with them" />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon>
+                                <Description />
+                            </ListItemIcon>
+                            <ListItemText primary="Create file and smart contract in file" />
+                        </ListItem>
+                    </List>
                 </div>
                 <div>
-                    <Typography>1. Post about your skills in discover, or find hiring posts</Typography>
-                    <Typography>2. They should create smart contract for you</Typography>
-                    <Typography>3. You will find it in your notifications</Typography>
+                    <List>
+                        <ListItem>
+                            <ListItemIcon>
+                                <Work />
+                            </ListItemIcon>
+                            <ListItemText primary="Post about your skills in Discover, or find hiring posts" />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon>
+                                <CheckCircle />
+                            </ListItemIcon>
+                            <ListItemText primary="They should create a smart contract for you" />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon>
+                                <Notifications />
+                            </ListItemIcon>
+                            <ListItemText primary="You will find it in your notifications" />
+                        </ListItem>
+                    </List>
                 </div>
             </SwipeableViews>
         </Box>
