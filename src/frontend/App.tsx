@@ -19,7 +19,9 @@ import MessagesDialog from "./components/chat/messages_box_dialog";
 import useSocket from "./websocket/use_socket";
 import {CircularProgress} from "@mui/material";
 import TopDialog from "./components/genral/TopDialog";
-import ThemeProvider from "@mui/material";
+
+// import "slick-carousel/slick/slick.css";
+// import "slick-carousel/slick/slick-theme.css";
 
 export let actor: ActorSubclass<_SERVICE> | undefined; // TODo maybe set the actor in redux
 

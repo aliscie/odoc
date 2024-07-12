@@ -1,10 +1,12 @@
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
 import React from 'react';
 import './styles/LandingPage.css';
-// import Card from "../components/genral/card";
-import CustomizedAccordions from "../components/genral/acordoin";
 import { Divider, Typography, Container, Grid, Box, Card, CardContent } from "@mui/material";
 import FullWidthTabs from "./welcome"; 
 import StyledAccordion from '../components/genral/styled_accordion';
+import Slider from "react-slick";
 
 const features = [
     {
@@ -140,6 +142,83 @@ let roadMap = [
 ]
 
 const LandingPage: React.FC = () => {
+
+    function NextArrow(props) {
+        const { className, style, onClick } = props;
+        return (
+            <div
+                className={className}
+                style={{
+                    ...style,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    background: '#19738D',
+                    borderRadius: '50%',
+                    right: '-20px',
+                    zIndex: 1,
+                    width: '40px',
+                    height: '40px',
+                }}
+                onClick={onClick}
+            >
+            </div>
+        );
+    }
+    
+    function PrevArrow(props) {
+        const { className, style, onClick } = props;
+        return (
+            <div
+                className={className}
+                style={{
+                    ...style,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    background: '#19738D',
+                    borderRadius: '50%',
+                    left: '-20px',
+                    zIndex: 1,
+                    width: '40px',
+                    height: '40px',
+                }}
+                onClick={onClick}
+            >
+            </div>
+        );
+    }
+
+    const settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 3000,
+        pauseOnHover: true,
+        cssEase: 'linear',
+        arrows: true,
+        nextArrow: <NextArrow />,
+        prevArrow: <PrevArrow />,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 600,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                }
+            }
+        ]
+    };
     
     return (
         <Container maxWidth="lg" className="landing-page">
@@ -181,9 +260,16 @@ const LandingPage: React.FC = () => {
                     Our Features
                 </Typography>
 
-                {features.map((feature, index) => (
-                    <StyledAccordion key={index} title={feature.title} content={feature.content} />
-                ))}
+                <Slider {...settings} className="feature-carousel">
+                    {features.map((features, index) => (
+                        <Card key={index} sx={{ margin: 1 }}>
+                            <CardContent>
+                                <Typography variant="h5">{features.title}</Typography>
+                                <Typography variant="body2">{features.content}</Typography>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </Slider>
             </section>
 
             <Divider sx={{ my: 4 }} />
