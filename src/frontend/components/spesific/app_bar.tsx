@@ -1,7 +1,7 @@
 import BasicMenu from "../genral/basic_menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import {handleRedux} from "../../redux/main";
-import {AppBar, Avatar, Button, Toolbar} from "@mui/material";
+import {AppBar, Avatar, Button, Toolbar, Box} from "@mui/material";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import MenuIcon from "@mui/icons-material/Menu";
 import {Route, Routes} from "react-router-dom";
@@ -23,11 +23,15 @@ import {convertToBlobLink} from "../../data_processing/image_to_vec";
 import {Notifications} from "../notifcations/notification";
 import ChatsComponent from "../chat_component";
 import Workspaces from "./work_spaces";
+import { useTheme, useMediaQuery } from "@mui/material";
 
 export function NavAppBar() {
     const dispatch = useDispatch();
     const {isNavOpen, isDarkMode, isLoggedIn, searchTool} = useSelector((state: any) => state.uiReducer);
     const {profile, current_file, files} = useSelector((state: any) => state.filesReducer);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
 
     async function loginProfile() {
         if (isLoggedIn) {
@@ -54,56 +58,61 @@ export function NavAppBar() {
     let image_link = profile ? convertToBlobLink(profile.photo) : '';
 
     return (
-        <AppBar position="fixed">
-            <Toolbar style={{transition: ' 0.4s', marginLeft: isNavOpen ? "250px" : 0}}>
-                <IconButton onClick={() => dispatch(handleRedux('TOGGLE_NAV'))}>
-                    {isNavOpen ? <MenuOpenIcon/> : <MenuIcon/>}
-                </IconButton>
-
-                <Routes>
-                    <Route path="*" element={<BreadPage/>}/>
-                </Routes>
-                <ShareFileButton/>
-                <IconButton color={'inherit'} onClick={() => dispatch(handleRedux('TOGGLE_DARK'))}>
-                    {isDarkMode ? <LightModeIcon/> : <DarkModeIcon/>}
-                </IconButton>
-
-                <Tooltip title={'You can press "Command+F"'} placement="top">
-                    <IconButton
-                        color={'inherit'}
-                        onClick={() => dispatch(handleRedux('SEARCH_TOOL'))}
-                        size="small"
-                    >
-                        {searchTool ? <CloseIcon/> : <SearchIcon/>}
+        <AppBar position="fixed" color="default" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
+            <Toolbar sx={{ transition: '0.4s', ml: isNavOpen ? "250px" : 0, justifyContent: 'space-between'}}>
+                 {/* Left Side: Navigation */}
+                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <IconButton edge="start" color="inherit" onClick={() => dispatch(handleRedux('TOGGLE_NAV'))}>
+                        {isNavOpen ? <MenuOpenIcon /> : <MenuIcon />}
                     </IconButton>
-                </Tooltip>
-                {isLoggedIn && <Notifications/>}
-                {isLoggedIn && <ChatsComponent/>}
-                {isLoggedIn ? (
-                    <BasicMenu
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'right',
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        options={[
-                            {content: "Profile", to: "Profile", icon: <Person2Icon/>},
-                            {content: 'Settings', icon: <SettingsIcon/>},
-                            {content: 'Logout', icon: <LogoutIcon/>, onClick: handleLogout},
-                        ]}
-                    >
-                        <Avatar style={{display: 'inline'}} alt="Remy Sharp" src={image_link}/>
-                    </BasicMenu>
-                ) : (
-                    <Button className={'login'} color={'inherit'} onClick={handleLogin}>Login</Button>
-                )}
+                    <Routes>
+                        <Route path="*" element={<BreadPage />} />
+                    </Routes>
+                    <ShareFileButton />
+                </Box>
 
-                {isLoggedIn && <Workspaces/>}
+                {/* Center: Search Bar */}
+                <Box sx={{ flexGrow: 1, mx: 2 }}>   
+                    <Tooltip title={'You can press "Command+F"'} placement="top">
+                        <IconButton color="inherit" onClick={() => dispatch(handleRedux('SEARCH_TOOL'))} size="small">
+                            {searchTool ? <CloseIcon /> : <SearchIcon />}
+                        </IconButton>
+                    </Tooltip>
+                </Box>
+              
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <IconButton color="inherit" onClick={() => dispatch(handleRedux('TOGGLE_DARK'))}>
+                        {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
+                    </IconButton>
 
-                {isLoggedIn && <MultiSaveButton/>}
+                    {isLoggedIn && <Notifications />}
+                    {isLoggedIn && <ChatsComponent />}
+
+                    {isLoggedIn ? (
+                        <BasicMenu
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            options={[
+                                { content: "Profile", to: "Profile", icon: <Person2Icon /> },
+                                { content: 'Settings', icon: <SettingsIcon /> },
+                                { content: 'Logout', icon: <LogoutIcon />, onClick: handleLogout },
+                            ]}
+                        >
+                            <Avatar alt="User Avatar" src={image_link} />
+                        </BasicMenu>
+                    ) : (
+                        <Button className="login" color="inherit" onClick={handleLogin}>Login</Button>
+                    )}
+
+                    {isLoggedIn && <Workspaces />}
+                    {isLoggedIn && <MultiSaveButton />}
+                </Box>
             </Toolbar>
         </AppBar>
     );
