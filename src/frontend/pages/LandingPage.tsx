@@ -6,7 +6,7 @@ import { Divider, Typography, Container, Grid, Box, Card, CardContent } from "@m
 import FullWidthTabs from "./welcome"; 
 import StyledAccordion from '../components/genral/styled_accordion';
 
-const data = [
+const features = [
     {
         title: "Smart contracts",
         content: "At ODOC, we are driven to address the struggles faced by freelancers worldwide, including those in war-affected regions like Iraq or even Russia nowadays, and individuals burdened by high commissions and taxes in countries like India. Our mission is to decentralize freelance contracts, making them transparent and liberating through the power of smart contracts. We envision a platform that provides unparalleled freedom and trust for freelancers."
@@ -140,6 +140,7 @@ let roadMap = [
 ]
 
 const LandingPage: React.FC = () => {
+    
     return (
         <Container maxWidth="lg" className="landing-page">
             <Grid container spacing={4}>
@@ -174,22 +175,27 @@ const LandingPage: React.FC = () => {
 
             <Divider sx={{ my: 4 }} />
 
-            <Typography variant="h4" align="center" gutterBottom>
-                Our Features
-            </Typography>
-            <div className="feature-accordions">
-                {data.map((item, index) => (
-                    <StyledAccordion key={index} title={item.title} content={item.content} />
+            
+            <section className="feature-accordions">
+                <Typography variant="h4" align="center" gutterBottom>
+                    Our Features
+                </Typography>
+
+                {features.map((feature, index) => (
+                    <StyledAccordion key={index} title={feature.title} content={feature.content} />
                 ))}
-            </div>
+            </section>
 
             <Divider sx={{ my: 4 }} />
 
             <section className="roadmap">
                 <Typography variant="h4" align="center" gutterBottom>
-                    Roadmap
-                </Typography>
-                <CustomizedAccordions data={roadMap} />
+                        Road Map
+                    </Typography>
+
+                {roadMap.map((item, index) => (
+                    <StyledAccordion key={index} title={item.title} content={item.content} isDone={item.is_done} />
+                ))}
             </section>
 
             <footer className="landing-footer">
