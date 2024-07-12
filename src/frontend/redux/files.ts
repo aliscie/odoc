@@ -16,7 +16,6 @@ import {actor} from "../App";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {getCurrentFile} from "./utls";
 import {Principal} from "@dfinity/principal";
-import {logger} from "../dev_utils/log_data";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
@@ -126,7 +125,7 @@ export function filesReducer(state: any = initialState, action: any) {
             };
 
         case 'ADD_FILE':
-            state.changes.files = [...state.changes.files, action.new_file]
+            state.changes.files.push(action.new_file);
             state.files = [...state.files, action.new_file]
             return {
                 ...state,
@@ -371,7 +370,7 @@ export function filesReducer(state: any = initialState, action: any) {
             });
             return {
                 ...state,
-                changes: {files: {}, contents: {}, contracts: {}},
+                changes: {files: [], contents: {}, contracts: {}, files_indexing: []},
                 contracts: normalize_contracts(converted_contracts)
             }
 
@@ -405,13 +404,15 @@ export function filesReducer(state: any = initialState, action: any) {
 
 
         case 'UPDATE_FILE_TITLE':
+            let updateed_file = {}
             state.files = state.files.map((file: FileNode) => {
                 if (file.id == action.id) {
                     file.name = action.title
+                    updateed_file = file;
                 }
                 return file
             })
-            // state.files[action.id].name = action.title;
+            state.changes.files.push(updateed_file)
             return {
                 ...state,
             }

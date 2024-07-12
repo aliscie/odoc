@@ -3,7 +3,7 @@ import MentionComponent from "./mention_component";
 import {Table, TableBody, TableCell, TableRow} from "@mui/material";
 import ContractView from "../views/contract_view";
 import SharesContractComponent from "../contracts/shares_contract";
-import SlateCustomContract from "../contracts/custom_contract/custom_contract";
+import SlateCustomContract from "../contracts/custom_contract/slate_custom_contract";
 
 export function EditorRenderer(props: any) {
 

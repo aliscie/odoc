@@ -142,7 +142,6 @@ function ExtendColumnsRows(payments: Array<CPayment>, columns: Array<CColumn>, r
                 })
             }
         });
-        console.log({extras})
         rows = rows.map((r: any) => {
             if (r.id === p.id) {
                 r = {...r, ...extras}

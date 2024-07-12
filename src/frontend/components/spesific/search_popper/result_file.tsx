@@ -1,4 +1,4 @@
-import {Divider, Typography} from "@mui/material";
+import {Divider} from "@mui/material";
 import EditorComponent from "../../editor_components/main";
 import * as React from "react";
 import {FileNode} from "../../../../declarations/backend/backend.did";
@@ -13,7 +13,7 @@ const resultFileContainerStyle: React.CSSProperties = {
     maxHeight: "200px",
     overflowY: "scroll",
     background: 'black',
-    border:"5px solid gray",
+    border: "5px solid gray",
 };
 
 // const editorContainerStyle: React.CSSProperties = {
@@ -27,11 +27,10 @@ function ResultFile(props: Props) {
     const {files, files_content} = useSelector(
         (state: any) => state.filesReducer
     );
-    let file: FileNode = files[props.file_id];
+    let file: FileNode = files.find((file: FileNode) => file.id == props.file_id);
 
     let title = file && file.name;
     let content = files_content[props.file_id];
-
     return (
         <div
             onMouseDown={() => {
@@ -44,7 +43,9 @@ function ResultFile(props: Props) {
             <EditorComponent
                 contentEditable={false}
                 editorKey={props.file_id}
-                content={[{type: "h1", children: [{text: title}]}]}
+                content={[
+                    {type: "h1", children: [{text: String(title)}]},
+                ]}
             />
             <div>
                 <EditorComponent

@@ -22,7 +22,7 @@ function useSearchFiles() {
             const content = file_content[1];
             for (let j = 0; j < content.length; j++) {
                 const content_node = content[j];
-                const content_text = content_node[1].text;
+                const content_text = content_node.text;
                 if (case_sensitive) {
                     if (content_text.includes(search_value)) {
                         search_res.push(file_id);
