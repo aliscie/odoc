@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -532,32 +532,5 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             }
         />
     );
-}
-
-export default function SlateCustomContract(props: any) {
-    const {contracts, current_file} = useSelector((state: any) => state.filesReducer);
-    // const contract: CustomContract = contracts[props.id];
-    const dispatch = useDispatch();
-    const [contract, setContract] = useState<CustomContract>(contracts[props.id]);
-    useEffect(() => {
-
-
-        (async () => {
-
-            // if (window.location.pathname.split("/").pop() === "share") {
-            if (!contract) {
-                let contract: undefined | { Ok: StoredContract } | { Err: string } = actor && current_file && await actor.get_contract(current_file.author, props.id);
-                if (contract && "Ok" in contract) {
-                    setContract(contract.Ok.CustomContract);
-                    dispatch(handleRedux("UPDATE_CONTRACT", {contract: contract.Ok}));
-                }
-            } else {
-                setContract(contracts[props.id]);
-
-            }
-        })()
-    }, [contracts])
-
-    return (contracts && <CustomContractComponent contract={contract}/>);
 }
 

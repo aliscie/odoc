@@ -34,7 +34,6 @@ const FileContentPage: React.FC<Props> = () => {
                     share_id: current_file.share_id || [],
                 };
                 dispatch(handleRedux('UPDATE_FILE_TITLE', {id: current_file.id, title}));
-                dispatch(handleRedux('FILE_CHANGES', {changes: file}));
             }
         }, 250),
         [dispatch, current_file]
