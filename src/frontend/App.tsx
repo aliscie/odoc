@@ -19,8 +19,7 @@ import MessagesDialog from "./components/chat/messages_box_dialog";
 import useSocket from "./websocket/use_socket";
 import {CircularProgress} from "@mui/material";
 import TopDialog from "./components/genral/TopDialog";
-import { ThemeProvider } from "@mui/material";
-import { createTheme } from "../frontend/theme";
+import ThemeProvider from "@mui/material";
 
 export let actor: ActorSubclass<_SERVICE> | undefined; // TODo maybe set the actor in redux
 
@@ -32,7 +31,6 @@ function App() {
 
     // Use a ref to track whether the WebSocket has already been set up
     // const isWebSocketSetup = useRef(false);
-    const theme = createTheme();
 
     useEffect(() => {
 
@@ -50,24 +48,28 @@ function App() {
     }, []);
 
     return (
-        <ThemeProvider theme={theme}>
-            {state ? <BrowserRouter>
-                <SearchPopper/>
-                <SnackbarProvider maxSnack={3}>
-                    <RegistrationForm/>
-                    <MessagesDialog/>
-                    <NavAppBar/>
-                    <TopDialog/>
-                    <NavBar>
-                        <Pages/>
-                    </NavBar>
-                </SnackbarProvider>
-            </BrowserRouter> : <CircularProgress
-                size="100px"
-                style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}/>}
-        </ThemeProvider>
-    )
-        ;
+        <>
+            {state ? (
+                <BrowserRouter>
+                    <SearchPopper />
+                    <SnackbarProvider maxSnack={3}>
+                        <RegistrationForm />
+                        <MessagesDialog />
+                        <NavAppBar />
+                        <TopDialog />
+                        <NavBar>
+                            <Pages />
+                        </NavBar>
+                    </SnackbarProvider>
+                </BrowserRouter>
+            ) : (
+                <CircularProgress
+                    size="100px"
+                    style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+                />
+            )}
+        </>
+    );
 }
 
 export default App;

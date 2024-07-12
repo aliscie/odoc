@@ -1,8 +1,8 @@
 import React from 'react';
 import './styles/LandingPage.css';
-import Card from "../components/genral/card";
+// import Card from "../components/genral/card";
 import CustomizedAccordions from "../components/genral/acordoin";
-import {Divider, Typography, Container, Grid, Box } from "@mui/material";
+import { Divider, Typography, Container, Grid, Box, Card, CardContent } from "@mui/material";
 import FullWidthTabs from "./welcome"; 
 import StyledAccordion from '../components/genral/styled_accordion';
 
@@ -143,34 +143,39 @@ const LandingPage: React.FC = () => {
     return (
         <Container maxWidth="lg" className="landing-page">
             <Grid container spacing={4}>
-                <Grid item xs={12} md={6}>
-                    <header className="landing-header">
-                        <Typography variant="h2" align="left" gutterBottom>
-                            Welcome to ODOC
-                        </Typography>
-                        <Typography variant="body1" align="left" paragraph>
-                            Empowering freelancers, employers, and employees with transparent and liberating smart contracts...
-                        </Typography>
-                    </header>
+                <Grid item xs={12}>
+                    <Card sx={{ borderRadius: 2, boxShadow: 3, overflow: 'hidden' }}>
+                        <CardContent>
+                            <header className="landing-header">
+                                <Typography variant="h2" align="left" gutterBottom>
+                                    Welcome to ODOC
+                                </Typography>
+                                <Typography variant="body1" align="left" paragraph>
+                                    Empowering freelancers, employers, and employees with transparent and liberating smart contracts...
+                                </Typography>
+                            </header>
 
-                    <FullWidthTabs />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <Box component="iframe" 
-                         src="https://www.youtube.com/embed/z3L_pdmDMe8" 
-                         width="100%" 
-                         height="88%" 
-                         title="What is Odoc" 
-                         frameBorder="0" 
-                         allowFullScreen 
-                         sx={{ my: 2 }}
-                    />
+                            <Box
+                                component="iframe"
+                                src="https://www.youtube.com/embed/z3L_pdmDMe8"
+                                width="100%"
+                                height="400px"
+                                title="What is Odoc"
+                                frameBorder="0"
+                                allowFullScreen
+                                sx={{ my: 2 }}
+                            />
+
+                            <FullWidthTabs />
+                        </CardContent>
+                    </Card>
                 </Grid>
             </Grid>
+
             <Divider sx={{ my: 4 }} />
 
             <Typography variant="h4" align="center" gutterBottom>
-                List of Features We Offer
+                Our Features
             </Typography>
             <div className="feature-accordions">
                 {data.map((item, index) => (
@@ -179,6 +184,7 @@ const LandingPage: React.FC = () => {
             </div>
 
             <Divider sx={{ my: 4 }} />
+
             <section className="roadmap">
                 <Typography variant="h4" align="center" gutterBottom>
                     Roadmap
@@ -188,7 +194,7 @@ const LandingPage: React.FC = () => {
 
             <footer className="landing-footer">
                 <Typography variant="body2" align="center" color="textSecondary">
-                    © 2023 ODOC. All rights reserved. Founded by Ali Al-Karaawi
+                    © 2024 ODOC. All rights reserved. Founded by Ali Al-Karaawi
                 </Typography>
             </footer>
         </Container>
