@@ -2,8 +2,9 @@ import React from 'react';
 import './styles/LandingPage.css';
 import Card from "../components/genral/card";
 import CustomizedAccordions from "../components/genral/acordoin";
-import {Divider} from "@mui/material";
-import FullWidthTabs from "./welcome";
+import {Divider, Typography, Container, Grid } from "@mui/material";
+import FullWidthTabs from "./welcome"; 
+import StyledAccordion from '../components/genral/styled_accordion';
 
 const data = [
     {
@@ -140,40 +141,42 @@ let roadMap = [
 
 const LandingPage: React.FC = () => {
     return (
-        <div className="landing-page">
-            <header>
-                <h1>Welcome to ODOC</h1>
-                <p>Empowering freelancers, employers and employees with transparent and liberating Smart-Contracts on
-                    the Blockchain. Odoc is
-                    all in one where you can manage your teams, tasks, notes, documentation, agreements, contracts and
-                    transactions. </p>
+        <Container maxWidth="lg" className="landing-page">
+            <header className="landing-header">
+                <Typography variant="h2" align="left" gutterBottom>
+                    Welcome to ODOC
+                </Typography>
+                <Typography variant="body1" align="left" paragraph>
+                    Empowering freelancers, employers, and employees with transparent and liberating smart contracts...
+                </Typography>
             </header>
-            {/*<TabsPanel*/}
-            {/*    items={[{label: "I'm hiring", value: <h1>You can create smart contract please watch the video</h1>}, {label: "I'm freelancer", value: <h1>You can receive payments</h1>}]}*/}
-            {/*/>*/}
-            <FullWidthTabs/>
-            <Divider/>
-            <h3>List of features we are offering.</h3>
-            <section className="features">
-                {data.map((card, index) => (
-                    <Card key={index} title={card.title}>
-                        {card.content}
-                    </Card>
-                ))}
 
-            </section>
-            <Divider/>
+            <FullWidthTabs />
+            <Divider sx={{ my: 4 }} />
+
+            <Typography variant="h4" align="center" gutterBottom>
+                List of Features We Offer
+            </Typography>
+            <div className="feature-accordions">
+                {data.map((item, index) => (
+                    <StyledAccordion key={index} title={item.title} content={item.content} />
+                ))}
+            </div>
+
+            <Divider sx={{ my: 4 }} />
             <section className="roadmap">
-                <h2>Roadmap</h2>
-                <ul>
-                    <CustomizedAccordions data={roadMap}/>
-                </ul>
+                <Typography variant="h4" align="center" gutterBottom>
+                    Roadmap
+                </Typography>
+                <CustomizedAccordions data={roadMap} />
             </section>
-            <footer>
-                <p>© 2023 ODOC. All rights reserved</p>
-                <p>Founded by Ali Al-Karaawi</p>
+
+            <footer className="landing-footer">
+                <Typography variant="body2" align="center" color="textSecondary">
+                    © 2023 ODOC. All rights reserved. Founded by Ali Al-Karaawi
+                </Typography>
             </footer>
-        </div>
+        </Container>
     );
 };
 

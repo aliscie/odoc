@@ -3,38 +3,30 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import CardActions from "@mui/material/CardActions";
-
-// const bull = (
-//     <Box
-//         component="span"
-//         sx={{display: 'inline-block', mx: '2px', transform: 'scale(0.8)'}}
-//     >
-//         •
-//     </Box>
-// );
+import CardActions from '@mui/material/CardActions';
 
 interface Props {
     children: React.ReactNode;
-    title: string,
-    actions: any;
+    title: string;
+    actions?: React.ReactNode;
 }
 
-export default function BasicCard(props: Props) {
+const BasicCard: React.FC<Props> = ({ children, title, actions }) => {
     return (
-        <Card sx={{minWidth: 275}}>
+        <Card sx={{ minWidth: 275, borderRadius: '12px', boxShadow: 2 }}>
             <CardContent>
-                {props.title &&
-                    <Typography variant="h5" component="div" textAlign="left"> {/* Set textAlign to 'left' */}
-                        {props.title}
-                    </Typography>}
-                <Typography variant="body2" textAlign="left"> {/* Set textAlign to 'left' */}
-                    {props.children}
+                {title && (
+                    <Typography variant="h5" component="div" textAlign="left">
+                        {title}
+                    </Typography>
+                )}
+                <Typography variant="body2" textAlign="left">
+                    {children}
                 </Typography>
             </CardContent>
-            <CardActions>
-                {props.actions}
-            </CardActions>
+            {actions && <CardActions>{actions}</CardActions>}
         </Card>
     );
-}
+};
+
+export default BasicCard;

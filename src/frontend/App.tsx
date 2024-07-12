@@ -5,7 +5,7 @@ import Pages from "./pages/main";
 import {BrowserRouter} from "react-router-dom";
 import {NavAppBar} from "./components/spesific/app_bar";
 import SearchPopper from "./components/spesific/search_popper";
-import Theme from "./components/genral/theme_provider";
+// import Theme from "./components/genral/theme_provider";
 import {SnackbarProvider} from "notistack";
 import RegistrationForm from "./components/spesific/registeration_form";
 import {handleRedux} from "./redux/main";
@@ -19,6 +19,8 @@ import MessagesDialog from "./components/chat/messages_box_dialog";
 import useSocket from "./websocket/use_socket";
 import {CircularProgress} from "@mui/material";
 import TopDialog from "./components/genral/TopDialog";
+import { ThemeProvider } from "@mui/material";
+import { createTheme } from "../frontend/theme";
 
 export let actor: ActorSubclass<_SERVICE> | undefined; // TODo maybe set the actor in redux
 
@@ -30,7 +32,7 @@ function App() {
 
     // Use a ref to track whether the WebSocket has already been set up
     // const isWebSocketSetup = useRef(false);
-
+    const theme = createTheme();
 
     useEffect(() => {
 
@@ -48,7 +50,7 @@ function App() {
     }, []);
 
     return (
-        <Theme>
+        <ThemeProvider theme={theme}>
             {state ? <BrowserRouter>
                 <SearchPopper/>
                 <SnackbarProvider maxSnack={3}>
@@ -63,7 +65,7 @@ function App() {
             </BrowserRouter> : <CircularProgress
                 size="100px"
                 style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}/>}
-        </Theme>
+        </ThemeProvider>
     )
         ;
 }

@@ -1,46 +1,56 @@
 import React from 'react';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {useSelector} from "react-redux";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useSelector } from "react-redux";
 
+const Theme = (props) => {
+    const { isDarkMode } = useSelector((state) => state.uiReducer);
 
-// window.matchMedia('(display-mode: standalone)').addEventListener('change', (evt) => {
-//     let displayMode = 'browser';
-//     if (evt.matches) {
-//         displayMode = 'standalone';
-//     }
-//     // Log display mode change to analytics
-//     console.log('DISPLAY_MODE_CHANGED', displayMode);
-// });
+    const theme = createTheme({
+        palette: {
+            mode: isDarkMode ? 'dark' : 'light',
+            primary: {
+                main: '#19738D', // Primary color
+            },
 
+            background: {
+                default: isDarkMode ? '#121212' : '#ffffff',
+                paper: isDarkMode ? '#1e1e1e' : '#ffffff',
+            },
+        },
+        typography: {
+            fontFamily: 'Inter, sans-serif',
+            h1: {
+                fontWeight: 600,
+            },
+            h2: {
+                fontWeight: 600,
+            },
+            body1: {
+                fontWeight: 400,
+            },
+        },
+        components: {
+            MuiButton: {
+                styleOverrides: {
+                    root: {
+                        borderRadius: 8, 
+                        textTransform: 'none',
+                    },
+                },
+            },
+            MuiCard: {
+                styleOverrides: {
+                    root: {
+                        borderRadius: 16,
+                    },
+                },
+            },
+        },
+    });
 
-const users = [
-    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: true},
-    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: true},
-    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: false},
-    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: true},
-    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: true},
-    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: false},
-    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: true},
-    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: true},
-    {name: 'Ali', image: 'https://i.pinimg.com/564x/55/1a/79/551a79b81ca3d42f9ef6437ecfad669a.jpg', is_active: false},
-];
-
-
-function Theme(props: any) {
-
-    let {isDarkMode} = useSelector((state: any) => state.uiReducer);
-    const darkTheme = createTheme({palette: {mode: 'dark'}});
-    const lightTheme = createTheme({palette: {mode: 'light'}});
     return (
-        <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+        <ThemeProvider theme={theme}>
             {props.children}
-            {/*<PwaDownloadPopup/>*/}
-            {/*<PersistentDrawerRight>*/}
-            {/*    <UserList users={users}/>*/}
-            {/*    <SwipeableTextMobileStepper/>*/}
-            {/*</PersistentDrawerRight>*/}
         </ThemeProvider>
     );
 }
