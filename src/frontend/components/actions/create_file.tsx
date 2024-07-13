@@ -1,14 +1,13 @@
-import {backend} from "../../backend_connect/main";
 import {handleRedux} from "../../redux/main";
 import React from "react";
-import {useDispatch} from "react-redux";
-import {useSnackbar} from "notistack";
-import {file_content_sample, note_page_content, randomString} from "../../data_processing/data_samples";
-import InputOption from "../genral/input_option";
-import {Button} from "@mui/material";
-import {FileNode} from "../../../declarations/user_canister/user_canister.did";
+import {useDispatch, useSelector} from "react-redux";
+import {file_content_sample, randomString} from "../../data_processing/data_samples";
+import {Button, Tooltip} from "@mui/material";
+import {FileNode} from "../../../declarations/backend/backend.did";
+import PostAddIcon from '@mui/icons-material/PostAdd';
 
 const CreateFile = () => {
+    const {profile} = useSelector((state: any) => state.filesReducer);
     const dispatch = useDispatch();
     // const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
@@ -18,16 +17,32 @@ const CreateFile = () => {
         // let res = await backend.create_file(value)
 
         let id = randomString();
-        let file: FileNode = {id, name: "NewName", parent: [], children: [], share_id: []};
-        dispatch(handleRedux("ADD", {data: file}))
+        let file: FileNode = {
+            id,
+            name: "Untitled",
+            parent: [],
+            children: [],
+            share_id: [],
+            author: profile.id,
+            users_permissions: [],
+            permission: {'None': null},
+            content_id: [],
+            workspace:"Default",
+        };
+        dispatch(handleRedux("ADD_FILE", {new_file: file}))
         dispatch(handleRedux("ADD_CONTENT", {id, content: file_content_sample}))
-        dispatch(handleRedux("FILE_CHANGES", {changes: file}));
+        // dispatch(handleRedux("FILE_CHANGES", {change: file}));
         // closeSnackbar(loading)
         // enqueueSnackbar('New file is created!', {variant: "success"});
     };
 
 
     // return (<InputOption   title={"note page"} tooltip={"hit enter to create"} onEnter={handleCreateFile}/>)
-    return (<Button onClick={() => handleCreateFile()}>New file</Button>)
+    return (
+        <Tooltip title="Create a new document" arrow>
+            <Button onClick={() => handleCreateFile()}>
+                <PostAddIcon/>
+            </Button>
+        </Tooltip>)
 }
 export default CreateFile

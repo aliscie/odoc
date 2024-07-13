@@ -1,28 +1,30 @@
 {
+  
+  "declarations": {
+    "output": "src/declarations",
+    "capabilities": [
+      "nodejs"
+    ]
+  },
   "canisters": {
-    "central_canister": {
-      "candid": "src/central_canister/central_canister.did",
-      "package": "central_canister",
-      "type": "rust"
-    },
-    "user_canister": {
-      "candid": "src/user_canister/user_canister.did",
-      "package": "user_canister",
-      "type": "rust"
-    },
     "internet_identity": {
-      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
-      "remote": {
+        "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+        "remote": {
         "id": {
-          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
         }
+        },
+        "type": "custom",
+        "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
       },
-      "type": "custom",
-      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
+    "backend": {
+      "candid": "src/backend/backend.did",
+      "package": "backend",
+      "type": "rust"
     },
     "frontend": {
       "dependencies": [
-        "user_canister"
+        "backend"
       ],
       "frontend": {
         "entrypoint": "src/frontend/public/index.html"
@@ -41,5 +43,5 @@
     }
   },
   "version": 1,
-  "dfx": "0.14.3"
+  "dfx": "0.17.0"
 }

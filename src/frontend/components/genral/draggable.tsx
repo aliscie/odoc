@@ -9,12 +9,13 @@ const DraggableItem = styled('div')({
 });
 
 interface DraggableItemProps {
+    index: number,
     id: string;
-    onDrop: (draggedId: string, draggedOverId: string, type: string) => void;
+    onDrop: (map: { draggedId: string; index: number; id: string; dragOverPosition: "middle" | "under"; type: string }) => void;
     preventDragUnder?: boolean;
 }
 
-const Draggable: React.FC<DraggableItemProps> = ({id, onDrop, preventDragUnder, children}) => {
+const Draggable: React.FC<DraggableItemProps> = ({index, id, onDrop, preventDragUnder, children}) => {
     const [dragging, setDragging] = useState(false);
     const [draggedOver, setDraggedOver] = useState(false);
     const [dragOverPosition, setDragOverPosition] = useState<'middle' | 'under'>('');
@@ -45,7 +46,7 @@ const Draggable: React.FC<DraggableItemProps> = ({id, onDrop, preventDragUnder, 
         } else {
             if (!preventDragUnder) {
                 setDragOverPosition('under');
-            } else {
+            } else {``
                 setDragOverPosition('middle');
             }
         }
@@ -62,7 +63,7 @@ const Draggable: React.FC<DraggableItemProps> = ({id, onDrop, preventDragUnder, 
         setDragOverPosition('');
         const draggedId = event.dataTransfer?.getData('text/plain'); // Retrieve the id of the dragged item
         if (draggedId && draggedId !== id) {
-            await onDrop(draggedId, id, dragOverPosition);
+            await onDrop({draggedId, id, dragOverPosition, type: "any", index});
         }
     };
 

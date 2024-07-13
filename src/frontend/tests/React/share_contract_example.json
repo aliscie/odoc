@@ -1,0 +1,79 @@
+{
+  "id": "42x2dy",
+  "type": "shares_contract",
+  "data": [],
+  "children": [
+    {
+      "id": "s3vsjb",
+      "type": "",
+      "data": [
+        {
+          "Table": {
+            "rows": [
+              {
+                "id": "trnk9l",
+                "contract": [
+                  {
+                    "SharesContract": "trnk9l"
+                  }
+                ],
+                "cells": []
+              }
+            ],
+            "columns": [
+              {
+                "id": "3slr2m",
+                "_type": {
+                  "Text": null
+                },
+                "field": "receiver",
+                "filters": [],
+                "permissions": [],
+                "dataValidator": [],
+                "editable": true,
+                "formula": []
+              },
+              {
+                "id": "wv2jii",
+                "_type": {
+                  "Text": null
+                },
+                "field": "accumulation",
+                "filters": [],
+                "permissions": [],
+                "dataValidator": [],
+                "editable": false,
+                "formula": []
+              },
+              {
+                "id": "8f0lon",
+                "_type": {
+                  "Text": null
+                },
+                "field": "share%",
+                "filters": [],
+                "permissions": [],
+                "dataValidator": [],
+                "editable": true,
+                "formula": []
+              },
+              {
+                "id": "tyt5xl",
+                "_type": {
+                  "Text": null
+                },
+                "field": "confirmed",
+                "filters": [],
+                "permissions": [],
+                "dataValidator": [],
+                "editable": false,
+                "formula": []
+              }
+            ]
+          }
+        }
+      ],
+      "text": ""
+    }
+  ]
+}

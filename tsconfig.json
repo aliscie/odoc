@@ -18,7 +18,17 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": [
+      "jest",
+      "node",
+      "react",
+      "react-dom",
+      "@testing-library/jest-dom",
+      "@testing-library/react",
+      "vitest/globals",
+      "redux-thunk"
+    ],
   },
   "include": [
     "src",

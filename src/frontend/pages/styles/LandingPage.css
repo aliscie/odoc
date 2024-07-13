@@ -1,6 +1,10 @@
+/* @import "~slick-carousel/slick/slick.css";
+@import "~slick-carousel/slick/slick-theme.css"; */
+
 .landing-page {
   text-align: center;
-  padding: 40px;
+  padding: 60px 20px;
+  /* background: linear-gradient(to bottom right, #f9f9f9, #ffffff); */
 }
 
 header {
@@ -8,46 +12,57 @@ header {
 }
 
 header h1 {
-  font-size: 36px;
+  font-size: 42px;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  color: #333;
 }
 
 header p {
-  font-size: 18px;
-  color: var(--color);
+  font-size: 20px;
+  color: #666;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
-  margin-bottom: 40px;
+  margin-bottom: 60px;
 }
 
 .feature {
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.feature:hover {
+  transform: translateY(-5px);
 }
 
 .feature h2 {
-  font-size: 24px;
+  font-size: 26px;
   margin-bottom: 10px;
+  color: #007BFF;
 }
 
 .feature p {
   font-size: 16px;
-  color: var(--color);
+  color: #444;
 }
 
 .roadmap {
-  margin-bottom: 40px;
+  margin-bottom: 60px;
 }
 
 .roadmap h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #333;
 }
 
 .roadmap ul {
@@ -58,11 +73,24 @@ header p {
 
 .roadmap li {
   font-size: 18px;
-  color: var(--color);
-  margin-bottom: 10px;
+  color: #444;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #f1f1f1;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.roadmap li:hover {
+  background: #e0e0e0;
 }
 
 footer {
-  font-size: 14px;
-  color: var(--color);
+  font-size: 16px;
+  color: #666;
+  margin-top: 40px;
+}
+
+footer p {
+  margin: 5px 0;
 }

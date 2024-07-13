@@ -39,7 +39,7 @@ const isDevelopment = process.env.NODE_ENV !== "production" || localEnv;
 
 initCanisterIds();
 
-const asset_entry = path.join("src", "frontend", "assets", "frontend", "index.html");
+// const asset_entry = path.join("src", "frontend", "assets", "frontend", "index.html");
 
 // List of all aliases for canisters
 // This will allow us to: import { canisterName } from "canisters/canisterName"
@@ -76,6 +76,30 @@ const canisterDefinitions = Object.entries(canisters).reduce(
 );
 
 export default defineConfig({
+    // test: {
+    //     environment: 'jsdom',
+    //     globals: true,
+    //     threads: false,
+    //     watch: true,
+    //     "compilerOptions": {
+    //         "types": ["vitest/globals"]
+    //     },
+    //     // include: ['**/__tests__/*.{js,tsx,ts}', "App.test.tsx"],
+    //     // globalSetup: ["./src/frontend/tests/React/setup.ts"],
+    //     setupFiles: './setup_tests.ts',
+    //     // reporters: ["default", {
+    //     //     async onWatcherRerun() {
+    //     //         await teardown();
+    //     //         await setup();
+    //     //     }
+    //     // }]
+    //     setupFilesAfterEnv: [
+    //         '@testing-library/jest-dom/extend-expect', // Ensure jest-dom extensions are loaded
+    //         './src/frontend/setupTests.ts',
+    //     ],
+
+
+    // },
     build: {
         outDir: "build",
     },
