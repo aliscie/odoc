@@ -58,7 +58,7 @@ export const features = [
     icon: <ViewIcon className="feature-card-icon" />,
   },
   {
-    title: "social platform",
+    title: "Social Platform",
     content: `Users can post about jobs they created or seek jobs.`,
     icon: <SocialIcon className="feature-card-icon" />,
   },

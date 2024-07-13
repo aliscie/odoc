@@ -1,19 +1,35 @@
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-import React from 'react';
+import React, { useState } from 'react';
 import './styles/LandingPage.css';
-import { Divider, Typography, Container, Grid, Box, Card, CardContent } from "@mui/material";
+import { Button, Divider, Typography, Container, Grid, Box, Card, CardContent } from "@mui/material";
 import FullWidthTabs from "./welcome"; 
 import StyledAccordion from '../components/genral/styled_accordion';
 import Slider from "react-slick";
 import { features } from '../data/odoc_features';
 import { roadMap } from '../data/odoc_roadmap';
-import { IconButton } from '@mui/material';
-import { ArrowForward } from '@mui/icons-material';
-import { ArrowBack } from '@mui/icons-material';
+import FeatureModal from '../components/genral/feature_modal';
+
+interface Features {
+    title: string;
+    content: string;
+    icon: JSX.Element;
+}
 
 const LandingPage: React.FC = () => {
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedFeature, setSelectedFeature] = useState<Features | null>(null);
+
+    const handleClickOpen = (feature: Features) => {
+        setSelectedFeature(feature);
+        setOpenModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        setSelectedFeature(null);
+    };
 
     const settings = {
         dots: true,
@@ -26,13 +42,11 @@ const LandingPage: React.FC = () => {
         pauseOnHover: true,
         cssEase: 'linear',
         arrows: true,
-        nextArrow: <ArrowForward />,
-        prevArrow: <ArrowBack />,
         responsive: [
             {
                 breakpoint: 1024,
                 settings: {
-                    slidesToShow: 2,
+                    slidesToShow: 3,
                     slidesToScroll: 1,
                 }
             },
@@ -81,7 +95,7 @@ const LandingPage: React.FC = () => {
             <Divider sx={{ my: 4 }} />
 
             
-            <section className="feature-accordions">
+            <section className="features-section">
                 <Typography variant="h4" align="center" gutterBottom>
                     Our Features
                 </Typography>
@@ -90,9 +104,16 @@ const LandingPage: React.FC = () => {
                     {features.map((feature, index) => (
                         <Card key={index} className="feature-card" sx={{ margin: 1 }}>
                             <CardContent className="feature-card-content">
-                                {feature.icon}
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '16px' }}>
+                                    {feature.icon}
+                                </div>
                                 <Typography variant="h5" className="feature-card-title">{feature.title}</Typography>
-                                <Typography variant="body2" className="feature-card-body">{feature.content}</Typography>
+                                <Typography variant="body2" className="feature-card-body">
+                                    {feature.content.length > 100 ? `${feature.content.substring(0, 70)}...` : feature.content}
+                                </Typography>
+                                <Button variant="outlined" color="primary" sx={{ marginTop: 2, marginInline: 7 }}  onClick={() => handleClickOpen(feature)}>
+                                    Learn More
+                                </Button>
                             </CardContent>
                         </Card>
                     ))}
@@ -116,6 +137,14 @@ const LandingPage: React.FC = () => {
                     © 2024 ODOC. All rights reserved. Founded by Ali Al-Karaawi
                 </Typography>
             </footer>
+
+            <FeatureModal
+                open={openModal}
+                handleClose={handleCloseModal}
+                title={selectedFeature?.title || ''}
+                content={selectedFeature?.content || ''}
+                icon={selectedFeature?.icon || null}
+            />
         </Container>
     );
 };
