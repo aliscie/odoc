@@ -1,0 +1,326 @@
+
+name: Odoc
+
+
+
+description: Odoco is a decentralized documentation platform for writing documents and smart contracts. For example, as documents you can write articles, books, courses with videos. A contract example, is a share contract where you can write who own how much of a specific payment.
+
+
+Principals: []
+
+
+
+
+logo: ~
+
+
+
+url: ~
+
+
+
+NnsProposal:
+    
+    title: ~
+
+    
+    
+    url: ~
+
+    
+    summary: ~
+
+
+
+
+fallback_controller_principals: []
+
+
+
+
+
+
+
+
+dapp_canisters: []
+
+
+
+Token:
+    
+    
+    name: ~
+
+    
+    
+    symbol: ~
+
+    
+    
+    transaction_fee: ~
+
+    
+    
+    
+    logo: ~
+
+
+
+
+Proposals:
+    
+    
+    rejection_fee: ~
+
+    
+    
+    
+    
+    initial_voting_period: ~
+
+
+        
+    
+        
+    maximum_wait_for_quiet_deadline_extension: ~
+
+
+Neurons:
+    
+    
+    minimum_creation_stake: ~
+
+
+Voting:
+    
+    
+        
+    
+        
+    
+    minimum_dissolve_delay: ~
+
+    
+    
+    
+    
+    
+    MaximumVotingPowerBonuses:
+        
+        
+        
+        
+        
+                
+        
+        
+        
+        
+        
+        
+        
+        
+                
+        
+        
+        DissolveDelay:
+            
+            
+            
+            duration: ~
+            
+            
+            
+            
+            
+            bonus: ~
+
+        
+        
+        
+        
+        
+        
+                
+        
+        
+        
+        
+        
+        
+        
+        
+                
+        
+        Age:
+            
+            
+            
+            
+            
+            duration: ~
+            
+            
+            
+            
+            
+            bonus: ~
+
+    
+        
+    
+    
+    
+    
+        
+    
+    
+    
+        
+    
+        
+    
+    RewardRate:
+        
+        
+        initial: ~
+
+        
+        
+        
+        
+        final: ~
+
+        
+        
+                
+                
+        transition_duration: ~
+
+
+
+
+
+
+
+
+
+
+
+
+Distribution:
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        
+    
+    
+    
+    
+    
+    Neurons: []
+    
+    InitialBalances:
+        
+        
+        
+        
+        governance: ~
+
+        
+        
+        
+        swap: ~
+
+    
+    
+    total: ~
+
+
+
+
+
+Swap:
+    
+    
+    
+    
+    
+    minimum_participants: ~
+
+    
+    
+    
+    
+    
+    minimum_icp: ~
+
+    
+    
+    
+    
+    
+    
+    
+    maximum_icp: ~
+
+    
+    
+    
+    minimum_participant_icp: ~
+
+    
+    
+    
+    maximum_participant_icp: ~
+
+    
+    
+        
+    
+    
+
+    
+        
+    
+        
+    
+
+    
+    
+    
+    VestingSchedule:
+        
+        
+        
+        
+        events: ~
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        interval: ~
+
+
+    
+    
+    duration: ~
+
+    
+    
+    
+    neurons_fund_investment_icp: ~

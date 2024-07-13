@@ -6,7 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 interface MenuOption {
     content: any;
     icon?: React.ReactNode;
-    handleClick?: (e?: any) => void;
+    Click?: (e?: any) => void;
     preventClose?: boolean;
 
 }
@@ -14,9 +14,10 @@ interface MenuOption {
 interface BasicMenuProps {
     options: MenuOption[];
     children: React.ReactNode;
+    SelectOption?: (option: any) => void;
 }
 
-const BasicMenu: React.FC<BasicMenuProps> = ({style, options, children}) => {
+const BasicMenu: React.FC<BasicMenuProps> = ({SelectOption, style, options, children}) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -49,7 +50,8 @@ const BasicMenu: React.FC<BasicMenuProps> = ({style, options, children}) => {
             >
                 {options.map((option, index, preventClose) => (
                     <MenuItem key={index} onClick={async (e: any) => {
-                        option.handleClick && await option.handleClick(e);
+                        SelectOption && await SelectOption(option);
+                        option.Click && await option.Click(option.content);
                         !preventClose && handleClose()
                     }}>
                         {option.icon && option.icon}

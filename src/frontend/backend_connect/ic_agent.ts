@@ -1,9 +1,10 @@
-import {AuthClient} from "@dfinity/auth-client";
 import {Actor, HttpAgent} from "@dfinity/agent";
-import {canisterId as userCanisterId, idlFactory} from "../../declarations/user_canister";
-import {canisterId as identityCanisterId} from "../../declarations/internet_identity";
+import {canisterId as backendCanisterId, idlFactory} from "../../declarations/backend";
+import {AuthClient} from "@dfinity/auth-client";
 
 let backendActor, loading = false
+
+// console.log("Backend cnaister Id: ", userCanisterId);
 
 const createActor = (canisterId, options = {}) => {
     const agent = options.agent || new HttpAgent({...options.agentOptions});
@@ -17,9 +18,10 @@ const createActor = (canisterId, options = {}) => {
     // Fetch root key for certificate validation during development
     if (import.meta.env.VITE_DFX_NETWORK !== "ic") {
         agent.fetchRootKey().catch((err) => {
-            console.warn(
+            console.error(
                 "Unable to fetch root key. Check to ensure that your local replica is running"
             );
+            console.error("------------------ root key error ------------------");
             console.error(err);
         });
     }
@@ -36,18 +38,22 @@ const createActor = (canisterId, options = {}) => {
 
 
 export const get_user_actor = async () => {
+    let host = "https://ic0.app";
+    if (import.meta.env.VITE_DFX_NETWORK !== "ic") {
+        host = import.meta.env.VITE_IC_HOST;
+    };
     await new Promise(resolve => !loading && resolve());
     loading = true
 
     if (!backendActor) {
         const authClient = await AuthClient.create();
         const identity = await authClient.getIdentity();
-        backendActor = createActor(userCanisterId, {
+        backendActor = createActor(backendCanisterId, {
             agentOptions: {
                 identity,
-                host: window.location.href,
+                host,
             }
-        });
+        });``
         // }
     }
 
@@ -59,7 +65,7 @@ function get_identity_url() {
     let identityProvider = "https://identity.ic0.app/#authorize";
     if (import.meta.env.VITE_DFX_NETWORK != "ic") {
         let port = import.meta.env.VITE_DFX_PORT;
-        identityProvider = `http://${identityCanisterId}.localhost:${port}/#authorize`
+        identityProvider = `http://${import.meta.env.VITE_INTERNET_IDENTITY}.localhost:${port}`
     }
     return identityProvider
 }
@@ -86,13 +92,23 @@ export async function is_logged() {
 }
 
 export async function logout() {
-    if (!(await is_logged())) {
-        const authClient = await AuthClient.create();
-        await authClient.logout()
-        window.location.reload()
-    }
+    // if (!(await is_logged())) {
+    const authClient = await AuthClient.create();
+    await authClient.logout()
+    window.location.reload()
+    // }
 
 }
 
+export async function get_id() {
+    const authClient = await AuthClient.create();
 
-// export const actor = user_canister;
+    if (await authClient.isAuthenticated()) {
+        const identity = await authClient.getIdentity();
+        return identity.getPrincipal().toText(); // Convert Principal to string
+    }
+
+    // Handle the case where the user is not authenticated
+    console.error("User is not authenticated.");
+    return null;
+}

@@ -27,12 +27,14 @@ function LoaderButton(props: LoaderButtonProps) {
     }
 
     return (<LoadingButton
+        color={props.color}
         loading={loading}
         disabled={props.disabled}
         // loadingPosition="start"
         // startIcon={<SaveIcon/>}
         onClick={handleClick}
         variant="text"
+
     >
         {props.children}
     </LoadingButton>)

@@ -7,12 +7,13 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import Collapse from "@mui/material/Collapse";
 import List from "@mui/material/List";
 import {NestedDataItem} from "./nest_list";
-import ContextMenu from "../../genral/context_menu";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../../redux/main";
 import DeleteFile from "../../actions/delete_file";
 import Draggable from "../../genral/draggable";
-import {actor} from "../../../App";
+import ShareIcon from '@mui/icons-material/Share';
+import ChangeWorkSpace from "../../actions/change_work_space_file";
+import ContextMenu from "../../genral/context_menu";
 
 interface ItemProps {
     data: Record<number, NestedDataItem>; // Use Record<number, NestedDataItem> instead of any
@@ -23,7 +24,9 @@ interface ItemProps {
     isChild?: boolean;
 }
 
-const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handleClick, path = null, pl = 1}) => {
+const DocComponent: React.FC<ItemProps> = ({data, item, index, openItems, handleClick, path = null, pl = 1}) => {
+    const {profile} = useSelector((state: any) => state.filesReducer);
+
     const dispatch = useDispatch();
 
     const html_file_id = `file${item.id}`;
@@ -35,7 +38,7 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
         dispatch(handleRedux("CURRENT_FILE", {file: item}));
     };
 
-    path = path ? path : item.name;
+    path = path ? path : item.id;
     path = path && path.replace(/\s+/g, '_').toLowerCase();
     path = path && path.replaceAll(".", "")
 
@@ -44,28 +47,29 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
         //     content: <RenameFile item={item}/>,
         //     preventClose: true,
         // },
-        {content: <DeleteFile item={item}/>},
+        {content: <DeleteFile item={item}/>, preventClose: true,},
+        {content: <ChangeWorkSpace item={item}/>},
     ]
 
-    const handleDrop: any = async (dropped, droppedOver, type) => {
-        console.log("dropped", {dropped, droppedOver, type})
-        let id = dropped;
-        let parent = droppedOver
-        console.log({id, parent})
-        dispatch(handleRedux("CHANGE_FILE_PARENT", {id, parent}));
+    const handleDrop: any = async ({draggedId, id, dragOverPosition, type, index}) => {
+        dispatch(handleRedux("CHANGE_FILE_PARENT", {position: dragOverPosition, id: draggedId, parent: [id], index}));
     };
+
     return (
         <>
             <Link to={path}>
                 <ContextMenu options={options}>
                     <Draggable
+                        index={index}
                         id={item.id}
                         onDrop={handleDrop}
                     >
                         <ListItemButton
                             id={html_file_id} onClick={handleItemClick} sx={{pl}}>
                             {hasChildren && (isOpen ? <ExpandLess/> : <ExpandMore/>)}
-                            <ListItemText primary={item.name}/>
+                            <ListItemText primary={<>
+                                {item.name} {item.author != profile.id && <ShareIcon size={"small"}/>}
+                            </>}/>
                         </ListItemButton>
                     </Draggable>
                 </ContextMenu>
@@ -74,11 +78,11 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
                 <Collapse in={isOpen} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         {[...item.children].map((childId, childIndex) => {
-                            const childItem = data[childId];
+                            const childItem = data.find(f => f.id == childId)
                             if (childItem) {
                                 return (
-                                    <ItemComponent
-                                        path={path + "/" + childItem.name}
+                                    <DocComponent
+                                        path={path + "/" + childItem.id}
                                         key={childItem.id}
                                         data={data}
                                         item={childItem}
@@ -97,4 +101,4 @@ const ItemComponent: React.FC<ItemProps> = ({data, item, index, openItems, handl
         </>
     );
 };
-export default ItemComponent;
+export default DocComponent;

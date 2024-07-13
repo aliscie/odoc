@@ -4,11 +4,11 @@ import LoaderButton from "../../../components/genral/loader_button";
 import {handleRedux} from "../../../redux/main";
 import {actor} from "../../../App";
 
-function Deposit(props: any) {
+function Deposit (props: any) {
     const dispatch = useDispatch();
 
     async function handleDeposit() {
-        let res = await actor.deposit_usdt(100);
+        let res = actor && await actor.deposit_usdt(Number(100));
         dispatch(handleRedux("UPDATE_BALANCE", {balance: res.Ok}));
         if ("Ok" in res) {
             dispatch(handleRedux("UPDATE_BALANCE", {balance: res.Ok}));

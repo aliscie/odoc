@@ -1,7 +1,7 @@
 import * as React from "react";
 import {styled} from "@mui/system";
 import {Button, Tooltip, tooltipClasses, TooltipProps} from "@mui/material";
-import ClickAwayListener from "@mui/base/ClickAwayListener";
+import { ClickAwayListener } from '@mui/base';
 
 function DialogOver({DialogContent, ...props}: any) {
 
@@ -37,9 +37,9 @@ function DialogOver({DialogContent, ...props}: any) {
     return <HtmlTooltip arrow open={open} title={<Dialog/>}>
         <Button
             color={"inherit"}
+            // variant="text"
             {...props}
             onClick={handleClick}
-            variant="text"
         >
             {props.children}
         </Button>

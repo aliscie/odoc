@@ -9,6 +9,7 @@ interface MenuOption {
     icon?: React.ReactNode;
     onClick?: () => void;
     to?: String;
+    pure?: boolean;
 }
 
 interface BasicMenuProps {
@@ -54,6 +55,9 @@ const BasicMenu: React.FC<BasicMenuProps> = ({options, children}) => {
                 }}
             >
                 {options.map((option, index) => {
+                    if (option.pure) {
+                        return option.content
+                    }
                     let item = <MenuItem
                         key={index}
                         onClick={() => handleOptionClick(option)}
@@ -61,7 +65,7 @@ const BasicMenu: React.FC<BasicMenuProps> = ({options, children}) => {
                         {option.icon && option.icon}
                         {option.content}
                     </MenuItem>;
-                    option.to ? item = <Link to={option.to}>{item}</Link> : null;
+                    option.to ? item = <Link key={index} to={option.to}>{item}</Link> : null;
                     return item;
                 })}
             </Menu>

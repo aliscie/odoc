@@ -1,0 +1,439 @@
+type ActionRating = record {
+  id : text;
+  action_type : ActionType;
+  date : float64;
+  received_promises : float64;
+  spent : float64;
+  rating : float64;
+  received : float64;
+  promises : float64;
+};
+type ActionType = variant { Share : SharePayment; Payment : CPayment };
+type AppMessage = record {
+  "text" : text;
+  notification : opt Notification;
+  timestamp : nat64;
+};
+type CCell = record { field : text; value : text };
+type CColumn = record {
+  id : text;
+  field : text;
+  formula_string : text;
+  column_type : text;
+  filters : vec Filter;
+  permissions : vec PermissionType;
+  headerName : text;
+  editable : bool;
+  deletable : bool;
+};
+type CContract = record {
+  id : text;
+  creator : principal;
+  date_created : float64;
+  name : text;
+  rows : vec CRow;
+  columns : vec CColumn;
+};
+type CPayment = record {
+  id : text;
+  status : PaymentStatus;
+  date_created : float64;
+  date_released : float64;
+  cells : vec CCell;
+  contract_id : text;
+  sender : principal;
+  amount : float64;
+  receiver : principal;
+};
+type CRow = record { id : text; cells : vec CCell };
+type CanisterOutputCertifiedMessages = record {
+  messages : vec CanisterOutputMessage;
+  cert : vec nat8;
+  tree : vec nat8;
+  is_end_of_queue : bool;
+};
+type CanisterOutputMessage = record {
+  key : text;
+  content : vec nat8;
+  client_key : ClientKey;
+};
+type CanisterWsCloseArguments = record { client_key : ClientKey };
+type CanisterWsGetMessagesArguments = record { nonce : nat64 };
+type CanisterWsMessageArguments = record { msg : WebsocketMessage };
+type CanisterWsOpenArguments = record {
+  gateway_principal : principal;
+  client_nonce : nat64;
+};
+type Chat = record {
+  id : text;
+  creator : principal;
+  members : vec principal;
+  messages : vec Message;
+  name : text;
+  admins : vec principal;
+  workspace : text;
+};
+type ClientKey = record { client_principal : principal; client_nonce : nat64 };
+type Column = record {
+  id : text;
+  _type : text;
+  field : text;
+  filters : vec Filter;
+  permissions : vec PermissionType;
+  dataValidator : opt text;
+  editable : bool;
+  formula : opt Formula;
+};
+type ContentData = variant { Comment : text; Image : vec nat64; Table : Table };
+type ContentNode = record {
+  id : text;
+  _type : text;
+  data : opt ContentData;
+  "text" : text;
+  children : vec text;
+  language : text;
+  parent : opt text;
+};
+type Contract = variant { SharesContract : text };
+type ContractNotification = record { contract_type : text; contract_id : text };
+type ContractPermissionType = variant {
+  Add : principal;
+  Edit : principal;
+  View : principal;
+  AnyOneView;
+  AnyOneEdite;
+  AnyOneAdd;
+};
+type CustomContract = record {
+  id : text;
+  permissions : vec ContractPermissionType;
+  creator : principal;
+  date_created : float64;
+  payments : vec CPayment;
+  name : text;
+  formulas : vec Formula;
+  contracts : vec CContract;
+  date_updated : float64;
+  promises : vec CPayment;
+};
+type Exchange = record {
+  to : text;
+  _type : ExchangeType;
+  date_created : float64;
+  from : text;
+  amount : float64;
+};
+type ExchangeType = variant { Withdraw; Deposit; LocalSend; LocalReceive };
+type Execute = variant { TransferNft; TransferToken; TransferUsdt : CPayment };
+type FEChat = record {
+  id : text;
+  creator : UserFE;
+  members : vec principal;
+  messages : vec Message;
+  name : text;
+  admins : vec UserFE;
+};
+type FileIndexing = record { id : text; new_index : nat64; parent : opt text };
+type FileNode = record {
+  id : text;
+  permission : ShareFilePermission;
+  content_id : opt text;
+  share_id : opt text;
+  name : text;
+  children : vec text;
+  author : text;
+  users_permissions : vec record { principal; ShareFilePermission };
+  workspace : text;
+  parent : opt text;
+};
+type Filter = record {
+  name : text;
+  operations : vec Operation;
+  formula : opt text;
+};
+type Formula = record { column_id : text; execute : Execute };
+type Friend = record { sender : User; confirmed : bool; receiver : User };
+type FriendRequestNotification = record { friend : Friend };
+type InitialData = record {
+  FilesContents : opt vec record { text; vec ContentNode };
+  Contracts : vec record { text; StoredContract };
+  Files : vec FileNode;
+  Friends : vec Friend;
+  Profile : User;
+  DiscoverUsers : vec record { text; User };
+  Wallet : Wallet;
+};
+type Message = record {
+  id : text;
+  date : nat64;
+  sender : principal;
+  seen_by : vec principal;
+  message : text;
+  chat_id : text;
+};
+type NoteContent = variant {
+  CustomContract : record { text; CPayment };
+  ContractUpdate : ContractNotification;
+  FriendRequest : FriendRequestNotification;
+  AcceptFriendRequest;
+  ApproveShareRequest : text;
+  CPaymentContract : record { CPayment; PaymentAction };
+  Unfriend;
+  ShareRequestApplied : SharesContract;
+  ShareRequestApproved : SharesContract;
+  ConformShare : text;
+  SharePayment : SharesContract;
+  ApplyShareRequest : text;
+  NewMessage : Message;
+  RemovedFromChat : text;
+};
+type Notification = record {
+  id : text;
+  is_seen : bool;
+  content : NoteContent;
+  time : float64;
+  sender : principal;
+  receiver : principal;
+};
+type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
+type PaymentAction = variant {
+  RequestCancellation : CPayment;
+  Released;
+  Objected;
+  Accepted;
+  Update;
+  Cancelled;
+  Promise;
+};
+type PaymentStatus = variant {
+  None;
+  RequestCancellation;
+  Released;
+  Objected : text;
+  Confirmed;
+  ConfirmedCancellation;
+  ApproveHighPromise;
+  HighPromise;
+};
+type PermissionType = variant {
+  Edit : principal;
+  View : principal;
+  AnyOneView;
+  AnyOneEdite;
+};
+type Post = record {
+  id : text;
+  creator : text;
+  date_created : nat64;
+  votes_up : vec principal;
+  tags : vec text;
+  content_tree : vec ContentNode;
+  votes_down : vec principal;
+};
+type PostUser = record {
+  id : text;
+  creator : UserFE;
+  date_created : nat64;
+  votes_up : vec principal;
+  tags : vec text;
+  content_tree : vec ContentNode;
+  votes_down : vec principal;
+};
+type Rating = record {
+  id : text;
+  date : float64;
+  user_id : principal;
+  comment : text;
+  rating : float64;
+};
+type RegisterUser = record {
+  name : opt text;
+  description : opt text;
+  photo : opt vec nat8;
+};
+type Result = variant { Ok : User; Err : text };
+type Result_1 = variant { Ok; Err : text };
+type Result_10 = variant { Ok; Err };
+type Result_11 = variant { Ok : WorkSpace; Err : text };
+type Result_12 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
+type Result_2 = variant { Ok : text; Err : text };
+type Result_3 = variant { Ok : float64; Err : text };
+type Result_4 = variant { Ok : StoredContract; Err : text };
+type Result_5 = variant { Ok : InitialData; Err : text };
+type Result_6 = variant { Ok : Post; Err : text };
+type Result_7 = variant { Ok : ShareFile; Err : text };
+type Result_8 = variant {
+  Ok : record { FileNode; vec ContentNode };
+  Err : text;
+};
+type Result_9 = variant { Ok : UserProfile; Err : text };
+type Row = record {
+  id : text;
+  contract : opt Contract;
+  cells : opt vec record { text; text };
+};
+type Share = record {
+  extra_cells : vec record { text; text };
+  share_contract_id : text;
+  accumulation : nat64;
+  share : nat64;
+  confirmed : bool;
+  receiver : principal;
+};
+type ShareFile = record { id : text; owner : principal };
+type ShareFileInput = record {
+  id : text;
+  permission : ShareFilePermission;
+  owner : principal;
+  users_permissions : vec record { principal; ShareFilePermission };
+};
+type ShareFilePermission = variant { CanComment; None; CanView; CanUpdate };
+type SharePayment = record { sender : principal; amount : nat64 };
+type SharePaymentOption = record {
+  id : text;
+  title : text;
+  date : text;
+  description : text;
+  amount : nat64;
+};
+type ShareRequest = record {
+  id : text;
+  requester : principal;
+  shares : vec Share;
+  is_applied : bool;
+  name : text;
+  approvals : vec principal;
+};
+type SharesContract = record {
+  payment_options : vec SharePaymentOption;
+  shares : vec Share;
+  payments : vec SharePayment;
+  contract_id : text;
+  author : text;
+  shares_requests : vec record { text; ShareRequest };
+};
+type StoredContract = variant {
+  CustomContract : CustomContract;
+  SharesContract : SharesContract;
+};
+type Table = record { rows : vec Row; columns : vec Column };
+type User = record {
+  id : text;
+  name : text;
+  description : text;
+  photo : vec nat8;
+};
+type UserFE = record { id : text; name : text };
+type UserProfile = record {
+  id : principal;
+  actions_rate : float64;
+  balance : float64;
+  rates_by_actions : vec ActionRating;
+  name : text;
+  description : text;
+  total_debt : float64;
+  spent : float64;
+  rates_by_others : vec Rating;
+  users_rate : float64;
+  users_interacted : float64;
+  photo : vec nat8;
+  debts : vec text;
+  received : float64;
+};
+type Wallet = record {
+  balance : float64;
+  owner : text;
+  total_debt : float64;
+  spent : float64;
+  exchanges : vec Exchange;
+  debts : vec record { text; float64 };
+  received : float64;
+};
+type WebsocketMessage = record {
+  sequence_num : nat64;
+  content : vec nat8;
+  client_key : ClientKey;
+  timestamp : nat64;
+  is_service_message : bool;
+};
+type WorkSpace = record {
+  id : text;
+  files : vec text;
+  creator : principal;
+  members : vec principal;
+  chats : vec text;
+  name : text;
+  admins : vec principal;
+};
+service : () -> {
+  accept_friend_request : (text) -> (Result);
+  apply_request : (text, text, text) -> (Result_1);
+  approve_high_promise : (CPayment) -> (Result_1);
+  approve_request : (text, text, text) -> (Result_1);
+  cancel_friend_request : (text) -> (Result);
+  confirmed_c_payment : (CPayment) -> (Result_1);
+  confirmed_cancellation : (CPayment) -> (Result_1);
+  conform_share : (text, text, text) -> (Result_1);
+  content_updates : (text, opt text, text) -> (Result_2);
+  counter : () -> (nat64) query;
+  create_new_file : (text, opt text) -> (FileNode);
+  create_share_contract : (vec Share) -> (Result_2);
+  delete_custom_contract : (text) -> (Result_1);
+  delete_file : (text) -> (opt FileNode);
+  delete_post : (text) -> (Result_1);
+  deposit_usdt : (float64) -> (Result_3);
+  get_all_files : () -> (vec FileNode) query;
+  get_all_files_content : () -> (vec record { text; vec ContentNode }) query;
+  get_all_users : () -> (vec record { text; User }) query;
+  get_chats_notifications : () -> (vec Message) query;
+  get_contract : (text, text) -> (Result_4) query;
+  get_file : (text) -> (opt FileNode) query;
+  get_file_content : (text) -> (opt vec ContentNode) query;
+  get_filtered_posts : (opt vec text, opt text) -> (vec PostUser) query;
+  get_friends : () -> (vec Friend) query;
+  get_initial_data : () -> (Result_5) query;
+  get_my_chats : () -> (vec FEChat) query;
+  get_post : (text) -> (Result_6) query;
+  get_posts : (nat64, nat64) -> (vec PostUser) query;
+  get_share_file : (text) -> (Result_7) query;
+  get_shared_file : (text) -> (Result_8);
+  get_user : (text) -> (Result) query;
+  get_user_notifications : () -> (vec Notification) query;
+  get_user_profile : (principal) -> (Result_9) query;
+  get_work_spaces : () -> (vec WorkSpace) query;
+  make_new_chat_room : (Chat) -> (Result_2);
+  message_is_seen : (Message) -> (Result_1);
+  move_file : (text, opt text) -> (Result_10);
+  multi_updates : (
+      vec FileNode,
+      vec vec record { text; vec ContentNode },
+      vec StoredContract,
+      vec text,
+      vec FileIndexing,
+    ) -> (Result_2);
+  object_on_cancel : (CPayment, text) -> (Result_1);
+  pay_for_share_contract : (text, nat64, text) -> (Result_1);
+  rate_user : (principal, Rating) -> (Result_1);
+  register : (RegisterUser) -> (Result);
+  reject_friend_request : (text) -> (Result);
+  save_post : (Post) -> (Result_1);
+  save_work_space : (WorkSpace) -> (Result_11);
+  search_files_content : (text, bool) -> (
+      vec record { text; vec ContentNode },
+    ) query;
+  search_posts : (text) -> (vec PostUser) query;
+  see_notifications : (text) -> ();
+  send_friend_request : (text) -> (Result);
+  send_message : (opt principal, Message) -> (Result_2);
+  share_file : (ShareFileInput) -> (Result_7);
+  unfriend : (text) -> (Result);
+  update_chat : (Chat) -> (Result_2);
+  update_user_profile : (RegisterUser) -> (Result);
+  vote_down : (text) -> (Result_6);
+  vote_up : (text) -> (Result_6);
+  withdraw_usdt : (float64) -> (Result_3);
+  ws_close : (CanisterWsCloseArguments) -> (Result_1);
+  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_12) query;
+  ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_1);
+  ws_open : (CanisterWsOpenArguments) -> (Result_1);
+}
