@@ -1,104 +1,177 @@
 import FormDialog from "../genral/fom_dialog";
 import * as React from "react";
-import {TextField} from "@mui/material";
-import {useDispatch, useSelector} from "react-redux";
-import {useSnackbar} from "notistack";
-import {convertToBytes} from "../../data_processing/image_to_vec";
-import {actor} from "../../App";
-import {RegisterUser, User} from "../../../declarations/backend/backend.did";
-import {handleRedux} from "../../redux/main";
+import { TextField, Box, CircularProgress, Avatar, IconButton, Typography } from "@mui/material";
+import { Add } from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import { useSnackbar } from "notistack";
+import { convertToBytes } from "../../data_processing/image_to_vec";
+import { actor } from "../../App";
+import { RegisterUser, User } from "../../../declarations/backend/backend.did";
+import { handleRedux } from "../../redux/main";
 
-const inputs = [
-    {id: "username", label: "Username", type: "text", required: true},
-    {id: "bio", label: "bio", type: "multiline", required: true},
-    {id: "first_name", label: "first name", type: "text"},
-    {id: "last_name", label: "last name", type: "text"},
-    {id: "email", label: "Email", type: "email"},
-    {id: "photo", label: "photo", type: "file"},
-];
+// const inputs = [
+//   { id: "username", label: "Username", type: "text", required: true },
+//   { id: "bio", label: "Bio", type: "multiline", required: true },
+//   { id: "first_name", label: "First Name", type: "text" },
+//   { id: "last_name", label: "Last Name", type: "text" },
+//   { id: "email", label: "Email", type: "email" },
+//   { id: "photo", label: "Photo", type: "file" },
+// ];
 
 function RegistrationForm() {
-    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    const {Anonymous} = useSelector((state: any) => state.filesReducer);
-    const [formValues, setFormValues]: any = React.useState({});
-    let [open, setOpen] = React.useState(Anonymous == true);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { Anonymous } = useSelector((state: any) => state.filesReducer);
+  const [formValues, setFormValues] = React.useState<any>({});
+  const [open, setOpen] = React.useState(Anonymous === true);
+  const [photo, setPhoto] = React.useState<File | null>(null);
+  const [loading, setLoading] = React.useState(false);
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const {id, value} = event.target;
-        setFormValues((prevValues) => ({...prevValues, [id]: value}));
-    };
-    var photo = [];
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = event.target;
+    setFormValues((prevValues) => ({ ...prevValues, [id]: value }));
+  };
 
-    async function handleUploadPhoto(e: any) {
-        let image = e.target.files[0];
-        try {
-            let imageByteData = await convertToBytes(image);
-            photo = imageByteData;
-        } catch (error) {
-            // Display the error message using enqueueSnackbar
-            enqueueSnackbar(error.message, {variant: "error"});
-        }
+  const handleUploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const image = e.target.files && e.target.files[0];
+    if (image) {
+      try {
+        setLoading(true);
+        const imageByteData = await convertToBytes(image);
+        setPhoto(image);
+        setLoading(false);
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: "error" });
+      }
     }
+  };
 
+  const dispatch = useDispatch();
+  const handleRegister = async () => {
+    setOpen(false);
+    const loaderMessage = <span>Creating agreement... <CircularProgress size={20} style={{ marginLeft: 10 }} /></span>;
+    const loading = enqueueSnackbar(loaderMessage, { variant: "info" });
 
-    const dispatch = useDispatch();
-    const handleRegister = async () => {
-        setOpen(false)
-
-        let loader_message = <span>Creating agreement... <span className={"loader"}/></span>;
-        let loading = enqueueSnackbar(loader_message, {variant: "info"});
-        let input: RegisterUser = {
-            name: [formValues.username || ""],
-            description: [formValues.bio],
-            photo: [photo]
-        };
-        let register: undefined | { Ok: User } | { Err: string } = actor && await actor.register(input);
-        register && dispatch(handleRedux("UPDATE_PROFILE", {profile: register.Ok}))
-        closeSnackbar(loading)
-
-        if (register.Ok) {
-            enqueueSnackbar(`Welcome ${register.Ok.name}, to Odoc`, {variant: "success"});
-        } else {
-            enqueueSnackbar(register.Err, {variant: "error"});
-            setOpen(true)
-        }
+    const input: RegisterUser = {
+      name: [formValues.username || ""],
+      description: [formValues.bio || ""],
+      photo: photo ? [photo] : undefined,
     };
 
-    return (
-        <FormDialog
-            title={"Register yourself here."}
-            description={""}
-            inputFields={
-                <>
-                    {inputs.map((input) => (
-                        <>
-                            <img id={"photo-preview"}/>
-                            <TextField
-                                required={input.required == true}
-                                multiline={input.type === "multiline"}
-                                key={input.id}
-                                autoFocus
-                                margin="dense"
-                                id={input.id}
-                                label={input.label}
-                                type={input.type}
-                                fullWidth
-                                variant="standard"
-                                value={formValues[input.id] || ""}
-                                onChange={input.type === 'file' ? handleUploadPhoto : handleChange}
+    try {
+      const register = actor && await actor.register(input);
+      closeSnackbar(loading);
 
-                            />
-                        </>
-                    ))}
-                </>
-            }
-            buttons={[
-                {name: "Cancel", onClick: () => setOpen(false)},
-                {name: "Register", onClick: handleRegister},
-            ]}
-            open={open}
-        />
-    );
+      if (register?.Ok) {
+        dispatch(handleRedux("UPDATE_PROFILE", { profile: register.Ok }));
+        enqueueSnackbar(`Welcome ${register.Ok.name}, to Odoc`, { variant: "success" });
+      } else if (register?.Err) {
+        enqueueSnackbar(register.Err, { variant: "error" });
+        setOpen(true);
+      }
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: "error" });
+    }
+  };
+
+  return (
+    <FormDialog
+      title={"Register yourself here."}
+      description={""}
+      inputFields={
+        <>
+          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", marginBottom: 2 }}>
+            <input
+              accept="image/*"
+              id="photo"
+              type="file"
+              style={{ display: "none" }}
+              onChange={handleUploadPhoto}
+            />
+            <label htmlFor="photo">
+              <IconButton component="span">
+                <Avatar
+                  src={photo ? URL.createObjectURL(photo) : undefined}
+                  alt="Profile Photo"
+                  sx={{ width: 100, height: 100 }}
+                >
+                  <Add />
+                </Avatar>
+              </IconButton>
+            </label>
+            <Typography variant="subtitle1">Upload Photo</Typography>
+            {loading && <CircularProgress size={20} style={{ marginTop: 10 }} />}
+          </Box>
+
+          <Box sx={{ marginBottom: 2 }}>
+            <TextField
+              required
+              id="username"
+              label="Username"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={formValues.username || ""}
+              onChange={handleChange}
+            />
+          </Box>
+
+          <Box sx={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
+            <TextField
+              id="first_name"
+              label="First Name"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={formValues.first_name || ""}
+              onChange={handleChange}
+              sx={{ marginRight: 1 }}
+            />
+            <TextField
+              id="last_name"
+              label="Last Name"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={formValues.last_name || ""}
+              onChange={handleChange}
+            />
+          </Box>
+
+          <Box sx={{ marginBottom: 2 }}>
+            <TextField
+              id="email"
+              label="Email"
+              type="email"
+              fullWidth
+              variant="outlined"
+              value={formValues.email || ""}
+              onChange={handleChange}
+            />
+          </Box>
+
+          <Box sx={{ marginBottom: 2 }}>
+            <TextField
+              required
+              multiline
+              id="bio"
+              label="Bio"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={formValues.bio || ""}
+              onChange={handleChange}
+            />
+          </Box>
+        </>
+      }
+      buttons={[
+        { name: "Cancel", onClick: () => setOpen(false) },
+        { name: "Done", onClick: handleRegister },
+      ]}
+      open={open}
+      maxWidth="md"
+    />
+  );
 }
 
 export default RegistrationForm;
