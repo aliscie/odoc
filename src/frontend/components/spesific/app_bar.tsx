@@ -24,6 +24,7 @@ import {Notifications} from "../notifcations/notification";
 import ChatsComponent from "../chat_component";
 import Workspaces from "./work_spaces";
 import { useTheme, useMediaQuery } from "@mui/material";
+import { Z_INDEX_TOP_NAVBAR } from "../../constants/zIndex";
 
 export function NavAppBar() {
     const dispatch = useDispatch();
@@ -58,7 +59,7 @@ export function NavAppBar() {
     let image_link = profile ? convertToBlobLink(profile.photo) : '';
 
     return (
-        <AppBar position="fixed" color="default" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
+        <AppBar position="fixed" color="default" sx={{ zIndex: Z_INDEX_TOP_NAVBAR }}>
             <Toolbar sx={{ transition: '0.4s', ml: isNavOpen ? "250px" : 0, justifyContent: 'space-between'}}>
                  {/* Left Side: Navigation */}
                  <Box sx={{ display: 'flex', alignItems: 'center' }}>

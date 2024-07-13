@@ -8,6 +8,7 @@ import CreateFile from "../actions/create_file";
 import { handleRedux } from "../../redux/main";
 import InfoIcon from '@mui/icons-material/Info';
 import ExploreIcon from '@mui/icons-material/Explore';
+import { Z_INDEX_SIDE_NAVBAR } from '../../constants/zIndex';
 
 const NavBar = (props: any) => {
     const dispatch = useDispatch();
@@ -27,7 +28,7 @@ const NavBar = (props: any) => {
                 anchor="left"
                 PaperProps={{
                     className: "sidenav card bg-blur",
-                    style: { width: "250px", padding: "16px", paddingTop: "80px" },
+                    style: { zIndex: Z_INDEX_SIDE_NAVBAR,  width: "250px", padding: "16px", },
                 }}
             >
                 <List>
