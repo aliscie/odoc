@@ -158,11 +158,13 @@ let Dialog = (props: any) => {
 
 const ShareFileButton = () => {
 
-    // const {current_file, files} = useSelector((state: any) => state.filesReducer);
-    // let is_owner_current_file = current_file && files.find((file: any) => file.id === current_file.id);
-
+    const {files} = useSelector((state: any) => state.filesReducer);
+    let currentPath = window.location.pathname.split("/").pop();
+    if (!files.find((file: any) => file.id === currentPath)) {
+        return null
+    }
     return (<>
-            { <DialogOver
+            {<DialogOver
                 variant="text"
                 DialogContent={Dialog}
             >

@@ -37,7 +37,6 @@ const NestedList: React.FC<NestedListProps> = ({files}) => {
             index,
             id: draggedId,
             parent: [],
-            index
         }));
     };
 

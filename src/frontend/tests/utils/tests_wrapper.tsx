@@ -1,13 +1,16 @@
 import React from 'react';
 import {Provider} from 'react-redux';
 import {SnackbarProvider} from 'notistack';
-// import store from "../../redux/main";
+import ThemeProvider from "../../ThemeProvider";
+import store from "../../redux/main";
 
-const TestWrapper: React.FC<{ store?: any }> = ({children, store}) => (
+const TestWrapper: React.FC<{ store?: any }> = ({children}) => (
     <Provider store={store}>
-        <SnackbarProvider>
-            {children}
-        </SnackbarProvider>
+        <ThemeProvider>
+            <SnackbarProvider>
+                {children}
+            </SnackbarProvider>
+        </ThemeProvider>
     </Provider>
 );
 
