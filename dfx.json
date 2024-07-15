@@ -27,15 +27,14 @@
         "backend"
       ],
       "frontend": {
-        "entrypoint": "src/frontend/public/index.html"
+        "entrypoint": "src/frontend/index.html"
       },
-      "source": [
-        "src/frontend/assets",
-        "build"
-      ],
+      "source": ["build"],
       "type": "assets"
     }
   },
+   "output_env_file": ".env",
+   
   "defaults": {
     "build": {
       "output": "canisters",
