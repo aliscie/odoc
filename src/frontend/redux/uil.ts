@@ -13,7 +13,7 @@ const initialState = {
     isNavOpen: false,
     searchTool: false,
     isDarkMode: true,
-    searchValue: String,
+    searchValue: "",
     isLoggedIn: false,
     // isLoggedIn: await agent.is_logged(),
 

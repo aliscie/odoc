@@ -11,10 +11,10 @@ import ChatsPage from "./chates_page";
 
 
 function Pages() {
-    return <Routes>
+    return<Routes>
         <Route path="/" element={<LandingPage/>}/>
         <Route path="/discover" element={<Discover/>}/>
-        <Route path="/Profile" element={<ProfileComponent/>}/>
+        <Route path="/profile" element={<ProfileComponent/>}/>
         <Route path="/share/*" element={<ShareFilePage/>}/>
         <Route path="/user/*" element={<UserPage/>}/>
         <Route path="/chats/*" element={<ChatsPage/>}/>

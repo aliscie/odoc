@@ -101,7 +101,7 @@ export function NavAppBar() {
                                 horizontal: 'right',
                             }}
                             options={[
-                                { content: "Profile", to: "Profile", icon: <Person2Icon /> },
+                                { content: "Profile", to: "profile", icon: <Person2Icon /> },
                                 { content: 'Settings', icon: <SettingsIcon /> },
                                 { content: 'Logout', icon: <LogoutIcon />, onClick: handleLogout },
                             ]}

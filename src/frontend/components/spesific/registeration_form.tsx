@@ -24,6 +24,7 @@ function RegistrationForm() {
   const [formValues, setFormValues] = React.useState<any>({});
   const [open, setOpen] = React.useState(Anonymous === true);
   const [photo, setPhoto] = React.useState<File | null>(null);
+  const [photoByte, setPhotoByte] = React.useState<any>();
   const [loading, setLoading] = React.useState(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,6 +39,8 @@ function RegistrationForm() {
         setLoading(true);
         const imageByteData = await convertToBytes(image);
         setPhoto(image);
+        console.log("Image byte: ", imageByteData);
+        setPhotoByte(imageByteData)
         setLoading(false);
       } catch (error) {
         enqueueSnackbar(error.message, { variant: "error" });
@@ -54,7 +57,7 @@ function RegistrationForm() {
     const input: RegisterUser = {
       name: [formValues.username || ""],
       description: [formValues.bio || ""],
-      photo: photo ? [photo] : undefined,
+      photo: photo ? [photoByte] : [],
     };
 
     try {
