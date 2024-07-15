@@ -57,6 +57,7 @@ export function NavAppBar() {
     }
 
     let image_link = profile ? convertToBlobLink(profile.photo) : '';
+    let is_owner_current_file = current_file && files.find((file: any) => file.id === current_file.id);
 
     return (
         <AppBar position="fixed" color="default" sx={{ zIndex: Z_INDEX_TOP_NAVBAR }}>
@@ -68,8 +69,8 @@ export function NavAppBar() {
                     </IconButton>
                     <Routes>
                         <Route path="*" element={<BreadPage />} />
-                    </Routes>
-                    <ShareFileButton />
+                    </Routes> 
+                    {is_owner_current_file && <ShareFileButton />}
                 </Box>
 
                 {/* Center: Search Bar */}
