@@ -145,6 +145,13 @@ export default function ProfileComponent() {
                                                     precision={0.5}/>
                                         </Tooltip>}
                                 </ListItem>
+                                <ListItem>
+                                    {profile_history &&
+                                        <Tooltip arrow title={"Your users rate"}>
+                                            <Rating readOnly name="half-rating" defaultValue={profile_history.users_rate}
+                                                    precision={0.5}/>
+                                        </Tooltip>}
+                                </ListItem>
                             </Grid>
                             <Grid item xs={12}>
                                 <List>
