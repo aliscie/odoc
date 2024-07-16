@@ -24,7 +24,7 @@ function RegistrationForm() {
   const [formValues, setFormValues] = React.useState<any>({});
   const [open, setOpen] = React.useState(Anonymous === true);
   const [photo, setPhoto] = React.useState<File | null>(null);
-  const [photoByte, setPhotoByte] = React.useState<any>();
+  const [photoByte, setPhotoByte] = React.useState<Uint8Array | number[]>();
   const [loading, setLoading] = React.useState(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,6 +72,7 @@ function RegistrationForm() {
         setOpen(true);
       }
     } catch (error) {
+      console.log("There was an issue with registraion: ", error);
       enqueueSnackbar(error.message, { variant: "error" });
     }
   };
@@ -104,7 +105,6 @@ function RegistrationForm() {
             <Typography variant="subtitle1">Upload Photo</Typography>
             {loading && <CircularProgress size={20} style={{ marginTop: 10 }} />}
           </Box>
-
           <Box sx={{ marginBottom: 2 }}>
             <TextField
               required

@@ -103,7 +103,7 @@ export function NavAppBar() {
                             options={[
                                 { content: "Profile", to: "profile", icon: <Person2Icon /> },
                                 { content: 'Settings', icon: <SettingsIcon /> },
-                                { content: 'Logout', icon: <LogoutIcon />, onClick: handleLogout },
+                                { content: 'Logout', to: "/", icon: <LogoutIcon />, onClick: handleLogout },
                             ]}
                         >
                             <Avatar alt="User Avatar" src={image_link} />
