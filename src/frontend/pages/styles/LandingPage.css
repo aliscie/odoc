@@ -1,10 +1,6 @@
-/* @import "~slick-carousel/slick/slick.css";
-@import "~slick-carousel/slick/slick-theme.css"; */
-
 .landing-page {
   text-align: center;
   padding: 60px 20px;
-  /* background: linear-gradient(to bottom right, #f9f9f9, #ffffff); */
 }
 
 header {
@@ -53,6 +49,68 @@ header p {
 .feature p {
   font-size: 16px;
   color: #444;
+}
+
+.feature-card {
+  margin: 0 10px;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+}
+
+.feature-card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.feature-card-title {
+  margin-bottom: 16px;
+}
+
+.feature-card-body {
+  flex-grow: 1;
+  margin-bottom: 16px;
+}
+
+.feature-carousel {
+  margin-bottom: 20px; 
+  position: relative; 
+}
+
+.feature-carousel .slick-prev,
+.feature-carousel .slick-next {
+  top: calc(50% - 25px); /* Adjust vertically */
+  z-index: 10;
+}
+
+.feature-carousel .slick-dots {
+  bottom: 10px;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  color: #19738d;
+  font-size: 2.5rem;
+}
+
+.slick-prev,
+.slick-next {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+}
+
+.slick-slide {
+  margin-right: 20px;
 }
 
 .roadmap {

@@ -39,7 +39,7 @@ impl Storable for User {
     }
 
     const BOUND: Bound = Bound::Bounded {
-        max_size: 900000,
+        max_size: 999999,
         is_fixed_size: false,
     };
 }

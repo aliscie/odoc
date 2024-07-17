@@ -19,6 +19,7 @@ import MultiAutoComplete from "../genral/multi_autocompelte";
 import useSearchFiles from "./search_popper/search_files_content";
 import ResultFile from "./search_popper/result_file";
 import TitleIcon from '@mui/icons-material/Title';
+import { Z_INDEX_SEARCH_POPPER } from '../../constants/zIndex';
 
 //TODO use this import CustomizedInputBase from "../genral/search_tools";
 
@@ -167,7 +168,7 @@ function SearchPopper() {
             {/*<CustomizedInputBase/>*/}
             <Popper
                 style={{
-                    zIndex: 1000, // Increase the z-index to make it appear on top of everything
+                    zIndex: Z_INDEX_SEARCH_POPPER, // Increase the z-index to make it appear on top of everything
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)', // Position in the middle of the page

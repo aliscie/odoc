@@ -24,6 +24,7 @@ import {Notifications} from "../notifcations/notification";
 import ChatsComponent from "../chat_component";
 import Workspaces from "./work_spaces";
 import { useTheme, useMediaQuery } from "@mui/material";
+import { Z_INDEX_TOP_NAVBAR } from "../../constants/zIndex";
 
 export function NavAppBar() {
     const dispatch = useDispatch();
@@ -56,9 +57,10 @@ export function NavAppBar() {
     }
 
     let image_link = profile ? convertToBlobLink(profile.photo) : '';
+    let is_owner_current_file = current_file && files.find((file: any) => file.id === current_file.id);
 
     return (
-        <AppBar position="fixed" color="default" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
+        <AppBar position="fixed" color="default" sx={{ zIndex: Z_INDEX_TOP_NAVBAR }}>
             <Toolbar sx={{ transition: '0.4s', ml: isNavOpen ? "250px" : 0, justifyContent: 'space-between'}}>
                  {/* Left Side: Navigation */}
                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -67,8 +69,8 @@ export function NavAppBar() {
                     </IconButton>
                     <Routes>
                         <Route path="*" element={<BreadPage />} />
-                    </Routes>
-                    <ShareFileButton />
+                    </Routes> 
+                    {is_owner_current_file && <ShareFileButton />}
                 </Box>
 
                 {/* Center: Search Bar */}
@@ -99,9 +101,9 @@ export function NavAppBar() {
                                 horizontal: 'right',
                             }}
                             options={[
-                                { content: "Profile", to: "Profile", icon: <Person2Icon /> },
+                                { content: "Profile", to: "profile", icon: <Person2Icon /> },
                                 { content: 'Settings', icon: <SettingsIcon /> },
-                                { content: 'Logout', icon: <LogoutIcon />, onClick: handleLogout },
+                                { content: 'Logout', to: "/", icon: <LogoutIcon />, onClick: handleLogout },
                             ]}
                         >
                             <Avatar alt="User Avatar" src={image_link} />
