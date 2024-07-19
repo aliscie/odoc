@@ -195,6 +195,7 @@ export function filesReducer(state: any = initialState, action: any) {
             }
 
         case 'CHANGE_FILE_PARENT': {
+
             const index = action.index;
             const childIndex = state.files.findIndex(file => file.id === action.id);
             const parentIndex = state.files.findIndex(file => file.id === action.parent[0]);

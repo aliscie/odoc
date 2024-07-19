@@ -19,7 +19,6 @@ import {
     Tooltip,
     Rating,
 } from "@mui/material";
-import { LoadingButton } from '@mui/lab';
 import { Add, MonetizationOn, AccountBalanceWallet } from "@mui/icons-material";
 import Friends from "./friends";
 import Deposit from "./actions/deposit";
@@ -138,20 +137,20 @@ export default function ProfileComponent() {
                                 <Typography variant="subtitle1" align="center" gutterBottom>
                                     Change Profile Photo
                                 </Typography>
-                                <ListItem>
-                                    {profile_history &&
-                                        <Tooltip arrow title={"Your actions rate"}>
-                                            <Rating readOnly name="half-rating" defaultValue={profile_history.actions_rate}
-                                                    precision={0.5}/>
-                                        </Tooltip>}
-                                </ListItem>
-                                <ListItem>
-                                    {profile_history &&
-                                        <Tooltip arrow title={"Your users rate"}>
-                                            <Rating readOnly name="half-rating" defaultValue={profile_history.users_rate}
-                                                    precision={0.5}/>
-                                        </Tooltip>}
-                                </ListItem>
+                                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2 }}>
+                                        {profile_history &&
+                                            <Tooltip arrow title={"Your actions rate"}>
+                                                <Rating readOnly name="half-rating" defaultValue={profile_history.actions_rate}
+                                                    precision={0.5} />
+                                            </Tooltip>}
+                                    </Box>
+                                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                        {profile_history &&
+                                            <Tooltip arrow title={"Your users rate"}>
+                                                <Rating readOnly name="half-rating" defaultValue={profile_history.users_rate}
+                                                    precision={0.5} />
+                                            </Tooltip>}
+                                    </Box>
                             </Grid>
                             <Grid item xs={12}>
                                 <List>

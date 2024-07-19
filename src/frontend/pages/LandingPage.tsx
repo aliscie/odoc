@@ -35,7 +35,7 @@ const LandingPage: React.FC = () => {
         dots: true,
         infinite: true,
         speed: 500,
-        slidesToShow: 3,
+        slidesToShow: 4,
         slidesToScroll: 1,
         autoplay: true,
         autoplaySpeed: 3000,
@@ -93,7 +93,6 @@ const LandingPage: React.FC = () => {
             </Grid>
 
             <Divider sx={{ my: 4 }} />
-
             
             <section className="features-section">
                 <Typography variant="h4" align="center" gutterBottom>
