@@ -196,61 +196,43 @@ export function filesReducer(state: any = initialState, action: any) {
 
         case 'CHANGE_FILE_PARENT': {
             const {position, id, parent, index} = action;
-
-            // Find the file being moved
-            const fileIndex = state.files.findIndex(file => file.id === id);
-            const file = state.files[fileIndex];
+            let file = state.files.find(f => f.id === id);
+            // 1. remove file
+            state.files = state.files.filter(f => f.id !== id);
 
             // 1. Remove the file from its current parent's children array
-            const oldParentIndex = state.files.findIndex(file => file.id === id);
-            const oldParent = state.files[oldParentIndex];
-            // 2. remove the id from children of old parent
-            // TODO state.changes.files = state.changes.files.filter((f: FileNode) => f.id !== file.parent[0])
-
-            if (oldParent) {
-                oldParent.children = oldParent.children.filter(childId => childId !== id);
+            const oldParentIndex = state.files.findIndex(f => f.id === file.parent[0]); // Use file.parent[0] to find the old parent
+            if (oldParentIndex !== -1) {
+                state.files[oldParentIndex].children = state.files[oldParentIndex].children.filter(childId => childId !== id);
             }
 
-            if (file) {
 
-                // Update the file's parent and position
-                if (parent.length > 0) {
-                    const newParentIndex = state.files.findIndex(file => file.id === parent[0]);
-                    const newParent = state.files[newParentIndex];
+            // 3. add the file in the correct place
+            const newParentIndex = state.files.findIndex(f => f.id === parent[0]); // Use parent[0] to find the new parent
+            file.parent = parent;
 
-                    if (newParent) {
-                        // Insert the file into the new parent's children array at the specified position
-                        const newChildren = [
-                            ...newParent.children.slice(0, position),
-                            id,
-                            ...newParent.children.slice(position)
-                        ];
-                        newParent.children = newChildren;
-                        file.parent = parent;
-                    }
+            if (newParentIndex !== -1) {
+                if (index !== -1) {
+                    state.files[newParentIndex].children.splice(index, 0, id);
                 } else {
-                    // If no new parent, clear the file's parent array
-                    file.parent = [];
+                    state.files[newParentIndex].children.push(id);
                 }
-
-                // Ensure the file's position in the files array is updated correctly
-                const updatedFiles = state.files.filter(f => f.id !== id); // Remove the file from its old position
-
-                if (parent.length > 0) {
-                    // Insert at the new position within the same level
-                    updatedFiles.splice(index, 0, file);
-                } else {
-                    // Append to the end if no new parent
-                    updatedFiles.push(file);
-                }
-
-                return {
-                    ...state,
-                    files: updatedFiles
-                };
+            }
+            if (index !== -1) {
+                state.files = state.files.slice(0, index).concat(file, state.files.slice(index));
+            } else {
+                state.files.push(file);
             }
 
-            return state;
+            // save to backend
+            let change: FileIndexing = {
+                id,
+                new_index: BigInt(index),
+                parent: parent
+            };
+            state.changes.files_indexing.push(change);
+            state.changes.files.push(file);
+            return {...state};
         }
 
 
