@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {useState} from 'react';
-import {styled} from '@mui/system';
+import { useState } from 'react';
+import { styled } from '@mui/system';
 
 const DraggableItem = styled('div')({
     cursor: 'move',
@@ -9,16 +9,24 @@ const DraggableItem = styled('div')({
 });
 
 interface DraggableItemProps {
-    index: number,
+    index: number;
     id: string;
-    onDrop: (map: { draggedId: string; index: number; id: string; dragOverPosition: "middle" | "under"; type: string }) => void;
+    onDrop: (map: {
+        draggedId: string;
+        targetId: string;
+        dragOverPosition: "middle" | "under";
+        type: string;
+        index: number;
+        clientY: number;
+    }) => void;
     preventDragUnder?: boolean;
 }
 
-const Draggable: React.FC<DraggableItemProps> = ({index, id, onDrop, preventDragUnder, children}) => {
+const Draggable: React.FC<DraggableItemProps> = ({ index, id, onDrop, preventDragUnder, children }) => {
     const [dragging, setDragging] = useState(false);
     const [draggedOver, setDraggedOver] = useState(false);
     const [dragOverPosition, setDragOverPosition] = useState<'middle' | 'under'>('');
+    const [clientY, setClientY] = useState<number>(0);
 
     const handleDragStart = (event: React.DragEvent) => {
         event.dataTransfer?.setData('text/plain', id); // Store the id of the dragged item
@@ -37,8 +45,9 @@ const Draggable: React.FC<DraggableItemProps> = ({index, id, onDrop, preventDrag
 
     const handleDragOver = (event: React.DragEvent) => {
         event.preventDefault();
-        const clientY = event.clientY;
-        const {top, height} = event.currentTarget.getBoundingClientRect();
+        const { clientY } = event;
+        setClientY(clientY); // Capture the Y-coordinate of the drag event
+        const { top, height } = event.currentTarget.getBoundingClientRect();
         const middlePosition = top + height / 2;
 
         if (clientY <= middlePosition) {
@@ -46,7 +55,7 @@ const Draggable: React.FC<DraggableItemProps> = ({index, id, onDrop, preventDrag
         } else {
             if (!preventDragUnder) {
                 setDragOverPosition('under');
-            } else {``
+            } else {
                 setDragOverPosition('middle');
             }
         }
@@ -54,7 +63,7 @@ const Draggable: React.FC<DraggableItemProps> = ({index, id, onDrop, preventDrag
 
     const handleDragLeave = () => {
         setDraggedOver(false);
-        setDragOverPosition(''); // Reset to middle when leaving the item
+        setDragOverPosition(''); // Reset to empty when leaving the item
     };
 
     const handleDrop = async (event: React.DragEvent) => {
@@ -63,7 +72,14 @@ const Draggable: React.FC<DraggableItemProps> = ({index, id, onDrop, preventDrag
         setDragOverPosition('');
         const draggedId = event.dataTransfer?.getData('text/plain'); // Retrieve the id of the dragged item
         if (draggedId && draggedId !== id) {
-            await onDrop({draggedId, id, dragOverPosition, type: "any", index});
+            await onDrop({
+                draggedId,
+                targetId: id,
+                dragOverPosition,
+                type: "any",
+                index,
+                clientY
+            });
         }
     };
 

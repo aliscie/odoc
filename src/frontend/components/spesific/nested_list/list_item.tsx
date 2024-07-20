@@ -14,6 +14,7 @@ import Draggable from "../../genral/draggable";
 import ShareIcon from '@mui/icons-material/Share';
 import ChangeWorkSpace from "../../actions/change_work_space_file";
 import ContextMenu from "../../genral/context_menu";
+import {logger} from "../../../dev_utils/log_data";
 
 interface ItemProps {
     data: Record<number, NestedDataItem>; // Use Record<number, NestedDataItem> instead of any
@@ -51,9 +52,19 @@ const DocComponent: React.FC<ItemProps> = ({data, item, index, openItems, handle
         {content: <ChangeWorkSpace item={item}/>},
     ]
 
-    const handleDrop: any = async ({draggedId, id, dragOverPosition, type, index}) => {
-        dispatch(handleRedux("CHANGE_FILE_PARENT", {position: dragOverPosition, id: draggedId, parent: [id], index}));
+    const handleDrop = async ({draggedId, targetId, dragOverPosition, type, index, clientY}) => {
+
+        let dragged = data.find(f => f.id == draggedId);
+        let target = data.find(f => f.id == targetId);
+        logger({dragged, target, dragOverPosition, type, index, clientY});
+        dispatch(handleRedux("CHANGE_FILE_PARENT", {
+            position: dragOverPosition,
+            id: draggedId,
+            parent: targetId,
+            index: index
+        }));
     };
+
 
     return (
         <>

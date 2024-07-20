@@ -195,50 +195,61 @@ export function filesReducer(state: any = initialState, action: any) {
             }
 
         case 'CHANGE_FILE_PARENT': {
-            const index = action.index;
-            const childIndex = state.files.findIndex(file => file.id === action.id);
-            const parentIndex = state.files.findIndex(file => file.id === action.parent[0]);
-            const child: FileNode = state.files[childIndex];
-            const parent: FileNode | undefined = state.files[parentIndex];
-            const oldParentIndex = state.files.findIndex(file => file.id === child.parent[0]);
-            const oldParent = state.files[oldParentIndex]
+            const {position, id, parent, index} = action;
 
-            if (action.position == "middle" && index !== 0) {
-                state.files = state.files.map((file: FileNode, index: number) => {
-                    if (index == parentIndex) {
-                        file.children = [...file.children, child.id]
-                        state.changes.files.push(file)
+            // Find the file being moved
+            const fileIndex = state.files.findIndex(file => file.id === id);
+            const file = state.files[fileIndex];
+
+            if (file) {
+                // Remove the file from its current parent's children array
+                if (file.parent.length > 0) {
+                    const oldParentIndex = state.files.findIndex(file => file.id === file.parent[0]);
+                    const oldParent = state.files[oldParentIndex];
+
+                    if (oldParent) {
+                        oldParent.children = oldParent.children.filter(childId => childId !== id);
                     }
-                    if (index == childIndex) {
-                        file.parent = parent ? [parent.id] : []
-                        state.changes.files.push(file)
-                    }
-                    return file
-                });
-            } else {
-                if (state.files[oldParentIndex]) {
-                    state.files[oldParentIndex].children = oldParent.children.filter(id => id !== action.id)
-                    state.files[childIndex].parent = []
-                    // state.changes.files.push(oldParent)
                 }
 
-                const newArray = [...state.files];
-                const [removed] = newArray.splice(childIndex, 1);
-                newArray.splice(index, 0, removed);
-                state.files = newArray;
+                // Update the file's parent and position
+                if (parent.length > 0) {
+                    const newParentIndex = state.files.findIndex(file => file.id === parent[0]);
+                    const newParent = state.files[newParentIndex];
 
-                let files_indexing: FileIndexing = {
-                    id: child.id,
-                    parent: action.parent[0] ? [String(action.parent[0])] : [],
-                    new_index: BigInt(index)
+                    if (newParent) {
+                        // Insert the file into the new parent's children array at the specified position
+                        const newChildren = [
+                            ...newParent.children.slice(0, position),
+                            id,
+                            ...newParent.children.slice(position)
+                        ];
+                        newParent.children = newChildren;
+                        file.parent = parent;
+                    }
+                } else {
+                    // If no new parent, clear the file's parent array
+                    file.parent = [];
                 }
-                state.changes.files_indexing.push(files_indexing)
+
+                // Ensure the file's position in the files array is updated correctly
+                const updatedFiles = state.files.filter(f => f.id !== id); // Remove the file from its old position
+
+                if (parent.length > 0) {
+                    // Insert at the new position within the same level
+                    updatedFiles.splice(index, 0, file);
+                } else {
+                    // Append to the end if no new parent
+                    updatedFiles.push(file);
+                }
+
+                return {
+                    ...state,
+                    files: updatedFiles
+                };
             }
 
-
-            return {
-                ...state,
-            };
+            return state;
         }
 
 
