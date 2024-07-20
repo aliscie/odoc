@@ -56,11 +56,15 @@ const DocComponent: React.FC<ItemProps> = ({data, item, index, openItems, handle
 
         let dragged = data.find(f => f.id == draggedId);
         let target = data.find(f => f.id == targetId);
-        logger({dragged, target, dragOverPosition, type, index, clientY});
+        // logger({dragged, target, dragOverPosition, type, index, clientY});
+        let parent = targetId
+        if (dragOverPosition == 'under') {
+            parent = target.parent
+        }
         dispatch(handleRedux("CHANGE_FILE_PARENT", {
             position: dragOverPosition,
             id: draggedId,
-            parent: targetId,
+            parent,
             index: index
         }));
     };

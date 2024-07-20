@@ -201,16 +201,17 @@ export function filesReducer(state: any = initialState, action: any) {
             const fileIndex = state.files.findIndex(file => file.id === id);
             const file = state.files[fileIndex];
 
-            if (file) {
-                // Remove the file from its current parent's children array
-                if (file.parent.length > 0) {
-                    const oldParentIndex = state.files.findIndex(file => file.id === file.parent[0]);
-                    const oldParent = state.files[oldParentIndex];
+            // 1. Remove the file from its current parent's children array
+            const oldParentIndex = state.files.findIndex(file => file.id === id);
+            const oldParent = state.files[oldParentIndex];
+            // 2. remove the id from children of old parent
+            // TODO state.changes.files = state.changes.files.filter((f: FileNode) => f.id !== file.parent[0])
 
-                    if (oldParent) {
-                        oldParent.children = oldParent.children.filter(childId => childId !== id);
-                    }
-                }
+            if (oldParent) {
+                oldParent.children = oldParent.children.filter(childId => childId !== id);
+            }
+
+            if (file) {
 
                 // Update the file's parent and position
                 if (parent.length > 0) {
