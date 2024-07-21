@@ -16,6 +16,7 @@ import {actor} from "../App";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {getCurrentFile} from "./utls";
 import {Principal} from "@dfinity/principal";
+import {logger} from "../dev_utils/log_data";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();
@@ -196,6 +197,7 @@ export function filesReducer(state: any = initialState, action: any) {
 
         case 'CHANGE_FILE_PARENT': {
             const {position, id, parent, index} = action;
+            console.log({index})
             let file = state.files.find(f => f.id === id);
             // 1. remove file
             state.files = state.files.filter(f => f.id !== id);
