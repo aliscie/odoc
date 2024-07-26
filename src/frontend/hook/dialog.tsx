@@ -3,7 +3,6 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import Editor from "odoc-editor";
 import {EditorRenderer} from "../components/editor_components/editor_renderer";
 
 export function useFormulaDialog(saveFormula) {
@@ -36,34 +35,34 @@ export function useFormulaDialog(saveFormula) {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogContent style={{width: "500px"}}>
-                    <Editor
-                        insertFooter={false}
-                        autoCompleteOptions={[
-                            "COL('name')",
-                            "COL('amount')",
-                            "COL('sender')",
-                            "COL('receiver')",
-                            "Apple",]}
-                        onChange={setFormula}
-                        renderElement={EditorRenderer}
-                        searchOptions={"gi"}
-                        data={
-                            [{
-                                "type": "code-block",
-                                "language": "typescript",
-                                "children": [
+                    {/*<Editor*/}
+                    {/*    insertFooter={false}*/}
+                    {/*    autoCompleteOptions={[*/}
+                    {/*        "COL('name')",*/}
+                    {/*        "COL('amount')",*/}
+                    {/*        "COL('sender')",*/}
+                    {/*        "COL('receiver')",*/}
+                    {/*        "Apple",]}*/}
+                    {/*    onChange={setFormula}*/}
+                    {/*    renderElement={EditorRenderer}*/}
+                    {/*    searchOptions={"gi"}*/}
+                    {/*    data={*/}
+                    {/*        [{*/}
+                    {/*            "type": "code-block",*/}
+                    {/*            "language": "typescript",*/}
+                    {/*            "children": [*/}
 
-                                    {
-                                        "type": "code-line",
-                                        "children": [{
-                                            text: formula[0] || ""
-                                        }]
-                                    },
+                    {/*                {*/}
+                    {/*                    "type": "code-line",*/}
+                    {/*                    "children": [{*/}
+                    {/*                        text: formula[0] || ""*/}
+                    {/*                    }]*/}
+                    {/*                },*/}
 
-                                ]
-                            },]
-                        }
-                    />
+                    {/*            ]*/}
+                    {/*        },]*/}
+                    {/*    }*/}
+                    {/*/>*/}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Close</Button>

@@ -4,6 +4,7 @@
 .env
 # dependencies
 /node_modules
+/src/frontend/odoc_editor_v2/node_modules
 /.pnp
 .pnp.js
 .dfx

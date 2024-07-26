@@ -28,7 +28,7 @@
       "@testing-library/react",
       "vitest/globals",
       "redux-thunk"
-    ],
+    ]
   },
   "include": [
     "src",
@@ -36,5 +36,11 @@
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "baseUrl": ".",
+  "paths": {
+    "@/*": [
+      "src/*"
+    ]
+  }
 }

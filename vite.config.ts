@@ -83,6 +83,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
+            '@': path.resolve(__dirname, 'src/frontend/odoc_editor_v2/src'),
             // Here we tell Vite the "fake" modules that we want to define
             ...aliases,
         },

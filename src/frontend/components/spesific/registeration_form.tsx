@@ -55,7 +55,7 @@ function RegistrationForm() {
         const input: RegisterUser = {
             name: [formValues.username || ""],
             description: [formValues.bio || ""],
-            photo: photo[0] == null ? [[]] : photo,
+            photo: !photo ? [[]] : photo,
         };
 
         try {
@@ -173,7 +173,7 @@ function RegistrationForm() {
             }
             buttons={[
                 {name: "Cancel", onClick: () => setOpen(false)},
-                {name: "Done", onClick: handleRegister},
+                {name: "Submit", onClick: handleRegister},
             ]}
             open={open}
             maxWidth="md"
