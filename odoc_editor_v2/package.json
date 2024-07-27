@@ -1,6 +1,7 @@
 {
   "name": "odoc_editor_v2",
-  "version": "2.1.1",
+  "main": "src/components/pages/editor.tsx",
+  "version": "2.1.5",
   "files": [
     "dist",
     "README.md"

@@ -16,7 +16,6 @@ const initialState = {
     searchValue: "",
     isLoggedIn: false,
     // isLoggedIn: await agent.is_logged(),
-
 };
 
 // const authClient = await AuthClient.create();
@@ -25,7 +24,6 @@ const initialState = {
 // "l5gd7-bl4bd-jodqy-yqblz-eawxr-w4fdt-eqxhj-luwyp-nav4q-fs66j-xae"
 // "6suv4-d4sug-pgi5x-ez36i-xi5z7-3irau-ozzaq-bubov-ejijq-f7k3j-wqe"
 // "dbrpy-d77yw-azutg-7ndrq-kw55i-72uhh-eonyl-hks6f-cugod-h5wgl-lae"
-
 
 export function uiReducer(state = initialState, action: any) {
 

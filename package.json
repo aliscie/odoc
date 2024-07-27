@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "typings": "dist",
   "workspaces": [
-    "src/frontend/odoc_editor_v2"
+    "workspaces/*"
   ],
   "dependencies": {
     "@babel/core": "^7.22.1",
@@ -49,7 +49,7 @@
     "mathjs": "^12.3.0",
     "monaco-editor": "^0.45.0",
     "notistack": "^3.0.1",
-    "odoc_editor_v2": "workspace:*",
+    "odoc_editor_v2": "workspaces/odoc_editor_v2",
     "prismjs": "^1.29.0",
     "react": "^18.3.1",
     "react-ace": "^10.1.0",

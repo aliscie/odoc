@@ -52,13 +52,19 @@ header p {
 }
 
 .feature-card {
-  margin: 0 10px;
+  margin: 0.5rem;
   height: 250px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   text-align: center;
+}
+
+@media (max-width: 600px) {
+  .feature-card {
+    margin: 0.25rem;
+  }
 }
 
 .feature-card-content {
@@ -78,18 +84,28 @@ header p {
 }
 
 .feature-carousel {
-  margin-bottom: 20px; 
-  position: relative; 
+  margin-bottom: 10px; 
+  position: relative;
 }
 
 .feature-carousel .slick-prev,
 .feature-carousel .slick-next {
-  top: calc(50% - 25px); /* Adjust vertically */
-  z-index: 10;
+  top: calc(25%);
+  z-index: 10; 
+}
+
+.feature-carousel .slick-track {
+  margin: 0 auto;
 }
 
 .feature-carousel .slick-dots {
-  bottom: 10px;
+  margin-top: 20px; 
+}
+
+@media (max-width: 1024px) {
+  .feature-carousel .slick-dots {
+    margin-top: 15px;
+  }
 }
 
 .slick-prev:before,

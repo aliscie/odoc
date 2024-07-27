@@ -16,7 +16,6 @@ import {actor} from "../App";
 import {normalize_contracts} from "../data_processing/normalize/normalize_contracts";
 import {getCurrentFile} from "./utls";
 import {Principal} from "@dfinity/principal";
-import {logger} from "../dev_utils/log_data";
 
 // import {logout} from "../backend_connect/ic_agent";
 // await logout();

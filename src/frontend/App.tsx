@@ -19,7 +19,7 @@ import MessagesDialog from "./components/chat/messages_box_dialog";
 import useSocket from "./websocket/use_socket";
 import {CircularProgress} from "@mui/material";
 import TopDialog from "./components/genral/TopDialog";
-import OdocEditor from "odoc_editor_v2/src";
+// import OdocEditor from "odoc_editor_v2";
 
 export let actor: ActorSubclass<_SERVICE> | undefined; // TODo maybe set the actor in redux
 
@@ -93,13 +93,13 @@ function App() {
                         <NavAppBar/>
                         <TopDialog/>
                         <NavBar>
-                            <OdocEditor
-                                initialValue={initialValue}
-                                onChange={onChange}
-                                extraPlugins={extraPlugins}
-                                onInsertComponent={onInsertComponent}
-                                mentions={mentions}
-                            />
+                            {/*<OdocEditor*/}
+                            {/*    initialValue={initialValue}*/}
+                            {/*    onChange={onChange}*/}
+                            {/*    extraPlugins={extraPlugins}*/}
+                            {/*    onInsertComponent={onInsertComponent}*/}
+                            {/*    mentions={mentions}*/}
+                            {/*/>*/}
                             <Pages/>
                         </NavBar>
                     </SnackbarProvider>
