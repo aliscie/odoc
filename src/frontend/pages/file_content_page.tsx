@@ -6,7 +6,6 @@ import {FileNode, StoredContract} from '../../declarations/backend/backend.did';
 import EditorComponent from '../components/editor_components/main';
 import debounce from '../utils/debounce';
 import {Principal} from '@dfinity/principal';
-import {Input} from "@mui/material";
 
 interface Props {
 }
@@ -25,31 +24,31 @@ const FileContentPage: React.FC<Props> = () => {
     }, [dispatch, files_content, current_file]);
 
     const handleInputChange = useCallback(
-        // debounce((title: string) => {
-        //     if (title !== current_file.name) {
-        //         const file: FileNode = {
-        //             ...current_file,
-        //             name: title,
-        //             parent: current_file.parent,
-        //             children: current_file.children,
-        //             share_id: current_file.share_id || [],
-        //         };
-        //         dispatch(handleRedux('UPDATE_FILE_TITLE', {id: current_file.id, title}));
-        //     }
-        // }, 250),
+        debounce((title: string) => {
+            if (title !== current_file.name) {
+                const file: FileNode = {
+                    ...current_file,
+                    name: title,
+                    parent: current_file.parent,
+                    children: current_file.children,
+                    share_id: current_file.share_id || [],
+                };
+                dispatch(handleRedux('UPDATE_FILE_TITLE', {id: current_file.id, title}));
+            }
+        }, 250),
         [dispatch, current_file]
     );
 
     const handleTitleKeyDown = useCallback((e: any) => {
-        // const title = e[0].children[0].text;
-        handleInputChange(e.target.value);
+        const title = e[0].children[0].text;
+        handleInputChange(title);
     }, [handleInputChange]);
 
     const preventEnter = (e: React.KeyboardEvent) => {
-        // if (e.key === 'Enter') {
-        //     e.preventDefault();
-        //     (e.target as HTMLElement).blur();
-        // }
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            (e.target as HTMLElement).blur();
+        }
     };
 
     function handleOnInsertComponent(e: any, component: any) {

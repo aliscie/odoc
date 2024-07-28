@@ -1,6 +1,6 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
-// import Editor from "odoc-editor";
+import Editor from "odoc-editor";
 import {payment_contract} from "../data_processing/data_samples";
 import {EditorRenderer} from "../components/editor_components/editor_renderer";
 import {ContentNode, FileNode} from "../../declarations/backend/backend.did";
@@ -53,17 +53,17 @@ function ShareFilePage(props: any) {
     return (
         <>
             <h1>{file && file.name}</h1>
-            {/*{state && <Editor*/}
-            {/*    contentEditable={false}*/}
-            {/*    componentsOptions={[*/}
-            {/*        payment_contract,*/}
-            {/*        {type: "shares_contract"},*/}
-            {/*        {type: "custom_contract"},*/}
-            {/*    ]}*/}
-            {/*    renderElement={EditorRenderer}*/}
-            {/*    searchOptions={"gi"}*/}
-            {/*    data={state || []}*/}
-            {/*/>}*/}
+            {state && <Editor
+                contentEditable={false}
+                componentsOptions={[
+                    payment_contract,
+                    {type: "shares_contract"},
+                    {type: "custom_contract"},
+                ]}
+                renderElement={EditorRenderer}
+                searchOptions={"gi"}
+                data={state || []}
+            />}
 
         </>
     )
