@@ -70,19 +70,30 @@ header p {
 .feature-card-content {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   height: 100%;
-  padding: 16px; /* Add padding for uniformity */
+  padding: 16px;
 }
 
 .feature-card-title {
   margin-bottom: 16px;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  text-align: center; /* Center text inside */
+  width: 100%; /* Ensure it takes the full width */
 }
+
 
 .feature-card-body {
   flex-grow: 1;
   margin-bottom: 16px;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  text-align: center; /* Center text inside */
 }
+
 
 .feature-carousel {
   margin-bottom: 10px;

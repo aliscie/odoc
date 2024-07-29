@@ -67,7 +67,6 @@ const LandingPage: React.FC = () => {
 
             <Divider sx={{my: 4}}/>
 
-
             <section className="features-section">
                 <Typography variant="h4" align="center" gutterBottom>
                     Our Features
@@ -78,9 +77,9 @@ const LandingPage: React.FC = () => {
                         <Grid item xs={12} sm={6} md={4} key={index}>
                             <Card className="feature-card" sx={{ margin: 1 }}>
                                 <CardContent className="feature-card-content">
-                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '16px' }}>
+                                    <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
                                         {feature.icon}
-                                    </div>
+                                    </Box>
                                     <Typography variant="h5" className="feature-card-title">{feature.title}</Typography>
                                     <Typography variant="body2" className="feature-card-body">
                                         {feature.content}
@@ -98,9 +97,6 @@ const LandingPage: React.FC = () => {
                 <Typography variant="h4" align="center" gutterBottom>
                     Road Map
                 </Typography>
-                    Road Map
-                </Typography>
-
                 {roadMap.map((item, index) => (
                     <StyledAccordion key={index} title={item.title} content={item.content} isDone={item.is_done}/>
                 ))}

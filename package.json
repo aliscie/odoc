@@ -62,8 +62,7 @@
     "slick-carousel": "^1.8.1",
     "tsc": "^2.0.4",
     "typescript": "^5.0.4",
-    "vite": "^4.3.9",
-    "vitest": "^1.2.0"
+    "vite": "^4.3.9"
   },
   "scripts": {
     "dfx": "dfx start --clean",
@@ -145,7 +144,6 @@
     "save": "^2.9.0",
     "storybook": "^8.1.11",
     "ts-jest": "^29.1.2",
-    "vite-plugin-environment": "^1.1.3",
-    "vitest": "^1.6.0"
+    "vite-plugin-environment": "^1.1.3"
   }
 }
