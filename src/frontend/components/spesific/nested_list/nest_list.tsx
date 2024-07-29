@@ -29,25 +29,14 @@ const NestedList: React.FC<NestedListProps> = ({ files }) => {
     }
   };
 
-  const dispatch = useDispatch();
-    const handleDrop: any = async ({ draggedId, id, dragOverPosition, type, index }) => {
-        if (draggedId !== id) {
-            // Dispatch the action to update the parent or order
-            if (dragOverPosition === 'middle') {
-            dispatch(handleRedux('CHANGE_FILE_PARENT', { 
-                draggedId, 
-                newParentId: id, 
-                position: dragOverPosition, 
-                index 
-            }));
-            } else {
-            dispatch(handleRedux('REORDER_ITEMS', { 
-                draggedId, 
-                id, 
-                position: dragOverPosition 
-            }));
-            }
-        }
+    const dispatch = useDispatch();
+    const handleDrop: any = async ({draggedId, id, dragOverPosition, type, index}) => {
+        dispatch(handleRedux("CHANGE_FILE_PARENT", {
+            position: dragOverPosition,
+            index,
+            id: draggedId,
+            parent: [],
+        }));
     };
 
   return (

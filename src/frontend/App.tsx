@@ -19,6 +19,7 @@ import MessagesDialog from "./components/chat/messages_box_dialog";
 import useSocket from "./websocket/use_socket";
 import {CircularProgress} from "@mui/material";
 import TopDialog from "./components/genral/TopDialog";
+// import OdocEditor from "odoc_editor_v2";
 
 export let actor: ActorSubclass<_SERVICE> | undefined; // TODo maybe set the actor in redux
 
@@ -46,25 +47,67 @@ function App() {
         })()
     }, []);
 
+
+    let onInsertComponent = (component: any) => {
+        console.log(component);
+    };
+
+    let onChange = (value: any) => {
+        console.log({value})
+    };
+
+    let extraPlugins = [
+        // {plugin: createAmazingPlugin, key: KEY_AMAZING, icon: Icons.kbd}
+    ];
+
+
+    const initialValue = [
+        {
+            id: "lkdf",
+            type: 'h1',
+            children: [{text: "This is a paragraph."}]
+        },
+        {
+            id: "98ryw",
+            type: 'amazing',
+            children: [{text: "Amaing"}],
+            data: "test",
+
+        }
+    ]
+
+    const mentions = [
+        {key: '0', text: 'Aayla Secura'},
+        {key: '1', text: 'Adi Gallia'},
+    ];
+
+
     return (
         <>
             {state ? (
                 <BrowserRouter>
-                    <SearchPopper />
+                    <SearchPopper/>
                     <SnackbarProvider maxSnack={3}>
-                        <RegistrationForm />
-                        <MessagesDialog />
-                        <NavAppBar />
-                        <TopDialog />
+                        <RegistrationForm/>
+                        <MessagesDialog/>
+                        <NavAppBar/>
+                        <TopDialog/>
                         <NavBar>
-                            <Pages />
+                            {/*<OdocEditor*/}
+                            {/*    initialValue={initialValue}*/}
+                            {/*    onChange={onChange}*/}
+                            {/*    extraPlugins={extraPlugins}*/}
+                            {/*    onInsertComponent={onInsertComponent}*/}
+                            {/*    mentions={mentions}*/}
+                            {/*/>*/}
+                            <Pages/>
                         </NavBar>
                     </SnackbarProvider>
                 </BrowserRouter>
             ) : (
                 <CircularProgress
                     size="100px"
-                    style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+                    style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}
                 />
             )}
         </>

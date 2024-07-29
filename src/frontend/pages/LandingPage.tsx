@@ -1,10 +1,12 @@
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import './styles/LandingPage.css';
-import { Button, Divider, Typography, Container, Grid, Box, Card, CardContent } from "@mui/material";
-import FullWidthTabs from "./welcome"; 
+import {Button, Divider, Typography, Container, Grid, Box, CardContent} from "@mui/material";
+import Card from "../components/genral/card";
+
+import FullWidthTabs from "./welcome";
 import StyledAccordion from '../components/genral/styled_accordion';
 import { features } from '../data/odoc_features';
 import { roadMap } from '../data/odoc_roadmap';
@@ -34,14 +36,15 @@ const LandingPage: React.FC = () => {
         <Container maxWidth="lg" className="landing-page">
             <Grid container spacing={4}>
                 <Grid item xs={12}>
-                    <Card sx={{ borderRadius: 2, boxShadow: 3, overflow: 'hidden' }}>
+                    <Card sx={{borderRadius: 2, boxShadow: 3, overflow: 'hidden'}}>
                         <CardContent>
                             <header className="landing-header">
                                 <Typography variant="h2" align="left" gutterBottom>
                                     Welcome to ODOC
                                 </Typography>
                                 <Typography variant="body1" align="left" paragraph>
-                                    Empowering freelancers, employers, and employees with transparent and liberating smart contracts...
+                                    Empowering freelancers, employers, and employees with transparent and liberating
+                                    smart contracts...
                                 </Typography>
                             </header>
 
@@ -53,17 +56,18 @@ const LandingPage: React.FC = () => {
                                 title="What is Odoc"
                                 frameBorder="0"
                                 allowFullScreen
-                                sx={{ my: 2 }}
+                                sx={{my: 2}}
                             />
 
-                            <FullWidthTabs />
+                            <FullWidthTabs/>
                         </CardContent>
                     </Card>
                 </Grid>
             </Grid>
 
-            <Divider sx={{ my: 4 }} />
-            
+            <Divider sx={{my: 4}}/>
+
+
             <section className="features-section">
                 <Typography variant="h4" align="center" gutterBottom>
                     Our Features
@@ -88,15 +92,17 @@ const LandingPage: React.FC = () => {
                 </Grid>
             </section>
 
-            <Divider sx={{ my: 4 }} />
+            <Divider sx={{my: 4}}/>
 
             <section className="roadmap">
                 <Typography variant="h4" align="center" gutterBottom>
                     Road Map
                 </Typography>
+                    Road Map
+                </Typography>
 
                 {roadMap.map((item, index) => (
-                    <StyledAccordion key={index} title={item.title} content={item.content} isDone={item.is_done} />
+                    <StyledAccordion key={index} title={item.title} content={item.content} isDone={item.is_done}/>
                 ))}
             </section>
 

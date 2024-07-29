@@ -5,7 +5,7 @@ import {file_content_sample, randomString} from "../../data_processing/data_samp
 import {Button, Tooltip} from "@mui/material";
 import {FileNode} from "../../../declarations/backend/backend.did";
 import PostAddIcon from '@mui/icons-material/PostAdd';
-import { AddBox } from "@mui/icons-material";
+import {AddBox} from "@mui/icons-material";
 
 const CreateFile = () => {
     const {profile} = useSelector((state: any) => state.filesReducer);
@@ -28,7 +28,7 @@ const CreateFile = () => {
             users_permissions: [],
             permission: {'None': null},
             content_id: [],
-            workspace:"Default",
+            workspace: "Default",
         };
 
         console.log('Dispatching ADD_FILE with file:', file);

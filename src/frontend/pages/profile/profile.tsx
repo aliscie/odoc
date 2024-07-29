@@ -209,7 +209,7 @@ export default function ProfileComponent() {
                         </Typography>
                         <Divider sx={{ my: 2 }} />
                         <Typography variant="h6" align="center" gutterBottom>
-                            {Number(wallet ? wallet.balance : 0)} USDT
+                            {Number(wallet ? wallet.balance : 0)} USDC
                         </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                             <Button variant="outlined" startIcon={<MonetizationOn />} onClick={handleDeposit}>

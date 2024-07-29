@@ -10,14 +10,15 @@ import {actor} from "../../App";
 import {useSelector} from "react-redux";
 import useGetUser from "../../utils/get_user_by_principal";
 import DialogOver from "../genral/daiolog_over";
-import {Divider, Input} from "@mui/material";
+import {Divider, Input, Typography} from "@mui/material";
 import LoaderButton from "../genral/loader_button";
 import {CPayment, Notification} from "../../../declarations/backend/backend.did";
 import {formatRelativeTime} from "../../utils/time";
+
 //
 
 function CPaymentContractDialog(props: { notification: Notification }): JSX.Element {
-    const { notification } = props;
+    const {notification} = props;
     const c_payment: CPayment = notification.content.CPaymentContract[0];
     const [status, setStatus] = useState<string>(() => {
         const newStatus = Object.keys(c_payment.status)[0];
@@ -65,22 +66,25 @@ function CPaymentContractDialog(props: { notification: Notification }): JSX.Elem
                     {status !== "ConfirmedCancellation" && (
                         <>
                             <Divider>The objection reason here.</Divider>
-                            <Input defaultValue={objection} onChange={(e) => e.target.value} />
-                            <LoaderButton onClick={() => handleButtonClick("object_on_cancel")}>Object on cancellation</LoaderButton>
+                            <Input defaultValue={objection} onChange={(e) => e.target.value}/>
+                            <LoaderButton onClick={() => handleButtonClick("object_on_cancel")}>Object on
+                                cancellation</LoaderButton>
                         </>
                     )}
-                    <Divider />
+                    <Divider/>
                     {status !== "Confirmed" && status !== "Objected" && status !== "ConfirmedCancellation" && (
                         <>
                             <Divider>You can confirm this contract to protect it from cancellation.</Divider>
-                            <LoaderButton onClick={() => handleButtonClick("confirmed_c_payment")}>Confirm</LoaderButton>
+                            <LoaderButton
+                                onClick={() => handleButtonClick("confirmed_c_payment")}>Confirm</LoaderButton>
                         </>
                     )}
-                    <h3 style={{ color: "orange" }}>{status === "RequestCancellation" && "The payer requested to cancel this promise"}</h3>
+                    <h3 style={{color: "orange"}}>{status === "RequestCancellation" && "The payer requested to cancel this promise"}</h3>
                     {status !== "ConfirmedCancellation" && (
                         <>
                             <Divider>You can approve the cancellation to allow renounce this payment.</Divider>
-                            <LoaderButton onClick={() => handleButtonClick("confirmed_cancellation")}>Confirm Conciliation</LoaderButton>
+                            <LoaderButton onClick={() => handleButtonClick("confirmed_cancellation")}>Confirm
+                                Conciliation</LoaderButton>
                         </>
                     )}
                 </>
@@ -88,7 +92,6 @@ function CPaymentContractDialog(props: { notification: Notification }): JSX.Elem
         </>
     );
 }
-
 
 
 function CPaymentContract(props: { notification: Notification }): string | JSX.Element {
@@ -145,7 +148,7 @@ function RenderNotification(props: { notification: Notification }): string | JSX
         case "AcceptFriendRequest":
             return `${time}: ${sender} accepted your friend request.`;
         case 'CPaymentContract':
-            return <CPaymentContract  sender={sender} notification={notification}/>
+            return <CPaymentContract sender={sender} notification={notification}/>
         default:
             console.log("unknown action", notification);
             return `${sender} ${JSON.stringify(content)} action`;
@@ -204,7 +207,7 @@ export function Notifications() {
                         // onClick: () => clickNotification(notification)
                     };
                     return item
-                }) : []}
+                }) : [{content: <Typography>You have no notifications.</Typography>,}]}
             >
                 <Badge
                     invisible={new_notifications.length == 0}

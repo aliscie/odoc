@@ -197,106 +197,46 @@ export function filesReducer(state: any = initialState, action: any) {
             }
 
         case 'CHANGE_FILE_PARENT': {
-            if (!action.payload) {
-                console.error('CHANGE_FILE_PARENT action.payload is undefined');
-                return state;
+            const {position, id, parent, index} = action;
+            console.log({index})
+            let file = state.files.find(f => f.id === id);
+            // 1. remove file
+            state.files = state.files.filter(f => f.id !== id);
+
+            // 1. Remove the file from its current parent's children array
+            const oldParentIndex = state.files.findIndex(f => f.id === file.parent[0]); // Use file.parent[0] to find the old parent
+            if (oldParentIndex !== -1) {
+                state.files[oldParentIndex].children = state.files[oldParentIndex].children.filter(childId => childId !== id);
             }
 
-            const { draggedId, newParentId, position, index } = action.payload;
-            console.log('Received payload in reducer:', action.payload);
 
-            const childIndex = state.files.findIndex((file) => file.id === draggedId);
-            const parentIndex = state.files.findIndex((file) => file.id === newParentId);
-            const child = state.files[childIndex];
-            const parent = state.files[parentIndex];
-            const oldParentIndex = state.files.findIndex((file) => file.id === child.parent[0]);
-            const oldParent = state.files[oldParentIndex];
+            // 3. add the file in the correct place
+            const newParentIndex = state.files.findIndex(f => f.id === parent[0]); // Use parent[0] to find the new parent
+            file.parent = parent;
 
-            let newFiles = [...state.files];
-
-            if (position === 'middle' && parentIndex !== -1) {
-                newFiles = newFiles.map((file, idx) => {
-                    if (idx === parentIndex) {
-                        return { ...file, children: [...file.children, child.id] };
-                    }
-                    if (idx === childIndex) {
-                        return { ...file, parent: parent ? [parent.id] : [] };
-                    }
-                    return file;
-                });
-            } else {
-                if (oldParentIndex !== -1) {
-                    newFiles[oldParentIndex] = {
-                        ...state.files[oldParentIndex],
-                        children: oldParent.children.filter((id) => id !== draggedId),
-                    };
+            if (newParentIndex !== -1) {
+                if (index !== -1) {
+                    state.files[newParentIndex].children.splice(index, 0, id);
+                } else {
+                    state.files[newParentIndex].children.push(id);
                 }
-
-                const [removed] = newFiles.splice(childIndex, 1);
-                newFiles.splice(index, 0, removed);
-
-                let files_indexing = {
-                    id: child.id,
-                    parent: newParentId,
-                    prev_parent: oldParent?.id,
-                    old_index: childIndex,
-                    new_index: index,
-                    prev_index: index,
-                };
-
-                newFiles = newFiles.map((file) => {
-                    if (file.id === child.id) {
-                        return { ...file, parent: parent ? [parent.id] : [] };
-                    }
-                    return file;
-                });
-
-                return {
-                    ...state,
-                    files: newFiles,
-                    changes: {
-                        ...state.changes,
-                        files_indexing: [...state.changes.files_indexing, files_indexing],
-                    },
-                };
+            }
+            if (index !== -1) {
+                state.files = state.files.slice(0, index).concat(file, state.files.slice(index));
+            } else {
+                state.files.push(file);
             }
 
-            return { ...state, files: newFiles };
+            // save to backend
+            let change: FileIndexing = {
+                id,
+                new_index: BigInt(index),
+                parent: parent
+            };
+            state.changes.files_indexing.push(change);
+            state.changes.files.push(file);
+            return {...state};
         }
-              
-
-        case 'UPDATE_PARENT':
-            const { draggedId, newParentId } = action.payload;
-            return {
-                ...state,
-                files: state.files.map(file => {
-                    if (file.id === draggedId) {
-                        return {
-                            ...file,
-                            parent: newParentId ? [newParentId] : []
-                        };
-                    }
-                    return file;
-                })
-            };
-
-        case 'REORDER_ITEMS':
-            const { fileId, position } = action.payload;
-            const draggedItemIndex = state.files.findIndex(file => file.id === draggedId);
-            const targetItemIndex = state.files.findIndex(file => file.id === id);
-            const updatedFiles = [...state.files];
-            const [draggedItem] = updatedFiles.splice(draggedItemIndex, 1);
-            
-            if (position === 'before') {
-                updatedFiles.splice(targetItemIndex, 0, draggedItem);
-            } else if (position === 'after') {
-                updatedFiles.splice(targetItemIndex + 1, 0, draggedItem);
-            }
-            
-            return {
-                ...state,
-                files: updatedFiles
-            };
 
 
         case 'UPDATE_CONTENT':

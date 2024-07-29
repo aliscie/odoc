@@ -21,12 +21,12 @@ const BreadPage: React.FC = () => {
             {pathNames.map((name, index) => {
                 const to = `/${pathNames.slice(0, index + 1).join('/')}`;
                 const isLast = index === pathNames.length - 1;
-                const displayName = name ? name.replaceAll("_", " ") : ''; // Add null check
+                // const displayName = name ? name.replaceAll("_", " ") : ''; // Add null check
                 return isLast ? (
-                    <Typography key={to}>{displayName}</Typography>
+                    <Typography key={to}>{String(name)}</Typography>
                 ) : (
                     <MuiLink component={LinkBehavior} underline="hover" color="inherit" href={to} key={to}>
-                        {displayName}
+                        {String(name)}
                     </MuiLink>
                 );
             })}

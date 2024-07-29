@@ -49,27 +49,23 @@ const DocComponent: React.FC<ItemProps> = ({ data, item, index, openItems, handl
     { content: <ChangeWorkSpace item={item} /> },
   ]
 
-  const handleDrop = async ({ draggedId, id, dragOverPosition, type, index }) => {
-    let parent = [];
-    if (dragOverPosition === 'middle') {
-        parent = [id];
-    } else {
-        parent = item.parent || [];
-    }
+    const handleDrop = async ({draggedId, targetId, dragOverPosition, type, index, clientY}) => {
 
-    const payload = {
-        draggedId,
-        newParentId: id,
-        position: dragOverPosition,
-        index,
+        let dragged = data.find(f => f.id == draggedId);
+        let target = data.find(f => f.id == targetId);
+        // logger({dragged, target, dragOverPosition, type, index, clientY});
+        let parent = [targetId]
+        if (dragOverPosition == 'under') {
+            parent = target.parent
+        }
+        dispatch(handleRedux("CHANGE_FILE_PARENT", {
+            position: dragOverPosition,
+            id: draggedId,
+            parent,
+            index: index
+        }));
     };
 
-    console.log('Dispatching CHANGE_FILE_PARENT with payload:', payload);
-
-    dispatch(handleRedux('CHANGE_FILE_PARENT', payload));
-};
-  
-  
 
   return (
     <>

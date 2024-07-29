@@ -23,7 +23,7 @@ export const CustomContractStory = ({}: ContractProps) => {
     custom_contract.contracts = [new_c_contract];
 
     return (
-        <TestWrapper store={store}>
+        <TestWrapper>
             <CustomContractComponent contract={custom_contract}/>
         </TestWrapper>
     );
