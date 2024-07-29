@@ -133,11 +133,12 @@ function useCreateChatGroup() {
         dispatch(handleRedux("TOP_DIALOG", top_dialog))
 
     }
+
     return {
         onClick: createNewGroup,
-        content: "+ Create New Group"
+        content: "+ Create New Group",
+    }
 
-    };
 }
 
 export default useCreateChatGroup;
