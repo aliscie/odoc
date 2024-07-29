@@ -72,6 +72,7 @@ header p {
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
+  padding: 16px; /* Add padding for uniformity */
 }
 
 .feature-card-title {
@@ -84,14 +85,14 @@ header p {
 }
 
 .feature-carousel {
-  margin-bottom: 10px; 
+  margin-bottom: 10px;
   position: relative;
 }
 
 .feature-carousel .slick-prev,
 .feature-carousel .slick-next {
   top: calc(25%);
-  z-index: 10; 
+  z-index: 10;
 }
 
 .feature-carousel .slick-track {
@@ -99,7 +100,7 @@ header p {
 }
 
 .feature-carousel .slick-dots {
-  margin-top: 20px; 
+  margin-top: 20px;
 }
 
 @media (max-width: 1024px) {

@@ -9,70 +9,63 @@ import ProtectionIcon from "@mui/icons-material/Security";
 
 export const features = [
   {
-    title: "Smart contracts",
-    content:
-      `At ODOC, we are driven to address the struggles faced by freelancers worldwide,
-       including those in war-affected regions like Iraq or even Russia nowadays, 
-       and individuals burdened by high commissions and taxes in countries like India.
-       Our mission is to decentralize freelance contracts, making them transparent 
-       and liberating through the power of smart contracts. We envision a platform
-       that provides unparalleled freedom and trust for freelancers.`,
+    title: "Smart Contracts",
+    content: 
+      `ODOC aims to address the struggles faced by freelancers, especially in war-affected regions 
+       or high-commission areas. By decentralizing freelance contracts with transparent smart contracts,
+       we provide unparalleled freedom and trust for freelancers worldwide.`,
     icon: <SmartContractIcon className="feature-card-icon" />,
   },
   {
-    title: "Profile trust score",
-    content:
-      `We are developing user profiles with comprehensive reliability histories 
-       and public ratings to promote transparency.
-       This fosters a highly transparent environment, empowering both freelancers 
-       and clients by encouraging trust and accountability throughout the process.
-       For example, if a user canceled a contract, it will appear in their profile.`,
+    title: "Profile Trust Score",
+    content: 
+      `We develop user profiles with comprehensive reliability histories and public ratings.
+       This transparent environment empowers freelancers and clients by encouraging trust and accountability,
+       showing details like contract cancellations in profiles.`,
     icon: <ProfileIcon className="feature-card-icon" />,
   },
   {
-    title: "Task managements",
-    content:
-      `In addition to empowering freelancers, we are creating a note-taking and task-management app,
-       prioritizing privacy by encrypting user data. 
-       This ensures that organizations like hospitals and research teams can confidently use our app.
-       Initially, we offer simple functionalities like spreadsheets, text styling, and grammar correction.
-       Users can choose to upload data to the blockchain for added security, with local storage capabilities.
-       Our permission system based on internet identity enhances privacy and data access control.`,
+    title: "Task Management",
+    content: 
+      `Our note-taking and task-management app prioritizes privacy by encrypting user data,
+       making it suitable for organizations like hospitals. Initial functionalities include spreadsheets,
+       text styling, and grammar correction, with optional blockchain storage.`,
     icon: <TaskIcon className="feature-card-icon" />,
   },
   {
-    title: "Formula and tables",
-    content:
-      `Similar to Microsoft Excel, you will have a spreadsheet where you can store your data and implement formulas.
-       Also, you can implement custom formulas like a Google translator. Last but not least,
-       you can use these spreadsheets as a backend for your services. In other words,
-       the components will act as a frontend that interacts with this spreadsheet.`,
+    title: "Formulas and Tables",
+    content: 
+      `Similar to Microsoft Excel, our platform supports spreadsheets with custom formulas,
+       like a Google translator. These spreadsheets can serve as a backend for your services,
+       interacting with frontend components.`,
     icon: <FormulaIcon className="feature-card-icon" />,
   },
   {
     title: "Views",
-    content:
-      `You can view a table in the form of a chart or gallery,
-       or in a custom view that allows you to see your data in different ways that are pleasant to the eye,
-       more expressive, cleaner, or for input like quatrains and polls.`,
+    content: 
+      `Our platform allows viewing data in various formats like charts or galleries.
+       Custom views offer expressive, clean presentations for data, enhancing the visual experience.`,
     icon: <ViewIcon className="feature-card-icon" />,
   },
   {
     title: "Social Platform",
-    content: `Users can post about jobs they created or seek jobs.`,
+    content: 
+      `Users can post job listings or seek employment opportunities, fostering a vibrant job market
+       and community interaction within our platform.`,
     icon: <SocialIcon className="feature-card-icon" />,
   },
   {
-    title: "Desktop version",
-    content:
-      `If you need only the web2 features like taking notes you can use the desktop version without transactions features.`,
+    title: "Desktop Version",
+    content: 
+      `For those who need only web2 features like note-taking, our desktop version offers
+       a streamlined experience without transaction features, focusing on productivity.`,
     icon: <DesktopIcon className="feature-card-icon" />,
   },
   {
-    title: "Minorities protection",
-    content:
-      `Instead of the SNS-voting system we will use SNS-migration system where users can migrate or stay on the old canister.
-       If the old canisters has no active users, it will be automatically deleted.`,
+    title: "Minorities Protection",
+    content: 
+      `Our SNS-migration system allows users to migrate or stay on old canisters.
+       If a canister has no active users, it will be automatically deleted, ensuring efficient management.`,
     icon: <ProtectionIcon className="feature-card-icon" />,
   },
 ];

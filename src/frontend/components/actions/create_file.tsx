@@ -30,13 +30,14 @@ const CreateFile = () => {
             content_id: [],
             workspace:"Default",
         };
+
+        console.log('Dispatching ADD_FILE with file:', file);
         dispatch(handleRedux("ADD_FILE", {new_file: file}))
         dispatch(handleRedux("ADD_CONTENT", {id, content: file_content_sample}))
         // dispatch(handleRedux("FILE_CHANGES", {change: file}));
         // closeSnackbar(loading)
         // enqueueSnackbar('New file is created!', {variant: "success"});
     };
-
 
     // return (<InputOption   title={"note page"} tooltip={"hit enter to create"} onEnter={handleCreateFile}/>)
     return (

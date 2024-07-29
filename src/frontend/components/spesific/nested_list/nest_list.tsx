@@ -1,81 +1,81 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import List from '@mui/material/List';
-import {ListSubheader} from "@mui/material";
+import { ListSubheader } from "@mui/material";
 import DocComponent from "./list_item";
 import Draggable from "../../genral/draggable";
-import {handleRedux} from "../../../redux/main";
-import {useDispatch} from "react-redux";
-
+import { handleRedux } from "../../../redux/main";
+import { useDispatch } from "react-redux";
 
 export interface NestedDataItem {
-    id: string;
-    name: string;
-    children: number[];
+  id: string;
+  name: string;
+  children: number[];
+  parent?: number[];
 }
-
 
 interface NestedListProps {
-    title: string;
-    files: Array<NestedDataItem>;
+  title: string;
+  files: Array<NestedDataItem>;
 }
 
-const NestedList: React.FC<NestedListProps> = ({files}) => {
-    const [openItems, setOpenItems] = useState<number[]>([]);
+const NestedList: React.FC<NestedListProps> = ({ files }) => {
+  const [openItems, setOpenItems] = useState<number[]>([]);
 
-    const handleClick = (index: number) => {
-        if (openItems.includes(index)) {
-            setOpenItems(openItems.filter((item) => item !== index));
-        } else {
-            setOpenItems([...openItems, index]);
+  const handleClick = (index: number) => {
+    if (openItems.includes(index)) {
+      setOpenItems(openItems.filter((item) => item !== index));
+    } else {
+      setOpenItems([...openItems, index]);
+    }
+  };
+
+  const dispatch = useDispatch();
+    const handleDrop: any = async ({ draggedId, id, dragOverPosition, type, index }) => {
+        if (draggedId !== id) {
+            // Dispatch the action to update the parent or order
+            if (dragOverPosition === 'middle') {
+            dispatch(handleRedux('CHANGE_FILE_PARENT', { 
+                draggedId, 
+                newParentId: id, 
+                position: dragOverPosition, 
+                index 
+            }));
+            } else {
+            dispatch(handleRedux('REORDER_ITEMS', { 
+                draggedId, 
+                id, 
+                position: dragOverPosition 
+            }));
+            }
         }
     };
 
-    const dispatch = useDispatch();
-    const handleDrop: any = async ({draggedId, id, dragOverPosition, type, index}) => {
-        dispatch(handleRedux("CHANGE_FILE_PARENT", {
-            position: dragOverPosition,
-            index,
-            id: draggedId,
-            parent: [],
-            index
-        }));
-    };
-
-    return (
-        <div>
-            <List
-
-                sx={{width: '100%', maxWidth: 360, margin: '5px'}}
-                component="nav"
-                aria-labelledby="nested-list-subheader"
-            >
-                <Draggable preventDragUnder={true}
-                           index={0}
-                           onDrop={handleDrop}
-                >
-                    <div style={{height: '5px', width: '100%'}}></div>
-                </Draggable>
-                {files.map((item, index) => (
-                    item.parent && item.parent.length == 0 && <DocComponent
-                        key={item.id}
-                        data={files}
-                        item={item}
-                        index={index}
-                        openItems={openItems}
-                        handleClick={handleClick}
-                        isChild={false}
-                    />
-                ))}
-                {/*<Draggable*/}
-                {/*    preventDragUnder={true}*/}
-                {/*    index={-1}*/}
-                {/*    onDrop={handleDrop}*/}
-                {/*>*/}
-                {/*    <div style={{height: '5px', width: '100%'}}></div>*/}
-                {/*</Draggable>*/}
-            </List>
-        </div>
-    );
+  return (
+    <List
+      sx={{ width: '100%', bgcolor: 'background.paper' }}
+      component="nav"
+      subheader={<ListSubheader component="div">Files</ListSubheader>}
+    >
+      {files.map((item, index) => (
+        <Draggable
+          index={index}
+          id={item.id}
+          key={item.id}
+          onDrop={handleDrop}
+        >
+          <DocComponent
+            key={item.id}
+            index={index}
+            data={files}
+            item={item}
+            openItems={openItems}
+            handleClick={handleClick}
+            pl={1}
+          />
+        </Draggable>
+      ))}
+    </List>
+  );
 };
 
 export default NestedList;

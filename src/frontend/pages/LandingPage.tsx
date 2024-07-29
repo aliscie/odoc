@@ -6,7 +6,6 @@ import './styles/LandingPage.css';
 import { Button, Divider, Typography, Container, Grid, Box, Card, CardContent } from "@mui/material";
 import FullWidthTabs from "./welcome"; 
 import StyledAccordion from '../components/genral/styled_accordion';
-import Slider from "react-slick";
 import { features } from '../data/odoc_features';
 import { roadMap } from '../data/odoc_roadmap';
 import FeatureModal from '../components/genral/feature_modal';
@@ -31,35 +30,6 @@ const LandingPage: React.FC = () => {
         setSelectedFeature(null);
     };
 
-    const settings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 3000,
-        pauseOnHover: true,
-        cssEase: 'linear',
-        arrows: true,
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                }
-            },
-            {
-                breakpoint: 600,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                }
-            }
-        ]
-    };
-    
     return (
         <Container maxWidth="lg" className="landing-page">
             <Grid container spacing={4}>
@@ -99,32 +69,31 @@ const LandingPage: React.FC = () => {
                     Our Features
                 </Typography>
 
-                <Slider {...settings} className="feature-carousel">
+                <Grid container spacing={2}>
                     {features.map((feature, index) => (
-                        <Card key={index} className="feature-card" sx={{ margin: 1 }}>
-                            <CardContent className="feature-card-content">
-                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '16px' }}>
-                                    {feature.icon}
-                                </div>
-                                <Typography variant="h5" className="feature-card-title">{feature.title}</Typography>
-                                <Typography variant="body2" className="feature-card-body">
-                                    {feature.content.length > 100 ? `${feature.content.substring(0, 70)}...` : feature.content}
-                                </Typography>
-                                <Button variant="outlined" color="primary" sx={{ marginTop: 2, marginInline: 7 }}  onClick={() => handleClickOpen(feature)}>
-                                    Learn More
-                                </Button>
-                            </CardContent>
-                        </Card>
+                        <Grid item xs={12} sm={6} md={4} key={index}>
+                            <Card className="feature-card" sx={{ margin: 1 }}>
+                                <CardContent className="feature-card-content">
+                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '16px' }}>
+                                        {feature.icon}
+                                    </div>
+                                    <Typography variant="h5" className="feature-card-title">{feature.title}</Typography>
+                                    <Typography variant="body2" className="feature-card-body">
+                                        {feature.content}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
                     ))}
-                </Slider>
+                </Grid>
             </section>
 
             <Divider sx={{ my: 4 }} />
 
             <section className="roadmap">
                 <Typography variant="h4" align="center" gutterBottom>
-                        Road Map
-                    </Typography>
+                    Road Map
+                </Typography>
 
                 {roadMap.map((item, index) => (
                     <StyledAccordion key={index} title={item.title} content={item.content} isDone={item.is_done} />
