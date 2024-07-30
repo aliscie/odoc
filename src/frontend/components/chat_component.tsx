@@ -15,7 +15,7 @@ interface Props {
 }
 
 function ChatsComponent(props: Props) {
-    let chat_group = useCreateChatGroup();
+    let {chat_group, searchValue} = useCreateChatGroup();
     // console.log({"messages"})// TODO this render like 30 times
     const {profile} = useSelector((state: any) => state.filesReducer);
     let dispatch = useDispatch();
@@ -36,15 +36,15 @@ function ChatsComponent(props: Props) {
             }
         })()
     }, []);
-
+    let searched_messages = messages.filter((m: Message) => m.message.toLowerCase().includes(searchValue.toLowerCase()))
     let options: any = [
         {...chat_group}
     ]
 
     if (loading) {
         options.push({content: <CircularProgress/>})
-    } else if (messages) {
-        messages.map((message: Message) => {
+    } else if (searched_messages) {
+        searched_messages.map((message: Message) => {
             options.push({content: <MessageNotification {...message}/>})
         })
     } else {

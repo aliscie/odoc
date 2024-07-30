@@ -1,13 +1,15 @@
 import React, {useRef, useState} from "react";
 import {handleRedux} from "../../redux/main";
 import {useDispatch, useSelector} from "react-redux";
-import {MenuItem, Select, TextField} from "@mui/material";
+import {Button, MenuItem, Tooltip, Select, TextField, Tooltip} from "@mui/material";
 import MultiAutoComplete from "../genral/multi_autocompelte";
 import {actor} from "../../App";
 import {Chat, Message, WorkSpace} from "../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import {useSnackbar} from "notistack";
 import {randomString} from "../../data_processing/data_samples";
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import Input from '@mui/material/Input';
 
 interface SelectMembersProps {
     onChange: (friends: any) => void;
@@ -133,10 +135,28 @@ function useCreateChatGroup() {
         dispatch(handleRedux("TOP_DIALOG", top_dialog))
 
     }
+    const [searchValue, setSearchValue] = useState("");
+    const GroupOptions = () => {
+        return <div>
+            <Tooltip arrow title={"Create new group"}>
+                <Button onClick={createNewGroup}><GroupAddIcon/></Button>
+            </Tooltip>
+            <Input
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                sx={{ml: 1, flex: 1}}
+                placeholder="Search username, content, group name"
+                inputProps={{'aria-label': 'search google maps'}}
+            />
+        </div>
+    }
     return {
-        onClick: createNewGroup,
-        content: "+ Create New Group"
+        chat_group: {
+            pure: true,
+            content: <GroupOptions/>
 
+        },
+        searchValue
     };
 }
 
