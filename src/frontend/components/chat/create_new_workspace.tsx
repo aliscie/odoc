@@ -6,8 +6,10 @@ import {WorkSpace} from "../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import {randomString} from "../../data_processing/data_samples";
 import {actor} from "../../App";
+import {useSnackbar} from "notistack";
 
 function useCreateWorkSpace() {
+    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const {workspaces, profile} = useSelector((state: any) => state.filesReducer);
     const dispatch = useDispatch();
 
@@ -48,7 +50,7 @@ function useCreateWorkSpace() {
             };
             let save_work_space =   actor && await actor.save_work_space(new_workspace);
             dispatch(handleRedux("ADD_WORKSPACE", {new_workspace}))
-            console.log({save_work_space});
+            enqueueSnackbar("WorkSpace created", {variant: "success"});
         },
         content: new_group,
     };

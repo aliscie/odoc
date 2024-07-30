@@ -99,7 +99,7 @@ import {ValueId} from "../../config/customizer-plugins";
 // import {captionPlugin} from "../../lib/plate/demo/plugins/captionPlugin";
 
 
-export const usePlaygroundPlugins = (inputs: {
+const usePlaygroundPlugins = (inputs: {
     components?: Record<string, PlatePluginComponent>;
     id?: ValueId;
 }) => {
@@ -416,7 +416,6 @@ export function OdocEditor(props: OdocEditorProps) {
             }
         });
     }
-    
 
 
     if (Array.isArray(extraPlugins)) {
@@ -425,7 +424,7 @@ export function OdocEditor(props: OdocEditorProps) {
                 slateSlashRules.push({
                     icon: item.icon,
                     onSelect: (editor) => {
-                        insertNode(editor, { type: item.key, children: [{ text: "" }] });
+                        insertNode(editor, {type: item.key, children: [{text: ""}]});
                         onInsertComponent(item);
                     },
                     value: item.key
@@ -436,14 +435,14 @@ export function OdocEditor(props: OdocEditorProps) {
 
     function initializeExtraPlugins(plugins) {
         if (!plugins) {
-          console.warn("plugins parameter is undefined. Initializing as an empty array.");
-          return [];
+            console.warn("plugins parameter is undefined. Initializing as an empty array.");
+            return [];
         }
         return plugins.map(item => item.plugin());
-      }
-      
-      let instantiatedExtraPlugins = initializeExtraPlugins(extraPlugins);
-      
+    }
+
+    let instantiatedExtraPlugins = initializeExtraPlugins(extraPlugins);
+
 
     const combinedPlugins = [...plugins, ...instantiatedExtraPlugins];
 
@@ -525,4 +524,5 @@ export function OdocEditor(props: OdocEditorProps) {
         </DndProvider>
     );
 }
+
 export default OdocEditor;

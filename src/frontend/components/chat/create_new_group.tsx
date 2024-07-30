@@ -77,7 +77,7 @@ function useCreateChatGroup() {
                 let chat: Chat = {
                     'id': chat_id,
                     'creator': Principal.fromText(profile.id),
-                    'members': members.map(m => m.id),
+                    'members': members ? members.map(m => m.id) : [],
                     'messages': [message],
                     'name': nameRef.current,
                     'admins': admins.map(a => a.id),

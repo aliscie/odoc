@@ -19,12 +19,13 @@
       "frontend": {
         "entrypoint": "src/frontend/index.html"
       },
-      "source": ["build"],
+      "source": [
+        "build"
+      ],
       "type": "assets"
     }
   },
-   "output_env_file": ".env",
-   
+  "output_env_file": ".env",
   "defaults": {
     "build": {
       "output": "canisters",
