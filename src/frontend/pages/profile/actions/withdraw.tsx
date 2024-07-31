@@ -3,6 +3,7 @@ import {handleRedux} from "../../../redux/main";
 import {useDispatch} from "react-redux";
 import LoaderButton from "../../../components/genral/loader_button";
 import {actor} from "../../../App";
+import {AccountBalanceWallet} from "@mui/icons-material";
 
 function Withdraw(props: any) {
     const dispatch = useDispatch();
@@ -16,6 +17,8 @@ function Withdraw(props: any) {
     }
 
     return (<LoaderButton
+        variant="outlined"
+        startIcon={<AccountBalanceWallet/>}
         onClick={handleWithdraw}
     >Withdraw</LoaderButton>)
 }

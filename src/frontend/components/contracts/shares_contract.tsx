@@ -532,7 +532,7 @@ export default function SharesContractComponent(props: any) {
         console.error("// ------------ data is empty ------------\\")
         return <div>Error</div>
     }
-    const [title, setTitle] = useState(contracts[table_content.id].title);
+    const [title, setTitle] = useState(contracts[table_content.id] && contracts[table_content.id].name);
     return (
         <div contentEditable={false}
              style={{

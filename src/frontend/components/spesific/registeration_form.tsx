@@ -31,7 +31,6 @@ function RegistrationForm() {
                 setLoading(true);
                 const imageByteData = await convertToBytes(image);
                 setPhoto(image);
-                console.log("Image byte: ", imageByteData);
                 setPhotoByte(imageByteData)
                 setLoading(false);
             } catch (error) {
@@ -54,8 +53,8 @@ function RegistrationForm() {
         const loading = enqueueSnackbar(loaderMessage, {variant: "info"});
         const input: RegisterUser = {
             name: [formValues.username || ""],
-            description: [formValues.bio || ""],
-            photo: !photo ? [[]] : photo,
+            description: [String(formValues.bio) || ""],
+            photo: photoByte ? [photoByte] : [],
         };
 
         try {

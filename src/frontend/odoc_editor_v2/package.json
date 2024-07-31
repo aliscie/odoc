@@ -1,7 +1,8 @@
 {
   "name": "odoc_editor_v2",
   "main": "index.tsx",
-  "version": "2.1.8",
+  "module": "dist/index.esm.js",
+  "version": "2.2.0",
   "files": [
     "dist",
     "README.md"

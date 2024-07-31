@@ -8,6 +8,9 @@ interface LoaderButtonProps {
     onClick: any,
     children: any;
     disabled?: boolean;
+    startIcon?: any;
+    color?: "inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning" | undefined;
+    variant?: "text" | "outlined" | "contained" | undefined;
 }
 
 function LoaderButton(props: LoaderButtonProps) {
@@ -31,9 +34,9 @@ function LoaderButton(props: LoaderButtonProps) {
         loading={loading}
         disabled={props.disabled}
         // loadingPosition="start"
-        // startIcon={<SaveIcon/>}
+        startIcon={props.startIcon}
         onClick={handleClick}
-        variant="text"
+        variant={props.variant || 'text'}
 
     >
         {props.children}

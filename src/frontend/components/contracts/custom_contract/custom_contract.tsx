@@ -36,6 +36,9 @@ import ChangeType from "./column_menu/column_type";
 import {Input} from "@mui/material";
 import {CCell} from "../../../../../.dfx/ic/canisters/backend/service.did";
 import {Principal} from "@dfinity/principal";
+import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
+import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
+import Button from "@mui/material/Button";
 
 interface VIEW {
     id?: string,
@@ -516,6 +519,21 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         default:
             break
     }
+    const [expand, setExpand] = useState(false);
+    if (!expand) {
+        return (<div>
+            <Input defaultValue={title || "Untitled"} onBlur={(e) => renameContract(e.target.value)}/>
+            <Button
+                onClick={() => {
+                    setExpand(true)
+                }}
+            >
+                <UnfoldMoreIcon
+
+                />
+            </Button>
+        </div>)
+    }
     return (
         <CustomDataGrid
             columnMenuSlots={columnMenuSlots}
@@ -532,6 +550,11 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                     <BasicMenu SelectOption={selectOption} options={options}>
                         {view && (view.name || view.type)}
                     </BasicMenu>
+                    <UnfoldLessIcon
+                        onClick={() => {
+                            setExpand(false)
+                        }}
+                    />
                     <BasicMenu SelectOption={mainSelectOption} options={mainOptions}>
                         <MoreVertIcon/>
                     </BasicMenu>
