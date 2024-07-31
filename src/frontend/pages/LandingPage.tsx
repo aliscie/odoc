@@ -33,35 +33,6 @@ const LandingPage: React.FC = () => {
         setSelectedFeature(null);
     };
 
-    const settings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 3,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 3000,
-        pauseOnHover: true,
-        cssEase: 'linear',
-        arrows: true,
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                }
-            },
-            {
-                breakpoint: 600,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                }
-            }
-        ]
-    };
-
     return (
         <Container maxWidth="lg" className="landing-page">
             <Grid container spacing={4}>
@@ -102,16 +73,26 @@ const LandingPage: React.FC = () => {
                 <Typography variant="h4" align="center" gutterBottom>
                     Our Features
                 </Typography>
-                <section className="features">
-                    {features.map((card, index) => (
-                        <Card key={index} title={card.title}>
-                            {card.content}
-                        </Card>
+
+                <Grid container spacing={2}>
+                    {features.map((feature, index) => (
+                        <Grid item xs={12} sm={6} md={4} key={index}>
+                            <Card className="feature-card" sx={{ margin: 1 }}>
+                                <CardContent className="feature-card-content">
+                                    <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
+                                        {feature.icon}
+                                    </Box>
+                                    <Typography variant="h5" className="feature-card-title">{feature.title}</Typography>
+                                    <Typography variant="body2" className="feature-card-body">
+                                        {feature.content}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
                     ))}
-
-                </section>
+                </Grid>
             </section>
-
+            
             <Divider sx={{my: 4}}/>
 
             <section className="roadmap">
