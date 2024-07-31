@@ -5,7 +5,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
-import {Tooltip} from "@mui/material";
+import {Tooltip, Box, IconButton} from "@mui/material";
 import * as React from "react";
 import LoaderButton from "../../components/genral/loader_button";
 import {actor} from "../../App";
@@ -13,6 +13,8 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import {Friend} from "../../../declarations/backend/backend.did";
 import RateUser from "../../components/spesific/rate_user";
 import {UserAvatar} from "../../components/genral/post_component";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel"; 
 
 interface FriendProps {
     id: string,
@@ -146,11 +148,11 @@ function secondaryActionSwitch(props) {
             );
         case 'senderconfirmedfriend':
             return (
-                <LoaderButton onClick={async () => await handleUnfriend(id)}>Unfriend</LoaderButton>
+                <LoaderButton onClick={async () => await handleUnfriend(id)} color="error" >Unfriend</LoaderButton>
             );
         case 'is_receiverconfirmedfriend':
             return (
-                <LoaderButton onClick={async () => await handleUnfriend(id)}>Unfriend</LoaderButton>
+                <LoaderButton onClick={async () => await handleUnfriend(id)} color="error">Unfriend</LoaderButton>
             );
         case '':
             return (
@@ -164,12 +166,24 @@ function secondaryActionSwitch(props) {
             return (
                 <>
                     {!confirmed && !is_sender && (
-                        <>
-                            <Tooltip title={"Friend request pending"}>
-                                <LoaderButton onClick={async () => await handleConfirm(id)}>Confirm</LoaderButton>
+                        <Box display="flex" gap={1}>
+                            <Tooltip title={"Confirm"}>
+                                <IconButton
+                                    onClick={async () => await handleConfirm(id)}
+                                    color="success"
+                                >
+                                    <CheckCircleIcon />
+                                </IconButton>
                             </Tooltip>
-                            <LoaderButton onClick={async () => await handleReject(id)}>Reject</LoaderButton>
-                        </>
+                            <Tooltip title={"Reject"}>
+                                <IconButton
+                                    onClick={async () => await handleReject(id)}
+                                    color="error"
+                                >
+                                    <CancelIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
                     )}
                 </>
             );
@@ -178,57 +192,46 @@ function secondaryActionSwitch(props) {
 
 
 export function FriendCom(props: FriendProps) {
-
-
-    return <ListItem
-        secondaryAction={secondaryActionSwitch(props)}
-    >
-        <ListItemAvatar>
-            <UserAvatar {...props} />
-        </ListItemAvatar>
-        <ListItemText id={props.labelId} primary={props.name}/>
+    return (
         <ListItem>
-            <RateUser rate={props.rate || 0} id={props.id}/>
+            <ListItemAvatar>
+                <UserAvatar {...props} />
+            </ListItemAvatar>
+            <Box display="flex" alignItems="center" width="100%">
+                <Box flexGrow={1}>
+                    <RateUser rate={props.rate || 0} id={props.id} />
+                </Box>
+                <Box display="flex" justifyContent="flex-end">
+                    {secondaryActionSwitch(props)}
+                </Box>
+            </Box>
         </ListItem>
-    </ListItem>
-
+    );
 }
 
 function Friends(props: any) {
-
-    const {
-        profile,
-    } = useSelector((state: any) => state.filesReducer);
+    const { profile } = useSelector((state: any) => state.filesReducer);
 
     if (!props.friends) {
-        return <></>
+        return <></>;
     }
 
     return (
-        <List dense>
-
-            {props.friends.map((value) => {
-                let user = value.receiver.id != profile.id ? value.receiver : value.sender
-                const labelId = `checkbox-list-secondary-label-${value.receiver.name}`;
-                if (value.confirmed) {
-                    return (<ListItem
-                        key={value.receiver && value.receiver.name}
-                        disablePadding
-                    >
-                        <FriendCom {...user} {...value} is_friend={true} labelId={labelId}/>
-                    </ListItem>)
-                }
-                return (
-                    <ListItem
-                        key={value.receiver.name}
-                        disablePadding
-                    >
-                        <FriendCom labelId={labelId} {...user} {...value}/>
-                    </ListItem>
-                );
-            })}
-        </List>
+        <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <List dense>
+                {props.friends.map((value) => {
+                    let user = value.receiver.id !== profile.id ? value.receiver : value.sender;
+                    const labelId = `checkbox-list-secondary-label-${value.receiver.name}`;
+                    return (
+                        <ListItem key={user.id} disablePadding>
+                            <FriendCom {...user} {...value} is_friend={value.confirmed} labelId={labelId} />
+                        </ListItem>
+                    );
+                })}
+            </List>
+        </Box>
     );
 }
+
 
 export default Friends
