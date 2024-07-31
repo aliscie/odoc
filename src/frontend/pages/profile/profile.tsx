@@ -206,13 +206,13 @@ export default function ProfileComponent() {
                         </CardContent>
                     </Card>
                     <Divider sx={{my: 4}}/>
-                    {wallet && <BasicTabs
+                    <BasicTabs
                         items={{
-                            "Friends": <Friends friends={friends}/>,
-                            "Transactions": <TransactionHistory items={wallet.exchanges}/>,
-                            "Reputation": user_history && <UserHistoryCom {...user_history}/>,
+                            "Friends": <Friends friends={friends} />,
+                            "Reputation": user_history && <UserHistoryCom {...user_history} />,
+                            ...(wallet && { "Transactions": <TransactionHistory items={wallet.exchanges} /> }),
                         }}
-                    />}
+                    />
                 </Grid>
             </Grid>
         </Container>
