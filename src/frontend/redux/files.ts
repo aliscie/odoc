@@ -195,8 +195,10 @@ export function filesReducer(state: any = initialState, action: any) {
             }
 
         case 'CHANGE_FILE_PARENT': {
-            const {position, id, parent, index} = action;
-            console.log({index})
+            let {position, id, parent, index} = action;
+
+            console.log({action});
+
             let file = state.files.find(f => f.id === id);
             // 1. remove file
             state.files = state.files.filter(f => f.id !== id);
@@ -220,12 +222,13 @@ export function filesReducer(state: any = initialState, action: any) {
                 }
             }
             if (index !== -1) {
+
                 state.files = state.files.slice(0, index).concat(file, state.files.slice(index));
             } else {
                 state.files.push(file);
             }
-
             // save to backend
+            index = index === -1 ? state.files.length + 1 : index;
             let change: FileIndexing = {
                 id,
                 new_index: BigInt(index),

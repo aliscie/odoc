@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
+    "jsx": "react-jsx",
     "declaration": true,
     "module": "esnext",
-    "jsx": "react",
     "downlevelIteration": true,
     "outDir": "dist",
     "target": "es2020",
@@ -13,7 +13,7 @@
     ],
     "useDefineForClassFields": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       "@/*": [
         "src/*"

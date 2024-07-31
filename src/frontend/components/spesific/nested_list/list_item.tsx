@@ -59,6 +59,9 @@ const DocComponent: React.FC<ItemProps> = ({data, item, index, openItems, handle
         let parent = [targetId]
         if (dragOverPosition == 'under') {
             parent = target.parent
+        } else if (dragOverPosition == 'above') {
+            parent = target.parent
+            index--;
         }
         dispatch(handleRedux("CHANGE_FILE_PARENT", {
             position: dragOverPosition,

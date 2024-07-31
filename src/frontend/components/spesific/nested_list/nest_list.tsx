@@ -65,13 +65,13 @@ const NestedList: React.FC<NestedListProps> = ({files}) => {
                         isChild={false}
                     />
                 ))}
-                {/*<Draggable*/}
-                {/*    preventDragUnder={true}*/}
-                {/*    index={-1}*/}
-                {/*    onDrop={handleDrop}*/}
-                {/*>*/}
-                {/*    <div style={{height: '5px', width: '100%'}}></div>*/}
-                {/*</Draggable>*/}
+                <Draggable
+                    preventDragUnder={true}
+                    index={-1}
+                    onDrop={handleDrop}
+                >
+                    <div style={{height: '5px', width: '100%'}}></div>
+                </Draggable>
             </List>
         </div>
     );

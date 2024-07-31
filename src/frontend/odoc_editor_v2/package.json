@@ -1,7 +1,7 @@
 {
   "name": "odoc_editor_v2",
-  "main": "src/components/pages/editor.tsx",
-  "version": "2.1.5",
+  "main": "index.tsx",
+  "version": "2.1.8",
   "files": [
     "dist",
     "README.md"
@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "tsc",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint  --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "build-storybook": "storybook build",
     "storybook": "storybook dev -p 6006"
