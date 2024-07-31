@@ -226,7 +226,6 @@ export default function ProfileComponent() {
                 {wallet && <BasicTabs
                 items={{
                     "Friends": <Friends friends={friends}/>,
-                    "Contracts": <ContractsHistory/>,
                     "Transactions": <TransactionHistory items={wallet.exchanges}/>,
                     "Reputation": user_history && <UserHistoryCom {...user_history}/>,
                 }}

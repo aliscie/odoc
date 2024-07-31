@@ -5,6 +5,7 @@ import {CustomContractComponent} from "../../components/contracts/custom_contrac
 import SharesContractComponent from "../../components/contracts/shares_contract";
 import {shares_contract} from "../../data_processing/data_samples";
 import {Divider} from "@mui/material";
+import ListItem from "@mui/material/ListItem";
 
 
 function ContractsHistory(props: any) {
@@ -14,16 +15,14 @@ function ContractsHistory(props: any) {
         <List dense>
             {Object.values(contracts).map((contract: CustomContractComponent | any) => {
                 if (contract.contracts) {
-                    return <div>
+                    return <ListItem>
                         <CustomContractComponent contract={contract}/>
-                        <Divider/>
-                    </div>
+                    </ListItem>
                 } else {
                     let c = {...shares_contract, contract_id: contract.contract_id}
-                    return <div>
+                    return <ListItem>
                         <SharesContractComponent {...c} />
-                        <Divider/>
-                    </div>
+                    </ListItem>
                 }
 
             })}

@@ -86,6 +86,7 @@ pub struct SharePaymentOption {
 
 #[derive(Eq, PartialEq, Clone, Debug, Serialize, CandidType, Deserialize)]
 pub struct SharesContract {
+    pub(crate) name: String,
     pub(crate) contract_id: ContractId,
     pub(crate) shares: Vec<Share>,
     pub(crate) payments: Vec<SharePayment>,
@@ -111,6 +112,7 @@ pub struct SharesContract {
 impl SharesContract {
     pub fn new(shares: Vec<Share>) -> SharesContract {
         let share = SharesContract {
+            name: "".to_string(),
             contract_id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
             shares,
             payments: vec![],

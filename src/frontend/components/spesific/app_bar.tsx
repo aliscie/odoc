@@ -25,7 +25,7 @@ import ChatsComponent from "../chat_component";
 import Workspaces from "./work_spaces";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { Z_INDEX_TOP_NAVBAR } from "../../constants/zIndex";
-
+import GavelIcon from '@mui/icons-material/Gavel';
 export function NavAppBar() {
     const dispatch = useDispatch();
     const {isNavOpen, isDarkMode, isLoggedIn, searchTool} = useSelector((state: any) => state.uiReducer);
@@ -102,6 +102,7 @@ export function NavAppBar() {
                             }}
                             options={[
                                 { content: "Profile", to: "profile", icon: <Person2Icon /> },
+                                { content: "Contracts", to: "contracts", icon: <GavelIcon /> },
                                 { content: 'Settings', icon: <SettingsIcon /> },
                                 { content: 'Logout', to: "/", icon: <LogoutIcon />, onClick: handleLogout },
                             ]}

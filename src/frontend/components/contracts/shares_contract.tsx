@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {GridRenderCellParams} from '@mui/x-data-grid';
-import {Button} from '@mui/material';
+import {Button, Input} from '@mui/material';
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/main";
 import {
@@ -523,7 +523,7 @@ export default function SharesContractComponent(props: any) {
         }
 
     }
-
+    let current_share_contract = contracts
     let render_shares_requests = contracts && contracts[table_content.id] && contracts[table_content.id].shares_requests && contracts[table_content.id].shares_requests.map((req: [string, ShareRequest]) => {
         return {content: req[1] && req[1].id, Click: async () => handleClickReq(req[1])}
     }) || [];
@@ -532,6 +532,7 @@ export default function SharesContractComponent(props: any) {
         console.error("// ------------ data is empty ------------\\")
         return <div>Error</div>
     }
+    const [title, setTitle] = useState(contracts[table_content.id].title);
     return (
         <div contentEditable={false}
              style={{
@@ -548,6 +549,22 @@ export default function SharesContractComponent(props: any) {
                 // addColumn={addColumn}
                 updateRow={updateRow}
                 tools={<>
+                    <Input
+                        defaultValue={title || "Untitled"}
+                        onBlur={(e) => {
+                            let new_title = {
+                                contract: {
+                                    "SharesContract": {
+                                        ...contracts[table_content.id],
+                                        name: e.target.value
+                                    }
+                                }
+                            };
+                            dispatch(handleRedux("UPDATE_CONTRACT", new_title));
+                            dispatch(handleRedux("CONTRACT_CHANGES", new_title));
+                            setTitle(e.target.value)
+                        }}
+                    />
                     <BasicMenu
                         options={[
                             {content: "Shares", Click},

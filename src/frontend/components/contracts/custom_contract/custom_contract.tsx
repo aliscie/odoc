@@ -47,6 +47,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
     const {profile, all_friends, wallet} = useSelector((state: any) => state.filesReducer);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const [view, setView] = useState<VIEW>({id: "", name: PROMISES, type: PROMISES});
+    const [title, setTitle] = useState<string>(contract.name);
     let current_contract = contract.contracts.find((c: CContract) => c.id === view.id);
     const {evaluate, addVarsToParser} = useParser({contract: current_contract, main_contract: contract});
     const dispatch = useDispatch();
@@ -191,7 +192,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             case PROMISES:
                 const new_payment: CPayment = {
 
-                    'id' : randomString(),
+                    'id': randomString(),
                     'status': {'None': null},
                     'date_created': 0,
                     'date_released': 0,
@@ -200,19 +201,19 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                     'sender': Principal.fromText(profile.id),
                     'amount': 0,
                     'receiver': Principal.fromText("2vxsx-fae"),
-  //
-  //                   'date_created': 0,
-  //                   'date_released': 0,
-  //                   contract_id: contract.id,
-  //                   id: randomString(),
-  //                   amount: 0,
-  //                   sender: Principal.fromText(profile.id),
-  //                   receiver: Principal.fromText("2vxsx-fae"),
-  //                   status: {'None': null},
-  //                   released: false,
-  //                   objected: false,
-  //                   confirmed: false,
-  //                   cells: [],
+                    //
+                    //                   'date_created': 0,
+                    //                   'date_released': 0,
+                    //                   contract_id: contract.id,
+                    //                   id: randomString(),
+                    //                   amount: 0,
+                    //                   sender: Principal.fromText(profile.id),
+                    //                   receiver: Principal.fromText("2vxsx-fae"),
+                    //                   status: {'None': null},
+                    //                   released: false,
+                    //                   objected: false,
+                    //                   confirmed: false,
+                    //                   cells: [],
                 };
                 const updated_promises = [...contract.promises];
                 updated_promises.splice(position, 0, new_payment);
@@ -448,6 +449,11 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         setView({...view, name: name});
     };
 
+    const renameContract = (name: string) => {
+        updateContract({...contract, name: name});
+        setTitle(name);
+    };
+
     let data = {};
 
     switch (view?.type) {
@@ -522,6 +528,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             updateRow={updateRow}
             tools={
                 <>
+                    <Input defaultValue={title || "Untitled"} onBlur={(e) => renameContract(e.target.value)}/>
                     <BasicMenu SelectOption={selectOption} options={options}>
                         {view && (view.name || view.type)}
                     </BasicMenu>

@@ -8,6 +8,7 @@ import ProfileComponent from "./profile/profile";
 import Discover from "./discover";
 import UserPage from "./user";
 import ChatsPage from "./chates_page";
+import ContractsHistory from "./profile/contractss_history";
 
 
 function Pages() {
@@ -18,6 +19,7 @@ function Pages() {
         <Route path="/share/*" element={<ShareFilePage/>}/>
         <Route path="/user/*" element={<UserPage/>}/>
         <Route path="/chats/*" element={<ChatsPage/>}/>
+        <Route path="/contracts/*" element={<ContractsHistory/>}/>
         <Route path="*" element={<FileContentPage/>}/>
     </Routes>
 
