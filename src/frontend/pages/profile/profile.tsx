@@ -27,13 +27,18 @@ import BasicTabs from "./history";
 import TransactionHistory from "./transaction_history";
 import {actor} from "../../App";
 import {UserHistoryCom} from "../user";
+import ShareProfile from "./share_profile_button";
+import NotFoundErr from "../../tests/utils/not_found_page";
 
 
 export default function ProfileComponent() {
 
 
     const dispatch = useDispatch();
-    const {profile, friends, profile_history, wallet} = useSelector((state: any) => state.filesReducer);
+    const {Anonymous, profile, friends, profile_history, wallet} = useSelector((state: any) => state.filesReducer);
+    if (Anonymous || !profile) {
+        return <NotFoundErr text={"Please login to view this page"}/>
+    }
 
     const [user_history, setUserHistory] = React.useState<UserHistoryCom | null>(null);
     const [profileData, setProfileData] = React.useState({
@@ -108,39 +113,39 @@ export default function ProfileComponent() {
                                             style={{display: "none"}}
                                         />
                                         <label htmlFor="photo">
-                                            <IconButton component="span">
-                                                <Avatar
-                                                    alt="Profile Photo"
-                                                    src={convertToBlobLink(profileData.photo)}
-                                                    sx={{width: 128, height: 128, mb: 2}}
-                                                >
-                                                    <Add/>
-                                                </Avatar>
-                                            </IconButton>
+                                            <Tooltip title={'click here to change your profile photo'} arrow>
+                                                <IconButton component="span">
+                                                    <Avatar
+                                                        alt="Profile Photo"
+                                                        src={convertToBlobLink(profileData.photo)}
+                                                        sx={{width: 128, height: 128, mb: 2}}
+                                                    >
+                                                        <Add/>
+                                                    </Avatar>
+                                                </IconButton>
+                                            </Tooltip>
                                         </label>
                                     </Box>
-                                    <Typography variant="subtitle1" align="center" gutterBottom>
-                                        Change Profile Photo
-                                    </Typography>
                                     <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2}}>
                                         {profile_history &&
                                             <Tooltip arrow title={"Your actions rate"}>
-                                                <Rating readOnly name="half-rating"
-                                                        defaultValue={profile_history.actions_rate}
-                                                        precision={0.5}/>
+                                                Success score: <Rating readOnly name="half-rating"
+                                                                       defaultValue={profile_history.actions_rate}
+                                                                       precision={0.5}/>
                                             </Tooltip>}
                                     </Box>
                                     <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                         {profile_history &&
                                             <Tooltip arrow title={"Your users rate"}>
-                                                <Rating readOnly name="half-rating"
-                                                        defaultValue={profile_history.users_rate}
-                                                        precision={0.5}/>
+                                                Rates by others <Rating readOnly name="half-rating"
+                                                                        defaultValue={profile_history.users_rate}
+                                                                        precision={0.5}/>
                                             </Tooltip>}
                                     </Box>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <List>
+                                        <ShareProfile/>
                                         {Object.entries(profileData).map(([key, value]) => {
                                             if (['photo', 'changed'].includes(key)) {
                                                 return null;

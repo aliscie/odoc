@@ -57,7 +57,7 @@ function ShareFilePage(props: any) {
                 contentEditable={false}
                 componentsOptions={[
                     payment_contract,
-                    {type: "shares_contract"},
+                    // {type: "shares_contract"},
                     {type: "custom_contract"},
                 ]}
                 renderElement={EditorRenderer}

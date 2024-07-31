@@ -73,7 +73,7 @@ export var initialState = {
 
 export async function get_initial_data() {
 
-    let isLoggedIn = await agent.is_logged() // TODO avoid repetition `isLoggedIn` is already used in ui.ts
+    let isLoggedIn = await agent.is_logged()
     let data: undefined | { Ok: InitialData } | { Err: string } = actor && await actor.get_initial_data();
 
     initialState["Anonymous"] = data.Err == "Anonymous user." && isLoggedIn;
@@ -426,7 +426,6 @@ export function filesReducer(state: any = initialState, action: any) {
             friends = state.friends.filter((f) => {
                 let sender = f.sender.id;
                 let receiver = f.receiver.id
-                // TODO REMOVE THIS UNESSERY CHECKING
                 if (typeof sender != 'string') {
                     sender = sender.toText();
                 }

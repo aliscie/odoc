@@ -24,7 +24,7 @@ import {
     updateCustomContractColumns,
     updateCustomContractRows
 } from "./utls";
-import {CONTRACT, CREATE_CONTRACT, PAYMENTS, PROMISES} from "./types";
+import {ACTION_BUTTON, CONTRACT, CREATE_ACTION_BUTTON, CREATE_CONTRACT, PAYMENTS, PROMISES} from "./types";
 import BasicMenu from "../../genral/drop_down";
 import CustomDataGrid from "../../datagrid";
 import useParser from "./formula_parser/use_parser";
@@ -411,6 +411,14 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 updateContract({...contract, contracts: [...contracts]});
                 setView({id: new_c_contract.id, type: CONTRACT, name: new_c_contract.name});
                 break
+            // case CREATE_ACTION_BUTTON:
+            //     let new_action_button = {
+            //         id: randomString(),
+            //         type: ACTION_BUTTON,
+            //         name: "Untitled",
+            //     }
+            //     setView(new_action_button);
+            //     break
             case CONTRACT:
                 setView({
                     id: option.id,
@@ -435,7 +443,8 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         {content: "Promises", type: PROMISES},
         {content: "Payments", type: PAYMENTS},
         ...otherContracts,
-        {content: <div><AddIcon color={"info"}/>Create contract</div>, type: CREATE_CONTRACT},
+        {content: <div><AddIcon color={"info"}/>Create sub-table</div>, type: CREATE_CONTRACT},
+        // {content: <div><AddIcon color={"info"}/>Create action button</div>, type: CREATE_ACTION_BUTTON},
     ];
 
     const mainOptions: any[] = [
@@ -460,6 +469,10 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
     let data = {};
 
     switch (view?.type) {
+        // case CREATE_CONTRACT:
+        //     data = {columns: [], rows: [], name: "Untitled"};
+        //     break
+
         case CONTRACT:
 
             mainOptions.push({

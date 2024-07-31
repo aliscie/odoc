@@ -62,13 +62,13 @@ const FileContentPage: React.FC<Props> = () => {
         }
 
         switch (component.type) {
-            case "shares_contract":
-                let new_contract = {...shares_contract_sample, author: profile.id};
-                let stored_shares: StoredContract = {"SharesContract": new_contract}
-                dispatch(handleRedux("ADD_CONTRACT", {contract: new_contract}))
-                dispatch(handleRedux("CONTRACT_CHANGES", {changes: stored_shares}));
-                insertText();
-                return null
+            // case "shares_contract":
+            //     let new_contract = {...shares_contract_sample, author: profile.id};
+            //     let stored_shares: StoredContract = {"SharesContract": new_contract}
+            //     dispatch(handleRedux("ADD_CONTRACT", {contract: new_contract}))
+            //     dispatch(handleRedux("CONTRACT_CHANGES", {changes: stored_shares}));
+            //     insertText();
+            //     return null
             case "custom_contract":
                 custom_contract.creator = Principal.fromText(profile.id)
                 custom_contract.date_created = Date.now() * 1e6

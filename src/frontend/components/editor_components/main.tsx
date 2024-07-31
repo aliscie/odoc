@@ -42,7 +42,6 @@ function EditorComponent(props: Props) {
                     slate_Custom_contract,
                     data_grid,
                     payment_contract,
-                    shares_contract,
                     {type: "custom_contract"},
                 ]}
                 onInsertComponent={props.handleOnInsertComponent}

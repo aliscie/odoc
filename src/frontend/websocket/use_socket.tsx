@@ -76,12 +76,6 @@ function useSocket() {
                         dispatch(handleRedux("ADD_FRIEND", {friend}));
                         dispatch(handleRedux('NOTIFY', {new_notification: data.notification[0]}));
                         break
-                    // TODO
-                    //     case "CancleFriendRequest":
-                    //         let new_request: Friend = data.notification[0].content.FriendRequest.friend
-                    //         new_request && dispatch(handleRedux("UPDATE_FRIEND", {cancel_friend_request: new_request}))
-                    //         dispatch(handleRedux('NOTIFY', {new_notification: data.notification[0]}));
-                    //         break
                     case "ContractUpdate":
                         // let new_contracts = actor && await actor.get_contracts();
                         // new_contracts && dispatch(handleRedux("UPDATE_CONTRACT", {contracts: new_contracts[0]}))

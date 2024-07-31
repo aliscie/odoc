@@ -51,10 +51,11 @@ function RegistrationForm() {
         setOpen(false);
         const loaderMessage = <span>Creating agreement... <CircularProgress size={20} style={{marginLeft: 10}}/></span>;
         const loading = enqueueSnackbar(loaderMessage, {variant: "info"});
+        console.log({x: photoByte ? "is" : "not"})
         const input: RegisterUser = {
             name: [formValues.username || ""],
             description: [String(formValues.bio) || ""],
-            photo: photoByte ? [photoByte] : [],
+            photo: photoByte ? [photoByte] : [[]],
         };
 
         try {

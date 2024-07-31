@@ -11,7 +11,7 @@ import ViewPost from "./discover/view_update_post";
 
 const Discover = () => {
         const {searchValue} = useSelector((state: any) => state.uiReducer);
-        const {isLoggedIn, Anonymous} = useSelector((state: any) => state.filesReducer);
+        const {Anonymous} = useSelector((state: any) => state.filesReducer);
 
         const [posts, setPosts] = React.useState<| Array<PostUser>>([]); //TODO use redux for this
         const [current_page, setPage] = React.useState<number>(0);
@@ -78,7 +78,7 @@ const Discover = () => {
                     marginRight: '20%',
                 }}
             >
-                {isLoggedIn && !Anonymous && <CreatePost setPosts={setPosts}/>}
+                {!Anonymous && <CreatePost setPosts={setPosts}/>}
                 <Divider/>
                 <FilterPosts initPosts={posts} setPage={setPage} setPosts={setPosts}/>
                 {

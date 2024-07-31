@@ -64,7 +64,7 @@ function ViewPost(props: Props) {
         }
     };
 
-    const {profile, isLoggedIn, Anonymous} = useSelector((state: any) => state.filesReducer);
+    const {profile, Anonymous} = useSelector((state: any) => state.filesReducer);
 
     const onChange = (changes: any) => {
 
@@ -80,7 +80,7 @@ function ViewPost(props: Props) {
     return (
         <div>
             <PostComponent
-                editable={isLoggedIn && !Anonymous}
+                editable={!Anonymous}
                 onChange={onChange}
                 post={props.post}
                 headerAction={
