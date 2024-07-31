@@ -111,7 +111,7 @@ interface TranProps {
 
 function TransactionHistory(props: TranProps) {
     return (
-        <div style={{ height: '400px', overflowY: 'auto' }}>
+        <div style={{ height: '300px', overflowY: 'auto' }}>
             <List dense>
                 {props.items.map((item: any, index: number) => {
                     return <ContractItem {...item} id={index} sender={item.from} receiver={item.to}/>

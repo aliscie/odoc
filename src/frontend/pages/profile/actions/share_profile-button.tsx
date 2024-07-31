@@ -38,7 +38,7 @@ const ShareProfileButton: React.FC<ShareProfileButtonProps> = ({ profileName, pr
         <Tooltip arrow title="Share Profile">
         <Button
             variant="contained"
-            color="secondary"
+            color="primary"
             onClick={handleShareProfile}
             startIcon={<Share />}
             fullWidth
