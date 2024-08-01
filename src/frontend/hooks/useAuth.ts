@@ -13,6 +13,8 @@ interface AuthHooks {
   
 
 const useAuth = (): AuthHooks => {
+  const port = import.meta.env.VITE_DFX_PORT;
+  
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
   const [authClient, setAuthClient] = useState<AuthClient | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -30,9 +32,9 @@ const useAuth = (): AuthHooks => {
 
       authClient?.login({
         identityProvider: 
-          process.env.DFX_NETWORK === "ic" ? "https://identity.ic0.app/#authorize" :
-          process.env.DFX_NETWORK === "playground" ? "https://identity.ic0.app/#authorize" :
-          process.env.DFX_NETWORK === "local" ? "http://localhost:4943?canisterId=bkyz2-fmaaa-aaaaa-qaaaq-cai":
+          import.meta.env.VITE_DFX_NETWORK === "ic" ? "https://identity.ic0.app/#authorize" :
+          import.meta.env.VITE_DFX_NETWORK === "playground" ? "https://identity.ic0.app/#authorize" :
+          import.meta.env.VITE_DFX_NETWORK === "local" ? `http://${import.meta.env.VITE_INTERNET_IDENTITY}.localhost:${port}`:
           undefined,
         onSuccess: async () => {
           setIsAuthenticating(false);
@@ -46,7 +48,7 @@ const useAuth = (): AuthHooks => {
 
   const logout = () => {
     setIsAuthenticated(false);
-    authClient?.logout({ returnTo: "/home_page" });
+    authClient?.logout({ returnTo: "/" });
   };
 
 
@@ -71,7 +73,7 @@ const useAuth = (): AuthHooks => {
         }
       })();
     }
-  },);
+  },[]);
 
   return {
     authClient,

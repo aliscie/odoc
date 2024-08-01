@@ -34,11 +34,16 @@ import Workspaces from "./work_spaces";
 
 import { handleRedux } from "../../redux/main";
 import { agent } from "../../backend_connect/main";
+import useAuth from "../../hooks/useAuth";
+import useIdentityAgent from "../../hooks/useIdentityAgent";
 import { convertToBlobLink } from "../../data_processing/image_to_vec";
 import { Z_INDEX_TOP_NAVBAR } from "../../constants/zIndex";
 
 const TopNavBar = () => {
     const dispatch = useDispatch();
+    const { authClient, login, logout } = useAuth();
+    const { identity, principal } = useIdentityAgent(authClient);
+
     const { isNavOpen, isDarkMode, isLoggedIn, searchTool } = useSelector(
       (state: any) => state.uiReducer
     );
@@ -55,12 +60,13 @@ const TopNavBar = () => {
     }, [dispatch, isLoggedIn]);
   
     const handleLogin = async () => {
-      await agent.identify();
+      await login();
       dispatch(handleRedux("LOGIN"));
+      console.log("Pricipal Id: ", principal);
     };
   
     const handleLogout = async () => {
-      await agent.logout();
+        logout();
       dispatch(handleRedux("LOGOUT"));
     };
   
@@ -70,6 +76,7 @@ const TopNavBar = () => {
     return (
       <AppBar position="fixed" color="default" sx={{ zIndex: Z_INDEX_TOP_NAVBAR }}>
         <Toolbar sx={{ transition: "0.4s", ml: isNavOpen ? "250px" : 0, justifyContent: "space-between" }}>
+          
           {/* Left Side: Navigation */}
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <IconButton edge="start" color="inherit" onClick={() => dispatch(handleRedux("TOGGLE_NAV"))}>

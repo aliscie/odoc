@@ -23,6 +23,7 @@ const BasicMenu: React.FC<BasicMenuProps> = ({options, children}) => {
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
+    
     const handleClose = () => {
         setAnchorEl(null);
     };
