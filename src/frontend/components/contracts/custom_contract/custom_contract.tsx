@@ -312,12 +312,10 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                     enqueueSnackbar(`As you hit save button you will send ${newRow.amount}USDT to ${newRow.receiver}`, {variant: "info"})
                 }
                 let updatedContractPromeses = {...contract};
-                updatedContractPromeses.promises = updatedContractPromeses.promises.map((p: CPayment) => {
-                    if (p.id === newRow.id) {
-                        return serializeRowToPromise(newRow, all_users, contract);
-                    }
-                    return p;
+                updatedContractPromeses.promises = newRows.map((p: CPayment) => {
+                    return serializeRowToPromise(newRow, all_users, contract);
                 });
+
                 updateContract(updatedContractPromeses)
                 break
             case CONTRACT:
