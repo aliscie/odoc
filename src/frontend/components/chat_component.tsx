@@ -72,7 +72,8 @@ function ChatsComponent(props: Props) {
             }}
 
             badgeContent={not_seen_message.length}
-        ><ChatBubbleIcon color={not_seen_message.length > 0 ? "error" : "action"}/></Badge>
+        >
+        <ChatBubbleIcon color={not_seen_message.length > 0 ? "error" : "action"}/></Badge>
 
     </BasicMenu>
 }

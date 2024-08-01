@@ -7,7 +7,7 @@ import ShareFilePage from "./share_file_page";
 import ProfileComponent from "./profile/profile";
 import Discover from "./discover";
 import UserPage from "./user";
-import ChatsPage from "./chates_page";
+import ChatsPage from "./chats_page";
 import ContractsHistory from "./profile/contractss_history";
 
 

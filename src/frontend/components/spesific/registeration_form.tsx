@@ -1,4 +1,4 @@
-import FormDialog from "../genral/form_dialog";
+import RegistrationFormDialog from "../genral/RegistrationFormDialog";
 import * as React from "react";
 import {TextField, Box, CircularProgress, Avatar, IconButton, Typography} from "@mui/material";
 import {Add} from "@mui/icons-material";
@@ -75,7 +75,7 @@ function RegistrationForm() {
     };
 
     return (
-        <FormDialog
+        <RegistrationFormDialog
             title={"Register yourself here."}
             description={""}
             inputFields={
