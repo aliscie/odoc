@@ -1,51 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
+import {Link} from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { IconButton, Box, Dialog, DialogContent, Typography } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import OpenInFullIcon from '@mui/icons-material/OpenInFull';
+import { useSnackbar } from 'notistack';
 import { handleRedux } from '../../redux/main';
 import MessagesList from './MessagesList';
+import MessageInput from './MessageInput';
+import MessageDialog from '../genral/MessageDialog';
+import { IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import OpenInFullIcon from '@mui/icons-material/OpenInFull';
+import SendMessageBox from './SendMessageBox';
 
-const MessagesDialog: React.FC = () => {
-  const dispatch = useDispatch();
-  const { current_chat_id } = useSelector((state: any) => state.chatsReducer);
-  const is_path_chats = window.location.pathname.includes('/chats');
+const MessagesDialogBox = () => {
+    const dispatch = useDispatch();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { current_chat_id } = useSelector((state) => state.chatsReducer);
+    const [messages, setMessages] = useState([]);
+    const is_path_chats = window.location.pathname.includes('/chats');
 
-  const closeDialog = () => {
-    dispatch(handleRedux('OPEN_CHAT', { current_chat_id: false }));
-  };
+    const closeDialog = () => {
+        dispatch(handleRedux('OPEN_CHAT', { current_chat_id: false }));
+    };
 
-  return (
-    <Dialog
-      PaperProps={{ style: {} }}
-      open={!is_path_chats && current_chat_id ? true : false}
-      onClose={closeDialog}
-    >
-      <Box sx={{ padding: '16px', position: 'relative' }}>
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{ textAlign: 'center', marginBottom: '8px' }}
-        >
-          Messages
-        </Typography>
-        <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
-          <IconButton onClick={closeDialog} key="close">
-            <CloseIcon color="action" />
-          </IconButton>
-          <IconButton component={Link} to="/chats" key="expand" onClick={closeDialog}>
-            <OpenInFullIcon color="action" />
-          </IconButton>
-        </Box>
-      </Box>
-    <DialogContent sx={{ padding: 0, height: 'calc(100vh - 128px)' }}>
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <MessagesList />
-    </Box>
-    </DialogContent>
-    </Dialog>
-);
+    const handleSend = (message) => {
+        setMessages([...messages, { text: message, isCurrentUser: true }]);
+    };
+
+    return (
+        <MessageDialog
+            open={!is_path_chats && current_chat_id ? true : false}
+            title="Messages"
+            inputFields={<MessagesList messages={messages} />}
+            actions={[
+                <IconButton key="close" onClick={closeDialog}>
+                    <CloseIcon color="action" />
+                </IconButton>,
+                <IconButton key="expand" component={Link} to="/chats" onClick={closeDialog}>
+                    <OpenInFullIcon color="action" />
+                </IconButton>
+            ]}
+            onClose={closeDialog}
+        />
+    );
 };
 
-export default MessagesDialog;
+export default MessagesDialogBox;

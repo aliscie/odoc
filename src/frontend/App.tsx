@@ -3,7 +3,7 @@ import "./App.css";
 import NavBar from "./components/spesific/nav_bar";
 import Pages from "./pages/main";
 import {BrowserRouter} from "react-router-dom";
-import {NavAppBar} from "./components/spesific/app_bar";
+import TopNavBar from "./components/spesific/TopNavBar";
 import SearchPopper from "./components/spesific/search_popper";
 // import Theme from "./components/genral/theme_provider";
 import {SnackbarProvider} from "notistack";
@@ -90,7 +90,7 @@ function App() {
                     <SnackbarProvider maxSnack={3}>
                         <RegistrationForm/>
                         <MessagesDialog/>
-                        <NavAppBar/>
+                        <TopNavBar/>
                         <TopDialog/>
                         <NavBar>
                             {/*<OdocEditor*/}

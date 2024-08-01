@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import {FEChat, UserFE} from "../../../declarations/backend/backend.did";
 import { ListItem, ListItemText, Tooltip, Typography, Box } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
@@ -23,8 +24,8 @@ const MessageComponent: React.FC<FrontendMessage> = (message) => {
   const { chats } = useSelector((state: any) => state.chatsReducer);
   const { getOther } = useGetChats();
 
-  const currentChat = chats.find((chat: FEChat) => chat.id === message.current_chat_id);
-  const otherUser = currentChat && getOther(currentChat);
+  const currentChat = chats.length > 0 && chats.find((chat: FEChat) => chat.id === message.current_chat_id);;
+  const otherUser: undefined | UserFE = currentChat && getOther(currentChat);
 
   const isCurrentUser = message.sender.toString() === profile.id;
 

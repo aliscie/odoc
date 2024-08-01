@@ -22,7 +22,10 @@ const RegistrationFormDialog = (props: {
         <Dialog
             PaperProps={{
                 style: {
-                    // Customize paper styles if needed
+                    width: '100%',
+                    maxWidth: '500px',
+                    padding: '16px',
+                    margin: 'auto',
                 },
             }}
             open={props.open}
@@ -48,7 +51,6 @@ const RegistrationFormDialog = (props: {
                             variant={button.name === 'Submit' ? 'contained' : 'outlined'}
                             sx={{ 
                                 alignSelf: 'center',
-                                // marginTop: '5px', // Adjust margin as needed
                                 marginBottom: '15px',
                                 marginLeft: '15px',
                                 marginRight: '15px'
