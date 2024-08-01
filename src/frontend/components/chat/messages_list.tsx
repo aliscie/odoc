@@ -30,7 +30,8 @@ function MessagesList(props: MessagesListProps) {
     return (
         <div>
             {is_group && is_admin ? <Input defaultValue={currentChat && currentChat.name}/> :
-                <div>Group: {currentChat && currentChat.name}</div>}
+                // <div>Group: {currentChat && currentChat.name}</div>
+              ""  }
             {/*{is_group && is_admin && <Button>update members</Button>}*/}
             {is_group && <GroupAvatars chat={currentChat}/>}
             {noMessages && <Button>No messages, yet.</Button>}

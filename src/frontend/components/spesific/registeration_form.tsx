@@ -1,4 +1,4 @@
-import FormDialog from "../genral/fom_dialog";
+import FormDialog from "../genral/form_dialog";
 import * as React from "react";
 import {TextField, Box, CircularProgress, Avatar, IconButton, Typography} from "@mui/material";
 import {Add} from "@mui/icons-material";

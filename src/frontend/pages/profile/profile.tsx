@@ -27,7 +27,7 @@ import BasicTabs from "./history";
 import TransactionHistory from "./transaction_history";
 import { actor } from "../../App";
 import { UserHistoryCom } from "../user";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { useSnackbar } from 'notistack';
 import ShareProfileButton from './actions/share_profile-button';
 import ProfilePhotoDialog from './actions/profile_photo_dialog';
@@ -45,6 +45,8 @@ export default function ProfileComponent() {
         photo: profile?.photo || '',
         changed: false,
     });
+    const [openDialog, setOpenDialog] = useState(false);
+    const [buttonLoading, setButtonLoading] = useState(false);
 
      // console.log({y:profile_history.actions_rate,x: profile_history.users_rate});
     // useEffect(() => {
@@ -61,9 +63,10 @@ export default function ProfileComponent() {
     //     })()
     // }, [profile]);
 
-    const [openDialog, setOpenDialog] = useState(false);
+   
 
     const handleSaveChanges = async () => {
+        setButtonLoading(true);
         if (profileData.changed) {
             try {
                 const res = await actor?.update_user_profile({
@@ -75,6 +78,7 @@ export default function ProfileComponent() {
                     ...pre, changed: false
                 }));
                 return res;
+            setButtonLoading(false);
             } catch (error) {
                 console.log("There was an issue with saving profile update: ", error);
             }
@@ -217,15 +221,17 @@ export default function ProfileComponent() {
                                 </List>
                                 {profileData.changed && (
                                     <Box sx={{ width: '100%', mt: 2 }}>
-                                        <LoaderButton
+                                        <Button
                                             color="primary"
                                             successMessage="Profile saved"
                                             onClick={handleSaveChanges}
                                             variant="contained"
                                             sx={{  width: '100% !important' }} 
-                                        >
-                                            Save changes
-                                        </LoaderButton>
+                                        >{
+                                            buttonLoading ? <CircularProgress size={20} /> 
+                                        : 'Save changes'
+                                        }
+                                        </Button>
                                     </Box>
                                 )}
 

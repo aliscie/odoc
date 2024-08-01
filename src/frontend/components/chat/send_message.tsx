@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
-import TextareaAutosize from '@mui/material/TextareaAutosize';
-import Button from '@mui/material/Button';
+import {Button, Box, TextareaAutosize, Paper, TextField} from '@mui/material';
 import {useDispatch, useSelector} from "react-redux";
 import {Message} from "../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
@@ -8,7 +7,16 @@ import {randomString} from "../../data_processing/data_samples";
 import {actor} from "../../App";
 import {useSnackbar} from "notistack";
 import {handleRedux} from "../../redux/main";
+import {styled} from '@mui/material/styles';
 
+const StyledBox = styled(Box)(({ theme }) => ({
+    padding: theme.spacing(2),
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing(2),
+    backgroundColor: theme.palette.background.default,
+    borderRadius: theme.shape.borderRadius,
+  }));
 
 export default function SendMessageBox() {
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
@@ -60,20 +68,22 @@ export default function SendMessageBox() {
             dispatch(handleRedux("UPDATE_MESSAGE", {message: new_message}))
         }
     };
-
     return (
-        <div>
-            <TextareaAutosize
-                rowsMin={4}
-                placeholder="Type your message here..."
-                value={message}
-                onChange={handleInputChange}
-                style={{width: '100%'}}
-            />
-            <br/>
-            <Button variant="contained" color="primary" onClick={handleSendClick}>
-                Send
-            </Button>
-        </div>
+        <Paper elevation={3}>
+            <StyledBox>
+                <TextField
+                    label="Type your message here..."
+                    multiline
+                    rows={4}
+                    variant="outlined"
+                    value={message}
+                    onChange={handleInputChange}
+                    fullWidth
+                />
+                <Button variant="contained" color="primary" onClick={handleSendClick}>
+                    Send
+                </Button>
+            </StyledBox>
+        </Paper>
     );
 }
