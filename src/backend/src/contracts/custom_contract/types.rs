@@ -378,7 +378,7 @@ impl CustomContract {
         if let Some(old_contract) = Self::get(&self.id, &self.creator) {
             self.date_created = old_contract.date_created.clone();
             self.date_updated = ic_cdk::api::time() as f64;
-            // self.creator = old_contract.creator.clone(); // no need for this cuz Self::get() already check for this
+            self.creator = old_contract.creator.clone(); // no need for this cuz Self::get() already check for this
             // self.payments = old_contract.clone().update_payments(self.payments.clone());
             self.payments = old_contract.payments.clone();
 

@@ -535,6 +535,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         return (<div>
             <Input defaultValue={title || "Untitled"} onBlur={(e) => renameContract(e.target.value)}/>
             <Button
+                className={"expand-button"}
                 onClick={() => {
                     setExpand(true)
                 }}
@@ -562,6 +563,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                         {view && (view.name || view.type)}
                     </BasicMenu>
                     <UnfoldLessIcon
+                        className={"expand-button"}
                         onClick={() => {
                             setExpand(false)
                         }}

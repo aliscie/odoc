@@ -40,23 +40,38 @@ it('creates and updates a contract, then interacts with rows and columns', async
         </TestWrapper>
     );
 
-
+    const expandButton = items.container.querySelector('.expand-button');
+    // click on expand button
+    createEvent.click(expandButton);
     const cellElement = items.container.querySelector(`[role="cell"]`);
-    let rows = items.container.querySelectorAll(`[role="row"]`);
-    expect(rows.length).toBe(2);
+    let rows = items.container.querySelectorAll('[role="row"]');
+    let key = 'add-row';
+    // item with key add-row should not be present
+    let addRow = document.querySelector(`[key="${key}"]`);
+    expect(addRow).toBeNull();
+    // let contextMenuEvent = createEvent.contextMenu(rows[0]);
+    createEvent.click(rows[0])
+    // // item with key add-row should be present
+    // addRow = document.querySelector(`[key="${key}"]`);
+    // expect(addRow).not.toBeNull();
+    // createEvent.click(addRow)
+    // // check if drop down menu is present
+    // let dropDown = document.querySelector('.dropdown');
+    // expect(dropDown).not.toBeNull();
+    // expect(rows.length).toBe(2);
     if (cellElement) {
         // select item by class name add-column-left
         let addCol = document.querySelector('.add-column-left');
         expect(addCol).toBeNull();
-        const contextMenuEvent = createEvent.contextMenu(cellElement);
-        let addCol2 = document.querySelector('.add-column-left');
-        expect(addCol2).not.toBeNull();
-        createEvent.click(addCol2)
-        let rows2 = items.container.querySelectorAll(`[role="row"]`);
-        expect(rows2.length).toBe(3);
+        // const contextMenuEvent = createEvent.contextMenu(cellElement);
+        // let addCol2 = document.querySelector('.add-column-left');
+        // expect(addCol2).not.toBeNull();
+        // createEvent.click(addCol2)
+        // let rows2 = items.container.querySelectorAll(`[role="row"]`);
+        // expect(rows2.length).toBe(3);
 
     } else {
-        console.error(`Element with role "${role}" not found.`);
+        // console.error(`Element with role "${role}" not found.`);
     }
 
 

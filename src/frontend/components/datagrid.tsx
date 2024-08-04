@@ -180,7 +180,7 @@ function CustomDataGrid(props: Props) {
         const add_row = [
             <Button onClick={() => handleAddRow(props.rowId, true)} key="two"><ArrowCircleUpIcon/></Button>,
             <Button onClick={() => handleAddRow(props.rowId, false)} key="three"><ArrowCircleDownIcon/></Button>,
-            <span onClick={() => handleAddRow(props.rowId, false)} style={{width: "100px"}} key="one">Add row</span>,
+            <span onClick={() => handleAddRow(props.rowId, false)} style={{width: "100px"}} key="add-row">Add row</span>,
         ];
 
         const add_column = [

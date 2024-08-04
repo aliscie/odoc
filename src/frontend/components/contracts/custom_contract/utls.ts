@@ -120,7 +120,6 @@ export function serializeRowToPromise(row: any, all_users: any[], contract): CPa
         "amount": Number(row.amount),
         'receiver': receiver ? Principal.fromText(receiver.id) : Principal.fromText("2vxsx-fae"),
     };
-    logger({promise});
     return promise
 
 

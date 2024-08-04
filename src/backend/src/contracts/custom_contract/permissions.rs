@@ -41,9 +41,9 @@ impl CContract {
             let permissions = &column.permissions;
             let perm_1 = PermissionType::Edit(caller());
             let perm_2 = PermissionType::AnyOneEdite;
-            return permissions.contains(&perm_1) || permissions.contains(&perm_2) || self.creator == caller();
+            return permissions.contains(&perm_1) || permissions.contains(&perm_2) || old_c_contract.creator == caller();
         }
-        self.creator == caller()
+        old_c_contract.creator == caller()
     }
 
     fn update_row_permission(&self, new_row: &CRow, old_c_contract: &CContract, contract_errors: &mut Vec<ContractError>) -> Result<CRow, String> {
