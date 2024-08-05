@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react';
 import {GridRenderCellParams} from '@mui/x-data-grid';
 import {Button, Input} from '@mui/material';
 import {useDispatch, useSelector} from "react-redux";
-import {handleRedux} from "../../redux/main";
+import { handleRedux } from '../../redux/store/handleRedux';
 import {
     Column,
     Row,
@@ -19,7 +19,7 @@ import BasicMenu from "../genral/drop_down";
 import {randomString} from "../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
 import useGetUser from "../../utils/get_user_by_principal";
-import {actor} from "../../App";
+// import {actor} from "../../App";
 import ShareConfirmButton from "./shares_contract/conforim_button";
 import useSharesRequests from "./shares_contract/use_shares_requests";
 import ApproveButton from "./shares_contract/approve_button";

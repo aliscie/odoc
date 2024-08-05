@@ -3,7 +3,7 @@ import {Button, Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import {closeSnackbar, enqueueSnackbar} from "notistack";
-import {actor} from "../../../App";
+// import {actor} from "../../../App";
 import {Share, SharesContract} from "../../../../declarations/backend/backend.did";
 
 interface Props {

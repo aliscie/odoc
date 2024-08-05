@@ -1,9 +1,9 @@
-import {handleRedux} from "../../redux/main";
+import { handleRedux } from "../../redux/store/handleRedux";
 import React from "react";
 import {useDispatch} from "react-redux";
 import {useSnackbar} from "notistack";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {actor} from "../../App";
+// import {actor} from "../../App";
 
 const DeleteFile = (props: any) => {
     const dispatch = useDispatch();

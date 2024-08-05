@@ -5,8 +5,8 @@ import MessageNotification from "./chat/message_notification";
 import CircularProgress from '@mui/material/CircularProgress';
 import {Message} from "../../declarations/backend/backend.did";
 import {useDispatch, useSelector} from "react-redux";
-import {handleRedux} from "../redux/main";
-import {actor} from "../App";
+import { handleRedux } from "../redux/store/handleRedux";
+// import {actor} from "../App";
 import {Badge} from "@mui/base";
 import useCreateChatGroup from "./chat/create_new_group";
 

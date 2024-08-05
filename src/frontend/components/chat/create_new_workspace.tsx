@@ -1,11 +1,11 @@
 import React, {useRef} from "react";
-import {handleRedux} from "../../redux/main";
+import { handleRedux } from "../../redux/store/handleRedux";
 import {useDispatch, useSelector} from "react-redux";
 import {TextField} from "@mui/material";
 import {WorkSpace} from "../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import {randomString} from "../../data_processing/data_samples";
-import {actor} from "../../App";
+// import {actor} from "../../App";
 import {useSnackbar} from "notistack";
 
 function useCreateWorkSpace() {

@@ -10,7 +10,7 @@ import {
 import {useDispatch, useSelector} from "react-redux";
 import {Principal} from "@dfinity/principal";
 import React from "react";
-import {handleRedux} from "../../../../redux/main";
+import { handleRedux } from "../../../../redux/store/handleRedux";
 import {useSnackbar} from "notistack";
 import {logger} from "../../../../dev_utils/log_data";
 

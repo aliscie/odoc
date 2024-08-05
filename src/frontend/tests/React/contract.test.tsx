@@ -9,7 +9,7 @@ import store, {handleRedux} from "../../redux/main";
 import {CustomContractComponent} from "../../components/contracts/custom_contract/custom_contract";
 import {actor} from "../../App";
 import {get_user_actor} from "../../backend_connect/ic_agent";
-import {get_initial_data} from "../../redux/files";
+import {get_initial_data} from "../../redux/reducers/filesReducersOld";
 import {agent} from "../../backend_connect/main";
 
 

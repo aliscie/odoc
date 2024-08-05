@@ -8,7 +8,7 @@ import List from "@mui/material/List";
 import CheckIcon from '@mui/icons-material/Check';
 import {ShareFile, ShareFileInput, ShareFilePermission, User} from "../../../declarations/backend/backend.did";
 import ShareIcon from "@mui/icons-material/Share";
-import {actor} from "../../App";
+// import {actor} from "../../App";
 import {Principal} from "@dfinity/principal";
 import Autocomplete from "@mui/material/Autocomplete";
 import useGetUser from "../../utils/get_user_by_principal";

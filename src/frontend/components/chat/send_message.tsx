@@ -4,9 +4,9 @@ import {useDispatch, useSelector} from "react-redux";
 import {Message} from "../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import {randomString} from "../../data_processing/data_samples";
-import {actor} from "../../App";
+// import {actor} from "../../App";
 import {useSnackbar} from "notistack";
-import {handleRedux} from "../../redux/main";
+import { handleRedux } from '../../redux/store/handleRedux';
 import {styled} from '@mui/material/styles';
 
 const StyledBox = styled(Box)(({ theme }) => ({

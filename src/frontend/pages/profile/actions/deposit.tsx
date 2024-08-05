@@ -1,8 +1,8 @@
 import * as React from "react";
 import {useDispatch} from "react-redux";
 import LoaderButton from "../../../components/genral/loader_button";
-import {handleRedux} from "../../../redux/main";
-import {actor} from "../../../App";
+import { handleRedux } from "../../../redux/store/handleRedux";
+// import {actor} from "../../../App";
 import {MonetizationOn} from "@mui/icons-material";
 
 function Deposit(props: any) {

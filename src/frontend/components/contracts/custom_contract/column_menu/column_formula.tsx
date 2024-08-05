@@ -4,7 +4,7 @@ import CodeEditor from "../formula_parser/code_editor";
 import {PROMISES_CONTRACT_FIELDS, updateContractColumn} from "../utls";
 import {useDispatch} from "react-redux";
 import CustomDialog from "../../../genral/custom_dialog";
-import {handleRedux} from "../../../../redux/main";
+import { handleRedux } from '../../../../redux/store/handleRedux';
 import {PROMISES} from "../types";
 
 interface Props {

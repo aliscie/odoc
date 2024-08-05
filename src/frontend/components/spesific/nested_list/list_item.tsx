@@ -8,7 +8,7 @@ import Collapse from "@mui/material/Collapse";
 import List from "@mui/material/List";
 import {NestedDataItem} from "./nest_list";
 import {useDispatch, useSelector} from "react-redux";
-import {handleRedux} from "../../../redux/main";
+import { handleRedux } from "../../../redux/store/handleRedux";
 import DeleteFile from "../../actions/delete_file";
 import Draggable from "../../genral/draggable";
 import ShareIcon from '@mui/icons-material/Share';

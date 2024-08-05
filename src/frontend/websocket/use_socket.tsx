@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 
 
 import React, {useEffect, useState} from "react";
-import {handleRedux} from "../redux/main";
+import { handleRedux } from "../redux/store/handleRedux";
 import {AuthClient} from "@dfinity/auth-client";
 import {AppMessage, Friend} from "../../declarations/backend/backend.did";
 import {get_id} from "../backend_connect/ic_agent";

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import MenuItem from "@mui/material/MenuItem";
 import {useDispatch} from "react-redux";
-import {handleRedux} from "../../redux/main";
+import { handleRedux } from '../../redux/store/handleRedux';
 
 interface Props {
     children: React.ReactNode,

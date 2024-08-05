@@ -1,6 +1,6 @@
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
-import {handleRedux} from "../../redux/main";
+import { handleRedux } from "../../redux/store/handleRedux";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -8,7 +8,7 @@ import * as React from "react";
 import {useEffect} from "react";
 import {Button, Divider, Tooltip, Typography} from "@mui/material";
 import useGetUser from "../../utils/get_user_by_principal";
-import {actor} from "../../App";
+// import {actor} from "../../App";
 import {Exchange} from "../../../declarations/backend/backend.did";
 import formatTimestamp from "../../utils/time";
 

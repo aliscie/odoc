@@ -1,8 +1,8 @@
 import {useDispatch, useSelector} from "react-redux";
 import React, {useEffect, useState} from "react";
 import {CustomContract, StoredContract} from "../../../../declarations/backend/backend.did";
-import {actor} from "../../../App";
-import {handleRedux} from "../../../redux/main";
+// import {actor} from "../../../App";
+import { handleRedux } from "../../../redux/store/handleRedux";
 import {CustomContractComponent} from "./custom_contract";
 
 export default function SlateCustomContract(props: any) {

@@ -2,9 +2,9 @@ import {useSelector} from "react-redux";
 import {ContentNode, FileNode} from "../../../../declarations/backend/backend.did";
 
 function useSearchFiles() {
-    const {files} = useSelector((state: any) => state.filesReducer);
+    const {files} = useSelector((state: any) => state.filesState);
 
-    const {denormalized_files_content}: { denormalized_files_content: [] | [Array<[string, Array<[string, ContentNode]>]>] } = useSelector((state: any) => state.filesReducer);
+    const {denormalized_files_content}: { denormalized_files_content: [] | [Array<[string, Array<[string, ContentNode]>]>] } = useSelector((state: any) => state.filesState);
 
     //
     // We need this to reduce the calls for the canisters because they also can cost scyles in the future.

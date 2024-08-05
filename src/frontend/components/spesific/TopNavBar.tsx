@@ -32,23 +32,21 @@ import { Notifications } from "../notifcations/notification";
 import ChatsComponent from "../chat_component";
 import Workspaces from "./work_spaces";
 
-import { handleRedux } from "../../redux/main";
-import { agent } from "../../backend_connect/main";
-import useAuth from "../../hooks/useAuth";
-import useIdentityAgent from "../../hooks/useIdentityAgent";
+import { handleRedux } from "../../redux/store/handleRedux";
+import { useBackendContext } from "../../contexts/BackendContext";
 import { convertToBlobLink } from "../../data_processing/image_to_vec";
 import { Z_INDEX_TOP_NAVBAR } from "../../constants/zIndex";
 
 const TopNavBar = () => {
     const dispatch = useDispatch();
-    const { authClient, login, logout } = useAuth();
-    const { identity, principal } = useIdentityAgent(authClient);
+    const { login, logout, principal } = useBackendContext();
+   
 
     const { isNavOpen, isDarkMode, isLoggedIn, searchTool } = useSelector(
-      (state: any) => state.uiReducer
+      (state: any) => state.uiState
     );
     const { profile, current_file, files } = useSelector(
-      (state: any) => state.filesReducer
+      (state: any) => state.filesState
     );
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));

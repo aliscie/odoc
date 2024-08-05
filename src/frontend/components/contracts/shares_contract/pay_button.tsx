@@ -3,7 +3,7 @@ import {useState} from "react";
 import {Typography} from "@mui/material";
 import DialogOver from "../../genral/daiolog_over";
 import {SharePaymentOption, SharesContract} from "../../../../declarations/backend/backend.did";
-import {actor} from "../../../App";
+// import {actor} from "../../../App";
 import {LoadingButton} from "@mui/lab";
 import {useSnackbar} from "notistack";
 

@@ -1,5 +1,5 @@
-import {actor} from "../../App";
-import {handleRedux} from "../../redux/main";
+// import {actor} from "../../App";
+import { handleRedux } from "../../redux/store/handleRedux";
 import {useDispatch, useSelector} from "react-redux";
 import {Principal} from "@dfinity/principal";
 import {Chat, FEChat} from "../../../declarations/backend/backend.did";

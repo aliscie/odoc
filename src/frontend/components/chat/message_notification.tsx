@@ -3,12 +3,12 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import {Avatar} from "@mui/material";
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {handleRedux} from "../../redux/main";
+import { handleRedux } from "../../redux/store/handleRedux";
 import {FEChat, Message, User} from "../../../declarations/backend/backend.did";
 import useGetChats from "./use_get_chats";
 import {Principal} from "@dfinity/principal";
 import {convertToBlobLink} from "../../data_processing/image_to_vec";
-import {actor} from "../../App";
+// import {actor} from "../../App";
 import MessageComponent from "./message";
 import GroupIcon from "@mui/icons-material/Group"
 

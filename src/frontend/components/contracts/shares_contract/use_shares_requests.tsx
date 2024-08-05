@@ -5,7 +5,7 @@ import useGetUser from "../../../utils/get_user_by_principal";
 import {useDispatch, useSelector} from "react-redux";
 import {randomString} from "../../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
-import {handleRedux} from "../../../redux/main";
+import { handleRedux } from "../../../redux/store/handleRedux";
 import {RenderReceiver} from "../payment_contract/renderers";
 
 interface ShareReqRow {

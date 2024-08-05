@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import {Resizable} from 'react-resizable';
 import {useDispatch, useSelector} from "react-redux";
-import {handleRedux} from "../../redux/main";
+import { handleRedux } from '../../redux/store/handleRedux';
 import OpenWithIcon from '@mui/icons-material/OpenWith';
 import {Box, Card, CardContent, Tooltip} from '@mui/material';
 import AbcIcon from '@mui/icons-material/Abc';
@@ -69,7 +69,7 @@ function SearchPopper() {
     const dispatch = useDispatch();
 
 
-    const {searchValue, searchTool} = useSelector((state: any) => state.uiReducer);
+    const {searchValue, searchTool} = useSelector((state: any) => state.uiState);
     const [width, setWidth] = React.useState(250);
     const [currentOptions, setOptions] = React.useState([]);
     const anchorRef = React.useRef<HTMLDivElement | null>(null);

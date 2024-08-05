@@ -1,4 +1,4 @@
-import {initialState} from "./files";
+import {initialState} from "./reducers/filesReducersOld";
 
 export type FriendsActions = "ADD_FRIEND" | "REMOVE_FRIEND" | "REMOVE_FRIEND_REQUEST" | "ADD_FRIEND_REQUEST";
 

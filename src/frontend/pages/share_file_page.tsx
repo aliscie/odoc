@@ -7,8 +7,8 @@ import {ContentNode, FileNode} from "../../declarations/backend/backend.did";
 import {normalize_content_tree, SlateNode} from "../data_processing/normalize/normalize_contents";
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
-import {handleRedux} from "../redux/main";
-import {actor} from "../App";
+import { handleRedux } from "../redux/store/handleRedux";
+// import {actor} from "../App";
 
 export type FileQuery = undefined | { Ok: [FileNode, Array<[string, ContentNode]>] } | { Err: string };
 

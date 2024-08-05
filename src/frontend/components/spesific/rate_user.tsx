@@ -3,7 +3,7 @@ import {Input, Rating as RatingCom} from "@mui/material";
 import * as React from "react";
 import {Principal} from "@dfinity/principal";
 import {randomString} from "../../data_processing/data_samples";
-import {actor} from "../../App";
+// import {actor} from "../../App";
 import {useSnackbar} from "notistack";
 import DialogOver from "../genral/daiolog_over";
 import {LoadingButton} from "@mui/lab";

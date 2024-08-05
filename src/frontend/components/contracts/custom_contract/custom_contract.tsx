@@ -4,7 +4,7 @@ import {useSnackbar} from "notistack";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';
 import {randomString} from "../../../data_processing/data_samples";
-import {handleRedux} from "../../../redux/main";
+import { handleRedux } from "../../../redux/store/handleRedux";
 import {
     CColumn,
     CContract,
@@ -31,7 +31,7 @@ import useParser from "./formula_parser/use_parser";
 import RenameColumn from "./column_menu/rename_column";
 import ChangeColumnPermissions from "./column_menu/column_permision";
 import ChangeColumnFormula from "./column_menu/column_formula";
-import {actor} from "../../../App";
+// import {actor} from "../../../App";
 import ChangeType from "./column_menu/column_type";
 import {Input} from "@mui/material";
 import {CCell} from "../../../../../.dfx/ic/canisters/backend/service.did";

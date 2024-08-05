@@ -14,7 +14,7 @@ import {useDispatch, useSelector} from "react-redux";
 import Person2Icon from "@mui/icons-material/Person2";
 import BasicMenu from "./basic_menu";
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import {handleRedux} from "../../redux/main";
+import { handleRedux } from '../../redux/store/handleRedux';
 import {Principal} from "@dfinity/principal";
 import useGetChats from "../chat/use_get_chats";
 import Avatar from "@mui/material/Avatar";

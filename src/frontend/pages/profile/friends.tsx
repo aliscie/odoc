@@ -1,6 +1,6 @@
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
-import {handleRedux} from "../../redux/main";
+import { handleRedux } from "../../redux/store/handleRedux";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
@@ -8,7 +8,7 @@ import ListItemText from "@mui/material/ListItemText";
 import {Tooltip, Box, IconButton} from "@mui/material";
 import * as React from "react";
 import LoaderButton from "../../components/genral/loader_button";
-import {actor} from "../../App";
+// import {actor} from "../../App";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import {Friend} from "../../../declarations/backend/backend.did";
 import RateUser from "../../components/spesific/rate_user";

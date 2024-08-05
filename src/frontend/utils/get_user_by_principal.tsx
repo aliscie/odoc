@@ -1,6 +1,6 @@
 import {useSelector} from "react-redux";
 import {User} from "../../declarations/backend/backend.did";
-import {actor} from "../App";
+// import {actor} from "../App";
 
 function useGetUser() {
     const {profile, all_friends} = useSelector((state: any) => state.filesReducer);

@@ -2,10 +2,10 @@ import * as React from "react";
 import {useState} from "react";
 import DialogOver from "../../genral/daiolog_over";
 import {LoadingButton} from "@mui/lab";
-import {actor} from "../../../App";
+// import {actor} from "../../../App";
 import {useDispatch, useSelector} from "react-redux";
 import {Share, SharesContract, StoredContract} from "../../../../declarations/backend/backend.did";
-import {handleRedux} from "../../../redux/main";
+import { handleRedux } from "../../../redux/store/handleRedux";
 import {useSnackbar} from "notistack";
 
 function ApplyButton({setData, props, req, id, contract}: any) {

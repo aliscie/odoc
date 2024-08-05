@@ -1,4 +1,4 @@
-import {handleRedux} from "../../redux/main";
+import { handleRedux } from "../../redux/store/handleRedux";
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {file_content_sample, randomString} from "../../data_processing/data_samples";

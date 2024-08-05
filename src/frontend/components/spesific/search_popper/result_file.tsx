@@ -3,7 +3,7 @@ import EditorComponent from "../../editor_components/main";
 import * as React from "react";
 import {FileNode} from "../../../../declarations/backend/backend.did";
 import {useDispatch, useSelector} from "react-redux";
-import {handleRedux} from "../../../redux/main";
+import { handleRedux } from "../../../redux/store/handleRedux";
 
 interface Props {
     file_id: string;

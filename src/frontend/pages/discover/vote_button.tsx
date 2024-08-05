@@ -3,7 +3,7 @@ import React from "react";
 import {useSnackbar} from "notistack";
 import {LoadingButton} from "@mui/lab";
 import {Post} from "../../../declarations/backend/backend.did";
-import {handleRedux} from "../../redux/main";
+import { handleRedux } from "../../redux/store/handleRedux";
 import {useDispatch} from "react-redux";
 
 interface Props {

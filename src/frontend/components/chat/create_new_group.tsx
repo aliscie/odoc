@@ -1,9 +1,9 @@
 import React, {useRef, useState} from "react";
-import {handleRedux} from "../../redux/main";
+import { handleRedux } from "../../redux/store/handleRedux";
 import {useDispatch, useSelector} from "react-redux";
 import {Button, MenuItem, Tooltip, Select, TextField, Tooltip} from "@mui/material";
 import MultiAutoComplete from "../genral/multi_autocompelte";
-import {actor} from "../../App";
+// import {actor} from "../../App";
 import {Chat, Message, WorkSpace} from "../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import {useSnackbar} from "notistack";

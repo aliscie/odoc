@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {handleRedux} from '../redux/main';
+import { handleRedux } from '../redux/store/handleRedux';
 import {custom_contract, shares_contract_sample} from '../data_processing/data_samples';
 import {FileNode, StoredContract} from '../../declarations/backend/backend.did';
 import EditorComponent from '../components/editor_components/main';

@@ -3,7 +3,7 @@ import List from '@mui/material/List';
 import {ListSubheader} from "@mui/material";
 import DocComponent from "./list_item";
 import Draggable from "../../genral/draggable";
-import {handleRedux} from "../../../redux/main";
+import { handleRedux } from '../../../redux/store/handleRedux';
 import {useDispatch} from "react-redux";
 
 

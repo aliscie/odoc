@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {actor} from "../App";
+// import {actor} from "../App";
 import {
     ActionRating,
     ActionType,

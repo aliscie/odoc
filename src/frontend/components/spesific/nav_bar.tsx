@@ -5,15 +5,15 @@ import NestedList from "./nested_list/nest_list";
 import { Button, Divider, Drawer, List, ListItemButton, ListItemText } from "@mui/material";
 import { Link } from "react-router-dom";
 import CreateFile from "../actions/create_file";
-import { handleRedux } from "../../redux/main";
+import { handleRedux } from '../../redux/store/handleRedux';
 import InfoIcon from '@mui/icons-material/Info';
 import ExploreIcon from '@mui/icons-material/Explore';
 import { Z_INDEX_SIDE_NAVBAR } from '../../constants/zIndex';
 
 const NavBar = (props: any) => {
     const dispatch = useDispatch();
-    const { isNavOpen, isLoggedIn } = useSelector((state: any) => state.uiReducer);
-    const { files } = useSelector((state: any) => state.filesReducer);
+    const { isNavOpen, isLoggedIn } = useSelector((state: any) => state.uiState);
+    const { files } = useSelector((state: any) => state.filesState);
 
     const navLinks = [
         { label: "About Us", to: "/", icon: <InfoIcon /> },

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {actor} from "../../App";
+// import {actor} from "../../App";
 import {useSelector} from "react-redux";
 import {Box, Button} from "@mui/material";
 import {PostUser} from "../../../declarations/backend/backend.did";

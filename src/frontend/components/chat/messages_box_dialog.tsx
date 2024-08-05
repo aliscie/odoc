@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {Link} from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
-import { handleRedux } from '../../redux/main';
+import { handleRedux } from '../../redux/store/handleRedux';
 import MessagesList from './MessagesList';
 import MessageInput from './MessageInput';
 import MessageDialog from '../genral/MessageDialog';
@@ -14,7 +14,7 @@ import SendMessageBox from './SendMessageBox';
 const MessagesDialogBox = () => {
     const dispatch = useDispatch();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-    const { current_chat_id } = useSelector((state) => state.chatsReducer);
+    const { current_chat_id } = useSelector((state) => state.chatsState);
     const [messages, setMessages] = useState([]);
     const is_path_chats = window.location.pathname.includes('/chats');
 
