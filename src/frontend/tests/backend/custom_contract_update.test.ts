@@ -13,7 +13,7 @@ import {
     InitialData,
     StoredContract
 } from "../../../declarations/backend/backend.did";
-import {logger} from "../../DevUtils/log_data";
+import {logger} from "../../DevUtils/logData";
 import {randomString} from "../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
 

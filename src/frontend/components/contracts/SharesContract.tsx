@@ -16,7 +16,7 @@ import {
 import PayButton from "./SharesContract/PayButton";
 import {RenderReceiver} from "./PaymentContract/Renderers";
 import BasicMenu from "../General/DropDown";
-import {randomString} from "../../DataProcessing/data_samples";
+import {randomString} from "../../DataProcessing/dataSamples";
 import {Principal} from "@dfinity/principal";
 import useGetUser from "../../utils/get_user_by_principal";
 // import {actor} from "../../App";

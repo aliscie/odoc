@@ -1,7 +1,7 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
 import Editor from "odoc-editor";
-import {payment_contract} from "../DataProcessing/data_samples";
+import {payment_contract} from "../DataProcessing/dataSamples";
 import {EditorRenderer} from "../components/EditorComponents/EditorRenderer";
 import {ContentNode, FileNode} from "../../declarations/backend/backend.did";
 import {normalize_content_tree, SlateNode} from "../DataProcessing/normalize/normalize_contents";

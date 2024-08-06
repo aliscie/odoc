@@ -12,7 +12,7 @@ import {Principal} from "@dfinity/principal";
 import React from "react";
 import { handleRedux } from "../../../../redux/store/handleRedux";
 import {useSnackbar} from "notistack";
-import {logger} from "../../../../DevUtils/log_data";
+import {logger} from "../../../../DevUtils/logData";
 
 interface ParserValues {
     [key: string]: any;

@@ -1,4 +1,4 @@
-import {randomString} from "../data_samples";
+import {randomString} from "../dataSamples";
 import {ContentNode} from "../../../declarations/backend/backend.did";
 
 function de_nesting(nested: any[]) {

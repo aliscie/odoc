@@ -10,7 +10,7 @@ import {useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
 import {LoadingButton} from "@mui/lab";
 import PostTags from "./TagsComponent";
-import serialize_file_contents from "../../DataProcessing/serialize/serialize_file_contents";
+import serialize_file_contents from "../../DataProcessing/serialize/serializeFileContents";
 
 interface Props {
     post: PostUser

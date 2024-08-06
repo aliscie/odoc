@@ -21,7 +21,7 @@ import Friends from "./Friends";
 import Deposit from "./Actions/deposit";
 import Withdraw from "./Actions/withdraw";
 import LoaderButton from "../../components/General/loader_button";
-import { convertToBlobLink, convertToBytes } from "../../DataProcessing/image_to_vec";
+import { convertToBlobLink, convertToBytes } from "../../DataProcessing/imageToVec";
 import { handleRedux } from '../../redux/store/handleRedux';
 import BasicTabs from "./History";
 import TransactionHistory from "./TransactionHistory";

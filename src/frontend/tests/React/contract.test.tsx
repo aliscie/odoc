@@ -4,7 +4,7 @@ import {CContract} from '../../../declarations/backend/backend.did';
 import TestWrapper from "../utils/tests_wrapper";
 import {newContract} from "../backend/data_samples";
 import {createCContract} from "../../components/Contracts/CustomContract/utls";
-import {logger} from "../../DevUtils/log_data";
+import {logger} from "../../DevUtils/logData";
 import store, {handleRedux} from "../../redux/main";
 import {CustomContractComponent} from "../../components/Contracts/CustomContract/CustomContract";
 import {actor} from "../../App";

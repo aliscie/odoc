@@ -11,7 +11,7 @@ import {
 import { Add } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
-import { convertToBytes } from "../../data_processing/image_to_vec";
+import { convertToBytes } from "../../DataProcessing/imageToVec";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { RegisterUser, User } from "../../../declarations/backend/backend.did";
 import { handleRedux } from "../../redux/store/handleRedux";

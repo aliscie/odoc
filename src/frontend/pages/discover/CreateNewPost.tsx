@@ -9,7 +9,7 @@ import {ContentNode, Post} from "../../../declarations/backend/backend.did";
 import {randomId} from "@mui/x-data-grid-generator";
 import {useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
-import serialize_file_contents from "../../DataProcessing/serialize/serialize_file_contents";
+import serialize_file_contents from "../../DataProcessing/serialize/serializeFileContents";
 import {LoadingButton} from "@mui/lab";
 import PostTags from "./TagsComponent";
 
