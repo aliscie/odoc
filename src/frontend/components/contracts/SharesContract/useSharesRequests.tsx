@@ -3,7 +3,7 @@ import {useState} from "react";
 import {Share, ShareRequest, StoredContract} from "../../../../declarations/backend/backend.did";
 import useGetUser from "../../../utils/get_user_by_principal";
 import {useDispatch, useSelector} from "react-redux";
-import {randomString} from "../../../data_processing/data_samples";
+import { randomString } from "../../../DataProcessing/dataSamples";
 import {Principal} from "@dfinity/principal";
 import { handleRedux } from "../../../redux/store/handleRedux";
 import {RenderReceiver} from "../PaymentContract/Renderers";

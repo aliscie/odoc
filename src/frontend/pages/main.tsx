@@ -2,7 +2,7 @@ import {Route, Routes} from "react-router-dom";
 import React from "react";
 import LandingPage from "./LandingPage";
 import NFTComparisonTable from "./TypesOfNfts";
-import FileContentPage from "./FileContent_page";
+import FileContentPage from "./FileContentPage";
 import ShareFilePage from "./ShareFilePage";
 import ProfileComponent from "./Profile/Profile";
 import Discover from "./Discover";

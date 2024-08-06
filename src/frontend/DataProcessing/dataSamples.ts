@@ -7,9 +7,9 @@ import {
     SharesContract
 } from "../../declarations/backend/backend.did";
 
-let payment_contract_id = randomString();
-let shares_contract_id = randomString();
-let first_share_id = randomString();
+let paymentContractId = randomString();
+let sharesContractId = randomString();
+let firstShareId = randomString();
 export let note_page_content = [{"id": 4, "children": [{"id": 5, "text": "", "type": "h1"}]}]
 export let file_data = {"id": "0000", "content": "0", "name": "NameTest", "children": {}, "parent": []}
 let column: Column = {
@@ -22,7 +22,7 @@ let column: Column = {
     formula: [],
     id: randomString(),
 }
-export let data_grid = {
+export let dataGrid = {
 
     "id": randomString(),
     "children": [{
@@ -52,16 +52,16 @@ export let data_grid = {
 }
 
 
-export let shares_contract = {
+export const sharesContract = {
 
     "id": randomString(),
     "children": [{
-        "id": shares_contract_id, "text": "", "data": [{
+        "id": sharesContractId, "text": "", "data": [{
             "Table": {
                 "rows": [
                     {
-                        id: first_share_id,
-                        contract: [{"SharesContract": first_share_id}],
+                        id: firstShareId,
+                        contract: [{"SharesContract": firstShareId}],
                         cells: [],
                         requests: [],
                     }
@@ -78,7 +78,7 @@ export let shares_contract = {
     "type": "shares_contract"
 }
 
-export let custom_contract: CustomContract = {
+export let customContract: CustomContract = {
     'id': randomString(),
     "name": "Custom contract",
     'creator': Principal.fromText("2vxsx-fae"),
@@ -91,8 +91,8 @@ export let custom_contract: CustomContract = {
     'permissions': [],
 }
 
-export let slate_Custom_contract = {
-    "id": custom_contract.id,
+export let slateCustomContract = {
+    "id": customContract.id,
     "children": [{
         "id": randomString(),
         "text": "",
@@ -101,15 +101,15 @@ export let slate_Custom_contract = {
     "type": "custom_contract"
 }
 
-export let payment_contract = {
-    "id": payment_contract_id,
+export let paymentContract = {
+    "id": paymentContractId,
     "children": [{
         "id": randomString(), "text": "", "data": [{
             "Table": {
                 "rows": [
                     {
-                        id: payment_contract_id,
-                        contract: [{"PaymentContract": payment_contract_id}],
+                        id: paymentContractId,
+                        contract: [{"PaymentContract": paymentContractId}],
                         cells: [],
                         requests: [],
                     }
@@ -130,7 +130,7 @@ export let payment_contract = {
     "type": "payment_contract"
 }
 
-export let file_content_sample = [
+export let fileContentSample = [
     {type: "p", children: [{text: ""}]},
 ]
 export let payment_contract_row = {"Contract": {"PaymentContract": "0"}}
@@ -174,8 +174,8 @@ export let contracts_sample = {
         }
     }
 }
-export let payment_contract_sample: PaymentContract = {
-    "contract_id": payment_contract_id,
+export let paymentContractSample: PaymentContract = {
+    "contract_id": paymentContractId,
     "sender": Principal.fromText("2vxsx-fae")!,
     "receiver": Principal.fromText("2vxsx-fae")!,
     "released": false,
@@ -186,8 +186,8 @@ export let payment_contract_sample: PaymentContract = {
     "extra_cells": [],
 }
 
-let share_sample: Share = {
-    'share_contract_id': first_share_id,
+let shareSample: Share = {
+    'share_contract_id': firstShareId,
     'accumulation': BigInt(0),
     'confirmed': false,
     'share': BigInt(100),
@@ -195,23 +195,23 @@ let share_sample: Share = {
     extra_cells: []
 }
 
-let payment_option: SharePaymentOption = {
+let paymentOption: SharePaymentOption = {
     'id': "",
     'title': "",
     'date': "",
     'description': "",
     'amount': BigInt(0),
 }
-export let shares_contract_sample: SharesContract = {
-    'shares': [share_sample],
+export let sharesContractSample: SharesContract = {
+    'shares': [shareSample],
     'payments': [],
-    'contract_id': shares_contract_id,
+    'contract_id': sharesContractId,
     'shares_requests': [],
-    "payment_options": [payment_option],
+    "payment_options": [paymentOption],
     "author": "2vxsx-fae",
 }
 
-export let contract_id_sample = {"Contract": {"PaymentContract": "18"}}
+export let contractIdSample = {"Contract": {"PaymentContract": "18"}}
 
 
 export function randomString() {

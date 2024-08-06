@@ -25,16 +25,17 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { Routes, Route } from "react-router-dom";
 
 import BasicMenu from "../General/BasicMenu";
-import BreadPage from "../General/breadcrumbs";
-import ShareFileButton from "../General/copy_link";
-import MultiSaveButton from "../Actions/multi_save";
-import { Notifications } from "../notifcations/notification";
-import ChatsComponent from "../chat_component";
-import Workspaces from "./work_spaces";
+import BreadPage from "../General/Breadcrumbs";
+import ShareFileButton from "../General/CopyLink";
+import MultiSaveButton from "../Actions/MultiSave";
+
+import { Notifications } from "../Notifcations/Notification";
+import ChatsComponent from "../ChatComponent";
+import Workspaces from "./WorkSpaces";
 
 import { handleRedux } from "../../redux/store/handleRedux";
 import { useBackendContext } from "../../contexts/BackendContext";
-import { convertToBlobLink } from "../../data_processing/image_to_vec";
+import { convertToBlobLink } from "../../DataProcessing/imageToVec";
 import { Z_INDEX_TOP_NAVBAR } from "../../constants/zIndex";
 
 const TopNavBar = () => {

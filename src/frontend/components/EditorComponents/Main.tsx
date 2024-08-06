@@ -1,5 +1,5 @@
 import * as React from "react";
-import {data_grid, payment_contract, shares_contract, slate_Custom_contract} from "../../data_processing/data_samples";
+import { dataGrid, paymentContract, sharesContract, slateCustomContract } from "../../DataProcessing/dataSamples";
 import {EditorRenderer} from "./EditorRenderer";
 import Editor from "odoc-editor";
 import {useSelector} from "react-redux";
@@ -14,8 +14,8 @@ interface Props {
 }
 
 function EditorComponent(props: Props) {
-    let {searchValue} = useSelector((state: any) => state.uiReducer);
-    const {all_friends} = useSelector((state: any) => state.filesReducer);
+    let {searchValue} = useSelector((state: any) => state.uiState);
+    const {all_friends} = useSelector((state: any) => state.filesState);
     let content = props.content
     if (props.content.length == 0) {
         content = [{type: "p", children: [{text: ""}]}];
@@ -39,10 +39,10 @@ function EditorComponent(props: Props) {
 
                         ]
                     },
-                    slate_Custom_contract,
-                    data_grid,
-                    payment_contract,
-                    shares_contract,
+                    slateCustomContract,
+                    dataGrid,
+                    paymentContract,
+                    sharesContract,
                     {type: "custom_contract"},
                 ]}
                 onInsertComponent={props.handleOnInsertComponent}

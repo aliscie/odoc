@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {DataGrid} from '@mui/x-data-grid';
 import {styled, Theme} from '@mui/material/styles';
-import {process_row} from "../data_processing/normalize/normalize_tables";
+import { processRow } from "../DataProcessing/normalize/normalizeTables";
 // import { DataGridPro, GridLogicOperator, GridToolbar } from '@mui/x-data-grid-pro';
 
 // import { DataGridPro } from '@mui/x-data-grid-pro';
@@ -55,7 +55,7 @@ export const StyledDataGrid = styled(DataGrid)(({theme}) => ({
 
 export default function SpreadSheet(props: any) {
     let table = props.data[0].Table;
-    let rows = process_row(table.rows);
+    let rows = processRow(table.rows);
 
     return (
         <TableContainer>

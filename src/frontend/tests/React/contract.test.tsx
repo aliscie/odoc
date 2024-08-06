@@ -3,7 +3,7 @@ import {createEvent, render} from '@testing-library/react';
 import {CContract} from '../../../declarations/backend/backend.did';
 import TestWrapper from "../utils/tests_wrapper";
 import {newContract} from "../backend/data_samples";
-import {createCContract} from "../../components/Contracts/CustomContract/utls";
+import {createCContract} from "../../components/Contracts/CustomContract/utils";
 import {logger} from "../../DevUtils/logData";
 import store, {handleRedux} from "../../redux/main";
 import {CustomContractComponent} from "../../components/Contracts/CustomContract/CustomContract";

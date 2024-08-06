@@ -5,7 +5,7 @@ import { ListItem, ListItemText, Tooltip, Typography, Box } from '@mui/material'
 import DoneIcon from '@mui/icons-material/Done';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import { Principal } from '@dfinity/principal';
-import useGetChats from './use_get_chats';
+import useGetChats from './utils/useGetChats';
 import formatTimestamp, { formatRelativeTime } from '../../utils/time';
 
 export interface FrontendMessage {

@@ -4,7 +4,7 @@ import {CustomContractComponent} from "../../../components/Contracts/CustomContr
 import TestWrapper from "../../utils/tests_wrapper";
 import {newContract} from "../../backend/data_samples";
 import {CContract} from "../../../../declarations/backend/backend.did";
-import {createCContract} from "../../../components/Contracts/CustomContract/utls";
+import {createCContract} from "../../../components/Contracts/CustomContract/utils";
 
 interface ContractProps {
 

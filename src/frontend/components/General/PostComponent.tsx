@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
 import IconButton, {IconButtonProps} from '@mui/material/IconButton';
-import {normalize_content_tree} from "../../data_processing/normalize/normalize_contents";
+import { normalizeContentTree } from '../../DataProcessing/normalize/normalizeContents';
 import {FEChat, PostUser, UserFE} from "../../../declarations/backend/backend.did";
 import formatTimestamp from "../../utils/time";
 import EditorComponent from "../EditorComponents/Main";
@@ -16,10 +16,10 @@ import BasicMenu from "./BasicMenu";
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import { handleRedux } from '../../redux/store/handleRedux';
 import {Principal} from "@dfinity/principal";
-import useGetChats from "../Chat/use_get_chats";
+import useGetChats from '../Chat/utils/useGetChats';
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
-import {convertToBlobLink} from "../../data_processing/image_to_vec";
+import { convertToBlobLink } from '../../DataProcessing/imageToVec';
 import {User} from "../../../../.dfx/local/canisters/backend/service.did";
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -97,7 +97,7 @@ export function UserAvatar(props: UserFE | User) {
 export default function PostComponent(props: Props) {
 
 
-    let content = normalize_content_tree(props.post.content_tree);
+    let content = normalizeContentTree(props.post.content_tree);
 
 
     let subheader = formatTimestamp(props.post.date_created)

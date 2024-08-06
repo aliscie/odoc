@@ -16,8 +16,8 @@ import AbcIcon from '@mui/icons-material/Abc';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import MultiAutoComplete from "../General/MultiAutocompelte";
-import useSearchFiles from "./search_popper/search_files_content";
-import ResultFile from "./search_popper/result_file";
+import useSearchFiles from './SearchPopper/SearchFilesContent';
+import ResultFile from './SearchPopper/ResultFile';
 import TitleIcon from '@mui/icons-material/Title';
 import { Z_INDEX_SEARCH_POPPER } from '../../constants/zIndex';
 

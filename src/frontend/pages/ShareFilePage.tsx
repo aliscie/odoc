@@ -1,10 +1,10 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
 import Editor from "odoc-editor";
-import {payment_contract} from "../DataProcessing/dataSamples";
+import { paymentContract } from "../DataProcessing/dataSamples";
 import {EditorRenderer} from "../components/EditorComponents/EditorRenderer";
 import {ContentNode, FileNode} from "../../declarations/backend/backend.did";
-import {normalize_content_tree, SlateNode} from "../DataProcessing/normalize/normalize_contents";
+import { normalizeContentTree, SlateNode } from "../DataProcessing/normalize/normalizeContents";
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
 import { handleRedux } from "../redux/store/handleRedux";
@@ -35,8 +35,8 @@ function ShareFilePage(props: any) {
 
                 if ("Ok" in res) {
                     let file: FileNode = res.Ok[0]
-                    let content_tree: Array<[string, ContentNode]> = res.Ok[1]
-                    let normalized_tree: Array<SlateNode> = normalize_content_tree(content_tree);
+                    let contentTree: Array<[string, ContentNode]> = res.Ok[1]
+                    let normalized_tree: Array<SlateNode> = normalizeContentTree(contentTree);
                     setFile(file);
                     setState(normalized_tree)
                     dispatch(handleRedux("CURRENT_FILE", {file}));
@@ -56,7 +56,7 @@ function ShareFilePage(props: any) {
             {state && <Editor
                 contentEditable={false}
                 componentsOptions={[
-                    payment_contract,
+                    paymentContract,
                     {type: "shares_contract"},
                     {type: "custom_contract"},
                 ]}

@@ -7,7 +7,7 @@ import {
     CustomContract,
     User
 } from "../../../../declarations/backend/backend.did";
-import {randomString} from "../../../data_processing/data_samples";
+import { randomString } from "../../../DataProcessing/dataSamples";
 import {Principal} from "@dfinity/principal";
 
 export function updateCContractColumn(contract, new_column): CContract {
@@ -33,7 +33,7 @@ export function updateContractColumn(contract: CustomContract, updated_column, v
     }
 }
 
-export function serialize_contract_column(contract, addVarsToParser, evaluate, all_users?): Array<CColumn> {
+export function serializeContractColumn(contract, addVarsToParser, evaluate, all_users?): Array<CColumn> {
     return contract.columns.map((col: CColumn) => {
         if (col.formula_string && col.formula_string.length > 0) {
             col['width'] = 150;
@@ -59,7 +59,7 @@ export function serialize_contract_column(contract, addVarsToParser, evaluate, a
 }
 
 
-export function serialize_contract_rows(rows: Array<CRow>, columns: Array<CColumn>) {
+export function serializeContractRows(rows: Array<CRow>, columns: Array<CColumn>) {
     return rows.map((row: CRow) => {
         let cells: any = {}
         row.cells && row.cells.map((cell: CCell) => {
@@ -78,7 +78,7 @@ export function serialize_contract_rows(rows: Array<CRow>, columns: Array<CColum
 }
 
 
-export function deserialize_contract_rows(rows: Array<any>): Array<CRow> {
+export function deserializeContractRows(rows: Array<any>): Array<CRow> {
     return rows.map((row) => {
         let cells: Array<any> = [];
         Object.keys(row).map((k: string) => {

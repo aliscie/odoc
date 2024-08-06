@@ -1,10 +1,10 @@
 import React from 'react';
-import "./style/nav_bar.css";
+import "./style/navBar.css";
 import { useDispatch, useSelector } from "react-redux";
-import NestedList from "./nested_list/nest_list";
+import NestedList from "./NestedList/nest_list";
 import { Button, Divider, Drawer, List, ListItemButton, ListItemText } from "@mui/material";
 import { Link } from "react-router-dom";
-import CreateFile from "../Actions/create_file";
+import CreateFile from '../Actions/CreateFile';
 import { handleRedux } from '../../redux/store/handleRedux';
 import InfoIcon from '@mui/icons-material/Info';
 import ExploreIcon from '@mui/icons-material/Explore';

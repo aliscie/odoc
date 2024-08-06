@@ -11,7 +11,7 @@ import {useSelector} from "react-redux";
 import useGetUser from "../../utils/get_user_by_principal";
 import DialogOver from "../General/DialogOver";
 import {Divider, Input, Typography} from "@mui/material";
-import LoaderButton from "../General/loader_button";
+import LoaderButton from '../General/LoaderButton';
 import {CPayment, Notification} from "../../../declarations/backend/backend.did";
 import {formatRelativeTime} from "../../utils/time";
 

@@ -7,7 +7,7 @@ import {
 
 type ContractType = CustomContract | PaymentContract | SharesContract;
 
-export function normalize_contracts(json: Array<[string, StoredContract]>) {
+export function normalizeContracts(json: Array<[string, StoredContract]>) {
     let contracts: Map<string, ContractType> = new Map();
     json.map((item: [string, StoredContract]) => {
         let key: string = item[0];

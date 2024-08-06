@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import { handleRedux } from "../../redux/store/handleRedux";
 import {useSnackbar} from "notistack";
 import {ContentNode, CPayment, FileNode, StoredContract} from "../../../declarations/backend/backend.did";
-import serialize_file_contents from "../../data_processing/serialize/serialize_file_contents";
+import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 // import {actor} from "../../App";
 import {LoadingButton} from "@mui/lab";
 
@@ -17,7 +17,7 @@ function MultiSaveButton(props: any) {
     const [loading, setLoading] = React.useState(false);
     const [openDialog, setOpenDialog] = React.useState(0);
 
-    let serialized_content: Array<Array<[string, Array<ContentNode>]>> = serialize_file_contents(changes.contents)
+    let serialized_content: Array<Array<[string, Array<ContentNode>]>> = serializeFileContents(changes.contents)
     let serialized_contracts: Array<StoredContract> = Object.values(changes.contracts);
     // let files: Array<FileNode> = Object.values(changes.files);
     let delete_contracts: Array<string> = changes.delete_contracts || [];

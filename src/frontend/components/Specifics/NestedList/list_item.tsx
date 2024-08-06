@@ -9,10 +9,10 @@ import List from "@mui/material/List";
 import {NestedDataItem} from "./nest_list";
 import {useDispatch, useSelector} from "react-redux";
 import { handleRedux } from "../../../redux/store/handleRedux";
-import DeleteFile from "../../Actions/delete_file";
+import DeleteFile from "../../Actions/DeleteFile";
 import Draggable from "../../General/Draggable";
 import ShareIcon from '@mui/icons-material/Share';
-import ChangeWorkSpace from "../../Actions/change_work_space_file";
+import ChangeWorkSpace from "../../Actions/ChangeWorkSpaceFile";
 import ContextMenu from "../../General/ContextMenu";
 
 interface ItemProps {

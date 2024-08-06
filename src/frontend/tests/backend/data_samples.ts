@@ -1,6 +1,6 @@
 import {randomString} from "../../data_processing/data_samples";
 import {CPayment, CustomContract} from "../../../declarations/backend/backend.did";
-import {createNewPromis} from "../../components/Contracts/CustomContract/utls";
+import {createNewPromis} from "../../components/Contracts/CustomContract/utils";
 import {Principal} from "@dfinity/principal";
 
 export function newContract(): { custom_contract: CustomContract, promise: CPayment } {

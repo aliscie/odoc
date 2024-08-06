@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';
-import {randomString} from "../../../data_processing/data_samples";
+import { randomString } from "../../../DataProcessing/dataSamples";
 import { handleRedux } from "../../../redux/store/handleRedux";
 import {
     CColumn,
@@ -15,15 +15,15 @@ import {
 } from "../../../../declarations/backend/backend.did";
 import {
     createCContract,
-    deserialize_contract_rows,
-    serialize_contract_column,
-    serialize_contract_rows,
+    deserializeContractRows,
+    serializeContractColumn,
+    serializeContractRows,
     serializePaymentData,
     serializePromisesData,
     serializeRowToPromise,
     updateCustomContractColumns,
     updateCustomContractRows
-} from "./utls";
+} from "./utils";
 import {CONTRACT, CREATE_CONTRACT, PAYMENTS, PROMISES} from "./types";
 import BasicMenu from "../../General/DropDown";
 import CustomDataGrid from "../../DataGrid";
@@ -34,7 +34,7 @@ import ChangeColumnFormula from "./ColumnMenu/ColumnFormula";
 // import {actor} from "../../../App";
 import ChangeType from "./ColumnMenu/ColumnType";
 import {Input} from "@mui/material";
-import {CCell} from "../../../../../.dfx/ic/canisters/backend/service.did";
+import { CCell } from "../../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
 import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
@@ -323,7 +323,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             case CONTRACT:
 
                 let updated_contract = contract.contracts.find((c: CContract) => c.id === view.id);
-                let rows = deserialize_contract_rows(newRows);
+                let rows = deserializeContractRows(newRows);
                 const updatedContract = updateCustomContractRows(contract, rows, updated_contract.id);
                 updateContract(updatedContract);
                 break;
@@ -384,12 +384,12 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         switch (option.type) {
 
             case PROMISES:
-                let serialize_PromisesData = serializePaymentData(contract.promises, all_users)
+                let serializePromisesData = serializePaymentData(contract.promises, all_users)
 
                 setView({
                     id: contract.contracts.find((c: CContract) => c.name === "Promises")?.id,
                     type: PROMISES,
-                    ...serialize_PromisesData,
+                    ...serializePromisesData,
                 })
                 break
 
@@ -477,8 +477,8 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 data = view;
                 break
             }
-            let serialized_columns: Array<CColumn> = serialize_contract_column(current_contract, addVarsToParser, evaluate, all_users)
-            let serialized_rows = serialize_contract_rows(current_contract.rows, current_contract.columns)
+            let serialized_columns: Array<CColumn> = serializeContractColumn(current_contract, addVarsToParser, evaluate, all_users)
+            let serialized_rows = serializeContractRows(current_contract.rows, current_contract.columns)
             data = {columns: serialized_columns, rows: serialized_rows, name: view.name};
 
             break;

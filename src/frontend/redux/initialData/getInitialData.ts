@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Principal } from '@dfinity/principal';
-import { normalize_files_contents } from '../../data_processing/normalize/normalize_contents';
-import { normalize_contracts } from '../../data_processing/normalize/normalize_contracts';
+import { normalizeFilesContents } from '../../DataProcessing/normalize/normalizeContents';
+import { normalizeContracts } from '../../DataProcessing/normalize/normalizeContracts';
 import { UserProfile, WorkSpace, Notification } from '../../../declarations/backend/backend.did';
 import { useBackendContext } from "../../contexts/BackendContext";
 import * as filesActions from "../actions/filesAction";
@@ -28,8 +28,8 @@ export async function getInitialData() {
     if (data && "Ok" in data) {
       dispatch(filesActions.updateProfile(data.Ok.Profile));
       dispatch(filesActions.addFile(data.Ok.Files));
-      dispatch(filesActions.filesSaved(normalize_files_contents(data.Ok.FilesContents[0])));
-      dispatch(filesActions.addContract(normalize_contracts(data.Ok.Contracts)));
+      dispatch(filesActions.filesSaved(normalizeFilesContents(data.Ok.FilesContents[0])));
+      dispatch(filesActions.addContract(normalizeContracts(data.Ok.Contracts)));
       dispatch(filesActions.addWorkspace(data.Ok.Workspaces));
       dispatch(filesActions.confirmFriend(data.Ok.Friends));
       dispatch(filesActions.updateAllFriends(data.Ok.Friends.map((f: Friend) => {

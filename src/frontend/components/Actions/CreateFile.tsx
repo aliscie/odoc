@@ -2,6 +2,7 @@ import { handleRedux } from "../../redux/store/handleRedux";
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {file_content_sample, randomString} from "../../data_processing/data_samples";
+import { file_content_sample, randomString } from "../../DataProcessing/dataSamples";
 import {Button, Tooltip} from "@mui/material";
 import {FileNode} from "../../../declarations/backend/backend.did";
 import PostAddIcon from '@mui/icons-material/PostAdd';
@@ -31,7 +32,7 @@ const CreateFile = () => {
             workspace: "Default",
         };
         dispatch(handleRedux("ADD_FILE", {new_file: file}))
-        dispatch(handleRedux("ADD_CONTENT", {id, content: file_content_sample}))
+        dispatch(handleRedux("ADD_CONTENT", {id, content: fileContentSample}))
         // dispatch(handleRedux("FILE_CHANGES", {change: file}));
         // closeSnackbar(loading)
         // enqueueSnackbar('New file is created!', {variant: "success"});

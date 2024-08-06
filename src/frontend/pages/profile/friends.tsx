@@ -7,12 +7,12 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import {Tooltip, Box, IconButton} from "@mui/material";
 import * as React from "react";
-import LoaderButton from "../../components/General/loader_button";
+import LoaderButton from "../../components/General/LoaderButton";
 // import {actor} from "../../App";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import {Friend} from "../../../declarations/backend/backend.did";
-import RateUser from "../../components/Specific/rate_user";
-import {UserAvatar} from "../../components/General/post_component";
+import RateUser from "../../components/Specifics/RateUser";
+import { UserAvatar } from "../../components/General/PostComponent";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel"; 
 

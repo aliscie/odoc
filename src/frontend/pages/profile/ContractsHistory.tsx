@@ -3,7 +3,7 @@ import List from "@mui/material/List";
 import * as React from "react";
 import {CustomContractComponent} from "../../components/Contracts/CustomContract/CustomContract";
 import SharesContractComponent from "../../components/Contracts/SharesContract";
-import {shares_contract} from "../../data_processing/data_samples";
+import { sharesContract } from "../../DataProcessing/dataSamples";
 import {Divider} from "@mui/material";
 import ListItem from "@mui/material/ListItem";
 
@@ -19,7 +19,7 @@ function ContractsHistory(props: any) {
                         <CustomContractComponent contract={contract}/>
                     </ListItem>
                 } else {
-                    let c = {...shares_contract, contract_id: contract.contract_id}
+                    let c = {...sharesContract, contract_id: contract.contract_id}
                     return <ListItem>
                         <SharesContractComponent {...c} />
                     </ListItem>

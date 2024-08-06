@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {TextField} from "@mui/material";
 import {WorkSpace} from "../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
-import {randomString} from "../../data_processing/data_samples";
+import { randomString } from "../../DataProcessing/dataSamples";
 // import {actor} from "../../App";
 import {useSnackbar} from "notistack";
 

@@ -39,7 +39,7 @@ function de_nesting(nested: any[]) {
 }
 
 
-function serialize_file_contents(content: any[], data: Array<Array<[string, Array<ContentNode>]>> = []) {
+function serializeFileContents(content: any[], data: Array<Array<[string, Array<ContentNode>]>> = []) {
     Object.keys(content).forEach((key) => {
         let change = [];
         let item = content[key];
@@ -53,4 +53,4 @@ function serialize_file_contents(content: any[], data: Array<Array<[string, Arra
 }
 
 
-export default serialize_file_contents;
+export default serializeFileContents;

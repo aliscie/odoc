@@ -10,7 +10,7 @@ import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContextMenu from "./General/ContextMenu";
 import {Row} from "../../declarations/backend/backend.did";
-import {randomString} from "../data_processing/data_samples";
+import { randomString } from "../DataProcessing/dataSamples";
 
 interface Props {
     data: any,

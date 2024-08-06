@@ -5,7 +5,7 @@ import * as React from "react";
 import {useState} from "react";
 import {useSelector} from "react-redux";
 import {GridColumnMenuItemProps} from "@mui/x-data-grid";
-import {PROMISES_CONTRACT_FIELDS, updateContractColumn} from "../utls";
+import {PROMISES_CONTRACT_FIELDS, updateContractColumn} from "../utils";
 import MenuItem from "@mui/material/MenuItem";
 import {PROMISES} from "../types";
 

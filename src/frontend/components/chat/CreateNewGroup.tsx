@@ -7,7 +7,7 @@ import MultiAutoComplete from "../General/MultiAutocompelte";
 import {Chat, Message, WorkSpace} from "../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import {useSnackbar} from "notistack";
-import {randomString} from "../../data_processing/data_samples";
+import { randomString } from "../../DataProcessing/dataSamples";
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import Input from '@mui/material/Input';
 

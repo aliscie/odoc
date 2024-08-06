@@ -5,11 +5,12 @@ import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import { handleRedux } from "../../redux/store/handleRedux";
 import {FEChat, Message, User} from "../../../declarations/backend/backend.did";
-import useGetChats from "./use_get_chats";
+import useGetChats from "./utils/useGetChats";
 import {Principal} from "@dfinity/principal";
-import {convertToBlobLink} from "../../data_processing/image_to_vec";
+import { convertToBlobLink } from "../../DataProcessing/imageToVec";
 // import {actor} from "../../App";
 import MessageComponent from "./Message";
+
 import GroupIcon from "@mui/icons-material/Group"
 
 // interface MessageNotificationProp {

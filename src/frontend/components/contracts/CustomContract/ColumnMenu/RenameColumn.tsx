@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {GridColumnMenuItemProps} from "@mui/x-data-grid";
-import {PROMISES_CONTRACT_FIELDS, updateContractColumn} from "../utls";
+import {PROMISES_CONTRACT_FIELDS, updateContractColumn} from "../utils";
 import {Input} from "@mui/material";
 import {PROMISES} from "../types";
 import {CCell, CPayment} from "../../../../../declarations/backend/backend.did";

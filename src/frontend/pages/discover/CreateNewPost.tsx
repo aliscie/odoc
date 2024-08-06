@@ -1,4 +1,4 @@
-import PostComponent from "../../components/General/post_component";
+import PostComponent from "../../components/General/PostComponent";
 import {Grid} from "@mui/material";
 import React from "react";
 import IconButton from "@mui/material/IconButton";

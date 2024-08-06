@@ -1,6 +1,6 @@
 import React from 'react';
 import {CColumn, CContract, CustomContract} from '../../../../../declarations/backend/backend.did';
-import {PROMISES_CONTRACT_FIELDS, updateContractColumn} from "../utls";
+import {PROMISES_CONTRACT_FIELDS, updateContractColumn} from "../utils";
 import BasicMenu from "../../../General/DropDown";
 import {PROMISES} from "../types";
 

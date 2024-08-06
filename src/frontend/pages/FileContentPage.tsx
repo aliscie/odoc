@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import { handleRedux } from '../redux/store/handleRedux';
-import {custom_contract, shares_contract_sample} from '../DataProcessing/dataSamples';
+import {customContract, sharesContractSample} from '../DataProcessing/dataSamples';
 import {FileNode, StoredContract} from '../../declarations/backend/backend.did';
 import EditorComponent from '../components/EditorComponents/Main';
 import debounce from '../utils/debounce';
@@ -62,18 +62,18 @@ const FileContentPage: React.FC<Props> = () => {
         }
 
         switch (component.type) {
-            case "shares_contract":
-                let new_contract = {...shares_contract_sample, author: profile.id};
+            case "sharesContract":
+                let new_contract = {...sharesContractSample, author: profile.id};
                 let stored_shares: StoredContract = {"SharesContract": new_contract}
                 dispatch(handleRedux("ADD_CONTRACT", {contract: new_contract}))
                 dispatch(handleRedux("CONTRACT_CHANGES", {changes: stored_shares}));
                 insertText();
                 return null
-            case "custom_contract":
-                custom_contract.creator = Principal.fromText(profile.id)
-                custom_contract.date_created = Date.now() * 1e6
-                let stored_custom: StoredContract = {"CustomContract": custom_contract}
-                dispatch(handleRedux("ADD_CONTRACT", {contract: custom_contract}))
+            case "customContract":
+                customContract.creator = Principal.fromText(profile.id)
+                customContract.date_created = Date.now() * 1e6
+                let stored_custom: StoredContract = {"CustomContract": customContract}
+                dispatch(handleRedux("ADD_CONTRACT", {contract: customContract}))
                 dispatch(handleRedux("CONTRACT_CHANGES", {changes: stored_custom}));
                 insertText();
                 return null;

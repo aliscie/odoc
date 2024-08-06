@@ -2,7 +2,7 @@ import {Rating} from "../../../declarations/backend/backend.did";
 import {Input, Rating as RatingCom} from "@mui/material";
 import * as React from "react";
 import {Principal} from "@dfinity/principal";
-import {randomString} from "../../data_processing/data_samples";
+import { randomString } from "../../DataProcessing/dataSamples";
 // import {actor} from "../../App";
 import {useSnackbar} from "notistack";
 import DialogOver from "../General/DialogOver";
