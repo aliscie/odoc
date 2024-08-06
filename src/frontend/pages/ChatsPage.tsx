@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import useGetChats from "../components/Chat/utils/UseGetChats";
+import useGetChats from "../components/Chat/utils/useGetChats";
 import { FEChat } from "../../declarations/backend/backend.did";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';

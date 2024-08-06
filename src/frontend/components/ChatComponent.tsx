@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import BasicMenu from './General/BasicMenu';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import MessageNotification from './Chat/message_notification';
+import MessageNotification from './Chat/MessageNotification';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Message } from '../../declarations/backend/backend.did';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleRedux } from '../redux/store/handleRedux';
 import { Badge } from '@mui/base';
-import useCreateChatGroup from './Chat/create_new_group';
+import useCreateChatGroup from './Chat/CreateNewGroup';
 import { useBackendContext } from '../contexts/BackendContext';
 
 interface Props {}

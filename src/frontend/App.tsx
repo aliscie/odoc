@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import NavBar from "./components/Specific/nav_bar";
+import NavBar from "./components/Specific/NavBar";
 import Pages from "./pages/main";
 import { BrowserRouter } from "react-router-dom";
 import { getInitialData } from "./redux/initialData/getInitialData";
 import TopNavBar from "./components/Specific/TopNavBar";
-import SearchPopper from "./components/Specific/search_popper";
+import SearchPopper from "./components/Specific/SearchPopper";
 // import Theme from "./components/genral/theme_provider";
 import { SnackbarProvider } from "notistack";
 import RegistrationForm from "./components/Specific/RegistrationForm";
+import Regist
 import { handleRedux } from "./redux/store/handleRedux";
 import { useDispatch } from "react-redux";
-import MessagesDialog from "./components/Chat/messages_box_dialog";
+import MessagesDialog from "./components/Chat/MessagesBoxDialog";
 import useSocket from "./websocket/use_socket";
 import { CircularProgress } from "@mui/material";
 import { useSnackbar } from "notistack";

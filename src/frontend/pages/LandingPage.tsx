@@ -4,14 +4,14 @@ import 'slick-carousel/slick/slick-theme.css';
 import React, {useState} from 'react';
 import './styles/LandingPage.css';
 import {Button, Divider, Typography, Container, Grid, Box, CardContent} from "@mui/material";
-import Card from "../components/General/card";
+import Card from "../components/General/Card";
 
-import FullWidthTabs from "./welcome";
-import StyledAccordion from '../components/General/styled_accordion';
+import FullWidthTabs from "./Welcome";
+import StyledAccordion from '../components/General/StyledAccordion';
 import Slider from "react-slick";
 import {features} from '../data/odoc_features';
 import {roadMap} from '../data/odoc_roadmap';
-import FeatureModal from '../components/General/feature_modal';
+import FeatureModal from '../components/General/FeatureModal';
 
 interface Features {
     title: string;

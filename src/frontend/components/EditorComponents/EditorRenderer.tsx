@@ -1,5 +1,5 @@
 import * as React from "react";
-import MentionComponent from "./mention_component";
+import MentionComponent from "./MentionComponent";
 import {Table, TableBody, TableCell, TableRow} from "@mui/material";
 import ContractView from "../views/contract_view";
 import SharesContractComponent from "../Contracts/SharesContract";

@@ -2,12 +2,12 @@ import React, {useEffect} from 'react';
 import './styles/LandingPage.css';
 import {Button, Divider, Grid} from "@mui/material";
 import {useSelector} from "react-redux";
-import CreatePost from "./discover/create_new_post";
+import CreatePost from "./discover/CreateNewPost";
 // import {actor} from "../App";
 import {PostUser} from "../../declarations/backend/backend.did";
 import {useSnackbar} from "notistack";
-import FilterPosts from "./discover/posts_filters";
-import ViewPost from "./discover/view_update_post";
+import FilterPosts from "./discover/PostsFilters";
+import ViewPost from "./discover/ViewUpdatePost";
 
 const Discover = () => {
         const {searchValue} = useSelector((state: any) => state.uiState);

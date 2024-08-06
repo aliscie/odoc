@@ -1,7 +1,7 @@
 import * as React from "react";
 import Autocomplete, {createFilterOptions} from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import AvatarChips from "./person_chip";
+import AvatarChips from "./PersonChip";
 
 const filter = createFilterOptions<any>();
 

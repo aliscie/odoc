@@ -1,9 +1,9 @@
 import React from 'react';
 import {CColumn, CContract, CustomContract, StoredContract} from '../../../../../declarations/backend/backend.did';
-import CodeEditor from "../FormulaParser/code_editor";
+import CodeEditor from "../FormulaParser/CodeEditor";
 import {PROMISES_CONTRACT_FIELDS, updateContractColumn} from "../utls";
 import {useDispatch} from "react-redux";
-import CustomDialog from "../../../General/custom_dialog";
+import CustomDialog from "../../../General/CustomDialog";
 import { handleRedux } from '../../../../redux/store/handleRedux';
 import {PROMISES} from "../types";
 

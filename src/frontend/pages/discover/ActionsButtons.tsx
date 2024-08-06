@@ -7,7 +7,7 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import {useSelector} from "react-redux";
 import {Principal} from "@dfinity/principal";
-import VoteButton from "./vote_button";
+import VoteButton from "./VoteButton";
 
 interface Props {
     post: PostUser

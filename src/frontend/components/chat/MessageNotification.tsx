@@ -9,7 +9,7 @@ import useGetChats from "./use_get_chats";
 import {Principal} from "@dfinity/principal";
 import {convertToBlobLink} from "../../data_processing/image_to_vec";
 // import {actor} from "../../App";
-import MessageComponent from "./message";
+import MessageComponent from "./Message";
 import GroupIcon from "@mui/icons-material/Group"
 
 // interface MessageNotificationProp {

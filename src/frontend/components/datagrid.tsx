@@ -1,5 +1,5 @@
 import {Button, ButtonGroup} from "@mui/material";
-import {StyledDataGrid} from "./spread_sheet";
+import {StyledDataGrid} from "./SpreadSheet";
 import * as React from "react";
 import {useEffect} from "react";
 import {GridCell, GridColumnMenu, GridColumnMenuProps, GridRowModel} from "@mui/x-data-grid";

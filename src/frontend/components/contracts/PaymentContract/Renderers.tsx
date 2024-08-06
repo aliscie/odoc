@@ -1,4 +1,4 @@
-import ReceiverComponent from "./render_reciver_column";
+import ReceiverComponent from "./RenderReceiverColumn";
 import * as React from "react";
 
 export let RenderReceiver = (props: any) => ReceiverComponent({...props})
