@@ -1,10 +1,10 @@
 import React from 'react';
 import store from "../../../redux/main";
-import {CustomContractComponent} from "../../../components/contracts/custom_contract/custom_contract";
+import {CustomContractComponent} from "../../../components/Contracts/CustomContract/CustomContract";
 import TestWrapper from "../../utils/tests_wrapper";
 import {newContract} from "../../backend/data_samples";
 import {CContract} from "../../../../declarations/backend/backend.did";
-import {createCContract} from "../../../components/contracts/custom_contract/utls";
+import {createCContract} from "../../../components/Contracts/CustomContract/utls";
 
 interface ContractProps {
 

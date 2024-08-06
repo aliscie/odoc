@@ -8,14 +8,14 @@ import {
     User,
     UserProfile
 } from "../../declarations/backend/backend.did";
-import {FriendCom} from "./profile/friends";
+import {FriendCom} from "./Profile/Friends";
 import {Principal} from "@dfinity/principal";
 import {List, Rating as RatingCom} from "@mui/material";
 import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
 import {LineChart} from "@mui/x-charts/LineChart";
 import useGetUser from "../utils/get_user_by_principal";
-import {logger} from "../dev_utils/log_data";
+import {logger} from "../DevUtils/log_data";
 
 export function UserHistoryCom(profile: UserProfile) {
     let {getUser} = useGetUser();

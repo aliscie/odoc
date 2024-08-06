@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import NavBar from "./components/spesific/nav_bar";
+import NavBar from "./components/Specific/nav_bar";
 import Pages from "./pages/main";
 import { BrowserRouter } from "react-router-dom";
-import { getInitialData } from "./redux/reducers/initialData/getInitialData";
-import TopNavBar from "./components/spesific/TopNavBar";
-import SearchPopper from "./components/spesific/search_popper";
+import { getInitialData } from "./redux/initialData/getInitialData";
+import TopNavBar from "./components/Specific/TopNavBar";
+import SearchPopper from "./components/Specific/search_popper";
 // import Theme from "./components/genral/theme_provider";
 import { SnackbarProvider } from "notistack";
-import RegistrationForm from "./components/spesific/RegistrationForm";
+import RegistrationForm from "./components/Specific/RegistrationForm";
 import { handleRedux } from "./redux/store/handleRedux";
 import { useDispatch } from "react-redux";
-import MessagesDialog from "./components/chat/messages_box_dialog";
+import MessagesDialog from "./components/Chat/messages_box_dialog";
 import useSocket from "./websocket/use_socket";
 import { CircularProgress } from "@mui/material";
 import { useSnackbar } from "notistack";
-import TopDialog from "./components/genral/TopDialog";
+import TopDialog from "./components/General/TopDialog";
 import OdocEditor from "odoc_editor_v2";
 import { useBackendContext } from "./contexts/BackendContext";
 

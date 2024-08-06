@@ -17,20 +17,20 @@ import {
     Typography,
 } from "@mui/material";
 import { Add, Edit } from "@mui/icons-material";
-import Friends from "./friends";
-import Deposit from "./actions/deposit";
-import Withdraw from "./actions/withdraw";
-import LoaderButton from "../../components/genral/loader_button";
-import { convertToBlobLink, convertToBytes } from "../../data_processing/image_to_vec";
+import Friends from "./Friends";
+import Deposit from "./Actions/deposit";
+import Withdraw from "./Actions/withdraw";
+import LoaderButton from "../../components/General/loader_button";
+import { convertToBlobLink, convertToBytes } from "../../DataProcessing/image_to_vec";
 import { handleRedux } from '../../redux/store/handleRedux';
-import BasicTabs from "./history";
-import TransactionHistory from "./transaction_history";
+import BasicTabs from "./History";
+import TransactionHistory from "./TransactionHistory";
 // import { actor } from "../../App";
-import { UserHistoryCom } from "../user";
+import { UserHistoryCom } from "../User";
 import { Button, CircularProgress } from "@mui/material";
 import { useSnackbar } from 'notistack';
-import ShareProfileButton from './actions/share_profile-button';
-import ProfilePhotoDialog from './actions/profile_photo_dialog';
+import ShareProfileButton from './Actions/share_profile-button';
+import ProfilePhotoDialog from './Actions/profile_photo_dialog';
 
 export default function ProfileComponent() {
     const { enqueueSnackbar } = useSnackbar();

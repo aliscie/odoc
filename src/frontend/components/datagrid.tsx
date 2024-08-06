@@ -8,7 +8,7 @@ import ArrowCircleDownIcon from "@mui/icons-material/ArrowCircleDown";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ContextMenu from "./genral/context_menu";
+import ContextMenu from "./General/ContextMenu";
 import {Row} from "../../declarations/backend/backend.did";
 import {randomString} from "../data_processing/data_samples";
 

@@ -4,7 +4,7 @@ import { FEChat, Message } from '../../../declarations/backend/backend.did';
 import CircularProgress from '@mui/material/CircularProgress';
 import SendMessageBox from './SendMessageBox';
 import MessageComponent, { FrontendMessage } from './message';
-import GroupAvatars from './helper_compnents/avats_list';
+import GroupAvatars from './HelperComponent/avats_list';
 import { Box, Typography, Input, Button } from '@mui/material';
 
 interface MessagesListProps {}

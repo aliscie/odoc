@@ -1,4 +1,3 @@
-// reducers.ts
 import { FilesActions, InitialState, initialState } from '../types/filesTypes';
 
 export function filesReducer(state: InitialState = initialState, action: FilesActions): InitialState {
@@ -180,8 +179,14 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
             state.changes.delete_contracts.push(action.id)
             return {
                 ...state,
-            }
-            
+            };
+        
+        case 'UPDATE_ANONYMOUS':
+            return {
+                ...state,
+                anonymous: action.anonymous,
+            };
+
         default:
         return state;
     }

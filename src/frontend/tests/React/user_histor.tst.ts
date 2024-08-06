@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import UserHistoryCom from "../../pages/user"
+import UserHistoryCom from "../../pages/User"
 jest.mock('../utils/get_user_by_principal');
 
 it('should render basic user information and history when user history is provided', () => {

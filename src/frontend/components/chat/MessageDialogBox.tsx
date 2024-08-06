@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack';
 import { handleRedux } from '../../redux/store/handleRedux';
 import MessagesList from './MessagesList';
 import MessageInput from './MessageInput';
-import MessageDialog from '../genral/MessageDialog';
+import MessageDialog from '../General/MessageDialog';
 import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';

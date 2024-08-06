@@ -1,4 +1,3 @@
-// chatActions.ts
 import {
   OPEN_CHAT,
   SET_CHATS,

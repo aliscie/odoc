@@ -1,14 +1,14 @@
 import {Route, Routes} from "react-router-dom";
 import React from "react";
 import LandingPage from "./LandingPage";
-import NFTComparisonTable from "./types_of_nfts";
-import FileContentPage from "./file_content_page";
-import ShareFilePage from "./share_file_page";
-import ProfileComponent from "./profile/profile";
-import Discover from "./discover";
-import UserPage from "./user";
-import ChatsPage from "./chats_page";
-import ContractsHistory from "./profile/contractss_history";
+import NFTComparisonTable from "./TypesOfNfts";
+import FileContentPage from "./FileContent_page";
+import ShareFilePage from "./ShareFilePage";
+import ProfileComponent from "./Profile/Profile";
+import Discover from "./Discover";
+import UserPage from "./User";
+import ChatsPage from "./ChatsPage";
+import ContractsHistory from "./Profile/ContractsHistory";
 
 
 function Pages() {

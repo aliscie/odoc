@@ -5,7 +5,7 @@
 //     3. Allow update a cell
 
 import {newContract} from "./data_samples";
-import {createCContract} from "../../components/contracts/custom_contract/utls";
+import {createCContract} from "../../components/Contracts/CustomContract/utls";
 import {
     CCell, CContract,
     CRow,
@@ -13,7 +13,7 @@ import {
     InitialData,
     StoredContract
 } from "../../../declarations/backend/backend.did";
-import {logger} from "../../dev_utils/log_data";
+import {logger} from "../../DevUtils/log_data";
 import {randomString} from "../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
 

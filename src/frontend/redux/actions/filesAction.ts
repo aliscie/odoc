@@ -1,4 +1,3 @@
-// filesActions.ts
 import { FilesActions } from '../types/filesTypes';
 import { FileNode, StoredContract, UserProfile, Notification, Friend, WorkSpace, FileIndexing } from "../../../declarations/backend/backend.did";
 
@@ -147,5 +146,10 @@ export const setTopDialog = (open: boolean, content: any, title: string): FilesA
 export const addWorkspace = (new_workspace: WorkSpace): FilesActions => ({
     type: 'ADD_WORKSPACE',
     new_workspace
+});
+
+export const updateAnonymous = (anonymous: boolean): FilesActions => ({
+    type: 'UPDATE_ANONYMOUS',
+    anonymous,
 });
 

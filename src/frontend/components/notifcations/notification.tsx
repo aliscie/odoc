@@ -3,15 +3,15 @@
 
 
 import React, {useEffect, useState} from 'react';
-import BasicMenu from "../genral/basic_menu";
+import BasicMenu from "../General/BasicMenu";
 import {Badge} from "@mui/base";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 // import {actor} from "../../App";
 import {useSelector} from "react-redux";
 import useGetUser from "../../utils/get_user_by_principal";
-import DialogOver from "../genral/daiolog_over";
+import DialogOver from "../General/DialogOver";
 import {Divider, Input, Typography} from "@mui/material";
-import LoaderButton from "../genral/loader_button";
+import LoaderButton from "../General/loader_button";
 import {CPayment, Notification} from "../../../declarations/backend/backend.did";
 import {formatRelativeTime} from "../../utils/time";
 
@@ -179,7 +179,7 @@ function NotificationComponent({notification}: { notification: Notification }) {
 
 export function Notifications() {
 
-    const {notifications} = useSelector((state: any) => state.filesReducer);
+    const {notifications} = useSelector((state: any) => state.filesState);
 
     const new_notifications = notifications && notifications.filter((notification: any) => notification && notification.is_seen == false);
 

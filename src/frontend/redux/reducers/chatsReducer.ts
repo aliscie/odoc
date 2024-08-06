@@ -1,4 +1,3 @@
-// chatReducer.ts
 import { ChatActions, ChatState, initialChatsState, OPEN_CHAT, SET_CHATS, SEND_MESSAGE, UPDATE_MESSAGE, ADD_NOTIFICATION, UPDATE_NOTIFICATION, SET_CHATS_NOTIFICATIONS } from '../types/chatsTypes';
 import { FEChat, Message, UserFE } from '../../../declarations/backend/backend.did';
 

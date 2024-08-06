@@ -1,4 +1,4 @@
-import {logger} from "../../dev_utils/log_data";
+import {logger} from "../../DevUtils/log_data";
 
 
 test("test friends requests", async () => {

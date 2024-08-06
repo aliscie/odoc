@@ -30,38 +30,8 @@ export type FilesActions =
     | { type: "CONFIRM_FRIEND"; friend: Friend }
     | { type: "TOP_DIALOG"; open: boolean; content: any; title: string }
     | { type: "ADD_WORKSPACE"; new_workspace: WorkSpace }
+    | { type: "UPDATE_ANONYMOUS"; anonymous: boolean };
     // | FriendsActions;
-
-    export const filesActionKeys = [
-        "ADD_FILE",
-        "REMOVE",
-        "UPDATE",
-        "GET",
-        "GET_ALL",
-        "CURRENT_FILE",
-        "UPDATE_CONTENT",
-        "FILES_SAVED",
-        "ADD_CONTENT",
-        "UPDATE_FILE_TITLE",
-        "ADD_CONTRACT",
-        "UPDATE_CONTRACT",
-        "CONTENT_CHANGES",
-        "CONTRACT_CHANGES",
-        "RESOLVE_CHANGES",
-        "CURRENT_USER_HISTORY",
-        "REMOVE_CONTRACT",
-        "UPDATE_BALANCE",
-        "UPDATE_PROFILE",
-        "CHANGE_FILE_PARENT",
-        "NOTIFY",
-        "UPDATE_FRIEND",
-        "UPDATE_NOT_LIST",
-        "DELETE_NOTIFY",
-        "UPDATE_NOTE",
-        "CONFIRM_FRIEND",
-        "TOP_DIALOG",
-        "ADD_WORKSPACE",
-      ];
 
 export interface InitialState {
     current_file: FileNode | null;
@@ -84,6 +54,7 @@ export interface InitialState {
     all_friends: Friend[];
     all_users: any[];
     [key: string]: any;
+    anonymous: boolean;
 }
 
 export const initialState: InitialState = {
@@ -100,4 +71,5 @@ export const initialState: InitialState = {
     contracts: {},
     all_friends: [],
     all_users: [],
+    anonymous: false,
 };

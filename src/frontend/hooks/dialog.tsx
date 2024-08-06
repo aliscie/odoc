@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import {EditorRenderer} from "../components/editor_components/editor_renderer";
+import {EditorRenderer} from "../components/EditorComponents/EditorRenderer";
 import Editor from 'odoc-editor'
 
 export function useFormulaDialog(saveFormula) {
