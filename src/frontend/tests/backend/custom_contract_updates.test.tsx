@@ -1,5 +1,4 @@
 import {CustomContract} from "../../../declarations/backend/backend.did";
-import {logger} from "../../dev_utils/log_data";
 
 test("Test update cell", async () => {
     let custom_contract: CustomContract = {

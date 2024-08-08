@@ -12,7 +12,6 @@ import {Principal} from "@dfinity/principal";
 import React from "react";
 import {handleRedux} from "../../../../redux/main";
 import {useSnackbar} from "notistack";
-import {logger} from "../../../../dev_utils/log_data";
 
 interface ParserValues {
     [key: string]: any;
@@ -47,7 +46,10 @@ function useParser(props: ParserProps) {
     const ref = React.useRef<Map<String, CPayment>>(new Map());
     const values: ParserValues = {};
     all_users.forEach((user: User) => {
-        values[user.name] = user;
+        if (user) {
+            values[user.name] = user;
+        }
+
     });
 
     const dispatch = useDispatch();
@@ -86,7 +88,6 @@ function useParser(props: ParserProps) {
                 "CustomContract": updatedContract
             };
             dispatch(handleRedux("UPDATE_CONTRACT", {contract: to_store}));
-            dispatch(handleRedux("CONTRACT_CHANGES", {changes: to_store}));
         }
     }
 

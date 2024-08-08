@@ -3,7 +3,6 @@ import {Identity} from "@dfinity/agent";
 import {createIdentity} from "@hadronous/pic";
 import {randomString} from "../../data_processing/data_samples";
 import {Principal} from "@dfinity/principal";
-import {logger} from "../../dev_utils/log_data";
 
 
 test("Test render login", async () => {

@@ -24,7 +24,7 @@ import {
     updateCustomContractColumns,
     updateCustomContractRows
 } from "./utls";
-import {ACTION_BUTTON, CONTRACT, CREATE_ACTION_BUTTON, CREATE_CONTRACT, PAYMENTS, PROMISES} from "./types";
+import {CONTRACT, CREATE_CONTRACT, PAYMENTS, PROMISES} from "./types";
 import BasicMenu from "../../genral/drop_down";
 import CustomDataGrid from "../../datagrid";
 import useParser from "./formula_parser/use_parser";
@@ -337,7 +337,6 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         if (updatedContract !== contract) {
             const storedContract: StoredContract = {CustomContract: updatedContract};
             dispatch(handleRedux("UPDATE_CONTRACT", {contract: storedContract}));
-            dispatch(handleRedux("CONTRACT_CHANGES", {changes: storedContract}));
         }
     }
 
@@ -405,8 +404,9 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 break
             case CREATE_CONTRACT:
                 let new_c_contract = createCContract();
-                let contracts = [...contract.contracts, new_c_contract];
-                updateContract({...contract, contracts: [...contracts]});
+                let updaed_c = {...contract};
+                updaed_c.contracts.push(new_c_contract);
+                updateContract(updaed_c);
                 setView({id: new_c_contract.id, type: CONTRACT, name: new_c_contract.name});
                 break
             // case CREATE_ACTION_BUTTON:
@@ -467,9 +467,6 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
     let data = {};
 
     switch (view?.type) {
-        // case CREATE_CONTRACT:
-        //     data = {columns: [], rows: [], name: "Untitled"};
-        //     break
 
         case CONTRACT:
 
@@ -530,7 +527,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         default:
             break
     }
-    const [expand, setExpand] = useState(false);
+    const [expand, setExpand] = useState(true);
     if (!expand) {
         return (<div>
             <Input defaultValue={title || "Untitled"} onBlur={(e) => renameContract(e.target.value)}/>

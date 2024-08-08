@@ -15,7 +15,6 @@ import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
 import {LineChart} from "@mui/x-charts/LineChart";
 import useGetUser from "../utils/get_user_by_principal";
-import {logger} from "../dev_utils/log_data";
 
 export function UserHistoryCom(profile: UserProfile) {
     let {getUser} = useGetUser();

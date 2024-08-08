@@ -18,7 +18,6 @@ function ContractsHistory(props: any) {
         custom_contract.date_created = Date.now() * 1e6
         let stored_custom: StoredContract = {"CustomContract": custom_contract}
         dispatch(handleRedux("ADD_CONTRACT", {contract: custom_contract}))
-        dispatch(handleRedux("CONTRACT_CHANGES", {changes: stored_custom}));
     }
 
     return (

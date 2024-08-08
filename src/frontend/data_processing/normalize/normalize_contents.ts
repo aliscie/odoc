@@ -24,6 +24,7 @@ function nesting(content_node: ContentNode, alL_contents: Array<ContentNode>, vi
         id: content_node.id,
         type: content_node._type,
         data: content_node.data,
+        value: content_node.value,
         // text: content_node.text,
         // children
     };

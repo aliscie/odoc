@@ -45,7 +45,6 @@ function ChangeColumnFormula(props: Props) {
             // updateContract({...updatedContract});
             const storedContract: StoredContract = {CustomContract: updatedContract};
             dispatch(handleRedux("UPDATE_CONTRACT", {contract: storedContract}));
-            dispatch(handleRedux("CONTRACT_CHANGES", {changes: storedContract}));
         }
 
     };

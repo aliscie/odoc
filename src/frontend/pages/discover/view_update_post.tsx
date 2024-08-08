@@ -76,10 +76,11 @@ function ViewPost(props: Props) {
         setPost(prevPost => ({...prevPost, content_tree: changes}));
         setChanged(true);
     };
-
+    let is_owner = props.post.creator.id == profile.id;
     return (
         <div>
             <PostComponent
+                is_owner={is_owner}
                 editable={!Anonymous}
                 onChange={onChange}
                 post={props.post}

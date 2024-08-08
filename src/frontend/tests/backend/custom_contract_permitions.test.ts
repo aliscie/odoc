@@ -6,16 +6,7 @@
 
 import {newContract} from "./data_samples";
 import {createCContract} from "../../components/contracts/custom_contract/utls";
-import {
-    CCell, CContract,
-    CRow,
-    CustomContract,
-    InitialData,
-    StoredContract
-} from "../../../declarations/backend/backend.did";
-import {logger} from "../../dev_utils/log_data";
-import {randomString} from "../../data_processing/data_samples";
-import {Principal} from "@dfinity/principal";
+import {CContract, InitialData, StoredContract} from "../../../declarations/backend/backend.did";
 
 test("Test custom contract update permissions", async () => {
     // -------------------------------------------------- Create contract  -------------------------------------------------- \\
@@ -31,7 +22,6 @@ test("Test custom contract update permissions", async () => {
     let to_store: StoredContract = {
         "CustomContract": custom_contract
     }
-    logger({creator_xxx: custom_contract.creator});
     res = await global.actor.multi_updates([], [], [to_store], [], []);
     expect({"Ok": "Updates applied successfully."}).toEqual(res)
     let init_date: { Ok: InitialData } | { Err: string } = await global.actor.get_initial_data();

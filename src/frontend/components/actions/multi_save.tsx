@@ -28,7 +28,6 @@ function MultiSaveButton(props: any) {
         setLoading(true);
         let loading = enqueueSnackbar(<span>Process saving... <span className={"loader"}/></span>,);
         let res = actor && await actor.multi_updates(changes.files, serialized_content, serialized_contracts, delete_contracts, changes.files_indexing || []);
-        console.log({res})
         setLoading(false);
         if (res.Ok && res.Ok.includes("Error") || res.Err) {
             enqueueSnackbar(res.Ok, {variant: "error"});

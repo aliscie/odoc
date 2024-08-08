@@ -84,7 +84,6 @@ function useSharesRequests({table_content, setView, data, props, setData}) {
         let stored_contract: StoredContract = {
             "SharesContract": updated_contracts[table_content.id]
         }
-        dispatch(handleRedux("CONTRACT_CHANGES", {changes: stored_contract}));
         dispatch(handleRedux("UPDATE_CONTRACT", {contract: stored_contract}));
 
 

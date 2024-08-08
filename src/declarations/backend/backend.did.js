@@ -29,7 +29,6 @@ export const idlFactory = ({ IDL }) => {
     'amount' : IDL.Float64,
     'receiver' : IDL.Principal,
   });
-  const Result_2 = IDL.Variant({ 'Ok' : IDL.Text, 'Err' : IDL.Text });
   const ShareFilePermission = IDL.Variant({
     'CanComment' : IDL.Null,
     'None' : IDL.Null,
@@ -58,6 +57,7 @@ export const idlFactory = ({ IDL }) => {
     'confirmed' : IDL.Bool,
     'receiver' : IDL.Principal,
   });
+  const Result_2 = IDL.Variant({ 'Ok' : IDL.Text, 'Err' : IDL.Text });
   const Result_3 = IDL.Variant({ 'Ok' : IDL.Float64, 'Err' : IDL.Text });
   const Contract = IDL.Variant({ 'SharesContract' : IDL.Text });
   const Row = IDL.Record({
@@ -110,6 +110,7 @@ export const idlFactory = ({ IDL }) => {
   const ContentNode = IDL.Record({
     'id' : IDL.Text,
     '_type' : IDL.Text,
+    'value' : IDL.Text,
     'data' : IDL.Opt(ContentData),
     'text' : IDL.Text,
     'children' : IDL.Vec(IDL.Text),
@@ -187,6 +188,7 @@ export const idlFactory = ({ IDL }) => {
     'payment_options' : IDL.Vec(SharePaymentOption),
     'shares' : IDL.Vec(Share),
     'payments' : IDL.Vec(SharePayment),
+    'name' : IDL.Text,
     'contract_id' : IDL.Text,
     'author' : IDL.Text,
     'shares_requests' : IDL.Vec(IDL.Tuple(IDL.Text, ShareRequest)),
@@ -434,11 +436,6 @@ export const idlFactory = ({ IDL }) => {
     'confirmed_c_payment' : IDL.Func([CPayment], [Result_1], []),
     'confirmed_cancellation' : IDL.Func([CPayment], [Result_1], []),
     'conform_share' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [Result_1], []),
-    'content_updates' : IDL.Func(
-        [IDL.Text, IDL.Opt(IDL.Text), IDL.Text],
-        [Result_2],
-        [],
-      ),
     'counter' : IDL.Func([], [IDL.Nat64], ['query']),
     'create_new_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [FileNode], []),
     'create_share_contract' : IDL.Func([IDL.Vec(Share)], [Result_2], []),

@@ -1,5 +1,5 @@
 import PostComponent from "../../components/genral/post_component";
-import {Grid} from "@mui/material";
+import {Divider, Grid} from "@mui/material";
 import React from "react";
 import IconButton from "@mui/material/IconButton";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -96,13 +96,13 @@ function CreatePost(props: any) {
             }}
         >
             < PostComponent
+                is_owner={true}s
                 key={changes} // Use the key to force a re-render
                 buttons={<CreateButtons/>}
                 post={post}
                 onChange={onChange}
             />
-
-
+            <Divider/>
         </Grid>
     )
 }

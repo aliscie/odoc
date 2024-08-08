@@ -7,8 +7,6 @@ interface Props {
 }
 
 function AmazingComponent(p: Props) {
-    // const {element} = p;
-    // console.log({p});
     return <div style={{color: 'red'}}>{p.children}</div>;
 }
 

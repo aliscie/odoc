@@ -155,7 +155,6 @@ function CustomDataGrid(props: Props) {
             //     };
             // }
             // dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contracts[table_content.id]}));
-            // dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contracts[table_content.id]}));
             return {...pre, rows}
         })
     };

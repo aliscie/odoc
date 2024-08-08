@@ -4,12 +4,11 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
-import Collapse from '@mui/material/Collapse';
 import IconButton, {IconButtonProps} from '@mui/material/IconButton';
 import {normalize_content_tree} from "../../data_processing/normalize/normalize_contents";
 import {FEChat, PostUser, UserFE} from "../../../declarations/backend/backend.did";
 import formatTimestamp from "../../utils/time";
-import EditorComponent from "../editor_components/main";
+import EditorComponent from "../editor_components/editor_component";
 import {useDispatch, useSelector} from "react-redux";
 import Person2Icon from "@mui/icons-material/Person2";
 import BasicMenu from "./basic_menu";
@@ -43,6 +42,7 @@ interface Props {
     post: PostUser,
     onChange?: any,
     editable?: boolean,
+    is_owner?: boolean
 }
 
 
@@ -96,12 +96,11 @@ export function UserAvatar(props: UserFE | User) {
 
 export default function PostComponent(props: Props) {
 
-
+    const {profile} = useSelector((state: any) => state.filesReducer);
     let content = normalize_content_tree(props.post.content_tree);
 
 
     let subheader = formatTimestamp(props.post.date_created)
-
     return (
         <Card
         >
@@ -115,6 +114,8 @@ export default function PostComponent(props: Props) {
 
             <CardContent>
                 <EditorComponent
+                    readOnly={!props.is_owner}
+                    id={'post_component'}
                     editable={props.editable}
                     onChange={props.onChange}
                     content={content}/>
@@ -122,21 +123,7 @@ export default function PostComponent(props: Props) {
 
             <CardActions disableSpacing>
                 {props.buttons}
-
-                {/*<ExpandMore*/}
-                {/*    expand={expanded}*/}
-                {/*    onClick={handleExpandClick}*/}
-                {/*    aria-expanded={expanded}*/}
-                {/*    aria-label="show more"*/}
-                {/*>*/}
-                {/*    <ExpandMoreIcon/>*/}
-                {/*</ExpandMore>*/}
             </CardActions>
-            {/*<Collapse in={expanded} timeout="auto" unmountOnExit>*/}
-            {/*    <CardContent>*/}
-            {/*        {props.full_description}*/}
-            {/*    </CardContent>*/}
-            {/*</Collapse>*/}
         </Card>
     );
 }

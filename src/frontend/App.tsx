@@ -5,7 +5,6 @@ import Pages from "./pages/main";
 import {BrowserRouter} from "react-router-dom";
 import {NavAppBar} from "./components/spesific/app_bar";
 import SearchPopper from "./components/spesific/search_popper";
-// import Theme from "./components/genral/theme_provider";
 import {SnackbarProvider} from "notistack";
 import RegistrationForm from "./components/spesific/registeration_form";
 import {handleRedux} from "./redux/main";
@@ -19,7 +18,7 @@ import MessagesDialog from "./components/chat/messages_box_dialog";
 import useSocket from "./websocket/use_socket";
 import {CircularProgress} from "@mui/material";
 import TopDialog from "./components/genral/TopDialog";
-// import OdocEditor from "odoc_editor_v2";
+
 export let actor: ActorSubclass<_SERVICE> | undefined; // TODo maybe set the actor in redux
 
 
@@ -47,40 +46,6 @@ function App() {
     }, []);
 
 
-    let onInsertComponent = (component: any) => {
-        console.log(component);
-    };
-
-    let onChange = (value: any) => {
-        console.log({value})
-    };
-
-    let extraPlugins = [
-        // {plugin: createAmazingPlugin, key: KEY_AMAZING, icon: Icons.kbd}
-    ];
-
-
-
-
-    const initialValue = [
-        {
-            id: "lkdf",
-            type: 'h1',
-            children: [{text: "This is a paragraph."}]
-        },
-        {
-            id: "98ryw",
-            type: 'amazing',
-            children: [{text: "Amaing"}],
-            data: "test",
-
-        }
-    ]
-
-    const mentions: MyMentionItem[] = [
-        {key: '0', text: 'Aayla Secura'},
-        {key: '1', text: 'Adi Gallia'},
-    ];
 
 
 
@@ -95,13 +60,6 @@ function App() {
                         <NavAppBar/>
                         <TopDialog/>
                         <NavBar>
-                            {/*<OdocEditor*/}
-                            {/*    initialValue={initialValue}*/}
-                            {/*    onChange={onChange}*/}
-                            {/*    extraPlugins={extraPlugins}*/}
-                            {/*    onInsertComponent={onInsertComponent}*/}
-                            {/*    mentions={mentions}*/}
-                            {/*/>*/}
                             <Pages/>
                         </NavBar>
                     </SnackbarProvider>

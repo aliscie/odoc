@@ -490,7 +490,6 @@
 //                 };
 //                 let updated_stored_contract: StoredContract = {"SharesContract": updated_contract}
 //                 dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_stored_contract}));
-//                 dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_stored_contract}));
 //                 await handleClickReq(new_request);
 //                 // setView(new_request.id);
 //                 break;
@@ -562,7 +561,6 @@
 //                                 }
 //                             };
 //                             dispatch(handleRedux("UPDATE_CONTRACT", new_title));
-//                             dispatch(handleRedux("CONTRACT_CHANGES", new_title));
 //                             setTitle(e.target.value)
 //                         }}
 //                     />

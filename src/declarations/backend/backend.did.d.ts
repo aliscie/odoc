@@ -98,6 +98,7 @@ export type ContentData = { 'Comment' : string } |
 export interface ContentNode {
   'id' : string,
   '_type' : string,
+  'value' : string,
   'data' : [] | [ContentData],
   'text' : string,
   'children' : Array<string>,
@@ -340,6 +341,7 @@ export interface SharesContract {
   'payment_options' : Array<SharePaymentOption>,
   'shares' : Array<Share>,
   'payments' : Array<SharePayment>,
+  'name' : string,
   'contract_id' : string,
   'author' : string,
   'shares_requests' : Array<[string, ShareRequest]>,
@@ -404,7 +406,6 @@ export interface _SERVICE {
   'confirmed_c_payment' : ActorMethod<[CPayment], Result_1>,
   'confirmed_cancellation' : ActorMethod<[CPayment], Result_1>,
   'conform_share' : ActorMethod<[string, string, string], Result_1>,
-  'content_updates' : ActorMethod<[string, [] | [string], string], Result_2>,
   'counter' : ActorMethod<[], bigint>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
   'create_share_contract' : ActorMethod<[Array<Share>], Result_2>,

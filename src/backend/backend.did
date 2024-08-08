@@ -88,6 +88,7 @@ type ContentData = variant { Comment : text; Image : vec nat64; Table : Table };
 type ContentNode = record {
   id : text;
   _type : text;
+  value : text;
   data : opt ContentData;
   "text" : text;
   children : vec text;
@@ -308,6 +309,7 @@ type SharesContract = record {
   payment_options : vec SharePaymentOption;
   shares : vec Share;
   payments : vec SharePayment;
+  name : text;
   contract_id : text;
   author : text;
   shares_requests : vec record { text; ShareRequest };
@@ -374,7 +376,6 @@ service : () -> {
   confirmed_c_payment : (CPayment) -> (Result_1);
   confirmed_cancellation : (CPayment) -> (Result_1);
   conform_share : (text, text, text) -> (Result_1);
-  content_updates : (text, opt text, text) -> (Result_2);
   counter : () -> (nat64) query;
   create_new_file : (text, opt text) -> (FileNode);
   create_share_contract : (vec Share) -> (Result_2);

@@ -1,8 +1,6 @@
-import {StoredContract, UserProfile} from "../../../declarations/backend/backend.did";
-import {custom_contract, randomString} from "../../data_processing/data_samples";
-import {assert} from "vitest";
+import {UserProfile} from "../../../declarations/backend/backend.did";
+import {randomString} from "../../data_processing/data_samples";
 import {newContract} from "./data_samples";
-import {logger} from "../../dev_utils/log_data";
 
 test("Test actions rating", async () => {
     let contract_id: string = randomString();

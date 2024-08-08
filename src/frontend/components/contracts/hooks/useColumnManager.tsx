@@ -39,7 +39,6 @@ function useColumnManager(props: any) {
         // Example dispatching an action to update content
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
         // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
     };
     const handleColumnValidator = (colId: number, dataValidator: any) => {
         let formula = dataValidator[0].children[0].children[0].text;
@@ -64,7 +63,6 @@ function useColumnManager(props: any) {
 
         // TODO: Dispatch relevant actions or update state as needed
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
     };
 
 
@@ -90,7 +88,6 @@ function useColumnManager(props: any) {
 
         // TODO: Dispatch relevant actions or update state as needed
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
     };
 
 
@@ -129,7 +126,6 @@ function useColumnManager(props: any) {
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
         // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
         // dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
     };
 
 

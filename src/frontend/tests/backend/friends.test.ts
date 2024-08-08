@@ -1,11 +1,7 @@
-import {logger} from "../../dev_utils/log_data";
-
-
 test("test friends requests", async () => {
     let initial_user = global.user;
     let newUser = await global.newUser();
     let send_friend_request = await global.actor.send_friend_request(newUser.getPrincipal().toText())
-    logger({send_friend_request});
 
     let init = await global.actor.get_initial_data()
     expect(init.Ok.Friends.length).toEqual(1)

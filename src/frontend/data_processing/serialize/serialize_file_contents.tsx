@@ -17,6 +17,7 @@ function de_nesting(nested: any[]) {
             }) : [];
             let obj: ContentNode = {
                 id: String(id),
+                value: item.value || "",
                 _type: item.type || "",
                 data: item.data || [],
                 text: item.text || "",
@@ -43,12 +44,10 @@ function serialize_file_contents(content: any[], data: Array<Array<[string, Arra
     Object.keys(content).forEach((key) => {
         let change = [];
         let item = content[key];
-
         let de_nested: Array<ContentNode> = de_nesting(item)
         change = [key, de_nested]
         data.push([change])
     });
-
     return data;
 }
 

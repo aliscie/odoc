@@ -241,37 +241,35 @@ export function filesReducer(state: any = initialState, action: any) {
 
 
         case 'UPDATE_CONTENT':
-            // Assuming action.id is the file ID and action.content is the new content
+            // files: state.files.map(file =>
+            //         file.id === action.id ? {...file, content: action.content} : file
+            //     ),
+            state.files_content[action.id] = action.content;
+            state.changes.contents[action.id] = action.content;
+
             return {
                 ...state,
-                files: state.files.map(file =>
-                    file.id === action.id ? {...file, content: action.content} : file
-                ),
             };
 
-
         case 'ADD_CONTRACT':
-            if (action.contract.contract_id) {
-                state.contracts[action.contract.contract_id] = action.contract;
-            } else {
-                state.contracts[action.contract.id] = action.contract;
-            }
-
+            state.contracts[action.contract.id] = action.contract;
+            state.changes.contracts[action.contract.id] = {"CustomContract": action.contract};
             return {
                 ...state,
             }
 
         case 'UPDATE_CONTRACT':
-
-            if (action.contract.CustomContract) {
-                state.contracts[action.contract.CustomContract.id].CustomContract = action.contract;
-                state.contracts[action.contract.CustomContract.id].contracts = action.contract.CustomContract.contracts;
-                state.contracts[action.contract.CustomContract.id].promises = action.contract.CustomContract.promises;
-            } else {
-                state.contracts[action.contract.contract_id] = {...state.contracts[action.contract.contract_id], ...action.contract}
-            }
-
-
+            // if (action.contract.CustomContract) {
+            let id = action.contract.CustomContract.id;
+            // console.log({list: state.contracts, id})
+            state.contracts[id].CustomContract = action.contract;
+            state.contracts[id].contracts = action.contract.CustomContract.contracts;
+            state.contracts[id].promises = action.contract.CustomContract.promises;
+            // }
+            // else {
+            //     state.contracts[action.contract.contract_id] = {...state.contracts[action.contract.contract_id], ...action.contract}
+            // }
+            state.changes.contracts[id] = action.contract;
             return {
                 ...state,
             }
@@ -305,31 +303,32 @@ export function filesReducer(state: any = initialState, action: any) {
         //         ...state,
         //     }
 
-        case 'CONTENT_CHANGES':
-            state.changes.contents[action.id] = action.changes;
-            return {
-                ...state,
-            }
+        // case 'CONTENT_CHANGES':
+        //     state.changes.contents[action.id] = action.changes;
+        //     return {
+        //         ...state,
+        //     }
 
-        case 'CONTRACT_CHANGES':
-
-
-            let changes: StoredContract = action.changes;
-            let id;
-            // console.log({xxx: changes.SharesContract})
-            if ('SharesContract' in changes) {
-                id = changes.SharesContract.contract_id;
-            } else if ('CustomContract' in changes) {
-                id = changes.CustomContract.id;
-            } else {
-                // handle the case when none of the types match
-                // you might want to provide a default value or throw an error
-            }
-            state.changes.contracts[id] = action.changes;
-
-            return {
-                ...state,
-            }
+        // case 'CONTRACT_CHANGES':
+        //
+        //
+        //     // let changes: StoredContract = action.changes;
+        //     // let id;
+        //     // // console.log({xxx: changes.SharesContract})
+        //     // if ('SharesContract' in changes) {
+        //     //     id = changes.SharesContract.contract_id;
+        //     // } else if ('CustomContract' in changes) {
+        //     //     id = changes.CustomContract.id;
+        //     // } else {
+        //     //     // handle the case when none of the types match
+        //     //     // you might want to provide a default value or throw an error
+        //     // }
+        //     console.log({x: state.contracts, action})
+        //     state.changes.contracts[action.changes.CustomContract.id] = action.changes;
+        //
+        //     return {
+        //         ...state,
+        //     }
         case 'RESOLVE_CHANGES':
             // for each contract check promises if .status === {Released:null} remove it from cusom_contract.promises and appened it to cusom_contract.payments
             let contracts: Array<StoredContract> = Object.values(state.changes.contracts);
