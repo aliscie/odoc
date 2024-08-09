@@ -27,7 +27,7 @@ const ChatsComponent: React.FC<Props> = () => {
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      if (chatsNotifications.length === 0) {
+      if (chatsNotifications?.length === 0) {
         setLoading(true);
         try {
             const res = await backendActor?.getChatsNotifications();
@@ -38,8 +38,7 @@ const ChatsComponent: React.FC<Props> = () => {
         } catch (error) {
             console.error("Issue fetching notifications from backend: ", error);
         }
-        
-        
+           
         setLoading(false);
       } else {
         setMessages(chatsNotifications);
@@ -48,9 +47,9 @@ const ChatsComponent: React.FC<Props> = () => {
     fetchNotifications();
   }, [backendActor, chatsNotifications, dispatch]);
 
-  const searchedMessages = messages.filter((message: Message) =>
+  const searchedMessages = messages ? messages.filter((message: Message) =>
     message.message.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  ) : [];
 
   const options: Option[] = [{ content: chatGroup }];
 
@@ -65,7 +64,7 @@ const ChatsComponent: React.FC<Props> = () => {
   }
 
   const unseenMessages = profile
-    ? messages.filter((message: Message) => !message.seenBy.some((user) => user.toString() === profile.id))
+    ? messages.filter((message: Message) => !message.seen_by.some((user) => user.toString() === profile.id))
     : [];
 
   return (
