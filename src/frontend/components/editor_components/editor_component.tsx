@@ -8,8 +8,6 @@ import {handleRedux} from "../../redux/main";
 import createContractPlugin, {CONTRACT_KEY} from "../contracts/editor_plugins/contract_plugin";
 import debounce from "../../utils/debounce";
 import TableChartIcon from '@mui/icons-material/TableChart';
-import createAmazingPlugin, {KEY_AMAZING} from "./amazing_com";
-import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Props {
     handleOnInsertComponent?: any;
@@ -31,7 +29,6 @@ function EditorComponent(props: Props) {
         content = [{type: "p", children: [{text: ""}]}];
     }
     let extraPlugins = [
-        {plugin: createAmazingPlugin, key: KEY_AMAZING, icon: DeleteIcon},
         {plugin: createContractPlugin, key: CONTRACT_KEY, icon: TableChartIcon}
     ];
     const mentions: MyMentionItem[] = all_friends.map((i: any) => {

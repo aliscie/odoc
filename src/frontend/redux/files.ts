@@ -34,8 +34,6 @@ export type FilesActions =
     | "UPDATE_FILE_TITLE"
     | "ADD_CONTRACT"
     | "UPDATE_CONTRACT"
-    | "CONTENT_CHANGES"
-    | "CONTRACT_CHANGES"
     | "RESOLVE_CHANGES"
     | "CURRENT_USER_HISTORY"
     | "REMOVE_CONTRACT"
@@ -291,44 +289,6 @@ export function filesReducer(state: any = initialState, action: any) {
                 ...state,
                 top_dialog: action
             }
-
-        // case 'FILES_CHANGED':
-        //     return {
-        //         ...state,
-        //         is_files_saved: false
-        //     }
-        // case 'DELETE_CONTRACT':
-        //     state.changes.delete_contracts.push(action.id);
-        //     return {
-        //         ...state,
-        //     }
-
-        // case 'CONTENT_CHANGES':
-        //     state.changes.contents[action.id] = action.changes;
-        //     return {
-        //         ...state,
-        //     }
-
-        // case 'CONTRACT_CHANGES':
-        //
-        //
-        //     // let changes: StoredContract = action.changes;
-        //     // let id;
-        //     // // console.log({xxx: changes.SharesContract})
-        //     // if ('SharesContract' in changes) {
-        //     //     id = changes.SharesContract.contract_id;
-        //     // } else if ('CustomContract' in changes) {
-        //     //     id = changes.CustomContract.id;
-        //     // } else {
-        //     //     // handle the case when none of the types match
-        //     //     // you might want to provide a default value or throw an error
-        //     // }
-        //     console.log({x: state.contracts, action})
-        //     state.changes.contracts[action.changes.CustomContract.id] = action.changes;
-        //
-        //     return {
-        //         ...state,
-        //     }
         case 'RESOLVE_CHANGES':
             // for each contract check promises if .status === {Released:null} remove it from cusom_contract.promises and appened it to cusom_contract.payments
             let contracts: Array<StoredContract> = Object.values(state.changes.contracts);

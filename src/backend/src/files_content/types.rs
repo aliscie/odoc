@@ -86,7 +86,7 @@ impl ContentNode {
     }
 
 
-    // pub fn new(file_id: FileId, content_parent_id: Option<ContentId>, node_type: String, text: String, data: Option<ContentData>, value: String) -> Option<ContentNode> {
+    // pub fn new(file_id: FileId, content_parent_id: Option<ContentId>, node_type: String, text: String, odoc_intro: Option<ContentData>, value: String) -> Option<ContentNode> {
     //     let caller_principal = ic_cdk::api::caller();
     //
     //     // Check if file with file_id exists
@@ -109,7 +109,7 @@ impl ContentNode {
     //         _type: node_type,
     //         text,
     //         language: "".to_string(),
-    //         data,
+    //         odoc_intro,
     //         value,
     //         children: Vec::new(),
     //     };

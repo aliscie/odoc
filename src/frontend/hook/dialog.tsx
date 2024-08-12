@@ -59,6 +59,27 @@ export function useFormulaDialog(saveFormula) {
                             },]}
                     />
 
+                    <EditorComponent
+                        id={'editor components'}
+                        // contentEditable={editable}
+                        // onChange={onChange}
+                        // editorKey={editorKey}
+                        content={
+                            [{
+                                "type": "code-block",
+                                "language": "typescript",
+                                "children": [
+
+                                    {
+                                        "type": "code-line",
+                                        "children": [{
+                                            text: formula[0] || ""
+                                        }]
+                                    },
+
+                                ]
+                            },]}
+                    />
 
                     {/*<Editor*/}
                     {/*    insertFooter={false}*/}

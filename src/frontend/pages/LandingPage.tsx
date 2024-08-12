@@ -9,8 +9,8 @@ import Card from "../components/genral/card";
 import FullWidthTabs from "./welcome";
 import StyledAccordion from '../components/genral/styled_accordion';
 import Slider from "react-slick";
-import {features} from '../data/odoc_features';
-import {roadMap} from '../data/odoc_roadmap';
+import {features} from '../odoc_intro/odoc_features';
+import {roadMap} from '../odoc_intro/odoc_roadmap';
 import FeatureModal from '../components/genral/feature_modal';
 
 interface Features {
