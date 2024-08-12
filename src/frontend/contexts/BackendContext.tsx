@@ -5,6 +5,7 @@ import {canisterId, idlFactory} from "../../declarations/backend";
 import {_SERVICE} from "../../declarations/backend/backend.did";
 import {useDispatch} from "react-redux";
 import {handleRedux} from "../redux/store/handleRedux";
+import {logger} from "../DevUtils/logData";
 
 interface BackendContextProps {
     authClient: AuthClient | null;
@@ -31,6 +32,49 @@ export const useBackendContext = (): BackendContextProps => {
 
 interface BackendProviderProps {
     children: ReactNode;
+}
+
+async function handleAgent(client) {
+
+    const identity = await client.getIdentity();
+    // setIdentity(identity);
+    const principal = identity.getPrincipal().toString();
+    // setPrincipal(principal);
+    let host = 'https://ic0.app';
+    if (import.meta.env.VITE_DFX_NETWORK === "local") {
+        host = import.meta.env.VITE_IC_HOST;
+    }
+    const newAgent = new HttpAgent({
+        identity,
+        host
+    });
+
+
+    // ---------------------- root key fetch ---------------------- \\
+    if (import.meta.env.VITE_DFX_NETWORK === "local") {
+        newAgent.fetchRootKey().catch((err) => {
+            console.error(
+                "Unable to fetch root key. Check to ensure that your local replica is running"
+                +
+                "------------------ root key error ------------------"
+                +
+                err
+            );
+            console.error({identity, host})
+        });
+    }
+
+
+    const actor = Actor.createActor<_SERVICE>(idlFactory, {
+        agent: newAgent,
+        canisterId,
+    });
+    // console.log("before: ", actor);
+    // const res = await actor.get_initial_data();
+    // console.log("Initial Data: ", res);
+    return {actor, newAgent, principal, identity};
+
+
 }
 
 export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
@@ -68,6 +112,7 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
                 identityProvider = `http://${import.meta.env.VITE_INTERNET_IDENTITY}.localhost:${port}`;
             }
             setIsAuthenticating(true);
+            console.log({authClient})
             await authClient.login({
                 identityProvider: identityProvider,
                 onSuccess: async () => {
@@ -87,9 +132,12 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
     };
 
     useEffect(() => {
+
         const initializeAuthClient = async () => {
             const client = await AuthClient.create();
             setAuthClient(client);
+
+            // setAuthClient(client);
             const alreadyAuthenticated = await client.isAuthenticated();
             if (alreadyAuthenticated) {
                 setIsAuthenticated(true);
@@ -99,42 +147,14 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
 
 
             setIsAuthenticating(false);
+
             const authenticated = await client.isAuthenticated();
+
             if (authenticated) {
-                const identity = await client.getIdentity();
-                setIdentity(identity);
-                const principal = identity.getPrincipal().toString();
+
+                const {actor, newAgent, principal, identity} = await handleAgent(client);
                 setPrincipal(principal);
-                let host = 'https://ic0.app';
-                if (import.meta.env.VITE_DFX_NETWORK === "local") {
-                    host = import.meta.env.VITE_IC_HOST;
-                }
-
-                const newAgent = new HttpAgent({
-                    identity,
-                    host
-                });
-
-
-                // ---------------------- root key fetch ---------------------- \\
-                if (import.meta.env.VITE_DFX_NETWORK === "local") {
-                    newAgent.fetchRootKey().catch((err) => {
-                        console.error(
-                            "Unable to fetch root key. Check to ensure that your local replica is running"
-                        );
-                        console.error("------------------ root key error ------------------");
-                        console.error(err);
-                    });
-                }
-
-
-                const actor = Actor.createActor<_SERVICE>(idlFactory, {
-                    agent: newAgent,
-                    canisterId,
-                });
-                // console.log("before: ");
-                // const res = await actor?.get_initial_data();
-                // console.log("Initial Data: ", res);
+                setIdentity(identity)
                 setBackendA̵ctor(actor);
                 setIsAuthenticated(true);
                 setHasLoggedIn(true);
