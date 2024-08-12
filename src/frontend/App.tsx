@@ -26,6 +26,7 @@ const App: React.FC = () => {
   const { isAuthenticated } = useBackendContext();
 
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [openRegistration, setOpenRegistration] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -36,6 +37,7 @@ const App: React.FC = () => {
           enqueueSnackbar("Please login to continue", { variant: "info" });
         }
         setLoggedIn(true);
+        setOpenRegistration(true);
       } catch (error) {
         console.error("Error initializing app:", error);
         setLoggedIn(true);
@@ -49,7 +51,7 @@ const App: React.FC = () => {
         <BrowserRouter>
           <SearchPopper />
           <SnackbarProvider maxSnack={3}>
-            <RegistrationForm />
+          <RegistrationForm open={openRegistration} onClose={() => setOpenRegistration(false)} />
             <MessagesDialog />
             <TopNavBar />
             <TopDialog />

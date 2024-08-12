@@ -17,21 +17,26 @@ import { RegisterUser, User } from "../../../declarations/backend/backend.did";
 import { handleRedux } from "../../redux/store/handleRedux";
 import RegistrationFormDialog from "../General/RegistrationFormDialog";
 
+interface RegistrationFormProps {
+    open: boolean;
+    onClose: () => void;
+}
+
 interface FormValues {
-    username: string;
+    userName: string;
     bio: string;
-    first_name?: string;
-    last_name?: string;
+    firstName?: string;
+    lastName?: string;
     email?: string;
 }
 
 interface State {
-    filesReducer: {
+    filesState: {
         Anonymous: boolean;
     };
 }
 
-const RegistrationForm: React.FC = () => {
+const RegistrationForm: React.FC<RegistrationFormProps>= ({ open, onClose }) => {
     const dispatch = useDispatch();
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -40,20 +45,20 @@ const RegistrationForm: React.FC = () => {
     const { Anonymous } = useSelector((state: State) => state.filesState);
     
     const [formValues, setFormValues] = useState<FormValues>({
-        username: "",
+        userName: "",
         bio: "",
-        first_name: "",
-        last_name: "",
+        firstName: "",
+        lastName: "",
         email: ""
     });
-    const [open, setOpen] = useState(Anonymous);
+    // const [open, setOpen] = useState(Anonymous);
     const [photo, setPhoto] = useState<File | null>(null);
     const [photoByte, setPhotoByte] = useState<Uint8Array | number[] | undefined>();
     const [loading, setLoading] = useState(false);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = event.target;
-        setFormValues(prevValues => ({ ...prevValues, [id]: value }));
+        setFormValues(prev => ({ ...prev, [id]: value }));
     };
 
     const handleUploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +70,11 @@ const RegistrationForm: React.FC = () => {
                 setPhoto(image);
                 setPhotoByte(imageByteData);
             } catch (error) {
-                enqueueSnackbar(error.message, { variant: "error" });
+                if(error instanceof Error) {
+                    enqueueSnackbar(error.message, { variant: "error" });
+                } else {
+                    enqueueSnackbar("There was an issue with uploading the image", { variant: "error" });
+                }    
             } finally {
                 setLoading(false);
             }
@@ -73,11 +82,19 @@ const RegistrationForm: React.FC = () => {
     };
 
     const handleRegister = async () => {
-        if (!formValues.username || !formValues.bio) {
+        try {
+            if (!formValues.userName || !formValues.bio) {
                 enqueueSnackbar("Please fill all required fields", { variant: "error" });
             return;
+            }
+        } catch (error) {
+            console.error("There was an issue with registration: ", error);
+            if( error instanceof Error) {
+                enqueueSnackbar(error.message, { variant: "error" });
+            } else {
+                enqueueSnackbar("There was an issue with registration", { variant: "error" });
+            }
         }
-
         setOpen(false);
         const loaderMessage = (
             <span>
@@ -87,7 +104,7 @@ const RegistrationForm: React.FC = () => {
         const loadingSnackbar = enqueueSnackbar(loaderMessage, { variant: "info" });
 
         const input: RegisterUser = {
-            name: [formValues.username],
+            name: [formValues.userName],
             description: [formValues.bio],
             photo: photoByte ? [photoByte] : [],
         };
@@ -147,7 +164,7 @@ const RegistrationForm: React.FC = () => {
                             type="text"
                             fullWidth
                             variant="outlined"
-                            value={formValues.username}
+                            value={formValues.userName}
                             onChange={handleChange}
                         />
                     </Box>
@@ -158,7 +175,7 @@ const RegistrationForm: React.FC = () => {
                             type="text"
                             fullWidth
                             variant="outlined"
-                            value={formValues.first_name || ""}
+                            value={formValues.firstName || ""}
                             onChange={handleChange}
                             sx={{ marginRight: 1 }}
                         />
@@ -168,7 +185,7 @@ const RegistrationForm: React.FC = () => {
                             type="text"
                             fullWidth
                             variant="outlined"
-                            value={formValues.last_name || ""}
+                            value={formValues.lastName || ""}
                             onChange={handleChange}
                         />
                     </Box>
