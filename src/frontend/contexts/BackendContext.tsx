@@ -101,17 +101,20 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
             setIsAuthenticating(false);
             const authenticated = await client.isAuthenticated();
             if (authenticated) {
-                const id = await client.getIdentity();
-                setIdentity(id);
-                const principal = id.getPrincipal().toString();
+                const identity = await client.getIdentity();
+                setIdentity(identity);
+                const principal = identity.getPrincipal().toString();
                 setPrincipal(principal);
+                let host = 'https://ic0.app';
+                if (import.meta.env.VITE_DFX_NETWORK === "local") {
+                    host = import.meta.env.VITE_IC_HOST;
+                }
+
                 const newAgent = new HttpAgent({
-                    identity: id,
-                    host:
-                        import.meta.env.VITE_DFX_NETWORK === "local"
-                            ? import.meta.env.VITE_IC_HOST || "http://localhost:8000"
-                            : "https://ic0.app",
+                    identity,
+                    host
                 });
+
 
                 // ---------------------- root key fetch ---------------------- \\
                 if (import.meta.env.VITE_DFX_NETWORK === "local") {
@@ -130,7 +133,7 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
                     canisterId,
                 });
                 // console.log("before: ");
-                const res = await actor.get_initial_data();
+                // const res = await actor?.get_initial_data();
                 // console.log("Initial Data: ", res);
                 setBackendA̵ctor(actor);
                 setIsAuthenticated(true);
