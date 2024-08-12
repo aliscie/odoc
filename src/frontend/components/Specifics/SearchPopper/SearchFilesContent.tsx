@@ -5,13 +5,6 @@ function useSearchFiles() {
     const {files} = useSelector((state: any) => state.filesState);
 
     const {denormalized_files_content}: { denormalized_files_content: [] | [Array<[string, Array<[string, ContentNode]>]>] } = useSelector((state: any) => state.filesState);
-
-    //
-    // We need this to reduce the calls for the canisters because they also can cost scyles in the future.
-    // when user click load more call actor.search_files_content(searchValue, true);
-    // When the results are empty also call actor.search_files_content(searchValue, true);
-
-    // Search in the content.text.contains(search_value) and  return just file id
     function SearchFilesContent(search_value: string, case_sensitive: boolean): [string] | undefined {
         if (denormalized_files_content.length === 0) return undefined;
         const files_content = denormalized_files_content[0];

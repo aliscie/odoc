@@ -1,7 +1,0 @@
-{
-  "extends": "../../../../plate/config/tsconfig.base.json",
-  "include": [
-    "src"
-  ],
-  "exclude": []
-}

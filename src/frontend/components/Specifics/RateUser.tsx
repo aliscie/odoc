@@ -8,6 +8,7 @@ import {useSnackbar} from "notistack";
 import DialogOver from "../General/DialogOver";
 import {LoadingButton} from "@mui/lab";
 import {useSelector} from "react-redux";
+import {useBackendContext} from "../../contexts/BackendContext";
 
 interface Props {
     id: string,
@@ -16,6 +17,7 @@ interface Props {
 
 
 function RateUser(props: Props) {
+    const { backendActor } = useBackendContext();
     const {profile} = useSelector((state: any) => state.filesReducer);
 
     // const [comment, setComment] = React.useState<string>("");
@@ -38,7 +40,7 @@ function RateUser(props: Props) {
             'rating': rate || 0,
         }
         setLoading(true)
-        let res: undefined | { Ok: null } | { Err: string } = actor && await actor.rate_user(Principal.fromText(props.id), rating)
+        let res: undefined | { Ok: null } | { Err: string } =  await backendActor.rate_user(Principal.fromText(props.id), rating)
         setLoading(false)
         setRate(props.rate)
         if (res && res['Ok']) {

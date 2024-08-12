@@ -9,7 +9,6 @@ import IconButton, {IconButtonProps} from '@mui/material/IconButton';
 import { normalizeContentTree } from '../../DataProcessing/normalize/normalizeContents';
 import {FEChat, PostUser, UserFE} from "../../../declarations/backend/backend.did";
 import formatTimestamp from "../../utils/time";
-import EditorComponent from "../EditorComponents/Main";
 import {useDispatch, useSelector} from "react-redux";
 import Person2Icon from "@mui/icons-material/Person2";
 import BasicMenu from "./BasicMenu";
@@ -21,6 +20,7 @@ import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import { convertToBlobLink } from '../../DataProcessing/imageToVec';
 import {User} from "../../../../.dfx/local/canisters/backend/service.did";
+import EditorComponent from "../EditorComponents/editor_component";
 
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;

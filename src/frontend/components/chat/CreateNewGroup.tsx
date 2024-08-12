@@ -1,15 +1,16 @@
 import React, {useRef, useState} from "react";
-import { handleRedux } from "../../redux/store/handleRedux";
+import {handleRedux} from "../../redux/store/handleRedux";
 import {useDispatch, useSelector} from "react-redux";
-import {Button, MenuItem, Tooltip, Select, TextField } from "@mui/material";
+import {Button, MenuItem, Tooltip, Select, TextField} from "@mui/material";
 import MultiAutoComplete from "../General/MultiAutocompelte";
 // import {actor} from "../../App";
 import {Chat, Message, WorkSpace} from "../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import {useSnackbar} from "notistack";
-import { randomString } from "../../DataProcessing/dataSamples";
+import {randomString} from "../../DataProcessing/dataSamples";
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import Input from '@mui/material/Input';
+import {useBackendContext} from "../../contexts/BackendContext";
 
 interface SelectMembersProps {
     onChange: (friends: any) => void;
@@ -52,11 +53,12 @@ function useCreateChatGroup() {
 
     const work_spaces = workspaces && workspaces.map((w: WorkSpace) => w.name);
 
-    // Define the form content
     let current_user = {title: profile && profile.name, id: profile && Principal.fromText(profile.id)};
     const [admins, setAdmins] = useState([current_user]);
     const [members, setMember] = useState();
-    // Define the top dialog properties
+    const {backendActor} = useBackendContext();
+
+
     const top_dialog = {
             open: true,
             handleSave: async () => {
@@ -84,7 +86,7 @@ function useCreateChatGroup() {
                     'workspace': "",
                 };
 
-                let res = actor && await actor.make_new_chat_room(chat)
+                let res = await backendActor.make_new_chat_room(chat)
 
                 if ("Ok" in res) {
                     enqueueSnackbar("Chat group created successfully", {variant: "success"});

@@ -14,7 +14,7 @@ use crate::websocket::{NoteContent, Notification};
 fn send_message(user: Option<Principal>, mut message: Message) -> Result<String, String> {
 
     // TODO don't create new private
-    //  if user is creator and caner() in admins
+    //  if user is creator and caller() in admins
     //  or if user in admins and caller() is creator
     message.seen_by.push(caller());
     let mut new_notification = Notification {

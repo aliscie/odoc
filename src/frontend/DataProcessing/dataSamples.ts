@@ -1,7 +1,7 @@
 import {Principal} from "@dfinity/principal";
 import {
     Column,
-    CustomContract, Filter, Formula, PermissionType,
+    CustomContract,
     Share,
     SharePaymentOption,
     SharesContract
@@ -10,6 +10,21 @@ import {
 let paymentContractId = randomString();
 let sharesContractId = randomString();
 let firstShareId = randomString();
+
+export let custom_contract: CustomContract = {
+    'id': 'change_later',
+    "name": "Custom contract",
+    'creator': Principal.fromText("2vxsx-fae"),
+    'date_created': Date.now() * 1e6,
+    'payments': [],
+    'promises': [],
+    'contracts': [],
+    'formulas': [],
+    'date_updated': 0,
+    'permissions': [],
+}
+
+
 export let note_page_content = [{"id": 4, "children": [{"id": 5, "text": "", "type": "h1"}]}]
 export let file_data = {"id": "0000", "content": "0", "name": "NameTest", "children": {}, "parent": []}
 let column: Column = {

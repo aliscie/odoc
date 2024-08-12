@@ -1,8 +1,8 @@
 import { FilesActions, InitialState, initialState } from '../types/filesTypes';
 
 export function filesReducer(state: InitialState = initialState, action: FilesActions): InitialState {
-    let friends = { ...state.friends };
-    let friend_id = action.id;
+    // let friends = { ...state.friends };
+    // let friend_id = action.id;
 
     switch (action.type) {
         case 'ADD_CONTENT':

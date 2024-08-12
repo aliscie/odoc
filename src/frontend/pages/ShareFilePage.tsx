@@ -1,15 +1,11 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
-import Editor from "odoc-editor";
-import { paymentContract } from "../DataProcessing/dataSamples";
-import {EditorRenderer} from "../components/EditorComponents/EditorRenderer";
 import {ContentNode, FileNode} from "../../declarations/backend/backend.did";
-import { normalizeContentTree, SlateNode } from "../DataProcessing/normalize/normalizeContents";
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
 import { handleRedux } from "../redux/store/handleRedux";
-// import {actor} from "../App";
-
+import { normalizeContentTree, SlateNode } from "../DataProcessing/normalize/normalizeContents";
+import EditorComponent from "../components/EditorComponents/editor_component";
 export type FileQuery = undefined | { Ok: [FileNode, Array<[string, ContentNode]>] } | { Err: string };
 
 function ShareFilePage(props: any) {
@@ -53,16 +49,11 @@ function ShareFilePage(props: any) {
     return (
         <>
             <h1>{file && file.name}</h1>
-            {state && <Editor
-                contentEditable={false}
-                componentsOptions={[
-                    paymentContract,
-                    {type: "shares_contract"},
-                    {type: "custom_contract"},
-                ]}
-                renderElement={EditorRenderer}
-                searchOptions={"gi"}
-                data={state || []}
+            {state && <EditorComponent
+                id={'share-file-content'}
+                editorKey={props.file_id}
+                content={state || []}
+                readOnly={true}
             />}
 
         </>

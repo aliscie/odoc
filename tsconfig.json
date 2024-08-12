@@ -32,13 +32,18 @@
   },
   "include": [
     "src",
-    "./types/**/*"
-,   "vite-env.d.ts", "vite-env.d.ts"  ],
+    "./types/**/*",
+    "vite-env.d.ts",
+    "vite-env.d.ts"
+  ],
   "exclude": [
     "node_modules"
   ],
   "baseUrl": ".",
   "paths": {
+    "@/editor": [
+      "/src/frontend/components/EditorComponents/editor_component"
+    ],
     "@/*": [
       "src/*"
     ]

@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { useDispatch, useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import Avatar from '@mui/material/Avatar';
 import {
+    Button,
     Card,
     CardContent,
+    CircularProgress,
     Container,
     Divider,
     Grid,
@@ -16,19 +18,16 @@ import {
     Tooltip,
     Typography,
 } from "@mui/material";
-import { Add, Edit } from "@mui/icons-material";
+import {Edit} from "@mui/icons-material";
 import Friends from "./Friends";
 import Deposit from "./Actions/deposit";
 import Withdraw from "./Actions/withdraw";
-import LoaderButton from "../../components/General/loader_button";
-import { convertToBlobLink, convertToBytes } from "../../DataProcessing/imageToVec";
-import { handleRedux } from '../../redux/store/handleRedux';
+import {convertToBlobLink, convertToBytes} from "../../DataProcessing/imageToVec";
+import {handleRedux} from '../../redux/store/handleRedux';
 import BasicTabs from "./History";
 import TransactionHistory from "./TransactionHistory";
-// import { actor } from "../../App";
-import { UserHistoryCom } from "../User";
-import { Button, CircularProgress } from "@mui/material";
-import { useSnackbar } from 'notistack';
+import {UserHistoryCom} from "../User";
+import {useSnackbar} from 'notistack';
 import ShareProfileButton from './Actions/share_profile-button';
 import ProfilePhotoDialog from './Actions/profile_photo_dialog';
 
@@ -47,22 +46,6 @@ export default function ProfileComponent() {
     });
     const [openDialog, setOpenDialog] = useState(false);
     const [buttonLoading, setButtonLoading] = useState(false);
-
-     // console.log({y:profile_history.actions_rate,x: profile_history.users_rate});
-    // useEffect(() => {
-    //     (async () => {
-    //         let res: undefined | { Ok: UserProfile } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(profile.id));
-    //         if ("Ok" in res) {
-    //             setUserHistory(res.Ok)
-    //         }
-    //         if (!profile_history) {
-    //             let x: undefined | { Ok: UserProfile } | { Err: string } = actor && await actor.get_user_profile(Principal.fromText(profile.id))
-    //             "Ok" in x && dispatch(handleRedux('CURRENT_USER_HISTORY', {profile_history: x.Ok}));
-    //         }
-
-    //     })()
-    // }, [profile]);
-
    
 
     const handleSaveChanges = async () => {

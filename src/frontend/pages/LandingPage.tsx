@@ -9,8 +9,8 @@ import Card from "../components/General/Card";
 import FullWidthTabs from "./Welcome";
 import StyledAccordion from '../components/General/StyledAccordion';
 import Slider from "react-slick";
-import { features } from '../data/odocFeatures';
-import {roadMap} from '../data/odocRoadmap';
+// import { features } from '../data/odocFeatures';
+// import {roadMap} from '../data/odocRoadmap';
 import FeatureModal from '../components/General/FeatureModal';
 
 interface Features {
@@ -75,21 +75,21 @@ const LandingPage: React.FC = () => {
                 </Typography>
 
                 <Grid container spacing={2}>
-                    {features.map((feature, index) => (
-                        <Grid item xs={12} sm={6} md={4} key={index}>
-                            <Card className="feature-card" sx={{ margin: 1 }}>
-                                <CardContent className="feature-card-content">
-                                    <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
-                                        {feature.icon}
-                                    </Box>
-                                    <Typography variant="h5" className="feature-card-title">{feature.title}</Typography>
-                                    <Typography variant="body2" className="feature-card-body">
-                                        {feature.content}
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    ))}
+                    {/*{features.map((feature, index) => (*/}
+                    {/*    <Grid item xs={12} sm={6} md={4} key={index}>*/}
+                    {/*        <Card className="feature-card" sx={{ margin: 1 }}>*/}
+                    {/*            <CardContent className="feature-card-content">*/}
+                    {/*                <Box display="flex" justifyContent="center" alignItems="center" mb={2}>*/}
+                    {/*                    {feature.icon}*/}
+                    {/*                </Box>*/}
+                    {/*                <Typography variant="h5" className="feature-card-title">{feature.title}</Typography>*/}
+                    {/*                <Typography variant="body2" className="feature-card-body">*/}
+                    {/*                    {feature.content}*/}
+                    {/*                </Typography>*/}
+                    {/*            </CardContent>*/}
+                    {/*        </Card>*/}
+                    {/*    </Grid>*/}
+                    {/*))}*/}
                 </Grid>
             </section>
             
@@ -100,9 +100,9 @@ const LandingPage: React.FC = () => {
                     Road Map
                 </Typography>
 
-                {roadMap.map((item, index) => (
-                    <StyledAccordion key={index} title={item.title} content={item.content} isDone={item.is_done}/>
-                ))}
+                {/*{roadMap.map((item, index) => (*/}
+                {/*    <StyledAccordion key={index} title={item.title} content={item.content} isDone={item.is_done}/>*/}
+                {/*))}*/}
             </section>
 
             <footer className="landing-footer">

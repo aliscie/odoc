@@ -1,17 +1,17 @@
-import PostComponent from "../../components/General/PostComponent";
-import {Grid} from "@mui/material";
+import {Divider, Grid} from "@mui/material";
 import React from "react";
 import IconButton from "@mui/material/IconButton";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import MoreTimeIcon from "@mui/icons-material/MoreTime";
-// import {actor} from "../../App";
 import {ContentNode, Post} from "../../../declarations/backend/backend.did";
 import {randomId} from "@mui/x-data-grid-generator";
 import {useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
-import serialize_file_contents from "../../DataProcessing/serialize/serializeFileContents";
 import {LoadingButton} from "@mui/lab";
+import PostComponent from "../../components/General/PostComponent";
+import {useBackendContext} from "../../contexts/BackendContext";
 import PostTags from "./TagsComponent";
+import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 
 
 function CreatePost(props: any) {
@@ -33,11 +33,12 @@ function CreatePost(props: any) {
     let [changes, setChanges] = React.useState<any>(null);
 
     const handleCreatePost = async () => {
-        let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> = serialize_file_contents(changes)
+        const {backendActor} = useBackendContext();
+        let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> = serializeFileContents(changes)
         let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1]
         let new_post = {...post, content_tree: content_tree};
         setLoad(true)
-        let res = actor && await actor.save_post(new_post)
+        let res = await backendActor.save_post(new_post)
         setLoad(false)
         if ("Ok" in res) {
             // TODo Why new posts does not show up
@@ -96,13 +97,13 @@ function CreatePost(props: any) {
             }}
         >
             < PostComponent
+                is_owner={true} s
                 key={changes} // Use the key to force a re-render
                 buttons={<CreateButtons/>}
                 post={post}
                 onChange={onChange}
             />
-
-
+            <Divider/>
         </Grid>
     )
 }

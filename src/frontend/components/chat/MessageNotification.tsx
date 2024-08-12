@@ -12,6 +12,7 @@ import { convertToBlobLink } from "../../DataProcessing/imageToVec";
 import MessageComponent from "./Message";
 
 import GroupIcon from "@mui/icons-material/Group"
+import {useBackendContext} from "../../contexts/BackendContext";
 
 // interface MessageNotificationProp {
 //
@@ -41,6 +42,7 @@ function MessageNotification(props: Message) {
     }, [chats])
 
     const dispatch = useDispatch();
+    const {backendActor} = useBackendContext();
     return <ListItem
 
         onClick={async () => {
@@ -51,7 +53,7 @@ function MessageNotification(props: Message) {
             if (!props.seen_by.includes(Principal.fromText(profile.id))) {
                 props.seen_by.push(Principal.fromText(profile.id))
                 dispatch(handleRedux("UPDATE_NOTIFICATION", {message: props}))
-                let res = actor && await actor.message_is_seen(props)
+                let res = await backendActor.message_is_seen(props)
             }
         }}
         alignItems="flex-start">

@@ -5,14 +5,16 @@ import {useDispatch, useSelector} from "react-redux";
 
 
 import React, {useEffect, useState} from "react";
-import { handleRedux } from "../redux/store/handleRedux";
+import {handleRedux} from "../redux/store/handleRedux";
 import {AuthClient} from "@dfinity/auth-client";
 import {AppMessage, Friend} from "../../declarations/backend/backend.did";
-import {get_id} from "../backend_connect/ic_agent";
+import {Principal} from "@dfinity/principal";
+
+// import {get_id} from "../backend_connect/ic_agent";
 
 
 function useSocket() {
-
+    const {profile} = useSelector((state: any) => state.filesState);
     let gatewayUrl = "wss://gateway.icws.io";
     let icUrl = `https://y43fd-5qaaa-aaaal-acbqa-cai.ic0.app`;
     if (import.meta.env.VITE_DFX_NETWORK != "ic") {
@@ -60,7 +62,7 @@ function useSocket() {
                 let keys = data.notification[0] && data.notification[0].content && Object.keys(data.notification[0].content);
                 if (data.text == "Delete") {
                     dispatch(handleRedux('DELETE_NOTIFY', {id: data.notification[0].id}));
-                    let user_id = await get_id()
+                    let user_id = profile.id;
                     let sender = event.data.notification[0].sender.toText();
                     let receiver = event.data.notification[0].receiver.toText();
                     let remove_id = sender !== user_id ? sender : receiver;
@@ -76,15 +78,7 @@ function useSocket() {
                         dispatch(handleRedux("ADD_FRIEND", {friend}));
                         dispatch(handleRedux('NOTIFY', {new_notification: data.notification[0]}));
                         break
-                    // TODO
-                    //     case "CancleFriendRequest":
-                    //         let new_request: Friend = data.notification[0].content.FriendRequest.friend
-                    //         new_request && dispatch(handleRedux("UPDATE_FRIEND", {cancel_friend_request: new_request}))
-                    //         dispatch(handleRedux('NOTIFY', {new_notification: data.notification[0]}));
-                    //         break
                     case "ContractUpdate":
-                        // let new_contracts = actor && await actor.get_contracts();
-                        // new_contracts && dispatch(handleRedux("UPDATE_CONTRACT", {contracts: new_contracts[0]}))
                         break
                     case"SharePayment":
                         let share_payment = data.notification[0].content["SharePayment"];

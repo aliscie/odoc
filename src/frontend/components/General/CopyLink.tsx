@@ -13,6 +13,7 @@ import {Principal} from "@dfinity/principal";
 import Autocomplete from "@mui/material/Autocomplete";
 import useGetUser from "../../utils/get_user_by_principal";
 import {useSnackbar} from "notistack";
+import {useBackendContext} from "../../contexts/BackendContext";
 
 type PermissionValue = 'CanComment' |
     'None' |
@@ -71,7 +72,7 @@ let Dialog = (props: any) => {
 
     useEffect(() => {
         (async () => {
-            let res: undefined | { Ok: ShareFile } | { Err: string } = actor && await actor.get_share_file(current_file.id)
+            let res: undefined | { Ok: ShareFile } | { Err: string } = await backendActor.get_share_file(current_file.id)
             if ("Ok" in res) {
                 setShareFile((pre) => {
                     return {...pre, ...res.Ok}
@@ -87,7 +88,7 @@ let Dialog = (props: any) => {
             }
         })()
     }, [current_file])
-
+    const {backendActor} = useBackendContext();
 
     return <List>
         <ListItemButton onClick={copyLink}>
@@ -145,7 +146,7 @@ let Dialog = (props: any) => {
         <Button
             onClick={async () => {
                 setSaving(true)
-                let res: undefined | { Ok: ShareFile } | { Err: string } = actor && await actor.share_file(share_file)
+                let res: undefined | { Ok: ShareFile } | { Err: string } = await backendActor.share_file(share_file)
                 if ("Err" in res) {
                     enqueueSnackbar(res.Err, {variant: "error"})
                 }

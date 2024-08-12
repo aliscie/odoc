@@ -312,12 +312,10 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                     enqueueSnackbar(`As you hit save button you will send ${newRow.amount}USDT to ${newRow.receiver}`, {variant: "info"})
                 }
                 let updatedContractPromeses = {...contract};
-                updatedContractPromeses.promises = updatedContractPromeses.promises.map((p: CPayment) => {
-                    if (p.id === newRow.id) {
-                        return serializeRowToPromise(newRow, all_users, contract);
-                    }
-                    return p;
+                updatedContractPromeses.promises = newRows.map((p: CPayment) => {
+                    return serializeRowToPromise(newRow, all_users, contract);
                 });
+
                 updateContract(updatedContractPromeses)
                 break
             case CONTRACT:
@@ -339,7 +337,6 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         if (updatedContract !== contract) {
             const storedContract: StoredContract = {CustomContract: updatedContract};
             dispatch(handleRedux("UPDATE_CONTRACT", {contract: storedContract}));
-            dispatch(handleRedux("CONTRACT_CHANGES", {changes: storedContract}));
         }
     }
 
@@ -407,10 +404,19 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                 break
             case CREATE_CONTRACT:
                 let new_c_contract = createCContract();
-                let contracts = [...contract.contracts, new_c_contract];
-                updateContract({...contract, contracts: [...contracts]});
+                let updaed_c = {...contract};
+                updaed_c.contracts.push(new_c_contract);
+                updateContract(updaed_c);
                 setView({id: new_c_contract.id, type: CONTRACT, name: new_c_contract.name});
                 break
+            // case CREATE_ACTION_BUTTON:
+            //     let new_action_button = {
+            //         id: randomString(),
+            //         type: ACTION_BUTTON,
+            //         name: "Untitled",
+            //     }
+            //     setView(new_action_button);
+            //     break
             case CONTRACT:
                 setView({
                     id: option.id,
@@ -435,7 +441,8 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         {content: "Promises", type: PROMISES},
         {content: "Payments", type: PAYMENTS},
         ...otherContracts,
-        {content: <div><AddIcon color={"info"}/>Create contract</div>, type: CREATE_CONTRACT},
+        {content: <div><AddIcon color={"info"}/>Create sub-table</div>, type: CREATE_CONTRACT},
+        // {content: <div><AddIcon color={"info"}/>Create action button</div>, type: CREATE_ACTION_BUTTON},
     ];
 
     const mainOptions: any[] = [
@@ -460,6 +467,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
     let data = {};
 
     switch (view?.type) {
+
         case CONTRACT:
 
             mainOptions.push({
@@ -519,11 +527,12 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         default:
             break
     }
-    const [expand, setExpand] = useState(false);
+    const [expand, setExpand] = useState(true);
     if (!expand) {
         return (<div>
             <Input defaultValue={title || "Untitled"} onBlur={(e) => renameContract(e.target.value)}/>
             <Button
+                className={"expand-button"}
                 onClick={() => {
                     setExpand(true)
                 }}
@@ -551,6 +560,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
                         {view && (view.name || view.type)}
                     </BasicMenu>
                     <UnfoldLessIcon
+                        className={"expand-button"}
                         onClick={() => {
                             setExpand(false)
                         }}

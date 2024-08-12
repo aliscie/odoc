@@ -13,7 +13,6 @@ test("Test render login", async () => {
 
 
     let res = await global.actor.register(input);
-    console.log({res})
 
     let input2: RegisterUser = {
         'name': ["user2"],

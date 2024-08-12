@@ -1,12 +1,13 @@
 import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tooltip} from "@mui/material";
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
-import { handleRedux } from "../../redux/store/handleRedux";
+import {handleRedux} from "../../redux/store/handleRedux";
 import {useSnackbar} from "notistack";
 import {ContentNode, CPayment, FileNode, StoredContract} from "../../../declarations/backend/backend.did";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 // import {actor} from "../../App";
 import {LoadingButton} from "@mui/lab";
+import {useBackendContext} from "../../contexts/BackendContext";
 
 function MultiSaveButton(props: any) {
 
@@ -22,13 +23,13 @@ function MultiSaveButton(props: any) {
     // let files: Array<FileNode> = Object.values(changes.files);
     let delete_contracts: Array<string> = changes.delete_contracts || [];
 
+    const {backendActor} = useBackendContext();
 
     async function confirm() {
         setOpenDialog(0);
         setLoading(true);
         let loading = enqueueSnackbar(<span>Process saving... <span className={"loader"}/></span>,);
-        let res = actor && await actor.multi_updates(changes.files, serialized_content, serialized_contracts, delete_contracts, changes.files_indexing || []);
-        console.log({res})
+        let res = await backendActor.multi_updates(changes.files, serialized_content, serialized_contracts, delete_contracts, changes.files_indexing || []);
         setLoading(false);
         if (res.Ok && res.Ok.includes("Error") || res.Err) {
             enqueueSnackbar(res.Ok, {variant: "error"});

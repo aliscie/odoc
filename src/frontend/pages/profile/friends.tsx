@@ -1,20 +1,19 @@
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
-import { handleRedux } from "../../redux/store/handleRedux";
+import {handleRedux} from "../../redux/store/handleRedux";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemText from "@mui/material/ListItemText";
-import {Tooltip, Box, IconButton} from "@mui/material";
+import {Box, IconButton, Tooltip} from "@mui/material";
 import * as React from "react";
 import LoaderButton from "../../components/General/LoaderButton";
-// import {actor} from "../../App";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import {Friend} from "../../../declarations/backend/backend.did";
 import RateUser from "../../components/Specifics/RateUser";
-import { UserAvatar } from "../../components/General/PostComponent";
+import {UserAvatar} from "../../components/General/PostComponent";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel"; 
+import CancelIcon from "@mui/icons-material/Cancel";
+import {useBackendContext} from "../../contexts/BackendContext";
 
 interface FriendProps {
     id: string,
@@ -28,6 +27,7 @@ interface FriendProps {
 
 
 function secondaryActionSwitch(props) {
+    const {backendActor} = useBackendContext();
     let {id, confirmed} = props;
     const {
         all_friends,
@@ -74,11 +74,12 @@ function secondaryActionSwitch(props) {
         return res
     }
 
+
     async function handleUnfriend(id: string) {
         if (typeof id != 'string') {
             id = id.toText();
         }
-        let res = actor && await actor.unfriend(id);
+        let res = await backendActor.unfriend(id);
         if (res.Ok) {
             dispatch(handleRedux("REMOVE_FRIEND", {id: id}));
             if (is_sender) {
@@ -97,7 +98,7 @@ function secondaryActionSwitch(props) {
         if (typeof id != 'string') {
             id = id.toText();
         }
-        let res = actor && await actor.cancel_friend_request(id)
+        let res = await backendActor.cancel_friend_request(id)
         if (res.Ok) {
             dispatch(handleRedux("REMOVE_FRIEND", {id: id}))
             dispatch(handleRedux('DELETE_NOTIFY', {id: profile.id + id}));
@@ -105,11 +106,12 @@ function secondaryActionSwitch(props) {
         return res
     }
 
+
     async function handleReject(id: string) {
         if (typeof id != 'string') {
             id = id.toText();
         }
-        let res = actor && await actor.reject_friend_request(id)
+        let res = await backendActor.reject_friend_request(id)
         if (res.Ok) {
             dispatch(handleRedux("REMOVE_FRIEND", {id: id}))
             dispatch(handleRedux('DELETE_NOTIFY', {id: id + profile.id}));
@@ -117,13 +119,14 @@ function secondaryActionSwitch(props) {
         return res
     }
 
+
     async function handleFriedReq(user) {
         if (typeof user != 'string') {
             user = user.toText();
         }
         let loading = enqueueSnackbar(<span>sending friend request... <span
             className={"loader"}/></span>, {variant: "info"});
-        let friend_request = actor && await actor.send_friend_request(user)
+        let friend_request = await backendActor.send_friend_request(user)
         dispatch(handleRedux("ADD_FRIEND", {
             friend: {
                 confirmed: false,
@@ -148,7 +151,7 @@ function secondaryActionSwitch(props) {
             );
         case 'senderconfirmedfriend':
             return (
-                <LoaderButton onClick={async () => await handleUnfriend(id)} color="error" >Unfriend</LoaderButton>
+                <LoaderButton onClick={async () => await handleUnfriend(id)} color="error">Unfriend</LoaderButton>
             );
         case 'is_receiverconfirmedfriend':
             return (
@@ -172,7 +175,7 @@ function secondaryActionSwitch(props) {
                                     onClick={async () => await handleConfirm(id)}
                                     color="success"
                                 >
-                                    <CheckCircleIcon />
+                                    <CheckCircleIcon/>
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title={"Reject"}>
@@ -180,7 +183,7 @@ function secondaryActionSwitch(props) {
                                     onClick={async () => await handleReject(id)}
                                     color="error"
                                 >
-                                    <CancelIcon />
+                                    <CancelIcon/>
                                 </IconButton>
                             </Tooltip>
                         </Box>
@@ -199,7 +202,7 @@ export function FriendCom(props: FriendProps) {
             </ListItemAvatar>
             <Box display="flex" alignItems="center" width="100%">
                 <Box flexGrow={1}>
-                    <RateUser rate={props.rate || 0} id={props.id} />
+                    <RateUser rate={props.rate || 0} id={props.id}/>
                 </Box>
                 <Box display="flex" justifyContent="flex-end">
                     {secondaryActionSwitch(props)}
@@ -210,7 +213,7 @@ export function FriendCom(props: FriendProps) {
 }
 
 function Friends(props: any) {
-    const { profile } = useSelector((state: any) => state.filesReducer);
+    const {profile} = useSelector((state: any) => state.filesReducer);
 
     if (!props.friends) {
         return <></>;
@@ -224,7 +227,7 @@ function Friends(props: any) {
                     const labelId = `checkbox-list-secondary-label-${value.receiver.name}`;
                     return (
                         <ListItem key={user.id} disablePadding>
-                            <FriendCom {...user} {...value} is_friend={value.confirmed} labelId={labelId} />
+                            <FriendCom {...user} {...value} is_friend={value.confirmed} labelId={labelId}/>
                         </ListItem>
                     );
                 })}

@@ -1,9 +1,9 @@
-import {Column, ColumnTypes, Table} from "../../../../declarations/backend/backend.did";
-import {handleRedux} from "../../../redux/main";
+import {Column, Table} from "../../../../declarations/backend/backend.did";
 import {useDispatch, useSelector} from "react-redux";
-import {randomString} from "../../../data_processing/data_samples";
 import * as React from "react";
 import {updateTableContent} from "../utils/update_table";
+import {handleRedux} from "../../../redux/store/handleRedux";
+import {randomString} from "../../../DataProcessing/dataSamples";
 
 function useColumnManager(props: any) {
     const {files_content, current_file} = useSelector((state: any) => state.filesReducer);
@@ -39,7 +39,6 @@ function useColumnManager(props: any) {
         // Example dispatching an action to update content
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
         // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
     };
     const handleColumnValidator = (colId: number, dataValidator: any) => {
         let formula = dataValidator[0].children[0].children[0].text;
@@ -64,7 +63,6 @@ function useColumnManager(props: any) {
 
         // TODO: Dispatch relevant actions or update state as needed
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
     };
 
 
@@ -90,12 +88,11 @@ function useColumnManager(props: any) {
 
         // TODO: Dispatch relevant actions or update state as needed
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
     };
 
 
     const handleAddColumn = (colId: number, before: boolean) => {
-        let column_type: ColumnTypes = {'Text': null};
+        let column_type: string = "Text";
         let id = randomString();
         const newColumn: Column = {
             id,
@@ -105,8 +102,6 @@ function useColumnManager(props: any) {
             permissions: [],
             dataValidator: [],
             formula: [],
-            // headerName: `Column ${columns.length + 1}`,
-            // width: 150,
             editable: true,
         };
         let index = columns.findIndex((col) => col.id === colId);
@@ -129,7 +124,6 @@ function useColumnManager(props: any) {
         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: newContent}));
         // dispatch(handleRedux("ADD_CONTRACT", {id: contract.contract_id, contract}));
         // dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract}));
-        dispatch(handleRedux("CONTENT_CHANGES", {id: current_file.id, changes: newContent}));
     };
 
 

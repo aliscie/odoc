@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-// import {actor} from "../App";
 import {
     ActionRating,
     ActionType,
@@ -8,14 +7,14 @@ import {
     User,
     UserProfile
 } from "../../declarations/backend/backend.did";
-import {FriendCom} from "./Profile/Friends";
+import {FriendCom} from "./profile/friends";
 import {Principal} from "@dfinity/principal";
 import {List, Rating as RatingCom} from "@mui/material";
 import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
 import {LineChart} from "@mui/x-charts/LineChart";
 import useGetUser from "../utils/get_user_by_principal";
-import {logger} from "../DevUtils/logData";
+import {useBackendContext} from "../contexts/BackendContext";
 
 export function UserHistoryCom(profile: UserProfile) {
     let {getUser} = useGetUser();
@@ -115,6 +114,7 @@ export function UserHistoryCom(profile: UserProfile) {
 
 
 function UserPage() {
+    const {backendActor} = useBackendContext();
     const [user, setUser] = React.useState<User | undefined>(undefined);
     const [user_history, setUser_history] = React.useState<UserHistory | undefined>(undefined);
     let url = window.location.search;
@@ -129,7 +129,7 @@ function UserPage() {
         (async () => {
 
             let user = Principal.fromText(user_id);
-            let res: undefined | { Ok: UserProfile } | { Err: string } = actor && await actor.get_user_profile(user);
+            let res: undefined | { Ok: UserProfile } | { Err: string } = await backendActor.get_user_profile(user);
             if ("Ok" in res) {
                 setUser(res.Ok)
                 setUser_history(res.Ok)

@@ -7,10 +7,12 @@ import {Principal} from "@dfinity/principal";
 import { randomString } from "../../DataProcessing/dataSamples";
 // import {actor} from "../../App";
 import {useSnackbar} from "notistack";
+import {useBackendContext} from "../../contexts/BackendContext";
 
 function useCreateWorkSpace() {
-    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    const {workspaces, profile} = useSelector((state: any) => state.filesState);
+    const {backendActor} = useBackendContext()
+    const {enqueueSnackbar} = useSnackbar();
+    const { profile} = useSelector((state: any) => state.filesState);
     const dispatch = useDispatch();
 
     // Initialize refs for TextField values
@@ -48,7 +50,7 @@ function useCreateWorkSpace() {
                 // admins: adminsRef.current,
                 // members: membersRef.current,
             };
-            let save_work_space =   actor && await actor.save_work_space(new_workspace);
+            let save_work_space =   await backendActor.save_work_space(new_workspace);
             dispatch(handleRedux("ADD_WORKSPACE", {new_workspace}))
             enqueueSnackbar("WorkSpace created", {variant: "success"});
         },

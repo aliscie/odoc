@@ -1,9 +1,6 @@
-import {handleRedux} from "../../redux/main";
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
-import DeleteIcon from "@mui/icons-material/Delete";
-import {actor} from "../../App";
 import {MenuItem, Select} from "@mui/material";
 import {WorkSpace} from "../../../declarations/backend/backend.did";
 

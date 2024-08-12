@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import {Resizable} from 'react-resizable';
 import {useDispatch, useSelector} from "react-redux";
-import { handleRedux } from '../../redux/store/handleRedux';
+import {handleRedux} from '../../redux/store/handleRedux';
 import OpenWithIcon from '@mui/icons-material/OpenWith';
 import {Box, Card, CardContent, Tooltip} from '@mui/material';
 import AbcIcon from '@mui/icons-material/Abc';
@@ -19,7 +19,7 @@ import MultiAutoComplete from "../General/MultiAutocompelte";
 import useSearchFiles from './SearchPopper/SearchFilesContent';
 import ResultFile from './SearchPopper/ResultFile';
 import TitleIcon from '@mui/icons-material/Title';
-import { Z_INDEX_SEARCH_POPPER } from '../../constants/zIndex';
+import {Z_INDEX_SEARCH_POPPER} from '../../constants/zIndex';
 
 //TODO use this import CustomizedInputBase from "../genral/search_tools";
 
@@ -116,8 +116,6 @@ function SearchPopper() {
         }
         setSearchRes([]);
         if (currentOptions.includes("files_contents")) {
-            // (async () => {
-            // let res: Array<[string, Array<[string, ContentNode]>]> = await actor.search_files_content(searchValue, true);
             let res: [string] | undefined = SearchFilesContent(searchValue, case_sensitive);
             if (res) {
                 setSearchRes((prevIds) => {
@@ -126,9 +124,6 @@ function SearchPopper() {
                 });
             }
 
-            // let normalized = normalize_files_contents(res);
-            // setSearchRes(normalized);
-            // })();
         }
         if (currentOptions.includes("files_titles")) {
 

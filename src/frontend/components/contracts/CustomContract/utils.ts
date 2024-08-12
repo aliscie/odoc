@@ -109,7 +109,7 @@ export function serializeRowToPromise(row: any, all_users: any[], contract): CPa
     let sender = all_users.find((user: any) => user.name === row.sender);
     let receiver = all_users.find((user: any) => user.name === row.receiver);
 
-    let promes: CPayment = {
+    let promise: CPayment = {
         'id': row.id,
         'status': status,
         'date_created': 0,
@@ -119,8 +119,8 @@ export function serializeRowToPromise(row: any, all_users: any[], contract): CPa
         'sender': Principal.fromText(sender.id),
         "amount": Number(row.amount),
         'receiver': receiver ? Principal.fromText(receiver.id) : Principal.fromText("2vxsx-fae"),
-    }
-    return promes
+    };
+    return promise
 
 
 }

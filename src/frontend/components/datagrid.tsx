@@ -155,7 +155,6 @@ function CustomDataGrid(props: Props) {
             //     };
             // }
             // dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contracts[table_content.id]}));
-            // dispatch(handleRedux("CONTRACT_CHANGES", {changes: updated_contracts[table_content.id]}));
             return {...pre, rows}
         })
     };
@@ -180,7 +179,7 @@ function CustomDataGrid(props: Props) {
         const add_row = [
             <Button onClick={() => handleAddRow(props.rowId, true)} key="two"><ArrowCircleUpIcon/></Button>,
             <Button onClick={() => handleAddRow(props.rowId, false)} key="three"><ArrowCircleDownIcon/></Button>,
-            <span onClick={() => handleAddRow(props.rowId, false)} style={{width: "100px"}} key="one">Add row</span>,
+            <span onClick={() => handleAddRow(props.rowId, false)} style={{width: "100px"}} key="add-row">Add row</span>,
         ];
 
         const add_column = [

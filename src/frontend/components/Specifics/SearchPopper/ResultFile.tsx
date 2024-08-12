@@ -1,9 +1,9 @@
 import {Divider} from "@mui/material";
-import EditorComponent from "../../EditorComponents/main";
 import * as React from "react";
 import {FileNode} from "../../../../declarations/backend/backend.did";
 import {useDispatch, useSelector} from "react-redux";
 import { handleRedux } from "../../../redux/store/handleRedux";
+import EditorComponent from "../../EditorComponents/editor_component";
 
 interface Props {
     file_id: string;
@@ -41,7 +41,8 @@ function ResultFile(props: Props) {
             style={resultFileContainerStyle}
         >
             <EditorComponent
-                contentEditable={false}
+                id={'result-title'}
+                readlOnly={true}
                 editorKey={props.file_id}
                 content={[
                     {type: "h1", children: [{text: String(title)}]},
@@ -49,6 +50,7 @@ function ResultFile(props: Props) {
             />
             <div>
                 <EditorComponent
+                    id={'result-content'}
                     contentEditable={false}
                     editorKey={props.file_id}
                     content={content || []}
