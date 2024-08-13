@@ -1,6 +1,6 @@
 import {Route, Routes} from "react-router-dom";
 import React from "react";
-import LandingPage from "./LandingPage";
+import LandingPage from "./LandingPage/LandingPage";
 import NFTComparisonTable from "./TypesOfNfts";
 import FileContentPage from "./FileContentPage";
 import ShareFilePage from "./ShareFilePage";

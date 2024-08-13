@@ -37,10 +37,10 @@ function VoteButton(props: Props) {
                         if ("Ok" in res) {
                             dispatch(handleRedux("POST_VOTE", {post_vote: res.Ok}));
                         } else {
-                            enqueueSnackbar("Error: " + res?.Err, {variant: "error"});
+                            enqueueSnackbar("voteButton Error: " + res?.Err, {variant: "error"});
                         }
                     } catch (error) {
-                        console.error("Error:", error);
+                        console.error("voteBUtton Error:", error);
                     } finally {
                         setLoading(false);
                     }

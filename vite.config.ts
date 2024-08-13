@@ -4,7 +4,7 @@ import path from "path";
 
 import dfxJson from "./dfx.json";
 
-let localCanisters, prodCanisters, canisters;
+let localCanisters: any, prodCanisters: any, canisters;
 
 let localEnv = true;
 let network = "local";
@@ -95,9 +95,9 @@ export default defineConfig({
         proxy: {
             // This proxies all http requests made to /api to our running dfx instance
             "/api": {
-                target: "http://localhost:4943",
+                target: "http://127.0.0.1:5173",
                 changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api/, "/api"),
+                rewrite: (path: string) => path.replace(/^\/api/, "/api"),
             },
         },
     },

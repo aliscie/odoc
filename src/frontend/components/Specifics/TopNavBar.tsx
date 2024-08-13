@@ -56,7 +56,7 @@ const TopNavBar = () => {
         if (isLoggedIn) {
             dispatch(handleRedux("LOGIN"));
         }
-    }, [dispatch, isLoggedIn]);
+    }, [isLoggedIn]);
 
     const handleLogin = async () => {
         await login();

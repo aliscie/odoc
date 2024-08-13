@@ -116,7 +116,7 @@ function useSocket() {
             };
 
             ws.onerror = (error) => {
-                console.log("Error:", error);
+                console.log("use_socket Error:", error);
             };
         }
 
