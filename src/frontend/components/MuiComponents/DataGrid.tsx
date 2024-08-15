@@ -1,8 +1,7 @@
 import {Button, ButtonGroup} from "@mui/material";
-import {StyledDataGrid} from "../SpreadSheet";
 import * as React from "react";
 import {useEffect} from "react";
-import {GridCell, GridColumnMenu, GridColumnMenuProps, GridRowModel} from "@mui/x-data-grid";
+import {DataGrid, GridCell, GridColumnMenu, GridColumnMenuProps, GridRowModel} from "@mui/x-data-grid";
 import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
 import ArrowCircleDownIcon from "@mui/icons-material/ArrowCircleDown";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
@@ -10,7 +9,46 @@ import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContextMenu from "./ContextMenu";
 import {Row} from "../../../declarations/backend/backend.did";
-import { randomString } from "../../DataProcessing/dataSamples";
+import {randomString} from "../../DataProcessing/dataSamples";
+import {styled} from "@mui/material/styles";
+
+
+export const StyledDataGrid = styled(DataGrid)(({theme}) => ({
+    border: 0,
+    fontFamily: [
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+    ].join(','),
+    WebkitFontSmoothing: 'auto',
+    letterSpacing: 'normal',
+    '& .MuiDataGrid-iconSeparator': {
+        display: 'none',
+    },
+
+    // ...customCheckbox(theme),
+
+    // Custom styling for borders
+    '& .MuiDataGrid-root': {
+        border: `1px solid #ccc`, // Border for the entire grid
+    },
+    '& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell:first-child': {
+        borderLeft: `1px solid #ccc`, // Border for the first column
+    },
+    '& .MuiDataGrid-row': {
+        '&:last-child .MuiDataGrid-cell': {
+            borderBottom: 'none', // Remove bottom border for the last row
+        },
+    },
+}));
+
 
 interface Props {
     data: any,
@@ -179,11 +217,13 @@ function CustomDataGrid(props: Props) {
         const add_row = [
             <Button onClick={() => handleAddRow(props.rowId, true)} key="two"><ArrowCircleUpIcon/></Button>,
             <Button onClick={() => handleAddRow(props.rowId, false)} key="three"><ArrowCircleDownIcon/></Button>,
-            <span onClick={() => handleAddRow(props.rowId, false)} style={{width: "100px"}} key="add-row">Add row</span>,
+            <span onClick={() => handleAddRow(props.rowId, false)} style={{width: "100px"}}
+                  key="add-row">Add row</span>,
         ];
 
         const add_column = [
-            <Button className={'add-column-left'} onClick={() => handleAddColumn(props.column.field, true)} key="two"><ArrowCircleLeftIcon/></Button>,
+            <Button className={'add-column-left'} onClick={() => handleAddColumn(props.column.field, true)}
+                    key="two"><ArrowCircleLeftIcon/></Button>,
             <Button onClick={() => handleAddColumn(props.column.field, false)}
                     key="three"><ArrowCircleRightIcon/></Button>,
             <span style={{width: "100px"}} key="one"
@@ -262,7 +302,7 @@ function CustomDataGrid(props: Props) {
         );
     }
 
-    return <div  contentEditable={false}>
+    return <div contentEditable={false}>
         <StyledDataGrid
             {...props}
             rows={data.rows}
