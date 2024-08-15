@@ -7,21 +7,28 @@ import {normalizeContracts} from "../../DataProcessing/normalize/normalizeContra
 import {Principal} from "@dfinity/principal";
 import {logger} from "../../DevUtils/logData";
 import {UserProfile, WorkSpace} from "../../../declarations/backend/backend.did";
+import {handleRedux} from "../store/handleRedux";
 
 const InitialDataFetcher = () => {
     const dispatch = useDispatch();
     const {backendActor} = useBackendContext();
     const [data, setData] = useState<any>();
-    const [profileHistory, setProfileHistory] = useState<any | { Ok: UserProfile } | { Err: string }>();
-    const [workspaces, setWorkspaces] = useState<Array<WorkSpace> | undefined>();
-    const [notifications, setNotifications] = useState<Notification>();
-
+    // const [profileHistory, setProfileHistory] = useState<any | { Ok: UserProfile } | { Err: string }>();
+    // const [workspaces, setWorkspaces] = useState<Array<WorkSpace> | undefined>();
+    // const [notifications, setNotifications] = useState<Notification>();
+    // const [isRegistered, setIsRegistered] = useState<boolean>(true);
     useEffect(() => {
         const fetchInitialData = async () => {
             if (backendActor) {
                 try {
                     const res = await backendActor.get_initial_data();
-                    setData(res);
+                    if ('Err' in res && res.Err == 'Anonymous user.') {
+                        // dispatch(handleRedux("IS_REGISTERED", {isRegistered: false}));
+                    } else {
+                        dispatch(handleRedux("IS_REGISTERED", {isRegistered: true}));
+                        setData(res);
+                    }
+
                 } catch (error) {
                     console.log("Issue fetching initial data from backend: ", error);
                     // dispatch(filesActions.errorAction(error));
@@ -39,9 +46,9 @@ const InitialDataFetcher = () => {
             dispatch(filesActions.addContract(normalizeContracts(data.Ok.Contracts)));
             dispatch(filesActions.addWorkspace(data.Ok.Workspaces));
             dispatch(filesActions.confirmFriend(data.Ok.Friends));
-            dispatch(filesActions.updateAllFriends(data.Ok.Friends.map((f: Friend) => {
-                return f.sender.id != data.Ok.Profile.id ? f.sender : f.receiver
-            })));
+            // dispatch(filesActions.updateAllFriends(data.Ok.Friends.map((f: Friend) => {
+            //     return f.sender.id != data.Ok.Profile.id ? f.sender : f.receiver
+            // })));
             dispatch(filesActions.updateBalance(data.Ok.Wallet));
         }
     }, [data, dispatch]);
@@ -51,7 +58,7 @@ const InitialDataFetcher = () => {
             if (backendActor && data && "Ok" in data) {
                 try {
                     const res = await backendActor.get_user_profile(Principal.fromText(data.Ok.Profile.id))
-                    setProfileHistory(res);
+                    // setProfileHistory(res);
                     dispatch(filesActions.setCurrentUserHistory(res));
                 } catch (error) {
                     console.log("Issue with fetching profileHistory: ", error);
@@ -67,7 +74,7 @@ const InitialDataFetcher = () => {
             if (backendActor) {
                 try {
                     const workspaces = await backendActor.get_work_spaces();
-                    setWorkspaces(workspaces);
+                    // setWorkspaces(workspaces);
                     dispatch(filesActions.addWorkspace(workspaces));
                 } catch (error) {
                     console.log("Issue fetching workspaces: ", error);
@@ -83,7 +90,7 @@ const InitialDataFetcher = () => {
             if (backendActor) {
                 try {
                     const notifications = await backendActor.get_user_notifications()
-                    setNotifications(notifications);
+                    // setNotifications(notifications);
                     dispatch(filesActions.updateNotificationList(notifications));
                 } catch (error) {
                     console.log("Issue fethcing notifications");

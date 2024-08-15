@@ -12,7 +12,7 @@ function ShareFilePage(props: any) {
     let url = window.location.search;
     let id = url.split("=")[1];
 
-    const {files, files_content} = useSelector((state: any) => state.filesReducer);
+    const {files, files_content} = useSelector((state: any) => state.filesState);
     let file_id: null | String = files.find((file: FileNode) => file.share_id[0] == id);
 
     let [file, setFile] = useState<null | FileNode>(files[file_id]);

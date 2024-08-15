@@ -1,21 +1,15 @@
-import React, { useState } from "react";
-import { 
-    TextField,
-    Box, 
-    CircularProgress, 
-    Avatar, 
-    IconButton, 
-    Typography 
-} from "@mui/material";
+import React, {useEffect, useState} from "react";
+import {Avatar, Box, CircularProgress, IconButton, TextField, Typography} from "@mui/material";
 
-import { Add } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
-import { useSnackbar } from "notistack";
-import { convertToBytes } from "../../DataProcessing/imageToVec";
-import { useBackendContext } from "../../contexts/BackendContext";
-import { RegisterUser, User } from "../../../declarations/backend/backend.did";
-import { handleRedux } from "../../redux/store/handleRedux";
+import {Add} from "@mui/icons-material";
+import {useDispatch, useSelector} from "react-redux";
+import {useSnackbar} from "notistack";
+import {convertToBytes} from "../../DataProcessing/imageToVec";
+import {useBackendContext} from "../../contexts/BackendContext";
+import {RegisterUser, User} from "../../../declarations/backend/backend.did";
+import {handleRedux} from "../../redux/store/handleRedux";
 import RegistrationFormDialog from "../MuiComponents/RegistrationFormDialog";
+import {uiReducer} from "../../redux/reducers/uiReducer";
 
 interface FormValues {
     username: string;
@@ -25,20 +19,14 @@ interface FormValues {
     email?: string;
 }
 
-interface State {
-    filesReducer: {
-        Anonymous: boolean;
-    };
-}
 
 const RegistrationForm: React.FC = () => {
     const dispatch = useDispatch();
+    const {isLoggedIn, isRegistered} = useSelector((state: any) => state.uiState);
 
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-    const { backendActor } = useBackendContext();
+    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+    const {backendActor} = useBackendContext();
 
-    const { Anonymous } = useSelector((state: State) => state.filesState);
-    
     const [formValues, setFormValues] = useState<FormValues>({
         username: "",
         bio: "",
@@ -46,14 +34,19 @@ const RegistrationForm: React.FC = () => {
         last_name: "",
         email: ""
     });
-    const [open, setOpen] = useState(Anonymous);
+    const [open, setOpen] = useState(isLoggedIn && !isRegistered);
+    console.log({open, isLoggedIn, isRegistered})
+    useEffect(() => {
+        setOpen(isLoggedIn && !isRegistered);
+    }, [isLoggedIn, isRegistered]);
+
     const [photo, setPhoto] = useState<File | null>(null);
     const [photoByte, setPhotoByte] = useState<Uint8Array | number[] | undefined>();
     const [loading, setLoading] = useState(false);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { id, value } = event.target;
-        setFormValues(prevValues => ({ ...prevValues, [id]: value }));
+        const {id, value} = event.target;
+        setFormValues(prevValues => ({...prevValues, [id]: value}));
     };
 
     const handleUploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +58,7 @@ const RegistrationForm: React.FC = () => {
                 setPhoto(image);
                 setPhotoByte(imageByteData);
             } catch (error) {
-                enqueueSnackbar(error.message, { variant: "error" });
+                enqueueSnackbar(error.message, {variant: "error"});
             } finally {
                 setLoading(false);
             }
@@ -74,17 +67,17 @@ const RegistrationForm: React.FC = () => {
 
     const handleRegister = async () => {
         if (!formValues.username || !formValues.bio) {
-                enqueueSnackbar("Please fill all required fields", { variant: "error" });
+            enqueueSnackbar("Please fill all required fields", {variant: "error"});
             return;
         }
 
         setOpen(false);
         const loaderMessage = (
             <span>
-                Creating agreement... <CircularProgress size={20} style={{ marginLeft: 10 }} />
+                Creating account... <CircularProgress size={20} style={{marginLeft: 10}}/>
             </span>
         );
-        const loadingSnackbar = enqueueSnackbar(loaderMessage, { variant: "info" });
+        const loadingSnackbar = enqueueSnackbar(loaderMessage, {variant: "info"});
 
         const input: RegisterUser = {
             name: [formValues.username],
@@ -94,20 +87,21 @@ const RegistrationForm: React.FC = () => {
 
         try {
             let register: { Ok: User } | { Err: string } | undefined;
-            if(backendActor) {
+            if (backendActor) {
                 register = await backendActor.register(input);
+                console.log("after", register)
                 closeSnackbar(loadingSnackbar);
-            }  
+            }
             if (register?.Ok) {
-                dispatch(handleRedux("UPDATE_PROFILE", { profile: register.Ok }));
-                enqueueSnackbar(`Welcome ${register.Ok.name}, to Odoc`, { variant: "success" });
+                dispatch(handleRedux("UPDATE_PROFILE", {profile: register.Ok}));
+                enqueueSnackbar(`Welcome ${register.Ok.name}, to Odoc`, {variant: "success"});
             } else if (register?.Err) {
-                enqueueSnackbar(register.Err, { variant: "error" });
+                enqueueSnackbar(register.Err, {variant: "error"});
                 setOpen(true);
             }
         } catch (error) {
             console.error("There was an issue with registration: ", error);
-            enqueueSnackbar(error.message, { variant: "error" });
+            enqueueSnackbar(error.message, {variant: "error"});
         }
     };
 
@@ -117,12 +111,12 @@ const RegistrationForm: React.FC = () => {
             description=""
             inputFields={
                 <>
-                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 2 }}>
+                    <Box sx={{display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 2}}>
                         <input
                             accept="image/*"
                             id="photo"
                             type="file"
-                            style={{ display: "none" }}
+                            style={{display: "none"}}
                             onChange={handleUploadPhoto}
                         />
                         <label htmlFor="photo">
@@ -130,16 +124,16 @@ const RegistrationForm: React.FC = () => {
                                 <Avatar
                                     src={photo ? URL.createObjectURL(photo) : undefined}
                                     alt="Profile Photo"
-                                    sx={{ width: 100, height: 100 }}
+                                    sx={{width: 100, height: 100}}
                                 >
-                                    <Add />
+                                    <Add/>
                                 </Avatar>
                             </IconButton>
                         </label>
                         <Typography variant="subtitle1">Upload Photo</Typography>
-                        {loading && <CircularProgress size={20} style={{ marginTop: 10 }} />}
+                        {loading && <CircularProgress size={20} style={{marginTop: 10}}/>}
                     </Box>
-                    <Box sx={{ marginBottom: 2 }}>
+                    <Box sx={{marginBottom: 2}}>
                         <TextField
                             required
                             id="username"
@@ -151,7 +145,7 @@ const RegistrationForm: React.FC = () => {
                             onChange={handleChange}
                         />
                     </Box>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
+                    <Box sx={{display: "flex", justifyContent: "space-between", marginBottom: 2}}>
                         <TextField
                             id="first_name"
                             label="First Name"
@@ -160,7 +154,7 @@ const RegistrationForm: React.FC = () => {
                             variant="outlined"
                             value={formValues.first_name || ""}
                             onChange={handleChange}
-                            sx={{ marginRight: 1 }}
+                            sx={{marginRight: 1}}
                         />
                         <TextField
                             id="last_name"
@@ -172,7 +166,7 @@ const RegistrationForm: React.FC = () => {
                             onChange={handleChange}
                         />
                     </Box>
-                    <Box sx={{ marginBottom: 2 }}>
+                    <Box sx={{marginBottom: 2}}>
                         <TextField
                             id="email"
                             label="Email"
@@ -183,7 +177,7 @@ const RegistrationForm: React.FC = () => {
                             onChange={handleChange}
                         />
                     </Box>
-                    <Box sx={{ marginBottom: 2 }}>
+                    <Box sx={{marginBottom: 2}}>
                         <TextField
                             required
                             multiline
@@ -199,8 +193,8 @@ const RegistrationForm: React.FC = () => {
                 </>
             }
             buttons={[
-                { name: "Cancel", onClick: () => setOpen(false) },
-                { name: "Submit", onClick: handleRegister },
+                {name: "Cancel", onClick: () => setOpen(false)},
+                {name: "Submit", onClick: handleRegister},
             ]}
             open={open}
             maxWidth="md"

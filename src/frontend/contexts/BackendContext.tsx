@@ -5,6 +5,7 @@ import {canisterId, idlFactory} from "../../declarations/backend";
 import {_SERVICE} from "../../declarations/backend/backend.did";
 import {useDispatch} from "react-redux";
 import {handleRedux} from "../redux/store/handleRedux";
+import {logger} from "../DevUtils/logData";
 
 
 interface State {
@@ -12,7 +13,6 @@ interface State {
     identity: Identity | null;
     backendActor: ActorSubclass<Record<string, ActorMethod<unknown[], unknown>>> | null;
     isAuthenticated: boolean;
-    hasLoggedIn: boolean;
     agent: HttpAgent | null;
     isAuthenticating?: boolean;
 }
@@ -23,7 +23,6 @@ interface BackendContextProps {
     backendActor: ActorSubclass<Record<string, ActorMethod<unknown[], unknown>>> | null;
     isAuthenticating: boolean;
     isAuthenticated: boolean;
-    hasLoggedIn: boolean;
     login: () => Promise<void>;
     logout: () => void;
 }
@@ -42,8 +41,8 @@ interface BackendProviderProps {
     children: ReactNode;
 }
 
-async function handleAgent() {
-    const client = await AuthClient.create()
+async function handleAgent(client) {
+
     let host = 'https://ic0.app';
     if (import.meta.env.VITE_DFX_NETWORK === "local") {
         host = import.meta.env.VITE_IC_HOST;
@@ -60,10 +59,9 @@ async function handleAgent() {
     // ---------------------- root key fetch ---------------------- \\
     if (import.meta.env.VITE_DFX_NETWORK === "local") {
         agent.fetchRootKey().then((rootKey) => {
-                // console.log("Root Key: ", rootKey);
+                console.log("successfully fetched root key: ");
             }
-        ).catch(
-            (err) => {
+        ).catch((err) => {
                 console.log("Error fetching root key: ", err);
             }
         )
@@ -74,12 +72,6 @@ async function handleAgent() {
         agent,
         canisterId,
     });
-    try {
-        const res = await actor.get_initial_data();
-        console.log("Initial Data: ", res);
-    } catch (e) {
-        console.log("Error get_initial_data: ", e);
-    }
     return {actor, agent, principal, identity, client};
 }
 
@@ -93,7 +85,6 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
         identity: null,
         backendActor: null,
         isAuthenticated: false,
-        hasLoggedIn: false,
         agent: null
     });
 
@@ -106,28 +97,27 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
             console.log("Auth client not initialized");
             return
         }
+
         const alreadyAuthenticated = await authClient.isAuthenticated();
 
         if (alreadyAuthenticated) {
-            setState((prevState: State) => {
-                return {...prevState, isAuthenticated: true, hasLoggedIn: true}
-            })
             dispatch(handleRedux('LOGIN'));
+            setState((prevState: State) => {
+                return {...prevState, isAuthenticated: true}
+            })
+
 
         } else {
             let identityProvider = "https://identity.ic0.app/#authorize";
             if (import.meta.env.VITE_DFX_NETWORK === "local") {
                 identityProvider = `http://${import.meta.env.VITE_INTERNET_IDENTITY}.localhost:${port}`;
             }
-            setState((prevState) => {
-                return {...prevState, isAuthenticated: true}
-            });
 
             await authClient.login({
                 identityProvider: identityProvider,
                 onSuccess: async () => {
                     setState((prevState: State) => {
-                        return {...prevState, isAuthenticated: true, isAuthenticating: false, hasLoggedIn: true}
+                        return {...prevState, isAuthenticated: true, isAuthenticating: false}
                     });
                     window.location.reload()
                 },
@@ -146,20 +136,32 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
     useEffect(() => {
 
         const initializeAuthClient = async () => {
-            const {actor, agent, principal, identity, client} = await handleAgent();
-            setState({
-                principal,
-                identity,
-                backendActor: actor,
-                isAuthenticated: true,
-                hasLoggedIn: true,
-                agent
-            });
+            const client = await AuthClient.create();
             setAuthClient(client);
+            const {actor, agent, principal, identity} = await handleAgent(client);
+
+            // const res = await actor.get_initial_data();
+
+            // if ('Err' in res && res.Err == 'Anonymous user.') {
+            //     isRegistered = false;
+            // }
+            // dispatch(handleRedux("IS_REGISTERED", {isRegistered}));
+
+            setState(pre => {
+                return {
+                    backendActor: actor,
+                    agent,
+                    principal,
+                    identity,
+                }
+            });
+
             const alreadyAuthenticated = await client.isAuthenticated();
             if (alreadyAuthenticated) {
                 dispatch(handleRedux('LOGIN'));
             }
+            ;
+
         };
 
         initializeAuthClient().catch((error) => {

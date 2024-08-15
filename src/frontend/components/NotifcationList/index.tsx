@@ -174,7 +174,7 @@ function NotificationComponent({notification}: { notification: Notification }) {
 
 export function Notifications() {
 
-    const {notifications} = useSelector((state: any) => state.filesState);
+    const {notifications} = useSelector((state: any) => state.notificationState);
 
     const new_notifications = notifications && notifications.filter((notification: any) => notification && notification.is_seen == false);
 

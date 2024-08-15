@@ -41,12 +41,12 @@ import {agent} from "../../backend_connect/main";
 
 const TopNavBar = () => {
     const dispatch = useDispatch();
-    const {login, logout, isAuthenticated} = useBackendContext();
+    const {login, logout, isAuthenticating, isAuthenticated} = useBackendContext();
 
     const {isNavOpen, isDarkMode, isLoggedIn, searchTool} = useSelector(
         (state: any) => state.uiState
     );
-    const {profile, current_file, files} = useSelector(
+    const {profile, isRegistered, current_file, files} = useSelector(
         (state: any) => state.filesState
     );
     const theme = useTheme();
@@ -70,6 +70,10 @@ const TopNavBar = () => {
 
     const imageLink = profile ? convertToBlobLink(profile.photo) : "";
     const isOwnerCurrentFile = current_file && files.find((file: any) => file.id === current_file.id);
+
+    // if (isAuthenticating || !isRegistered) {
+    //     return <h3> Loading... </h3>
+    // }
 
     return (
         <AppBar position="fixed" color="default" sx={{zIndex: Z_INDEX_TOP_NAVBAR}}>
@@ -120,7 +124,7 @@ const TopNavBar = () => {
                         </>
                     )}
 
-                    {!isAuthenticated && (
+                    {!isLoggedIn && (
                         <Button className="login" color="inherit" onClick={handleLogin}>
                             Login
                         </Button>

@@ -1,5 +1,12 @@
 // types.ts
-import { FileNode, FileIndexing, Friend, StoredContract, UserProfile, WorkSpace } from "../../../declarations/backend/backend.did";
+import {
+    FileNode,
+    FileIndexing,
+    Friend,
+    StoredContract,
+    UserProfile,
+    WorkSpace
+} from "../../../declarations/backend/backend.did";
 
 export type FilesActions =
     | { type: "ADD_FILE"; new_file: FileNode }
@@ -22,16 +29,14 @@ export type FilesActions =
     | { type: "UPDATE_BALANCE"; balance: number }
     | { type: "UPDATE_PROFILE"; profile: Partial<UserProfile> }
     | { type: "CHANGE_FILE_PARENT"; position: number; id: string; parent: string[]; index: number }
-    | { type: "NOTIFY"; new_notification: Notification }
     | { type: "UPDATE_FRIEND"; id: string }
-    | { type: "UPDATE_NOT_LIST"; new_list: Notification[] }
-    | { type: "DELETE_NOTIFY"; id: string }
     | { type: "UPDATE_NOTE"; id: string }
     | { type: "CONFIRM_FRIEND"; friend: Friend }
     | { type: "TOP_DIALOG"; open: boolean; content: any; title: string }
     | { type: "ADD_WORKSPACE"; new_workspace: WorkSpace }
-    | { type: "UPDATE_ANONYMOUS"; anonymous: boolean };
-    // | FriendsActions;
+    | { type: "UPDATE_ANONYMOUS"; anonymous: boolean }
+
+// | FriendsActions;
 
 export interface InitialState {
     current_file: FileNode | null;
@@ -46,27 +51,29 @@ export interface InitialState {
         delete_contracts: string[];
         files_indexing: FileIndexing[];
     };
-    notifications: Notification[];
     profile_history: UserProfile | null;
     top_dialog: { open: boolean; content: any; title: string | null };
     workspaces: WorkSpace[];
     contracts: Record<string, StoredContract>;
     all_friends: Friend[];
     all_users: any[];
+
     [key: string]: any;
+
     anonymous: boolean;
 }
 
 export const initialState: InitialState = {
+    isLoggedIn: false,
+    isRegistered: false,
     current_file: null,
     is_files_saved: true,
     files: [],
     files_content: {},
     friends: [],
-    changes: { files: [], contents: {}, contracts: {}, delete_contracts: [], files_indexing: [] },
-    notifications: [],
+    changes: {files: [], contents: {}, contracts: {}, delete_contracts: [], files_indexing: []},
     profile_history: null,
-    top_dialog: { open: false, content: null, title: null },
+    top_dialog: {open: false, content: null, title: null},
     workspaces: [],
     contracts: {},
     all_friends: [],

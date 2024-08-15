@@ -1,6 +1,7 @@
 ## old version of Odoc can be found [here](https://github.com/aliscie/Odoc-old)
 
 ## to get started
+
 1. first download the pocketic https://github.com/dfinity/pocketic/releases
 2. add this to dfx.json
    ```json
@@ -17,14 +18,15 @@
    ```
 
 3. in your .env file add
-    1. When you run `dfx deploy` you will get 3 links, frontend, backend and internet_identity copy the value with localhost and the port after it
-    2. `VITE_IC_HOST='http://localhost:<the port of your frontend host canisters eg localhost:4943 or 127.0.0.1:5000 etc>`
+    1. When you run `dfx deploy` you will get 3 links, frontend, backend and internet_identity copy the value with
+       localhost and the port after it
+    2. `VITE_IC_HOST='http://localhost:<the port of your of the canister, after runing dfx deploy backend you will get   backend: http://127.0.0.1:<port>/?canisterId=<...>&id=<...>>`
     3. `VITE_INTERNET_IDENTITY=<internet_identity id at the end of link after ?id=.....>`
     4. `POCKET_IC_BIN=/<path to>/pocket-ic`
     5. `BACKEND_WASM=/<ur dir>/odoc/target/wasm32-unknown-unknown/release/backend.wasm`
     6. `VITE_DFX_NETWORK='local'`
-    7. `VITE_DFX_PORT=<the port from dfx deploy urls>` 
-   
+    7. `VITE_DFX_PORT=<the port from dfx deploy urls>`
+
 4. read this https://crates.io/crates/pocket-ic
 5. and read this https://www.npmjs.com/package/@hadronous/pic
 
