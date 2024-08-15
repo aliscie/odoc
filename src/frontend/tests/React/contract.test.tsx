@@ -5,8 +5,8 @@ import TestWrapper from "../utils/tests_wrapper";
 import {newContract} from "../backend/data_samples";
 import {handleRedux} from "../../redux/store/handleRedux";
 import store from "../../redux/store";
-import {createCContract} from "../../components/contracts/CustomContract/utils";
-import {CustomContractComponent} from "../../components/contracts/CustomContract/CustomContract";
+import {createCContract} from "../../components/ContractTable/utils";
+import {CustomContractComponent} from "../../components/ContractTable";
 
 
 it('creates and updates a contract, then interacts with rows and columns', async () => {

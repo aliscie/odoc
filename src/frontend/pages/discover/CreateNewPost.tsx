@@ -8,7 +8,7 @@ import {randomId} from "@mui/x-data-grid-generator";
 import {useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
 import {LoadingButton} from "@mui/lab";
-import PostComponent from "../../components/General/PostComponent";
+import PostComponent from "../../components/MuiComponents/PostComponent";
 import {useBackendContext} from "../../contexts/BackendContext";
 import PostTags from "./TagsComponent";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";

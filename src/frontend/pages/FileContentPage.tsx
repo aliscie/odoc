@@ -4,7 +4,7 @@ import {FileNode} from '../../declarations/backend/backend.did';
 import debounce from '../utils/debounce';
 import {Input} from "@mui/material";
 import {handleRedux} from "../redux/store/handleRedux";
-import EditorComponent from "../components/EditorComponents/editor_component";
+import EditorComponent from "../components/EditorComponent";
 
 interface Props {
 }

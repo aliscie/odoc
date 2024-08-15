@@ -1,23 +1,21 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import "./App.css";
-import NavBar from "./components/Specifics/NavBar";
-import Pages from "./pages/main";
+import Pages from "./pages";
 import {BrowserRouter} from "react-router-dom";
 import InitialDataFetcher from "./redux/initialData/InitialDataFetcher";
-import TopNavBar from "./components/Specifics/TopNavBar";
-import SearchPopper from "./components/Specifics/SearchPopper";
-// import Theme from "./components/genral/theme_provider";
-import {SnackbarProvider} from "notistack";
-import RegistrationForm from "./components/Specifics/RegistrationForm";
+
+import {SnackbarProvider, useSnackbar} from "notistack";
 import {handleRedux} from "./redux/store/handleRedux";
 import {useDispatch} from "react-redux";
-import MessagesDialog from "./components/Chat/MessagesBoxDialog";
 import useSocket from "./websocket/use_socket";
 import {CircularProgress} from "@mui/material";
-import {useSnackbar} from "notistack";
-import TopDialog from "./components/General/TopDialog";
-import OdocEditor from "odoc_editor_v2";
 import {useBackendContext} from "./contexts/BackendContext";
+import NavBar from "./components/MainComponents/NavBar";
+import TopNavBar from "./components/MainComponents/TopNavBar";
+import RegistrationForm from "./components/MainComponents/RegistrationForm";
+import TopDialog from "./components/MuiComponents/TopDialog";
+import MessagesDialogBox from "./components/ChatSendMessage/MessagesBoxDialog";
+import SearchPopper from "./components/MainComponents/SearchPopper";
 
 const App: React.FC = () => {
     const dispatch = useDispatch();
@@ -50,7 +48,7 @@ const App: React.FC = () => {
                     <SearchPopper/>
                     <SnackbarProvider maxSnack={3}>
                         <RegistrationForm/>
-                        <MessagesDialog/>
+                        <MessagesDialogBox/>
                         <TopNavBar/>
                         <TopDialog/>
                         <NavBar>

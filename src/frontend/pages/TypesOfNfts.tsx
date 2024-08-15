@@ -61,7 +61,7 @@ const NFTComparisonTable = () => {
         category: 'EIP (Ethereum Improvement Proposal)',
         definition: 'Proposals to improve the Ethereum platform',
         purpose: 'Propose and discuss improvements and changes to the Ethereum platform and ecosystem',
-        architecture: 'EIP: General Ethereum improvement proposals',
+        architecture: 'EIP: MuiComponents Ethereum improvement proposals',
         features: 'Proposals for technical changes and improvements to the Ethereum protocol',
         examples: 'EIP: EIP-1559, EIP-721',
       },

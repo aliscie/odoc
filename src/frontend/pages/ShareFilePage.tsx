@@ -5,7 +5,7 @@ import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
 import { handleRedux } from "../redux/store/handleRedux";
 import { normalizeContentTree, SlateNode } from "../DataProcessing/normalize/normalizeContents";
-import EditorComponent from "../components/EditorComponents/editor_component";
+import EditorComponent from "../components/EditorComponent";
 export type FileQuery = undefined | { Ok: [FileNode, Array<[string, ContentNode]>] } | { Err: string };
 
 function ShareFilePage(props: any) {

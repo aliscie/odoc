@@ -1,7 +1,7 @@
 import * as React from "react";
 import { handleRedux } from "../../../redux/store/handleRedux";
 import {useDispatch} from "react-redux";
-import LoaderButton from "../../../components/General/LoaderButton";
+import LoaderButton from "../../../components/MuiComponents/LoaderButton";
 // import {actor} from "../../../App";
 import {AccountBalanceWallet} from "@mui/icons-material";
 

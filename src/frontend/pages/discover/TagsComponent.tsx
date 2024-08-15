@@ -1,4 +1,4 @@
-import MultiAutoComplete from "../../components/General/MultiAutocompelte";
+import MultiAutoComplete from "../../components/MuiComponents/MultiAutocompelte";
 import React from "react";
 import {PostUser} from "../../../declarations/backend/backend.did";
 import debounce from "../../utils/debounce";

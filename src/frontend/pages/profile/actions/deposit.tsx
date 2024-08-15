@@ -1,6 +1,6 @@
 import * as React from "react";
 import {useDispatch} from "react-redux";
-import LoaderButton from "../../../components/General/LoaderButton";
+import LoaderButton from "../../../components/MuiComponents/LoaderButton";
 import { handleRedux } from "../../../redux/store/handleRedux";
 // import {actor} from "../../../App";
 import {MonetizationOn} from "@mui/icons-material";

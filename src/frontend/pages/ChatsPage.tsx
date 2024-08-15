@@ -8,7 +8,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import { useDispatch, useSelector } from "react-redux";
-import MessagesList from "../components/Chat/MessagesList";
+import MessagesList from "../components/ChatNotifications/MessagesList";
 import { handleRedux } from "../redux/store/handleRedux";
 import { Box, Container, Typography, Card, CardContent, Paper, Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";

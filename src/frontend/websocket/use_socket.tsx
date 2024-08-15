@@ -1,4 +1,4 @@
-import {canisterId, backend} from "../../declarations/backend";
+import {backend, canisterId} from "../../declarations/backend";
 import IcWebSocket, {createWsConfig} from "ic-websocket-js";
 import {SignIdentity} from "@dfinity/agent";
 import {useDispatch, useSelector} from "react-redux";
@@ -8,9 +8,6 @@ import React, {useEffect, useState} from "react";
 import {handleRedux} from "../redux/store/handleRedux";
 import {AuthClient} from "@dfinity/auth-client";
 import {AppMessage, Friend} from "../../declarations/backend/backend.did";
-import {Principal} from "@dfinity/principal";
-
-// import {get_id} from "../backend_connect/ic_agent";
 
 
 function useSocket() {
@@ -62,10 +59,9 @@ function useSocket() {
                 let keys = data.notification[0] && data.notification[0].content && Object.keys(data.notification[0].content);
                 if (data.text == "Delete") {
                     dispatch(handleRedux('DELETE_NOTIFY', {id: data.notification[0].id}));
-                    let user_id = profile.id;
                     let sender = event.data.notification[0].sender.toText();
                     let receiver = event.data.notification[0].receiver.toText();
-                    let remove_id = sender !== user_id ? sender : receiver;
+                    let remove_id = sender !== profile.id ? sender : receiver;
                     dispatch(handleRedux('REMOVE_FRIEND', {id: remove_id}));
                     return;
                 }
@@ -88,7 +84,7 @@ function useSocket() {
                         let id = event.data.notification[0].id;
 
                         dispatch(handleRedux('DELETE_NOTIFY', {id: id}));
-                        let user_id = await get_id()
+                        let user_id = profile.id;
                         let sender = event.data.notification[0].sender.toText();
                         let receiver = event.data.notification[0].receiver.toText();
                         let remove_id = sender == user_id ? receiver : sender;
@@ -116,7 +112,7 @@ function useSocket() {
             };
 
             ws.onerror = (error) => {
-                console.log("Error:", error);
+                console.log("use_socket Error:", error);
             };
         }
 

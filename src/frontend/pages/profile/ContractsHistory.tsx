@@ -5,7 +5,7 @@ import ListItem from "@mui/material/ListItem";
 import Button from "@mui/material/Button";
 import {Principal} from "@dfinity/principal";
 import {StoredContract} from "../../../declarations/backend/backend.did";
-import {CustomContractComponent} from "../../components/contracts/CustomContract/CustomContract";
+import {CustomContractComponent} from "../../components/ContractTable";
 import {custom_contract} from "../../DataProcessing/dataSamples";
 import {handleRedux} from "../../redux/store/handleRedux";
 

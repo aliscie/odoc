@@ -26,8 +26,8 @@ test("Test custom contract update permissions", async () => {
     expect({"Ok": "Updates applied successfully."}).toEqual(res)
     let init_date: { Ok: InitialData } | { Err: string } = await global.actor.get_initial_data();
     // expect(init_date.Ok.Contracts.length).toBeGreaterThan(0);
-    // init_date.Ok.Contracts.forEach((contract: CustomContract) => {
-    //     expect(contract[1].CustomContract.contracts[0].rows[0].cells[0].value).toBe("INIT VALUE");
+    // init_date.Ok.Contracts.forEach((contract: ContractTable) => {
+    //     expect(contract[1].ContractTable.contracts[0].rows[0].cells[0].value).toBe("INIT VALUE");
     // });
 
     // -------------------------- Other user try to update the cell -------------------------- \\

@@ -1,8 +1,8 @@
-import BasicMenu from "../../components/General/BasicMenu";
+import BasicMenu from "../../components/MuiComponents/BasicMenu";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ActionsButtons from "./ActionsButtons";
-import PostComponent from "../../components/General/PostComponent";
+import PostComponent from "../../components/MuiComponents/PostComponent";
 import React from "react";
 import {ContentNode, Post, PostUser} from "../../../declarations/backend/backend.did";
 import {useSelector} from "react-redux";
