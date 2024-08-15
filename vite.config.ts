@@ -115,4 +115,21 @@ export default defineConfig({
         EnvironmentPlugin("all", {prefix: "DFX_"}),
         EnvironmentPlugin({BACKEND_CANISTER_ID: ""}),
     ],
+    optimizeDeps: {
+        include: [
+            // "@mui/base",
+            // "@mui/icons-material",
+            // "@mui/lab",
+            // "@mui/material",
+            // "@mui/styles",
+            // "@mui/system",
+            // "@mui/x-charts",
+            // "@mui/x-data-grid",
+            "@mui/x-data-grid-generator",
+
+            // '@emotion/react',
+            // '@emotion/styled',
+        ],
+    }
+
 });
