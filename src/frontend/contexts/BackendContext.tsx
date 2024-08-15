@@ -6,6 +6,17 @@ import {_SERVICE} from "../../declarations/backend/backend.did";
 import {useDispatch} from "react-redux";
 import {handleRedux} from "../redux/store/handleRedux";
 
+
+interface State {
+    principal: string | null;
+    identity: Identity | null;
+    backendActor: ActorSubclass<Record<string, ActorMethod<unknown[], unknown>>> | null;
+    isAuthenticated: boolean;
+    hasLoggedIn: boolean;
+    agent: HttpAgent | null;
+    isAuthenticating?: boolean;
+}
+
 interface BackendContextProps {
     authClient: AuthClient | null;
     agent: HttpAgent | null;
@@ -15,8 +26,6 @@ interface BackendContextProps {
     hasLoggedIn: boolean;
     login: () => Promise<void>;
     logout: () => void;
-    identity: Identity | null;
-    principal: string | null;
 }
 
 const BackendContext = createContext<BackendContextProps | undefined>(undefined);
@@ -33,8 +42,8 @@ interface BackendProviderProps {
     children: ReactNode;
 }
 
-async function handleAgent(client: { getIdentity: () => any; }) {
-
+async function handleAgent() {
+    const client = await AuthClient.create()
     let host = 'https://ic0.app';
     if (import.meta.env.VITE_DFX_NETWORK === "local") {
         host = import.meta.env.VITE_IC_HOST;
@@ -65,14 +74,13 @@ async function handleAgent(client: { getIdentity: () => any; }) {
         agent,
         canisterId,
     });
-    // console.log("before: ", actor);
     try {
         const res = await actor.get_initial_data();
         console.log("Initial Data: ", res);
     } catch (e) {
         console.log("Error get_initial_data: ", e);
     }
-    return {actor, agent, principal, identity};
+    return {actor, agent, principal, identity, client};
 }
 
 export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
@@ -80,14 +88,16 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
 
     const port = import.meta.env.VITE_DFX_PORT;
 
-    const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
+    const [state, setState] = useState<State>({
+        principal: null,
+        identity: null,
+        backendActor: null,
+        isAuthenticated: false,
+        hasLoggedIn: false,
+        agent: null
+    });
+
     const [authClient, setAuthClient] = useState<AuthClient | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [hasLoggedIn, setHasLoggedIn] = useState<boolean>(false);
-    const [stateIdenitity, setStateIdenitity] = useState<Identity | null>(null);
-    const [stateAgent, setStateAgent] = useState<HttpAgent | null>(null);
-    const [backendActor, setBackendA̵ctor] = useState<ActorSubclass<Record<string, ActorMethod<unknown[], unknown>>> | null>(null);
-    const [statePrincipal, setStatePrincipal] = useState<string | null>(null);
 
 
     const login = useCallback(async () => {
@@ -99,8 +109,9 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
         const alreadyAuthenticated = await authClient.isAuthenticated();
 
         if (alreadyAuthenticated) {
-            setIsAuthenticated(true);
-            setHasLoggedIn(true);
+            setState((prevState: State) => {
+                return {...prevState, isAuthenticated: true, hasLoggedIn: true}
+            })
             dispatch(handleRedux('LOGIN'));
 
         } else {
@@ -108,13 +119,16 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
             if (import.meta.env.VITE_DFX_NETWORK === "local") {
                 identityProvider = `http://${import.meta.env.VITE_INTERNET_IDENTITY}.localhost:${port}`;
             }
-            setIsAuthenticating(true);
+            setState((prevState) => {
+                return {...prevState, isAuthenticated: true}
+            });
+
             await authClient.login({
                 identityProvider: identityProvider,
                 onSuccess: async () => {
-                    setIsAuthenticating(false);
-                    setIsAuthenticated(true);
-                    setHasLoggedIn(true);
+                    setState((prevState: State) => {
+                        return {...prevState, isAuthenticated: true, isAuthenticating: false, hasLoggedIn: true}
+                    });
                     window.location.reload()
                 },
             });
@@ -123,37 +137,28 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
 
 
     const logout = () => {
-        setIsAuthenticated(false);
+        setState((prevState: State) => {
+            return {...prevState, isAuthenticated: false}
+        })
         authClient?.logout({returnTo: "/"});
     };
 
     useEffect(() => {
 
         const initializeAuthClient = async () => {
-            const client = await AuthClient.create();
+            const {actor, agent, principal, identity, client} = await handleAgent();
+            setState({
+                principal,
+                identity,
+                backendActor: actor,
+                isAuthenticated: true,
+                hasLoggedIn: true,
+                agent
+            });
             setAuthClient(client);
-
-            // setAuthClient(client);
             const alreadyAuthenticated = await client.isAuthenticated();
             if (alreadyAuthenticated) {
-                setIsAuthenticated(true);
-                setHasLoggedIn(true);
                 dispatch(handleRedux('LOGIN'));
-            }
-
-
-            setIsAuthenticating(false);
-
-            const authenticated = await client.isAuthenticated();
-
-            if (authenticated && !isAuthenticated) {
-                const {actor, agent, principal, identity} = await handleAgent(client);
-                setStatePrincipal(principal);
-                setStateIdenitity(identity)
-                setBackendA̵ctor(actor);
-                setIsAuthenticated(true);
-                setHasLoggedIn(true);
-                setStateAgent(agent);
             }
         };
 
@@ -165,16 +170,9 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
     return (
         <BackendContext.Provider
             value={{
-                authClient,
-                agent: stateAgent,
-                backendActor,
-                isAuthenticating,
-                isAuthenticated,
-                hasLoggedIn,
+                ...state,
                 login,
                 logout,
-                identity: stateIdenitity,
-                principal: statePrincipal?.toString(),
             }}
         >
             {children}

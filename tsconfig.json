@@ -38,14 +38,5 @@
   ],
   "exclude": [
     "node_modules"
-  ],
-  "baseUrl": ".",
-  "paths": {
-    "@/editor": [
-      "/src/frontend/components/EditorComponents/editor_component"
-    ],
-    "@/*": [
-      "src/*"
-    ]
-  }
+  ]
 }
