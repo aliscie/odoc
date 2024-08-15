@@ -15,7 +15,7 @@ import TopNavBar from "./components/MainComponents/TopNavBar";
 import RegistrationForm from "./components/MainComponents/RegistrationForm";
 import TopDialog from "./components/MuiComponents/TopDialog";
 import MessagesDialogBox from "./components/ChatSendMessage/MessagesBoxDialog";
-import SearchPopper from "./components/MainComponents/SearchPopper";
+import SearchPopper from "./components/SearchComponent";
 
 const App: React.FC = () => {
     const dispatch = useDispatch();

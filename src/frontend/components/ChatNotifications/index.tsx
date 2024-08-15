@@ -19,7 +19,7 @@ import {useBackendContext} from "../../contexts/BackendContext";
 // }
 
 
-function Index(props: Message) {
+function ChatNotification(props: Message) {
     let {getChats, getPrivateChat} = useGetChats()
 
     const {profile} = useSelector((state: any) => state.filesReducer);
@@ -65,4 +65,4 @@ function Index(props: Message) {
     </ListItem>
 }
 
-export default Index;
+export default ChatNotification;

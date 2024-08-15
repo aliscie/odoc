@@ -65,7 +65,7 @@ const search_options = [
     // },
 ];
 
-function Index() {
+function SearchPopper() {
     const dispatch = useDispatch();
 
 
@@ -220,4 +220,4 @@ function Index() {
     );
 }
 
-export default Index;
+export default SearchPopper;

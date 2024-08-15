@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import BasicMenu from '../MuiComponents/BasicMenu';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import Index from '../ChatNotifications';
+import ChatNotification from '../ChatNotifications';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Message } from '../../../declarations/backend/backend.did';
 import { useDispatch, useSelector } from 'react-redux';
@@ -57,7 +57,7 @@ const ChatsComponent: React.FC<Props> = () => {
     options.push({ content: <CircularProgress /> });
   } else if (searchedMessages.length > 0) {
     searchedMessages.forEach((message: Message) => {
-      options.push({ content: <Index {...message} /> });
+      options.push({ content: <ChatNotification {...message} /> });
     });
   } else {
     options.push({ content: <div>You have no messages yet!</div> });
