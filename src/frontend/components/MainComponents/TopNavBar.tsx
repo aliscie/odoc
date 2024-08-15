@@ -41,7 +41,7 @@ import {agent} from "../../backend_connect/main";
 
 const TopNavBar = () => {
     const dispatch = useDispatch();
-    const {login, logout, isAuthenticating, isAuthenticated} = useBackendContext();
+    const {login, logout} = useBackendContext();
 
     const {isNavOpen, isDarkMode, isLoggedIn, searchTool} = useSelector(
         (state: any) => state.uiState

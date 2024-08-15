@@ -12,7 +12,6 @@ interface State {
     principal: string | null;
     identity: Identity | null;
     backendActor: ActorSubclass<Record<string, ActorMethod<unknown[], unknown>>> | null;
-    isAuthenticated: boolean;
     agent: HttpAgent | null;
     isAuthenticating?: boolean;
 }
@@ -22,7 +21,6 @@ interface BackendContextProps {
     agent: HttpAgent | null;
     backendActor: ActorSubclass<Record<string, ActorMethod<unknown[], unknown>>> | null;
     isAuthenticating: boolean;
-    isAuthenticated: boolean;
     login: () => Promise<void>;
     logout: () => void;
 }
@@ -84,7 +82,6 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
         principal: null,
         identity: null,
         backendActor: null,
-        isAuthenticated: false,
         agent: null
     });
 
@@ -102,11 +99,6 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
 
         if (alreadyAuthenticated) {
             dispatch(handleRedux('LOGIN'));
-            setState((prevState: State) => {
-                return {...prevState, isAuthenticated: true}
-            })
-
-
         } else {
             let identityProvider = "https://identity.ic0.app/#authorize";
             if (import.meta.env.VITE_DFX_NETWORK === "local") {
@@ -117,7 +109,7 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
                 identityProvider: identityProvider,
                 onSuccess: async () => {
                     setState((prevState: State) => {
-                        return {...prevState, isAuthenticated: true, isAuthenticating: false}
+                        return {...prevState, isAuthenticating: false}
                     });
                     window.location.reload()
                 },
@@ -127,9 +119,7 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
 
 
     const logout = () => {
-        setState((prevState: State) => {
-            return {...prevState, isAuthenticated: false}
-        })
+        dispatch(handleRedux('LOGIN'));
         authClient?.logout({returnTo: "/"});
     };
 

@@ -6,10 +6,9 @@ import InitialDataFetcher from "./redux/initialData/InitialDataFetcher";
 
 import {SnackbarProvider, useSnackbar} from "notistack";
 import {handleRedux} from "./redux/store/handleRedux";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import useSocket from "./websocket/use_socket";
 import {CircularProgress} from "@mui/material";
-import {useBackendContext} from "./contexts/BackendContext";
 import NavBar from "./components/MainComponents/NavBar";
 import TopNavBar from "./components/MainComponents/TopNavBar";
 import RegistrationForm from "./components/MainComponents/RegistrationForm";
@@ -21,14 +20,13 @@ const App: React.FC = () => {
     const dispatch = useDispatch();
     const {ws} = useSocket();
     const {enqueueSnackbar} = useSnackbar();
-    const {isAuthenticated} = useBackendContext();
-
+    const {isLoggedIn, anonymous} = useSelector((state: any) => state.filesState);
     const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
     useEffect(() => {
         (async () => {
             try {
-                if (isAuthenticated) {
+                if (isLoggedIn) {
                     dispatch(handleRedux('LOGIN'));
                 } else {
                     enqueueSnackbar("Please login to continue", {variant: "info"});
