@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {addColumnUtils} from '../../units/addColumnUtils';
+import {addColumnUtils} from '../../utils/addColumnUtils';
 import {CColumn, Contract} from '../../../declarations/backend/backend.did';
 
 const updateCustomContractColumns = (contract: Contract, columns: CColumn[], viewId: string): Contract => {

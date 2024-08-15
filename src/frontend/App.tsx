@@ -1,67 +1,60 @@
 import React, {useEffect, useState} from "react";
 import "./App.css";
-import NavBar from "./components/spesific/nav_bar";
-import Pages from "./pages/main";
+import Pages from "./pages";
 import {BrowserRouter} from "react-router-dom";
-import {NavAppBar} from "./components/spesific/app_bar";
-import SearchPopper from "./components/spesific/search_popper";
-import {SnackbarProvider} from "notistack";
-import RegistrationForm from "./components/spesific/registeration_form";
-import {handleRedux} from "./redux/main";
+import InitialDataFetcher from "./redux/initialData/InitialDataFetcher";
+
+import {SnackbarProvider, useSnackbar} from "notistack";
+import {handleRedux} from "./redux/store/handleRedux";
 import {useDispatch} from "react-redux";
-import {agent} from "./backend_connect/main";
-import {get_initial_data} from "./redux/files";
-import {get_user_actor} from "./backend_connect/ic_agent";
-import {ActorSubclass} from "@dfinity/agent";
-import {_SERVICE} from "../declarations/backend/backend.did";
-import MessagesDialog from "./components/chat/messages_box_dialog";
 import useSocket from "./websocket/use_socket";
 import {CircularProgress} from "@mui/material";
-import TopDialog from "./components/genral/TopDialog";
+import {useBackendContext} from "./contexts/BackendContext";
+import NavBar from "./components/MainComponents/NavBar";
+import TopNavBar from "./components/MainComponents/TopNavBar";
+import RegistrationForm from "./components/MainComponents/RegistrationForm";
+import TopDialog from "./components/MuiComponents/TopDialog";
+import MessagesDialogBox from "./components/ChatSendMessage/MessagesBoxDialog";
+import SearchPopper from "./components/SearchComponent";
 
-export let actor: ActorSubclass<_SERVICE> | undefined; // TODo maybe set the actor in redux
-
-
-function App() {
+const App: React.FC = () => {
     const dispatch = useDispatch();
-    const [state, setState] = useState(false);
     const {ws} = useSocket();
+    const {enqueueSnackbar} = useSnackbar();
+    const {isAuthenticated} = useBackendContext();
 
-    // Use a ref to track whether the WebSocket has already been set up
-    // const isWebSocketSetup = useRef(false);
+    const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
     useEffect(() => {
-
         (async () => {
-            // actor = backend;
-            actor = await get_user_actor();
-            await get_initial_data();
-
-            if (await agent.is_logged()) {
-                dispatch(handleRedux('LOGIN'));
+            try {
+                if (isAuthenticated) {
+                    dispatch(handleRedux('LOGIN'));
+                } else {
+                    enqueueSnackbar("Please login to continue", {variant: "info"});
+                }
+                setLoggedIn(true);
+            } catch (error) {
+                console.error("Error initializing app:", error);
+                setLoggedIn(true);
             }
-            setState(true)
-
-        })()
-    }, []);
-
-
-
-
+        })();
+    }, [dispatch]);
 
     return (
         <>
-            {state ? (
+            {loggedIn ? (
                 <BrowserRouter>
                     <SearchPopper/>
                     <SnackbarProvider maxSnack={3}>
                         <RegistrationForm/>
-                        <MessagesDialog/>
-                        <NavAppBar/>
+                        <MessagesDialogBox/>
+                        <TopNavBar/>
                         <TopDialog/>
                         <NavBar>
                             <Pages/>
                         </NavBar>
+                        <InitialDataFetcher/>
                     </SnackbarProvider>
                 </BrowserRouter>
             ) : (
@@ -72,6 +65,6 @@ function App() {
             )}
         </>
     );
-}
+};
 
 export default App;

@@ -3,7 +3,7 @@ import App from "../../App";
 import {findByText, render} from "@testing-library/react";
 import configureStore from 'redux-mock-store';
 
-import {initialState} from "../../redux/files";
+import {initialState} from "../../redux/reducers/filesReducersOld";
 import TestRapper from "../utils/tests_wrapper";
 import {RegisterUser} from "../../../declarations/backend/backend.did";
 

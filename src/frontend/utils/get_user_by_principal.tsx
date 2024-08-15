@@ -1,8 +1,10 @@
 import {useSelector} from "react-redux";
 import {User} from "../../declarations/backend/backend.did";
-import {actor} from "../App";
+import {useBackendContext} from "../contexts/BackendContext";
+// import {actor} from "../App";
 
 function useGetUser() {
+    const { backendActor } = useBackendContext();
     const {profile, all_friends} = useSelector((state: any) => state.filesReducer);
     let users = all_friends && [...all_friends, profile];
 
@@ -15,7 +17,7 @@ function useGetUser() {
         if (friend) {
             return friend;
         }
-        let user: undefined | { Ok: User } | { Err: string } = actor && await actor.get_user(userId.toString());
+        let user: undefined | { Ok: User } | { Err: string } = await backendActor.get_user(userId.toString());
         if ('Ok' in user) {
             // TODO save this user somewhere in order to prevent calling unnecessary queries again and again.
             return user.Ok;

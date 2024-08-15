@@ -3,9 +3,10 @@ import {createEvent, render} from '@testing-library/react';
 import {CContract} from '../../../declarations/backend/backend.did';
 import TestWrapper from "../utils/tests_wrapper";
 import {newContract} from "../backend/data_samples";
-import {createCContract} from "../../components/contracts/custom_contract/utls";
-import store, {handleRedux} from "../../redux/main";
-import {CustomContractComponent} from "../../components/contracts/custom_contract/custom_contract";
+import {handleRedux} from "../../redux/store/handleRedux";
+import store from "../../redux/store";
+import {createCContract} from "../../components/ContractTable/utils";
+import {CustomContractComponent} from "../../components/ContractTable";
 
 
 it('creates and updates a contract, then interacts with rows and columns', async () => {

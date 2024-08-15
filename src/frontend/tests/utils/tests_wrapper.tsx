@@ -2,7 +2,7 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import {SnackbarProvider} from 'notistack';
 import ThemeProvider from "../../ThemeProvider";
-import store from "../../redux/main";
+import store from "../../redux/store";
 
 const TestWrapper = ({children}) => (
     <Provider store={store}>

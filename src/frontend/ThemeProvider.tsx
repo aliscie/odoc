@@ -8,7 +8,7 @@ interface ThemeProviderProps {
 }
 
 const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const { isDarkMode } = useSelector((state: any) => state.uiReducer);
+  const { isDarkMode } = useSelector((state: any) => state.uiState);
   const theme: Theme = createTheme(isDarkMode);
 
   return (

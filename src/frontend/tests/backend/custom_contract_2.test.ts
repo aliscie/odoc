@@ -156,7 +156,7 @@ test("Basic contract action", async () => {
     // promise.status = {Released: null};
     // promise.receiver = new_user.getPrincipal();
     // let to_store = {
-    //     "CustomContract": {...custom_contract, promises: [promise]}
+    //     "ContractTable": {...custom_contract, promises: [promise]}
     // };
     //
     // res = await global.actor.multi_updates([], [], [to_store], []);

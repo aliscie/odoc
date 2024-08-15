@@ -1,9 +1,8 @@
 import { vi } from 'vitest';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { useDispatch } from 'react-redux';
-import { handleRedux } from '../../redux/main';
 import { actor } from '../../App';
-import Deposit from '../../pages/profile/actions/deposit';
+import Deposit from '../../pages/Profile/Actions/deposit';
 import TestWrapper from '../utils/tests_wrapper';
 
 vi.mock('react-redux', async (importOriginal) => {

@@ -70,28 +70,40 @@ header p {
 .feature-card-content {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   height: 100%;
+  padding: 16px;
 }
 
 .feature-card-title {
   margin-bottom: 16px;
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  text-align: center; 
+  width: 100%; 
 }
+
 
 .feature-card-body {
   flex-grow: 1;
   margin-bottom: 16px;
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  text-align: center; 
 }
 
+
 .feature-carousel {
-  margin-bottom: 10px; 
+  margin-bottom: 10px;
   position: relative;
 }
 
 .feature-carousel .slick-prev,
 .feature-carousel .slick-next {
   top: calc(25%);
-  z-index: 10; 
+  z-index: 10;
 }
 
 .feature-carousel .slick-track {
@@ -99,7 +111,7 @@ header p {
 }
 
 .feature-carousel .slick-dots {
-  margin-top: 20px; 
+  margin-top: 20px;
 }
 
 @media (max-width: 1024px) {
