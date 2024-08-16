@@ -60,9 +60,8 @@ async function handleAgent(client) {
                 console.log("successfully fetched root key: ");
             }
         ).catch((err) => {
-                console.log("Error fetching root key: ", err);
-            }
-        )
+            console.log("Error fetching root key: ", err);
+        })
     }
 
 
@@ -130,12 +129,6 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
             setAuthClient(client);
             const {actor, agent, principal, identity} = await handleAgent(client);
 
-            // const res = await actor.get_initial_data();
-
-            // if ('Err' in res && res.Err == 'Anonymous user.') {
-            //     isRegistered = false;
-            // }
-            // dispatch(handleRedux("IS_REGISTERED", {isRegistered}));
 
             setState(pre => {
                 return {

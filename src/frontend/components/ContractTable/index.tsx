@@ -47,7 +47,7 @@ interface VIEW {
 }
 
 export function CustomContractComponent({contract}: { contract: CustomContract }) {
-    const {profile, all_friends, wallet} = useSelector((state: any) => state.filesReducer);
+    const {profile, all_friends, wallet} = useSelector((state: any) => state.chatsState);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const [view, setView] = useState<VIEW>({id: "", name: PROMISES, type: PROMISES});
     const [title, setTitle] = useState<string>(contract.name);

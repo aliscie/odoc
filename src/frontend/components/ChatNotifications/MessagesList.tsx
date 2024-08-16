@@ -10,8 +10,8 @@ import { Box, Typography, Input, Button } from '@mui/material';
 interface MessagesListProps {}
 
 const MessagesList: React.FC<MessagesListProps> = () => {
-  const { current_file, files_content, profile } = useSelector((state: any) => state.filesReducer);
-  const { current_chat_id, chats } = useSelector((state: any) => state.chatsReducer);
+  const { current_file, files_content, profile } = useSelector((state: any) => state.filesState)
+  const { current_chat_id, chats } = useSelector((state: any) => state.chatsState)
   const [messages, setMessages] = useState<Message[]>([]);
   const [noMessages, setNoM] = useState<boolean>(current_chat_id === 'chat_id');
 

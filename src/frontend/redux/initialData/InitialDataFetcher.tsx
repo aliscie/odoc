@@ -1,31 +1,24 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {useBackendContext} from "../../contexts/BackendContext";
 import * as filesActions from "../actions/filesAction";
 import {normalizeFilesContents} from "../../DataProcessing/normalize/normalizeContents";
 import {normalizeContracts} from "../../DataProcessing/normalize/normalizeContracts";
 import {Principal} from "@dfinity/principal";
-import {logger} from "../../DevUtils/logData";
-import {UserProfile, WorkSpace} from "../../../declarations/backend/backend.did";
 import {handleRedux} from "../store/handleRedux";
 
 const InitialDataFetcher = () => {
     const dispatch = useDispatch();
     const {backendActor} = useBackendContext();
     const [data, setData] = useState<any>();
-    // const [profileHistory, setProfileHistory] = useState<any | { Ok: UserProfile } | { Err: string }>();
-    // const [workspaces, setWorkspaces] = useState<Array<WorkSpace> | undefined>();
-    // const [notifications, setNotifications] = useState<Notification>();
-    // const [isRegistered, setIsRegistered] = useState<boolean>(true);
     useEffect(() => {
         const fetchInitialData = async () => {
             if (backendActor) {
                 try {
                     const res = await backendActor.get_initial_data();
                     if ('Err' in res && res.Err == 'Anonymous user.') {
-                        // dispatch(handleRedux("IS_REGISTERED", {isRegistered: false}));
+                        dispatch(handleRedux("IS_REGISTERED", {isRegistered: false}));
                     } else {
-                        dispatch(handleRedux("IS_REGISTERED", {isRegistered: true}));
                         setData(res);
                     }
 

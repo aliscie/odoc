@@ -19,8 +19,8 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
 export default function SendMessageBox() {
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
-    const {current_chat_id, current_user} = useSelector((state: any) => state.chatsReducer);
-    const {profile} = useSelector((state: any) => state.filesReducer);
+    const {current_chat_id, current_user} = useSelector((state: any) => state.chatsState);
+    const {profile} = useSelector((state: any) => state.chatsState);
 
     const [message, setMessage] = useState('');
     const dispatch = useDispatch();

@@ -64,7 +64,7 @@ function ViewPost(props: Props) {
         }
     };
 
-    const {profile, Anonymous} = useSelector((state: any) => state.filesReducer);
+    const {profile, Anonymous} = useSelector((state: any) => state.filesState);
 
     const onChange = (changes: any) => {
 

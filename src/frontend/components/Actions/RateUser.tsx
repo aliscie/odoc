@@ -18,7 +18,7 @@ interface Props {
 
 function RateUser(props: Props) {
     const { backendActor } = useBackendContext();
-    const {profile} = useSelector((state: any) => state.filesReducer);
+    const {profile} = useSelector((state: any) => state.filesState);
 
     // const [comment, setComment] = React.useState<string>("");
     const commentRef = React.useRef<string>("");

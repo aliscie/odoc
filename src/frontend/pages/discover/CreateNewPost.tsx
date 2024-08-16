@@ -16,7 +16,7 @@ import serializeFileContents from "../../DataProcessing/serialize/serializeFileC
 
 function CreatePost(props: any) {
     let post_id = randomId();
-    const {profile} = useSelector((state: any) => state.filesReducer);
+    const {profile} = useSelector((state: any) => state.filesState);
     const [post, setPost] = React.useState<Post>({
         'id': post_id,
         'creator': profile.id,

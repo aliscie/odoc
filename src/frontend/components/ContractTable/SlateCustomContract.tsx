@@ -7,7 +7,7 @@ import {CustomContractComponent} from "./index";
 
 export default function SlateCustomContract(props: any) {
     const {id} = props.element;
-    const {contracts, profile, current_file} = useSelector((state: any) => state.filesReducer);
+    const {contracts, profile, current_file} = useSelector((state: any) => state.chatsState);
     const dispatch = useDispatch();
     const [contract, setContract] = useState<CustomContract>(contracts[id]);
     const [loading, setLoading] = useState(false);

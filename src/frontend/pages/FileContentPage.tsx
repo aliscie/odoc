@@ -11,7 +11,7 @@ interface Props {
 
 const FileContentPage: React.FC<Props> = () => {
     const dispatch = useDispatch();
-    const {current_file, files_content, profile} = useSelector((state: any) => state.filesReducer);
+    const {current_file, files_content, profile} = useSelector((state: any) => state.filesState);
 
     // const [title, setTitle] = React.useState(current_file.name || 'Untitled')
 

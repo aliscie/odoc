@@ -7,7 +7,7 @@ export function uiReducer(state = initialState, action: Action): State {
         case 'IS_REGISTERED':
             return {
                 ...state,
-                is_registered: action.isRegistered
+                isRegistered: action.isRegistered
             };
 
         case 'TOGGLE_NAV':

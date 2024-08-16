@@ -33,7 +33,7 @@ function secondaryActionSwitch(props) {
         all_friends,
         friends,
         profile
-    } = useSelector((state: any) => state.filesReducer);
+    } = useSelector((state: any) => state.filesState);
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
     const dispatch = useDispatch();
@@ -213,7 +213,7 @@ export function FriendCom(props: FriendProps) {
 }
 
 function Friends(props: any) {
-    const {profile} = useSelector((state: any) => state.filesReducer);
+    const {profile} = useSelector((state: any) => state.filesState);
 
     if (!props.friends) {
         return <></>;

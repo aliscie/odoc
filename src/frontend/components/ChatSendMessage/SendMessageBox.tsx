@@ -11,8 +11,8 @@ const SendMessageBox: React.FC = () => {
     const {backendActor} = useBackendContext()
     const [message, setMessage] = useState('');
     const dispatch = useDispatch();
-    const {current_chat_id, current_user} = useSelector((state: any) => state.chatsReducer);
-    const {profile} = useSelector((state: any) => state.filesReducer);
+    const {current_chat_id, current_user} = useSelector((state: any) => state.chatsState);
+    const {profile} = useSelector((state: any) => state.chatsState);
 
     const handleSendMessage = async () => {
         if (message.trim()) {

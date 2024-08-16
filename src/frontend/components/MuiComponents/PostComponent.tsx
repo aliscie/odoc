@@ -53,7 +53,7 @@ export function UserAvatar(props: UserFE | User) {
     const dispatch = useDispatch();
     const {
         profile,
-    } = useSelector((state: any) => state.filesReducer);
+    } = useSelector((state: any) => state.filesState);
 
     let options: any = [];
     if (profile && props.id && profile.id == props.id) {

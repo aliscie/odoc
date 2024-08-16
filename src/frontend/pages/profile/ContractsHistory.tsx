@@ -12,7 +12,7 @@ import {handleRedux} from "../../redux/store/handleRedux";
 
 function ContractsHistory(props: any) {
     const dispatch = useDispatch();
-    const {contracts, profile} = useSelector((state: any) => state.filesReducer);
+    const {contracts, profile} = useSelector((state: any) => state.filesState);
     const handleClick = () => {
         custom_contract.creator = Principal.fromText(profile.id)
         custom_contract.date_created = Date.now() * 1e6

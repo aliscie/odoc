@@ -9,7 +9,6 @@ import {useBackendContext} from "../../contexts/BackendContext";
 import {RegisterUser, User} from "../../../declarations/backend/backend.did";
 import {handleRedux} from "../../redux/store/handleRedux";
 import RegistrationFormDialog from "../MuiComponents/RegistrationFormDialog";
-import {uiReducer} from "../../redux/reducers/uiReducer";
 
 interface FormValues {
     username: string;
@@ -35,7 +34,7 @@ const RegistrationForm: React.FC = () => {
         email: ""
     });
     const [open, setOpen] = useState(isLoggedIn && !isRegistered);
-    console.log({open, isLoggedIn, isRegistered})
+
     useEffect(() => {
         setOpen(isLoggedIn && !isRegistered);
     }, [isLoggedIn, isRegistered]);
@@ -89,7 +88,7 @@ const RegistrationForm: React.FC = () => {
             let register: { Ok: User } | { Err: string } | undefined;
             if (backendActor) {
                 register = await backendActor.register(input);
-                console.log("after", register)
+                // console.log("after", register)
                 closeSnackbar(loadingSnackbar);
             }
             if (register?.Ok) {

@@ -1,9 +1,9 @@
 import React from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useSelector } from "react-redux";
+import {createTheme, ThemeProvider} from '@mui/material/styles';
+import {useSelector} from "react-redux";
 
 const Theme = (props) => {
-    const { isDarkMode } = useSelector((state) => state.uiReducer);
+    const {isDarkMode} = useSelector((state: any) => state.uiState);
 
     const theme = createTheme({
         palette: {
@@ -33,7 +33,7 @@ const Theme = (props) => {
             MuiButton: {
                 styleOverrides: {
                     root: {
-                        borderRadius: 8, 
+                        borderRadius: 8,
                         textTransform: 'none',
                     },
                 },

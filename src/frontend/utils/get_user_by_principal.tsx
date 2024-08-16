@@ -5,7 +5,7 @@ import {useBackendContext} from "../contexts/BackendContext";
 
 function useGetUser() {
     const { backendActor } = useBackendContext();
-    const {profile, all_friends} = useSelector((state: any) => state.filesReducer);
+    const {profile, all_friends} = useSelector((state: any) => state.filesState);
     let users = all_friends && [...all_friends, profile];
 
     async function getUser(userId: string): Promise<User | null> {

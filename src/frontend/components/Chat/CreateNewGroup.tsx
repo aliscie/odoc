@@ -18,7 +18,7 @@ interface SelectMembersProps {
 function SelectMembers(props: SelectMembersProps) {
     const {
         all_friends,
-    } = useSelector((state: any) => state.filesReducer);
+    } = useSelector((state: any) => state.filesState)
     const [selectedFriends, setSelectedFriends] = useState([]);
     return (<MultiAutoComplete
             onChange={(event, friends) => {

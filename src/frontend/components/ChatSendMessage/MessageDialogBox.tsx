@@ -14,7 +14,7 @@ import SendMessageBox from './SendMessageBox';
 const MessagesDialogBox = () => {
     const dispatch = useDispatch();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-    const { current_chat_id } = useSelector((state) => state.chatsState);
+    const { current_chat_id } = useSelector((state:any) => state.chatsState);
     const [messages, setMessages] = useState([]);
     const is_path_chats = window.location.pathname.includes('/chats');
 

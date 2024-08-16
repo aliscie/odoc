@@ -14,7 +14,7 @@ import formatTimestamp from "../../utils/time";
 
 export function ContractItem(props: any) {
     let date_created = formatTimestamp(props.date_created)
-    const {profile} = useSelector((state: any) => state.filesReducer);
+    const {profile} = useSelector((state: any) => state.filesState);
     const [users, setUsers] = React.useState<any>({sender: "Null", receiver: "Null"})
 
     useEffect(() => {

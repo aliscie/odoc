@@ -5,7 +5,7 @@ import DoneAllIcon from '@mui/icons-material/DoneAll';
 import {Tooltip} from "@mui/material";
 
 function ShareProfile() {
-    const {Anonymous, profile} = useSelector((state: any) => state.filesReducer);
+    const {Anonymous, profile} = useSelector((state: any) => state.filesState);
     if (Anonymous || !profile) {
         return null
     }

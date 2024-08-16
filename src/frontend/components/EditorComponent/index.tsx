@@ -23,8 +23,8 @@ interface Props {
 
 function EditorComponent(props: Props) {
     const dispatch = useDispatch();
-    let {searchValue} = useSelector((state: any) => state.uiReducer);
-    const {all_friends, profile} = useSelector((state: any) => state.filesReducer);
+    // let {searchValue} = useSelector((state: any) => state.uiState);
+    const {all_friends, profile} = useSelector((state: any) => state.filesState);
     let content = props.content
     if (props.content.length == 0) {
         content = [{type: "p", children: [{text: ""}]}];

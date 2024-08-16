@@ -25,7 +25,7 @@ function ResultFile(props: Props) {
     let dispatch = useDispatch();
 
     const {files, files_content} = useSelector(
-        (state: any) => state.filesReducer
+        (state: any) => state.filesState
     );
     let file: FileNode = files.find((file: FileNode) => file.id == props.file_id);
 

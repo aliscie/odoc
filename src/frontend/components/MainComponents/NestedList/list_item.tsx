@@ -25,7 +25,7 @@ interface ItemProps {
 }
 
 const DocComponent: React.FC<ItemProps> = ({data, item, index, openItems, handleClick, path = null, pl = 1}) => {
-    const {profile} = useSelector((state: any) => state.filesReducer);
+    const {profile} = useSelector((state: any) => state.filesState);
 
     const dispatch = useDispatch();
 

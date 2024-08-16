@@ -22,8 +22,8 @@ import {useBackendContext} from "../../contexts/BackendContext";
 function ChatNotification(props: Message) {
     let {getChats, getPrivateChat} = useGetChats()
 
-    const {profile} = useSelector((state: any) => state.filesReducer);
-    const {current_chat_id, chats} = useSelector((state: any) => state.chatsReducer);
+    const {profile} = useSelector((state: any) => state.filesState);
+    const {current_chat_id, chats} = useSelector((state: any) => state.chatsState);
     let chat = chats.find((chat: FEChat) => chat.id === props.chat_id);
     let is_group = chat && chat.name != "private_chat"
     const [sender, setSender] = React.useState<User | null>(null);

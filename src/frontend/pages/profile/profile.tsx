@@ -34,7 +34,7 @@ import ProfilePhotoDialog from './Actions/profile_photo_dialog';
 export default function ProfileComponent() {
     const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
-    const { profile, friends, profile_history, wallet } = useSelector((state: any) => state.filesReducer);
+    const { profile, friends, profile_history, wallet } = useSelector((state: any) => state.filesState);
 
     const [user_history, setUserHistory] = React.useState<UserHistoryCom | null>(null);
     const [profileData, setProfileData] = React.useState({

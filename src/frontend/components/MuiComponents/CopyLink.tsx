@@ -25,7 +25,7 @@ let Dialog = (props: any) => {
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
     let {getUser, getUserByName} = useGetUser();
-    const {current_file, profile} = useSelector((state: any) => state.filesReducer);
+    const {current_file, profile} = useSelector((state: any) => state.filesState);
     // let file_share_id = current_file.share_id[0];
     let url = window.location.host;
     let share_link = `${url}/share?id=${current_file.id}`;
@@ -47,7 +47,7 @@ let Dialog = (props: any) => {
             setCopy(false)
         }, 2000)
     };
-    const {all_friends} = useSelector((state: any) => state.filesReducer);
+    const {all_friends} = useSelector((state: any) => state.filesState);
     const [multi_options_value, setMultiOptionsValue] = useState<Array<{ title: string, id: string, permission: ShareFilePermission }>>([]);
 
 
@@ -159,7 +159,7 @@ let Dialog = (props: any) => {
 
 const ShareFileButton = () => {
 
-    const {files} = useSelector((state: any) => state.filesReducer);
+    const {files} = useSelector((state: any) => state.filesState);
     let currentPath = window.location.pathname.split("/").pop();
     if (!files.find((file: any) => file.id === currentPath)) {
         return null

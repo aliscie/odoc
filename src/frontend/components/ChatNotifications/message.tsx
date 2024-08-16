@@ -20,8 +20,8 @@ export interface FrontendMessage {
 }
 
 const MessageComponent: React.FC<FrontendMessage> = (message) => {
-  const { profile } = useSelector((state: any) => state.filesReducer);
-  const { chats } = useSelector((state: any) => state.chatsReducer);
+  const { profile } = useSelector((state: any) => state.filesState);
+  const { chats } = useSelector((state: any) => state.chatsState);
   const { getOther } = useGetChats();
 
   const currentChat = chats.length > 0 && chats.find((chat: FEChat) => chat.id === message.current_chat_id);;

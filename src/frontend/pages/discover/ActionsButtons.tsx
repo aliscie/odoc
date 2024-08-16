@@ -18,8 +18,8 @@ let tags_options = [
 ]
 
 function ActionsButtons(props: Props) {
-    const {profile} = useSelector((state: any) => state.filesReducer);
-    const {post_vote}: { post_vote: undefined | Post } = useSelector((state: any) => state.uiReducer);
+    const {profile} = useSelector((state: any) => state.filesState);
+    const {post_vote}: { post_vote: undefined | Post } = useSelector((state: any) => state.uiState);
     let current_user: Principal | undefined = profile && Principal.fromText(profile.id);
     let is_creator: boolean = profile && props.post.creator.id == profile.id;
     let already_voted_up = current_user && props.post.votes_up.some(item => item.__principal__ === current_user.__principal__);

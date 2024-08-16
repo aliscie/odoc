@@ -1,4 +1,3 @@
-// Action Types
 export type UiActions =
     | "TOGGLE_NAV"
     | "SEARCH"
@@ -63,7 +62,7 @@ export interface State {
 
 // Initial State
 export const initialState: State = {
-    isRegistered: false,
+    isRegistered: true,
     count: 0,
     isNavOpen: false,
     searchTool: false,

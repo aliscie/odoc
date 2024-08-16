@@ -70,8 +70,8 @@ function ChatItem(props: FEChat) {
 
 function ChatsPage(props: Props) {
     const classes = useStyles();
-    const { current_user } = useSelector((state: any) => state.chatsReducer);
-    const { profile } = useSelector((state: any) => state.filesReducer);
+    const { current_user } = useSelector((state: any) => state.chatsState);
+    const { profile } = useSelector((state: any) => state.filesState);
     const dispatch = useDispatch();
     let { getChats } = useGetChats();
 

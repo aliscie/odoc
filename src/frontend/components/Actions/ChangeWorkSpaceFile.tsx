@@ -5,7 +5,7 @@ import {MenuItem, Select} from "@mui/material";
 import {WorkSpace} from "../../../declarations/backend/backend.did";
 
 const ChangeWorkSpace = (props: any) => {
-    const {all_friends, profile, workspaces} = useSelector((state: any) => state.filesReducer);
+    const {all_friends, profile, workspaces} = useSelector((state: any) => state.filesState);
     const dispatch = useDispatch();
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 

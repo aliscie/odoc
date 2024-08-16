@@ -28,7 +28,7 @@ let perm = [
 ]
 
 function ColumnPermission(props: Props) {
-    const {all_friends} = useSelector((state: any) => state.filesReducer);
+    const {all_friends} = useSelector((state: any) => state.chatsState);
     // let [share_file, setShareFile] = useState(new_share_file);
     const [multi_options_value, setMultiOptionsValue] = useState<Array<PermissionType>>(props.value || []);
 
