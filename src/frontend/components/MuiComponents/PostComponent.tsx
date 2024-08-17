@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
 import IconButton, {IconButtonProps} from '@mui/material/IconButton';
-import { normalizeContentTree } from '../../DataProcessing/normalize/normalizeContents';
+import { normalizeContentTree } from '../../DataProcessing/deserlize/deserializeContents';
 import {FEChat, PostUser, UserFE} from "../../../declarations/backend/backend.did";
 import formatTimestamp from "../../utils/time";
 import {useDispatch, useSelector} from "react-redux";

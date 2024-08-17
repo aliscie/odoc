@@ -16,7 +16,6 @@ export type FilesActions =
     | { type: "GET_ALL" }
     | { type: "CURRENT_FILE"; file: FileNode }
     | { type: "UPDATE_CONTENT"; id: string; content: any }
-    | { type: "FILES_SAVED"; id: string; content: any }
     | { type: "ADD_CONTENT"; id: string; content: any }
     | { type: "UPDATE_FILE_TITLE"; id: string; title: string }
     | { type: "ADD_CONTRACT"; contract: StoredContract }

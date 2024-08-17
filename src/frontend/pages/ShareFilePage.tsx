@@ -4,7 +4,7 @@ import {ContentNode, FileNode} from "../../declarations/backend/backend.did";
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
 import { handleRedux } from "../redux/store/handleRedux";
-import { normalizeContentTree, SlateNode } from "../DataProcessing/normalize/normalizeContents";
+import { normalizeContentTree, SlateNode } from "../DataProcessing/deserlize/deserializeContents";
 import EditorComponent from "../components/EditorComponent";
 export type FileQuery = undefined | { Ok: [FileNode, Array<[string, ContentNode]>] } | { Err: string };
 

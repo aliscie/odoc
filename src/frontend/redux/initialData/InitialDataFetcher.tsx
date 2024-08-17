@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {useBackendContext} from "../../contexts/BackendContext";
 import * as filesActions from "../actions/filesAction";
-import {normalizeFilesContents} from "../../DataProcessing/normalize/normalizeContents";
-import {normalizeContracts} from "../../DataProcessing/normalize/normalizeContracts";
+import {normalizeFilesContents} from "../../DataProcessing/deserlize/deserializeContents";
+import {deserializeContracts} from "../../DataProcessing/deserlize/deserializeContracts";
 import {Principal} from "@dfinity/principal";
 import {handleRedux} from "../store/handleRedux";
 
@@ -37,7 +37,7 @@ const InitialDataFetcher = () => {
             // dispatch(filesActions.addFile(data.Ok.Files));
             dispatch(handleRedux("INIT_FILES", {files: data.Ok.Files}));
             dispatch(filesActions.filesSaved(normalizeFilesContents(data.Ok.FilesContents[0])));
-            dispatch(filesActions.addContract(normalizeContracts(data.Ok.Contracts)));
+            dispatch(filesActions.addContract(deserializeContracts(data.Ok.Contracts)));
             dispatch(filesActions.addWorkspace(data.Ok.Workspaces));
             dispatch(filesActions.confirmFriend(data.Ok.Friends));
             // dispatch(filesActions.updateAllFriends(data.Ok.Friends.map((f: Friend) => {

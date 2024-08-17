@@ -13,24 +13,26 @@ const FileContentPage: React.FC<Props> = () => {
     const dispatch = useDispatch();
     const {current_file, files_content, profile, files} = useSelector((state: any) => state.filesState);
 
-    // const [title, setTitle] = React.useState(current_file.name || 'Untitled')
+    const [title, setTitle] = React.useState(current_file && current_file.name || 'Untitled')
 
     const editorKey = current_file && current_file.id || '';
-    const onChange = (changes: any) => {
-        if (current_file) {
-            dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: changes}));
-        }
-    }
+    // const onChange = (changes: any) => {
+    //     if (current_file) {
+    //         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: changes}));
+    //     }
+    // }
+    const onChange = useCallback(
+        debounce((changes: any) => {
+            if (current_file) {
+                dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: changes}));
+            }
+        }, 250),
+        [dispatch, current_file]
+    );
+
     const handleInputChange = useCallback(
         debounce((title: string) => {
             if (title !== current_file.name) {
-                // const file: FileNode = {
-                //     ...current_file,
-                //     name: title,
-                //     parent: current_file.parent,
-                //     children: current_file.children,
-                //     share_id: current_file.share_id || [],
-                // };
                 dispatch(handleRedux('UPDATE_FILE_TITLE', {id: current_file.id, title}));
             }
         }, 250),
@@ -40,7 +42,7 @@ const FileContentPage: React.FC<Props> = () => {
 
     const handleTitleKeyDown = useCallback((title: string) => {
         handleInputChange(title);
-        // setTitle(title);
+        setTitle(title);
     }, [handleInputChange]);
 
     const preventEnter = (e: React.KeyboardEvent) => {
@@ -60,11 +62,11 @@ const FileContentPage: React.FC<Props> = () => {
         current_file.author === profile.id ||
         Object.keys(current_file.permission)[0] === 'CanUpdate' ||
         current_file.users_permissions.some(([userId, permissions]) => userId === profile.id && permissions.CanUpdate);
-
+    console.log({x: current_file.name});
     return (
         <div style={{marginTop: '3px', marginLeft: '10%', marginRight: '10%'}}>
             <Input
-                key={current_file.id + current_file.name}
+                key={current_file.id + title}
                 inputProps={{
                     style: {
                         width: '100%',
@@ -73,7 +75,7 @@ const FileContentPage: React.FC<Props> = () => {
                         whiteSpace: 'nowrap'
                     }
                 }}
-                defaultValue={current_file.name}
+                defaultValue={title}
                 // value={current_file.name}
                 placeholder="Untitled"
                 onKeyDown={preventEnter}
