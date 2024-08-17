@@ -34,7 +34,8 @@ const InitialDataFetcher = () => {
     useEffect(() => {
         if (data && "Ok" in data) {
             dispatch(filesActions.updateProfile(data.Ok.Profile));
-            dispatch(filesActions.addFile(data.Ok.Files));
+            // dispatch(filesActions.addFile(data.Ok.Files));
+            dispatch(handleRedux("INIT_FILES", {files: data.Ok.Files}));
             dispatch(filesActions.filesSaved(normalizeFilesContents(data.Ok.FilesContents[0])));
             dispatch(filesActions.addContract(normalizeContracts(data.Ok.Contracts)));
             dispatch(filesActions.addWorkspace(data.Ok.Workspaces));

@@ -35,6 +35,7 @@ export type FilesActions =
     | { type: "TOP_DIALOG"; open: boolean; content: any; title: string }
     | { type: "ADD_WORKSPACE"; new_workspace: WorkSpace }
     | { type: "UPDATE_ANONYMOUS"; anonymous: boolean }
+    | { type: "INIT_FILES"; files: FileNode[] }
 
 // | FriendsActions;
 

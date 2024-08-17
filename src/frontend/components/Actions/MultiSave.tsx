@@ -3,9 +3,8 @@ import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/store/handleRedux";
 import {useSnackbar} from "notistack";
-import {ContentNode, CPayment, FileNode, StoredContract} from "../../../declarations/backend/backend.did";
+import {ContentNode, CPayment, StoredContract} from "../../../declarations/backend/backend.did";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
-// import {actor} from "../../App";
 import {LoadingButton} from "@mui/lab";
 import {useBackendContext} from "../../contexts/BackendContext";
 
@@ -29,7 +28,7 @@ function MultiSaveButton(props: any) {
         setOpenDialog(0);
         setLoading(true);
         let loading = enqueueSnackbar(<span>Process saving... <span className={"loader"}/></span>,);
-        let res = await backendActor.multi_updates(changes.files, serialized_content, serialized_contracts, delete_contracts, changes.files_indexing || []);
+        let res = await backendActor?.multi_updates(changes.files, serialized_content, serialized_contracts, delete_contracts, changes.files_indexing || []);
         setLoading(false);
         if (res.Ok && res.Ok.includes("Error") || res.Err) {
             enqueueSnackbar(res.Ok, {variant: "error"});

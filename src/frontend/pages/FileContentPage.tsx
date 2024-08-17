@@ -11,7 +11,7 @@ interface Props {
 
 const FileContentPage: React.FC<Props> = () => {
     const dispatch = useDispatch();
-    const {current_file, files_content, profile} = useSelector((state: any) => state.filesState);
+    const {current_file, files_content, profile, files} = useSelector((state: any) => state.filesState);
 
     // const [title, setTitle] = React.useState(current_file.name || 'Untitled')
 
@@ -24,13 +24,13 @@ const FileContentPage: React.FC<Props> = () => {
     const handleInputChange = useCallback(
         debounce((title: string) => {
             if (title !== current_file.name) {
-                const file: FileNode = {
-                    ...current_file,
-                    name: title,
-                    parent: current_file.parent,
-                    children: current_file.children,
-                    share_id: current_file.share_id || [],
-                };
+                // const file: FileNode = {
+                //     ...current_file,
+                //     name: title,
+                //     parent: current_file.parent,
+                //     children: current_file.children,
+                //     share_id: current_file.share_id || [],
+                // };
                 dispatch(handleRedux('UPDATE_FILE_TITLE', {id: current_file.id, title}));
             }
         }, 250),
@@ -64,7 +64,7 @@ const FileContentPage: React.FC<Props> = () => {
     return (
         <div style={{marginTop: '3px', marginLeft: '10%', marginRight: '10%'}}>
             <Input
-                key={current_file.id}
+                key={current_file.id + current_file.name}
                 inputProps={{
                     style: {
                         width: '100%',

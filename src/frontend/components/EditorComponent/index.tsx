@@ -26,9 +26,9 @@ function EditorComponent(props: Props) {
     // let {searchValue} = useSelector((state: any) => state.uiState);
     const {all_friends, profile} = useSelector((state: any) => state.filesState);
     let content = props.content
-    if (props.content.length == 0) {
-        content = [{type: "p", children: [{text: ""}]}];
-    }
+    // if (props.content.length == 0) {
+    //     content = [{type: "p", children: [{text: ""}]}];
+    // }
     let extraPlugins = [
         {plugin: createContractPlugin, key: CONTRACT_KEY, icon: TableChartIcon}
     ];

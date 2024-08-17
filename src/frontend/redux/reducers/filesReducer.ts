@@ -1,8 +1,17 @@
 import {FilesActions, InitialState, initialState} from '../types/filesTypes';
+import {FileIndexing, FileNode, StoredContract} from "../../../declarations/backend/backend.did";
 
 export function filesReducer(state: InitialState = initialState, action: FilesActions): InitialState {
 
     switch (action.type) {
+
+        case 'INIT_FILES':
+            return {
+                ...state,
+                files: action.files,
+            };
+
+
         case 'ADD_CONTENT':
             return {
                 ...state,
@@ -98,51 +107,84 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
                     [action.contract.contract_id || action.contract.id]: action.contract
                 }
             };
-
+        case 'RESOLVE_CHANGES':
+            state.changes = {files: [], contents: {}, contracts: {}, delete_contracts: [], files_indexing: []}
+            return {...state}
         case 'CONTRACT_CHANGES':
             state.changes.contracts[action.changes.contract_id || action.changes.id] = action.changes;
             return {...state};
 
         case 'UPDATE_FILE_TITLE':
-            return {
-                ...state,
-                files: state.files.map(file => file.id === action.id ? {...file, title: action.title} : file)
-            };
+            if (state.changes.files.find(file => file.id === action.id)) {
+                state.changes.files = state.changes.files.map(file => file.id === action.id ? {
+                    ...file,
+                    title: action.title
+                } : file);
+            } else {
+                state.changes.files.push({id: action.id, title: action.title});
+            }
 
-        case 'UPDATE_BALANCE':
+            return <InitialState>{
+                ...state,
+                files: state.files.map(file => file.id === action.id ? {...file, title: action.title} : file),
+                current_file: {...state.current_file, title: action.title},
+            };
+        // console.log({action})
+        // state.changes.files = state.changes.files.map(file => file.id === action.id ? {
+        //     ...file,
+        //     title: action.title
+        // } : file);
+        // state.current_file = {...state.current_file, title: action.title};
+        // state.files = state.files.map(file => file.id === action.id ? {...file, title: action.title} : file);
+        // console.log({state})
+        // return {...state};
+
+        case
+        'UPDATE_BALANCE'
+        :
             return {
                 ...state,
                 wallet: {...state.wallet, balance: action.balance}
             };
 
-        case 'FILES_SAVED':
+        case
+        'FILES_SAVED'
+        :
             return {
                 ...state,
                 is_files_saved: action.content,
                 changes: {...state.changes, files: []}
             };
 
-        case 'UPDATE_PROFILE':
+        case
+        'UPDATE_PROFILE'
+        :
             return {
                 ...state,
                 profile: {...state.profile, ...action.profile}
             };
         // TODO firndRecuer
-        case 'UPDATE_FRIEND':
+        case
+        'UPDATE_FRIEND'
+        :
             return {
                 ...state,
                 friends: state.friends.map(friend => friend.id === action.id ? {...friend, ...action} : friend)
             };
 
-            // TODO profile reducer
-        case 'CURRENT_USER_HISTORY':
+        // TODO profile reducer
+        case
+        'CURRENT_USER_HISTORY'
+        :
             return {
                 ...state,
                 profile_history: action.profile_history
             };
 
 
-        case 'REMOVE_CONTRACT':
+        case
+        'REMOVE_CONTRACT'
+        :
             delete state.contracts[action.id]
             state.changes.delete_contracts.push(action.id)
             return {
