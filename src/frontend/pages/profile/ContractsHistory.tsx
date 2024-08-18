@@ -21,7 +21,6 @@ function ContractsHistory(props: any) {
         let stored_custom: StoredContract = {"CustomContract": custom_contract}
         dispatch(handleRedux("ADD_CONTRACT", {contract: stored_custom}));
     }
-    logger({contracts});
     return (
         <List dense>
             <Button
