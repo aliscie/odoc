@@ -5,7 +5,7 @@ import {
     Friend,
     StoredContract,
     UserProfile,
-    WorkSpace
+    WorkSpace, Contract
 } from "../../../declarations/backend/backend.did";
 
 export type FilesActions =
@@ -35,6 +35,7 @@ export type FilesActions =
     | { type: "ADD_WORKSPACE"; new_workspace: WorkSpace }
     | { type: "UPDATE_ANONYMOUS"; anonymous: boolean }
     | { type: "INIT_FILES"; files: FileNode[] }
+    | { type: "INIT_CONTRACTS", contracts: StoredContract }
 
 // | FriendsActions;
 

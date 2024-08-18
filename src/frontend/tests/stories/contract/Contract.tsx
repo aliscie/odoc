@@ -1,9 +1,12 @@
 import React from 'react';
-import {CustomContractComponent} from "../../../components/contracts/custom_contract/custom_contract";
-import TestWrapper from "../../utils/tests_wrapper";
-import {createCContract} from "../../../components/contracts/custom_contract/utls";
-import {CContract} from "../../../../declarations/backend/backend.did";
-import {newContract} from "../../backend/data_samples";
+// import {CustomContractComponent} from "../../../components/contracts/custom_contract/custom_contract";
+// import {createCContract} from "../../../components/contracts/custom_contract/utls";
+// import {CContract} from "../../../../declarations/backend/backend.did";
+// import {newContract} from "../../backend/data_samples";
+// import {createCContract} from "../../../components/ContractTable/utils";
+import {CustomContractComponent} from "../../../components/ContractTable";
+// import {custom_contract} from "../../../DataProcessing/dataSamples";
+// import {CustomContractComponent} from "../../../components/ContractTable";
 
 export interface ButtonProps {
     /**
@@ -39,21 +42,16 @@ export const Contract = ({
                              ...props
                          }: ButtonProps) => {
 
-    const {custom_contract, promise} = newContract();
+    // const {custom_contract, promise} = newContract();
 
     // custom_contract.creator = global.user.getPrincipal();
-    let new_c_contract: CContract = createCContract();
+    // let new_c_contract: CContract = createCContract();
     // custom_contract.creator = global.user.getPrincipal();
-    new_c_contract.rows[0].cells[0].value = "INIT VALUE"
-    custom_contract.contracts = [new_c_contract];
+    // new_c_contract.rows[0].cells[0].value = "INIT VALUE"
+    // custom_contract.contracts = [new_c_contract];
 
 
-    const mode = primary ? 'storybook-button--primary' : 'storybook-button--secondary';
+    // const mode = primary ? 'storybook-button--primary' : 'storybook-button--secondary';
 
-    return (
-        <h1>test</h1>
-        // <TestWrapper>
-        //     <CustomContractComponent contract={custom_contract} />
-        // </TestWrapper>
-    );
+    return (<CustomContractComponent/>)
 };

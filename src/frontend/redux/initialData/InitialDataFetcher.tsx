@@ -36,8 +36,9 @@ const InitialDataFetcher = () => {
             dispatch(filesActions.updateProfile(data.Ok.Profile));
             // dispatch(filesActions.addFile(data.Ok.Files));
             dispatch(handleRedux("INIT_FILES", {files: data.Ok.Files}));
+            dispatch(handleRedux("INIT_CONTRACTS", {contracts: data.Ok.Contracts}));
             dispatch(filesActions.filesSaved(normalizeFilesContents(data.Ok.FilesContents[0])));
-            dispatch(filesActions.addContract(deserializeContracts(data.Ok.Contracts)));
+            // dispatch(filesActions.addContract(deserializeContracts(data.Ok.Contracts)));
             dispatch(filesActions.addWorkspace(data.Ok.Workspaces));
             dispatch(filesActions.confirmFriend(data.Ok.Friends));
             // dispatch(filesActions.updateAllFriends(data.Ok.Friends.map((f: Friend) => {

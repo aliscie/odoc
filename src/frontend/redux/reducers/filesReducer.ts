@@ -1,5 +1,5 @@
 import {FilesActions, InitialState, initialState} from '../types/filesTypes';
-import {FileIndexing, FileNode, StoredContract} from "../../../declarations/backend/backend.did";
+import {FileIndexing, FileNode} from "../../../declarations/backend/backend.did";
 
 
 export function filesReducer(state: InitialState = initialState, action: FilesActions): InitialState {
@@ -92,16 +92,39 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
             state.changes.files.push(file);
             return {...state};
         }
-
-        case 'UPDATE_CONTENT':
-            console.log({action})
-            state.changes.contents[action.id] = action.content;
+        case 'INIT_CONTRACTS':
             return {
                 ...state,
+                contracts: action.contracts
+            }
+        case 'UPDATE_CONTENT':
+            return {
+                ...state,
+                changes: {...state.changes, contents: {...state.changes.contents, [action.id]: action.content}},
                 files: state.files.map(file => file.id === action.id ? {...file, content: action.content} : file)
             };
 
-        case 'ADD_CONTRACT':
+        case 'ADD_CONTRACT': {
+            const {contract} = action;
+            const id = contract.CustomContract?.id;
+            return {
+                ...state,
+                changes: {
+                    ...state.changes,
+                    contracts: {
+                        ...state.changes.contracts,
+                        [id]: {...contract}
+                    }
+                },
+                contracts: {
+                    ...state.contracts,
+                    [id]: {...contract}
+                }
+            };
+        }
+
+        case 'UPDATE_CONTRACT':
+            console.log("UPDATE_CONTRACT")
             return {
                 ...state,
                 contracts: {
@@ -110,20 +133,14 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
                 }
             };
 
-        case 'UPDATE_CONTRACT':
-            return {
-                ...state,
-                contracts: {
-                    ...state.contracts,
-                    [action.contract.contract_id || action.contract.id]: action.contract
-                }
-            };
         case 'RESOLVE_CHANGES':
             state.changes = {files: [], contents: {}, contracts: {}, delete_contracts: [], files_indexing: []}
             return {...state}
-        case 'CONTRACT_CHANGES':
-            state.changes.contracts[action.changes.contract_id || action.changes.id] = action.changes;
-            return {...state};
+
+        // case 'CONTRACT_CHANGES':
+        //
+        //     state.changes.contracts[action.changes.contract_id || action.changes.id] = action.changes;
+        //     return {...state};
 
         case 'UPDATE_FILE_TITLE':
             let newFile = state.files.find(file => file.id === action.id)!;

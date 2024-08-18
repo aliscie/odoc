@@ -53,10 +53,10 @@ export const updateFileTitle = (id: string, title: string): FilesActions => ({
     title
 });
 
-export const addContract = (contract: StoredContract): FilesActions => ({
-    type: 'ADD_CONTRACT',
-    contract
-});
+// export const addContract = (contract: StoredContract): FilesActions => ({
+//     type: 'ADD_CONTRACT',
+//     contract
+// });
 
 export const updateContract = (contract: StoredContract): FilesActions => ({
     type: 'UPDATE_CONTRACT',

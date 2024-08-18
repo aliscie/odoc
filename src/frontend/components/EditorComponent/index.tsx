@@ -9,6 +9,7 @@ import debounce from "../../utils/debounce";
 import TableChartIcon from '@mui/icons-material/TableChart';
 import {handleRedux} from "../../redux/store/handleRedux";
 import {custom_contract} from "../../DataProcessing/dataSamples";
+import {StoredContract} from "../../../declarations/backend/backend.did";
 
 interface Props {
     handleOnInsertComponent?: any;
@@ -39,10 +40,12 @@ function EditorComponent(props: Props) {
     function handleOnInsertComponent(component: any, component_id: string) {
         switch (component.key) {
             case "custom_contract":
+                console.log("handleOnInsertComponent")
                 custom_contract.id = component_id;
                 custom_contract.creator = Principal.fromText(profile.id)
                 custom_contract.date_created = Date.now() * 1e6
-                dispatch(handleRedux("ADD_CONTRACT", {contract: custom_contract}))
+                let stored_custom: StoredContract = {"CustomContract": custom_contract}
+                dispatch(handleRedux("ADD_CONTRACT", {contract: stored_custom}))
                 return null;
 
             case "data_grid":

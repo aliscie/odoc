@@ -4,22 +4,24 @@ import * as React from "react";
 import ListItem from "@mui/material/ListItem";
 import Button from "@mui/material/Button";
 import {Principal} from "@dfinity/principal";
-import {StoredContract} from "../../../declarations/backend/backend.did";
 import {CustomContractComponent} from "../../components/ContractTable";
 import {custom_contract} from "../../DataProcessing/dataSamples";
 import {handleRedux} from "../../redux/store/handleRedux";
+import {StoredContract} from "../../../declarations/backend/backend.did";
+import {logger} from "../../DevUtils/logData";
 
 
 function ContractsHistory(props: any) {
     const dispatch = useDispatch();
     const {contracts, profile} = useSelector((state: any) => state.filesState);
     const handleClick = () => {
-        custom_contract.creator = Principal.fromText(profile.id)
-        custom_contract.date_created = Date.now() * 1e6
+        custom_contract.id = Math.random().toString(36).substring(7);
+        custom_contract.creator = profile && Principal.fromText(profile.id);
+        custom_contract.date_created = Date.now() * 1e6;
         let stored_custom: StoredContract = {"CustomContract": custom_contract}
-        dispatch(handleRedux("ADD_CONTRACT", {contract: custom_contract}))
+        dispatch(handleRedux("ADD_CONTRACT", {contract: stored_custom}));
     }
-
+    logger({contracts});
     return (
         <List dense>
             <Button
@@ -28,14 +30,15 @@ function ContractsHistory(props: any) {
             >Create new contract</Button>
             {
                 Object.values(contracts).map((contract: CustomContractComponent | any) => {
-                    if (contract.contracts) {
+                    let c = Object.values(contract)
+                    console.log({c})
+                    if (c) {
                         return <ListItem>
-                            <CustomContractComponent contract={contract}/>
+                            <CustomContractComponent contract={contract.CustomContract}/>
                         </ListItem>
                     }
                 })
             }
-
         </List>
     );
 }
