@@ -30,7 +30,6 @@ function ContractsHistory(props: any) {
             {
                 Object.values(contracts).map((contract: CustomContractComponent | any) => {
                     let c = Object.values(contract)
-                    console.log({c})
                     if (c) {
                         return <ListItem>
                             <CustomContractComponent contract={contract.CustomContract}/>
