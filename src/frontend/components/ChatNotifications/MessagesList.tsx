@@ -13,7 +13,6 @@ const MessagesList: React.FC<MessagesListProps> = () => {
   const { current_file, files_content, profile } = useSelector((state: any) => state.filesState)
   const { current_chat_id, chats } = useSelector((state: any) => state.chatsState)
   const [messages, setMessages] = useState<Message[]>([]);
-  const [noMessages, setNoM] = useState<boolean>(current_chat_id === 'chat_id');
 
   const currentChat = chats.find((chat: FEChat) => chat.id === current_chat_id);
 
@@ -21,30 +20,29 @@ const MessagesList: React.FC<MessagesListProps> = () => {
     if (chats && chats.length > 0 && current_chat_id !== 'chat_id') {
       if (currentChat) {
         setMessages(currentChat.messages || []);
-        setNoM(false);
       }
     }
   }, [chats, current_chat_id]);
 
-  const is_group = currentChat && currentChat.name !== 'private_chat';
-  const is_admin = currentChat && currentChat.admins.some((admin) => admin.id === profile.id);
+  const isGroup = currentChat && currentChat.name !== 'private_chat';
+  const isAdmin = currentChat && currentChat.admins.some((admin) => admin.id === profile.id);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {is_group && is_admin && (
+      {isGroup && isAdmin && (
         <Typography variant="subtitle1" component="div">
           <Input defaultValue={currentChat && currentChat.name} />
         </Typography>
       )}
-      {is_group && <GroupAvatars chat={currentChat} />}
-      {noMessages && <Button>No messages yet.</Button>}
+      {isGroup && <GroupAvatars chat={currentChat} />}
+      {messages.length === 0 && <Button>No messages yet.</Button>}
       <Box sx={{ flex: 1, overflowY: 'auto', padding: 2 }}>
         {messages.length > 0 ? (
-          messages.map((message: FrontendMessage) => (
+          messages.map((message: Message) => (
             <MessageComponent key={message.id} current_chat_id={current_chat_id} {...message} />
           ))
         ) : (
-          !noMessages && <CircularProgress />
+          <CircularProgress />
         )}
       </Box>
     </Box>

@@ -24,7 +24,7 @@ const MessageComponent: React.FC<FrontendMessage> = (message) => {
   const { chats } = useSelector((state: any) => state.chatsState);
   const { getOther } = useGetChats();
 
-  const currentChat = chats.length > 0 && chats.find((chat: FEChat) => chat.id === message.current_chat_id);;
+  const currentChat = chats.length > 0 && chats.find((chat: FEChat) => chat.id === message.chat_id);
   const otherUser: undefined | UserFE = currentChat && getOther(currentChat);
 
   const isCurrentUser = message.sender.toString() === profile.id;

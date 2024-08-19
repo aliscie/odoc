@@ -32,7 +32,7 @@ function ChatNotification(props: Message) {
             await getChats(); // TODO find a unified way to getChats maybe on app init
             // Note on app init we are making too much requests and we are loading too much data
             // not all users will need chats every day use so load chats only when needed
-            if (props.sender.toString() === profile.id) {
+            if (props.sender.toText() === profile.id) {
                 setSender(chat.admins[0])
             } else {
                 setSender(chat.creator)

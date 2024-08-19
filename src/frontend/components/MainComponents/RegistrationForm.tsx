@@ -64,11 +64,6 @@ const RegistrationForm: React.FC = () => {
         }
     };
 
-    const convertPhotoToBase64 = (photo) => {
-        return btoa(String.fromCharCode(...photo));
-    };
-
-
     const handleRegister = async () => {
         if (!formValues.username || !formValues.bio) {
             enqueueSnackbar("Please fill all required fields", {variant: "error"});
@@ -92,24 +87,18 @@ const RegistrationForm: React.FC = () => {
         try {
             let register: { Ok: User } | { Err: string } | undefined;
             if (backendActor) {
-              register = await backendActor.register(input);
-              // console.log("after", register)
-              closeSnackbar(loadingSnackbar);
+                register = await backendActor.register(input);
+                // console.log("after", register)
+                closeSnackbar(loadingSnackbar);
             }
-            
             if (register?.Ok) {
-              // Use the convertPhotoToBase64 function here
-              const updatedProfile = {
-                ...register.Ok,
-                photo: photoByte ? convertPhotoToBase64(photoByte) : null
-              };
-              dispatch(handleRedux("UPDATE_PROFILE", {profile: updatedProfile}));
-              enqueueSnackbar(`Welcome ${register.Ok.name}, to Odoc`, {variant: "success"});
+                dispatch(handleRedux("UPDATE_PROFILE", {profile: register.Ok}));
+                enqueueSnackbar(`Welcome ${register.Ok.name}, to Odoc`, {variant: "success"});
             } else if (register?.Err) {
-              enqueueSnackbar(register.Err, {variant: "error"});
-              setOpen(true);
+                enqueueSnackbar(register.Err, {variant: "error"});
+                setOpen(true);
             }
-          } catch (error) {
+        } catch (error) {
             console.error("There was an issue with registration: ", error);
             enqueueSnackbar(error.message, {variant: "error"});
         }
