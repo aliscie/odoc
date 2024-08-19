@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { FEChat, Message } from '../../../declarations/backend/backend.did';
 import CircularProgress from '@mui/material/CircularProgress';
 import SendMessageBox from '../ChatSendMessage/SendMessageBox';
-import MessageComponent, { FrontendMessage } from './message';
+import MessageComponent, { FrontendMessage } from './Message';
 import GroupAvatars from '../Chat/HelperComponent/AvatsList';
 import { Box, Typography, Input, Button } from '@mui/material';
 

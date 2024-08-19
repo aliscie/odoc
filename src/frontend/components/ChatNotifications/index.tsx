@@ -8,11 +8,9 @@ import {FEChat, Message, User} from "../../../declarations/backend/backend.did";
 import useGetChats from "../Chat/utils/useGetChats";
 import {Principal} from "@dfinity/principal";
 import { convertToBlobLink } from "../../DataProcessing/imageToVec";
-// import {actor} from "../../App";
-import MessageComponent from "./message";
-
-import GroupIcon from "@mui/icons-material/Group"
-import {useBackendContext} from "../../contexts/BackendContext";
+import MessageComponent from "./Message";
+import { useBackendContext } from "../../contexts/BackendContext";
+import GroupIcon from "@mui/icons-material/Group";
 
 // interface MessageNotificationProp {
 //
@@ -20,6 +18,8 @@ import {useBackendContext} from "../../contexts/BackendContext";
 
 
 function ChatNotification(props: Message) {
+    const  { backendActor } = useBackendContext();
+    const dispatch = useDispatch();
     let {getChats, getPrivateChat} = useGetChats()
 
     const {profile} = useSelector((state: any) => state.filesState);
@@ -40,9 +40,7 @@ function ChatNotification(props: Message) {
 
         })()
     }, [chats])
-
-    const dispatch = useDispatch();
-    const {backendActor} = useBackendContext();
+ 
     return <ListItem
 
         onClick={async () => {

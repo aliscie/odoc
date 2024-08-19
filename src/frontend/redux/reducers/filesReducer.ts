@@ -115,19 +115,20 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
             return {...state};
 
         case 'UPDATE_FILE_TITLE':
-            if (state.changes.files.find(file => file.id === action.id)) {
-                state.changes.files = state.changes.files.map(file => file.id === action.id ? {
-                    ...file,
-                    title: action.title
-                } : file);
-            } else {
-                state.changes.files.push({id: action.id, title: action.title});
-            }
-
-            return <InitialState>{
+            const updatedFiles = state.files.map((file: FileNode) => {
+                if (file.id === action.id) {
+                    return {...file, name: action.title};
+                }
+                return file;
+            });
+            const updatedFile = updatedFiles.find((file: FileNode) => file.id === action.id);
+            return {
                 ...state,
-                files: state.files.map(file => file.id === action.id ? {...file, title: action.title} : file),
-                current_file: {...state.current_file, title: action.title},
+                files: updatedFiles,
+                changes: {
+                    ...state.changes,
+                    files: updatedFile ? [...state.changes.files, updatedFile] : state.changes.files,
+                },
             };
         // console.log({action})
         // state.changes.files = state.changes.files.map(file => file.id === action.id ? {
