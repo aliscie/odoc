@@ -1,36 +1,25 @@
-import React, {useState} from 'react';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import {useDispatch, useSelector} from "react-redux";
-import Avatar from '@mui/material/Avatar';
+import React, { useState } from 'react';
 import {
-    Button,
-    Card,
-    CardContent,
-    CircularProgress,
-    Container,
-    Divider,
-    Grid,
-    IconButton,
-    Rating,
-    TextField,
-    Tooltip,
-    Typography,
+    Avatar, Box, Button, Card, CardContent, CircularProgress, Container, Divider, Grid, IconButton, List, ListItem,
+    Rating, TextField, Tooltip, Typography
 } from "@mui/material";
-import {Edit} from "@mui/icons-material";
+import { Edit } from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import { useSnackbar } from 'notistack';
 import Friends from './Friends';
-import Deposit from './actions/Deposit';
-import Withdraw from "./Actions/withdraw";
-import {convertToBlobLink, convertToBytes} from "../../DataProcessing/imageToVec";
-import {handleRedux} from '../../redux/store/handleRedux';
+import { capitalizeFirstLetter } from './utils';
+import { convertToBlobLink, convertToBytes } from "../../DataProcessing/imageToVec";
+import { handleRedux } from '../../redux/store/handleRedux';
 import BasicTabs from "./History";
 import TransactionHistory from "./TransactionHistory";
-import {UserHistoryCom} from "../User";
-import {useSnackbar} from 'notistack';
-import ShareProfileButton from './actions/ShareProfileButton';
+import { UserHistoryCom } from "../User";
 import ProfilePhotoDialog from './actions/ProfilePhotoDialog';
+import ProfilePhoto from './ProfilePhoto';
+import ProfileRatings from './ProfileRating';
+import WalletSection from './WalletSection';
 import { useBackendContext } from '../../contexts/BackendContext';
+
+
 
 export default function ProfileComponent() {
     const { backendActor } = useBackendContext();
@@ -38,8 +27,8 @@ export default function ProfileComponent() {
     const dispatch = useDispatch();
     const { profile, friends, profile_history, wallet } = useSelector((state: any) => state.filesState);
 
-    const [user_history, setUserHistory] = React.useState<UserHistoryCom | null>(null);
-    const [profileData, setProfileData] = React.useState({
+    const [user_history, setUserHistory] = useState<UserHistoryCom | null>(null);
+    const [profileData, setProfileData] = useState({
         id: profile?.id || '',
         name: profile?.name || '',
         description: profile?.description || '',
@@ -48,7 +37,6 @@ export default function ProfileComponent() {
     });
     const [openDialog, setOpenDialog] = useState(false);
     const [buttonLoading, setButtonLoading] = useState(false);
-   
 
     const handleSaveChanges = async () => {
         setButtonLoading(true);
@@ -59,22 +47,23 @@ export default function ProfileComponent() {
                     description: [profileData.description],
                     photo: [profileData.photo],
                 });
-                setProfileData((pre: any) => ({
-                    ...pre, changed: false
-                }));
+                setProfileData((prev) => ({ ...prev, changed: false }));
+                enqueueSnackbar('Profile updated successfully!', { variant: 'success' });
                 return res;
-            setButtonLoading(false);
             } catch (error) {
-                console.log("There was an issue with saving profile update: ", error);
+                console.error("Error saving profile:", error);
+                enqueueSnackbar('Failed to update profile.', { variant: 'error' });
+            } finally {
+                setButtonLoading(false);
             }
         } else {
-            return { Err: "No changes to save" }
+            enqueueSnackbar('No changes to save.', { variant: 'info' });
         }
     };
 
     const handlePhotoChange = async (e) => {
         const fileInput = e.target;
-        let photo = await convertToBytes(fileInput.files[0]);
+        const photo = await convertToBytes(fileInput.files[0]);
         setProfileData((prev) => ({ ...prev, photo, changed: true }));
 
         dispatch(handleRedux("UPDATE_PROFILE", { profile: { photo } }));
@@ -82,13 +71,38 @@ export default function ProfileComponent() {
         fileInput.value = '';
     };
 
-    const handleAvatarClick = () => {
-        setOpenDialog(true);
-    };
+    const handleAvatarClick = () => setOpenDialog(true);
+    const handleDialogClose = () => setOpenDialog(false);
 
-    const handleDialogClose = () => {
-        setOpenDialog(false);
-    };
+    const ProfileDetailList = () => (
+        <List>
+            {Object.entries(profileData).map(([key, value]) => {
+                if (['photo', 'changed'].includes(key)) return null;
+                return (
+                    <ListItem key={key}>
+                        <TextField
+                            disabled={key === 'id'}
+                            label={capitalizeFirstLetter(key)}
+                            value={value}
+                            onChange={(e) =>
+                                setProfileData((prev) => ({
+                                    ...prev,
+                                    [key]: e.target.value,
+                                    changed: true,
+                                }))
+                            }
+                            fullWidth
+                            multiline={key === 'description'}
+                            rows={key === 'description' ? 4 : 1}
+                            variant="outlined"
+                            InputLabelProps={{ style: { fontWeight: 'bold' } }}
+                            InputProps={{ style: { borderRadius: 8 } }}
+                        />
+                    </ListItem>
+                );
+            })}
+        </List>
+    );
 
     return (
         <Container maxWidth="lg" sx={{ mt: 4 }}>
@@ -102,146 +116,34 @@ export default function ProfileComponent() {
                             <Divider sx={{ my: 2 }} />
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
-                                        <input
-                                            type="file"
-                                            id="photo"
-                                            accept="image/*"
-                                            onChange={handlePhotoChange}
-                                            style={{ display: 'none' }}
-                                        />
-                                        <IconButton component="span" onClick={(e) => e.stopPropagation()}>
-                                            <Avatar
-                                                alt="Profile Photo"
-                                                src={convertToBlobLink(profileData.photo)}
-                                                sx={{ width: 128, height: 128, mb: 2 }}
-                                                onClick={handleAvatarClick}
-                                            />
-                                        </IconButton>
-                                        <IconButton
-                                            aria-label="edit"
-                                            component="span"
-                                            sx={{
-                                                position: 'absolute',
-                                                bottom: 20,
-                                                right: 300,
-                                                backgroundColor: 'white',
-                                                borderRadius: '50%',
-                                                '&:hover': {
-                                                    backgroundColor: 'secondary.light',
-                                                },
-                                            }}
-                                            onClick={() => document.getElementById('photo')?.click()}
-                                        >
-                                            <Edit />
-                                        </IconButton>
-                                    </Box>
-                                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 1, mt: 2}}>
-                                        <Grid container spacing={2} justifyContent="center" alignItems="center">
-                                            <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
-                                                <Typography variant="subtitle2" gutterBottom>
-                                                    Success Rating
-                                                </Typography>
-                                                {profile_history && (
-                                                    <Tooltip arrow title={'Your actions rate'}>
-                                                        <Rating
-                                                            readOnly
-                                                            name="half-rating"
-                                                            defaultValue={profile_history.actions_rate}
-                                                            precision={0.5}
-                                                        />
-                                                    </Tooltip>
-                                                )}
-                                            </Grid>
-                                            <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
-                                                <ShareProfileButton profileName={profileData.name} profileId={profileData.id} />
-                                            </Grid>
-                                            <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
-                                                <Typography variant="subtitle2" gutterBottom>
-                                                    Community Rating
-                                                </Typography>
-                                                {profile_history && (
-                                                    <Tooltip arrow title={'Your users rate'}>
-                                                        <Rating
-                                                            readOnly
-                                                            name="half-rating"
-                                                            defaultValue={profile_history.users_rate}
-                                                            precision={0.5}
-                                                        />
-                                                    </Tooltip>
-                                                )}
-                                            </Grid>
-                                        </Grid>
-                                    </Box>
+                                    <ProfilePhoto
+                                        photo={convertToBlobLink(profileData.photo)}
+                                        onAvatarClick={handleAvatarClick}
+                                        onPhotoChange={handlePhotoChange}
+                                    />
+                                    <ProfileRatings profile_history={profile_history} profileData={profileData} />
                                 </Grid>
                                 <Grid item xs={12}>
-                                <List>
-                                    {Object.entries(profileData).map(([key, value]) => {
-                                        if (['photo', 'changed'].includes(key)) {
-                                            return null;
-                                        }
-                                        return (
-                                            <ListItem key={key}>
-                                                <TextField
-                                                    disabled={key === 'id'}
-                                                    label={key.charAt(0).toUpperCase() + key.slice(1)}
-                                                    value={value}
-                                                    onChange={(e) =>
-                                                        setProfileData({
-                                                            ...profileData,
-                                                            [key]: e.target.value,
-                                                            changed: true,
-                                                        })
-                                                    }
-                                                    fullWidth
-                                                    multiline={key === 'description'}
-                                                    rows={key === 'description' ? 4 : 1}
-                                                    variant="outlined"
-                                                    InputLabelProps={{ style: { fontWeight: 'bold' } }}
-                                                    InputProps={{ style: { borderRadius: 8 } }}
-                                                />
-                                            </ListItem>
-                                        );
-                                    })}
-                                </List>
-                                {profileData.changed && (
-                                    <Box sx={{ width: '100%', mt: 2 }}>
-                                        <Button
-                                            color="primary"
-                                            successMessage="Profile saved"
-                                            onClick={handleSaveChanges}
-                                            variant="contained"
-                                            sx={{  width: '100% !important' }} 
-                                        >{
-                                            buttonLoading ? <CircularProgress size={20} /> 
-                                        : 'Save changes'
-                                        }
-                                        </Button>
-                                    </Box>
-                                )}
-
+                                    <ProfileDetailList />
+                                    {profileData.changed && (
+                                        <Box sx={{ width: '100%', mt: 2 }}>
+                                            <Button
+                                                color="primary"
+                                                onClick={handleSaveChanges}
+                                                variant="contained"
+                                                sx={{ width: '100% !important' }}
+                                            >
+                                                {buttonLoading ? <CircularProgress size={20} /> : 'Save changes'}
+                                            </Button>
+                                        </Box>
+                                    )}
                                 </Grid>
                             </Grid>
                         </CardContent>
                     </Card>
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <Card sx={{ borderRadius: 2, boxShadow: 3, overflow: 'hidden' }}>
-                        <CardContent>
-                            <Typography variant="h5" align="center" gutterBottom>
-                                Wallet
-                            </Typography>
-                            <Divider sx={{ my: 2 }} />
-                            <Typography variant="h6" align="center" gutterBottom>
-                                {Number(wallet ? wallet.balance : 0)} USDC
-                            </Typography>
-                            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                                <Deposit />
-                                <Box sx={{ mx: 1 }} />
-                                <Withdraw />
-                            </Box>
-                        </CardContent>
-                    </Card>
+                    <WalletSection wallet={wallet} />
                     <Divider sx={{ my: 4 }} />
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <BasicTabs

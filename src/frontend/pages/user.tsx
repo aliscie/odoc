@@ -7,7 +7,7 @@ import {
     User,
     UserProfile
 } from "../../declarations/backend/backend.did";
-import {FriendCom} from "./profile/friends";
+import {FriendCom} from "./profile/Friends";
 import {Principal} from "@dfinity/principal";
 import {List, Rating as RatingCom} from "@mui/material";
 import ListItemText from "@mui/material/ListItemText";

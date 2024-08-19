@@ -3,7 +3,7 @@ import React from "react";
 import LandingPage from "./LandingPage/LandingPage";
 import FileContentPage from "./FileContentPage";
 import ShareFilePage from "./ShareFilePage";
-import ProfileComponent from "./Profile/Profile";
+import ProfileComponent from "./profile/Profile";
 import Discover from "./Discover";
 import UserPage from "./User";
 import ChatsPage from "./ChatsPage";

@@ -8,11 +8,12 @@ import * as React from "react";
 import {useEffect} from "react";
 import {Button, Divider, Tooltip, Typography} from "@mui/material";
 import useGetUser from "../../utils/get_user_by_principal";
-// import {actor} from "../../App";
+import { useBackendContext } from "../../contexts/BackendContext";
 import {Exchange} from "../../../declarations/backend/backend.did";
 import formatTimestamp from "../../utils/time";
 
 export function ContractItem(props: any) {
+    const { backendActor } = useBackendContext();
     let date_created = formatTimestamp(props.date_created)
     const {profile} = useSelector((state: any) => state.filesState);
     const [users, setUsers] = React.useState<any>({sender: "Null", receiver: "Null"})
@@ -49,7 +50,7 @@ export function ContractItem(props: any) {
 
     async function handleDelete() {
         let loader = enqueueSnackbar(<>Deleting...<span className="loader"/></>);
-        let res = await actor.delete_payment(props.id)
+        let res = await backendActor.delete_payment(props.id)
         closeSnackbar(loader);
         if ('Ok' in res) {
             enqueueSnackbar("Deleted successfully", {variant: "success"});
