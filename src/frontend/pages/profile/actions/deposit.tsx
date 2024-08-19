@@ -1,28 +1,33 @@
-import * as React from "react";
-import {useDispatch} from "react-redux";
+import React from "react";
+import { useDispatch } from "react-redux";
 import LoaderButton from "../../../components/MuiComponents/LoaderButton";
 import { handleRedux } from "../../../redux/store/handleRedux";
-// import {actor} from "../../../App";
-import {MonetizationOn} from "@mui/icons-material";
+import { MonetizationOn } from "@mui/icons-material";
+import { useBackendContext } from "../../../contexts/BackendContext";
 
-function Deposit(props: any) {
+function Deposit() {
+    const { backendActor } = useBackendContext();
     const dispatch = useDispatch();
 
-    async function handleDeposit() {
-        let res = actor && await actor.deposit_usdt(Number(100));
-        dispatch(handleRedux("UPDATE_BALANCE", {balance: res.Ok}));
-        if ("Ok" in res) {
-            dispatch(handleRedux("UPDATE_BALANCE", {balance: res.Ok}));
-        }
-        return res
-    }
+    const handleDeposit = async () => {
+        if (!backendActor) return;
 
-    return (<LoaderButton
+        const res = await backendActor.deposit_usdt(100);
+        if (res?.Ok) {
+            dispatch(handleRedux("UPDATE_BALANCE", { balance: res.Ok }));
+        }
+        return res;
+    };
+
+    return (
+        <LoaderButton
             variant="outlined"
-            startIcon={<MonetizationOn/>}
+            startIcon={<MonetizationOn />}
             onClick={handleDeposit}
-        >Deposit</LoaderButton>
-    )
+        >
+            Deposit
+        </LoaderButton>
+    );
 }
 
 export default Deposit;

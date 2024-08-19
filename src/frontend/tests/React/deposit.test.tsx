@@ -2,7 +2,7 @@ import { vi } from 'vitest';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { useDispatch } from 'react-redux';
 import { actor } from '../../App';
-import Deposit from '../../pages/Profile/Actions/deposit';
+import Deposit from '../../pages/profile/actions/Deposit';
 import TestWrapper from '../utils/tests_wrapper';
 
 vi.mock('react-redux', async (importOriginal) => {

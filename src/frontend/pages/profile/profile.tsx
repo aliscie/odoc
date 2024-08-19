@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import {Edit} from "@mui/icons-material";
 import Friends from './Friends';
-import Deposit from './Actions/deposit';
+import Deposit from './actions/Deposit';
 import Withdraw from "./Actions/withdraw";
 import {convertToBlobLink, convertToBytes} from "../../DataProcessing/imageToVec";
 import {handleRedux} from '../../redux/store/handleRedux';
@@ -28,8 +28,8 @@ import BasicTabs from "./History";
 import TransactionHistory from "./TransactionHistory";
 import {UserHistoryCom} from "../User";
 import {useSnackbar} from 'notistack';
-import ShareProfileButton from './Actions/share_profile-button';
-import ProfilePhotoDialog from './Actions/profile_photo_dialog';
+import ShareProfileButton from './actions/ShareProfileButton';
+import ProfilePhotoDialog from './actions/ProfilePhotoDialog';
 import { useBackendContext } from '../../contexts/BackendContext';
 
 export default function ProfileComponent() {
