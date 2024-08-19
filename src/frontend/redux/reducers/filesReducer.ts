@@ -157,13 +157,13 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
             };
 
         case
-        'UPDATE_PROFILE'
-        :
+        'UPDATE_PROFILE':
             return {
                 ...state,
                 profile: {...state.profile, ...action.profile}
             };
         // TODO firndRecuer
+        
         case
         'UPDATE_FRIEND'
         :

@@ -19,8 +19,8 @@ import {
     Typography,
 } from "@mui/material";
 import {Edit} from "@mui/icons-material";
-import Friends from "./Friends";
-import Deposit from "./Actions/deposit";
+import Friends from './Friends';
+import Deposit from './Actions/deposit';
 import Withdraw from "./Actions/withdraw";
 import {convertToBlobLink, convertToBytes} from "../../DataProcessing/imageToVec";
 import {handleRedux} from '../../redux/store/handleRedux';
@@ -30,8 +30,10 @@ import {UserHistoryCom} from "../User";
 import {useSnackbar} from 'notistack';
 import ShareProfileButton from './Actions/share_profile-button';
 import ProfilePhotoDialog from './Actions/profile_photo_dialog';
+import { useBackendContext } from '../../contexts/BackendContext';
 
 export default function ProfileComponent() {
+    const { backendActor } = useBackendContext();
     const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
     const { profile, friends, profile_history, wallet } = useSelector((state: any) => state.filesState);
@@ -52,7 +54,7 @@ export default function ProfileComponent() {
         setButtonLoading(true);
         if (profileData.changed) {
             try {
-                const res = await actor?.update_user_profile({
+                const res = await backendActor?.update_user_profile({
                     name: [profileData.name],
                     description: [profileData.description],
                     photo: [profileData.photo],
