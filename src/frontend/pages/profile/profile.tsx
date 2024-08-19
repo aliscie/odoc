@@ -36,6 +36,7 @@ export default function ProfileComponent() {
     const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
     const { profile, friends, profile_history, wallet } = useSelector((state: any) => state.filesState);
+    console.log("Wallet: ", wallet);
 
     const [userHistory, setUserHistory] = useState<UserProfile | null>(null);
     const [profileData, setProfileData] = useState({
@@ -166,7 +167,7 @@ export default function ProfileComponent() {
                             items={{
                                 Friends: <Friends friends={friends} />,
                                 Reputation: userHistory && <UserHistory {...userHistory} />,
-                                ...(wallet && { Transactions: <TransactionHistory items={wallet.exchanges} /> }),
+                                ...(wallet && { Transactions: <TransactionHistory transactionRecords={wallet.exchanges} /> }),
                             }}
                         />
                     </Box>

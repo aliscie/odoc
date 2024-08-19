@@ -15,7 +15,7 @@ const WalletSection: React.FC<WalletSectionProps> = ({ wallet }) => (
             </Typography>
             <Divider style={{ margin: '16px 0' }} />
             <Typography variant="h6" align="center">
-                {wallet?.balance} ckUSDC
+                {wallet && wallet.balance ? wallet.balance : '0.00'} ckUSDC
             </Typography>
             <Divider style={{ margin: '16px 0' }} />
             <Box style={{ display: 'flex', justifyContent: 'space-around' }}>

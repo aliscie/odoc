@@ -2,11 +2,11 @@ import React, {useEffect} from 'react';
 import './styles/LandingPage.css';
 import {Button, Divider, Grid} from "@mui/material";
 import {useSelector} from "react-redux";
-import CreatePost from "./discover/CreateNewPost";
+import CreatePost from "./Discover/CreateNewPost";
 import {PostUser} from "../../declarations/backend/backend.did";
 import {useSnackbar} from "notistack";
-import FilterPosts from "./discover/PostsFilters";
-import ViewPost from "./discover/ViewUpdatePost";
+import FilterPosts from "./Discover/PostsFilters";
+import ViewPost from "./Discover/ViewUpdatePost";
 import {useBackendContext} from "../contexts/BackendContext";
 
 const Discover = () => {

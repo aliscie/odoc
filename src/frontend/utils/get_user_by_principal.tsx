@@ -1,7 +1,6 @@
 import {useSelector} from "react-redux";
 import {User} from "../../declarations/backend/backend.did";
 import {useBackendContext} from "../contexts/BackendContext";
-// import {actor} from "../App";
 
 function useGetUser() {
     const { backendActor } = useBackendContext();
