@@ -1,7 +1,17 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
-    Avatar, Box, Button, Card, CardContent, CircularProgress, Container, Divider, Grid, IconButton, List, ListItem,
-    Rating, TextField, Tooltip, Typography
+    Box,
+    Button, 
+    Card, 
+    CardContent, 
+    CircularProgress, 
+    Container, 
+    Divider, 
+    Grid, 
+    List, 
+    ListItem,
+    TextField, 
+    Typography
 } from "@mui/material";
 import { Edit } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,13 +22,13 @@ import { convertToBlobLink, convertToBytes } from "../../DataProcessing/imageToV
 import { handleRedux } from '../../redux/store/handleRedux';
 import BasicTabs from "./History";
 import TransactionHistory from "./TransactionHistory";
-import { UserHistoryCom } from "../User";
+import { UserProfile } from '../../../declarations/backend/backend.did';
+import { UserHistory } from '../User';
 import ProfilePhotoDialog from './actions/ProfilePhotoDialog';
 import ProfilePhoto from './ProfilePhoto';
 import ProfileRatings from './ProfileRating';
 import WalletSection from './WalletSection';
 import { useBackendContext } from '../../contexts/BackendContext';
-
 
 
 export default function ProfileComponent() {
@@ -27,7 +37,7 @@ export default function ProfileComponent() {
     const dispatch = useDispatch();
     const { profile, friends, profile_history, wallet } = useSelector((state: any) => state.filesState);
 
-    const [user_history, setUserHistory] = useState<UserHistoryCom | null>(null);
+    const [userHistory, setUserHistory] = useState<UserProfile | null>(null);
     const [profileData, setProfileData] = useState({
         id: profile?.id || '',
         name: profile?.name || '',
@@ -61,15 +71,21 @@ export default function ProfileComponent() {
         }
     };
 
-    const handlePhotoChange = async (e) => {
+    const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const fileInput = e.target;
-        const photo = await convertToBytes(fileInput.files[0]);
-        setProfileData((prev) => ({ ...prev, photo, changed: true }));
-
-        dispatch(handleRedux("UPDATE_PROFILE", { profile: { photo } }));
-
-        fileInput.value = '';
+        if (fileInput.files && fileInput.files[0]) {
+            try {
+                const photo = await convertToBytes(fileInput.files[0]);
+                console.log('Photo data:', photo);
+                setProfileData((prev) => ({ ...prev, photo, changed: true }));
+                dispatch(handleRedux("UPDATE_PROFILE", { profile: { photo } }));
+            } catch (error) {
+                console.error("Error processing photo:", error);
+            }
+            fileInput.value = '';
+        }
     };
+    
 
     const handleAvatarClick = () => setOpenDialog(true);
     const handleDialogClose = () => setOpenDialog(false);
@@ -149,7 +165,7 @@ export default function ProfileComponent() {
                         <BasicTabs
                             items={{
                                 Friends: <Friends friends={friends} />,
-                                Reputation: user_history && <UserHistoryCom {...user_history} />,
+                                Reputation: userHistory && <UserHistory {...userHistory} />,
                                 ...(wallet && { Transactions: <TransactionHistory items={wallet.exchanges} /> }),
                             }}
                         />

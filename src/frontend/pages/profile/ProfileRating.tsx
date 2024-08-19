@@ -1,7 +1,6 @@
 import React from 'react';
 import { Rating, Tooltip, Typography, Grid, Box } from '@mui/material';
 import ShareProfileButton from './actions/ShareProfileButton';
-import { UserHistoryCom } from '../User';
 
 interface ProfileRatingsProps {
     profile_history: any;

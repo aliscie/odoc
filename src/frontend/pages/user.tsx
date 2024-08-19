@@ -16,7 +16,7 @@ import {LineChart} from "@mui/x-charts/LineChart";
 import useGetUser from "../utils/get_user_by_principal";
 import {useBackendContext} from "../contexts/BackendContext";
 
-export function UserHistoryCom(profile: UserProfile) {
+export function UserHistory (profile: UserProfile) {
     let {getUser} = useGetUser();
 
     const [actionRatingsWithNames, setActionRatingsWithNames] = useState([]);
