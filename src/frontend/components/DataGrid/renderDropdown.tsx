@@ -11,8 +11,8 @@ export function renderDropdown({row, onRowChange}: RenderEditCellProps<Row>) {
     return (
         <select
             className={'textEditorClassname'}
-            value={row.bs}
-            onChange={(event) => onRowChange({...row, bs: event.target.value}, true)}
+            value={row.title}
+            onChange={(event) => onRowChange({...row, title: event.target.value}, true)}
             autoFocus
         >
             {titles.map((title) => (

@@ -1,7 +1,7 @@
 import MultiAutoComplete from "../../components/MuiComponents/MultiAutocompelte";
 import React from "react";
 import {PostUser} from "../../../declarations/backend/backend.did";
-import debounce from "../../utils/debounce";
+import {debounce} from 'lodash';
 
 interface Props {
     onChange: any,

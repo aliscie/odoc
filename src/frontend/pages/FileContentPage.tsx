@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {FileNode} from '../../declarations/backend/backend.did';
-import debounce from '../utils/debounce';
+import {debounce} from 'lodash';
+
 import {Input} from "@mui/material";
 import {handleRedux} from "../redux/store/handleRedux";
 import EditorComponent from "../components/EditorComponent";

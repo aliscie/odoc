@@ -17,8 +17,9 @@ import {HTML5Backend} from 'react-dnd-html5-backend';
 import {DraggableRowRenderer} from "./DraggableRowRenderer";
 import {createPortal} from "react-dom";
 import {Menu, MenuItem} from "@mui/material";
-import {renderStreet} from "./renderStreet";
 import {renderDropdown} from "./renderDropdown";
+import RenameColumn from "./RenameColumn";
+import {randomString} from "../../DataProcessing/dataSamples";
 
 
 export interface Row {
@@ -42,149 +43,10 @@ function rowKeyGetter(row: Row) {
     return row.id;
 }
 
-const columns: readonly Column<Row>[] = [
-    SelectColumn,
-    {
-        key: 'id',
-        name: 'ID',
-        width: 50,
-        resizable: true,
-        frozen: true
-    },
-    // {
-    //     key: 'avatar',
-    //     name: 'Avatar',
-    //     width: 40,
-    //     resizable: true,
-    //     renderCell: renderAvatar
-    // },
-    // {
-    //     key: 'title',
-    //     name: 'Title',
-    //     width: 200,
-    //     resizable: true,
-    //     renderEditCell: renderDropdown
-    // },
-    {
-        key: 'firstName',
-        name: 'First Name',
-        width: 200,
-        resizable: true,
-        frozen: true,
-        renderEditCell: textEditor
-    },
-    {
-        key: 'lastName',
-        name: 'Last Name',
-        width: 200,
-        resizable: true,
-        frozen: true,
-        renderEditCell: textEditor
-    },
-    {
-        key: 'email',
-        name: 'Email',
-        width: 'max-content',
-        renderEditCell: textEditor,
-        resizable: true,
-        sortable: true,
-        draggable: true
-    },
-    // {
-    //     key: 'street',
-    //     name: 'Street',
-    //     width: 200,
-    //     renderEditCell: textEditor,
-    //     resizable: true,
-    //     sortable: true,
-    //     draggable: true,
-    //     renderCell: renderStreet,
-    // },
-    // {
-    //     key: 'zipCode',
-    //     name: 'ZipCode',
-    //     width: 200,
-    //     renderEditCell: textEditor,
-    //     resizable: true,
-    //     sortable: true,
-    //     draggable: true
-    // },
-    // {
-    //     key: 'date',
-    //     name: 'Date',
-    //     width: 200,
-    //     renderEditCell: textEditor,
-    //     resizable: true,
-    //     sortable: true,
-    //     draggable: true,
-    // },
-    {
-        key: 'bs',
-        name: 'bs',
-        width: 200,
-        renderEditCell: renderDropdown,
-        resizable: true,
-        sortable: true,
-        draggable: true,
 
-    },
-    // {
-    //     key: 'catchPhrase',
-    //     name: 'Catch Phrase',
-    //     width: 'max-content',
-    //     renderEditCell: textEditor,
-    //     resizable: true,
-    //     sortable: true,
-    //     draggable: true,
-    // },
-    // {
-    //     key: 'companyName',
-    //     name: 'Company Name',
-    //     width: 200,
-    //     renderEditCell: textEditor,
-    //     resizable: true,
-    //     sortable: true,
-    //     draggable: true,
-    // },
-    // {
-    //     key: 'sentence',
-    //     name: 'Sentence',
-    //     width: 'max-content',
-    //     renderEditCell: textEditor,
-    //     resizable: true,
-    //     sortable: true,
-    //     draggable: true,
-    // }
-];
-
-function createRows(): Row[] {
-    const rows: Row[] = [];
-
-    for (let i = 0; i < 3; i++) {
-        rows.push({
-            id: `id_${i}`,
-            avatar: faker.image.avatar(),
-            email: faker.internet.email(),
-            title: faker.person.prefix(),
-            firstName: faker.person.firstName(),
-            lastName: faker.person.lastName(),
-            street: faker.location.street(),
-            zipCode: faker.location.zipCode(),
-            date: faker.date.past().toLocaleDateString(),
-            bs: faker.company.buzzPhrase(),
-            catchPhrase: faker.company.catchPhrase(),
-            companyName: faker.company.name(),
-            words: faker.lorem.words(),
-            sentence: faker.lorem.sentence()
-        });
-    }
-
-    return rows;
-}
-
-
-export default function AllFeatures({direction}: Props) {
-    const [rows, setRows] = useState(createRows);
+export default function DataGridSheet({initRows, initColumns, direction}: Props) {
+    const [columns, setColumns] = useState(initColumns);
+    const [rows, setRows] = useState(initRows);
     const [selectedRows, setSelectedRows] = useState((): ReadonlySet<string> => new Set());
 
     function handleFill({columnKey, sourceRow, targetRow}: FillEvent<Row>): Row {
@@ -224,7 +86,6 @@ export default function AllFeatures({direction}: Props) {
 
     const handleRowsChange = (newRows) => {
         setRows(newRows);
-        // logger(newRows); // This will log the new rows to the console
     };
 
     function hanldeColumnResize(index: number, width: number) {
@@ -238,7 +99,7 @@ export default function AllFeatures({direction}: Props) {
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const reorderedColumns = useMemo(() => {
         return columnsOrder.map((index) => columns[index]);
-    }, [columnsOrder]);
+    }, [columnsOrder, columns]);
     const onSortColumnsChange = useCallback((sortColumns: SortColumn[]) => {
         setSortColumns(sortColumns.slice(-1));
     }, []);
@@ -293,7 +154,7 @@ export default function AllFeatures({direction}: Props) {
             if (event.target instanceof Node && menuRef.current?.contains(event.target)) {
                 return;
             }
-            setContextMenuProps(null);
+            // setContextMenuProps(null);
         }
 
         addEventListener('click', onClick);
@@ -316,19 +177,26 @@ export default function AllFeatures({direction}: Props) {
 
 
     const onAddColumn = () => {
+        const key = contextMenuProps?.column.key;
+        let index = columns.findIndex((column) => column.key === key);
         let newColumn = {
-            key: 'newColumn',
-            name: 'New Column',
-            width: 200,
+            key: randomString(),
+            name: 'Untitled',
+            width: 100,
             resizable: true,
             sortable: true,
             draggable: true
         };
-        // setColumnsOrder([...columnsOrder, columns.length]);
-        // setSortColumns(prev => [...prev, {columnKey: 'newColumn', direction: 'NONE'}]);
-
+        setColumns([...columns.slice(0, index + 1), newColumn, ...columns.slice(index + 1)]);
+        setColumnsOrder([...columnsOrder, columns.length]);
     };
 
+    const onDeleteColumn = () => {
+        const key = contextMenuProps?.column.key;
+        let index = columns.findIndex((column) => column.key === key);
+        setColumns([...columns.slice(0, index), ...columns.slice(index + 1)]);
+        setColumnsOrder([...columnsOrder.slice(0, index), ...columnsOrder.slice(index + 1)]);
+    };
 
     return (
         <DndProvider backend={HTML5Backend}>
@@ -365,19 +233,24 @@ export default function AllFeatures({direction}: Props) {
                 // direction={direction}
                 onCellClick={(args, event) => {
                     if (args.column.key === 'title') {
+                        // setContextMenuProps(pre => {
+                        //     return {...pre}
+                        // });
                         event.preventGridDefault();
                         args.selectCell(true);
                     }
                 }}
 
-                onCellContextMenu={({row}, event) => {
+                onCellContextMenu={(args, event) => {
+                    const {row, column} = args;
                     event.preventGridDefault();
                     // Do not show the default context menu
                     event.preventDefault();
                     setContextMenuProps({
                         rowIdx: rows.indexOf(row),
                         top: event.clientY,
-                        left: event.clientX
+                        left: event.clientX,
+                        column,
                     });
                 }}
 
@@ -394,12 +267,22 @@ export default function AllFeatures({direction}: Props) {
                             contextMenuProps ? {top: contextMenuProps.top, left: contextMenuProps.left} : undefined
                         }
                     >
+                        <RenameColumn setColumns={setColumns} {...contextMenuProps}/>
+
                         <MenuItem onClick={() => {
                             onAddColumn();
                             setContextMenuProps(null);
                         }}>
                             Add Column
                         </MenuItem>
+
+                        <MenuItem onClick={() => {
+                            onDeleteColumn();
+                            setContextMenuProps(null);
+                        }}>
+                            Delete Column
+                        </MenuItem>
+
 
                         <MenuItem onClick={() => {
                             const {rowIdx} = contextMenuProps;
@@ -422,11 +305,11 @@ export default function AllFeatures({direction}: Props) {
                         }}>
                             Insert Row Below
                         </MenuItem>
+
+
                     </Menu>,
                     document.body
                 )}
-
-
         </DndProvider>
     );
 }
