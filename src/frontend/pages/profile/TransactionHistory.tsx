@@ -1,6 +1,6 @@
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
-import { handleRedux } from "../../redux/store/handleRedux";
+import {handleRedux} from "../../redux/store/handleRedux";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -8,11 +8,12 @@ import * as React from "react";
 import {useEffect} from "react";
 import {Button, Divider, Tooltip, Typography} from "@mui/material";
 import useGetUser from "../../utils/get_user_by_principal";
-// import {actor} from "../../App";
 import {Exchange} from "../../../declarations/backend/backend.did";
 import formatTimestamp from "../../utils/time";
+import {useBackendContext} from "../../contexts/BackendContext";
 
 export function ContractItem(props: any) {
+    const {backendActor} = useBackendContext();
     let date_created = formatTimestamp(props.date_created)
     const {profile} = useSelector((state: any) => state.filesState);
     const [users, setUsers] = React.useState<any>({sender: "Null", receiver: "Null"})
@@ -49,7 +50,7 @@ export function ContractItem(props: any) {
 
     async function handleDelete() {
         let loader = enqueueSnackbar(<>Deleting...<span className="loader"/></>);
-        let res = await actor.delete_payment(props.id)
+        let res = await backendActor?.delete_payment(props.id)
         closeSnackbar(loader);
         if ('Ok' in res) {
             enqueueSnackbar("Deleted successfully", {variant: "success"});
@@ -111,7 +112,7 @@ interface TranProps {
 
 function TransactionHistory(props: TranProps) {
     return (
-        <div style={{ height: '300px', overflowY: 'auto' }}>
+        <div style={{height: '300px', overflowY: 'auto'}}>
             <List dense>
                 {props.items.map((item: any, index: number) => {
                     return <ContractItem {...item} id={index} sender={item.from} receiver={item.to}/>

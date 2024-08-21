@@ -20,11 +20,22 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
                 files: action.files,
             };
 
+        case 'INIT_WALLET':
+            return {
+                ...state,
+                wallet: action.wallet,
+            };
 
         case 'ADD_CONTENT':
             return {
                 ...state,
                 files_content: {...state.files_content, [action.id]: action.content}
+            };
+
+        case 'INIT_CONTENTS':
+            return {
+                ...state,
+                files_content: action.files_content
             };
 
         case 'ADD_FILE':

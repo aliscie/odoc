@@ -3,16 +3,15 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import {Avatar} from "@mui/material";
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
-import { handleRedux } from "../../redux/store/handleRedux";
 import {FEChat, Message, User} from "../../../declarations/backend/backend.did";
 import useGetChats from "../Chat/utils/useGetChats";
 import {Principal} from "@dfinity/principal";
-import { convertToBlobLink } from "../../DataProcessing/imageToVec";
-// import {actor} from "../../App";
+import {convertToBlobLink} from "../../DataProcessing/imageToVec";
 import MessageComponent from "./message";
 
 import GroupIcon from "@mui/icons-material/Group"
 import {useBackendContext} from "../../contexts/BackendContext";
+import {handleRedux} from "../../redux/store/handleRedux";
 
 // interface MessageNotificationProp {
 //
@@ -46,10 +45,12 @@ function ChatNotification(props: Message) {
     return <ListItem
 
         onClick={async () => {
-            dispatch(handleRedux("OPEN_CHAT", {
-                current_chat_id: props.chat_id,
-                current_user: Principal.fromText(sender.id.toString())
-            }))
+            dispatch(handleRedux("OPEN_CHAT",
+                {
+                    current_chat_id: props.chat_id,
+                    current_user: Principal.fromText(sender.id.toString())
+                }
+            ))
             if (!props.seen_by.includes(Principal.fromText(profile.id))) {
                 props.seen_by.push(Principal.fromText(profile.id))
                 dispatch(handleRedux("UPDATE_NOTIFICATION", {message: props}))

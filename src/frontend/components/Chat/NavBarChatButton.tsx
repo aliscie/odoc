@@ -14,6 +14,7 @@ interface Props {
 }
 
 interface Option {
+    public?: boolean;
     content: JSX.Element;
 }
 
@@ -51,8 +52,8 @@ const ChatsComponent: React.FC<Props> = () => {
     const searchedMessages = messages ? messages.filter((message: Message) =>
         message.message.toLowerCase().includes(searchValue.toLowerCase())
     ) : [];
-
-    const options: Option[] = [{content: chatGroup}];
+    const options: Option[] = [chatGroup];
+    // const options: Option[] = [];
 
     if (loading) {
         options.push({content: <CircularProgress/>});
