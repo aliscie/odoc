@@ -3,10 +3,10 @@ import '@testing-library/jest-dom/vitest';
 import {resolve} from "node:path";
 import {createIdentity, PocketIc} from "@hadronous/pic";
 import {idlFactory} from "./src/declarations/backend";
-import {_SERVICE} from ".dfx/local/canisters/backend/service.did";
+import { _SERVICE } from "./src/declarations/backend/backend.did";
 import {Identity} from "@dfinity/agent";
 import {RegisterUser, User} from "./src/declarations/backend/backend.did";
-import {randomString} from "./src/frontend/data_processing/data_samples";
+import { randomString } from "./src/frontend/DataProcessing/dataSamples";
 
 vi.stubGlobal('matchMedia', () => ({
     addEventListener: () => {

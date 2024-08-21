@@ -8,6 +8,7 @@ interface WalletSectionProps {
 }
 
 const WalletSection: React.FC<WalletSectionProps> = ({ wallet }) => (
+    
     <Card style={{ borderRadius: 8, boxShadow: '0 0 3px rgba(0,0,0,0.2)', overflow: 'hidden' }}>
         <CardContent>
             <Typography variant="h5" align="center" gutterBottom>

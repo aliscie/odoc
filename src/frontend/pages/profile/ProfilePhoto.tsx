@@ -19,12 +19,11 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ photo, onAvatarClick, onPho
                 onChange={onPhotoChange}
                 style={{ display: 'none' }}
             />
-            <IconButton component="span" onClick={(e) => e.stopPropagation()}>
+           <IconButton component="span" onClick={onAvatarClick}>
                 <Avatar
                     alt="Profile Photo"
                     src={photo}
                     style={{ width: 128, height: 128, marginBottom: 16 }}
-                    onClick={onAvatarClick}
                 />
             </IconButton>
             <IconButton

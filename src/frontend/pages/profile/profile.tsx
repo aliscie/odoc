@@ -38,6 +38,12 @@ export default function ProfileComponent() {
     const { profile, friends, profile_history, wallet } = useSelector((state: any) => state.filesState);
     console.log("Wallet: ", wallet);
 
+    if (wallet) {
+        console.log("Transaction records: ", wallet.balance.exchanges);
+      } else {
+        console.log("Wallet is undefined");
+    }
+
     const [userHistory, setUserHistory] = useState<UserProfile | null>(null);
     const [profileData, setProfileData] = useState({
         id: profile?.id || '',
@@ -167,7 +173,7 @@ export default function ProfileComponent() {
                             items={{
                                 Friends: <Friends friends={friends} />,
                                 Reputation: userHistory && <UserHistory {...userHistory} />,
-                                ...(wallet && { Transactions: <TransactionHistory transactionRecords={wallet.exchanges} /> }),
+                                ...(wallet && { Transactions: <TransactionHistory transactionRecords={wallet.balance.exchanges} /> }),
                             }}
                         />
                     </Box>

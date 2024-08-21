@@ -7,6 +7,7 @@ interface TransactionProps {
 }
 
 const  TransactionHistory = ({ transactionRecords }: TransactionProps) => {
+    console.log("Transaction Records in transaction component: ", transactionRecords);
     return (
         <div style={{ height: '300px', overflowY: 'auto' }}>
             <List dense>
