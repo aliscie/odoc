@@ -10,8 +10,6 @@ import LoaderButton from '../MuiComponents/LoaderButton';
 import {CPayment, Notification} from "../../../declarations/backend/backend.did";
 import {formatRelativeTime} from "../../utils/time";
 
-//
-
 function CPaymentContractDialog(props: { notification: Notification }): JSX.Element {
     const {notification} = props;
     const c_payment: CPayment = notification.content.CPaymentContract[0];

@@ -1,25 +1,16 @@
-import {useCallback, useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react';
+import React, {useCallback, useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react';
 import {faker} from '@faker-js/faker';
 import 'react-data-grid/lib/styles.css';
-import DataGrid, {
-    Column,
-    CopyEvent,
-    FillEvent,
-    PasteEvent,
-    RenderRowProps,
-    Row,
-    SelectColumn,
-    SortColumn,
-    textEditor
-} from 'react-data-grid';
+import DataGrid, {CopyEvent, FillEvent, PasteEvent, RenderRowProps, Row, SortColumn} from 'react-data-grid';
 import {DndProvider} from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';
 import {DraggableRowRenderer} from "./DraggableRowRenderer";
 import {createPortal} from "react-dom";
 import {Menu, MenuItem} from "@mui/material";
-import {renderDropdown} from "./renderDropdown";
 import RenameColumn from "./RenameColumn";
 import {randomString} from "../../DataProcessing/dataSamples";
+import InsertFormula from "./InsertFormula";
+import FormulaCell from "./FormulaCell";
 
 
 export interface Row {
@@ -98,7 +89,12 @@ export default function DataGridSheet({initRows, initColumns, direction}: Props)
 
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const reorderedColumns = useMemo(() => {
-        return columnsOrder.map((index) => columns[index]);
+        return columnsOrder.map((index) => {
+            if (columns[index].formula) {
+                return {...columns[index], renderCell: FormulaCell}
+            }
+            return columns[index]
+        });
     }, [columnsOrder, columns]);
     const onSortColumnsChange = useCallback((sortColumns: SortColumn[]) => {
         setSortColumns(sortColumns.slice(-1));
@@ -121,6 +117,7 @@ export default function DataGridSheet({initRows, initColumns, direction}: Props)
     }
 
     const [nextId, setNextId] = useReducer((id: number) => id + 1, rows[rows.length - 1].id + 1);
+
     const renderRow = useCallback((key: React.Key, props: RenderRowProps<Row>) => {
         function onRowReorder(fromIndex: number, toIndex: number) {
             setRows((rows) => {
@@ -130,13 +127,12 @@ export default function DataGridSheet({initRows, initColumns, direction}: Props)
             });
         }
 
-        // return <Row {...props} />
         return <DraggableRowRenderer
             {...props}
             key={key}
             onRowReorder={onRowReorder}
         />;
-    }, []);
+    }, [columns]);
 
     const menuRef = useRef<HTMLMenuElement | null>(null);
     const [contextMenuProps, setContextMenuProps] = useState<{
@@ -198,6 +194,19 @@ export default function DataGridSheet({initRows, initColumns, direction}: Props)
         setColumnsOrder([...columnsOrder.slice(0, index), ...columnsOrder.slice(index + 1)]);
     };
 
+
+    const onAddFormula = (formula) => {
+        const key = contextMenuProps?.column.key;
+        let index = columns.findIndex((column) => column.key === key);
+        setColumns(prev => {
+                const newColumns = [...prev];
+                newColumns[index] = {...newColumns[index], formula};
+                return newColumns;
+            }
+        );
+    };
+
+
     return (
         <DndProvider backend={HTML5Backend}>
             <DataGrid
@@ -250,6 +259,7 @@ export default function DataGridSheet({initRows, initColumns, direction}: Props)
                         rowIdx: rows.indexOf(row),
                         top: event.clientY,
                         left: event.clientX,
+                        row,
                         column,
                     });
                 }}
@@ -306,6 +316,7 @@ export default function DataGridSheet({initRows, initColumns, direction}: Props)
                             Insert Row Below
                         </MenuItem>
 
+                        <InsertFormula contextMenuProps={contextMenuProps} onAddFormula={onAddFormula}/>
 
                     </Menu>,
                     document.body

@@ -12,7 +12,6 @@ import {CircularProgress} from "@mui/material";
 import NavBar from "./components/MainComponents/NavBar";
 import TopNavBar from "./components/MainComponents/TopNavBar";
 import RegistrationForm from "./components/MainComponents/RegistrationForm";
-import TopDialog from "./components/MuiComponents/TopDialog";
 import MessagesDialogBox from "./components/ChatSendMessage/MessagesBoxDialog";
 import SearchPopper from "./components/SearchComponent";
 
@@ -48,7 +47,6 @@ const App: React.FC = () => {
                         <RegistrationForm/>
                         <MessagesDialogBox/>
                         <TopNavBar/>
-                        <TopDialog/>
                         <NavBar>
                             <Pages/>
                         </NavBar>

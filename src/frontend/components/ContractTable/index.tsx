@@ -9,6 +9,7 @@ import DataGridSheet, {Row} from "../DataGrid";
 import {Column, SelectColumn, textEditor} from "react-data-grid";
 import {renderDropdown} from "../DataGrid/renderDropdown";
 import {faker} from "@faker-js/faker";
+import {Principal} from "@dfinity/principal";
 
 interface VIEW {
     id?: string,
@@ -24,7 +25,7 @@ const initColumns: readonly Column<Row>[] = [
         name: 'ID',
         width: 30,
         resizable: true,
-        frozen: true
+        frozen: true,
     },
     {
         key: 'title',
@@ -80,6 +81,19 @@ function createRows(): Row[] {
     return rows;
 }
 
+let contractSample: CustomContract = {
+    "id": "2wjej",
+    "permissions": [],
+    "creator": Principal.fromText("oo54d-aga7v-5qouy-mijkh-pookd-bhj7t-3eh2z-pqf3m-pgkb7-u65lk-bqe"),
+    "date_created": 1723950331764397000,
+    "payments": [],
+    "name": "Custom contract",
+    "formulas": [],
+    "contracts": [],
+    "date_updated": 0,
+    "promises": []
+}
+
 
 export function CustomContractComponent({contract}: { contract: CustomContract }) {
 
@@ -88,16 +102,31 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
 
 
     let options = [
-        {content: "item 1", onClick: () => {}},
-        {content: "item 2", onClick: () => {}}
+        {
+            content: "item 1", onClick: () => {
+            }
+        },
+        {
+            content: "item 2", onClick: () => {
+            }
+        }
     ];
 
     let viewOptions = [
-        {content: "Promises", onClick: () => {}},
-        {content: "Payments", onClick: () => {}},
-        {content: "Others", onClick: () => {}}
+        {
+            content: "Promises", onClick: () => {
+            }
+        },
+        {
+            content: "Payments", onClick: () => {
+            }
+        },
+        {
+            content: "Others", onClick: () => {
+            }
+        }
     ];
-
+    // logger({contract})
 
     return (<div>
         <ButtonGroup size="small" variant="contained" aria-label="Basic button group">

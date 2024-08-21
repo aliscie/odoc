@@ -8,7 +8,6 @@ import {CustomContractComponent} from "../../components/ContractTable";
 import {custom_contract} from "../../DataProcessing/dataSamples";
 import {handleRedux} from "../../redux/store/handleRedux";
 import {StoredContract} from "../../../declarations/backend/backend.did";
-import {logger} from "../../DevUtils/logData";
 
 
 function ContractsHistory(props: any) {
@@ -32,7 +31,7 @@ function ContractsHistory(props: any) {
                     let c = Object.values(contract)
                     if (c) {
                         return <ListItem>
-                            <CustomContractComponent contract={contract.CustomContract}/>
+                            <CustomContractComponent contract={c}/>
                         </ListItem>
                     }
                 })
