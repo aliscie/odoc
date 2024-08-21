@@ -10,6 +10,12 @@ import {
 import { FEChat, Message } from '../../../declarations/backend/backend.did';
 import { Principal } from "@dfinity/principal";
 
+//Base Action Interface
+export interface BaseAction<T = any> {
+  type: string;
+  payload?: T;
+}
+
 export const openChat = (current_chat_id: string, current_user: Principal) => ({
   type: OPEN_CHAT,
   current_chat_id,

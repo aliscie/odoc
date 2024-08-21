@@ -11,6 +11,7 @@ import useGetChats from "../Chat/utils/useGetChats";
 import { convertToBlobLink } from "../../DataProcessing/imageToVec";
 import MessageComponent from "./Message";
 import { useBackendContext } from "../../contexts/BackendContext";
+import { OPEN_CHAT, UPDATE_NOTIFICATION } from "../../redux/types/chatsTypes";
 
 function ChatNotification(props: Message) {
     const { backendActor } = useBackendContext();
@@ -36,14 +37,14 @@ function ChatNotification(props: Message) {
     }, [chats, getChats, props.sender, profile.id, chat]);
 
     const handleChatClick = async () => {
-        dispatch(handleRedux("OPEN_CHAT", {
+        dispatch(handleRedux(OPEN_CHAT, {
             current_chat_id: props.chat_id,
             current_user: Principal.fromText(sender?.id.toString() || "")
         }));
     
         if (!props.seen_by.includes(Principal.fromText(profile.id))) {
             props.seen_by.push(Principal.fromText(profile.id));
-            dispatch(handleRedux("UPDATE_NOTIFICATION", { message: props }));
+            dispatch(handleRedux(UPDATE_NOTIFICATION, { message: props }));
     
             if (backendActor) {
                 await backendActor.message_is_seen(props);

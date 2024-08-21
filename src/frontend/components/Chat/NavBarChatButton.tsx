@@ -52,7 +52,8 @@ const ChatsComponent: React.FC<Props> = () => {
         message.message.toLowerCase().includes(searchValue.toLowerCase())
     ) : [];
 
-    const options: Option[] = [{content: chatGroup}];
+    // TODO FIX chatGroup const options: Option[] = [{content: chatGroup}];
+    const options: Option[] = [];
 
     if (loading) {
         options.push({content: <CircularProgress/>});
