@@ -37,8 +37,8 @@ const InitialDataFetcher = () => {
             // dispatch(filesActions.addFile(data.Ok.Files));
             dispatch(handleRedux("INIT_FILES", {files: data.Ok.Files}));
             dispatch(handleRedux("INIT_CONTRACTS", {contracts: data.Ok.Contracts}));
-            dispatch(handleRedux("INIT_CONTENTS", {files_content: data.Ok.FilesContents[0]}));
-            dispatch(filesActions.filesSaved(normalizeFilesContents(data.Ok.FilesContents[0])));
+            dispatch(handleRedux("INIT_CONTENTS", {files_content: normalizeFilesContents(data.Ok.FilesContents[0])}));
+            // dispatch(filesActions.filesSaved(normalizeFilesContents(data.Ok.FilesContents[0])));
             // dispatch(filesActions.addContract(deserializeContracts(data.Ok.Contracts)));
             dispatch(filesActions.addWorkspace(data.Ok.Workspaces));
             dispatch(filesActions.confirmFriend(data.Ok.Friends));
