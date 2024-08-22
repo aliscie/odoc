@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import List from "@mui/material/List";
 import {Exchange} from "../../../declarations/backend/backend.did";
 import ContractItem  from "./ContractItem";
@@ -6,7 +7,10 @@ interface TransactionProps {
     transactionRecords: Array<Exchange>
 }
 
-const  TransactionHistory = ({ transactionRecords }: TransactionProps) => {
+const  TransactionHistory = () => {
+    const { wallet } = useSelector((state: any) => state.filesState);
+    const transactionRecords = wallet?.balance?.exchanges || [];
+    
     console.log("Transaction Records in transaction component: ", transactionRecords);
     return (
         <div style={{ height: '300px', overflowY: 'auto' }}>

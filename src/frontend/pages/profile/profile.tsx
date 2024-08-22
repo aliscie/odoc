@@ -13,7 +13,6 @@ import {
     TextField, 
     Typography
 } from "@mui/material";
-import { Edit } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from 'notistack';
 import Friends from './Friends';
@@ -173,7 +172,7 @@ export default function ProfileComponent() {
                             items={{
                                 Friends: <Friends friends={friends} />,
                                 Reputation: userHistory && <UserHistory {...userHistory} />,
-                                ...(wallet && { Transactions: <TransactionHistory transactionRecords={wallet.balance.exchanges} /> }),
+                                ...(wallet && { Transactions: <TransactionHistory /> }),
                             }}
                         />
                     </Box>

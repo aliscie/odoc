@@ -4,11 +4,7 @@ import { Card, CardContent, Divider, Typography, Box } from '@mui/material';
 import Deposit from './actions/Deposit';
 import Withdraw from './actions/Withdraw';
 
-interface WalletSectionProps {
-    wallet: any;
-}
-
-const WalletSection: React.FC<WalletSectionProps> = () => {
+const WalletSection: React.FC = () => {
 
     const { wallet } = useSelector((state: any) => state.filesState)
 
