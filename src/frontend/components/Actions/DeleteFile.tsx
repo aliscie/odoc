@@ -18,8 +18,13 @@ const DeleteFile: React.FC<DeleteFileProps> = ({ item }) => {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     const handleDeleteFile = async (e: MouseEvent<HTMLSpanElement>) => {
+        if (!backendActor) {
+            enqueueSnackbar("Failed to delete: Backend actor not available", { variant: "error" });
+            return;
+        }
+
         e.currentTarget.classList.add("disabled");
-        
+
         const loading = enqueueSnackbar(
             <span>
                 Deleting {item.name}... <span className="loader" />
