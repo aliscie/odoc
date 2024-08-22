@@ -166,7 +166,7 @@ export default function ProfileComponent() {
                     </Card>
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <WalletSection wallet={wallet} />
+                    <WalletSection />
                     <Divider sx={{ my: 4 }} />
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <BasicTabs
