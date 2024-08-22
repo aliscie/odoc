@@ -70,7 +70,7 @@ export function normalizeFilesContents(content: Array<[string, Array<ContentNode
         }
         let file_id: string = node[0];
         let file_content: Array<ContentNode> = node[1];
-        let nested_file_content: Array<SlateNode> = normalize_content_tree(file_content);
+        let nested_file_content: Array<SlateNode> = normalizeContentTree(file_content);
         data[file_id] = nested_file_content
 
     })
