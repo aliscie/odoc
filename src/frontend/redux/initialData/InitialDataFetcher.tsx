@@ -36,6 +36,8 @@ const InitialDataFetcher = () => {
             dispatch(filesActions.updateProfile(data.Ok.Profile));
             // dispatch(filesActions.addFile(data.Ok.Files));
             dispatch(handleRedux("INIT_FILES", {files: data.Ok.Files}));
+            dispatch(handleRedux("INIT_CONTRACTS", {contracts: data.Ok.Contracts}));
+            dispatch(handleRedux("INIT_CONTENTS", {files_content: data.Ok.FilesContents[0]}));
             dispatch(filesActions.filesSaved(normalizeFilesContents(data.Ok.FilesContents[0])));
             dispatch(filesActions.addContract(normalizeContracts(data.Ok.Contracts)));
             dispatch(filesActions.addWorkspace(data.Ok.Workspaces));
@@ -43,6 +45,7 @@ const InitialDataFetcher = () => {
             // dispatch(filesActions.updateAllFriends(data.Ok.Friends.map((f: Friend) => {
             //     return f.sender.id != data.Ok.Profile.id ? f.sender : f.receiver
             // })));
+            dispatch(handleRedux("INIT_WALLET", {wallet: data.Ok.Wallet}));
             dispatch(filesActions.updateBalance(data.Ok.Wallet));
         }
     }, [data, dispatch]);

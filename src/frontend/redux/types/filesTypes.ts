@@ -1,10 +1,12 @@
 // types.ts
 import {
-    FileNode,
+    ContentNode,
     FileIndexing,
+    FileNode,
     Friend,
     StoredContract,
     UserProfile,
+    Wallet,
     WorkSpace
 } from "../../../declarations/backend/backend.did";
 
@@ -16,7 +18,6 @@ export type FilesActions =
     | { type: "GET_ALL" }
     | { type: "CURRENT_FILE"; file: FileNode }
     | { type: "UPDATE_CONTENT"; id: string; content: any }
-    | { type: "FILES_SAVED"; id: string; content: any }
     | { type: "ADD_CONTENT"; id: string; content: any }
     | { type: "UPDATE_FILE_TITLE"; id: string; title: string }
     | { type: "ADD_CONTRACT"; contract: StoredContract }
@@ -36,6 +37,9 @@ export type FilesActions =
     | { type: "ADD_WORKSPACE"; new_workspace: WorkSpace }
     | { type: "UPDATE_ANONYMOUS"; anonymous: boolean }
     | { type: "INIT_FILES"; files: FileNode[] }
+    | { type: "INIT_CONTRACTS", contracts: StoredContract }
+    | { type: "INIT_WALLET"; wallet: Wallet }
+    | { type: "INIT_CONTENTS"; file_contents: Record<string, ContentNode> }
 
 // | FriendsActions;
 
@@ -65,6 +69,7 @@ export interface InitialState {
 }
 
 export const initialState: InitialState = {
+    wallet: {balance: 0, address: '', mnemonic: '', exchanges: []},
     isLoggedIn: false,
     isRegistered: false,
     current_file: null,

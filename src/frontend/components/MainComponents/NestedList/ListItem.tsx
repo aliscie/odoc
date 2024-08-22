@@ -6,7 +6,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import Collapse from "@mui/material/Collapse";
 import List from "@mui/material/List";
-import {NestedDataItem} from "./nest_list";
+import {NestedDataItem} from "./nestList";
 import {useDispatch, useSelector} from "react-redux";
 import { handleRedux } from "../../../redux/store/handleRedux";
 import DeleteFile from "../../Actions/DeleteFile";

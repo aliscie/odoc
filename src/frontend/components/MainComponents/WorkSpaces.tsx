@@ -1,47 +1,40 @@
+import React, { useState } from "react";
+import { Tooltip } from "@mui/material";
+import { useSelector } from "react-redux";
 import BasicMenu from "../MuiComponents/BasicMenu";
-import React, {useState} from "react";
-import {Tooltip} from "@mui/material";
 import useCreateWorkSpace from "../Chat/CreateNewWorkspace";
-import {useSelector} from "react-redux";
-import {WorkSpace} from "../../../declarations/backend/backend.did";
+import { WorkSpace } from "../../../declarations/backend/backend.did";
 
-interface Props {
+interface Props {}
 
-}
+const  Workspaces = (props: Props) => {
 
-
-function Workspaces(props: Props) {
-    const {workspaces} = useSelector((state: any) => state.filesState);
+    const { workspaces } = useSelector((state: any) => state.filesState);
 
     const createWorkspace = useCreateWorkSpace();
 
-    const [state, setState] = useState("My work space")
+    const [selectedWorkspace, setSelectedWorkspace] = useState("My work space");
 
-    let options = [createWorkspace, ...workspaces.map((item: WorkSpace) => {
-        return {content: item.name, onClick: () => setState(item.name)}
-    })];
+    const options = [
+        createWorkspace,
+        ...workspaces.map((workspace: WorkSpace) => ({
+            content: workspace.name,
+            onClick: () => setSelectedWorkspace(workspace.name),
+        })),
+    ];
 
-    return <BasicMenu
-        anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
-        }}
-        transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-        }}
-        options={
-            options
-        }
-    >
-        <Tooltip arrow title={"Chose your workspace"}>
-            {state}
-        </Tooltip>
-        {/*<Avatar style={{display: 'inline'}} alt="Remy Sharp" src={image_link}/>*/}
-        {/*Each work spaces has its own chats and its won files,*/}
-        {/*Default workspaces shows all files and chats*/}
-
-    </BasicMenu>
+    return (
+        <BasicMenu
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+            options={options}
+        >
+            <Tooltip arrow title="Choose your workspace">
+                {/* Display the selected workspace name */}
+                <span>{selectedWorkspace}</span>
+            </Tooltip>
+        </BasicMenu>
+    );
 }
 
-export default Workspaces
+export default Workspaces;

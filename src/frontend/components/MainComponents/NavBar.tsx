@@ -1,7 +1,7 @@
 import React from 'react';
 import "./style/navBar.css";
 import { useDispatch, useSelector } from "react-redux";
-import NestedList from "./NestedList/nest_list";
+import NestedList from "./NestedList/nestList";
 import { Button, Divider, Drawer, List, ListItemButton, ListItemText } from "@mui/material";
 import { Link } from "react-router-dom";
 import CreateFile from '../Actions/CreateFile';

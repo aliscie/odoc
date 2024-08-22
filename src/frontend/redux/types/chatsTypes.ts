@@ -1,7 +1,6 @@
 // chatTypesAndActionTypes.ts
 import { FEChat, Message } from '../../../declarations/backend/backend.did';
 import { Principal } from "@dfinity/principal";
-import { BaseAction } from '../actions/chatsActions';
 
 // Action Type Constants
 export const OPEN_CHAT = 'OPEN_CHAT';
@@ -11,16 +10,6 @@ export const UPDATE_MESSAGE = 'UPDATE_MESSAGE';
 export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 export const UPDATE_NOTIFICATION = 'UPDATE_NOTIFICATION';
 export const SET_CHATS_NOTIFICATIONS = 'SET_CHATS_NOTIFICATIONS';
-
-// Define specific action types
-export type OpenChatAction = BaseAction<{ current_chat_id: string; current_user: Principal }>;
-export type SetChatsAction = BaseAction<{ chats: FEChat[] }>;
-export type SendMessageAction = BaseAction<{ message: Message }>;
-export type UpdateMessageAction = BaseAction<{ message: Message }>;
-export type AddNotificationAction = BaseAction<{ message: Message }>;
-export type UpdateNotificationAction = BaseAction<{ message: Message }>;
-export type SetChatsNotificationsAction = BaseAction<{ messages: Message[] }>;
-
 
 // Action Types
 export type ChatActions =
