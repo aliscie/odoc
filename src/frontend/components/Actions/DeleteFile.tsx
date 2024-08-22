@@ -1,27 +1,49 @@
-import { handleRedux } from "../../redux/store/handleRedux";
-import React from "react";
-import {useDispatch} from "react-redux";
-import {useSnackbar} from "notistack";
+import React, { MouseEvent } from "react";
+import { useDispatch } from "react-redux";
+import { useSnackbar } from "notistack";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {useBackendContext} from "../../contexts/BackendContext";
-// import {actor} from "../../App";
+import { handleRedux } from "../../redux/store/handleRedux";
+import { useBackendContext } from "../../contexts/BackendContext";
 
-const DeleteFile = (props: any) => {
+interface DeleteFileProps {
+    item: {
+        id: string;
+        name: string;
+    };
+}
+
+const DeleteFile: React.FC<DeleteFileProps> = ({ item }) => {
     const { backendActor } = useBackendContext();
     const dispatch = useDispatch();
-    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-    async function handleDeleteFile(e: any) {
-        e.target.classList.add("disabled")
-        let loading = enqueueSnackbar(<span>Deleting {props.item.name}... <span
-            className={"loader"}/></span>, {variant: "info"});
-        let res = await backendActor.delete_file(props.item.id)
-        dispatch(handleRedux("REMOVE", {id: props.item.id}))
-        e.target.classList.remove("disabled")
-        closeSnackbar(loading)
-        enqueueSnackbar(`${props.item.name} is deleted`, {variant: "success"});
-    }
+    const handleDeleteFile = async (e: MouseEvent<HTMLSpanElement>) => {
+        e.currentTarget.classList.add("disabled");
+        
+        const loading = enqueueSnackbar(
+            <span>
+                Deleting {item.name}... <span className="loader" />
+            </span>,
+            { variant: "info" }
+        );
 
-    return (<span onClick={handleDeleteFile}> <DeleteIcon size={"small"}/> Delete</span>)
-}
-export default DeleteFile
+        try {
+            const res = await backendActor.delete_file(item.id);
+            dispatch(handleRedux("REMOVE", { id: item.id }));
+            enqueueSnackbar(`${item.name} is deleted`, { variant: "success" });
+        } catch (error) {
+            enqueueSnackbar(`Failed to delete ${item.name}`, { variant: "error" });
+        } finally {
+            e.currentTarget.classList.remove("disabled");
+            closeSnackbar(loading);
+        }
+    };
+
+    return (
+        <span onClick={handleDeleteFile}>
+            <DeleteIcon fontSize="small" /> Delete
+        </span>
+    );
+};
+
+export default DeleteFile;
