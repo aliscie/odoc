@@ -1,23 +1,32 @@
 import React from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {useSnackbar} from "notistack";
-import {MenuItem, Select} from "@mui/material";
-import {WorkSpace} from "../../../declarations/backend/backend.did";
+import { useDispatch, useSelector } from "react-redux";
+import { useSnackbar } from "notistack";
+import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import { WorkSpace } from "../../../declarations/backend/backend.did";
 
 const ChangeWorkSpace = (props: any) => {
-    const {all_friends, profile, workspaces} = useSelector((state: any) => state.filesState);
     const dispatch = useDispatch();
-    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    
+    const { workspaces } = useSelector((state: any) => state.filesState);
 
-    async function handleWorkSpace(e: any) {
+    const workSpaceNames = workspaces?.map((workspace: WorkSpace) => workspace.name) || [];
 
-    }
+    const handleWorkSpaceChange = (event: SelectChangeEvent<unknown>) => {
+        const selectedWorkSpace = event.target.value;
+        console.log(selectedWorkSpace);
+        enqueueSnackbar(`Switched to workspace: ${selectedWorkSpace}`, { variant: "success" });
+    };
 
-    const work_spaces = workspaces && workspaces.map((w: WorkSpace) => w.name);
-    return (<Select onChange={(e) => {
-        console.log(e.target.value)
-    }}>
-        {work_spaces.map((w, i) => <MenuItem key={i} value={w}>{w}</MenuItem>)}
-    </Select>)
-}
-export default ChangeWorkSpace
+    return (
+        <Select onChange={handleWorkSpaceChange}>
+            {workSpaceNames.map((name, index) => (
+                <MenuItem key={index} value={name}>
+                    {name}
+                </MenuItem>
+            ))}
+        </Select>
+    );
+};
+
+export default ChangeWorkSpace;
