@@ -129,18 +129,26 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
                 },
                 contracts: {
                     ...state.contracts,
-                    [id]: {...contract}
+                    [id]: contract
                 }
             };
         }
 
         case 'UPDATE_CONTRACT':
-            console.log("UPDATE_CONTRACT")
+            let toStore = {CustomContract: action.contract};
+
             return {
                 ...state,
+                changes: {
+                    ...state.changes,
+                    contracts: {
+                        ...state.changes.contracts,
+                        [action.contract.id]: toStore
+                    }
+                },
                 contracts: {
                     ...state.contracts,
-                    [action.contract.contract_id || action.contract.id]: action.contract
+                    [action.contract.id]: action.contract
                 }
             };
 

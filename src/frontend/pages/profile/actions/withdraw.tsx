@@ -4,12 +4,14 @@ import {useDispatch} from "react-redux";
 import LoaderButton from "../../../components/MuiComponents/LoaderButton";
 // import {actor} from "../../../App";
 import {AccountBalanceWallet} from "@mui/icons-material";
+import {useBackendContext} from "../../../contexts/BackendContext";
 
 function Withdraw(props: any) {
+    const {backendActor} = useBackendContext();
     const dispatch = useDispatch();
 
     async function handleWithdraw() {
-        let res = await actor.withdraw_usdt(Number(100));
+        let res = await backendActor?.withdraw_usdt(Number(100));
         if ("Ok" in res) {
             dispatch(handleRedux("UPDATE_BALANCE", {balance: res.Ok}));
         }
