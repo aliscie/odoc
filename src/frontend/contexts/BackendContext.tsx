@@ -11,16 +11,12 @@ import {logger} from "../DevUtils/logData";
 interface State {
     principal: string | null;
     identity: Identity | null;
-    backendActor: ActorSubclass<Record<string, ActorMethod<unknown[], unknown>>> | null;
+    backendActor: ActorSubclass<_SERVICE> | null;
     agent: HttpAgent | null;
     isAuthenticating?: boolean;
 }
 
 interface BackendContextProps {
-    authClient: AuthClient | null;
-    agent: HttpAgent | null;
-    backendActor: ActorSubclass<Record<string, ActorMethod<unknown[], unknown>>> | null;
-    isAuthenticating: boolean;
     login: () => Promise<void>;
     logout: () => void;
 }
@@ -39,7 +35,7 @@ interface BackendProviderProps {
     children: ReactNode;
 }
 
-async function handleAgent(client) {
+async function handleAgent(client: AuthClient) {
 
     let host = 'https://ic0.app';
     if (import.meta.env.VITE_DFX_NETWORK === "local") {

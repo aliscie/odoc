@@ -1,3 +1,30 @@
 # Ignore artifacts:
 build
 coverage
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore build and dist directories
+build/
+dist/
+
+# Ignore git files
+.git/
+.gitignore
+
+# Ignore editor configuration files
+.editorconfig
+
+# Ignore IDE settings directories
+.vscode/
+.idea/
+
+# Ignore log files
+*.log
+
+# Ignore environment files
+.env
+.env.local
+.env.development
+.env.test
