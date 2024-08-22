@@ -1,11 +1,9 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import List from '@mui/material/List';
-import {ListSubheader} from "@mui/material";
-import DocComponent from "./list_item";
 import Draggable from "../../MuiComponents/Draggable";
+import { useDispatch } from "react-redux";
 import { handleRedux } from '../../../redux/store/handleRedux';
-import {useDispatch} from "react-redux";
-
+import DocComponent from "./ListItem";
 
 export interface NestedDataItem {
     id: string;
@@ -13,25 +11,26 @@ export interface NestedDataItem {
     children: number[];
 }
 
-
 interface NestedListProps {
     title: string;
-    files: Array<NestedDataItem>;
+    files: NestedDataItem[];
 }
 
-const NestedList: React.FC<NestedListProps> = ({files}) => {
+const NestedList: React.FC<NestedListProps> = ({ files }) => {
     const [openItems, setOpenItems] = useState<number[]>([]);
+    const dispatch = useDispatch();
 
+    // Toggle the open/closed state of items in the list
     const handleClick = (index: number) => {
-        if (openItems.includes(index)) {
-            setOpenItems(openItems.filter((item) => item !== index));
-        } else {
-            setOpenItems([...openItems, index]);
-        }
+        setOpenItems(prevOpenItems =>
+            prevOpenItems.includes(index)
+                ? prevOpenItems.filter(item => item !== index)
+                : [...prevOpenItems, index]
+        );
     };
 
-    const dispatch = useDispatch();
-    const handleDrop: any = async ({draggedId, id, dragOverPosition, type, index}) => {
+    // Handle drop events for draggable items
+    const handleDrop = async ({ draggedId, dragOverPosition, index }) => {
         dispatch(handleRedux("CHANGE_FILE_PARENT", {
             position: dragOverPosition,
             index,
@@ -43,34 +42,41 @@ const NestedList: React.FC<NestedListProps> = ({files}) => {
     return (
         <div>
             <List
-
-                sx={{width: '100%', maxWidth: 360, margin: '5px'}}
+                sx={{ width: '100%', maxWidth: 360, margin: '5px' }}
                 component="nav"
                 aria-labelledby="nested-list-subheader"
             >
-                <Draggable preventDragUnder={true}
-                           index={0}
-                           onDrop={handleDrop}
+                {/* Top draggable placeholder */}
+                <Draggable
+                    preventDragUnder={true}
+                    index={0}
+                    onDrop={handleDrop}
                 >
-                    <div style={{height: '5px', width: '100%'}}></div>
+                    <div style={{ height: '5px', width: '100%' }}></div>
                 </Draggable>
-                {files.map((item, index) => (
-                    item.parent && item.parent.length == 0 && <DocComponent
-                        key={item.id}
-                        data={files}
-                        item={item}
-                        index={index}
-                        openItems={openItems}
-                        handleClick={handleClick}
-                        isChild={false}
-                    />
+
+                {/* Render root-level items in the list */}
+                {files?.map((item, index) => (
+                    item.parent && item.parent.length === 0 && (
+                        <DocComponent
+                            key={item.id}
+                            data={files}
+                            item={item}
+                            index={index}
+                            openItems={openItems}
+                            handleClick={handleClick}
+                            isChild={false}
+                        />
+                    )
                 ))}
+
+                {/* Bottom draggable placeholder */}
                 <Draggable
                     preventDragUnder={true}
                     index={-1}
                     onDrop={handleDrop}
                 >
-                    <div style={{height: '5px', width: '100%'}}></div>
+                    <div style={{ height: '5px', width: '100%' }}></div>
                 </Draggable>
             </List>
         </div>

@@ -37,9 +37,9 @@ function useCreateChatGroup() {
     const {enqueueSnackbar} = useSnackbar();
     const {all_friends, profile, workspaces} = useSelector((state: any) => state.filesState);
 
-    const options = all_friends && all_friends.map((f) => {
+    const options = all_friends ? all_friends.map((f) => {
         return {title: f.name, id: Principal.fromText(f.id)}
-    });
+      }) : [];
 
     const dispatch = useDispatch();
 
@@ -50,9 +50,9 @@ function useCreateChatGroup() {
         ref.current = event.target.value;
     };
 
-    const work_spaces = workspaces && workspaces.map((w: WorkSpace) => w.name);
+    const work_spaces = workspaces ? workspaces.map((w: WorkSpace) => w.name) : [];
 
-    let current_user = {title: profile && profile.name, id: profile && Principal.fromText(profile.id)};
+    let current_user = {title: profile ? profile.name : '', id: profile ? Principal.fromText(profile.id) : ''};
     const [admins, setAdmins] = useState([current_user]);
     const [members, setMember] = useState();
     const {backendActor} = useBackendContext();
