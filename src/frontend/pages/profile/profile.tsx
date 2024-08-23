@@ -30,9 +30,9 @@ import {UserHistoryCom} from "../User";
 import {useSnackbar} from 'notistack';
 import ShareProfileButton from './Actions/share_profile-button';
 import ProfilePhotoDialog from './Actions/profile_photo_dialog';
+import {logger} from "../../DevUtils/logData";
 
 export default function ProfileComponent() {
-    const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
     const { profile, friends, profile_history, wallet } = useSelector((state: any) => state.filesState);
 

@@ -1,5 +1,4 @@
 import React, {useCallback, useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react';
-import {faker} from '@faker-js/faker';
 import 'react-data-grid/lib/styles.css';
 import DataGrid, {CopyEvent, FillEvent, PasteEvent, RenderRowProps, Row, SortColumn} from 'react-data-grid';
 import {DndProvider} from 'react-dnd';
@@ -11,7 +10,6 @@ import RenameColumn from "./RenameColumn";
 import {randomString} from "../../DataProcessing/dataSamples";
 import InsertFormula from "./InsertFormula";
 import FormulaCell from "./FormulaCell";
-
 
 export interface Row {
     id: string;
@@ -34,14 +32,19 @@ function rowKeyGetter(row: Row) {
     return row.id;
 }
 
+interface Props {
+    onChangeRow: (rows: any, column: any) => void
+    onDeleteRow: (rowId: string) => void
+    onAddColumn: () => void
+}
 
-export default function DataGridSheet({initRows, initColumns, direction}: Props) {
+export default function DataGridSheet(props: Props) {
+    const {initRows, initColumns, direction} = props
     const [columns, setColumns] = useState(initColumns);
     const [rows, setRows] = useState(initRows);
     const [selectedRows, setSelectedRows] = useState((): ReadonlySet<string> => new Set());
 
     function handleFill({columnKey, sourceRow, targetRow}: FillEvent<Row>): Row {
-        console.log({columnKey, sourceRow, targetRow});
         return {...targetRow, [columnKey]: sourceRow[columnKey as keyof Row]};
     }
 
@@ -75,12 +78,13 @@ export default function DataGridSheet({initRows, initColumns, direction}: Props)
         setSelectedRows(selectedRow);
     }
 
-    const handleRowsChange = (newRows) => {
+    const handleRowsChange = (newRows, column) => {
+        props.onChangeRow(newRows, column)
         setRows(newRows);
     };
 
     function hanldeColumnResize(index: number, width: number) {
-        console.log({index, width});
+        // console.log({index, width});
     }
 
     const [columnsOrder, setColumnsOrder] = useState((): readonly number[] =>
@@ -116,7 +120,7 @@ export default function DataGridSheet({initRows, initColumns, direction}: Props)
         });
     }
 
-    const [nextId, setNextId] = useReducer((id: number) => id + 1, rows[rows.length - 1].id + 1);
+    const [nextId, setNextId] = useReducer((id: number) => id + 1, rows.length > 0 && rows[rows.length - 1].id + 1);
 
     const renderRow = useCallback((key: React.Key, props: RenderRowProps<Row>) => {
         function onRowReorder(fromIndex: number, toIndex: number) {
@@ -162,9 +166,7 @@ export default function DataGridSheet({initRows, initColumns, direction}: Props)
 
     function insertRow(insertRowIdx: number) {
         const newRow: Row = {
-            id: nextId,
-            product: faker.commerce.productName(),
-            price: faker.commerce.price()
+            id: randomString(),
         };
 
         setRows([...rows.slice(0, insertRowIdx), newRow, ...rows.slice(insertRowIdx)]);
@@ -185,6 +187,7 @@ export default function DataGridSheet({initRows, initColumns, direction}: Props)
         };
         setColumns([...columns.slice(0, index + 1), newColumn, ...columns.slice(index + 1)]);
         setColumnsOrder([...columnsOrder, columns.length]);
+        props.onAddColumn();
     };
 
     const onDeleteColumn = () => {
@@ -208,6 +211,7 @@ export default function DataGridSheet({initRows, initColumns, direction}: Props)
 
 
     return (
+
         <DndProvider backend={HTML5Backend}>
             <DataGrid
                 onCellClick={(args, event) => {
@@ -227,7 +231,7 @@ export default function DataGridSheet({initRows, initColumns, direction}: Props)
                 onRowsChange={handleRowsChange}
 
                 rows={rows}
-                renderers={{renderRow}}
+                renderers={{renderRow, noRowsFallback: <h1>No rows to show.</h1>}}
                 rowKeyGetter={rowKeyGetter}
                 onFill={handleFill}
                 onCopy={handleCopy}
@@ -295,7 +299,19 @@ export default function DataGridSheet({initRows, initColumns, direction}: Props)
 
 
                         <MenuItem onClick={() => {
+
                             const {rowIdx} = contextMenuProps;
+                            const rowId = rows[rowIdx].id;
+                            props.onDeleteRow(rowId);
+                            if (rows.length <= 1) {
+                                setRows([{
+                                    id: nextId,
+                                    product: faker.commerce.productName(),
+                                    price: faker.commerce.price()
+                                }]);
+                                return
+                            }
+
                             setRows([...rows.slice(0, rowIdx), ...rows.slice(rowIdx + 1)]);
                             setContextMenuProps(null);
                         }}>

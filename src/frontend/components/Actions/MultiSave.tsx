@@ -3,13 +3,13 @@ import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../redux/store/handleRedux";
 import {useSnackbar} from "notistack";
-import {ContentNode, CPayment, CustomContract, StoredContract} from "../../../declarations/backend/backend.did";
+import {ContentNode, CPayment, StoredContract} from "../../../declarations/backend/backend.did";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 import {LoadingButton} from "@mui/lab";
 import {useBackendContext} from "../../contexts/BackendContext";
 import {logger} from "../../DevUtils/logData";
 
-function MultiSaveButton(props: any) {
+function MultiSaveButton() {
 
     const dispatch = useDispatch();
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
@@ -20,7 +20,6 @@ function MultiSaveButton(props: any) {
 
     let serialized_content: Array<Array<[string, Array<ContentNode>]>> = serializeFileContents(changes.contents)
     let serialized_contracts: Array<StoredContract> = Object.values(changes.contracts);
-    // let files: Array<FileNode> = Object.values(changes.files);
     let delete_contracts: Array<string> = changes.delete_contracts || [];
 
     const {backendActor} = useBackendContext();
@@ -48,7 +47,6 @@ function MultiSaveButton(props: any) {
         let payments: Array<CPayment> = [];
 
 
-        // get the promoses with status.Realsed === null and push them to payments
         serialized_contracts.forEach((contract: StoredContract) => {
             if (contract.CustomContract) {
                 contract.CustomContract.promises.forEach((promise: CPayment) => {

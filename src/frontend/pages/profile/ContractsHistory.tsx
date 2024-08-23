@@ -8,6 +8,8 @@ import {CustomContractComponent} from "../../components/ContractTable";
 import {custom_contract} from "../../DataProcessing/dataSamples";
 import {handleRedux} from "../../redux/store/handleRedux";
 import {StoredContract} from "../../../declarations/backend/backend.did";
+import {logger} from "../../DevUtils/logData";
+import {Divider} from "@mui/material";
 
 
 function ContractsHistory(props: any) {
@@ -28,11 +30,8 @@ function ContractsHistory(props: any) {
             >Create new contract</Button>
             {
                 Object.values(contracts).map((contract: CustomContractComponent | any) => {
-                    let c = Object.values(contract)
-                    if (c) {
-                        return <ListItem>
-                            <CustomContractComponent contract={c}/>
-                        </ListItem>
+                    if (contract) {
+                        return <ListItem><CustomContractComponent contract={contract}/></ListItem>
                     }
                 })
             }

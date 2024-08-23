@@ -26,7 +26,6 @@ function LoaderButton(props: LoaderButtonProps) {
             enqueueSnackbar(res.Err, {variant: "error"});
         }
         setLoading(false)
-
     }
 
     return (<LoadingButton
