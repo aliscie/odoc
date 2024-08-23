@@ -68,7 +68,9 @@ const MessageComponent: React.FC<FrontendMessage> = (message) => {
                 color="text.secondary"
               >
                 <Tooltip title={formatTimestamp(message.date)}>
-                  {formatRelativeTime(message.date)}
+                  <React.Fragment>
+                    {formatRelativeTime(Number(message.date))}
+                  </React.Fragment>
                 </Tooltip>
                 {message.is_saving ? <DoneIcon fontSize="small" /> : <DoneAllIcon fontSize="small" />}
               </Typography>
