@@ -1,11 +1,13 @@
+import React from "react";
+import { useBackendContext } from "../../../contexts/BackendContext";
 import { handleRedux } from "../../../redux/store/handleRedux";
 import {useDispatch, useSelector} from "react-redux";
 import {Principal} from "@dfinity/principal";
 import {Chat, FEChat} from "../../../../declarations/backend/backend.did";
-import React from "react";
+
 
 function useGetChats() {
-
+    const { backendActor } = useBackendContext();
     const profile = useSelector((state: any) => state.filesReducer.profile);
     const chats = useSelector((state: any) => state.chatsReducer.chats);
 
@@ -24,7 +26,7 @@ function useGetChats() {
     const getChats = React.useCallback(async () => {
         if (!chats || chats.length === 0) {
             try {
-                let res: undefined | Array<FEChat> = actor && await actor.get_my_chats();
+                let res: undefined | Array<FEChat> = backendActor && await backendActor.get_my_chats();
                 res && dispatch(handleRedux("SET_CHATS", {chats: res}));
                 return res;
             } catch (error) {
