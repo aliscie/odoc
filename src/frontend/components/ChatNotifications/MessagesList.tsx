@@ -5,14 +5,31 @@ import { Box, Typography, Input, Button } from '@mui/material';
 import { FEChat, Message } from '../../../declarations/backend/backend.did';
 import SendMessageBox from '../ChatSendMessage/SendMessageBox';
 import MessageComponent from './Message';
-import GroupAvatars from '../Chat/HelperComponent/AvatsList';
+import GroupAvatars from '../Chat/HelperComponent/AvaterList';
+
+interface RootState {
+  filesState: {
+    current_file: string | null;
+    files_content: any[];
+    profile: { id: string };
+  };
+  chatsState: {
+    current_chat_id: string | null;
+    chats: FEChat[];
+  };
+}
 
 const MessagesList: React.FC = () => {
-  const { current_file, files_content, profile } = useSelector((state: any) => state.filesState);
-  const { current_chat_id, chats } = useSelector((state: any) => state.chatsState);
+  const { current_file, files_content, profile } = useSelector(
+    (state: RootState) => state.filesState
+  );
+  const { current_chat_id, chats } = useSelector(
+    (state: RootState) => state.chatsState
+  );
+
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const currentChat = chats.find((chat: FEChat) => chat.id === current_chat_id);
+  const currentChat = chats.find((chat) => chat.id === current_chat_id);
 
   useEffect(() => {
     if (currentChat) {
@@ -30,15 +47,22 @@ const MessagesList: React.FC = () => {
           <Input defaultValue={currentChat?.name || ''} />
         </Typography>
       )}
+
       {isGroupChat && <GroupAvatars chat={currentChat} />}
-      
+
       <Box sx={{ flex: 1, overflowY: 'auto', padding: 2 }}>
         {messages.length > 0 ? (
           messages.map((message) => (
-            <MessageComponent key={message.id} current_chat_id={current_chat_id} {...message} />
+            <MessageComponent
+              key={message.id}
+              current_chat_id={current_chat_id!}
+              {...message}
+            />
           ))
+        ) : currentChat ? (
+          <CircularProgress />
         ) : (
-          currentChat ? <CircularProgress /> : <Button>No messages yet.</Button>
+          <Button>No messages yet.</Button>
         )}
       </Box>
     </Box>
