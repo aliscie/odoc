@@ -31,7 +31,7 @@ const MessageInput = ({ onSend }) => {
                     flexGrow: 1,
                     marginRight: 1,
                     '& .MuiOutlinedInput-root': {
-                        paddingRight: '40px', // Adjust to leave space for the send icon
+                        paddingRight: '40px',
                     },
                 }}
                 InputProps={{

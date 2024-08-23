@@ -7,7 +7,7 @@ import {Principal} from "@dfinity/principal";
 import {CustomContractComponent} from "../../components/ContractTable";
 import {custom_contract} from "../../DataProcessing/dataSamples";
 import {handleRedux} from "../../redux/store/handleRedux";
-import {StoredContract} from "../../../declarations/backend/backend.did";
+import {CustomContract, StoredContract} from "../../../declarations/backend/backend.did";
 import {logger} from "../../DevUtils/logData";
 import {Divider} from "@mui/material";
 
@@ -29,7 +29,7 @@ function ContractsHistory(props: any) {
                 variant={'outlined'}
             >Create new contract</Button>
             {
-                Object.values(contracts).map((contract: CustomContractComponent | any) => {
+                Object.values(contracts).map((contract: CustomContract | any) => {
                     if (contract) {
                         return <ListItem><CustomContractComponent contract={contract}/></ListItem>
                     }

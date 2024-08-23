@@ -1,50 +1,68 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { FEChat, Message } from '../../../declarations/backend/backend.did';
 import CircularProgress from '@mui/material/CircularProgress';
-import SendMessageBox from '../ChatSendMessage/SendMessageBox';
-import MessageComponent, { FrontendMessage } from './message';
-import GroupAvatars from '../Chat/HelperComponent/AvatsList';
 import { Box, Typography, Input, Button } from '@mui/material';
+import { FEChat, Message } from '../../../declarations/backend/backend.did';
+import SendMessageBox from '../ChatSendMessage/SendMessageBox';
+import MessageComponent from './Message';
+import GroupAvatars from '../Chat/HelperComponent/AvaterList';
 
-interface MessagesListProps {}
+interface RootState {
+  filesState: {
+    current_file: string | null;
+    files_content: any[];
+    profile: { id: string };
+  };
+  chatsState: {
+    current_chat_id: string | null;
+    chats: FEChat[];
+  };
+}
 
-const MessagesList: React.FC<MessagesListProps> = () => {
-  const { current_file, files_content, profile } = useSelector((state: any) => state.filesState)
-  const { current_chat_id, chats } = useSelector((state: any) => state.chatsState)
+const MessagesList: React.FC = () => {
+  const { current_file, files_content, profile } = useSelector(
+    (state: RootState) => state.filesState
+  );
+  const { current_chat_id, chats } = useSelector(
+    (state: RootState) => state.chatsState
+  );
+
   const [messages, setMessages] = useState<Message[]>([]);
-  const [noMessages, setNoM] = useState<boolean>(current_chat_id === 'chat_id');
 
-  const currentChat = chats.find((chat: FEChat) => chat.id === current_chat_id);
+  const currentChat = chats.find((chat) => chat.id === current_chat_id);
 
   useEffect(() => {
-    if (chats && chats.length > 0 && current_chat_id !== 'chat_id') {
-      if (currentChat) {
-        setMessages(currentChat.messages || []);
-        setNoM(false);
-      }
+    if (currentChat) {
+      setMessages(currentChat.messages || []);
     }
-  }, [chats, current_chat_id]);
+  }, [currentChat]);
 
-  const is_group = currentChat && currentChat.name !== 'private_chat';
-  const is_admin = currentChat && currentChat.admins.some((admin) => admin.id === profile.id);
+  const isGroupChat = currentChat?.name !== 'private_chat';
+  const isAdmin = currentChat?.admins.some((admin) => admin.id === profile.id);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {is_group && is_admin && (
+      {isGroupChat && isAdmin && (
         <Typography variant="subtitle1" component="div">
-          <Input defaultValue={currentChat && currentChat.name} />
+          <Input defaultValue={currentChat?.name || ''} />
         </Typography>
       )}
-      {is_group && <GroupAvatars chat={currentChat} />}
-      {noMessages && <Button>No messages yet.</Button>}
+
+      {isGroupChat && <GroupAvatars chat={currentChat} />}
+
       <Box sx={{ flex: 1, overflowY: 'auto', padding: 2 }}>
         {messages.length > 0 ? (
-          messages.map((message: FrontendMessage) => (
-            <MessageComponent key={message.id} current_chat_id={current_chat_id} {...message} />
+          messages.map((message) => (
+            <MessageComponent
+              key={message.id}
+              current_chat_id={current_chat_id!}
+              {...message}
+            />
           ))
+        ) : currentChat ? (
+          <CircularProgress />
         ) : (
-          !noMessages && <CircularProgress />
+          <Button>No messages yet.</Button>
         )}
       </Box>
     </Box>

@@ -1,28 +1,8 @@
-import * as React from "react";
-import App from "../../App";
-import {findByText, render} from "@testing-library/react";
-import configureStore from 'redux-mock-store';
-
-import {initialState} from "../../redux/reducers/filesReducersOld";
-import TestRapper from "../utils/tests_wrapper";
-import {RegisterUser} from "../../../declarations/backend/backend.did";
-
-const mockStore = configureStore([]);
-
-
-test("Test render app", async () => {
-    let input: RegisterUser = {
-        'name': ["string"],
-        'description': ["Somthing"],
-        'photo': [[]],
-    };
-    let res = await global.actor.register(input);
-    let store = mockStore(initialState);
-    render(<TestRapper>
-        <App/>
-    </TestRapper>);
-    // find by classname = login
-    // let loginButton = await findByText(document.body, "Login");
-    // expect(loginButton).toBeInTheDocument();
-
+// src/App.test.js
+import { render, screen } from '@testing-library/react';
+import App from '../../App';
+test('renders without crashing', () => {
+  render(<App />);
+  const linkElement = screen.getByText(/some text in your App component/i);
+  expect(linkElement).toBeInTheDocument();
 });

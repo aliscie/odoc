@@ -35,6 +35,7 @@ const InitialDataFetcher = () => {
         if (data && "Ok" in data) {
             dispatch(filesActions.updateProfile(data.Ok.Profile));
             dispatch(handleRedux("INIT_FILES", {files: data.Ok.Files}));
+            dispatch(handleRedux("UPDATE_PROFILE", {files: data.Ok.Profile}));
             dispatch(handleRedux("INIT_CONTRACTS", {contracts: deserializeContracts(data.Ok.Contracts)}));
             dispatch(handleRedux("INIT_CONTENTS", {files_content: normalizeFilesContents(data.Ok.FilesContents[0])}));
             // dispatch(filesActions.addWorkspace(data.Ok.Workspaces));

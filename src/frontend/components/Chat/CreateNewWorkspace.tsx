@@ -1,66 +1,96 @@
-import React, {useRef} from "react";
+import React, {useRef, useState} from "react";
 import { handleRedux } from "../../redux/store/handleRedux";
 import {useDispatch, useSelector} from "react-redux";
-import {TextField} from "@mui/material";
+import {TextField, Button, Tooltip, Input} from "@mui/material";
 import {WorkSpace} from "../../../declarations/backend/backend.did";
 import {Principal} from "@dfinity/principal";
 import { randomString } from "../../DataProcessing/dataSamples";
-// import {actor} from "../../App";
 import {useSnackbar} from "notistack";
 import {useBackendContext} from "../../contexts/BackendContext";
+import AddIcon from '@mui/icons-material/Add';
+import { Result_11 } from "../../../declarations/backend/backend.did";
 
 function useCreateWorkSpace() {
-    const {backendActor} = useBackendContext()
+    const {backendActor} = useBackendContext();
     const {enqueueSnackbar} = useSnackbar();
-    const { profile} = useSelector((state: any) => state.filesState);
+    const { profile } = useSelector((state: any) => state.filesState);
     const dispatch = useDispatch();
 
-    // Initialize refs for TextField values
     const nameRef = useRef('');
-    const adminsRef = useRef('');
-    const membersRef = useRef('');
 
-    // Initialize state for the Select component
-
-    // Handler for TextField changes
-    const handleChange = (ref) => (event) => {
+    const handleChange = (ref: React.MutableRefObject<string>) => (event: { target: { value: string; }; }) => {
         ref.current = event.target.value;
     };
 
-    let new_group = <>
-        <TextField name="name" label="Name" onChange={handleChange(nameRef)}/>
-        <TextField disabled name="admins" label="Admins" onChange={handleChange(adminsRef)}/>
-        <TextField disabled name="members" label="Members" onChange={handleChange(membersRef)}/>
-        <p/>
-    </>;
-
-    // Define the top dialog properties
-    let top_dialog = {
+    const top_dialog = {
         open: true,
         handleSave: async () => {
-            // let id = randomString();
-            const new_workspace: WorkSpace = {
+            if (!backendActor) {
+                enqueueSnackbar("Backend service is unavailable", {variant: "error"});
+                return false;
+            }
+
+            if (nameRef.current.length === 0) {
+                enqueueSnackbar("Name is required", {variant: "error"});
+                return false;
+            }
+
+            const newWorkSpace: WorkSpace = {
                 name: nameRef.current,
-                'id': randomString(),
-                'files': [],
-                'creator': Principal.fromText(profile.id),
-                'members': [],
-                'chats': [],
-                'admins': [],
-                // admins: adminsRef.current,
-                // members: membersRef.current,
+                id: randomString(),
+                files: [],
+                creator: Principal.fromText(profile.id),
+                members: [],
+                chats: [],
+                admins: [],
             };
-            let save_work_space =   await backendActor.save_work_space(new_workspace);
-            dispatch(handleRedux("ADD_WORKSPACE", {new_workspace}))
-            enqueueSnackbar("WorkSpace created", {variant: "success"});
+
+            let saveWorkSpace = await backendActor.save_work_space(newWorkSpace) as Result_11;
+
+            if ("Ok" in saveWorkSpace) {
+                dispatch(handleRedux("ADD_WORKSPACE", {newWorkSpace}));
+                enqueueSnackbar("WorkSpace created", {variant: "success"});
+            } else {
+                enqueueSnackbar("Error: " + saveWorkSpace.Err, {variant: "error"});
+            }
+            return true;
         },
-        content: new_group,
+        content: (
+            <>
+                <TextField name="name" label="Name" onChange={handleChange(nameRef)} />
+            </>
+        ),
     };
 
-    // Return the onClick function and button content
+    const createNewWorkspace = async () => {
+        dispatch(handleRedux("TOP_DIALOG", top_dialog));
+    }
+
+    const [searchValue, setSearchValue] = useState("");
+
+    const WorkspaceOptions = () => {
+        return (
+            <div>
+                <Tooltip arrow title={"Create new workspace"}>
+                    <Button onClick={createNewWorkspace}><AddIcon /></Button>
+                </Tooltip>
+                <Input
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    sx={{ ml: 1, flex: 1 }}
+                    placeholder="Search workspaces"
+                    inputProps={{ 'aria-label': 'search workspaces' }}
+                />
+            </div>
+        );
+    }
+
     return {
-        onClick: () => dispatch(handleRedux("TOP_DIALOG", top_dialog)),
-        content: "+ Create new workSpace",
+        workspaceGroup: {
+            pure: true,
+            content: <WorkspaceOptions />
+        },
+        searchValue
     };
 }
 

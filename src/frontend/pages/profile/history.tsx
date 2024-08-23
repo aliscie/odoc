@@ -46,19 +46,17 @@ export default function BasicTabs(props: any) {
 
     return (
         <Box sx={{width: '100%'}}>
-            <Box sx={{borderBottom: 1, borderColor: 'divider'}}>
-                <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                    {Object.keys(props.items).map((key: any, index: number) => <Tab
-                        label={key} {...a11yProps(index)} />)}
-                </Tabs>
-            </Box>
+           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                {Object.keys(props.items).map((key: any, index: number) => (
+                    <Tab key={key} label={key} {...a11yProps(index)} />
+                ))}
+            </Tabs>
+
             {Object.values(props.items).map((item: any, index: number) => (
-                <CustomTabPanel value={value} index={index}>
+                <CustomTabPanel key={index} value={value} index={index}>
                     {item}
                 </CustomTabPanel>
             ))}
-
-
         </Box>
     );
 }

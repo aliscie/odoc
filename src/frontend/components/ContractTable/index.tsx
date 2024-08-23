@@ -15,7 +15,6 @@ import {useDispatch} from "react-redux";
 export function CustomContractComponent({contract}: { contract: CustomContract }) {
     const dispatch = useDispatch();
 
-
     let options = [
         {
             content: <Input placeholder={"Untitled contract"}/>,

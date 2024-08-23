@@ -6,11 +6,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import {Message} from '../../../declarations/backend/backend.did';
 import {useDispatch, useSelector} from 'react-redux';
 import {handleRedux} from '../../redux/store/handleRedux';
-import {Badge} from '@mui/base';
+import {Badge} from '@mui/material';
 import useCreateChatGroup from './CreateNewGroup';
 import {useBackendContext} from '../../contexts/BackendContext';
 
-interface Props {
+interface ChatsComponentProps {
 }
 
 interface Option {
@@ -18,14 +18,14 @@ interface Option {
     content: JSX.Element;
 }
 
-const ChatsComponent: React.FC<Props> = () => {
+const ChatsComponent: React.FC<ChatsComponentProps> = () => {
     const {backendActor} = useBackendContext();
     const {chatGroup, searchValue} = useCreateChatGroup();
     const {profile} = useSelector((state: any) => state.filesState);
-    const dispatch = useDispatch();
     const {chatsNotifications} = useSelector((state: any) => state.chatsState);
+    const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
-    const [messages, setMessages] = useState<Message[]>(chatsNotifications);
+    const [messages, setMessages] = useState<Message[]>(chatsNotifications || []);
 
     useEffect(() => {
         const fetchNotifications = async () => {
@@ -39,35 +39,38 @@ const ChatsComponent: React.FC<Props> = () => {
                     }
                 } catch (error) {
                     console.error("Issue fetching notifications from backend: ", error);
+                } finally {
+                    setLoading(false);
                 }
-
-                setLoading(false);
             } else {
                 setMessages(chatsNotifications);
             }
         };
+
         fetchNotifications();
     }, [backendActor, chatsNotifications, dispatch]);
 
-    const searchedMessages = messages ? messages.filter((message: Message) =>
+    const searchedMessages = messages && messages.filter((message: Message) =>
         message.message.toLowerCase().includes(searchValue.toLowerCase())
-    ) : [];
+    );
+
+    const unseenMessages = profile
+        ? messages && messages.filter(
+        (message: Message) => !message.seen_by.some((user) => user.toString() === profile.id)
+    )
+        : [];
+
     const options: Option[] = [chatGroup];
-    // const options: Option[] = [];
 
     if (loading) {
         options.push({content: <CircularProgress/>});
-    } else if (searchedMessages.length > 0) {
+    } else if (searchedMessages && searchedMessages.length > 0) {
         searchedMessages.forEach((message: Message) => {
-            options.push({content: <ChatNotification {...message} />});
+            options.push({content: <ChatNotification key={message.id} {...message} />});
         });
     } else {
         options.push({content: <div>You have no messages yet!</div>});
     }
-
-    const unseenMessages = profile
-        ? messages && messages.filter((message: Message) => !message.seen_by.some((user) => user.toString() === profile.id))
-        : [];
 
     return (
         <BasicMenu

@@ -16,7 +16,7 @@ import {logger} from "../../../DevUtils/logData";
 function Promises(props) {
     const {profile} = useSelector((state: any) => state.filesState);
     const dispatch = useDispatch();
-
+    console.log({contract: props.contract})
     let rows = props.contract.promises.map((promise, index) => {
         if (promise.cells.length > 0) {
             console.log({xxx: promise.cells})

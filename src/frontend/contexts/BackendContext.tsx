@@ -164,4 +164,3 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({children}) => {
         </BackendContext.Provider>
     );
 };
-

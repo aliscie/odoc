@@ -81,7 +81,8 @@
     "format": "prettier --write .",
     "generate": "scripts/did.sh && dfx --identity anonymous generate  && npm run format",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "sonar": "sonar-scanner"
   },
   "eslintConfig": {
     "extends": [
@@ -129,6 +130,7 @@
     "@types/redux-mock-store": "^1.0.6",
     "@types/redux-thunk": "2.1.0",
     "@types/testing-library__jest-dom": "^6.0.0",
+    "@vitest/coverage-v8": "^2.0.5",
     "@vitest/ui": "^2.0.5",
     "autoprefixer": "^10.4.20",
     "eslint-plugin-storybook": "^0.8.0",
@@ -139,6 +141,7 @@
     "jsdom": "^24.1.1",
     "lightic": "^0.4.1",
     "postcss": "^8.4.41",
+    "prettier": "3.3.3",
     "react-test-renderer": "^18.3.1",
     "redux": "^5.0.1",
     "redux-mock-store": "^1.5.4",

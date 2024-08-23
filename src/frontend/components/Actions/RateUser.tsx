@@ -1,78 +1,96 @@
-import {Rating} from "../../../declarations/backend/backend.did";
-import {Input, Rating as RatingCom} from "@mui/material";
-import * as React from "react";
-import {Principal} from "@dfinity/principal";
-import { randomString } from "../../DataProcessing/dataSamples";
-// import {actor} from "../../App";
-import {useSnackbar} from "notistack";
+import React, { useState, useRef, ChangeEvent } from "react";
+import { Input, Rating as RatingComponent } from "@mui/material";
+import { Principal } from "@dfinity/principal";
+import { useSnackbar } from "notistack";
+import { LoadingButton } from "@mui/lab";
+import { useSelector } from "react-redux";
+import { useBackendContext } from "../../contexts/BackendContext";
 import DialogOver from "../MuiComponents/DialogOver";
-import {LoadingButton} from "@mui/lab";
-import {useSelector} from "react-redux";
-import {useBackendContext} from "../../contexts/BackendContext";
+import { randomString } from "../../DataProcessing/dataSamples";
+import { Rating } from "../../../declarations/backend/backend.did";
 
-interface Props {
-    id: string,
-    rate: number,
+interface RateUserProps {
+    id: string;
+    rate: number;
 }
 
-
-function RateUser(props: Props) {
+const RateUser: React.FC<RateUserProps> = ({ id, rate: initialRate }) => {
     const { backendActor } = useBackendContext();
-    const {profile} = useSelector((state: any) => state.filesState);
+    const { profile } = useSelector((state: any) => state.filesState);
+    const { enqueueSnackbar } = useSnackbar();
 
-    // const [comment, setComment] = React.useState<string>("");
-    const commentRef = React.useRef<string>("");
-    const [rate, setRate] = React.useState<number | null>(props.rate);
-    const [loading, setLoading] = React.useState<boolean>(false);
-    const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+    const commentRef = useRef<string>("");
+    const [rate, setRate] = useState<number | null>(initialRate);
+    const [loading, setLoading] = useState<boolean>(false);
 
-    const handleRating = (event, newValue) => {
-        if (newValue > 0) {
-            setRate(newValue)
+    const handleRating = (_event: React.ChangeEvent<{}>, newValue: number | null) => {
+        if (newValue !== null && newValue > 0) {
+            setRate(newValue);
         }
-    }
+    };
+
     const handleSubmit = async () => {
-        let rating: Rating = {
-            'id': randomString(),
-            'date': Date.now() * 1e6,
-            'user_id': Principal.fromText(profile.id),
-            'comment': commentRef.current,
-            'rating': rate || 0,
-        }
-        setLoading(true)
-        let res: undefined | { Ok: null } | { Err: string } =  await backendActor.rate_user(Principal.fromText(props.id), rating)
-        setLoading(false)
-        setRate(props.rate)
-        if (res && res['Ok']) {
-            enqueueSnackbar("Thank you for your feedback", {variant: "success"})
-        } else if (res) {
-            enqueueSnackbar(res['Err'], {variant: "error"})
-        } else {
-            enqueueSnackbar("Something went wrong", {variant: "error"})
-        }
-        return res
-    }
-    const handleInput = (event: any) => {
-        // setComment(event.target.value)
-        commentRef.current = event.target.value
-    }
+        const rating: Rating = {
+            id: randomString(),
+            date: Date.now() * 1e6,
+            user_id: Principal.fromText(profile.id),
+            comment: commentRef.current,
+            rating: rate || 0,
+        };
 
-    return <DialogOver
-        size={"small"}
-        disabled={loading}
-        variant="text"
-        DialogContent={(dia: any) => <React.Fragment>
-            Comment : <Input disabled={loading} onChange={handleInput}/>
-            <LoadingButton loading={loading} disabled={loading} onClick={async () => {
-                await handleSubmit()
-                dia.handleCancel()
-            }}>Submit</LoadingButton>
-        </React.Fragment>}>
-        <RatingCom
-            // Disabled
-            onChangeActive={handleRating}
-            name="half-rating" defaultValue={rate || 0} precision={0.5}/>
-    </DialogOver>
-}
+        setLoading(true);
+
+        try {
+            const res = await backendActor?.rate_user(Principal.fromText(id), rating);
+
+            if (res?.Ok !== undefined) {
+                enqueueSnackbar("Thank you for your feedback", { variant: "success" });
+                setRate(initialRate);  // Reset to initial rate after submission
+            } else if (res?.Err) {
+                enqueueSnackbar(res.Err, { variant: "error" });
+            } else {
+                enqueueSnackbar("Something went wrong", { variant: "error" });
+            }
+        } catch (error) {
+            enqueueSnackbar("An error occurred while submitting your rating", { variant: "error" });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
+        commentRef.current = event.target.value;
+    };
+
+    return (
+        <DialogOver
+            size="small"
+            disabled={loading}
+            variant="text"
+            DialogContent={(dia: any) => (
+                <>
+                    Comment: <Input disabled={loading} onChange={handleInput} />
+                    <LoadingButton
+                        loading={loading}
+                        disabled={loading}
+                        onClick={async () => {
+                            await handleSubmit();
+                            dia.handleCancel();
+                        }}
+                    >
+                        Submit
+                    </LoadingButton>
+                </>
+            )}
+        >
+            <RatingComponent
+                onChange={handleRating}
+                name="half-rating"
+                defaultValue={rate || 0}
+                precision={0.5}
+            />
+        </DialogOver>
+    );
+};
 
 export default RateUser;

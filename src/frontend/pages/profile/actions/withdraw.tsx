@@ -1,21 +1,27 @@
-import * as React from "react";
 import { handleRedux } from "../../../redux/store/handleRedux";
 import {useDispatch} from "react-redux";
 import LoaderButton from "../../../components/MuiComponents/LoaderButton";
-// import {actor} from "../../../App";
+import { useBackendContext } from "../../../contexts/BackendContext";
 import {AccountBalanceWallet} from "@mui/icons-material";
-import {useBackendContext} from "../../../contexts/BackendContext";
+import { Result_3 } from "../../../../declarations/backend/backend.did";
 
-function Withdraw(props: any) {
-    const {backendActor} = useBackendContext();
+const Withdraw = (props: any) => {
+    const { backendActor } = useBackendContext();
     const dispatch = useDispatch();
 
-    async function handleWithdraw() {
-        let res = await backendActor?.withdraw_usdt(Number(100));
+
+    const handleWithdraw = async () => {
+        if (!backendActor) return;
+
+        const res = await backendActor.withdraw_usdt(100) as Result_3; // Result_3 represent the return type of the function
+
         if ("Ok" in res) {
-            dispatch(handleRedux("UPDATE_BALANCE", {balance: res.Ok}));
+            dispatch(handleRedux("UPDATE_BALANCE", { balance: res.Ok }));
+        } else if ("Err" in res) {
+            console.error(`Withdraw failed: ${res.Err}`);
         }
-        return res
+
+        return res;
     }
 
     return (<LoaderButton
