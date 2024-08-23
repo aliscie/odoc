@@ -8,7 +8,6 @@ import MessageDialog from '../MuiComponents/MessageDialog';
 import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
-import SendMessageBox from './SendMessageBox';
 
 interface Message {
     text: string;
