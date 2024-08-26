@@ -5,21 +5,22 @@ import ListItem from "@mui/material/ListItem";
 import Button from "@mui/material/Button";
 import {Principal} from "@dfinity/principal";
 import {CustomContractComponent} from "../../components/ContractTable";
-import {custom_contract} from "../../DataProcessing/dataSamples";
+import {custom_contract, randomString} from "../../DataProcessing/dataSamples";
 import {handleRedux} from "../../redux/store/handleRedux";
-import {CustomContract, StoredContract} from "../../../declarations/backend/backend.did";
-import {logger} from "../../DevUtils/logData";
-import {Divider} from "@mui/material";
+import {CustomContract} from "../../../declarations/backend/backend.did";
 
 
 function ContractsHistory(props: any) {
     const dispatch = useDispatch();
     const {contracts, profile} = useSelector((state: any) => state.filesState);
     const handleClick = () => {
-        custom_contract.id = Math.random().toString(36).substring(7);
-        custom_contract.creator = profile && Principal.fromText(profile.id);
-        custom_contract.date_created = Date.now() * 1e6;
-        dispatch(handleRedux("ADD_CONTRACT", {contract: custom_contract}));
+        let newContract = {
+            ...custom_contract,
+            id:randomString(),
+            creator: profile && Principal.fromText(profile.id),
+            date_created: Date.now() * 1e6
+        }
+        dispatch(handleRedux("ADD_CONTRACT", {contract: newContract}));
     }
     return (
         <List dense>

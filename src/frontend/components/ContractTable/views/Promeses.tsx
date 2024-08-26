@@ -11,7 +11,6 @@ import {handleRedux} from "../../../redux/store/handleRedux";
 import {renderUser} from "../renders/renderUser";
 import {renderStatusCell} from "../renders/renderStatusCell";
 import rowToCells from "../serializers/rowToCells";
-import {logger} from "../../../DevUtils/logData";
 
 export const MAIN_FIELDS = ['id', 'sender', 'receiver', 'receiver', 'amount', 'status']
 

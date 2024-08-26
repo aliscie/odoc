@@ -14,26 +14,26 @@ import {createCContract} from "./utils";
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteTableContract from "./actions/DeleteTableContract";
 import RenameTableContract from "./actions/RenameTableContract";
-
+import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
+import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 
 export function CustomContractComponent({contract}: { contract: CustomContract }) {
     const dispatch = useDispatch();
     const [view, setView] = useState<VIEW_OPTIONS>({content: PROMISES});
 
     let options = [
-        // {
-        //     content: <Input placeholder={"Untitled contract"}/>,
-        // },
         {
             content: <DeleteContract id={contract.id}/>,
         },
-        {
-            content: <DeleteTableContract contract={contract} view={view}/>,
-        },
-        {
-            content: <RenameTableContract contract={contract} view={view}/>,
-        }
     ];
+    if (view.contract) {
+        options.push({
+            content: <DeleteTableContract contract={contract} view={view}/>,
+        })
+        options.push({
+            content: <RenameTableContract contract={contract} view={view}/>,
+        })
+    }
 
     let viewOptions: VIEW_OPTIONS[] = [
         {
@@ -77,7 +77,7 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
         dispatch(handleRedux("UPDATE_CONTRACT", {contract: updated_contract}));
     }, 300);
 
-
+    const [expanded, setExpanded] = useState(true);
     return (<div>
         <ButtonGroup size="small" variant="contained" aria-label="Basic button group">
 
@@ -112,8 +112,10 @@ export function CustomContractComponent({contract}: { contract: CustomContract }
             >
                 <MoreVertIcon/>
             </BasicMenu>
+            <Button onClick={() => setExpanded(!expanded)}>{expanded ? <CloseFullscreenIcon/> :
+                <OpenInFullIcon/>}</Button>
         </ButtonGroup>
-        <RenderViews view={view} contract={contract}/>
+        {expanded && <RenderViews view={view} contract={contract}/>}
 
     </div>);
 }

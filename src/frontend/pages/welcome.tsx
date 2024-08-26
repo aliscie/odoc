@@ -31,7 +31,7 @@ const FullWidthTabs = () => {
                             <ListItemIcon>
                                 <Search />
                             </ListItemIcon>
-                            <ListItemText primary="Find people on Discover, or post about your job offer" />
+                            <ListItemText primary="Find people on Index, or post about your job offer" />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon>
@@ -59,7 +59,7 @@ const FullWidthTabs = () => {
                             <ListItemIcon>
                                 <Work />
                             </ListItemIcon>
-                            <ListItemText primary="Post about your skills in Discover, or find hiring posts" />
+                            <ListItemText primary="Post about your skills in Index, or find hiring posts" />
                         </ListItem>
                         <ListItem>
                             <ListItemIcon>

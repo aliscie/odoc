@@ -1,6 +1,6 @@
 import React, {useCallback, useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react';
 import 'react-data-grid/lib/styles.css';
-import DataGrid, {CopyEvent, FillEvent, PasteEvent, RenderRowProps, Row, SortColumn, textEditor} from 'react-data-grid';
+import DataGrid, {CopyEvent, FillEvent, PasteEvent, RenderRowProps, Row, SortColumn} from 'react-data-grid';
 import {DndProvider} from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';
 import {DraggableRowRenderer} from "./DraggableRowRenderer";
@@ -10,7 +10,7 @@ import RenameColumn from "./RenameColumn";
 import {randomString} from "../../DataProcessing/dataSamples";
 import InsertFormula from "./InsertFormula";
 import FormulaCell from "./FormulaCell";
-import {CColumn, Filter, PermissionType} from "../../../declarations/backend/backend.did";
+import {CColumn} from "../../../declarations/backend/backend.did";
 
 export interface Row {
     id: string;

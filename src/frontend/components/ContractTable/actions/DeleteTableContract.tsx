@@ -1,7 +1,5 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import React from "react";
-import {useSnackbar} from "notistack";
-import {useBackendContext} from "../../../contexts/BackendContext";
 import LoaderButton from "../../MuiComponents/LoaderButton";
 import {handleRedux} from "../../../redux/store/handleRedux";
 import {useDispatch} from "react-redux";

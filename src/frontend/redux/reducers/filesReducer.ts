@@ -14,7 +14,6 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
         }
         return {...state};
     }
-
     switch (action.type) {
         case 'INIT_FILES_STATE':
             return {

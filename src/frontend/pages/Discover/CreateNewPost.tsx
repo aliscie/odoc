@@ -12,6 +12,7 @@ import PostComponent from "../../components/MuiComponents/PostComponent";
 import {useBackendContext} from "../../contexts/BackendContext";
 import PostTags from "./TagsComponent";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
+import {logger} from "../../DevUtils/logData";
 
 
 function CreatePost(props: any) {
@@ -19,7 +20,7 @@ function CreatePost(props: any) {
     const {profile} = useSelector((state: any) => state.filesState);
     const [post, setPost] = React.useState<Post>({
         'id': post_id,
-        'creator': profile.id,
+        'creator': profile ? profile.id : "",
         'date_created': BigInt(0),
         'votes_up': [],
         'tags': [],
@@ -31,14 +32,15 @@ function CreatePost(props: any) {
     let [isEnter, setEnter] = React.useState(false);
     let [loading, setLoad] = React.useState(false);
     let [changes, setChanges] = React.useState<any>(null);
+    const {backendActor} = useBackendContext();
 
     const handleCreatePost = async () => {
-        const {backendActor} = useBackendContext();
+
         let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> = serializeFileContents(changes)
         let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1]
         let new_post = {...post, content_tree: content_tree};
         setLoad(true)
-        let res = await backendActor.save_post(new_post)
+        let res = await backendActor?.save_post(new_post)
         setLoad(false)
         if ("Ok" in res) {
             // TODo Why new posts does not show up

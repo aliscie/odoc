@@ -1,18 +1,19 @@
 import React, {useEffect} from 'react';
-import './styles/LandingPage.css';
+import '../styles/LandingPage.css';
 import {Button, Divider, Grid} from "@mui/material";
 import {useSelector} from "react-redux";
-import CreatePost from "./Discover/CreateNewPost";
-import {PostUser} from "../../declarations/backend/backend.did";
+import CreatePost from "./CreateNewPost";
+import {PostUser} from "../../../declarations/backend/backend.did";
 import {useSnackbar} from "notistack";
-import FilterPosts from "./Discover/PostsFilters";
-import ViewPost from "./Discover/ViewUpdatePost";
-import {useBackendContext} from "../contexts/BackendContext";
+import FilterPosts from "./PostsFilters";
+import ViewPost from "./ViewUpdatePost";
+import {useBackendContext} from "../../contexts/BackendContext";
+import {logger} from "../../DevUtils/logData";
 
 const Discover = () => {
         const {backendActor} = useBackendContext();
         const {searchValue} = useSelector((state: any) => state.uiState);
-        const {isLoggedIn, Anonymous} = useSelector((state: any) => state.filesState);
+        const {isLoggedIn} = useSelector((state: any) => state.uiState);
 
         const [posts, setPosts] = React.useState<| Array<PostUser>>([]); //TODO use redux for this
         const [current_page, setPage] = React.useState<number>(0);
@@ -70,7 +71,6 @@ const Discover = () => {
             })()
         }, [])
 
-
         return (
             <Grid
 
@@ -79,7 +79,7 @@ const Discover = () => {
                     marginRight: '20%',
                 }}
             >
-                {isLoggedIn && !Anonymous && <CreatePost setPosts={setPosts}/>}
+                {isLoggedIn && <CreatePost setPosts={setPosts}/>}
                 <Divider/>
                 <FilterPosts initPosts={posts} setPage={setPage} setPosts={setPosts}/>
                 {

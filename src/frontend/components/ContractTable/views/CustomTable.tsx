@@ -1,11 +1,10 @@
 import DataGridSheet from "../../DataGrid";
 import React from "react";
 import {textEditor} from "react-data-grid";
-import {CCell, CColumn, CustomContract} from "../../../../declarations/backend/backend.did";
+import {CColumn, CustomContract} from "../../../../declarations/backend/backend.did";
 import {useDispatch} from "react-redux";
 import {VIEW_OPTIONS} from "./index";
 import {handleRedux} from "../../../redux/store/handleRedux";
-import {logger} from "../../../DevUtils/logData";
 import cellsToRow from "../serializers/cellsToRow";
 import rowToCells from "../serializers/rowToCells";
 

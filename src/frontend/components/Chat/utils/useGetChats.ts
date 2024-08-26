@@ -8,8 +8,8 @@ import {Chat, FEChat} from "../../../../declarations/backend/backend.did";
 
 function useGetChats() {
     const { backendActor } = useBackendContext();
-    const profile = useSelector((state: any) => state.filesReducer.profile);
-    const chats = useSelector((state: any) => state.chatsReducer.chats);
+    const profile = useSelector((state: any) => state.filesState.profile);
+    const chats = useSelector((state: any) => state.chatsState.chats);
 
     const dispatch = useDispatch();
 

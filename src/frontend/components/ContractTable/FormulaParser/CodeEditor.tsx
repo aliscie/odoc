@@ -14,8 +14,6 @@ function CodeEditor(props: Props) {
   let onChange = (e: string) => {
     props.onChange(e);
   };
-  let browser_font = document.getElementsByTagName("html")[0].style.fontSize;
-  console.log(browser_font);
 
   return (
     <AceEditor

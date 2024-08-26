@@ -6,7 +6,6 @@ import PostComponent from "../../components/MuiComponents/PostComponent";
 import React from "react";
 import {ContentNode, Post, PostUser} from "../../../declarations/backend/backend.did";
 import {useSelector} from "react-redux";
-// import {actor} from "../../App";
 import {useSnackbar} from "notistack";
 import {LoadingButton} from "@mui/lab";
 import PostTags from "./TagsComponent";

@@ -4,6 +4,7 @@ import {useBackendContext} from "../../contexts/BackendContext";
 import * as filesActions from "../actions/filesAction";
 import {Principal} from "@dfinity/principal";
 import {handleRedux} from "../store/handleRedux";
+import {logger} from "../../DevUtils/logData";
 
 const InitialDataFetcher = () => {
     const dispatch = useDispatch();

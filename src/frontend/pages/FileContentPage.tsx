@@ -58,7 +58,6 @@ const FileContentPage: React.FC<Props> = () => {
         current_file.author === profile.id ||
         Object.keys(current_file.permission)[0] === 'CanUpdate' ||
         current_file.users_permissions.some(([userId, permissions]) => userId === profile.id && permissions.CanUpdate);
-    console.log({files_content});
     return (
         <div style={{marginTop: '3px', marginLeft: '10%', marginRight: '10%'}}>
             <Input
