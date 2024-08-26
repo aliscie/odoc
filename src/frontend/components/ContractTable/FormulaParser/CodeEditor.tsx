@@ -25,20 +25,24 @@ function CodeEditor(props: Props) {
       value={props.code}
       mode="javascript"
       theme="monokai"
-      options={{
-        // Use fontFamily for specific font control (optional)
-        // fontFamily: browser_font,
-        // inlineSuggest: true,
-        // fontSize: "16px",
-        // formatOnType: true,
-        // autoClosingBrackets: true,
-        // minimap: { scale: 5 },
-      }}
-      setOptions={{
-        // enableLiveAutocompletion: false,
-        // showLineNumbers: true,
-        // tabSize: 2,
-      }}
+      options={
+        {
+          // Use fontFamily for specific font control (optional)
+          // fontFamily: browser_font,
+          // inlineSuggest: true,
+          // fontSize: "16px",
+          // formatOnType: true,
+          // autoClosingBrackets: true,
+          // minimap: { scale: 5 },
+        }
+      }
+      setOptions={
+        {
+          // enableLiveAutocompletion: false,
+          // showLineNumbers: true,
+          // tabSize: 2,
+        }
+      }
     />
   );
 }

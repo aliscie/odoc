@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
-} from '@mui/material';
+} from "@mui/material";
 
 interface FeatureModalProps {
   open: boolean;
@@ -34,12 +34,13 @@ const FeatureModal: React.FC<FeatureModalProps> = ({
         const anchorRect = anchorEl.getBoundingClientRect();
         const dialogRect = dialogRef.current.getBoundingClientRect();
         const top = anchorRect.bottom + window.scrollY + 10;
-        const left = anchorRect.left + (anchorRect.width - dialogRect.width) / 2;
+        const left =
+          anchorRect.left + (anchorRect.width - dialogRect.width) / 2;
         setDialogStyle({
           top: `${top}px`,
           left: `${left}px`,
-          transform: 'scale(1)',
-          transition: 'transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1)',
+          transform: "scale(1)",
+          transition: "transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1)",
         });
       }
     };
@@ -61,15 +62,15 @@ const FeatureModal: React.FC<FeatureModalProps> = ({
       PaperProps={{
         ref: dialogRef,
         style: {
-          position: 'absolute',
-          transformOrigin: 'top',
+          position: "absolute",
+          transformOrigin: "top",
           ...dialogStyle,
         },
       }}
     >
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center' }}>
+      <DialogTitle sx={{ display: "flex", alignItems: "center" }}>
         {icon}
-        <Typography variant="h6" component="span" sx={{ marginLeft: '8px' }}>
+        <Typography variant="h6" component="span" sx={{ marginLeft: "8px" }}>
           {title}
         </Typography>
       </DialogTitle>

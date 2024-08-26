@@ -1,12 +1,18 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import {FEChat, UserFE} from "../../../declarations/backend/backend.did";
-import { ListItem, ListItemText, Tooltip, Typography, Box } from '@mui/material';
-import DoneIcon from '@mui/icons-material/Done';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
-import { Principal } from '@dfinity/principal';
-import useGetChats from '../Chat/utils/useGetChats';
-import formatTimestamp, { formatRelativeTime } from '../../utils/time';
+import React from "react";
+import { useSelector } from "react-redux";
+import { FEChat, UserFE } from "../../../declarations/backend/backend.did";
+import {
+  ListItem,
+  ListItemText,
+  Tooltip,
+  Typography,
+  Box,
+} from "@mui/material";
+import DoneIcon from "@mui/icons-material/Done";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import { Principal } from "@dfinity/principal";
+import useGetChats from "../Chat/utils/useGetChats";
+import formatTimestamp, { formatRelativeTime } from "../../utils/time";
 
 export interface FrontendMessage {
   id: string;
@@ -24,7 +30,9 @@ const MessageComponent: React.FC<FrontendMessage> = (message) => {
   const { chats } = useSelector((state: any) => state.chatsState);
   const { getOther } = useGetChats();
 
-  const currentChat = chats.length > 0 && chats.find((chat: FEChat) => chat.id === message.chat_id);
+  const currentChat =
+    chats.length > 0 &&
+    chats.find((chat: FEChat) => chat.id === message.chat_id);
   const otherUser: undefined | UserFE = currentChat && getOther(currentChat);
 
   const isCurrentUser = message.sender.toString() === profile.id;
@@ -34,15 +42,15 @@ const MessageComponent: React.FC<FrontendMessage> = (message) => {
       key={message.id}
       alignItems="flex-start"
       sx={{
-        display: 'flex',
-        justifyContent: isCurrentUser ? 'flex-end' : 'flex-start',
+        display: "flex",
+        justifyContent: isCurrentUser ? "flex-end" : "flex-start",
       }}
     >
       <Box
         sx={{
-          maxWidth: '70%',
-          backgroundColor: isCurrentUser ? 'primary.main' : 'grey.300',
-          color: isCurrentUser ? 'white' : 'black',
+          maxWidth: "70%",
+          backgroundColor: isCurrentUser ? "primary.main" : "grey.300",
+          color: isCurrentUser ? "white" : "black",
           borderRadius: 2,
           padding: 1,
           marginBottom: 1,
@@ -51,18 +59,19 @@ const MessageComponent: React.FC<FrontendMessage> = (message) => {
         <ListItemText
           primary={
             <Typography
-              sx={{ display: 'inline' }}
+              sx={{ display: "inline" }}
               component="span"
               variant="body2"
               color="text.primary"
             >
-              {isCurrentUser ? 'You: ' : `${otherUser?.name || 'User'}: `}{message.message}
+              {isCurrentUser ? "You: " : `${otherUser?.name || "User"}: `}
+              {message.message}
             </Typography>
           }
           secondary={
             <React.Fragment>
               <Typography
-                sx={{ display: 'inline' }}
+                sx={{ display: "inline" }}
                 component="span"
                 variant="caption"
                 color="text.secondary"
@@ -72,7 +81,11 @@ const MessageComponent: React.FC<FrontendMessage> = (message) => {
                     {formatRelativeTime(Number(message.date))}
                   </React.Fragment>
                 </Tooltip>
-                {message.is_saving ? <DoneIcon fontSize="small" /> : <DoneAllIcon fontSize="small" />}
+                {message.is_saving ? (
+                  <DoneIcon fontSize="small" />
+                ) : (
+                  <DoneAllIcon fontSize="small" />
+                )}
               </Typography>
             </React.Fragment>
           }

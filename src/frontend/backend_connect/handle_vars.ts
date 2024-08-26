@@ -17,7 +17,6 @@ import canister_id from "../../../.dfx/local/canister_ids.json";
 // let backend_id = await central_canister_actor.get_backend()
 // TODO canisterId = backend_id.ik
 
-
 // import.meta.env.VITE_IDENTITY_PROVIDER_ID
 // import.meta.env.VITE_backend_CANISTER_ID
 export const canisterId = canister_id.backend.local;

@@ -1,34 +1,36 @@
 import Payments from "./Payments";
 import Promises from "./Promeses";
 import React from "react";
-import {CONTRACT, PAYMENTS, PROMISES} from "../types";
-import {CContract, CustomContract} from "../../../../declarations/backend/backend.did";
+import { CONTRACT, PAYMENTS, PROMISES } from "../types";
+import {
+  CContract,
+  CustomContract,
+} from "../../../../declarations/backend/backend.did";
 import CustomTable from "./CustomTable";
 
 export type VIEW_OPTIONS = {
-    content: string,
-    name: string,
-    contract?: CContract,
-    onClick: (e: any, contract: any) => void
-}
-
+  content: string;
+  name: string;
+  contract?: CContract;
+  onClick: (e: any, contract: any) => void;
+};
 
 interface Props {
-    view: VIEW_OPTIONS,
-    contract: CustomContract,
+  view: VIEW_OPTIONS;
+  contract: CustomContract;
 }
 
 function RenderViews(props: Props) {
-    switch (props.view.content) {
-        case PROMISES:
-            return <Promises contract={props.contract}/>
-        case PAYMENTS:
-            return <Payments contract={props.contract}/>
-        case CONTRACT:
-            return <CustomTable view={props.view} contract={props.contract}/>
-        default:
-            return <div>Unknown</div>
-    }
+  switch (props.view.content) {
+    case PROMISES:
+      return <Promises contract={props.contract} />;
+    case PAYMENTS:
+      return <Payments contract={props.contract} />;
+    case CONTRACT:
+      return <CustomTable view={props.view} contract={props.contract} />;
+    default:
+      return <div>Unknown</div>;
+  }
 }
 
 export default RenderViews;
