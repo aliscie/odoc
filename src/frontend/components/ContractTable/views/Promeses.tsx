@@ -8,47 +8,19 @@ import {CCell, CPayment, PaymentStatus} from "../../../../declarations/backend/b
 import {Principal} from "@dfinity/principal";
 import {useDispatch, useSelector} from "react-redux";
 import {handleRedux} from "../../../redux/store/handleRedux";
-import {renderSender} from "../renders/renderSender";
-import {renderReceiver} from "../renders/renderReciver";
+import {renderUser} from "../renders/renderUser";
+import {renderStatusCell} from "../renders/renderStatusCell";
+import rowToCells from "../serializers/rowToCells";
 import {logger} from "../../../DevUtils/logData";
+
+export const MAIN_FIELDS = ['id', 'sender', 'receiver', 'receiver', 'amount', 'status']
 
 
 function Promises(props) {
+
     const {profile} = useSelector((state: any) => state.filesState);
     const dispatch = useDispatch();
-    console.log({contract: props.contract})
-    let rows = props.contract.promises.map((promise, index) => {
-        if (promise.cells.length > 0) {
-            console.log({xxx: promise.cells})
-            columns.push({
-                key: 'cells',
-                name: 'cells',
-                width: 'max-content',
-                renderEditCell: textEditor,
-                frozen: true,
-            })
 
-        }
-        return {
-            id: promise.id,
-            receiver: promise.receiver.toString(),
-            sender: promise.sender.toString(),
-            amount: promise.amount,
-            status: Object.keys(promise.status)[0],
-        }
-    });
-
-    if (rows.length === 0) {
-        rows = [
-            {
-                id: "0",
-                receiver: Principal.fromText("2vxsx-fae").toString(),
-                sender: Principal.fromText(profile.id).toString(),
-                amount: 0,
-                status: "pending",
-            }
-        ]
-    }
 
     let columns = [
         // SelectColumn,
@@ -64,7 +36,7 @@ function Promises(props) {
             name: 'receiver',
             width: 'max-content',
             renderEditCell: receiverDropDown,
-            renderCell: renderReceiver,
+            renderCell: renderUser,
             frozen: true,
 
         },
@@ -73,7 +45,7 @@ function Promises(props) {
             name: 'sender',
             width: 'max-content',
             frozen: true,
-            renderCell: renderSender,
+            renderCell: renderUser,
             renderEditCell: senderDropDown,
         },
         {
@@ -88,6 +60,7 @@ function Promises(props) {
             name: 'status',
             width: 'max-content',
             renderEditCell: statusDropDown,
+            renderCell: renderStatusCell,
             frozen: true,
             // resizable: true,
             // sortable: true,
@@ -96,17 +69,64 @@ function Promises(props) {
 
     ];
 
-    function onChangeRow(rows, column) {
+    let newColumns = {};
+    let rows = props.contract.promises.map((promise, index) => {
+        if (promise.cells.length > 0) {
 
+            promise.cells.forEach((cell) => {
+                newColumns[cell.field] = cell.value
+            });
+
+
+        }
+        return {
+            id: promise.id,
+            receiver: promise.receiver.toString(),
+            sender: promise.sender.toString(),
+            amount: promise.amount,
+            status: Object.keys(promise.status)[0],
+            ...newColumns,
+        }
+    });
+
+    Object.keys(newColumns).forEach(key => {
+        if (!columns.find(c => c.key == key)) {
+            columns.push({
+                key: key,
+                name: key,
+                width: 'max-content',
+                renderEditCell: textEditor,
+                frozen: false,
+            })
+        }
+
+
+    })
+
+    if (rows.length === 0) {
+        rows = [
+            {
+                id: "0",
+                receiver: Principal.fromText("2vxsx-fae").toString(),
+                sender: Principal.fromText(profile.id).toString(),
+                amount: 0,
+                status: "pending",
+            }
+        ]
+    }
+
+
+    function onChangeRow(rows, column) {
         let promises = rows.map((row) => {
             let status = {}
+            let cells = rowToCells(row)
             status[row.status] = null;
             let updatedPayment: CPayment = {
                 'id': row.id,
                 'status': status as PaymentStatus,
                 'date_created': 0,
                 'date_released': 0,
-                'cells': [],
+                cells,
                 'contract_id': props.contract.id,
                 'sender': Principal.fromText(profile.id),
                 'amount': Number(row.amount),
@@ -124,19 +144,47 @@ function Promises(props) {
         dispatch(handleRedux("UPDATE_CONTRACT", {contract: updateContract}));
     }
 
-    function onAddColumn() {
+    function onAddColumn(column: any) {
         let promises = props.contract.promises.map((p) => {
-            let newCell: CCell = {'field': '', 'value': ''}
-            p.cells.push(newCell)
-            return p
-        });
-        let updateContract = {...props.contract, promises}
-        logger({updateContract})
+            let newCell: CCell = {field: column.key, value: column.name};
+            return {
+                ...p,
+                cells: [...p.cells, newCell]
+            };
+        })
+        let updateContract = {
+            ...props.contract,
+            promises
+        };
         dispatch(handleRedux("UPDATE_CONTRACT", {contract: updateContract}));
     }
 
+    function onRenameColumn(k, n) {
+
+        let updateContract = {
+            ...props.contract,
+            promises: props.contract.promises.map((p) => {
+                let cells = p.cells.map((c: CCell) => {
+                    if (c.field == k) {
+                        return {field: n, value: c.value}
+                    }
+                    return c
+                })
+                return {
+                    ...p,
+                    cells
+                };
+            })
+        };
+        dispatch(handleRedux("UPDATE_CONTRACT", {contract: updateContract}));
+
+
+    }
+
+
     return (
         <DataGridSheet
+            onRenameColumn={onRenameColumn}
             onDeleteRow={onDeleteRow}
             onChangeRow={onChangeRow}
             onAddColumn={onAddColumn}

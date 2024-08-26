@@ -20,7 +20,7 @@ pub struct CColumn {
     pub id: String,
     pub editable: bool,
     pub field: String,
-    pub headerName: String,
+    pub name: String,
     pub deletable: bool,
     pub column_type: String,
     pub formula_string: String,
@@ -33,6 +33,7 @@ pub struct CColumn {
 pub(crate) struct CCell {
     pub value: String,
     pub field: String,
+    // pub index: u64,
 }
 
 

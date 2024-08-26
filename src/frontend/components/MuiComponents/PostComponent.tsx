@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
 import IconButton, {IconButtonProps} from '@mui/material/IconButton';
-import { normalizeContentTree } from '../../DataProcessing/deserlize/deserializeContents';
+import { deserializeContentTree } from '../../DataProcessing/deserlize/deserializeContents';
 import {FEChat, PostUser, UserFE} from "../../../declarations/backend/backend.did";
 import formatTimestamp from "../../utils/time";
 import {useDispatch, useSelector} from "react-redux";
@@ -97,7 +97,7 @@ export function UserAvatar(props: UserFE | User) {
 export default function PostComponent(props: Props) {
 
 
-    let content = normalizeContentTree(props.post.content_tree);
+    let content = deserializeContentTree(props.post.content_tree);
 
 
     let subheader = formatTimestamp(props.post.date_created)

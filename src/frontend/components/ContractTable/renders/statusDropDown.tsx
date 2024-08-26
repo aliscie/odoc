@@ -1,6 +1,9 @@
 import {RenderEditCellProps} from "react-data-grid";
-import {useSelector} from "react-redux";
-import {PaymentStatus} from "../../../../declarations/backend/backend.did";
+import PaidIcon from '@mui/icons-material/Paid';
+import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
+import convertCamelToTitle from "../../../utils/convertCamelToTitle";
+
+const statuses = ['None', 'RequestCancellation', 'Released', 'Objected', 'Confirmed', 'ConfirmedCancellation', 'ApproveHighPromise', 'HighPromise'];
 
 
 export function statusDropDown({row, onRowChange}: RenderEditCellProps) {
@@ -11,9 +14,9 @@ export function statusDropDown({row, onRowChange}: RenderEditCellProps) {
             onChange={(event) => onRowChange({...row, status: event.target.value}, true)}
             autoFocus
         >
-            {['None', 'RequestCancellation', 'Released', 'Objected', 'Confirmed', 'ConfirmedCancellation', 'ApproveHighPromise', 'HighPromise'].map((status) => (
+            {statuses.map((status) => (
                 <option key={status} value={status}>
-                    {status}
+                    {convertCamelToTitle(status)}
                 </option>
             ))}
         </select>

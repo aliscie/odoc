@@ -4,17 +4,12 @@ import {textEditor} from "react-data-grid";
 import {senderDropDown} from "../renders/senderDropDown";
 import {statusDropDown} from "../renders/statusDropDown";
 import {receiverDropDown} from "../renders/receiverDropDown";
+import {CPayment} from "../../../../declarations/backend/backend.did";
+import {renderUser} from "../renders/renderUser";
 
 
 function Payments(props) {
 
-    // let rows = [{
-    //     id: `id_${0}`,
-    //     receiver: "dummy",
-    //     sender: "dummy",
-    //     amount: "",
-    //     status: "payment",
-    // }];
     let rows = [];
 
     let columns = [
@@ -30,6 +25,7 @@ function Payments(props) {
             key: 'receiver',
             name: 'receiver',
             width: 'max-content',
+            renderCell: renderUser,
             renderEditCell: receiverDropDown,
             frozen: true,
 
@@ -39,6 +35,7 @@ function Payments(props) {
             name: 'sender',
             width: 'max-content',
             frozen: true,
+            renderCell: renderUser,
             renderEditCell: senderDropDown,
         },
         {
@@ -58,8 +55,18 @@ function Payments(props) {
             // sortable: true,
             // draggable: true
         },
-
     ];
+
+    props.contract.payments.forEach((payment: CPayment) => {
+        let status = Object.keys(payment.status)[0]
+        rows.push({
+            sender: payment.sender.toString(),
+            receiver: payment.receiver.toString(),
+            status,
+            amount: payment.amount,
+            id: payment.id,
+        })
+    })
 
 
     return (

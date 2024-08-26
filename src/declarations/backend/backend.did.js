@@ -141,7 +141,7 @@ export const idlFactory = ({ IDL }) => {
     'column_type' : IDL.Text,
     'filters' : IDL.Vec(Filter),
     'permissions' : IDL.Vec(PermissionType),
-    'headerName' : IDL.Text,
+    'name' : IDL.Text,
     'editable' : IDL.Bool,
     'deletable' : IDL.Bool,
   });

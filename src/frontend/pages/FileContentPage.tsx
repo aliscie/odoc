@@ -5,6 +5,7 @@ import {debounce} from 'lodash';
 import {Input} from "@mui/material";
 import {handleRedux} from "../redux/store/handleRedux";
 import EditorComponent from "../components/EditorComponent";
+import {logger} from "../DevUtils/logData";
 
 interface Props {
 }
@@ -16,11 +17,6 @@ const FileContentPage: React.FC<Props> = () => {
     const [title, setTitle] = React.useState(current_file && current_file.name || 'Untitled')
 
     const editorKey = current_file && current_file.id || '';
-    // const onChange = (changes: any) => {
-    //     if (current_file) {
-    //         dispatch(handleRedux("UPDATE_CONTENT", {id: current_file.id, content: changes}));
-    //     }
-    // }
     const onChange = useCallback(
         debounce((changes: any) => {
             if (current_file) {
@@ -62,7 +58,7 @@ const FileContentPage: React.FC<Props> = () => {
         current_file.author === profile.id ||
         Object.keys(current_file.permission)[0] === 'CanUpdate' ||
         current_file.users_permissions.some(([userId, permissions]) => userId === profile.id && permissions.CanUpdate);
-    console.log({x: current_file.name});
+    console.log({files_content});
     return (
         <div style={{marginTop: '3px', marginLeft: '10%', marginRight: '10%'}}>
             <Input

@@ -1,6 +1,6 @@
 import React, {useCallback, useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react';
 import 'react-data-grid/lib/styles.css';
-import DataGrid, {CopyEvent, FillEvent, PasteEvent, RenderRowProps, Row, SortColumn} from 'react-data-grid';
+import DataGrid, {CopyEvent, FillEvent, PasteEvent, RenderRowProps, Row, SortColumn, textEditor} from 'react-data-grid';
 import {DndProvider} from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';
 import {DraggableRowRenderer} from "./DraggableRowRenderer";
@@ -10,6 +10,7 @@ import RenameColumn from "./RenameColumn";
 import {randomString} from "../../DataProcessing/dataSamples";
 import InsertFormula from "./InsertFormula";
 import FormulaCell from "./FormulaCell";
+import {CColumn, Filter, PermissionType} from "../../../declarations/backend/backend.did";
 
 export interface Row {
     id: string;
@@ -35,7 +36,8 @@ function rowKeyGetter(row: Row) {
 interface Props {
     onChangeRow: (rows: any, column: any) => void
     onDeleteRow: (rowId: string) => void
-    onAddColumn: () => void
+    onAddColumn: (newColumn: CColumn) => void
+    onRenameColumn: (key, name) => void
 }
 
 export default function DataGridSheet(props: Props) {
@@ -97,7 +99,7 @@ export default function DataGridSheet(props: Props) {
             if (columns[index].formula) {
                 return {...columns[index], renderCell: FormulaCell}
             }
-            return columns[index]
+            return {...columns[index], key: columns[index].id || columns[index].key}
         });
     }, [columnsOrder, columns]);
     const onSortColumnsChange = useCallback((sortColumns: SortColumn[]) => {
@@ -177,17 +179,21 @@ export default function DataGridSheet(props: Props) {
     const onAddColumn = () => {
         const key = contextMenuProps?.column.key;
         let index = columns.findIndex((column) => column.key === key);
-        let newColumn = {
-            key: randomString(),
+        let id = randomString();
+        let newColumn: CColumn = {
+            id,
+            'formula_string': '',
+            'field': id,
+            'column_type': '',
+            'filters': [],
+            'permissions': [],
+            'editable': true,
+            'deletable': true,
             name: 'Untitled',
-            width: 100,
-            resizable: true,
-            sortable: true,
-            draggable: true
         };
         setColumns([...columns.slice(0, index + 1), newColumn, ...columns.slice(index + 1)]);
         setColumnsOrder([...columnsOrder, columns.length]);
-        props.onAddColumn();
+        props.onAddColumn(newColumn);
     };
 
     const onDeleteColumn = () => {
@@ -281,7 +287,8 @@ export default function DataGridSheet(props: Props) {
                             contextMenuProps ? {top: contextMenuProps.top, left: contextMenuProps.left} : undefined
                         }
                     >
-                        <RenameColumn setColumns={setColumns} {...contextMenuProps}/>
+                        <RenameColumn onRenameColumn={props.onRenameColumn}
+                                      setColumns={setColumns} {...contextMenuProps}/>
 
                         <MenuItem onClick={() => {
                             onAddColumn();

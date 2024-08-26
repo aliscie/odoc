@@ -260,7 +260,7 @@ export function createCColumn(field: string): CColumn {
     return {
         id: randomString(),
         field,
-        headerName: "Untitled",
+        name: "Untitled",
         column_type: "string",
         filters: [],
         permissions: [{'AnyOneView': null}],

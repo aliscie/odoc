@@ -3,6 +3,8 @@ import {useSelector} from "react-redux";
 
 
 export function receiverDropDown({row, onRowChange}: RenderEditCellProps) {
+    const {all_friends, profile} = useSelector((state: any) => state.filesState);
+
     return (
         <select
             className={'textEditorClassname'}
@@ -10,17 +12,12 @@ export function receiverDropDown({row, onRowChange}: RenderEditCellProps) {
             onChange={(event) => onRowChange({...row, receiver: event.target.value}, true)}
             autoFocus
         >
-            {/*{[...all_friends, profile].map((u) => (*/}
-            {/*    <option key={u.name} value={u.name}>*/}
-            {/*        {u.name}*/}
-            {/*    </option>*/}
-            {/*))}*/}
-
-            {['ali', 'John', 'Jack', 'Smith'].map((status) => (
-                <option key={status} value={status}>
-                    {status}
+            {[...all_friends, profile].map((u) => (
+                <option key={u.name} value={u.name}>
+                    {u.name}
                 </option>
             ))}
+
         </select>
     );
 }

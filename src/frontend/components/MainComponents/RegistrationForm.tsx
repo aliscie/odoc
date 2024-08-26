@@ -9,6 +9,7 @@ import {useBackendContext} from "../../contexts/BackendContext";
 import {RegisterUser, User} from "../../../declarations/backend/backend.did";
 import {handleRedux} from "../../redux/store/handleRedux";
 import RegistrationFormDialog from "../MuiComponents/RegistrationFormDialog";
+import {logger} from "../../DevUtils/logData";
 
 interface FormValues {
     username: string;
@@ -40,7 +41,7 @@ const RegistrationForm: React.FC = () => {
     }, [isLoggedIn, isRegistered]);
 
     const [photo, setPhoto] = useState<File | null>(null);
-    const [photoByte, setPhotoByte] = useState<Uint8Array | number[] | undefined>();
+    const [photoByte, setPhotoByte] = useState<Uint8Array | number[] | undefined>(null);
     const [loading, setLoading] = useState(false);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,14 +82,13 @@ const RegistrationForm: React.FC = () => {
         const input: RegisterUser = {
             name: [formValues.username],
             description: [formValues.bio],
-            photo: photoByte ? [photoByte] : [],
+            photo: photoByte ? [photoByte] : [[]],
         };
 
         try {
             let register: { Ok: User } | { Err: string } | undefined;
             if (backendActor) {
                 register = await backendActor.register(input);
-                // console.log("after", register)
                 closeSnackbar(loadingSnackbar);
             }
             if (register?.Ok) {

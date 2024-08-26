@@ -2,10 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {useBackendContext} from "../../contexts/BackendContext";
 import * as filesActions from "../actions/filesAction";
-import {normalizeFilesContents} from "../../DataProcessing/deserlize/deserializeContents";
 import {Principal} from "@dfinity/principal";
 import {handleRedux} from "../store/handleRedux";
-import {deserializeContracts} from "../../DataProcessing/deserlize/deserializeContracts";
 
 const InitialDataFetcher = () => {
     const dispatch = useDispatch();
@@ -33,14 +31,8 @@ const InitialDataFetcher = () => {
 
     useEffect(() => {
         if (data && "Ok" in data) {
-            dispatch(filesActions.updateProfile(data.Ok.Profile));
-            dispatch(handleRedux("INIT_FILES", {files: data.Ok.Files}));
-            dispatch(handleRedux("UPDATE_PROFILE", {files: data.Ok.Profile}));
-            dispatch(handleRedux("INIT_CONTRACTS", {contracts: deserializeContracts(data.Ok.Contracts)}));
-            dispatch(handleRedux("INIT_CONTENTS", {files_content: normalizeFilesContents(data.Ok.FilesContents[0])}));
+            dispatch(handleRedux("INIT_FILES_STATE", {data: data.Ok}));
             // dispatch(filesActions.addWorkspace(data.Ok.Workspaces));
-            // dispatch(filesActions.confirmFriend(data.Ok.Friends));
-            dispatch(handleRedux("INIT_WALLET", {wallet: data.Ok.Wallet}));
         }
     }, [data, dispatch]);
 

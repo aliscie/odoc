@@ -22,7 +22,7 @@ type CColumn = record {
   column_type : text;
   filters : vec Filter;
   permissions : vec PermissionType;
-  headerName : text;
+  name : text;
   editable : bool;
   deletable : bool;
 };

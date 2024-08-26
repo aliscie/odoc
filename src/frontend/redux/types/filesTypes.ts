@@ -3,7 +3,7 @@ import {
     ContentNode,
     FileIndexing,
     FileNode,
-    Friend,
+    Friend, InitialData,
     StoredContract,
     UserProfile,
     Wallet,
@@ -36,10 +36,7 @@ export type FilesActions =
     | { type: "TOP_DIALOG"; open: boolean; content: any; title: string }
     | { type: "ADD_WORKSPACE"; new_workspace: WorkSpace }
     | { type: "UPDATE_ANONYMOUS"; anonymous: boolean }
-    | { type: "INIT_FILES"; files: FileNode[] }
-    | { type: "INIT_CONTRACTS", contracts: StoredContract }
-    | { type: "INIT_WALLET"; wallet: Wallet }
-    | { type: "INIT_CONTENTS"; file_contents: Record<string, ContentNode> }
+    | { type: "INIT_FILES_STATE"; data: InitialData }
 
 // | FriendsActions;
 

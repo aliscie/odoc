@@ -4,7 +4,7 @@ import {ContentNode, FileNode} from "../../declarations/backend/backend.did";
 import {useSnackbar} from "notistack";
 import {useDispatch, useSelector} from "react-redux";
 import { handleRedux } from "../redux/store/handleRedux";
-import { normalizeContentTree, SlateNode } from "../DataProcessing/deserlize/deserializeContents";
+import { deserializeContentTree, SlateNode } from "../DataProcessing/deserlize/deserializeContents";
 import EditorComponent from "../components/EditorComponent";
 export type FileQuery = undefined | { Ok: [FileNode, Array<[string, ContentNode]>] } | { Err: string };
 
@@ -32,7 +32,7 @@ function ShareFilePage(props: any) {
                 if ("Ok" in res) {
                     let file: FileNode = res.Ok[0]
                     let contentTree: Array<[string, ContentNode]> = res.Ok[1]
-                    let normalized_tree: Array<SlateNode> = normalizeContentTree(contentTree);
+                    let normalized_tree: Array<SlateNode> = deserializeContentTree(contentTree);
                     setFile(file);
                     setState(normalized_tree)
                     dispatch(handleRedux("CURRENT_FILE", {file}));

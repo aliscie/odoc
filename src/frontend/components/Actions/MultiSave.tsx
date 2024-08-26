@@ -1,29 +1,18 @@
-import React, {useState, MouseEvent} from "react";
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Tooltip
-} from "@mui/material";
+import React, {useState} from "react";
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tooltip} from "@mui/material";
 import {useDispatch, useSelector} from "react-redux";
 import {LoadingButton} from "@mui/lab";
 import {useSnackbar} from "notistack";
-import {ContentNode, CPayment, StoredContract} from "../../../declarations/backend/backend.did";
+import {CPayment, StoredContract} from "../../../declarations/backend/backend.did";
 import {handleRedux} from "../../redux/store/handleRedux";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 import {useBackendContext} from "../../contexts/BackendContext";
+import {logger} from "../../DevUtils/logData";
 
 interface MultiSaveButtonProps {
 }
 
 
-interface MultiUpdateResponse {
-    Ok?: string;
-    Err?: string;
-}
 
 const MultiSaveButton: React.FC<MultiSaveButtonProps> = () => {
     const dispatch = useDispatch();
@@ -54,7 +43,7 @@ const MultiSaveButton: React.FC<MultiSaveButtonProps> = () => {
         );
 
         try {
-            const res: MultiUpdateResponse = await backendActor?.multi_updates(
+            const res: any = await backendActor?.multi_updates(
                 changes.files,
                 serializedContent,
                 serializedContracts,

@@ -19,8 +19,7 @@ function ContractsHistory(props: any) {
         custom_contract.id = Math.random().toString(36).substring(7);
         custom_contract.creator = profile && Principal.fromText(profile.id);
         custom_contract.date_created = Date.now() * 1e6;
-        let stored_custom: StoredContract = {"CustomContract": custom_contract}
-        dispatch(handleRedux("ADD_CONTRACT", {contract: stored_custom}));
+        dispatch(handleRedux("ADD_CONTRACT", {contract: custom_contract}));
     }
     return (
         <List dense>

@@ -43,7 +43,7 @@ function nesting(content_node: ContentNode, alL_contents: Array<ContentNode>, vi
 
 }
 
-export function normalizeContentTree(tree: Array<ContentNode>) {
+export function deserializeContentTree(tree: Array<ContentNode>) {
     let nested_file_content: Array<SlateNode> = [];
     let visited = [];
     tree.map((node: ContentNode) => {
@@ -56,7 +56,8 @@ export function normalizeContentTree(tree: Array<ContentNode>) {
     return nested_file_content
 }
 
-export function normalizeFilesContents(content: Array<[string, Array<ContentNode>]>) {
+export function deserializeContents(content: Array<[string, Array<ContentNode>]>) {
+
     if (!content) {
         return []
     }
@@ -70,7 +71,7 @@ export function normalizeFilesContents(content: Array<[string, Array<ContentNode
         }
         let file_id: string = node[0];
         let file_content: Array<ContentNode> = node[1];
-        let nested_file_content: Array<SlateNode> = normalizeContentTree(file_content);
+        let nested_file_content: Array<SlateNode> = deserializeContentTree(file_content);
         data[file_id] = nested_file_content
 
     })

@@ -5,7 +5,7 @@ import {useEffect, useState} from "react";
 import {User} from "../../../../declarations/backend/backend.did";
 
 
-export function renderSender({row, onRowChange}: RenderEditCellProps) {
+export function renderUser({row, onRowChange}: RenderEditCellProps) {
     let {getUser, getUserByName} = useGetUser();
     const [sender, setSender] = useState("");
     useEffect(() => {

@@ -1,5 +1,8 @@
 import {FilesActions, InitialState, initialState} from '../types/filesTypes';
-import {FileIndexing, FileNode} from "../../../declarations/backend/backend.did";
+import {FileIndexing, FileNode, StoredContract} from "../../../declarations/backend/backend.did";
+import {logger} from "../../DevUtils/logData";
+import {deserializeContents} from "../../DataProcessing/deserlize/deserializeContents";
+import {deserializeContracts} from "../../DataProcessing/deserlize/deserializeContracts";
 
 
 export function filesReducer(state: InitialState = initialState, action: FilesActions): InitialState {
@@ -13,17 +16,16 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
     }
 
     switch (action.type) {
-
-        case 'INIT_FILES':
+        case 'INIT_FILES_STATE':
             return {
                 ...state,
-                files: action.files,
-            };
-
-        case 'INIT_WALLET':
-            return {
-                ...state,
-                wallet: action.wallet,
+                files: action.data.Files,
+                wallet: action.data.Wallet,
+                files_content: deserializeContents(action.data.FilesContents[0]),
+                contracts: deserializeContracts(action.data.Contracts),
+                profile: action.data.Profile,
+                friends: action.data.Friends,
+                // friends: action.data.Friends.map(friend => friend.id === action.id ? {...friend, ...action} : friend)
             };
 
         case 'ADD_CONTENT':
@@ -32,11 +34,11 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
                 files_content: {...state.files_content, [action.id]: action.content}
             };
 
-        case 'INIT_CONTENTS':
-            return {
-                ...state,
-                files_content: action.files_content
-            };
+        // case 'INIT_CONTENTS':
+        //     return {
+        //         ...state,
+        //         files_content: action.files_content
+        //     };
 
         case 'ADD_FILE':
             return {
@@ -103,11 +105,11 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
             state.changes.files.push(file);
             return {...state};
         }
-        case 'INIT_CONTRACTS':
-            return {
-                ...state,
-                contracts: action.contracts
-            }
+        // case 'INIT_CONTRACTS':
+        //     return {
+        //         ...state,
+        //         contracts: action.contracts
+        //     }
         case 'UPDATE_CONTENT':
             return {
                 ...state,
@@ -118,13 +120,14 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
         case 'ADD_CONTRACT': {
             const {contract} = action;
             const id = contract.CustomContract?.id;
+            let stored_custom: StoredContract = {"CustomContract": action.contract}
             return {
                 ...state,
                 changes: {
                     ...state.changes,
                     contracts: {
                         ...state.changes.contracts,
-                        [id]: {...contract}
+                        [id]: {...stored_custom}
                     }
                 },
                 contracts: {
@@ -136,7 +139,6 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
 
         case 'UPDATE_CONTRACT':
             let toStore = {CustomContract: action.contract};
-
             return {
                 ...state,
                 changes: {
@@ -151,6 +153,7 @@ export function filesReducer(state: InitialState = initialState, action: FilesAc
                     [action.contract.id]: action.contract
                 }
             };
+
 
         case 'RESOLVE_CHANGES':
             state.changes = {files: [], contents: {}, contracts: {}, delete_contracts: [], files_indexing: []}

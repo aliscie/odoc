@@ -2,6 +2,7 @@ import React from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import {logger} from "../../DevUtils/logData";
 
 interface MenuOption {
     content: any;
@@ -26,7 +27,6 @@ const BasicMenu: React.FC<BasicMenuProps> = ({SelectOption, style, options, chil
     const handleClose = () => {
         setAnchorEl(null);
     };
-
     return (
         <div>
             <Button

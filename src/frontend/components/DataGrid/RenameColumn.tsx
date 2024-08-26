@@ -1,12 +1,14 @@
 import {Input} from "@mui/material";
-import { debounce } from 'lodash';
+import {debounce} from 'lodash';
+import {logger} from "../../DevUtils/logData";
 
 function RenameColumn(props: any) {
-    const {setColumns, column} = props;
+    const {setColumns, column, onRenameColumn} = props;
     const debouncedOnChange = debounce((e: any) => {
         setColumns((prev: any) => {
             return prev.map((c: any) => {
-                if (c.key === column.key) {
+                if (c.id === column.id) {
+                    onRenameColumn(column.key || column.id, e.target.value)
                     return {...c, name: e.target.value};
                 }
                 return c;

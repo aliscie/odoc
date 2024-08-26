@@ -27,7 +27,7 @@ export interface CColumn {
   'column_type' : string,
   'filters' : Array<Filter>,
   'permissions' : Array<PermissionType>,
-  'headerName' : string,
+  'name' : string,
   'editable' : boolean,
   'deletable' : boolean,
 }

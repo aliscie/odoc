@@ -54,7 +54,7 @@ impl CContract {
             }
             if let Some(old_cell) = old_c_contract.rows.iter().find(|r| r.id == new_row.id).map(|r| r.cells.iter().find(|c| c.field == cell.field)) {
                 if let Some(column) = old_c_contract.columns.iter().find(|c| c.field == cell.field) {
-                    let name = column.headerName.clone();
+                    let name = column.name.clone();
                     contract_errors.push(ContractError { message: format!("You don't have permission to update column: {}", name) });
                 };
                 if let Some(old_cell) = old_cell {
