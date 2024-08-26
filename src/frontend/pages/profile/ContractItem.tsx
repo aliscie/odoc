@@ -42,6 +42,8 @@ const ContractItem: React.FC<ContractItemProps> = ({
   const dispatch = useDispatch();
   const { getUser } = useGetUser();
 
+  console.log("Backend actor: ", backendActor);
+
   useEffect(() => {
     (async () => {
       const receiverUser = await getUser(receiver.toString());
@@ -54,7 +56,7 @@ const ContractItem: React.FC<ContractItemProps> = ({
         receiver: receiverUser ? receiverUser.name : "Null",
       });
     })();
-  }, [receiver, sender, getUser]);
+  }, [backendActor]);
 
   const handleDelete = async () => {
     if (!backendActor) {
