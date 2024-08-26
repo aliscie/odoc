@@ -8,7 +8,6 @@ import {useSnackbar} from "notistack";
 import FilterPosts from "./PostsFilters";
 import ViewPost from "./ViewUpdatePost";
 import {useBackendContext} from "../../contexts/BackendContext";
-import {logger} from "../../DevUtils/logData";
 
 const Discover = () => {
         const {backendActor} = useBackendContext();

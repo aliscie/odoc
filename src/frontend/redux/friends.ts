@@ -1,6 +1,10 @@
-import {initialState} from "./reducers/filesReducersOld";
+import { initialState } from "./reducers/filesReducersOld";
 
-export type FriendsActions = "ADD_FRIEND" | "REMOVE_FRIEND" | "REMOVE_FRIEND_REQUEST" | "ADD_FRIEND_REQUEST";
+export type FriendsActions =
+  | "ADD_FRIEND"
+  | "REMOVE_FRIEND"
+  | "REMOVE_FRIEND_REQUEST"
+  | "ADD_FRIEND_REQUEST";
 
 // export function friendsReducer(state = initialState, action: { type: FriendsActions, friend: any, id: any }) {
 //     let friends = {...state.friends[0]};

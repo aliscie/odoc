@@ -4,7 +4,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ActionsButtons from "./ActionsButtons";
 import PostComponent from "../../components/MuiComponents/PostComponent";
 import React from "react";
-import {ContentNode, Post, PostUser} from "../../../declarations/backend/backend.did";
+import {ContentNode, Post, PostUser,} from "../../../declarations/backend/backend.did";
 import {useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
 import {LoadingButton} from "@mui/lab";
@@ -12,9 +12,9 @@ import PostTags from "./TagsComponent";
 import serialize_file_contents from "../../DataProcessing/serialize/serializeFileContents";
 
 interface Props {
-    post: PostUser
-    setPosts: React.Dispatch<React.SetStateAction<PostUser[]>>
-    posts: PostUser[]
+    post: PostUser;
+    setPosts: React.Dispatch<React.SetStateAction<PostUser[]>>;
+    posts: PostUser[];
 }
 
 function ViewPost(props: Props) {
@@ -36,12 +36,11 @@ function ViewPost(props: Props) {
     const {enqueueSnackbar} = useSnackbar();
 
     const handleSave = async () => {
-
         let new_change = {};
-        new_change[''] = post.content_tree;
+        new_change[""] = post.content_tree;
         const de_changes = serialize_file_contents(new_change);
-        let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1]
-        setLoading(true)
+        let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
+        setLoading(true);
         const res = await actor?.save_post({...post, content_tree});
         setLoading(false);
         if (res && "Ok" in res) {
@@ -56,23 +55,24 @@ function ViewPost(props: Props) {
     const handleDeletePost = async (post_id: string) => {
         const res = await actor?.delete_post(post_id);
         if (res) {
-            enqueueSnackbar('Post deleted successfully', {variant: 'success'});
-            props.setPosts(prevPosts => prevPosts.filter(post => post.id !== post_id));
+            enqueueSnackbar("Post deleted successfully", {variant: "success"});
+            props.setPosts((prevPosts) =>
+                prevPosts.filter((post) => post.id !== post_id),
+            );
         } else {
-            enqueueSnackbar('Error deleting post', {variant: 'error'});
+            enqueueSnackbar("Error deleting post", {variant: "error"});
         }
     };
 
     const {profile, Anonymous} = useSelector((state: any) => state.filesState);
 
     const onChange = (changes: any) => {
-
         // let new_change = {};
         // new_change[''] = changes;
 
         // const normalizedChanges = serialize_file_contents(new_change);
         // console.log({normalizedChanges})
-        setPost(prevPost => ({...prevPost, content_tree: changes}));
+        setPost((prevPost) => ({...prevPost, content_tree: changes}));
         setChanged(true);
     };
     let is_owner = props.post.creator.id == profile.id;
@@ -84,41 +84,52 @@ function ViewPost(props: Props) {
                 onChange={onChange}
                 post={props.post}
                 headerAction={
-                    profile && props.post.creator.id === profile.id && <BasicMenu
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'right',
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        options={[
-                            {content: "More actions in later versions."},
-                            {
-                                content: 'Delete',
-                                icon: <DeleteIcon/>,
-                                onClick: () => handleDeletePost(props.post.id)
-                            },
-                        ]}
-                    >
-                        <MoreVertIcon/>
-                    </BasicMenu>
+                    profile &&
+                    props.post.creator.id === profile.id && (
+                        <BasicMenu
+                            anchorOrigin={{
+                                vertical: "bottom",
+                                horizontal: "right",
+                            }}
+                            transformOrigin={{
+                                vertical: "top",
+                                horizontal: "right",
+                            }}
+                            options={[
+                                {content: "More actions in later versions."},
+                                {
+                                    content: "Delete",
+                                    icon: <DeleteIcon/>,
+                                    onClick: () => handleDeletePost(props.post.id),
+                                },
+                            ]}
+                        >
+                            <MoreVertIcon/>
+                        </BasicMenu>
+                    )
                 }
-                buttons={<>
-                    <ActionsButtons post={props.post}/>
-                    {profile && profile.id === props.post.creator.id &&
-                        <PostTags
-                            post={props.post}
-
-                            setTags={(updatedTags) => {
-                                setPost(prevPost => ({...prevPost, tags: updatedTags.map(tag => tag.title)}));
-                                setChanged(true);
-                            }}/>}
-                    {isChanged &&
-                        <LoadingButton loading={loading} onClick={handleSave}>Save</LoadingButton>
-                    }
-                </>}
+                buttons={
+                    <>
+                        <ActionsButtons post={props.post}/>
+                        {profile && profile.id === props.post.creator.id && (
+                            <PostTags
+                                post={props.post}
+                                setTags={(updatedTags) => {
+                                    setPost((prevPost) => ({
+                                        ...prevPost,
+                                        tags: updatedTags.map((tag) => tag.title),
+                                    }));
+                                    setChanged(true);
+                                }}
+                            />
+                        )}
+                        {isChanged && (
+                            <LoadingButton loading={loading} onClick={handleSave}>
+                                Save
+                            </LoadingButton>
+                        )}
+                    </>
+                }
                 user={props.post.creator}
             />
         </div>

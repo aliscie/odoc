@@ -1,72 +1,71 @@
 export type UiActions =
-    | "TOGGLE_NAV"
-    | "SEARCH"
-    | "TOGGLE_DARK"
-    | "LOGOUT"
-    | "LOGIN"
-    | "SEARCH_TOOL"
-    | "POST_VOTE";
+  | "TOGGLE_NAV"
+  | "SEARCH"
+  | "TOGGLE_DARK"
+  | "LOGOUT"
+  | "LOGIN"
+  | "SEARCH_TOOL"
+  | "POST_VOTE";
 
 // Action Interfaces
 export interface ToggleNavAction {
-    type: 'TOGGLE_NAV';
+  type: "TOGGLE_NAV";
 }
 
 export interface PostVoteAction {
-    type: 'POST_VOTE';
-    postVote: any;  // Adjust the type of postVote as needed
+  type: "POST_VOTE";
+  postVote: any; // Adjust the type of postVote as needed
 }
 
 export interface ToggleDarkModeAction {
-    type: 'TOGGLE_DARK';
+  type: "TOGGLE_DARK";
 }
 
 export interface SearchAction {
-    type: 'SEARCH';
-    searchValue: string;
+  type: "SEARCH";
+  searchValue: string;
 }
 
 export interface LogoutAction {
-    type: 'LOGOUT';
+  type: "LOGOUT";
 }
 
 export interface LoginAction {
-    type: 'LOGIN';
+  type: "LOGIN";
 }
 
 export interface ToggleSearchToolAction {
-    type: 'SEARCH_TOOL';
+  type: "SEARCH_TOOL";
 }
 
-
 export type Action =
-    | ToggleNavAction
-    | PostVoteAction
-    | ToggleDarkModeAction
-    | SearchAction
-    | LogoutAction
-    | LoginAction
-    | ToggleSearchToolAction
-    | { type: 'IS_REGISTERED'; isRegistered: boolean; };
+  | ToggleNavAction
+  | PostVoteAction
+  | ToggleDarkModeAction
+  | SearchAction
+  | LogoutAction
+  | LoginAction
+  | ToggleSearchToolAction
+  | { type: "IS_REGISTERED"; isRegistered: boolean };
 
 // State Interface
 export interface State {
-    isRegistered: boolean;
-    count: number;
-    isNavOpen: boolean;
-    searchTool: boolean;
-    isDarkMode: boolean;
-    searchValue: string;
-    isLoggedIn: boolean;
+  isRegistered: boolean;
+  count: number;
+  isNavOpen: boolean;
+  searchTool: boolean;
+  isDarkMode: boolean;
+  searchValue: string;
+  isLoggedIn: boolean;
 }
 
 // Initial State
 export const initialState: State = {
-    isRegistered: true,
-    count: 0,
-    isNavOpen: false,
-    searchTool: false,
-    isDarkMode: true,
-    searchValue: "",
-    isLoggedIn: false,
+  isRegistered: true,
+  count: 0,
+  isNavOpen: false,
+  searchTool: false,
+  isDarkMode: true,
+  searchValue: "",
+  isLoggedIn: false,
 };

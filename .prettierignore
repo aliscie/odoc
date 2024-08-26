@@ -28,3 +28,12 @@ dist/
 .env.local
 .env.development
 .env.test
+
+# Ignore package-lock.json
+package-lock.json
+
+# Ignore yarn.lock
+yarn.lock
+
+# Ignore backend files
+src/backend/

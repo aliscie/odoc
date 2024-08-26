@@ -1,7 +1,25 @@
-import { ChatActions, ChatState, initialChatsState, OPEN_CHAT, SET_CHATS, SEND_MESSAGE, UPDATE_MESSAGE, ADD_NOTIFICATION, UPDATE_NOTIFICATION, SET_CHATS_NOTIFICATIONS } from '../types/chatsTypes';
-import { FEChat, Message, UserFE } from '../../../declarations/backend/backend.did';
+import {
+  ChatActions,
+  ChatState,
+  initialChatsState,
+  OPEN_CHAT,
+  SET_CHATS,
+  SEND_MESSAGE,
+  UPDATE_MESSAGE,
+  ADD_NOTIFICATION,
+  UPDATE_NOTIFICATION,
+  SET_CHATS_NOTIFICATIONS,
+} from "../types/chatsTypes";
+import {
+  FEChat,
+  Message,
+  UserFE,
+} from "../../../declarations/backend/backend.did";
 
-export function chatsReducer(state: ChatState = initialChatsState, action: ChatActions): ChatState {
+export function chatsReducer(
+  state: ChatState = initialChatsState,
+  action: ChatActions,
+): ChatState {
   switch (action.type) {
     case OPEN_CHAT: {
       const { current_chat_id, current_user } = action;
@@ -20,7 +38,9 @@ export function chatsReducer(state: ChatState = initialChatsState, action: ChatA
     }
 
     case SEND_MESSAGE: {
-      let chat = state.chats.find((chat: FEChat) => chat.id === action.message.chat_id);
+      let chat = state.chats.find(
+        (chat: FEChat) => chat.id === action.message.chat_id,
+      );
 
       if (!chat) {
         let admin: UserFE = {
@@ -48,7 +68,9 @@ export function chatsReducer(state: ChatState = initialChatsState, action: ChatA
       return {
         ...state,
         chats: state.chats.map((_chat: FEChat) =>
-          _chat.id === chat.id ? { ...chat, messages: [...chat.messages, action.message] } : _chat
+          _chat.id === chat.id
+            ? { ...chat, messages: [...chat.messages, action.message] }
+            : _chat,
         ),
       };
     }
@@ -61,10 +83,10 @@ export function chatsReducer(state: ChatState = initialChatsState, action: ChatA
             ? {
                 ...chat,
                 messages: chat.messages.map((message: Message) =>
-                  message.id === action.message.id ? action.message : message
+                  message.id === action.message.id ? action.message : message,
                 ),
               }
-            : chat
+            : chat,
         ),
       };
     }
@@ -78,10 +100,12 @@ export function chatsReducer(state: ChatState = initialChatsState, action: ChatA
                 ...chat,
                 messages: [...chat.messages, action.message],
               }
-            : chat
+            : chat,
         ),
         chats_notifications: [
-          ...state.chats_notifications.filter((m: Message) => m.chat_id !== action.message.chat_id),
+          ...state.chats_notifications.filter(
+            (m: Message) => m.chat_id !== action.message.chat_id,
+          ),
           action.message,
         ],
       };
@@ -91,7 +115,7 @@ export function chatsReducer(state: ChatState = initialChatsState, action: ChatA
       return {
         ...state,
         chats_notifications: state.chats_notifications.map((m: Message) =>
-          m.chat_id === action.message.chat_id ? action.message : m
+          m.chat_id === action.message.chat_id ? action.message : m,
         ),
       };
     }

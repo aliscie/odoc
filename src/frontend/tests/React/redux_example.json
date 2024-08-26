@@ -168,9 +168,7 @@
             "_type": "p",
             "data": [],
             "text": "",
-            "children": [
-              "gucurj"
-            ],
+            "children": ["gucurj"],
             "language": "",
             "parent": []
           },
@@ -181,18 +179,14 @@
             "text": "",
             "children": [],
             "language": "",
-            "parent": [
-              "5xqmjz"
-            ]
+            "parent": ["5xqmjz"]
           },
           {
             "id": "42x2dy",
             "_type": "shares_contract",
             "data": [],
             "text": "",
-            "children": [
-              "s3vsjb"
-            ],
+            "children": ["s3vsjb"],
             "language": "",
             "parent": []
           },
@@ -269,18 +263,14 @@
             "text": "",
             "children": [],
             "language": "",
-            "parent": [
-              "42x2dy"
-            ]
+            "parent": ["42x2dy"]
           },
           {
             "id": "anzh1c",
             "_type": "p",
             "data": [],
             "text": "",
-            "children": [
-              "shcqe"
-            ],
+            "children": ["shcqe"],
             "language": "",
             "parent": []
           },
@@ -291,18 +281,14 @@
             "text": "test",
             "children": [],
             "language": "",
-            "parent": [
-              "anzh1c"
-            ]
+            "parent": ["anzh1c"]
           },
           {
             "id": "yvrfx",
             "_type": "p",
             "data": [],
             "text": "",
-            "children": [
-              "iftveq"
-            ],
+            "children": ["iftveq"],
             "language": "",
             "parent": []
           },
@@ -313,9 +299,7 @@
             "text": "",
             "children": [],
             "language": "",
-            "parent": [
-              "yvrfx"
-            ]
+            "parent": ["yvrfx"]
           }
         ]
       ]

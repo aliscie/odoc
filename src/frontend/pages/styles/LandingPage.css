@@ -43,7 +43,7 @@ header p {
 .feature h2 {
   font-size: 26px;
   margin-bottom: 10px;
-  color: #007BFF;
+  color: #007bff;
 }
 
 .feature p {
@@ -78,22 +78,20 @@ header p {
 .feature-card-title {
   margin-bottom: 16px;
   display: flex;
-  justify-content: center; 
-  align-items: center; 
-  text-align: center; 
-  width: 100%; 
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
 }
-
 
 .feature-card-body {
   flex-grow: 1;
   margin-bottom: 16px;
   display: flex;
-  justify-content: center; 
-  align-items: center; 
-  text-align: center; 
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
-
 
 .feature-carousel {
   margin-bottom: 10px;

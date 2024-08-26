@@ -1,23 +1,23 @@
-import * as React from 'react';
-import {AutocompleteGetTagProps, useAutocomplete} from '@mui/base';
-import CloseIcon from '@mui/icons-material/Close';
-import {styled} from '@mui/material/styles';
-import {autocompleteClasses} from '@mui/material/Autocomplete';
+import * as React from "react";
+import { AutocompleteGetTagProps, useAutocomplete } from "@mui/base";
+import CloseIcon from "@mui/icons-material/Close";
+import { styled } from "@mui/material/styles";
+import { autocompleteClasses } from "@mui/material/Autocomplete";
 
-const Root = styled('div')(
-    ({theme}) => `
+const Root = styled("div")(
+  ({ theme }) => `
   font-size: 14px;
 `,
 );
 
-const Label = styled('label')`
+const Label = styled("label")`
   padding: 0 0 4px;
   line-height: 1.5;
   display: block;
 `;
 
-const InputWrapper = styled('div')(
-    ({theme}) => `
+const InputWrapper = styled("div")(
+  ({ theme }) => `
   border-radius: 4px;
   padding: 1px;
   display: flex;
@@ -48,21 +48,21 @@ const InputWrapper = styled('div')(
 );
 
 interface TagProps extends ReturnType<AutocompleteGetTagProps> {
-    label: string;
+  label: string;
 }
 
 function Tag(props: TagProps) {
-    const {label, onDelete, ...other} = props;
-    return (
-        <div {...other}>
-            <span>{label}</span>
-            <CloseIcon onClick={onDelete}/>
-        </div>
-    );
+  const { label, onDelete, ...other } = props;
+  return (
+    <div {...other}>
+      <span>{label}</span>
+      <CloseIcon onClick={onDelete} />
+    </div>
+  );
 }
 
 const StyledTag = styled(Tag)<TagProps>(
-    ({theme}) => `
+  ({ theme }) => `
   display: flex;
   align-items: center;
   height: 24px;
@@ -95,8 +95,8 @@ const StyledTag = styled(Tag)<TagProps>(
 `,
 );
 
-const Listbox = styled('ul')(
-    ({theme}) => `
+const Listbox = styled("ul")(
+  ({ theme }) => `
   margin: 2px 0 0;
   padding: 0;
   position: absolute;
@@ -142,78 +142,82 @@ const Listbox = styled('ul')(
 );
 
 export default function MultiAutoComplete(props: any) {
-    let args = {
-        id: 'customized-hook-demo',
+  let args = {
+    id: "customized-hook-demo",
 
-        multiple: props.multiple,  // TODO if false value will be a Hashmap instead of an array
-        options: props.options,
-        getOptionLabel: (option) => option.title,
-        onChange: props.onChange,
-        value: props.value,
-    };
+    multiple: props.multiple, // TODO if false value will be a Hashmap instead of an array
+    options: props.options,
+    getOptionLabel: (option) => option.title,
+    onChange: props.onChange,
+    value: props.value,
+  };
 
-    if (props.defaultValue) {
-        args["defaultValue"] = [props.defaultValue];
-    }
-    ;
-
-    const {
-        getRootProps,
-        getInputLabelProps,
-        getInputProps,
-        getTagProps,
-        getListboxProps,
-        getOptionProps,
-        groupedOptions,
-        value,
-        focused,
-        setAnchorEl,
-    } = useAutocomplete(args);
-    return (
-        <Root>
-            <div {...getRootProps()}>
-                <InputWrapper
-
-                    // style={{
-                    //     width: '100px'
-                    // }}
-                    style={props.style}
-                    onChange={props.onChange}
-                    ref={setAnchorEl} className={focused ? 'focused' : ''}>
-                    {value && props.multiple && value.map((option: FilmOptionType, index: number) => (
-                        <StyledTag label={option.title} {...getTagProps({index})} />
-                    ))}
-                    {value && !props.multiple && <StyledTag label={value.title} {...getTagProps({index: 0})} />}
-                    <input placeholder={props.label} {...getInputProps()} onBlur={props.onBlur}/>
-                </InputWrapper>
-            </div>
-            {groupedOptions.length > 0 ? (
-                <Listbox {...getListboxProps()}>
-                    {(groupedOptions as typeof top100Films).map((option, index) => {
-
-                        try {
-                            if (value.find((v: any) => v.title === option.title)) {
-                                return null;
-                            }
-                        } catch (e) {
-
-                        }
-                        return (
-                            <li {...getOptionProps({option, index})}>
-                                <span>{option.title}</span>
-                                {/*<CheckIcon  fontSize="small"/>*/}
-                            </li>
-                        )
-                    })}
-                </Listbox>
-            ) : null}
-        </Root>
-    );
+  if (props.defaultValue) {
+    args["defaultValue"] = [props.defaultValue];
+  }
+  const {
+    getRootProps,
+    getInputLabelProps,
+    getInputProps,
+    getTagProps,
+    getListboxProps,
+    getOptionProps,
+    groupedOptions,
+    value,
+    focused,
+    setAnchorEl,
+  } = useAutocomplete(args);
+  return (
+    <Root>
+      <div {...getRootProps()}>
+        <InputWrapper
+          // style={{
+          //     width: '100px'
+          // }}
+          style={props.style}
+          onChange={props.onChange}
+          ref={setAnchorEl}
+          className={focused ? "focused" : ""}
+        >
+          {value &&
+            props.multiple &&
+            value.map((option: FilmOptionType, index: number) => (
+              <StyledTag label={option.title} {...getTagProps({ index })} />
+            ))}
+          {value && !props.multiple && (
+            <StyledTag label={value.title} {...getTagProps({ index: 0 })} />
+          )}
+          <input
+            placeholder={props.label}
+            {...getInputProps()}
+            onBlur={props.onBlur}
+          />
+        </InputWrapper>
+      </div>
+      {groupedOptions.length > 0 ? (
+        <Listbox {...getListboxProps()}>
+          {(groupedOptions as typeof top100Films).map((option, index) => {
+            try {
+              if (value.find((v: any) => v.title === option.title)) {
+                return null;
+              }
+            } catch (e) {}
+            return (
+              <li {...getOptionProps({ option, index })}>
+                <span>{option.title}</span>
+                {/*<CheckIcon  fontSize="small"/>*/}
+              </li>
+            );
+          })}
+        </Listbox>
+      ) : null}
+    </Root>
+  );
 }
 
 interface FilmOptionType {
-    title: string;
-    year: number;
+  title: string;
+  year: number;
 }
 
 // Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top

@@ -1,10 +1,10 @@
-import {createPluginFactory} from "@udecode/plate-common";
+import { createPluginFactory } from "@udecode/plate-common";
 import SlateCustomContract from "./SlateCustomContract";
-import {CustomContractComponent} from "./index.tsx"
-const CONTRACT_KEY = 'custom_contract';
+import { CustomContractComponent } from "./index.tsx";
+const CONTRACT_KEY = "custom_contract";
 
 interface Props {
-    children: any;
+  children: any;
 }
 
 // function ContractPlugin(p: Props) {
@@ -12,9 +12,9 @@ interface Props {
 // }
 
 const createContractPlugin = createPluginFactory({
-    key: CONTRACT_KEY,
-    isElement: true,
-    component: SlateCustomContract,
+  key: CONTRACT_KEY,
+  isElement: true,
+  component: SlateCustomContract,
 });
-export {CONTRACT_KEY, CustomContractComponent};
+export { CONTRACT_KEY, CustomContractComponent };
 export default createContractPlugin;
