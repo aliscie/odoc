@@ -1,62 +1,76 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import TransactionHistory from "../../pages/profile/TransactionHistory";
-import { createStore } from "redux";
 import { Provider } from "react-redux";
-import { BackendProvider } from "../../contexts/BackendContext";
-const mockTransactionRecords = [
-  {
-    from: "sender1",
-    to: "receiver1",
-    amount: 100,
-  },
-  {
-    from: "sender2",
-    to: "receiver2",
-    amount: 200,
-  },
-];
+import { configureStore } from "@reduxjs/toolkit";
+import TransactionHistory from "../../pages/profile/TransactionHistory";
+import { vi } from "vitest";
+import { filesReducer } from "../../redux/reducers/filesReducer";
 
-const mockStore = createStore(() => ({
+// Mock store and initial state
+const initialState = {
   filesState: {
     wallet: {
-      exchanges: mockTransactionRecords,
+      exchanges: [
+        { from: "0xSender1", to: "0xReceiver1", amount: 100 },
+        { from: "0xSender2", to: "0xReceiver2", amount: 200 },
+      ],
     },
   },
-}));
+};
 
-describe("TransactionHistory component", () => {
-  it("renders transaction records", () => {
-    render(
-      <Provider store={mockStore}>
-        <TransactionHistory />
-      </Provider>,
-    );
+const renderWithProviders = (
+  ui,
+  {
+    preloadedState,
+    store = configureStore({
+      reducer: { filesState: filesReducer },
+      preloadedState,
+    }),
+  } = {},
+) => {
+  return render(<Provider store={store}>{ui}</Provider>);
+};
 
-    expect(screen.getAllByRole("listitem")).toHaveLength(2);
-    expect(screen.getByText("sender1")).toBeInTheDocument();
-    expect(screen.getByText("receiver1")).toBeInTheDocument();
-    expect(screen.getByText("100")).toBeInTheDocument();
-    expect(screen.getByText("sender2")).toBeInTheDocument();
-    expect(screen.getByText("receiver2")).toBeInTheDocument();
-    expect(screen.getByText("200")).toBeInTheDocument();
+describe("TransactionHistory", () => {
+  test("renders a list of ContractItem components when exchanges are present", () => {
+    renderWithProviders(<TransactionHistory />, {
+      preloadedState: initialState,
+    });
+
+    const contractItems = screen.getAllByTestId("contract-item");
+    expect(contractItems).toHaveLength(2);
+
+    expect(contractItems[0]).toHaveTextContent("0xSender1");
+    expect(contractItems[0]).toHaveTextContent("0xReceiver1");
+    expect(contractItems[1]).toHaveTextContent("0xSender2");
+    expect(contractItems[1]).toHaveTextContent("0xReceiver2");
   });
 
-  it("renders empty list when no transaction records", () => {
-    const emptyStore = createStore(() => ({
+  test("renders an empty list when no exchanges are present", () => {
+    const stateWithoutExchanges = {
       filesState: {
         wallet: {
           exchanges: [],
         },
       },
-    }));
+    };
+    renderWithProviders(<TransactionHistory />, {
+      preloadedState: stateWithoutExchanges,
+    });
 
-    render(
-      <Provider store={emptyStore}>
-        <TransactionHistory />
-      </Provider>,
-    );
+    expect(screen.queryByTestId("contract-item")).not.toBeInTheDocument();
+  });
 
-    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+  test("renders nothing when wallet is undefined", () => {
+    const stateWithUndefinedWallet = {
+      filesState: {
+        wallet: undefined,
+      },
+    };
+    renderWithProviders(<TransactionHistory />, {
+      preloadedState: stateWithUndefinedWallet,
+    });
+
+    expect(screen.queryByTestId("contract-item")).not.toBeInTheDocument();
   });
 });

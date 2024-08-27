@@ -1,9 +1,9 @@
-import React, {useCallback} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {debounce} from "lodash";
+import React, { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { debounce } from "lodash";
 
-import {Input} from "@mui/material";
-import {handleRedux} from "../redux/store/handleRedux";
+import { Input } from "@mui/material";
+import { handleRedux } from "../redux/store/handleRedux";
 import EditorComponent from "../components/EditorComponent";
 
 interface Props {}

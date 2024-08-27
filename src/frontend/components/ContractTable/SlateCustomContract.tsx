@@ -4,14 +4,15 @@ import {
   CustomContract,
   StoredContract,
 } from "../../../declarations/backend/backend.did";
-// import {actor} from "../../../App";
+import { useBackendContext } from "../../contexts/BackendContext";
 import { handleRedux } from "../../redux/store/handleRedux";
 import { CustomContractComponent } from "./index";
 
 export default function SlateCustomContract(props: any) {
+  const { backendActor } = useBackendContext();
   const { id } = props.element;
   const { contracts, profile, current_file } = useSelector(
-    (state: any) => state.chatsState,
+    (state: any) => state.filesState,
   );
   const dispatch = useDispatch();
   const [contract, setContract] = useState<CustomContract>(contracts[id]);
@@ -22,9 +23,9 @@ export default function SlateCustomContract(props: any) {
       if (!contract && is_share) {
         setLoading(true);
         let contract: undefined | { Ok: StoredContract } | { Err: string } =
-          actor &&
+          backendActor &&
           current_file &&
-          (await actor.get_contract(current_file.author, id));
+          (await backendActor.get_contract(current_file.author, id));
         setLoading(false);
         if (contract && "Ok" in contract) {
           setContract(contract.Ok.CustomContract);
