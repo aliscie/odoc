@@ -88,9 +88,9 @@ function FilterPosts(props: Props) {
           View my only posts
         </Button>
       )}
-        <Typography variant="h6" sx={{fontWeight: "bold", mr: 2}}>
-            Filter posts by tags:
-        </Typography>
+      <Typography variant="h6" sx={{ fontWeight: "bold", mr: 2 }}>
+        Filter posts by tags:
+      </Typography>
       <PostTags
         style={{ backgroundColor: "backgroundColor.paper" }}
         tags={tags}
