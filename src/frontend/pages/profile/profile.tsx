@@ -39,7 +39,6 @@ export default function ProfileComponent() {
   const { profile, friends, profile_history, wallet } = useSelector(
     (state: any) => state.filesState,
   );
-  console.log("Wallet: ", wallet);
 
   if (wallet) {
     console.log("Transaction records: ", wallet.exchanges);
