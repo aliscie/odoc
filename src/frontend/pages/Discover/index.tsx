@@ -45,14 +45,17 @@ const Discover = () => {
 
 
         async function set_posts() {
+            // TODO setting backendActor context is very slow, it should be done before loading the app (or at least before loading discover page.)
+            console.log({backendActor})
+            if (!backendActor) {
+                return
+            }
 
-            // TODO store posts in local storage prevent the need to call teh backend everytime after search.
+
             posts.length > 0 && setPage(posts.length);
             let res: undefined | Array<PostUser> = await backendActor.get_posts(BigInt(current_page), BigInt(current_page + 10))
 
             if (res && res.length > 0) {
-                // TODO make sure there will be no repeated posts due to the filter.
-                //  After filtering setPosts may take the same posts again.
                 setPosts((pre) => {
                     return posts.length == 0 ? [...res] : [...pre, ...res]
                 })
