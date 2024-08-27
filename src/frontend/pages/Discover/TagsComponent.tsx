@@ -57,9 +57,6 @@ function PostTags(props: Props) {
         alignItems: "center",
       }}
     >
-      <Typography variant="h6" sx={{ fontWeight: "bold", mr: 2 }}>
-        Filter
-      </Typography>
       <MultiAutoComplete
         {...props}
         style={{ ...props.style, minWidth: "300px" }}

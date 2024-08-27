@@ -5,7 +5,6 @@ import { PostUser } from "../../../declarations/backend/backend.did";
 import PostTags from "./TagsComponent";
 import { useBackendContext } from "../../contexts/BackendContext";
 import Typography from "@mui/material/Typography";
-import Chip from "@mui/material/Chip";
 
 interface Props {
   setPosts: React.Dispatch<React.SetStateAction<any>>;
@@ -89,6 +88,9 @@ function FilterPosts(props: Props) {
           View my only posts
         </Button>
       )}
+        <Typography variant="h6" sx={{fontWeight: "bold", mr: 2}}>
+            Filter posts by tags:
+        </Typography>
       <PostTags
         style={{ backgroundColor: "backgroundColor.paper" }}
         tags={tags}

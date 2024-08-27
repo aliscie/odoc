@@ -1,4 +1,4 @@
-import { Divider, Grid } from "@mui/material";
+import {Divider, Grid, Typography} from "@mui/material";
 import React from "react";
 import IconButton from "@mui/material/IconButton";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -71,6 +71,9 @@ function CreatePost(props: any) {
       <IconButton>
         <MoreTimeIcon />
       </IconButton>
+        <Typography variant="h6" sx={{fontWeight: "bold", mr: 2}}>
+            Tags:
+        </Typography>
       <PostTags
         post={post}
         setTags={(updatedTags) => {
