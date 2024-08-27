@@ -23,7 +23,7 @@ const Discover = () => {
             const delayedSearch = async () => {
                 // TODO later add a Button for deep search_popper in cuz query can cost cycles.
                 if (searchValue.length > 0) {
-                    let res: undefined | Array<PostUser> = await backendActor.search_posts(searchValue);
+                    let res: Array<PostUser> = await backendActor.search_posts(searchValue);
                     res && setPosts(res);
                 } else {
                     setPage(0)
@@ -45,15 +45,10 @@ const Discover = () => {
 
 
         async function set_posts() {
-            // TODO setting backendActor context is very slow, it should be done before loading the app (or at least before loading discover page.)
-            console.log({backendActor})
-            if (!backendActor) {
-                return
-            }
 
 
             posts.length > 0 && setPage(posts.length);
-            let res: undefined | Array<PostUser> = await backendActor.get_posts(BigInt(current_page), BigInt(current_page + 10))
+            let res: Array<PostUser> = await backendActor.get_posts(BigInt(current_page), BigInt(current_page + 10))
 
             if (res && res.length > 0) {
                 setPosts((pre) => {
