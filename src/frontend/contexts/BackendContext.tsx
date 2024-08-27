@@ -36,7 +36,7 @@ interface BackendContextProps {
     agent: HttpAgent | null;
     backendActor: ActorSubclass<
         Record<string, ActorMethod<unknown[], unknown>>
-    > | null;
+    >;
     isAuthenticating: boolean;
     login: () => Promise<void>;
     logout: () => void;

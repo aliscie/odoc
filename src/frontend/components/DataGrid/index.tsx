@@ -244,6 +244,57 @@ export default function DataGridSheet(props: Props) {
             return newColumns;
         });
     };
+    let menuItems = [
+
+        <MenuItem
+            onClick={() => {
+                onAddColumn();
+                setContextMenuProps(null);
+            }}
+        >
+            Add Column
+        </MenuItem>,
+
+        <MenuItem
+            onClick={() => {
+                const {rowIdx} = contextMenuProps;
+                const rowId = rows[rowIdx].id;
+                props.onDeleteRow(rowId);
+                if (rows.length <= 1) {
+                    setRows([
+                        {
+                            id: nextId,
+                        },
+                    ]);
+                    return;
+                }
+
+                setRows([...rows.slice(0, rowIdx), ...rows.slice(rowIdx + 1)]);
+                setContextMenuProps(null);
+            }}
+        >
+            Delete Row
+        </MenuItem>,
+        <MenuItem
+            onClick={() => {
+                const {rowIdx} = contextMenuProps;
+                insertRow(rowIdx);
+                setContextMenuProps(null);
+            }}
+        >
+            Insert Row Above
+        </MenuItem>,
+        <MenuItem
+            onClick={() => {
+                const {rowIdx} = contextMenuProps;
+                insertRow(rowIdx + 1);
+                setContextMenuProps(null);
+            }}
+        >
+            Insert Row Below
+        </MenuItem>,
+    ];
+
 
     return (
         <DndProvider backend={HTML5Backend}>
@@ -286,16 +337,44 @@ export default function DataGridSheet(props: Props) {
                 }}
                 onCellContextMenu={(args, event) => {
                     const {row, column} = args;
+                    // if (column.frozen) {
+                    //     return
+                    // }
+
+
                     event.preventGridDefault();
                     // Do not show the default context menu
-                    event.preventDefault();
-                    setContextMenuProps({
+                    let contextPorps = {
                         rowIdx: rows.indexOf(row),
                         top: event.clientY,
                         left: event.clientX,
                         row,
                         column,
-                    });
+                    }
+                    event.preventDefault();
+                    if (!column.frozen) {
+                        contextPorps['extraOption'] = [
+                            <RenameColumn
+                                onRenameColumn={props.onRenameColumn}
+                                setColumns={setColumns}
+                                {...contextPorps}
+                            />,
+                            <InsertFormula
+                                contextMenuProps={contextPorps}
+                                onAddFormula={onAddFormula}
+                            />,
+                            <MenuItem
+                                onClick={() => {
+                                    onDeleteColumn();
+                                    setContextMenuProps(null);
+                                }}
+                            >
+                                Delete Column
+                            </MenuItem>
+                        ];
+                    }
+
+                    setContextMenuProps(contextPorps);
                 }}
             />
 
@@ -311,75 +390,9 @@ export default function DataGridSheet(props: Props) {
                                 : undefined
                         }
                     >
-                        <RenameColumn
-                            onRenameColumn={props.onRenameColumn}
-                            setColumns={setColumns}
-                            {...contextMenuProps}
-                        />
+                        {contextMenuProps.extraOption}
+                        {menuItems}
 
-                        <MenuItem
-                            onClick={() => {
-                                onAddColumn();
-                                setContextMenuProps(null);
-                            }}
-                        >
-                            Add Column
-                        </MenuItem>
-
-                        <MenuItem
-                            onClick={() => {
-                                onDeleteColumn();
-                                setContextMenuProps(null);
-                            }}
-                        >
-                            Delete Column
-                        </MenuItem>
-
-                        <MenuItem
-                            onClick={() => {
-                                const {rowIdx} = contextMenuProps;
-                                const rowId = rows[rowIdx].id;
-                                props.onDeleteRow(rowId);
-                                if (rows.length <= 1) {
-                                    setRows([
-                                        {
-                                            id: nextId,
-                                            product: faker.commerce.productName(),
-                                            price: faker.commerce.price(),
-                                        },
-                                    ]);
-                                    return;
-                                }
-
-                                setRows([...rows.slice(0, rowIdx), ...rows.slice(rowIdx + 1)]);
-                                setContextMenuProps(null);
-                            }}
-                        >
-                            Delete Row
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => {
-                                const {rowIdx} = contextMenuProps;
-                                insertRow(rowIdx);
-                                setContextMenuProps(null);
-                            }}
-                        >
-                            Insert Row Above
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => {
-                                const {rowIdx} = contextMenuProps;
-                                insertRow(rowIdx + 1);
-                                setContextMenuProps(null);
-                            }}
-                        >
-                            Insert Row Below
-                        </MenuItem>
-
-                        <InsertFormula
-                            contextMenuProps={contextMenuProps}
-                            onAddFormula={onAddFormula}
-                        />
                     </Menu>,
                     document.body,
                 )}

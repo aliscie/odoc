@@ -11,6 +11,7 @@ import {handleRedux} from "../../../redux/store/handleRedux";
 import {renderUser} from "../renders/renderUser";
 import {renderStatusCell} from "../renders/renderStatusCell";
 import rowToCells from "../serializers/rowToCells";
+import {randomString} from "../../../DataProcessing/dataSamples";
 
 export const MAIN_FIELDS = [
     "id",
@@ -99,6 +100,10 @@ function Promises(props) {
         }
     });
 
+    columns = columns.map((c) => {
+        return {...c, id: c.key || c.id || randomString()}
+    });
+
     if (rows.length === 0) {
         rows = [
             {
@@ -141,7 +146,7 @@ function Promises(props) {
 
     function onAddColumn(column: any) {
         let promises = props.contract.promises.map((p) => {
-            let newCell: CCell = {field: column.key, value: column.name};
+            let newCell: CCell = {field: column.id, value: column.name};
             return {
                 ...p,
                 cells: [...p.cells, newCell],
@@ -155,12 +160,13 @@ function Promises(props) {
     }
 
     function onRenameColumn(k, n) {
+
         let updateContract = {
             ...props.contract,
             promises: props.contract.promises.map((p) => {
                 let cells = p.cells.map((c: CCell) => {
                     if (c.field == k) {
-                        return {field: n, value: c.value};
+                        return {...c, field: n};
                     }
                     return c;
                 });

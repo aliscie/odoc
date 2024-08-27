@@ -10,6 +10,7 @@ import {useSnackbar} from "notistack";
 import {LoadingButton} from "@mui/lab";
 import PostTags from "./TagsComponent";
 import serialize_file_contents from "../../DataProcessing/serialize/serializeFileContents";
+import {useBackendContext} from "../../contexts/BackendContext";
 
 interface Props {
     post: PostUser;
@@ -18,6 +19,8 @@ interface Props {
 }
 
 function ViewPost(props: Props) {
+    const {backendActor} = useBackendContext();
+
     const [post, setPost] = React.useState(() => {
         const initialPost: Post = {
             id: props.post.id,
@@ -41,7 +44,7 @@ function ViewPost(props: Props) {
         const de_changes = serialize_file_contents(new_change);
         let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
         setLoading(true);
-        const res = await actor?.save_post({...post, content_tree});
+        const res = await backendActor?.save_post({...post, content_tree});
         setLoading(false);
         if (res && "Ok" in res) {
             enqueueSnackbar("Post saved", {variant: "success"});
@@ -53,7 +56,7 @@ function ViewPost(props: Props) {
     };
 
     const handleDeletePost = async (post_id: string) => {
-        const res = await actor?.delete_post(post_id);
+        const res = await backendActor?.delete_post(post_id);
         if (res) {
             enqueueSnackbar("Post deleted successfully", {variant: "success"});
             props.setPosts((prevPosts) =>
@@ -75,7 +78,7 @@ function ViewPost(props: Props) {
         setPost((prevPost) => ({...prevPost, content_tree: changes}));
         setChanged(true);
     };
-    let is_owner = props.post.creator.id == profile.id;
+    let is_owner = props.post.creator.id == profile ? profile.id : "";
     return (
         <div>
             <PostComponent
