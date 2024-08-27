@@ -25,7 +25,7 @@ import { handleRedux } from "../../redux/store/handleRedux";
 import BasicTabs from "./History";
 import TransactionHistory from "./TransactionHistory";
 import { UserProfile } from "../../../declarations/backend/backend.did";
-import { UserHistory } from "../User";
+import { UserHistoryComponent } from "../User";
 import ProfilePhotoDialog from "./actions/ProfilePhotoDialog";
 import ProfilePhoto from "./ProfilePhoto";
 import ProfileRatings from "./ProfileRating";
@@ -182,7 +182,7 @@ export default function ProfileComponent() {
             <BasicTabs
               items={{
                 Friends: <Friends friends={friends} />,
-                Reputation: userHistory && <UserHistory {...userHistory} />,
+                Reputation: userHistory && <UserHistoryComponent {...userHistory} />,
                 ...(wallet && { Transactions: <TransactionHistory /> }),
               }}
             />
