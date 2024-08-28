@@ -49,7 +49,7 @@ export type Action =
   | { type: "IS_REGISTERED"; isRegistered: boolean };
 
 // State Interface
-export interface State {
+export interface InitialState {
   isRegistered: boolean;
   count: number;
   isNavOpen: boolean;
@@ -60,7 +60,7 @@ export interface State {
 }
 
 // Initial State
-export const initialState: State = {
+export const initialState: InitialState = {
   isRegistered: true,
   count: 0,
   isNavOpen: false,

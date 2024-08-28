@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import renderWithProviders from "./testSetup";
 
 vi.mock("react-redux", () => ({
   useDispatch: vi.fn(),
@@ -51,7 +52,7 @@ describe("Deposit Component", () => {
       logout: vi.fn(),
     });
 
-    render(<Deposit />);
+    renderWithProviders(<Deposit />);
 
     const depositButton = screen.getByRole("button", { name: /deposit/i });
     fireEvent.click(depositButton);
@@ -83,7 +84,7 @@ describe("Deposit Component", () => {
       logout: vi.fn(),
     });
 
-    render(<Deposit />);
+    renderWithProviders(<Deposit />);
 
     const depositButton = screen.getByRole("button", { name: /deposit/i });
     fireEvent.click(depositButton);
@@ -109,7 +110,7 @@ describe("Deposit Component", () => {
       logout: vi.fn(),
     });
 
-    render(<Deposit />);
+    renderWithProviders(<Deposit />);
 
     const depositButton = screen.getByRole("button", { name: /deposit/i });
     fireEvent.click(depositButton);
