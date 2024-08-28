@@ -1,4 +1,4 @@
-import { MAIN_FIELDS } from "../views/Promeses";
+import { MAIN_FIELDS } from "../views/Promises";
 import { CCell } from "../../../../declarations/backend/backend.did";
 
 function rowToCells(row): Array<CCell> {

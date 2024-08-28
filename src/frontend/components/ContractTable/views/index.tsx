@@ -1,5 +1,5 @@
 import Payments from "./Payments";
-import Promises from "./Promeses";
+import Promises from "./Promises";
 import React from "react";
 import { CONTRACT, PAYMENTS, PROMISES } from "../types";
 import {
@@ -21,6 +21,8 @@ interface Props {
 }
 
 function RenderViews(props: Props) {
+  console.log("contracts in render views: ", props.contract);
+
   switch (props.view.content) {
     case PROMISES:
       return <Promises contract={props.contract} />;

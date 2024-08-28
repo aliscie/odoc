@@ -18,6 +18,7 @@ export default function SlateCustomContract(props: any) {
   const [contract, setContract] = useState<CustomContract>(contracts[id]);
   const [loading, setLoading] = useState(false);
   const is_share = window.location.href.includes("share");
+
   useEffect(() => {
     (async () => {
       if (!contract && is_share) {
@@ -36,6 +37,7 @@ export default function SlateCustomContract(props: any) {
       }
     })();
   }, [contracts]);
+
   if (loading) {
     return <div>Loading...</div>;
   }
