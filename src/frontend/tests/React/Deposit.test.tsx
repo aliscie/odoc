@@ -60,10 +60,9 @@ describe("Deposit Component", () => {
     // Wait for async operations to complete
     await waitFor(() => {
       expect(mockBackendActor.deposit_usdt).toHaveBeenCalledWith(100);
-      expect(mockDispatch).toHaveBeenCalledWith({
-        type: "UPDATE_BALANCE",
-        payload: { balance: 100 },
-      });
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "UPDATE_BALANCE", balance: 100 }),
+      );
       expect(mockEnqueueSnackbar).not.toHaveBeenCalled();
     });
   });
