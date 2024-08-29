@@ -1,41 +1,41 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
+import { useSnackbar } from "notistack";
 import TransactionHistory from "../../pages/profile/TransactionHistory";
-import { vi } from "vitest";
-import { filesReducer } from "../../redux/reducers/filesReducer";
+import renderWithProviders from "./testSetup";
 
-// Mock store and initial state
-const initialState = {
-  filesState: {
-    wallet: {
-      exchanges: [
-        { from: "0xSender1", to: "0xReceiver1", amount: 100 },
-        { from: "0xSender2", to: "0xReceiver2", amount: 200 },
-      ],
-    },
-  },
-};
+vi.mock("react-redux", () => ({
+  useSelector: vi.fn(),
+}));
 
-const renderWithProviders = (
-  ui,
-  {
-    preloadedState,
-    store = configureStore({
-      reducer: { filesState: filesReducer },
-      preloadedState,
-    }),
-  } = {},
-) => {
-  return render(<Provider store={store}>{ui}</Provider>);
-};
+vi.mock("notistack", () => ({
+  useSnackbar: vi.fn(),
+}));
+
+// Mock BackendContext
+vi.mock("../../contexts/BackendContext", () => ({
+  useBackendContext: vi.fn(() => ({
+    backendActor: {},
+  })),
+}));
 
 describe("TransactionHistory", () => {
+  const mockUseSelector = vi.fn();
+  const mockEnqueueSnackbar = vi.fn();
+
+  beforeEach(() => {
+    useSelector.mockClear();
+    useSnackbar.mockClear();
+  });
+
   test("renders a list of ContractItem components when exchanges are present", () => {
-    renderWithProviders(<TransactionHistory />, {
-      preloadedState: initialState,
-    });
+    const mockExchanges = [
+      { from: "0xSender1", to: "0xReceiver1" },
+      { from: "0xSender2", to: "0xReceiver2" },
+    ];
+    useSelector.mockReturnValue({ wallet: { exchanges: mockExchanges } });
+    renderWithProviders(<TransactionHistory />);
 
     const contractItems = screen.getAllByTestId("contract-item");
     expect(contractItems).toHaveLength(2);
@@ -47,29 +47,15 @@ describe("TransactionHistory", () => {
   });
 
   test("renders an empty list when no exchanges are present", () => {
-    const stateWithoutExchanges = {
-      filesState: {
-        wallet: {
-          exchanges: [],
-        },
-      },
-    };
-    renderWithProviders(<TransactionHistory />, {
-      preloadedState: stateWithoutExchanges,
-    });
+    useSelector.mockReturnValue({ wallet: { exchanges: [] } });
+    renderWithProviders(<TransactionHistory />);
 
     expect(screen.queryByTestId("contract-item")).not.toBeInTheDocument();
   });
 
   test("renders nothing when wallet is undefined", () => {
-    const stateWithUndefinedWallet = {
-      filesState: {
-        wallet: undefined,
-      },
-    };
-    renderWithProviders(<TransactionHistory />, {
-      preloadedState: stateWithUndefinedWallet,
-    });
+    useSelector.mockReturnValue({ wallet: undefined });
+    renderWithProviders(<TransactionHistory />);
 
     expect(screen.queryByTestId("contract-item")).not.toBeInTheDocument();
   });

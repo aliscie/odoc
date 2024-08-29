@@ -1,4 +1,3 @@
-// testSetup.ts
 import React from "react";
 import { BackendProvider } from "../../contexts/BackendContext";
 import { Provider } from "react-redux";
@@ -10,6 +9,7 @@ import { initialState as filesInitialState } from "../../redux/types/filesTypes"
 import { initialChatsState as chatsInitialState } from "../../redux/types/chatsTypes";
 import { initialState as uiInitialState } from "../../redux/types/uiTypes";
 import { notificationInitialState } from "../../redux/types/notificationTypes";
+import { mockBackendActor } from "./mocks";
 
 vi.mock("react-redux", async (importOriginal) => {
   const actual = await importOriginal();
@@ -24,7 +24,18 @@ vi.mock("../../contexts/BackendContext", async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
-    BackendProvider: ({ children }) => <div>{children}</div>,
+    useBackendContext: () => ({
+      backendActor: mockBackendActor,
+    }),
+    BackendProvider: ({ children, backendActor }) => (
+      <div>
+        {React.createElement(
+          actual.BackendProvider,
+          { value: backendActor },
+          children,
+        )}
+      </div>
+    ),
   };
 });
 
@@ -49,7 +60,9 @@ const renderWithProviders = (
 
   return render(
     <Provider store={store}>
-      <BackendProvider>{component}</BackendProvider>
+      <BackendProvider backendActor={mockBackendActor}>
+        <div>{component}</div>
+      </BackendProvider>
     </Provider>,
   );
 };
