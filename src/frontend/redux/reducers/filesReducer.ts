@@ -6,6 +6,7 @@ import {
 } from "../../../declarations/backend/backend.did";
 import {deserializeContents} from "../../DataProcessing/deserlize/deserializeContents";
 import {deserializeContracts} from "../../DataProcessing/deserlize/deserializeContracts";
+import {logger} from "../../DevUtils/logData";
 
 export function filesReducer(
     state: InitialState = initialState,
@@ -183,14 +184,24 @@ export function filesReducer(
         //   };
 
         case "UPDATE_CONTRACT":
+            const {contract} = action;
+            let id = contract.id;
+            let toStoreContract = {CustomContract: contract};
+            logger({contract})
             return {
                 ...state,
-                contracts: state.contracts.map((contract) =>
-                    contract.id === action.contract.id
-                        ? {...contract, name: action.contract.name}
-                        : contract,
-                ),
-            };
+                changes: {
+                    ...state.changes,
+                    contracts: {
+                        ...state.changes.contracts,
+                        [id]: {...toStoreContract},
+                    },
+                },
+                contracts: {
+                    ...state.contracts,
+                    [id]: contract,
+                },
+            }
 
         case "RESOLVE_CHANGES":
             state.changes = {
@@ -249,6 +260,7 @@ export function filesReducer(
         case "REMOVE_CONTRACT":
             delete state.contracts[action.id];
             state.changes.delete_contracts.push(action.id);
+            delete state.changes.contracts[action.id];
             return {
                 ...state,
             };

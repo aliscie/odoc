@@ -2,7 +2,16 @@ import React, { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { CustomContract } from "../../../declarations/backend/backend.did";
 import BasicMenu from "../MuiComponents/DropDown";
-import { Box, Button, Input, MenuItem, Select, Tooltip } from "@mui/material";
+import {
+  Button,
+  ButtonGroup,
+  Input,
+  MenuItem,
+  Select,
+  Tooltip,
+  Typography,
+  Box,
+} from "@mui/material";
 import DeleteContract from "./actions/DeleteContract";
 import { CONTRACT, CREATE_CONTRACT, PAYMENTS, PROMISES } from "./types";
 import RenderViews, { VIEW_OPTIONS } from "./views";
@@ -15,13 +24,13 @@ import DeleteTableContract from "./actions/DeleteTableContract";
 import RenameTableContract from "./actions/RenameTableContract";
 import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
 import OpenInFullIcon from "@mui/icons-material/OpenInFull";
+import { logger } from "../../DevUtils/logData";
 
-interface Props {
+export function CustomContractComponent({
+  contract,
+}: {
   contract: CustomContract;
-}
-
-export function CustomContractComponent(props: Props) {
-  const { contract } = props;
+}) {
   const dispatch = useDispatch();
   const [view, setView] = useState<VIEW_OPTIONS>({ content: PROMISES });
   const [expanded, setExpanded] = useState(true);
@@ -65,6 +74,7 @@ export function CustomContractComponent(props: Props) {
   });
 
   viewOptions.push({
+    name: "create contract",
     content: CREATE_CONTRACT,
     onClick: (view) => {
       let newContract = createCContract();
@@ -96,18 +106,13 @@ export function CustomContractComponent(props: Props) {
 
   const onChange = debounce((event: any) => {
     try {
-      let updatedContracts = contract.contracts.filter(
-        (c) => c.id !== contractId,
+      dispatch(
+        handleRedux("UPDATE_CONTRACT", {
+          contract: { ...contract, name: event.target.value },
+        }),
       );
-      updatedContracts.push({
-        ...contract.contracts.find((c) => c.id === contractId),
-        name: event.target.value,
-      });
-
-      console.log("updatedContracts", updatedContracts);
-      dispatch(handleRedux("UPDATE_CONTRACT", { contracts: updatedContracts }));
     } catch (error) {
-      console.error("Error updating contract:", error);
+      console.log("Error updating contract:", error);
     }
   }, 300);
 
@@ -139,7 +144,7 @@ export function CustomContractComponent(props: Props) {
           defaultValue={PROMISES}
           sx={{ minWidth: 150, bgcolor: "background.default", borderRadius: 1 }}
         >
-          {viewOptions.map((w, i) => (
+          {viewOptions.map((w: VIEW_OPTIONS, i: number) => (
             <MenuItem onClick={() => w.onClick(w)} key={i} value={w.name}>
               {w.content === CREATE_CONTRACT ? (
                 <Tooltip title="Create new table">
