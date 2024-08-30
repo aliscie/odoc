@@ -41,7 +41,7 @@ export default function ProfileComponent() {
   );
 
   if (wallet) {
-    console.log("Transaction records: ", wallet.exchanges);
+    console.log("Transaction records: ", wallet);
   } else {
     console.log("Wallet is undefined");
   }

@@ -1,0 +1,7 @@
+.custom-data-grid .rdg-row {
+  border-bottom: 1px solid #ccc;
+}
+
+.custom-data-grid .rdg-row:last-child {
+  border-bottom: none;
+}

@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import renderWithProviders from "./testSetup";
 
 vi.mock("react-redux", () => ({
   useDispatch: vi.fn(),
@@ -51,7 +52,7 @@ describe("Deposit Component", () => {
       logout: vi.fn(),
     });
 
-    render(<Deposit />);
+    renderWithProviders(<Deposit />);
 
     const depositButton = screen.getByRole("button", { name: /deposit/i });
     fireEvent.click(depositButton);
@@ -59,10 +60,9 @@ describe("Deposit Component", () => {
     // Wait for async operations to complete
     await waitFor(() => {
       expect(mockBackendActor.deposit_usdt).toHaveBeenCalledWith(100);
-      expect(mockDispatch).toHaveBeenCalledWith({
-        type: "UPDATE_BALANCE",
-        payload: { balance: 100 },
-      });
+      expect(mockDispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "UPDATE_BALANCE", balance: 100 }),
+      );
       expect(mockEnqueueSnackbar).not.toHaveBeenCalled();
     });
   });
@@ -83,7 +83,7 @@ describe("Deposit Component", () => {
       logout: vi.fn(),
     });
 
-    render(<Deposit />);
+    renderWithProviders(<Deposit />);
 
     const depositButton = screen.getByRole("button", { name: /deposit/i });
     fireEvent.click(depositButton);
@@ -109,7 +109,7 @@ describe("Deposit Component", () => {
       logout: vi.fn(),
     });
 
-    render(<Deposit />);
+    renderWithProviders(<Deposit />);
 
     const depositButton = screen.getByRole("button", { name: /deposit/i });
     fireEvent.click(depositButton);

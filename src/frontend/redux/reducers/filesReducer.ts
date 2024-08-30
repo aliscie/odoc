@@ -1,7 +1,11 @@
-import {FilesActions, InitialState, initialState} from "../types/filesTypes";
-import {FileIndexing, FileNode, StoredContract,} from "../../../declarations/backend/backend.did";
-import {deserializeContents} from "../../DataProcessing/deserlize/deserializeContents";
-import {deserializeContracts} from "../../DataProcessing/deserlize/deserializeContracts";
+import { FilesActions, InitialState, initialState } from "../types/filesTypes";
+import {
+  FileIndexing,
+  FileNode,
+  StoredContract,
+} from "../../../declarations/backend/backend.did";
+import { deserializeContents } from "../../DataProcessing/deserlize/deserializeContents";
+import { deserializeContracts } from "../../DataProcessing/deserlize/deserializeContracts";
 
 export function filesReducer(
   state: InitialState = initialState,
@@ -157,21 +161,33 @@ export function filesReducer(
       };
     }
 
+    // case "UPDATE_CONTRACT":
+    //   return {
+    //     ...state,
+    //     changes: {
+    //       ...state.changes,
+    //       contracts: {
+    //         ...state.changes.contracts,
+    //         [action.contract.id]: {
+    //           ...state.changes.contracts[action.contract.id],
+    //           CustomContract: action.contract,
+    //         },
+    //       },
+    //     },
+    //     contracts: {
+    //       ...state.contracts,
+    //       [action.contract.id]: action.contract,
+    //     },
+    //   };
+
     case "UPDATE_CONTRACT":
-      let toStore = { CustomContract: action.contract };
       return {
         ...state,
-        changes: {
-          ...state.changes,
-          contracts: {
-            ...state.changes.contracts,
-            [action.contract.id]: toStore,
-          },
-        },
-        contracts: {
-          ...state.contracts,
-          [action.contract.id]: action.contract,
-        },
+        contracts: state.contracts.map((contract) =>
+          contract.id === action.contract.id
+            ? { ...contract, name: action.contract.name }
+            : contract,
+        ),
       };
 
     case "RESOLVE_CHANGES":

@@ -8,6 +8,7 @@ import { CPayment } from "../../../../declarations/backend/backend.did";
 import { renderUser } from "../renders/renderUser";
 
 function Payments(props) {
+  console.log("contract in payments: ", props.contract);
   let rows = [];
 
   let columns = [
@@ -65,7 +66,13 @@ function Payments(props) {
     });
   });
 
-  return <DataGridSheet initRows={rows} initColumns={columns} />;
+  return (
+    <DataGridSheet
+      initRows={rows}
+      initColumns={columns}
+      contract={props.contract}
+    />
+  );
 }
 
 export default Payments;

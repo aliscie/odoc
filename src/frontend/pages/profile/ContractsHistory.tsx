@@ -14,20 +14,30 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Divider from "@mui/material/Divider";
-import * as React from "react";
+import { v4 as uuidv4 } from "uuid";
 
 function ContractsHistory(props: any) {
   const dispatch = useDispatch();
   const { contracts, profile } = useSelector((state: any) => state.filesState);
 
   const handleClick = () => {
-    let newContract = {
-      ...custom_contract,
-      id: randomString(),
-      creator: profile && Principal.fromText(profile.id),
-      date_created: Date.now() * 1e6,
-    };
-    dispatch(handleRedux("ADD_CONTRACT", { contract: newContract }));
+    try {
+      if (!profile) {
+        throw new Error("Profile is not defined");
+      }
+
+      const newContract = {
+        ...custom_contract,
+        id: uuidv4(),
+        creator: Principal.fromText(profile.id),
+        date_created: Date.now() * 1e6,
+      };
+
+      dispatch(handleRedux("ADD_CONTRACT", { contract: newContract }));
+    } catch (error) {
+      console.error("Error creating new contract:", error);
+      //we can display error for user with snack bar here
+    }
   };
 
   return (
