@@ -9,7 +9,8 @@ import { initialState as filesInitialState } from "../../redux/types/filesTypes"
 import { initialChatsState as chatsInitialState } from "../../redux/types/chatsTypes";
 import { initialState as uiInitialState } from "../../redux/types/uiTypes";
 import { notificationInitialState } from "../../redux/types/notificationTypes";
-import { mockBackendActor } from "./mocks";
+import { mockBackendActor } from "./backendMocks";
+import { indexedDBMock } from "./indexedDBMock";
 
 vi.mock("react-redux", async (importOriginal) => {
   const actual = await importOriginal();
@@ -17,6 +18,14 @@ vi.mock("react-redux", async (importOriginal) => {
     ...actual,
     useDispatch: vi.fn(),
     useSelector: vi.fn(),
+  };
+});
+
+vi.mock("indexedDB", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    indexedDB: indexedDBMock,
   };
 });
 

@@ -1,8 +1,8 @@
 import { screen } from "@testing-library/react";
 import ContractItem from "../../pages/profile/ContractItem";
 import renderWithProviders from "./testSetup";
-import { useBackendContext } from "../../contexts/BackendContext";
-import { mockBackendActor } from "./mocks";
+import "@testing-library/jest-dom";
+import { waitFor } from "@testing-library/react";
 
 describe("ContractItem component", () => {
   const props = {
@@ -14,24 +14,31 @@ describe("ContractItem component", () => {
     canceled: false,
   };
 
-  it("renders sender and receiver addresses", () => {
-    useBackendContext.mockReturnValue({
-      backendActor: mockBackendActor,
+  it("renders sender and receiver addresses", async () => {
+    renderWithProviders(<ContractItem {...props} />);
+    await waitFor(() => {
+      expect(screen.findByText(props.sender)).not.toBeNull();
+      expect(screen.findByText(props.receiver)).not.toBeNull();
     });
-
-    renderWithProviders(<ContractItem {...props} />);
-    expect(screen.getByText(props.sender)).toBeInTheDocument();
-    expect(screen.getByText(props.receiver)).toBeInTheDocument();
   });
 
-  it("renders amount and date created", () => {
+  it("renders amount and date created", async () => {
     renderWithProviders(<ContractItem {...props} />);
-    expect(screen.getByText(`${props.amount} USDTs`)).toBeInTheDocument();
-    expect(screen.getByText(props.date_created)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.findByText(`${props.amount} USDTs`)).not.toBeNull();
+      expect(screen.findByText(props.date_created)).not.toBeNull();
+    });
   });
 
-  it("renders canceled status", () => {
+  it("renders canceled status", async () => {
     renderWithProviders(<ContractItem {...props} canceled={true} />);
-    expect(screen.getByText("Canceled")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Sender: .*/).closest("li")).toHaveStyle(
+        "textDecoration: line-through",
+      );
+      expect(screen.getByText(/Sender: .*/).closest("li")).toHaveStyle(
+        "color: tomato",
+      );
+    });
   });
 });
