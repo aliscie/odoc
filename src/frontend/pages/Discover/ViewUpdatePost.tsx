@@ -4,13 +4,18 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ActionsButtons from "./ActionsButtons";
 import PostComponent from "../../components/MuiComponents/PostComponent";
 import React from "react";
-import {ContentNode, Post, PostUser,} from "../../../declarations/backend/backend.did";
+import {
+    ContentNode,
+    Post,
+    PostUser,
+} from "../../../declarations/backend/backend.did";
 import {useSelector} from "react-redux";
 import {useSnackbar} from "notistack";
 import {LoadingButton} from "@mui/lab";
 import PostTags from "./TagsComponent";
 import serialize_file_contents from "../../DataProcessing/serialize/serializeFileContents";
 import {useBackendContext} from "../../contexts/BackendContext";
+import {Typography} from "@mui/material";
 
 interface Props {
     post: PostUser;
@@ -115,16 +120,21 @@ function ViewPost(props: Props) {
                     <>
                         <ActionsButtons post={props.post}/>
                         {profile && profile.id === props.post.creator.id && (
-                            <PostTags
-                                post={props.post}
-                                setTags={(updatedTags) => {
-                                    setPost((prevPost) => ({
-                                        ...prevPost,
-                                        tags: updatedTags.map((tag) => tag.title),
-                                    }));
-                                    setChanged(true);
-                                }}
-                            />
+                            <>
+                                <Typography variant="h6" sx={{fontWeight: "bold", mr: 2}}>
+                                    Tags:
+                                </Typography>
+                                <PostTags
+                                    post={props.post}
+                                    setTags={(updatedTags) => {
+                                        setPost((prevPost) => ({
+                                            ...prevPost,
+                                            tags: updatedTags.map((tag) => tag.title),
+                                        }));
+                                        setChanged(true);
+                                    }}
+                                />
+                            </>
                         )}
                         {isChanged && (
                             <LoadingButton loading={loading} onClick={handleSave}>

@@ -2,6 +2,7 @@ import MultiAutoComplete from "../../components/MuiComponents/MultiAutocompelte"
 import React from "react";
 import { PostUser } from "../../../declarations/backend/backend.did";
 import { debounce } from "lodash";
+import { Typography, Box, TextField, Chip } from "@mui/material";
 
 interface Props {
   onChange: any;
@@ -46,14 +47,44 @@ function PostTags(props: Props) {
   );
 
   return (
-    <MultiAutoComplete
-      {...props}
-      style={props.style}
-      onChange={debouncedHandleChange}
-      value={tags}
-      options={tags_options}
-      multiple={true}
-    />
+    <Box
+      sx={{
+        p: 2,
+        borderRadius: 2,
+        backgroundColor: "background.paper",
+        boxShadow: 3,
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <MultiAutoComplete
+        {...props}
+        style={{ ...props.style, minWidth: "300px" }}
+        onChange={debouncedHandleChange}
+        value={tags}
+        options={tags_options}
+        multiple={true}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            placeholder="Type to add tags"
+            fullWidth
+          />
+        )}
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => (
+            <Chip
+              key={index}
+              label={option.title}
+              color="primary"
+              sx={{ margin: "2px" }}
+              {...getTagProps({ index })}
+            />
+          ))
+        }
+      />
+    </Box>
   );
 }
 

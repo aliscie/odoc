@@ -27,12 +27,12 @@ function LoaderButton(props: LoaderButtonProps) {
 
   async function handleClick() {
     setLoading(true);
-    let res = props.onClick && (await props.onClick());
-    if ("Ok" in res) {
+    let res: { Ok?: any; Err?: any } = props.onClick && (await props.onClick());
+    if (res?.Ok !== undefined) {
       props.successMessage &&
         enqueueSnackbar(props.successMessage, { variant: "success" });
     } else {
-      enqueueSnackbar(res.Err, { variant: "error" });
+      enqueueSnackbar(res?.Err, { variant: "error" });
     }
     setLoading(false);
   }

@@ -1,30 +1,20 @@
-import {defineConfig} from 'vitest/config';
+import { defineConfig } from "vitest/config";
+import { resolve } from "node:path";
 
 export default defineConfig({
-        test: {
-            alias: {
-                '@': '/src'
-            },
-            environment: 'jsdom',
-            globals: true,
-            threads: false,
-            watch: true,
-            "compilerOptions": {
-                "types": ["vitest/globals"]
-            },
-            // include: ['src/**/*.{test,spec}.{js,ts,jsx,tsx}'],
-            // globalSetup: ["./src/frontend/tests/React/setup.ts"],
-            setupFiles: './setup_tests.ts',
-            // reporters: ["default", {
-            //     async onWatcherRerun() {
-            //         await teardown();
-            //         await setup();
-            //     }
-            // }]
-            setupFilesAfterEnv: [
-                '@testing-library/jest-dom/extend-expect', // Ensure jest-dom extensions are loaded
-                './src/frontend/setupTests.ts',
-            ],
-        }
-    }
-);
+  test: {
+    alias: {
+      "@": "/src",
+    },
+    environment: "jsdom",
+    globals: true,
+    threads: false,
+    watch: true,
+    setupFiles:
+      process.env.VITE_TEST_ENV === "backend" ? "./setup_tests.ts" : [],
+    setupFilesAfterEnv: [
+      "@testing-library/jest-dom/extend-expect",
+      "./src/frontend/setupTests.ts",
+    ],
+  },
+});
