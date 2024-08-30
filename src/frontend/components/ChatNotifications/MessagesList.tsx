@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import CircularProgress from "@mui/material/CircularProgress";
-import {Box, Typography, Input, Button} from "@mui/material";
+import {Box, Button, Input, Typography} from "@mui/material";
 import {FEChat, Message} from "../../../declarations/backend/backend.did";
 import SendMessageBox from "../ChatSendMessage/SendMessageBox";
 import MessageComponent from "./Message";
 import GroupAvatars from "../Chat/HelperComponent/AvaterList";
-import {logger} from "../../DevUtils/logData";
 
 interface RootState {
     filesState: {

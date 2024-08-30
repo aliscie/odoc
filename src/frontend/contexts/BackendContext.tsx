@@ -1,24 +1,10 @@
-import React, {
-    createContext,
-    ReactNode,
-    useCallback,
-    useContext,
-    useEffect,
-    useState,
-} from "react";
+import React, {createContext, ReactNode, useCallback, useContext, useEffect, useState,} from "react";
 import {AuthClient} from "@dfinity/auth-client";
-import {
-    Actor,
-    ActorMethod,
-    ActorSubclass,
-    HttpAgent,
-    Identity,
-} from "@dfinity/agent";
+import {Actor, ActorMethod, ActorSubclass, HttpAgent, Identity,} from "@dfinity/agent";
 import {canisterId, idlFactory} from "../../declarations/backend";
 import {_SERVICE} from "../../declarations/backend/backend.did";
 import {useDispatch} from "react-redux";
 import {handleRedux} from "../redux/store/handleRedux";
-import {logger} from "../DevUtils/logData";
 import {CircularProgress} from "@mui/material";
 
 interface State {

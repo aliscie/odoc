@@ -1,6 +1,5 @@
 import {Input} from "@mui/material";
 import {debounce} from "lodash";
-import {logger} from "../../DevUtils/logData";
 
 function RenameColumn(props: any) {
     const {setColumns, column, onRenameColumn} = props;

@@ -1,22 +1,14 @@
-import React, { useEffect, useState } from "react";
-import {
-  Avatar,
-  Box,
-  CircularProgress,
-  IconButton,
-  TextField,
-  Typography,
-} from "@mui/material";
+import React, {useEffect, useState} from "react";
+import {Avatar, Box, CircularProgress, IconButton, TextField, Typography,} from "@mui/material";
 
-import { Add } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
-import { useSnackbar } from "notistack";
-import { convertToBytes } from "../../DataProcessing/imageToVec";
-import { useBackendContext } from "../../contexts/BackendContext";
-import { RegisterUser, User } from "../../../declarations/backend/backend.did";
-import { handleRedux } from "../../redux/store/handleRedux";
+import {Add} from "@mui/icons-material";
+import {useDispatch, useSelector} from "react-redux";
+import {useSnackbar} from "notistack";
+import {convertToBytes} from "../../DataProcessing/imageToVec";
+import {useBackendContext} from "../../contexts/BackendContext";
+import {RegisterUser, User} from "../../../declarations/backend/backend.did";
+import {handleRedux} from "../../redux/store/handleRedux";
 import RegistrationFormDialog from "../MuiComponents/RegistrationFormDialog";
-import { logger } from "../../DevUtils/logData";
 
 interface FormValues {
   username: string;

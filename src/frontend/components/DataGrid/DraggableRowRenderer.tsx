@@ -1,6 +1,5 @@
-import { useDrag, useDrop } from "react-dnd";
-import { RenderRowProps, Row } from "react-data-grid";
-import { logger } from "../../DevUtils/logData";
+import {useDrag, useDrop} from "react-dnd";
+import {RenderRowProps, Row} from "react-data-grid";
 //
 //
 interface DraggableRowRenderProps<R, SR> extends RenderRowProps<R, SR> {

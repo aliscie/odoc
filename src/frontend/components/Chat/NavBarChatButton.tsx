@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import BasicMenu from "../MuiComponents/BasicMenu";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import ChatNotification from "../ChatNotifications";
@@ -9,7 +9,6 @@ import {handleRedux} from "../../redux/store/handleRedux";
 import {Badge} from "@mui/material";
 import useCreateChatGroup from "./CreateNewGroup";
 import {useBackendContext} from "../../contexts/BackendContext";
-import {logger} from "../../DevUtils/logData";
 
 interface ChatsComponentProps {
 }
@@ -25,7 +24,6 @@ const ChatsComponent: React.FC<ChatsComponentProps> = () => {
     const {profile} = useSelector((state: any) => state.filesState);
     const {chats_notifications} = useSelector((state: any) => state.chatsState);
 
-    // logger({"chatsNotifications": chats_notifications});
 
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
@@ -33,16 +31,16 @@ const ChatsComponent: React.FC<ChatsComponentProps> = () => {
 
     useEffect(() => {
         const fetchNotifications = async () => {
-            if (chats_notifications?.length === 0) {
+            if (chats_notifications?.length === 0 && messages.length === 0) {
                 setLoading(true);
                 try {
-                    const res = await backendActor?.get_chats_notifications();
+                    const res: Array<Message> = await backendActor.get_chats_notifications();
                     if (res) {
                         setMessages(res)
                         dispatch(handleRedux("SET_CHATS_NOTIFICATIONS", {messages: res}))
                     }
                 } catch (error) {
-                    console.error("Issue fetching notifications from backend: ", error)
+                    console.log("Issue fetching notifications from backend: ", error)
                 } finally {
                     setLoading(false)
                 }
@@ -52,7 +50,7 @@ const ChatsComponent: React.FC<ChatsComponentProps> = () => {
         };
 
         fetchNotifications();
-    }, [backendActor, chats_notifications, dispatch]);
+    }, []);
 
     const searchedMessages =
         messages &&

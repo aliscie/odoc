@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
@@ -6,17 +6,12 @@ import Avatar from "@mui/material/Avatar";
 import GroupIcon from "@mui/icons-material/Group";
 import {Principal} from "@dfinity/principal";
 import {handleRedux} from "../../redux/store/handleRedux";
-import {
-    FEChat,
-    Message,
-    User,
-} from "../../../declarations/backend/backend.did";
+import {FEChat, Message, User,} from "../../../declarations/backend/backend.did";
 import useGetChats from "../Chat/utils/useGetChats";
 import {convertToBlobLink} from "../../DataProcessing/imageToVec";
 import MessageComponent from "./Message";
 import {useBackendContext} from "../../contexts/BackendContext";
 import {OPEN_CHAT, UPDATE_NOTIFICATION} from "../../redux/types/chatsTypes";
-import {logger} from "../../DevUtils/logData";
 
 function ChatNotification(props: Message) {
 
