@@ -143,7 +143,7 @@ export function filesReducer(
 
     case "ADD_CONTRACT": {
       const { contract } = action;
-      const id = contract.CustomContract?.id;
+      const id = contract.id;
       let stored_custom: StoredContract = { CustomContract: action.contract };
       return {
         ...state,
