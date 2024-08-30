@@ -1,14 +1,11 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Button, Tooltip } from "@mui/material";
-import { AddBox } from "@mui/icons-material";
-import { handleRedux } from "../../redux/store/handleRedux";
-import {
-  fileContentSample,
-  randomString,
-} from "../../DataProcessing/dataSamples";
-import { FileNode } from "../../../declarations/backend/backend.did";
-import { useSnackbar } from "notistack";
+import {useDispatch, useSelector} from "react-redux";
+import {Button, Tooltip} from "@mui/material";
+import {AddBox} from "@mui/icons-material";
+import {handleRedux} from "../../redux/store/handleRedux";
+import {fileContentSample, randomString,} from "../../DataProcessing/dataSamples";
+import {FileNode} from "../../../declarations/backend/backend.did";
+import {useSnackbar} from "notistack";
 
 const CreateFile: React.FC = () => {
   const dispatch = useDispatch();

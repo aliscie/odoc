@@ -1,8 +1,4 @@
-import {
-  CustomContract,
-  StoredContract,
-} from "../../../declarations/backend/backend.did";
-import { logger } from "../../DevUtils/logData";
+import {CustomContract, StoredContract,} from "../../../declarations/backend/backend.did";
 
 // type ContractType = CustomContract;
 
