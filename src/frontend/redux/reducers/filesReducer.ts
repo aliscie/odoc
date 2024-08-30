@@ -137,6 +137,7 @@ export function filesReducer(
                     ...state.changes,
                     contents: {...state.changes.contents, [action.id]: action.content},
                 },
+                files_content: {...state.files_content, [action.id]: action.content},
                 files: state.files.map((file) =>
                     file.id === action.id ? {...file, content: action.content} : file,
                 ),
