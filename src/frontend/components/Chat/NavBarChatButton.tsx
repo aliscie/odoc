@@ -9,6 +9,7 @@ import {handleRedux} from "../../redux/store/handleRedux";
 import {Badge} from "@mui/material";
 import useCreateChatGroup from "./CreateNewGroup";
 import {useBackendContext} from "../../contexts/BackendContext";
+import {logger} from "../../DevUtils/logData";
 
 interface ChatsComponentProps {
 }
