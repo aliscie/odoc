@@ -55,14 +55,19 @@ function EditorComponent(props: Props) {
         }
     }
 
-    const handleInputChange = useCallback(
-        debounce((changes: string) => {
-            if (changes !== content) {
-                props.onChange(changes);
-            }
-        }, 250),
-        [dispatch],
-    );
+    // const handleInputChange = useCallback(
+    //     debounce((changes: string) => {
+    //         if (changes !== content) {
+    //             props.onChange(changes);
+    //         }
+    //     }, 600),
+    //     [dispatch],
+    // );
+
+
+    const handleInputChange = (changes: any) => {
+        props.onChange(changes);
+    }
 
     return (
         <OdocEditor
