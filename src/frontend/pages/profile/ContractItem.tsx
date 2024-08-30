@@ -19,9 +19,9 @@ interface ContractItemProps {
   canceled: boolean;
 }
 
-interface User {
-  name: string;
-}
+// interface User {
+//   name: string;
+// }
 
 const ContractItem: React.FC<ContractItemProps> = ({
   id,
@@ -42,7 +42,6 @@ const ContractItem: React.FC<ContractItemProps> = ({
   const dispatch = useDispatch();
   const { getUser } = useGetUser();
 
-  console.log("Backend actor: ", backendActor);
 
   useEffect(() => {
     (async () => {
@@ -79,32 +78,32 @@ const ContractItem: React.FC<ContractItemProps> = ({
     }
   };
 
-  const DeleteDialog: React.FC<{
-    handleCancel: () => void;
-    handleClick: () => void;
-  }> = ({ handleCancel, handleClick }) => (
-    <>
-      <Typography variant="subtitle2">Confirmation</Typography>
-      <Typography>Are you sure you want to delete this contract?</Typography>
-      <div>
-        <Button onClick={handleCancel} color="primary">
-          No
-        </Button>
-        <Button
-          onClick={async () => {
-            await handleDelete();
-            handleClick();
-          }}
-          color="primary"
-          autoFocus
-        >
-          Yes
-        </Button>
-      </div>
-    </>
-  );
+  // const DeleteDialog: React.FC<{
+  //   handleCancel: () => void;
+  //   handleClick: () => void;
+  // }> = ({ handleCancel, handleClick }) => (
+  //   <>
+  //     <Typography variant="subtitle2">Confirmation</Typography>
+  //     <Typography>Are you sure you want to delete this contract?</Typography>
+  //     <div>
+  //       <Button onClick={handleCancel} color="primary">
+  //         No
+  //       </Button>
+  //       <Button
+  //         onClick={async () => {
+  //           await handleDelete();
+  //           handleClick();
+  //         }}
+  //         color="primary"
+  //         autoFocus
+  //       >
+  //         Yes
+  //       </Button>
+  //     </div>
+  //   </>
+  // );
 
-  const isSender = profile.id === sender.toString();
+  // const isSender = profile.id === sender.toString();
   const isReceiver = profile.id === receiver.toString();
 
   const reportTooltip = (
