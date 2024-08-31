@@ -64,9 +64,8 @@ export default function DataGridSheet(props: Props) {
   const [selectedRows, setSelectedRows] = useState(
     (): ReadonlySet<string> => new Set(),
   );
-  const [gridId, setGridId] = useState(uuidv4());
+  // const [gridId, setGridId] = useState(uuidv4());
 
-  console.log("Contracts props: ", props.contract);
 
   function handleFill({
     columnKey,

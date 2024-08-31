@@ -8,6 +8,7 @@ export function notificationReducer(
   state: NotificationInitialState = notificationInitialState,
   action: NotificationActions,
 ): notificationInitialState {
+
   switch (action.type) {
     case "NOTIFY":
       let is_in = false;

@@ -22,19 +22,19 @@ const ProfileRatings: React.FC<ProfileRatingsProps> = ({
   >
     <Grid container spacing={2} justifyContent="center" alignItems="center">
       <Grid item xs={12} sm={4} style={{ textAlign: "center" }}>
-        <Typography variant="subtitle2" gutterBottom>
-          Success Rating
-        </Typography>
-        {profile_history && (
-          <Tooltip arrow title={"Your actions rate"}>
-            <Rating
-              readOnly
-              name="half-rating"
-              defaultValue={profile_history.actions_rate}
-              precision={0.5}
-            />
-          </Tooltip>
-        )}
+        {/*<Typography variant="subtitle2" gutterBottom>*/}
+        {/*  Success Rating*/}
+        {/*</Typography>*/}
+        {/*{profile_history && (*/}
+        {/*  <Tooltip arrow title={"Your actions rate"}>*/}
+        {/*    <Rating*/}
+        {/*      readOnly*/}
+        {/*      name="half-rating"*/}
+        {/*      defaultValue={profile_history.actions_rate}*/}
+        {/*      precision={0.5}*/}
+        {/*    />*/}
+        {/*  </Tooltip>*/}
+        {/*)}*/}
       </Grid>
       <Grid item xs={12} sm={4} style={{ textAlign: "center" }}>
         <ShareProfileButton

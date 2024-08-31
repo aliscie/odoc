@@ -9,7 +9,6 @@ import {handleRedux} from "../../redux/store/handleRedux";
 import {Badge} from "@mui/material";
 import useCreateChatGroup from "./CreateNewGroup";
 import {useBackendContext} from "../../contexts/BackendContext";
-import {logger} from "../../DevUtils/logData";
 
 interface ChatsComponentProps {
 }
@@ -41,7 +40,7 @@ const ChatsComponent: React.FC<ChatsComponentProps> = () => {
                         dispatch(handleRedux("SET_CHATS_NOTIFICATIONS", {messages: res}))
                     }
                 } catch (error) {
-                    console.log("Issue fetching notifications from backend: ", error)
+                    console.error("Issue fetching notifications from backend: ", error)
                 } finally {
                     setLoading(false)
                 }

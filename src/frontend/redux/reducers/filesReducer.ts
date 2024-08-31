@@ -6,7 +6,6 @@ import {
 } from "../../../declarations/backend/backend.did";
 import {deserializeContents} from "../../DataProcessing/deserlize/deserializeContents";
 import {deserializeContracts} from "../../DataProcessing/deserlize/deserializeContracts";
-import {logger} from "../../DevUtils/logData";
 
 export function filesReducer(
     state: InitialState = initialState,
@@ -33,7 +32,8 @@ export function filesReducer(
                 contracts: deserializeContracts(action.data.Contracts),
                 profile: action.data.Profile,
                 friends: action.data.Friends,
-                inited: true
+                inited: true,
+                profile_history: action.data.ProfileHistory,
                 // friends: action.data.Friends.map(friend => friend.id === action.id ? {...friend, ...action} : friend)
             };
 
@@ -187,7 +187,6 @@ export function filesReducer(
             const {contract} = action;
             let id = contract.id;
             let toStoreContract = {CustomContract: contract};
-            logger({contract})
             return {
                 ...state,
                 changes: {

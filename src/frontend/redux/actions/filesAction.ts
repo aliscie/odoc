@@ -89,12 +89,6 @@ export const resolveChanges = (): FilesActions => ({
   type: "RESOLVE_CHANGES",
 });
 
-export const setCurrentUserHistory = (
-  profile_history: UserProfile,
-): FilesActions => ({
-  type: "CURRENT_USER_HISTORY",
-  profile_history,
-});
 
 export const removeContract = (id: string): FilesActions => ({
   type: "REMOVE_CONTRACT",
@@ -129,12 +123,6 @@ export const notify = (new_notification: Notification): FilesActions => ({
   new_notification,
 });
 
-export const updateNotificationList = (
-  new_list: Notification[],
-): FilesActions => ({
-  type: "UPDATE_NOT_LIST",
-  new_list,
-});
 
 export const deleteNotify = (id: string): FilesActions => ({
   type: "DELETE_NOTIFY",
