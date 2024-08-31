@@ -120,7 +120,7 @@ function useSocket() {
       };
 
       ws.onerror = (error) => {
-        console.log("use_socket Error:", error);
+        console.error("use_socket Error:", error);
       };
     }
   }, [ws]);

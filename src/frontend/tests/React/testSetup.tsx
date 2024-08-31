@@ -61,6 +61,7 @@ const renderWithProviders = (
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(), // Add middleware if needed
   }),
 ) => {
+  console.log("store", store);
   if (!store) {
     throw new Error(
       "Store is required. Please provide a valid store instance.",

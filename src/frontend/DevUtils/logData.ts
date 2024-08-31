@@ -1,5 +1,3 @@
-import chalk from 'chalk';
-
 export function logger(data: any) {
     const jsonStringifiableData = JSON.parse(
         JSON.stringify(data, (key, value) => {
@@ -14,5 +12,5 @@ export function logger(data: any) {
     const jsonString = JSON.stringify(jsonStringifiableData, null, 2);
 
     // Create a styled console log
-    console.log("---------------logger---------------" + '\ln' + chalk.green(jsonString));
+    console.log(`%c${jsonString}`, "color: green; font-weight: bold;");
 }

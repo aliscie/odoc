@@ -40,11 +40,6 @@ export default function ProfileComponent() {
     (state: any) => state.filesState,
   );
 
-  if (wallet) {
-    console.log("Transaction records: ", wallet);
-  } else {
-    console.log("Wallet is undefined");
-  }
 
   const [userHistory, setUserHistory] = useState<UserProfile | null>(null);
   const [profileData, setProfileData] = useState({

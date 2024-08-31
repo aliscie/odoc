@@ -38,23 +38,21 @@ function CreatePost(props: any) {
         let new_post = {...post, content_tree: content_tree};
         setLoad(true);
         let res = await backendActor?.save_post(new_post);
-        console.log({res})
         setLoad(false);
         if ("Ok" in res) {
-            // TODo Why new posts does not show up
-            // props.setPosts((pre) => {
-            //     let new_posts = [];
-            //     if (pre.length > 0) {
-            //         new_posts = pre;
-            //     }
-            //     new_post = {
-            //         ...new_post,
-            //         creator: {name: profile.name, id: profile.id},
-            //     };
-            //     return [new_post, ...new_posts];
-            // });
-            // enqueueSnackbar("Post created", {variant: "success"});
-            // setChanges(null);
+            props.setPosts((pre) => {
+                let new_posts = [];
+                if (pre.length > 0) {
+                    new_posts = pre;
+                }
+                new_post = {
+                    ...new_post,
+                    creator: {name: profile.name, id: profile.id},
+                };
+                return [new_post, ...new_posts];
+            });
+            enqueueSnackbar("Post created", {variant: "success"});
+            setChanges(null);
         } else {
             enqueueSnackbar("Error creating post. " + res.Err, {variant: "error"});
         }

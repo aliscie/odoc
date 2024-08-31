@@ -1,6 +1,7 @@
 import { State, initialState, Action } from "../types/uiTypes";
 
 export function uiReducer(state = initialState, action: Action): State {
+
   switch (action.type) {
     case "IS_REGISTERED":
       return {
