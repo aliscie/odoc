@@ -1,6 +1,6 @@
-import { State, initialState, Action } from "../types/uiTypes";
+import {Action, initialState} from "../types/uiTypes";
 
-export function uiReducer(state = initialState, action: Action): State {
+export function uiReducer(state = initialState, action: Action) {
 
   switch (action.type) {
     case "IS_REGISTERED":

@@ -34,7 +34,7 @@ export function filesReducer(
                 friends: action.data.Friends,
                 inited: true,
                 profile_history: action.data.ProfileHistory,
-                // friends: action.data.Friends.map(friend => friend.id === action.id ? {...friend, ...action} : friend)
+                friends: action.data.Friends.map(friend => friend.id === action.id ? {...friend, ...action} : friend)
             };
 
         case "ADD_CONTENT":

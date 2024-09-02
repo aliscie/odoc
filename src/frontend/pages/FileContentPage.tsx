@@ -18,25 +18,17 @@ const FileContentPage: React.FC<Props> = () => {
 
     let current_file = files.find((file: any) => file.id === fileId);
 
-
-    // const [title, setTitle] = React.useState(
-    //     (current_file && current_file.name) || "Untitled",
-    // );
-
     const editorKey = (current_file && current_file.id) || "";
-    const onChange = useCallback(
-        debounce((changes: any) => {
-            if (current_file) {
-                dispatch(
-                    handleRedux("UPDATE_CONTENT", {
-                        id: current_file.id,
-                        content: changes,
-                    }),
-                );
-            }
-        }, 250),
-        [dispatch, current_file],
-    );
+    const onChange = debounce((changes: any) => {
+        if (current_file) {
+            dispatch(
+                handleRedux("UPDATE_CONTENT", {
+                    id: current_file.id,
+                    content: changes,
+                }),
+            );
+        }
+    }, 250)
 
     const handleInputChange = useCallback(
         debounce((title: string) => {

@@ -102,7 +102,7 @@ const DocComponent: React.FC<ItemProps> = ({
                                 primary={
                                     <>
                                         {item.name || "Untitled"}
-                                        {item.author !== profile.id && (
+                                        {profile && item.author !== profile.id && (
                                             <ShareIcon fontSize="small"/>
                                         )}
                                     </>

@@ -41,7 +41,6 @@ export default function ProfileComponent() {
   );
 
 
-  const [userHistory, setUserHistory] = useState<UserProfile | null>(null);
   const [profileData, setProfileData] = useState({
     id: profile?.id || "",
     name: profile?.name || "",
@@ -177,7 +176,7 @@ export default function ProfileComponent() {
             <BasicTabs
               items={{
                 Friends: <Friends friends={friends} />,
-                Reputation: userHistory && <UserHistoryComponent {...userHistory} />,
+                Reputation: profile_history && <UserHistoryComponent {...profile_history} />,
                 ...(wallet && { Transactions: <TransactionHistory /> }),
               }}
             />
