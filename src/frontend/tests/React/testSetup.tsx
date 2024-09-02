@@ -9,8 +9,40 @@ import { initialState as filesInitialState } from "../../redux/types/filesTypes"
 import { initialChatsState as chatsInitialState } from "../../redux/types/chatsTypes";
 import { initialState as uiInitialState } from "../../redux/types/uiTypes";
 import { notificationInitialState } from "../../redux/types/notificationTypes";
-import { mockBackendActor } from "./backendMocks";
+import { backendMocks } from "./backendMocks";
 import { indexedDBMock } from "./indexedDBMock";
+import { authClientMock } from "./authClientMock";
+
+const getMockBackendActor = () => backendMocks.mockBackendActor;
+const getIndexedDBMock = () => indexedDBMock;
+const getAuthClientMock = () => authClientMock;
+
+vi.mock("../../contexts/BackendContext", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useBackendContext: () => ({
+      backendActor: getMockBackendActor(),
+    }),
+    BackendProvider: ({ children, backendActor }) => (
+      <div>
+        {React.createElement(
+          actual.BackendProvider,
+          { value: backendActor },
+          children,
+        )}
+      </div>
+    ),
+  };
+});
+
+vi.mock("@dfinity/auth-client", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    AuthClient: getAuthClientMock(),
+  };
+});
 
 vi.mock("react-redux", async (importOriginal) => {
   const actual = await importOriginal();
@@ -25,26 +57,7 @@ vi.mock("indexedDB", async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
-    indexedDB: indexedDBMock,
-  };
-});
-
-vi.mock("../../contexts/BackendContext", async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    useBackendContext: () => ({
-      backendActor: mockBackendActor,
-    }),
-    BackendProvider: ({ children, backendActor }) => (
-      <div>
-        {React.createElement(
-          actual.BackendProvider,
-          { value: backendActor },
-          children,
-        )}
-      </div>
-    ),
+    indexedDB: getIndexedDBMock(),
   };
 });
 
@@ -70,7 +83,7 @@ const renderWithProviders = (
 
   return render(
     <Provider store={store}>
-      <BackendProvider backendActor={mockBackendActor}>
+      <BackendProvider backendActor={getMockBackendActor()}>
         <div>{component}</div>
       </BackendProvider>
     </Provider>,

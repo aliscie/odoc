@@ -20,9 +20,7 @@ interface State {
 interface BackendContextProps {
     authClient: AuthClient | null;
     agent: HttpAgent | null;
-    backendActor: ActorSubclass<
-        Record<string, ActorMethod<unknown[], unknown>>
-    >;
+    backendActor: ActorSubclass<Record<string, ActorMethod<unknown[], unknown>>>;
     isAuthenticating: boolean;
     login: () => Promise<void>;
     logout: () => void;
@@ -62,7 +60,7 @@ async function handleAgent(client) {
         agent
             .fetchRootKey()
             .then((rootKey) => {
-                // console.log("successfully fetched root key: ");
+                console.log("successfully fetched root key: ");
             })
             .catch((err) => {
                 console.log("Error fetching root key: ", err);
@@ -73,7 +71,6 @@ async function handleAgent(client) {
         agent,
         canisterId,
     });
-
     return {actor, agent, principal, identity, client};
 }
 
@@ -90,7 +87,6 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({
         backendActor: null,
         agent: null,
     });
-
 
     const [authClient, setAuthClient] = useState<AuthClient | null>(null);
 
@@ -154,7 +150,7 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({
     }, []);
 
     if (!state.backendActor) {
-        return <CircularProgress/>
+        return <CircularProgress/>;
     }
 
     return (
