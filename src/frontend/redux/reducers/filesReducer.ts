@@ -1,9 +1,5 @@
 import {FilesActions, InitialState, initialState} from "../types/filesTypes";
-import {
-    FileIndexing,
-    FileNode,
-    StoredContract,
-} from "../../../declarations/backend/backend.did";
+import {FileIndexing, FileNode, Friend, StoredContract,} from "../../../declarations/backend/backend.did";
 import {deserializeContents} from "../../DataProcessing/deserlize/deserializeContents";
 import {deserializeContracts} from "../../DataProcessing/deserlize/deserializeContracts";
 
@@ -24,6 +20,15 @@ export function filesReducer(
 
     switch (action.type) {
         case "INIT_FILES_STATE":
+            let all_friends = []
+            action.data.Friends.forEach((f: Friend) => {
+
+                if (f.sender.id != action.data.Profile.id) {
+                    all_friends.push(f.sender)
+                } else {
+                    all_friends.push(f.receiver)
+                }
+            })
             return {
                 ...state,
                 files: action.data.Files,
@@ -34,7 +39,8 @@ export function filesReducer(
                 friends: action.data.Friends,
                 inited: true,
                 profile_history: action.data.ProfileHistory,
-                friends: action.data.Friends.map(friend => friend.id === action.id ? {...friend, ...action} : friend)
+                friends: action.data.Friends.map(friend => friend.id === action.id ? {...friend, ...action} : friend),
+                all_friends: all_friends,
             };
 
         case "ADD_CONTENT":

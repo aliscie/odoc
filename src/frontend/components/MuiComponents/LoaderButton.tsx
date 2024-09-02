@@ -2,8 +2,10 @@ import * as React from "react";
 import { useState } from "react";
 import { useSnackbar } from "notistack";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { Tooltip } from "@mui/material";
 
 interface LoaderButtonProps {
+  toolTip?: string;
   successMessage?: string;
   onClick: any;
   children: any;
@@ -43,11 +45,13 @@ function LoaderButton(props: LoaderButtonProps) {
       loading={loading}
       disabled={props.disabled}
       // loadingPosition="start"
-      startIcon={props.startIcon}
+      startIcon={props.children ? props.startIcon : null}
       onClick={handleClick}
       variant={props.variant || "text"}
     >
-      {props.children}
+      <Tooltip title={props.toolTip}>
+        {props.children || props.startIcon}
+      </Tooltip>
     </LoadingButton>
   );
 }

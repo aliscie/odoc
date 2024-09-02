@@ -24,7 +24,6 @@ import {
 import { handleRedux } from "../../redux/store/handleRedux";
 import BasicTabs from "./History";
 import TransactionHistory from "./TransactionHistory";
-import { UserProfile } from "../../../declarations/backend/backend.did";
 import { UserHistoryComponent } from "../User";
 import ProfilePhotoDialog from "./actions/ProfilePhotoDialog";
 import ProfilePhoto from "./ProfilePhoto";
@@ -39,7 +38,6 @@ export default function ProfileComponent() {
   const { profile, friends, profile_history, wallet } = useSelector(
     (state: any) => state.filesState,
   );
-
 
   const [profileData, setProfileData] = useState({
     id: profile?.id || "",
@@ -138,7 +136,7 @@ export default function ProfileComponent() {
                 <Grid item xs={12}>
                   <ProfilePhoto
                     photo={convertToBlobLink(profileData.photo)}
-                    onAvatarClick={handleAvatarClick}
+                    onClick={handleAvatarClick}
                     onPhotoChange={handlePhotoChange}
                   />
                   <ProfileRatings
@@ -176,7 +174,9 @@ export default function ProfileComponent() {
             <BasicTabs
               items={{
                 Friends: <Friends friends={friends} />,
-                Reputation: profile_history && <UserHistoryComponent {...profile_history} />,
+                Reputation: profile_history && (
+                  <UserHistoryComponent {...profile_history} />
+                ),
                 ...(wallet && { Transactions: <TransactionHistory /> }),
               }}
             />

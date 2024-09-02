@@ -1,9 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import React from "react";
-import LandingPage from "./LandingPage/LandingPage";
+import LandingPage from "./LandingPage";
 import FileContentPage from "./FileContentPage";
 import ShareFilePage from "./ShareFilePage";
-import ProfileComponent from "./profile/Profile";
+import ProfileComponent from "./profile";
 import Discover from "./Discover";
 import UserPage from "./User";
 import ChatsPage from "./ChatsPage";

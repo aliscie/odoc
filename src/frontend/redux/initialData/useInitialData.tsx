@@ -8,19 +8,16 @@ const fetchInitialData = async (backendActor) => {
 
     try {
         const res = await backendActor.get_initial_data();
+
         if ('Err' in res && res.Err == 'Anonymous user.') {
             return {isRegistered: false}
-            // dispatch(handleRedux("IS_REGISTERED", {isRegistered: false}));
         } else {
-
             const getProfileRes = await backendActor.get_user_profile(Principal.fromText(res.Ok.Profile.id))
             return {data: {...res.Ok, ProfileHistory: getProfileRes.Ok}};
-            // dispatch(handleRedux("INIT_FILES_STATE",{data: {...res.Ok, ProfileHistory: getProfileRes.Ok}}))
         }
 
     } catch (error) {
         console.log("Issue fetching initial data from backend: ", error);
-        // dispatch(filesActions.errorAction(error));
     }
 }
 
@@ -44,6 +41,12 @@ const useInitialData = () => {
 
         }
     }, [backendActor]);
+    useEffect(() => {
+        (async () => {
+            const notifications = await backendActor.get_user_notifications()
+            dispatch(handleRedux("UPDATE_NOT_LIST", {new_list: notifications}));
+        })()
+    }, [])
 
     // useEffect(() => {
     //
@@ -84,8 +87,8 @@ const useInitialData = () => {
     //     // const fetchNotifications = async () => {
     //     //     if (backendActor) {
     //     //         try {
-    //     //             const notifications = await backendActor.get_user_notifications()
-    //     //             dispatch(handleRedux("UPDATE_NOT_LIST", {new_list: notifications}));
+    //                 const notifications = await backendActor.get_user_notifications()
+    //                 dispatch(handleRedux("UPDATE_NOT_LIST", {new_list: notifications}));
     //     //         } catch (error) {
     //     //             console.error("Issue fethcing notifications");
     //     //         }

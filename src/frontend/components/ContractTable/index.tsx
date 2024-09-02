@@ -75,24 +75,6 @@ export function CustomContractComponent({
         },
     });
 
-    // const debouncedOnChange = debounce((e: any) => {
-    //   let updated_contract = { ...contract, name: e.target.value };
-    //   console.log("updated_contract", updated_contract);
-    //   dispatch(handleRedux("UPDATE_CONTRACT", { contract: updated_contract }));
-    // }, 300);
-
-    // const debouncedOnChange = debounce((e: any) => {
-    //   const newContractName = e.target.value;
-    //   const existingContract = contract.contracts.find(
-    //     (c) => c.name === newContractName,
-    //   );
-    //   if (!existingContract) {
-    //     let updated_contract = { ...contract, name: newContractName };
-    //     dispatch(handleRedux("UPDATE_CONTRACT", { contract: updated_contract }));
-    //   } else {
-    //     console.error(`Contract with name ${newContractName} already exists`);
-    //   }
-    // }, 300);
 
     const onChange = debounce((event: any) => {
         try {

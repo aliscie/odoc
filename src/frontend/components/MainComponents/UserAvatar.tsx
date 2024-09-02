@@ -15,9 +15,12 @@ function UserAvatar(props: Props) {
 
     return (
         <ProgressCircle progress={props.actions_rate}>
-            <IconButton component="span" onClick={props.onClick}>
+            <IconButton
+                onAvatarClick={props.onAvatarClick}
+                component="span"
+                onClick={props.onClick}>
                 <Avatar
-                    alt="Profile Photo"
+
                     src={props.photo}
                     style={props.style}
                 />

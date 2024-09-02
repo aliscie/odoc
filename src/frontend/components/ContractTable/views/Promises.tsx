@@ -12,10 +12,11 @@ import {
 import { Principal } from "@dfinity/principal";
 import { useDispatch, useSelector } from "react-redux";
 import { handleRedux } from "../../../redux/store/handleRedux";
-import { renderUser } from "../renders/renderUser";
+import { renderSenderUser } from "../renders/renderSenderUser";
 import { renderStatusCell } from "../renders/renderStatusCell";
 import rowToCells from "../serializers/rowToCells";
 import { randomString } from "../../../DataProcessing/dataSamples";
+import { renderReceiver } from "../renders/renderReceiver";
 
 export const MAIN_FIELDS = [
   "id",
@@ -27,7 +28,9 @@ export const MAIN_FIELDS = [
 ];
 
 function Promises(props) {
-  const { profile } = useSelector((state: any) => state.filesState);
+  const { all_friends, profile } = useSelector(
+    (state: any) => state.filesState,
+  );
   const dispatch = useDispatch();
 
   let columns = [
@@ -44,7 +47,7 @@ function Promises(props) {
       name: "receiver",
       width: "max-content",
       renderEditCell: receiverDropDown,
-      renderCell: renderUser,
+      renderCell: renderReceiver,
       frozen: true,
     },
     {
@@ -52,7 +55,7 @@ function Promises(props) {
       name: "sender",
       width: "max-content",
       frozen: true,
-      renderCell: renderUser,
+      renderCell: renderSenderUser,
       renderEditCell: senderDropDown,
     },
     {
@@ -112,10 +115,10 @@ function Promises(props) {
     rows = [
       {
         id: "0",
-        receiver: Principal.fromText("2vxsx-fae").toString(),
-        sender: Principal.fromText(profile.id).toString(),
-        amount: 0,
-        status: "pending",
+        receiver: null,
+        sender: null,
+        amount: "",
+        status: "",
       },
     ];
   }
@@ -125,6 +128,16 @@ function Promises(props) {
       let status = {};
       let cells = rowToCells(row);
       status[row.status] = null;
+
+      let sender = [...all_friends, profile].find(
+        (f) => f.id === row.sender || f.name === row.sender,
+      );
+      let receiver = [...all_friends, profile].find(
+        (f) => f.id === row.receiver || f.name === row.receiver,
+      );
+
+      sender = Principal.fromText(sender ? sender.id : "2vxsx-fae");
+      receiver = Principal.fromText(receiver ? receiver.id : "2vxsx-fae");
       let updatedPayment: CPayment = {
         id: row.id,
         status: status as PaymentStatus,
@@ -132,9 +145,9 @@ function Promises(props) {
         date_released: 0,
         cells,
         contract_id: props.contract.id,
-        sender: Principal.fromText(profile.id),
         amount: Number(row.amount),
-        receiver: Principal.fromText("2vxsx-fae"),
+        sender,
+        receiver,
       };
       return updatedPayment;
     });

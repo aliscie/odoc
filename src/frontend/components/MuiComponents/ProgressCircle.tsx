@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 
-const ProgressCircle = ({progress, children}) => {
+const ProgressCircle = (props: any) => {
+    const {progress, children} = props;
     const [progressColor, setProgressColor] = useState("#ff0000"); // Initial color is red
 
     useEffect(() => {

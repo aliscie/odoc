@@ -1,24 +1,21 @@
 import React from "react";
-import {Avatar, CircularProgress, IconButton} from "@mui/material";
+import {IconButton} from "@mui/material";
 import {Edit} from "@mui/icons-material";
-import ProgressCircle from "../../components/MuiComponents/ProgressCircle";
 import UserAvatar from "../../components/MainComponents/UserAvatar";
 import {useSelector} from "react-redux";
 
 interface ProfilePhotoProps {
     photo: string;
-    onAvatarClick: () => void;
+    onClick: () => void;
     onPhotoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const ProfilePhoto: React.FC<ProfilePhotoProps> = ({
                                                        photo,
-                                                       onAvatarClick,
+                                                       onClick,
                                                        onPhotoChange,
                                                    }) => {
-    const {profile, friends, profile_history, wallet} = useSelector(
-        (state: any) => state.filesState,
-    );
+    const {profile_history} = useSelector((state: any) => state.filesState);
 
     return (
         <div
@@ -36,12 +33,14 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({
                 onChange={onPhotoChange}
                 style={{display: "none"}}
             />
+
             <UserAvatar
+                onClick={onClick}
                 actions_rate={profile_history ? profile_history.actions_rate : 0}
                 photo={photo}
-                onAvatarClick={onAvatarClick}
                 style={{width: 200, height: 200}}
             />
+
             <IconButton
                 aria-label="edit"
                 component="span"
