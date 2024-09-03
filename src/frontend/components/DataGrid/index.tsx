@@ -27,6 +27,7 @@ import FormulaCell from "./FormulaCell";
 import { CColumn } from "../../../declarations/backend/backend.did";
 import { v4 as uuidv4 } from "uuid";
 import { CustomContract } from "../../../declarations/backend/backend.did";
+import { useTheme } from "@mui/material/styles";
 
 export interface Row {
   id: string;
@@ -65,7 +66,8 @@ export default function DataGridSheet(props: Props) {
     (): ReadonlySet<string> => new Set(),
   );
   // const [gridId, setGridId] = useState(uuidv4());
-
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
 
   function handleFill({
     columnKey,
@@ -317,6 +319,7 @@ export default function DataGridSheet(props: Props) {
   return (
     <DndProvider backend={HTML5Backend}>
       <DataGrid
+        style={{ width: "100%" }}
         key={props.contract.id}
         rowHeight={35}
         onCellClick={(args, event) => {
@@ -341,7 +344,7 @@ export default function DataGridSheet(props: Props) {
         rowHeight={30}
         selectedRows={selectedRows}
         onSelectedRowsChange={onSelectedRowsChange}
-        className="fill-grid"
+        className={isDarkMode ? "dark-mode" : "light-mode"}
         rowClass={(row, index) =>
           row.id.includes("7") || index === 0 ? "" : undefined
         }

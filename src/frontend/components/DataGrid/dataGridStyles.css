@@ -1,7 +1,19 @@
-.custom-data-grid .rdg-row {
-  border-bottom: 1px solid #ccc;
+/* Example CSS */
+.container {
+  height: 100vh; /* Full viewport height */
+  width: 100%; /* Full width */
+  display: flex;
+  flex-direction: column;
 }
 
-.custom-data-grid .rdg-row:last-child {
-  border-bottom: none;
+.data-grid-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.fill-grid {
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
 }

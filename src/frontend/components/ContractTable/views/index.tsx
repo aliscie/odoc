@@ -21,7 +21,6 @@ interface Props {
 }
 
 function RenderViews(props: Props) {
-
   switch (props.view.content) {
     case PROMISES:
       return <Promises contract={props.contract} />;

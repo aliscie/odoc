@@ -31,6 +31,7 @@ import ProfilePhoto from "./ProfilePhoto";
 import ProfileRatings from "./ProfileRating";
 import WalletSection from "./WalletSection";
 import { useBackendContext } from "../../contexts/BackendContext";
+import { compressAndResizeImage } from "../../DataProcessing/compressAndResizeImage";
 
 export default function ProfileComponent() {
   const { backendActor } = useBackendContext();
@@ -39,7 +40,6 @@ export default function ProfileComponent() {
   const { profile, friends, profile_history, wallet } = useSelector(
     (state: any) => state.filesState,
   );
-
 
   const [userHistory, setUserHistory] = useState<UserProfile | null>(null);
   const [profileData, setProfileData] = useState({
@@ -81,10 +81,18 @@ export default function ProfileComponent() {
     const fileInput = e.target;
     if (fileInput.files && fileInput.files[0]) {
       try {
-        const photo = await convertToBytes(fileInput.files[0]);
-        console.log("Photo data:", photo);
-        setProfileData((prev) => ({ ...prev, photo, changed: true }));
-        dispatch(handleRedux("UPDATE_PROFILE", { profile: { photo } }));
+        const imageBuffer = await compressAndResizeImage(fileInput.files[0]);
+        const imageUint8Array = new Uint8Array(imageBuffer);
+        if (imageUint8Array && imageUint8Array.length > 0) {
+          setProfileData((prev) => ({
+            ...prev,
+            imageUint8Array,
+            changed: true,
+          }));
+          dispatch(
+            handleRedux("UPDATE_PROFILE", { profile: { imageUint8Array } }),
+          );
+        }
       } catch (error) {
         console.error("Error processing photo:", error);
       }
@@ -177,7 +185,9 @@ export default function ProfileComponent() {
             <BasicTabs
               items={{
                 Friends: <Friends friends={friends} />,
-                Reputation: userHistory && <UserHistoryComponent {...userHistory} />,
+                Reputation: userHistory && (
+                  <UserHistoryComponent {...userHistory} />
+                ),
                 ...(wallet && { Transactions: <TransactionHistory /> }),
               }}
             />
