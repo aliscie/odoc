@@ -79,6 +79,7 @@ function Promises(props) {
   ];
 
   let newColumns = {};
+
   let rows = props.contract.promises.map((promise, index) => {
     if (promise.cells.length > 0) {
       promise.cells.forEach((cell) => {

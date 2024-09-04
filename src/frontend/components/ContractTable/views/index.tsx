@@ -9,10 +9,10 @@ import {
 import CustomTable from "./CustomTable";
 
 export type VIEW_OPTIONS = {
-  content?: string;
+  content: string;
   name: string;
   contract?: CContract;
-  onClick: (e: VIEW_OPTIONS, contract?: CustomContract) => void;
+  onClick?: (e: VIEW_OPTIONS, contract?: CustomContract) => void;
 };
 
 interface Props {
@@ -21,7 +21,6 @@ interface Props {
 }
 
 function RenderViews(props: Props) {
-
   switch (props.view.content) {
     case PROMISES:
       return <Promises contract={props.contract} />;

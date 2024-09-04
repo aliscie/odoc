@@ -10,7 +10,7 @@ function useGetUser() {
   let users = all_friends && [...all_friends, profile];
 
   async function getUser(userId: string): Promise<User | null> {
-    if (userId == "") {
+    if (userId == ""|| !userId) {
       return null;
     }
 

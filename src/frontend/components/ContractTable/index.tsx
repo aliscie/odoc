@@ -22,7 +22,7 @@ export function CustomContractComponent({
     contract: CustomContract;
 }) {
     const dispatch = useDispatch();
-    const [view, setView] = useState<VIEW_OPTIONS>({content: PROMISES});
+    const [view, setView] = useState<VIEW_OPTIONS>({name: PROMISES, content: PROMISES});
     const [expanded, setExpanded] = useState(true);
 
     let options = [
@@ -35,7 +35,7 @@ export function CustomContractComponent({
             content: <DeleteTableContract contract={contract} view={view}/>,
         });
         options.push({
-            content: <RenameTableContract contract={contract} view={view}/>,
+            content: <RenameTableContract setView={setView} contract={contract} view={view}/>,
         });
     }
 
@@ -70,7 +70,7 @@ export function CustomContractComponent({
             let newContract = createCContract();
             let contracts = [...contract.contracts, newContract];
             let updateContract = {...contract, contracts};
-            setView({content: CONTRACT, contract: newContract});
+            setView({name: 'Untitled', content: CONTRACT, contract: newContract});
             dispatch(handleRedux("UPDATE_CONTRACT", {contract: updateContract}));
         },
     });
@@ -109,7 +109,7 @@ export function CustomContractComponent({
                     Filter
                 </Button>
                 <Select
-                    defaultValue={PROMISES}
+                    value={view.name}
                     sx={{minWidth: 150, bgcolor: "background.default", borderRadius: 1}}
                 >
                     {viewOptions.map((w: VIEW_OPTIONS, i: number) => (

@@ -17,6 +17,7 @@ interface Props {
     content: any[];
     readOnly?: boolean;
     id?: string;
+    extraPlugins?: boolean
 }
 
 function EditorComponent(props: Props) {
@@ -67,7 +68,7 @@ function EditorComponent(props: Props) {
             readOnly={props.readOnly}
             initialValue={content}
             onChange={handleInputChange}
-            extraPlugins={extraPlugins}
+            extraPlugins={props.extraPlugins == undefined ? extraPlugins : []}
             onInsertComponent={handleOnInsertComponent}
             userMentions={mentions}
         />
