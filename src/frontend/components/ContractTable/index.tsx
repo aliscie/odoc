@@ -2,16 +2,7 @@ import React, { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { CustomContract } from "../../../declarations/backend/backend.did";
 import BasicMenu from "../MuiComponents/DropDown";
-import {
-  Button,
-  ButtonGroup,
-  Input,
-  MenuItem,
-  Select,
-  Tooltip,
-  Typography,
-  Box,
-} from "@mui/material";
+import { Box, Button, Input, MenuItem, Select, Tooltip } from "@mui/material";
 import DeleteContract from "./actions/DeleteContract";
 import { CONTRACT, CREATE_CONTRACT, PAYMENTS, PROMISES } from "./types";
 import RenderViews, { VIEW_OPTIONS } from "./views";
@@ -24,7 +15,6 @@ import DeleteTableContract from "./actions/DeleteTableContract";
 import RenameTableContract from "./actions/RenameTableContract";
 import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
 import OpenInFullIcon from "@mui/icons-material/OpenInFull";
-import { logger } from "../../DevUtils/logData";
 
 export function CustomContractComponent({
   contract,
@@ -85,24 +75,6 @@ export function CustomContractComponent({
     },
   });
 
-  // const debouncedOnChange = debounce((e: any) => {
-  //   let updated_contract = { ...contract, name: e.target.value };
-  //   console.log("updated_contract", updated_contract);
-  //   dispatch(handleRedux("UPDATE_CONTRACT", { contract: updated_contract }));
-  // }, 300);
-
-  // const debouncedOnChange = debounce((e: any) => {
-  //   const newContractName = e.target.value;
-  //   const existingContract = contract.contracts.find(
-  //     (c) => c.name === newContractName,
-  //   );
-  //   if (!existingContract) {
-  //     let updated_contract = { ...contract, name: newContractName };
-  //     dispatch(handleRedux("UPDATE_CONTRACT", { contract: updated_contract }));
-  //   } else {
-  //     console.error(`Contract with name ${newContractName} already exists`);
-  //   }
-  // }, 300);
 
   const onChange = debounce((event: any) => {
     try {

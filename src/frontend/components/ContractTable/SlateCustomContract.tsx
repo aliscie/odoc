@@ -42,7 +42,8 @@ export default function SlateCustomContract(props: any) {
     return <div>Loading...</div>;
   }
   return (
-    <div>
+    <div
+        contentEditable={false}>
       <CustomContractComponent contract={contracts[id]} />
     </div>
   );

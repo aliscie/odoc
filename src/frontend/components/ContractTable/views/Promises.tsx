@@ -49,11 +49,13 @@ function Promises(props) {
       renderEditCell: receiverDropDown,
       renderCell: renderReceiver,
       frozen: true,
+      resizable: false,
+      draggable: false,
     },
     {
       key: "sender",
       name: "sender",
-      width: "max-content",
+      width: 100,
       frozen: true,
       renderCell: renderSenderUser,
       renderEditCell: senderDropDown,
@@ -103,6 +105,8 @@ function Promises(props) {
         name: key,
         width: "max-content",
         renderEditCell: textEditor,
+        resizable: true,
+        draggable: true,
         frozen: false,
       });
     }
@@ -163,6 +167,11 @@ function Promises(props) {
   }
 
   function onAddColumn(column: any) {
+    // if (props.contract.promises.length == 0) {
+    //   props.contract.promises = [{
+    //
+    //   }]
+    // }
     let promises = props.contract.promises.map((p) => {
       let newCell: CCell = { field: column.id, value: column.name };
       return {

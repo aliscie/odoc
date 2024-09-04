@@ -9,7 +9,6 @@ import { renderSenderUser } from "../renders/renderSenderUser";
 import { renderReceiver } from "../renders/renderReceiver";
 
 function Payments(props) {
-  console.log("contract in payments: ", props.contract);
   let rows = [];
 
   let columns = [

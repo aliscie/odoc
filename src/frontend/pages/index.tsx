@@ -19,7 +19,7 @@ function Pages() {
       <Route path="/user/*" element={<UserPage />} />
       <Route path="/chats/*" element={<ChatsPage />} />
       <Route path="/contracts/*" element={<ContractsHistory />} />
-      <Route path="*" element={<FileContentPage />} />
+      <Route path="/*" element={<FileContentPage />} />
     </Routes>
   );
 }
