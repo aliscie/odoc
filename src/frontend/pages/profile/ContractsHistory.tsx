@@ -42,9 +42,6 @@ function ContractsHistory(props: any) {
 
   return (
     <Box sx={{ padding: 3, margin: 2 }}>
-      <Typography variant="h5" gutterBottom>
-        Contracts History
-      </Typography>
       <Button
         onClick={handleClick}
         variant="contained"

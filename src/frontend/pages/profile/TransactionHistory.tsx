@@ -11,11 +11,6 @@ const TransactionHistory = () => {
   const { wallet } = useSelector((state: any) => state.filesState);
   const transactionRecords = wallet.exchanges || [];
 
-  if (wallet) {
-    console.log("Transaction records: ", wallet.exchanges);
-  } else {
-    console.log("Wallet is undefined");
-  }
   return (
     <div style={{ height: "300px", overflowY: "auto" }}>
       <List dense>
