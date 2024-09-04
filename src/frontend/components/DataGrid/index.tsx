@@ -115,7 +115,7 @@ export default function DataGridSheet(props: Props) {
     setRows(newRows);
   };
 
-  function hanldeColumnResize(index: number, width: number) {
+  function handleColumnResize(index: number, width: number) {
     // console.log({index, width});
   }
 
@@ -315,11 +315,16 @@ export default function DataGridSheet(props: Props) {
       Insert Row Below
     </MenuItem>,
   ];
-
+  let height = 100;
+  if (rows.length < 3) {
+    height = rows.length * 90;
+  } else {
+    height = rows.length * 50;
+  }
   return (
     <DndProvider backend={HTML5Backend}>
       <DataGrid
-        style={{ width: "100%" }}
+        style={{ width: "100%", height, maxHeight: 400 }}
         key={props.contract.id}
         rowHeight={35}
         onCellClick={(args, event) => {
@@ -333,7 +338,7 @@ export default function DataGridSheet(props: Props) {
         onSortColumnsChange={onSortColumnsChange}
         defaultColumnOptions={{ width: "1fr" }}
         onColumnsReorder={onColumnsReorder}
-        onColumnResize={hanldeColumnResize}
+        onColumnResize={handleColumnResize}
         onRowsChange={handleRowsChange}
         rows={rows}
         renderers={{ renderRow, noRowsFallback: <h1>No rows to show.</h1> }}
@@ -341,10 +346,9 @@ export default function DataGridSheet(props: Props) {
         onFill={handleFill}
         onCopy={handleCopy}
         onPaste={handlePaste}
-        rowHeight={30}
         selectedRows={selectedRows}
         onSelectedRowsChange={onSelectedRowsChange}
-        className={isDarkMode ? "dark-mode" : "light-mode"}
+        className={isDarkMode ? "rdg-dark" : "rdg-light"}
         rowClass={(row, index) =>
           row.id.includes("7") || index === 0 ? "" : undefined
         }
