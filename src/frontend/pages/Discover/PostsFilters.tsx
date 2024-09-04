@@ -57,7 +57,6 @@ function FilterPosts(props: Props) {
           [options.map((opt) => opt.title)],
           [],
         ));
-      console.log({ response, t: options.map((opt) => opt.title) });
       response && props.setPosts(response || []);
       response && props.setPage(0);
     } else {

@@ -38,7 +38,6 @@ function CreatePost(props: any) {
     let new_post = { ...post, content_tree: content_tree };
     setLoad(true);
     let res = await backendActor?.save_post(new_post);
-    console.log({ res });
     setLoad(false);
     if ("Ok" in res) {
       // TODo Why new posts does not show up

@@ -76,7 +76,7 @@ function useSocket() {
             dispatch(handleRedux("ADD_FRIEND", { friend }));
             dispatch(
               handleRedux("NOTIFY", { new_notification: data.notification[0] }),
-            );
+            );https://stackoverflow.com/questions/54182806/redux-seems-slow-when-saving-large-collection-to-store
             break;
           case "ContractUpdate":
             break;
