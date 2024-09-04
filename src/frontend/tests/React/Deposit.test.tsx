@@ -1,9 +1,9 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import Deposit from "../../pages/profile/actions/Deposit";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import renderWithProviders from "./testSetup";
 
 vi.mock("react-redux", () => ({

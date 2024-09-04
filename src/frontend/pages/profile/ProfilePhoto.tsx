@@ -39,7 +39,7 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({
             <UserAvatar
                 actions_rate={profile_history ? profile_history.actions_rate : 0}
                 photo={photo}
-                onAvatarClick={onAvatarClick}
+                onClick={onAvatarClick}
                 style={{width: 200, height: 200}}
             />
             <IconButton
