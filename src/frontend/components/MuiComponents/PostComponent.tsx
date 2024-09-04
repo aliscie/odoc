@@ -6,11 +6,7 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import IconButton, {IconButtonProps} from "@mui/material/IconButton";
 import {deserializeContentTree} from "../../DataProcessing/deserlize/deserializeContents";
-import {
-    FEChat,
-    PostUser,
-    UserFE,
-} from "../../../declarations/backend/backend.did";
+import {FEChat, PostUser, UserFE,} from "../../../declarations/backend/backend.did";
 import formatTimestamp from "../../utils/time";
 import {useDispatch, useSelector} from "react-redux";
 import Person2Icon from "@mui/icons-material/Person2";
@@ -126,14 +122,29 @@ export default function PostComponent(props: Props) {
 
             <CardContent>
                 <EditorComponent
-                    extraPlugins={false}
                     editable={props.editable}
                     onChange={props.onChange}
                     content={content}
                 />
             </CardContent>
 
-            <CardActions disableSpacing>{props.buttons}</CardActions>
+            <CardActions disableSpacing>
+                {props.buttons}
+
+                {/*<ExpandMore*/}
+                {/*    expand={expanded}*/}
+                {/*    onClick={handleExpandClick}*/}
+                {/*    aria-expanded={expanded}*/}
+                {/*    aria-label="show more"*/}
+                {/*>*/}
+                {/*    <ExpandMoreIcon/>*/}
+                {/*</ExpandMore>*/}
+            </CardActions>
+            {/*<Collapse in={expanded} timeout="auto" unmountOnExit>*/}
+            {/*    <CardContent>*/}
+            {/*        {props.full_description}*/}
+            {/*    </CardContent>*/}
+            {/*</Collapse>*/}
         </Card>
     );
 }

@@ -9,10 +9,10 @@ import {
 import CustomTable from "./CustomTable";
 
 export type VIEW_OPTIONS = {
-  content: string;
+  content?: string;
   name: string;
   contract?: CContract;
-  onClick?: (e: VIEW_OPTIONS, contract?: CustomContract) => void;
+  onClick: (e: VIEW_OPTIONS, contract?: CustomContract) => void;
 };
 
 interface Props {

@@ -1,7 +1,8 @@
-import React from "react";
+import React, {useCallback} from "react";
 import {useDispatch, useSelector} from "react-redux";
+import {debounce} from "lodash";
 
-import {CircularProgress, Typography} from "@mui/material";
+import {CircularProgress, Input} from "@mui/material";
 import {handleRedux} from "../redux/store/handleRedux";
 import EditorComponent from "../components/EditorComponent";
 
@@ -17,34 +18,49 @@ const FileContentPage: React.FC<Props> = () => {
 
     let current_file = files.find((file: any) => file.id === fileId);
 
+
+    // const [title, setTitle] = React.useState(
+    //     (current_file && current_file.name) || "Untitled",
+    // );
+
     const editorKey = (current_file && current_file.id) || "";
-    const onChange = (changes: any) => {
+    const onChange = useCallback(
+        debounce((changes: any) => {
+            if (current_file) {
+                dispatch(
+                    handleRedux("UPDATE_CONTENT", {
+                        id: current_file.id,
+                        content: changes,
+                    }),
+                );
+            }
+        }, 250),
+        [dispatch, current_file],
+    );
 
-        if (current_file) {
-            dispatch(
-                handleRedux("UPDATE_CONTENT", {
-                    id: current_file.id,
-                    content: changes,
-                }),
-            )
-        }
-
-    }
-
-    const handleTitleKeyUp = (event) => {
-        {
-            let title = event.target.innerText;
+    const handleInputChange = useCallback(
+        debounce((title: string) => {
             if (title !== current_file.name) {
                 dispatch(
                     handleRedux("UPDATE_FILE_TITLE", {id: current_file.id, title}),
                 );
             }
-        }
-    }
+        }, 250),
+        [dispatch, current_file],
+    );
+
+    const handleTitleKeyDown = useCallback(
+        debounce((title: string) => {
+            handleInputChange(title);
+        }, 250),
+
+        [handleInputChange],
+    );
 
     const preventEnter = (e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
             e.preventDefault();
+            (e.target as HTMLElement).blur();
         }
     };
     if (!inited) {
@@ -60,22 +76,26 @@ const FileContentPage: React.FC<Props> = () => {
         current_file.users_permissions.some(
             ([userId, permissions]) => userId === profile.id && permissions.CanUpdate,
         );
+
     return (
         <div style={{marginTop: "3px", marginLeft: "10%", marginRight: "10%"}}>
-            <Typography
-                contentEditable={editable}
-                variant="h4" style={{marginBottom: "10px"}}
+            <Input
                 key={current_file.id + current_file.name}
-                style={{outline: "none"}}
-                // onKeyUp={handleTitleKeyUp}
-                onKeyDown={preventEnter}
-                onBlur={handleTitleKeyUp}
-
-            >
-                {current_file.name || "Untitled"}
-            </Typography>
+                inputProps={{
+                    style: {
+                        width: "100%",
+                        fontSize: "1.5rem",
+                        overflow: "visible",
+                        whiteSpace: "nowrap",
+                    },
+                }}
+                defaultValue={current_file.name}
+                // value={current_file.name}
+                placeholder="Untitled"
+                // onKeyDown={preventEnter}
+                onChange={(e) => handleTitleKeyDown(e.target.value)}
+            />
             <EditorComponent
-                title={current_file.name || "Untitled"}
                 id={current_file.id}
                 contentEditable={editable}
                 onChange={onChange}

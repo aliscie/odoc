@@ -189,20 +189,22 @@ function secondaryActionSwitch(props) {
                 <>
                     {!confirmed && !is_sender && (
                         <Box display="flex" gap={1}>
-                            <LoaderButton
-                                toolTip={"Confirm the friend request"}
-                                onClick={async () => await handleConfirm(id)}
-                                color="success"
-                                startIcon={<CheckCircleIcon/>}
-                            />
+                            <Tooltip title={"Confirm"}>
+                                <LoaderButton
+                                    onClick={async () => await handleConfirm(id)}
+                                    color="success"
+                                    startIcon={<CheckCircleIcon/>}
+                                />
 
-                            <LoaderButton
-                                toolTip={"Reject the friend request"}
-                                onClick={async () => await handleReject(id)}
-                                color="error"
-                                startIcon={<CancelIcon/>}
-                            />
+                            </Tooltip>
+                            <Tooltip title={"Reject"}>
+                                <LoaderButton
+                                    onClick={async () => await handleReject(id)}
+                                    color="error"
+                                    startIcon={<CancelIcon/>}
+                                />
 
+                            </Tooltip>
                         </Box>
                     )}
                 </>
