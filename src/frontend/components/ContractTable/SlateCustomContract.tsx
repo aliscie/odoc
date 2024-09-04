@@ -41,5 +41,9 @@ export default function SlateCustomContract(props: any) {
   if (loading) {
     return <div>Loading...</div>;
   }
-  return <CustomContractComponent contract={contracts[id]} />;
+  return (
+    <div>
+      <CustomContractComponent contract={contracts[id]} />
+    </div>
+  );
 }
