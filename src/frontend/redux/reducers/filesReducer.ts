@@ -22,20 +22,20 @@ export function filesReducer(
     return { ...state };
   }
 
-    switch (action.type) {
-        case "INIT_FILES_STATE":
-            return {
-                ...state,
-                files: action.data.Files,
-                wallet: action.data.Wallet,
-                files_content: deserializeContents(action.data.FilesContents[0]),
-                contracts: deserializeContracts(action.data.Contracts),
-                profile: action.data.Profile,
-                friends: action.data.Friends,
-                inited: true,
-                profile_history: action.data.ProfileHistory,
-                // friends: action.data.Friends.map(friend => friend.id === action.id ? {...friend, ...action} : friend)
-            };
+  switch (action.type) {
+    case "INIT_FILES_STATE":
+      return {
+        ...state,
+        files: action.data.Files,
+        wallet: action.data.Wallet,
+        files_content: deserializeContents(action.data.FilesContents[0]),
+        contracts: deserializeContracts(action.data.Contracts),
+        profile: action.data.Profile,
+        friends: action.data.Friends,
+        inited: true,
+        profile_history: action.data.ProfileHistory,
+        // friends: action.data.Friends.map(friend => friend.id === action.id ? {...friend, ...action} : friend)
+      };
 
     case "ADD_CONTENT":
       return {
@@ -247,6 +247,21 @@ export function filesReducer(
         friends: state.friends.map((friend) =>
           friend.id === action.id ? { ...friend, ...action } : friend,
         ),
+      };
+
+    case "CONFIRM_FRIEND":
+      console.log({ friends: state.friends, action });
+      return {
+        ...state,
+        friends: state.friends.map((f) => {
+          if (
+            f.sender == action.friend.sender &&
+            action.friend.receiver == f.receiver
+          ) {
+            return f;
+          }
+          return f;
+        }),
       };
 
     // TODO profile reducer

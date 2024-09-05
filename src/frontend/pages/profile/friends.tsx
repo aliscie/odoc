@@ -25,8 +25,7 @@ interface FriendProps {
     confirmed?: boolean;
 }
 
-function secondaryActionSwitch(props) {
-
+function SecondaryActionSwitch(props) {
     const {backendActor} = useBackendContext();
     let {id, confirmed} = props;
     const {all_friends, friends, profile} = useSelector(
@@ -195,7 +194,6 @@ function secondaryActionSwitch(props) {
                                     color="success"
                                     startIcon={<CheckCircleIcon/>}
                                 />
-
                             </Tooltip>
                             <Tooltip title={"Reject"}>
                                 <LoaderButton
@@ -203,7 +201,6 @@ function secondaryActionSwitch(props) {
                                     color="error"
                                     startIcon={<CancelIcon/>}
                                 />
-
                             </Tooltip>
                         </Box>
                     )}
@@ -223,7 +220,7 @@ export function FriendCom(props: FriendProps) {
                     <RateUser rate={props.rate || 0} id={props.id}/>
                 </Box>
                 <Box display="flex" justifyContent="flex-end">
-                    {secondaryActionSwitch(props)}
+                    <SecondaryActionSwitch {...props} />
                 </Box>
             </Box>
         </ListItem>
@@ -231,9 +228,9 @@ export function FriendCom(props: FriendProps) {
 }
 
 function Friends(props: any) {
-    const {profile} = useSelector((state: any) => state.filesState);
+    const {profile, friends} = useSelector((state: any) => state.filesState);
 
-    if (!props.friends) {
+    if (!friends) {
         return <></>;
     }
 
@@ -242,7 +239,7 @@ function Friends(props: any) {
             sx={{display: "flex", flexDirection: "column", alignItems: "center"}}
         >
             <List dense>
-                {props.friends.map((value) => {
+                {friends.map((value) => {
                     let user =
                         value.receiver.id !== profile.id ? value.receiver : value.sender;
                     const labelId = `checkbox-list-secondary-label-${value.receiver.name}`;

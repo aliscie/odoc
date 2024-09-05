@@ -163,7 +163,7 @@ export default function ProfileComponent() {
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <BasicTabs
               items={{
-                Friends: <Friends friends={friends} />,
+                Friends: <Friends />,
                 Reputation: profile_history && (
                   <UserHistoryComponent {...profile_history} />
                 ),
