@@ -7,6 +7,7 @@ import React, {
   useState,
 } from "react";
 import "react-data-grid/lib/styles.css";
+import "./dataGridStyles.css";
 import DataGrid, {
   CopyEvent,
   FillEvent,
@@ -323,87 +324,70 @@ export default function DataGridSheet(props: Props) {
   }
   return (
     <DndProvider backend={HTML5Backend}>
-      <DataGrid
-        style={{ width: "100%", height, maxHeight: 400 }}
-        key={props.contract.id}
-        rowHeight={35}
-        onCellClick={(args, event) => {
-          if (args.column.key === "title") {
-            event.preventGridDefault();
-            args.selectCell(true);
+      <div className="data-grid-container">
+        <DataGrid
+          style={{ width: "100%", height: "100%" }}
+          rowHeight={35}
+          onCellClick={(args, event) => {
+            if (args.column.key === "title") {
+              event.preventGridDefault();
+              args.selectCell(true);
+            }
+          }}
+          columns={reorderedColumns}
+          sortColumns={sortColumns}
+          onSortColumnsChange={onSortColumnsChange}
+          defaultColumnOptions={{ width: 150 }} // Default column width
+          onColumnsReorder={onColumnsReorder}
+          onColumnResize={handleColumnResize}
+          onRowsChange={handleRowsChange}
+          rows={rows}
+          renderers={{ renderRow, noRowsFallback: <h1>No rows to show.</h1> }}
+          rowKeyGetter={rowKeyGetter}
+          onFill={handleFill}
+          onCopy={handleCopy}
+          onPaste={handlePaste}
+          selectedRows={selectedRows}
+          onSelectedRowsChange={onSelectedRowsChange}
+          className={isDarkMode ? "rdg-dark" : "rdg-light"}
+          rowClass={(row, index) =>
+            row.id.includes("7") || index === 0 ? "" : undefined
           }
-        }}
-        columns={reorderedColumns}
-        sortColumns={sortColumns}
-        onSortColumnsChange={onSortColumnsChange}
-        defaultColumnOptions={{ width: "1fr" }}
-        onColumnsReorder={onColumnsReorder}
-        onColumnResize={handleColumnResize}
-        onRowsChange={handleRowsChange}
-        rows={rows}
-        renderers={{ renderRow, noRowsFallback: <h1>No rows to show.</h1> }}
-        rowKeyGetter={rowKeyGetter}
-        onFill={handleFill}
-        onCopy={handleCopy}
-        onPaste={handlePaste}
-        selectedRows={selectedRows}
-        onSelectedRowsChange={onSelectedRowsChange}
-        className={isDarkMode ? "rdg-dark" : "rdg-light"}
-        rowClass={(row, index) =>
-          row.id.includes("7") || index === 0 ? "" : undefined
-        }
-        // direction={direction}
-        onCellClick={(args, event) => {
-          if (args.column.key === "title") {
-            // setContextMenuProps(pre => {
-            //     return {...pre}
-            // });
-            event.preventGridDefault();
-            args.selectCell(true);
-          }
-        }}
-        onCellContextMenu={(args, event) => {
-          const { row, column } = args;
-          // if (column.frozen) {
-          //     return
-          // }
-
-          event.preventGridDefault();
-          // Do not show the default context menu
-          let contextPorps = {
-            rowIdx: rows.indexOf(row),
-            top: event.clientY,
-            left: event.clientX,
-            row,
-            column,
-          };
-          event.preventDefault();
-          if (!column.frozen) {
-            contextPorps["extraOption"] = [
-              <RenameColumn
-                onRenameColumn={props.onRenameColumn}
-                setColumns={setColumns}
-                {...contextPorps}
-              />,
-              <InsertFormula
-                contextMenuProps={contextPorps}
-                onAddFormula={onAddFormula}
-              />,
-              <MenuItem
-                onClick={() => {
-                  onDeleteColumn();
-                  setContextMenuProps(null);
-                }}
-              >
-                Delete Column
-              </MenuItem>,
-            ];
-          }
-
-          setContextMenuProps(contextPorps);
-        }}
-      />
-
+          onCellContextMenu={(args, event) => {
+            const { row, column } = args;
+            event.preventDefault();
+            let contextProps = {
+              rowIdx: rows.indexOf(row),
+              top: event.clientY,
+              left: event.clientX,
+              row,
+              column,
+            };
+            if (!column.frozen) {
+              contextProps["extraOption"] = [
+                <RenameColumn
+                  onRenameColumn={props.onRenameColumn}
+                  setColumns={setColumns}
+                  {...contextProps}
+                />,
+                <InsertFormula
+                  contextMenuProps={contextProps}
+                  onAddFormula={onAddFormula}
+                />,
+                <MenuItem
+                  onClick={() => {
+                    onDeleteColumn();
+                    setContextMenuProps(null);
+                  }}
+                >
+                  Delete Column
+                </MenuItem>,
+              ];
+            }
+            setContextMenuProps(contextProps);
+          }}
+        />
+      </div>
       {isContextMenuOpen &&
         createPortal(
           <Menu
