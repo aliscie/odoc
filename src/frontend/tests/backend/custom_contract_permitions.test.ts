@@ -5,7 +5,7 @@
 //     3. Allow update a cell
 
 import { newContract } from "./data_samples";
-import { createCContract } from "../../components/contracts/custom_contract/utls";
+// import { createCContract } from "../../components/contracts/custom_contract/utls";
 import {
   CContract,
   InitialData,
