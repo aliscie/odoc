@@ -241,6 +241,7 @@ export function filesReducer(
         profile: { ...state.profile, ...action.profile },
       };
     // TODO firndRecuer
+
     case "UPDATE_FRIEND":
       return {
         ...state,
@@ -249,8 +250,27 @@ export function filesReducer(
         ),
       };
 
+    case "REMOVE_FRIEND":
+      function checkf(f: any) {
+        let sender = f.sender.id;
+        let receiver = f.receiver.id;
+        if (typeof sender != "string") {
+          sender = sender.toString();
+        }
+        if (typeof receiver != "string") {
+          receiver = receiver.toString();
+        }
+
+        return sender !== action.id && receiver !== action.id;
+      }
+
+      let friends = state.friends.filter((f) => checkf(f));
+
+      return { ...state, friends };
+
+    case "ADD_FRIEND":
+      return { ...state, friends: [...state.friends, action.friend] };
     case "CONFIRM_FRIEND":
-      console.log({ friends: state.friends, action });
       return {
         ...state,
         friends: state.friends.map((f) => {
@@ -258,6 +278,8 @@ export function filesReducer(
             f.sender == action.friend.sender &&
             action.friend.receiver == f.receiver
           ) {
+            c.confirmed = action.friend.confirmed;
+            // console.log({ f });
             return f;
           }
           return f;
