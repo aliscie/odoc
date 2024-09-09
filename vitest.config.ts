@@ -11,7 +11,7 @@ export default defineConfig({
     },
     // include: ['src/*/.{test,spec}.{js,ts,jsx,tsx}'],
     // globalSetup: ["./src/frontend/tests/React/setup.ts"],
-    setupFiles: "./backend_unit_test_setup.ts",
+    setupFiles: "./src/frontend/tests/backend/backend_unit_test_setup.ts",
     // reporters: ["default", {
     //     async onWatcherRerun() {
     //         await teardown();
@@ -20,7 +20,7 @@ export default defineConfig({
     // }]
     setupFilesAfterEnv: [
       "@testing-library/jest-dom/extend-expect", // Ensure jest-dom extensions are loaded
-      "./src/frontend/setupTests.ts",
+      "./src/frontend/tests/React/utils/frontendTestSetup.tsx",
     ],
   },
 });

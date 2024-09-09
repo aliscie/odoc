@@ -1,12 +1,11 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import ContractItem from "../../pages/profile/ContractItem";
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
 import useGetUser from "../../utils/get_user_by_principal";
-import formatTimestamp from "../../utils/time";
-import renderWithProviders from "./testSetup";
+import renderWithProviders from "./utils/frontendTestSetup";
 
 // Mock necessary hooks and functions
 vi.mock("react-redux", () => ({

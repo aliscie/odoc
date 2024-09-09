@@ -42,15 +42,15 @@ vi.mock("indexedDB", async () => {
 });
 
 import React from "react";
-import { BackendProvider } from "../../contexts/BackendContext";
+import { BackendProvider } from "../../../contexts/BackendContext";
 import { Provider } from "react-redux";
 import { render } from "@testing-library/react";
 import { configureStore } from "@reduxjs/toolkit";
-import rootReducer from "../../redux/reducers";
-import { initialState as filesInitialState } from "../../redux/types/filesTypes";
-import { initialChatsState as chatsInitialState } from "../../redux/types/chatsTypes";
-import { initialState as uiInitialState } from "../../redux/types/uiTypes";
-import { notificationInitialState } from "../../redux/types/notificationTypes";
+import rootReducer from "../../../redux/reducers";
+import { initialState as filesInitialState } from "../../../redux/types/filesTypes";
+import { initialChatsState as chatsInitialState } from "../../../redux/types/chatsTypes";
+import { initialState as uiInitialState } from "../../../redux/types/uiTypes";
+import { notificationInitialState } from "../../../redux/types/notificationTypes";
 
 const renderWithProviders = (
   component: React.ReactElement,

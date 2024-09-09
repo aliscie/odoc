@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import renderWithProviders from "./testSetup";
+import renderWithProviders from "./utils/frontendTestSetup";
 import UserPage from "../../pages/user";
 import {
   ActionRating,
@@ -12,6 +12,7 @@ import {
   UserProfile,
 } from "../../../declarations/backend/backend.did";
 import { Principal } from "@dfinity/principal";
+import TestWrapper from "./utils/tests_wrapper";
 
 vi.mock("react-redux", () => ({
   useDispatch: vi.fn(),
@@ -85,7 +86,11 @@ describe("Deposit Component", () => {
     const mockSearchValue = `?user_id=${id}`;
     delete window.location;
     window.location = { search: mockSearchValue } as any;
-    renderWithProviders(<UserPage />);
+    renderWithProviders(
+      <TestWrapper>
+        <UserPage />
+      </TestWrapper>,
+    );
   });
 
   it("does nothing if backendActor is not available", () => {});

@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import renderWithProviders from "./testSetup";
+import renderWithProviders from "./utils/frontendTestSetup";
 
 vi.mock("react-redux", () => ({
   useDispatch: vi.fn(),

@@ -27,7 +27,7 @@ export function CustomContractComponent({
 
   let options = [
     {
-      content: <DeleteContract id={contract.id} />,
+      content: <DeleteContract id={contract && contract.id} />,
     },
   ];
   if (view.contract) {
@@ -74,7 +74,6 @@ export function CustomContractComponent({
       dispatch(handleRedux("UPDATE_CONTRACT", { contract: updateContract }));
     },
   });
-
 
   const onChange = debounce((event: any) => {
     try {

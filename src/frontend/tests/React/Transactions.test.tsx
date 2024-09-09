@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import TransactionHistory from "../../pages/profile/TransactionHistory";
-import renderWithProviders from "./testSetup";
+import renderWithProviders from "./utils/frontendTestSetup";
 
 vi.mock("react-redux", () => ({
   useSelector: vi.fn(),

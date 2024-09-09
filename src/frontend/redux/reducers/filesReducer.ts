@@ -271,16 +271,13 @@ export function filesReducer(
     case "ADD_FRIEND":
       return { ...state, friends: [...state.friends, action.friend] };
     case "CONFIRM_FRIEND":
+      let sender = action.friend.sender;
+      let receiver = action.friend.receiver;
       return {
         ...state,
         friends: state.friends.map((f) => {
-          if (
-            f.sender == action.friend.sender &&
-            action.friend.receiver == f.receiver
-          ) {
-            c.confirmed = action.friend.confirmed;
-            // console.log({ f });
-            return f;
+          if (f.sender.id === sender.id && receiver.id === f.receiver.id) {
+            return { ...f, confirmed: true };
           }
           return f;
         }),

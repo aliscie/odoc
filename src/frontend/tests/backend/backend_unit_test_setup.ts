@@ -2,11 +2,11 @@ import { afterAll, beforeAll, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { resolve } from "node:path";
 import { createIdentity, PocketIc } from "@hadronous/pic";
-import { idlFactory } from "./src/declarations/backend";
-import { _SERVICE } from "./src/declarations/backend/backend.did";
+import { idlFactory } from "../../../declarations/backend";
+import { _SERVICE } from "../../../declarations/backend/backend.did";
 import { Identity } from "@dfinity/agent";
-import { RegisterUser, User } from "./src/declarations/backend/backend.did";
-import { randomString } from "./src/frontend/DataProcessing/dataSamples";
+import { RegisterUser, User } from "../../../declarations/backend/backend.did";
+import { randomString } from "../../DataProcessing/dataSamples";
 
 vi.stubGlobal("matchMedia", () => ({
   addEventListener: () => {},

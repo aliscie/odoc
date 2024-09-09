@@ -26,12 +26,9 @@ interface FriendProps {
 }
 
 function SecondaryActionSwitch(props) {
-
   const { backendActor } = useBackendContext();
   let { id, confirmed } = props;
-  const { all_friends, friends, profile } = useSelector(
-    (state: any) => state.filesState,
-  );
+  const { friends, profile } = useSelector((state: any) => state.filesState);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const dispatch = useDispatch();
