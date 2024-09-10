@@ -59,7 +59,7 @@ function ContractsHistory(props: any) {
                 <Paper
                   elevation={3}
                   sx={{
-                    width: "100%",
+                    width: "70%",
                     "&:hover": {
                       boxShadow: 6,
                     },

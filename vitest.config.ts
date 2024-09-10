@@ -11,7 +11,7 @@ export default defineConfig({
     },
     // include: ['src/*/.{test,spec}.{js,ts,jsx,tsx}'],
     // globalSetup: ["./src/frontend/tests/React/setup.ts"],
-    // setupFiles: "./src/frontend/tests/backend/backend_unit_test_setup.ts",
+    setupFiles: process.env.VITE_TEST_ENV === "backend" ? "./src/frontend/tests/backend/backend_unit_test_setup.ts" : [],,
     // reporters: ["default", {
     //     async onWatcherRerun() {
     //         await teardown();
