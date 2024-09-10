@@ -30,7 +30,7 @@ export function filesReducer(
         wallet: action.data.Wallet,
         files_content: deserializeContents(action.data.FilesContents[0]),
         contracts: deserializeContracts(action.data.Contracts),
-        profile: action.data.Profile,
+        profile: { ...action.data.Profile, photo: [[]] },
         friends: action.data.Friends,
         inited: true,
         profile_history: action.data.ProfileHistory,
@@ -238,7 +238,7 @@ export function filesReducer(
     case "UPDATE_PROFILE":
       return {
         ...state,
-        profile: { ...state.profile, ...action.profile },
+        profile: { ...state.profile, ...action.profile, photo: [[]] },
       };
     // TODO firndRecuer
 

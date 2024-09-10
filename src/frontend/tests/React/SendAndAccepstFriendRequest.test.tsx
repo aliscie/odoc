@@ -86,11 +86,7 @@ describe("Deposit Component", () => {
     const mockSearchValue = `?user_id=${id}`;
     delete window.location;
     window.location = { search: mockSearchValue } as any;
-    renderWithProviders(
-      <TestWrapper>
-        <UserPage />
-      </TestWrapper>,
-    );
+    renderWithProviders(<UserPage />);
   });
 
   it("does nothing if backendActor is not available", () => {});

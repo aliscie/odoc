@@ -15,7 +15,7 @@ function useGetUser() {
     }
 
     const friend = users && users.find((f) => f.id === userId);
-    if (friend) {
+    if (friend) {``
       return friend;
     }
     let user: undefined | { Ok: User } | { Err: string } =

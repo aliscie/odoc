@@ -76,7 +76,7 @@ export default function ProfileComponent() {
       try {
         const photo = await convertToBytes(fileInput.files[0]);
         setProfileData((prev) => ({ ...prev, photo, changed: true }));
-        dispatch(handleRedux("UPDATE_PROFILE", { profile: { photo } }));
+        // dispatch(handleRedux("UPDATE_PROFILE", { profile: { photo } }));
       } catch (error) {
         console.error("Error processing photo:", error);
       }

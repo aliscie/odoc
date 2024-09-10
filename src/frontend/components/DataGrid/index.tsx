@@ -15,8 +15,6 @@ import DataGrid, {
   Row,
   SortColumn,
 } from "react-data-grid";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { DraggableRowRenderer } from "./DraggableRowRenderer";
 import { createPortal } from "react-dom";
 import { Menu, MenuItem } from "@mui/material";
@@ -322,7 +320,7 @@ export default function DataGridSheet(props: Props) {
     height = rows.length * 50;
   }
   return (
-    <DndProvider backend={HTML5Backend}>
+    <div >
       <DataGrid
         style={{ width: "100%", height, maxHeight: 400 }}
         key={props.contract.id}
@@ -421,6 +419,6 @@ export default function DataGridSheet(props: Props) {
           </Menu>,
           document.body,
         )}
-    </DndProvider>
+    </div>
   );
 }

@@ -73,10 +73,10 @@ const setupTestEnvironment = async () => {
 beforeAll(setupTestEnvironment);
 
 afterAll(async () => {
-  await global.pic.tearDown();
-  delete global.lol;
-  delete global.pic;
-  delete global.actor;
-  delete global.loginAs;
-  delete global.user;
+  // await global.pic.tearDown();
+  // delete global.lol;
+  // delete global.pic;
+  // delete global.actor;
+  // delete global.loginAs;
+  // delete global.user;
 });
