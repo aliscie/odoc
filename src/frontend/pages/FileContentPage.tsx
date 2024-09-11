@@ -10,6 +10,7 @@ interface Props {
 }
 
 const FileContentPage: React.FC<Props> = () => {
+    const { isLoggedIn } = useSelector((state: any) => state.uiState);
     let fileId = window.location.pathname.split("/")[1];
     const dispatch = useDispatch();
     const {inited, files_content, profile, files} = useSelector(
@@ -57,13 +58,8 @@ const FileContentPage: React.FC<Props> = () => {
         [handleInputChange],
     );
 
-    const preventEnter = (e: React.KeyboardEvent) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            (e.target as HTMLElement).blur();
-        }
-    };
-    if (!inited) {
+
+    if (!inited && isLoggedIn) {
         return <CircularProgress/>
     }
     if (!current_file) {

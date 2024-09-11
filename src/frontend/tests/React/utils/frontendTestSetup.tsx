@@ -23,7 +23,7 @@ vi.mock("../../contexts/BackendContext", async (importOriginal) => {
       login: vi.fn(),
       logout: vi.fn(),
     }),
-    BackendProvider: ({ children }) => <div>{children}</div>,
+    BackendProvider: actual.BackendProvider, // Add this line
   };
 });
 

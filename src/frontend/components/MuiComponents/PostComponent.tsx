@@ -37,14 +37,17 @@ export function UserAvatar(props: UserFE | User) {
         let res = await getChats();
         let chat = res.find(
           (chat: FEChat) =>
-            chat.admins[0].id.toString() === props.id ||
+            chat.admins[0].id.toString() === props.id.toString() ||
             chat.creator.id.toString() === props.id,
         );
-
+        let current_user: string | Principal = props.id;
+        if (typeof props.id === "string") {
+          current_user = Principal.fromText(current_user);
+        }
         dispatch(
           handleRedux("OPEN_CHAT", {
             current_chat_id: (chat && chat.id) || "chat_id",
-            current_user: Principal.fromText(props.id || ""),
+            current_user,
           }),
         );
       },

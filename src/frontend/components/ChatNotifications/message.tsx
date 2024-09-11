@@ -48,8 +48,10 @@ const MessageComponent: React.FC<FrontendMessage> = (message) => {
     >
       <Box
         sx={{
-          maxWidth: "70%",
-          backgroundColor: isCurrentUser ? "primary.main" : "grey.300",
+          maxWidth: "180px",
+             whiteSpace: 'normal',
+          overflow: "hidden",
+          backgroundColor: isCurrentUser ? "primary.main" : "info.main",
           color: isCurrentUser ? "white" : "black",
           borderRadius: 2,
           padding: 1,
