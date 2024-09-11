@@ -15,7 +15,6 @@ import { LoadingButton } from "@mui/lab";
 import PostTags from "./TagsComponent";
 import serialize_file_contents from "../../DataProcessing/serialize/serializeFileContents";
 import { useBackendContext } from "../../contexts/BackendContext";
-import { Typography } from "@mui/material";
 
 interface Props {
   post: PostUser;

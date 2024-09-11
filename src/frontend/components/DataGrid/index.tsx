@@ -22,9 +22,10 @@ import RenameColumn from "./RenameColumn";
 import { randomString } from "../../DataProcessing/dataSamples";
 import InsertFormula from "./InsertFormula";
 import FormulaCell from "./FormulaCell";
-import { CColumn } from "../../../declarations/backend/backend.did";
-import { v4 as uuidv4 } from "uuid";
-import { CustomContract } from "../../../declarations/backend/backend.did";
+import {
+  CColumn,
+  CustomContract,
+} from "../../../declarations/backend/backend.did";
 import { useTheme } from "@mui/material/styles";
 
 export interface Row {

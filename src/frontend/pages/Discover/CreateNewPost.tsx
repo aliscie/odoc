@@ -41,17 +41,13 @@ function CreatePost(props: any) {
     setLoad(false);
     if ("Ok" in res) {
       props.setPosts((pre) => {
-          let new_posts = [];
-          if (pre.length > 0) {
-              new_posts = pre;
-          }
-          new_post = {
-              ...new_post,
-              creator: {name: profile.name, id: profile.id},
-          };
-          return [new_post, ...new_posts];
+        new_post.creator = { name: profile.name, id: profile.id };
+        if (pre.length > 0) {
+          return [new_post, ...pre];
+        }
+        return [new_post];
       });
-      enqueueSnackbar("Post created", {variant: "success"});
+      enqueueSnackbar("Post created", { variant: "success" });
       setChanges(null);
     } else {
       enqueueSnackbar("Error creating post. " + res.Err, { variant: "error" });

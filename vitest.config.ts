@@ -2,6 +2,9 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
+    esbuild: {
+      jsxInject: `import React from 'react'`,
+    },
     environment: "jsdom",
     globals: true,
     threads: false,
@@ -11,7 +14,11 @@ export default defineConfig({
     },
     // include: ['src/*/.{test,spec}.{js,ts,jsx,tsx}'],
     // globalSetup: ["./src/frontend/tests/React/setup.ts"],
-    setupFiles: process.env.VITE_TEST_ENV === "backend" ? "./src/frontend/tests/backend/backend_unit_test_setup.ts" : [],,
+
+    setupFiles:
+      process.env.VITE_TEST_ENV === "backend"
+        ? "./src/frontend/tests/backend/backend_unit_test_setup.ts"
+        : [],
     // reporters: ["default", {
     //     async onWatcherRerun() {
     //         await teardown();
