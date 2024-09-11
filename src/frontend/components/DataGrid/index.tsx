@@ -27,7 +27,7 @@ import {
   CustomContract,
 } from "../../../declarations/backend/backend.did";
 import { useTheme } from "@mui/material/styles";
-
+import "./dataGridStyles.css";
 export interface Row {
   id: string;
   avatar: string;
@@ -321,7 +321,9 @@ export default function DataGridSheet(props: Props) {
     height = rows.length * 50;
   }
   return (
-    <div >
+    <div
+    className={'data-grid-container'}
+    >
       <DataGrid
         style={{ width: "100%", height, maxHeight: 400 }}
         key={props.contract.id}

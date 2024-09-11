@@ -16,9 +16,9 @@ export function receiverDropDown({ row, onRowChange }: RenderEditCellProps) {
         onRowChange({ ...row, receiver: event.target.value }, true)
       }
     >
-      {[...all_friends].map((u) => (
-        <MenuItem value={u.name}>{u.name}</MenuItem>
-      ))}
+      {[...all_friends].map((u) => {
+        return <MenuItem value={u.name}>{u.name}</MenuItem>;
+      })}
     </Select>
   );
 }

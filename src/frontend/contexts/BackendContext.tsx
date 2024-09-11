@@ -18,7 +18,6 @@ import { canisterId, idlFactory } from "../../declarations/backend";
 import { _SERVICE } from "../../declarations/backend/backend.did";
 import { useDispatch } from "react-redux";
 import { handleRedux } from "../redux/store/handleRedux";
-import { CircularProgress } from "@mui/material";
 
 interface State {
   principal: string | null;
