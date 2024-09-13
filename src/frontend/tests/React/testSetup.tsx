@@ -11,8 +11,8 @@ vi.mock("react-redux", async (importOriginal) => {
 });
 
 vi.mock("../../contexts/BackendContext", async (importOriginal) => {
-  const { backendMocks } = await import("./backendMocks");
-  const { authClientMock } = await import("./authClientMock");
+  const { backendMocks } = await import("./utils/backendMocks");
+  const { authClientMock } = await import("./utils/authClientMock");
   const actual = await importOriginal();
   return {
     ...actual,
@@ -28,14 +28,14 @@ vi.mock("../../contexts/BackendContext", async (importOriginal) => {
 });
 
 vi.mock("@dfinity/auth-client", async () => {
-  const { authClientMock } = await import("./authClientMock");
+  const { authClientMock } = await import("./utils/authClientMock");
   return {
     AuthClient: authClientMock,
   };
 });
 
 vi.mock("indexedDB", async () => {
-  const { indexedDBMock } = await import("./indexedDBMock");
+  const { indexedDBMock } = await import("./utils/indexedDBMock");
   return {
     indexedDB: indexedDBMock,
   };
