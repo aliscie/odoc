@@ -12,10 +12,13 @@ import {
   Notification,
 } from "../../../declarations/backend/backend.did";
 import { formatRelativeTime } from "../../utils/time";
+import { useBackendContext } from "../../contexts/BackendContext";
 
 function CPaymentContractDialog(props: {
   notification: Notification;
 }): JSX.Element {
+  const { backendActor } = useBackendContext();
+
   const { notification } = props;
   const c_payment: CPayment = notification.content.CPaymentContract[0];
   const [status, setStatus] = useState<string>(() => {
@@ -28,18 +31,24 @@ function CPaymentContractDialog(props: {
     let res;
     switch (action) {
       case "approve_heigh_conform":
-        res = actor && (await actor.approve_high_promise(c_payment));
+        res =
+          backendActor && (await backendActor.approve_high_promise(c_payment));
         break;
       case "object_on_cancel":
-        res = actor && (await actor.object_on_cancel(c_payment, "Reason"));
+        res =
+          backendActor &&
+          (await backendActor.object_on_cancel(c_payment, "Reason"));
         setStatus("Objected");
         break;
       case "confirmed_c_payment":
-        res = actor && (await actor.confirmed_c_payment(c_payment));
+        res =
+          backendActor && (await backendActor.confirmed_c_payment(c_payment));
         setStatus("Confirmed");
         break;
       case "confirmed_cancellation":
-        res = actor && (await actor.confirmed_cancellation(c_payment));
+        res =
+          backendActor &&
+          (await backendActor.confirmed_cancellation(c_payment));
         setStatus("ConfirmedCancellation");
         break;
       default:
@@ -186,14 +195,14 @@ function NotificationComponent({
   notification: Notification;
 }) {
   // console.log("render Notification") // TODO this renders about 20 times.
-
+  const { backendActor } = useBackendContext();
   const [loading, setLoading] = useState(false);
   return (
     <div
       onClick={async () => {
-        if (actor && !notification.is_seen) {
+        if (backendActor && !notification.is_seen) {
           setLoading(true);
-          let res = await actor.see_notifications(notification.id);
+          let res = await backendActor.see_notifications(notification.id);
           notification.is_seen = true;
           setLoading(false);
           // console.log(res)

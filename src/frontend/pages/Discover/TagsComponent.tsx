@@ -3,8 +3,11 @@ import React from "react";
 import { PostUser } from "../../../declarations/backend/backend.did";
 import { debounce } from "lodash";
 import { Typography, Box, TextField, Chip } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import { logger } from "../../DevUtils/logData";
 
 interface Props {
+  readOnly: boolean;
   onChange: any;
   setTags: any;
   tags: [];
@@ -15,6 +18,7 @@ interface Props {
 function PostTags(props: Props) {
   let init = [{ title: "hiring" }, { title: "seeking" }];
   const [tags_options, setTagsOptions] = React.useState(init);
+
   const [tags, setTags] = React.useState(
     props.post
       ? props.post.tags.map((tag) => {
@@ -34,7 +38,6 @@ function PostTags(props: Props) {
         return [{ title: String(event.target.value) }, ...pre];
       });
     } else if (options) {
-      props.setTags(options);
       setTags(options);
     } else {
       setTagsOptions(init);
@@ -45,7 +48,9 @@ function PostTags(props: Props) {
     () => debounce(handleChange, 300),
     [],
   );
-
+  if (props.readOnly && tags.length === 0) {
+    return null;
+  }
   return (
     <Box
       sx={{
@@ -57,32 +62,24 @@ function PostTags(props: Props) {
         alignItems: "center",
       }}
     >
-      <MultiAutoComplete
-        {...props}
-        style={{ ...props.style, minWidth: "300px" }}
-        onChange={debouncedHandleChange}
-        value={tags}
+      <Autocomplete
+        disabled={props.readOnly}
+        onChange={(e, value) => props.setTags(value)}
+        onKeyDown={debouncedHandleChange}
+        multiple
+        limitTags={2}
+        id="multiple-limit-tags"
         options={tags_options}
-        multiple={true}
+        getOptionLabel={(option) => option.title}
+        defaultValue={tags}
         renderInput={(params) => (
           <TextField
             {...params}
-            variant="outlined"
-            placeholder="Type to add tags"
-            fullWidth
+            label={props.label}
+            // placeholder="Favorites"
           />
         )}
-        renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip
-              key={index}
-              label={option.title}
-              color="primary"
-              sx={{ margin: "2px" }}
-              {...getTagProps({ index })}
-            />
-          ))
-        }
+        // sx={{ width: "250px" }}
       />
     </Box>
   );

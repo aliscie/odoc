@@ -19,8 +19,6 @@ interface Props {
 function CustomTable(props: Props) {
   const dispatch = useDispatch();
 
-  console.log("contract in custom table: ", props.contract);
-
   const rows = useMemo(() => {
     return props.view.contract.rows.map((r) => {
       return { id: r.id, ...cellsToRow(r.cells) };

@@ -1,270 +1,314 @@
-import {FilesActions, InitialState, initialState} from "../types/filesTypes";
+import { FilesActions, InitialState, initialState } from "../types/filesTypes";
 import {
-    FileIndexing,
-    FileNode,
-    StoredContract,
+  FileIndexing,
+  FileNode,
+  Friend,
+  StoredContract,
 } from "../../../declarations/backend/backend.did";
-import {deserializeContents} from "../../DataProcessing/deserlize/deserializeContents";
-import {deserializeContracts} from "../../DataProcessing/deserlize/deserializeContracts";
+import { deserializeContents } from "../../DataProcessing/deserlize/deserializeContents";
+import { deserializeContracts } from "../../DataProcessing/deserlize/deserializeContracts";
 
 export function filesReducer(
-    state: InitialState = initialState,
-    action: FilesActions,
+  state: InitialState = initialState,
+  action: FilesActions,
 ): InitialState {
-    function changeFile(newFile: FileNode) {
-        if (state.changes.files.find((file) => file.id === newFile.id)) {
-            state.changes.files = state.changes.files.map((file) =>
-                file.id === file.id ? newFile : file,
-            );
+  function changeFile(newFile: FileNode) {
+    if (state.changes.files.find((file) => file.id === newFile.id)) {
+      state.changes.files = state.changes.files.map((file) =>
+        file.id === file.id ? newFile : file,
+      );
+    } else {
+      state.changes.files.push(newFile);
+    }
+    return { ...state };
+  }
+
+  switch (action.type) {
+    case "INIT_FILES_STATE":
+      let all_friends = [];
+      action.data.Friends.forEach((f: Friend) => {
+        if (f.sender.id !== action.data.Profile.id ){
+          all_friends.push(f.sender)
         } else {
-            state.changes.files.push(newFile);
+          all_friends.push(f.receiver)
         }
-        return {...state};
+      });
+      return {
+        ...state,
+        all_friends,
+        files: action.data.Files,
+        wallet: action.data.Wallet,
+        files_content: deserializeContents(action.data.FilesContents[0]),
+        contracts: deserializeContracts(action.data.Contracts),
+        profile: { ...action.data.Profile, photo: [[]] },
+        friends: action.data.Friends,
+        inited: true,
+        profile_history: action.data.ProfileHistory,
+        // friends: action.data.Friends.map(friend => friend.id === action.id ? {...friend, ...action} : friend)
+      };
+
+    case "ADD_CONTENT":
+      return {
+        ...state,
+        files_content: { ...state.files_content, [action.id]: action.content },
+      };
+
+    // case 'INIT_CONTENTS':
+    //     return {
+    //         ...state,
+    //         files_content: action.files_content
+    //     };
+
+    case "ADD_FILE":
+      return {
+        ...state,
+        files: [...state.files, action.new_file],
+        changes: {
+          ...state.changes,
+          files: [...state.changes.files, action.new_file],
+        },
+      };
+
+    case "UPDATE":
+      return {
+        ...state,
+        files: state.files.map((file) =>
+          file.id === action.id ? { ...file, ...action.file } : file,
+        ),
+      };
+
+    case "REMOVE":
+      return {
+        ...state,
+        files: state.files.filter((file) => file.id !== action.id),
+      };
+
+    case "CURRENT_FILE":
+      localStorage.setItem("current_file", JSON.stringify({ ...action.file }));
+      return {
+        ...state,
+        current_file: action.file,
+      };
+
+    case "CHANGE_FILE_PARENT": {
+      const { position, id, parent, index } = action;
+      let file = state.files.find((f) => f.id === id)!;
+
+      state.files = state.files.filter((f) => f.id !== id);
+
+      const oldParentIndex = state.files.findIndex(
+        (f) => f.id === file.parent[0],
+      );
+      if (oldParentIndex !== -1) {
+        state.files[oldParentIndex].children = state.files[
+          oldParentIndex
+        ].children.filter((childId) => childId !== id);
+      }
+
+      const newParentIndex = state.files.findIndex((f) => f.id === parent[0]);
+      file.parent = parent;
+
+      if (newParentIndex !== -1) {
+        if (index !== -1) {
+          state.files[newParentIndex].children.splice(index, 0, id);
+        } else {
+          state.files[newParentIndex].children.push(id);
+        }
+      }
+
+      if (index !== -1) {
+        state.files = [
+          ...state.files.slice(0, index),
+          file,
+          ...state.files.slice(index),
+        ];
+      } else {
+        state.files.push(file);
+      }
+
+      let change: FileIndexing = {
+        id,
+        new_index: BigInt(index),
+        parent,
+      };
+
+      state.changes.files_indexing.push(change);
+      state.changes.files.push(file);
+      return { ...state };
+    }
+    // case 'INIT_CONTRACTS':
+    //     return {
+    //         ...state,
+    //         contracts: action.contracts
+    //     }
+    case "UPDATE_CONTENT":
+      return {
+        ...state,
+        changes: {
+          ...state.changes,
+          contents: { ...state.changes.contents, [action.id]: action.content },
+        },
+        files_content: { ...state.files_content, [action.id]: action.content },
+        files: state.files.map((file) =>
+          file.id === action.id ? { ...file, content: action.content } : file,
+        ),
+      };
+
+    case "ADD_CONTRACT": {
+      const { contract } = action;
+      const id = contract.id;
+      let stored_custom: StoredContract = { CustomContract: action.contract };
+      return {
+        ...state,
+        changes: {
+          ...state.changes,
+          contracts: {
+            ...state.changes.contracts,
+            [id]: { ...stored_custom },
+          },
+        },
+        contracts: {
+          ...state.contracts,
+          [id]: contract,
+        },
+      };
     }
 
-    switch (action.type) {
-        case "INIT_FILES_STATE":
-            return {
-                ...state,
-                files: action.data.Files,
-                wallet: action.data.Wallet,
-                files_content: deserializeContents(action.data.FilesContents[0]),
-                contracts: deserializeContracts(action.data.Contracts),
-                profile: action.data.Profile,
-                friends: action.data.Friends,
-                inited: true,
-                profile_history: action.data.ProfileHistory,
-                // friends: action.data.Friends.map(friend => friend.id === action.id ? {...friend, ...action} : friend)
-            };
+    // case "UPDATE_CONTRACT":
+    //   return {
+    //     ...state,
+    //     changes: {
+    //       ...state.changes,
+    //       contracts: {
+    //         ...state.changes.contracts,
+    //         [action.contract.id]: {
+    //           ...state.changes.contracts[action.contract.id],
+    //           CustomContract: action.contract,
+    //         },
+    //       },
+    //     },
+    //     contracts: {
+    //       ...state.contracts,
+    //       [action.contract.id]: action.contract,
+    //     },
+    //   };
 
-        case "ADD_CONTENT":
-            return {
-                ...state,
-                files_content: {...state.files_content, [action.id]: action.content},
-            };
+    case "UPDATE_CONTRACT":
+      const { contract } = action;
+      let id = contract.id;
+      let toStoreContract = { CustomContract: contract };
+      return {
+        ...state,
+        changes: {
+          ...state.changes,
+          contracts: {
+            ...state.changes.contracts,
+            [id]: { ...toStoreContract },
+          },
+        },
+        contracts: {
+          ...state.contracts,
+          [id]: contract,
+        },
+      };
 
-        // case 'INIT_CONTENTS':
-        //     return {
-        //         ...state,
-        //         files_content: action.files_content
-        //     };
+    case "RESOLVE_CHANGES":
+      state.changes = {
+        files: [],
+        contents: {},
+        contracts: {},
+        delete_contracts: [],
+        files_indexing: [],
+      };
+      return { ...state };
 
-        case "ADD_FILE":
-            return {
-                ...state,
-                files: [...state.files, action.new_file],
-                changes: {
-                    ...state.changes,
-                    files: [...state.changes.files, action.new_file],
-                },
-            };
+    // case 'CONTRACT_CHANGES':
+    //
+    //     state.changes.contracts[action.changes.contract_id || action.changes.id] = action.changes;
+    //     return {...state};
 
-        case "UPDATE":
-            return {
-                ...state,
-                files: state.files.map((file) =>
-                    file.id === action.id ? {...file, ...action.file} : file,
-                ),
-            };
+    case "UPDATE_FILE_TITLE":
+      let newFile = state.files.find((file) => file.id === action.id)!;
+      newFile.name = action.title;
+      state = changeFile(newFile);
+      return <InitialState>{
+        ...state,
+        files: state.files.map((file) =>
+          file.id === action.id ? { ...file, title: action.title } : file,
+        ),
+        current_file: { ...state.current_file, title: action.title },
+      };
 
-        case "REMOVE":
-            return {
-                ...state,
-                files: state.files.filter((file) => file.id !== action.id),
-            };
+    case "UPDATE_BALANCE":
+      return {
+        ...state,
+        wallet: { ...state.wallet, balance: action.balance },
+      };
 
-        case "CURRENT_FILE":
-            localStorage.setItem("current_file", JSON.stringify({...action.file}));
-            return {
-                ...state,
-                current_file: action.file,
-            };
+    case "UPDATE_PROFILE":
+      return {
+        ...state,
+        profile: { ...state.profile, ...action.profile, photo: [[]] },
+      };
+    // TODO firndRecuer
 
-        case "CHANGE_FILE_PARENT": {
-            const {position, id, parent, index} = action;
-            let file = state.files.find((f) => f.id === id)!;
+    case "UPDATE_FRIEND":
+      return {
+        ...state,
+        friends: state.friends.map((friend) =>
+          friend.id === action.id ? { ...friend, ...action } : friend,
+        ),
+      };
 
-            state.files = state.files.filter((f) => f.id !== id);
-
-            const oldParentIndex = state.files.findIndex(
-                (f) => f.id === file.parent[0],
-            );
-            if (oldParentIndex !== -1) {
-                state.files[oldParentIndex].children = state.files[
-                    oldParentIndex
-                    ].children.filter((childId) => childId !== id);
-            }
-
-            const newParentIndex = state.files.findIndex((f) => f.id === parent[0]);
-            file.parent = parent;
-
-            if (newParentIndex !== -1) {
-                if (index !== -1) {
-                    state.files[newParentIndex].children.splice(index, 0, id);
-                } else {
-                    state.files[newParentIndex].children.push(id);
-                }
-            }
-
-            if (index !== -1) {
-                state.files = [
-                    ...state.files.slice(0, index),
-                    file,
-                    ...state.files.slice(index),
-                ];
-            } else {
-                state.files.push(file);
-            }
-
-            let change: FileIndexing = {
-                id,
-                new_index: BigInt(index),
-                parent,
-            };
-
-            state.changes.files_indexing.push(change);
-            state.changes.files.push(file);
-            return {...state};
+    case "REMOVE_FRIEND":
+      function checkf(f: any) {
+        let sender = f.sender.id;
+        let receiver = f.receiver.id;
+        if (typeof sender != "string") {
+          sender = sender.toString();
         }
-        // case 'INIT_CONTRACTS':
-        //     return {
-        //         ...state,
-        //         contracts: action.contracts
-        //     }
-        case "UPDATE_CONTENT":
-            return {
-                ...state,
-                changes: {
-                    ...state.changes,
-                    contents: {...state.changes.contents, [action.id]: action.content},
-                },
-                files_content: {...state.files_content, [action.id]: action.content},
-                files: state.files.map((file) =>
-                    file.id === action.id ? {...file, content: action.content} : file,
-                ),
-            };
-
-        case "ADD_CONTRACT": {
-            const {contract} = action;
-            const id = contract.id;
-            let stored_custom: StoredContract = {CustomContract: action.contract};
-            return {
-                ...state,
-                changes: {
-                    ...state.changes,
-                    contracts: {
-                        ...state.changes.contracts,
-                        [id]: {...stored_custom},
-                    },
-                },
-                contracts: {
-                    ...state.contracts,
-                    [id]: contract,
-                },
-            };
+        if (typeof receiver != "string") {
+          receiver = receiver.toString();
         }
 
-        // case "UPDATE_CONTRACT":
-        //   return {
-        //     ...state,
-        //     changes: {
-        //       ...state.changes,
-        //       contracts: {
-        //         ...state.changes.contracts,
-        //         [action.contract.id]: {
-        //           ...state.changes.contracts[action.contract.id],
-        //           CustomContract: action.contract,
-        //         },
-        //       },
-        //     },
-        //     contracts: {
-        //       ...state.contracts,
-        //       [action.contract.id]: action.contract,
-        //     },
-        //   };
+        return sender !== action.id && receiver !== action.id;
+      }
 
-        case "UPDATE_CONTRACT":
-            const {contract} = action;
-            let id = contract.id;
-            let toStoreContract = {CustomContract: contract};
-            return {
-                ...state,
-                changes: {
-                    ...state.changes,
-                    contracts: {
-                        ...state.changes.contracts,
-                        [id]: {...toStoreContract},
-                    },
-                },
-                contracts: {
-                    ...state.contracts,
-                    [id]: contract,
-                },
-            }
+      let friends = state.friends.filter((f) => checkf(f));
 
-        case "RESOLVE_CHANGES":
-            state.changes = {
-                files: [],
-                contents: {},
-                contracts: {},
-                delete_contracts: [],
-                files_indexing: [],
-            };
-            return {...state};
+      return { ...state, friends };
 
-        // case 'CONTRACT_CHANGES':
-        //
-        //     state.changes.contracts[action.changes.contract_id || action.changes.id] = action.changes;
-        //     return {...state};
+    case "ADD_FRIEND":
+      return { ...state, friends: [...state.friends, action.friend] };
+    case "CONFIRM_FRIEND":
+      let sender = action.friend.sender;
+      let receiver = action.friend.receiver;
+      return {
+        ...state,
+        friends: state.friends.map((f) => {
+          if (f.sender.id === sender.id && receiver.id === f.receiver.id) {
+            return { ...f, confirmed: true };
+          }
+          return f;
+        }),
+      };
 
-        case "UPDATE_FILE_TITLE":
-            let newFile = state.files.find((file) => file.id === action.id)!;
-            newFile.name = action.title;
-            state = changeFile(newFile);
-            return <InitialState>{
-                ...state,
-                files: state.files.map((file) =>
-                    file.id === action.id ? {...file, title: action.title} : file,
-                ),
-                current_file: {...state.current_file, title: action.title},
-            };
+    // TODO profile reducer
+    case "CURRENT_USER_HISTORY":
+      return {
+        ...state,
+        profile_history: action.profile_history,
+      };
 
-        case "UPDATE_BALANCE":
-            return {
-                ...state,
-                wallet: {...state.wallet, balance: action.balance},
-            };
+    case "REMOVE_CONTRACT":
+      delete state.contracts[action.id];
+      state.changes.delete_contracts.push(action.id);
+      delete state.changes.contracts[action.id];
+      return {
+        ...state,
+      };
 
-        case "UPDATE_PROFILE":
-            return {
-                ...state,
-                profile: {...state.profile, ...action.profile},
-            };
-        // TODO firndRecuer
-        case "UPDATE_FRIEND":
-            return {
-                ...state,
-                friends: state.friends.map((friend) =>
-                    friend.id === action.id ? {...friend, ...action} : friend,
-                ),
-            };
-
-        // TODO profile reducer
-        case "CURRENT_USER_HISTORY":
-            return {
-                ...state,
-                profile_history: action.profile_history,
-            };
-
-        case "REMOVE_CONTRACT":
-            delete state.contracts[action.id];
-            state.changes.delete_contracts.push(action.id);
-            delete state.changes.contracts[action.id];
-            return {
-                ...state,
-            };
-
-        default:
-            return state;
-    }
+    default:
+      return state;
+  }
 }

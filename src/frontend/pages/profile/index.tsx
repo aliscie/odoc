@@ -11,7 +11,6 @@ import {
   List,
   ListItem,
   TextField,
-  Typography,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
@@ -24,14 +23,12 @@ import {
 import { handleRedux } from "../../redux/store/handleRedux";
 import BasicTabs from "./History";
 import TransactionHistory from "./TransactionHistory";
-import { UserProfile } from "../../../declarations/backend/backend.did";
 import { UserHistoryComponent } from "../User";
 import ProfilePhotoDialog from "./actions/ProfilePhotoDialog";
 import ProfilePhoto from "./ProfilePhoto";
 import ProfileRatings from "./ProfileRating";
 import WalletSection from "./WalletSection";
 import { useBackendContext } from "../../contexts/BackendContext";
-import { compressAndResizeImage } from "../../DataProcessing/compressAndResizeImage";
 
 export default function ProfileComponent() {
   const { backendActor } = useBackendContext();
@@ -41,7 +38,6 @@ export default function ProfileComponent() {
     (state: any) => state.filesState,
   );
 
-  const [userHistory, setUserHistory] = useState<UserProfile | null>(null);
   const [profileData, setProfileData] = useState({
     id: profile?.id || "",
     name: profile?.name || "",
@@ -49,59 +45,45 @@ export default function ProfileComponent() {
     photo: profile?.photo || "",
     changed: false,
   });
-  const [openDialog, setOpenDialog] = useState(false);
+
   const [buttonLoading, setButtonLoading] = useState(false);
 
   const handleSaveChanges = async () => {
     setButtonLoading(true);
-    if (profileData.changed) {
-      try {
-        const res = await backendActor?.update_user_profile({
-          name: [profileData.name],
-          description: [profileData.description],
-          photo: [profileData.photo],
-        });
-        setProfileData((prev) => ({ ...prev, changed: false }));
-        enqueueSnackbar("Profile updated successfully!", {
-          variant: "success",
-        });
-        return res;
-      } catch (error) {
-        console.error("Error saving profile:", error);
-        enqueueSnackbar("Failed to update profile.", { variant: "error" });
-      } finally {
-        setButtonLoading(false);
-      }
-    } else {
-      enqueueSnackbar("No changes to save.", { variant: "info" });
+    try {
+      const res = await backendActor?.update_user_profile({
+        name: [profileData.name],
+        description: [profileData.description],
+        photo: [profileData.photo],
+      });
+      setProfileData((prev) => ({ ...prev, changed: false }));
+      enqueueSnackbar("Profile updated successfully!", {
+        variant: "success",
+      });
+      return res;
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      enqueueSnackbar("Failed to update profile.", { variant: "error" });
+    } finally {
+      setButtonLoading(false);
     }
   };
-
+  const [photoUpload, setUploading] = useState(false);
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUploading(true);
     const fileInput = e.target;
     if (fileInput.files && fileInput.files[0]) {
       try {
-        const imageBuffer = await compressAndResizeImage(fileInput.files[0]);
-        const imageUint8Array = new Uint8Array(imageBuffer);
-        if (imageUint8Array && imageUint8Array.length > 0) {
-          setProfileData((prev) => ({
-            ...prev,
-            imageUint8Array,
-            changed: true,
-          }));
-          dispatch(
-            handleRedux("UPDATE_PROFILE", { profile: { imageUint8Array } }),
-          );
-        }
+        const photo = await convertToBytes(fileInput.files[0]);
+        setProfileData((prev) => ({ ...prev, photo, changed: true }));
+        // dispatch(handleRedux("UPDATE_PROFILE", { profile: { photo } }));
       } catch (error) {
         console.error("Error processing photo:", error);
       }
       fileInput.value = "";
     }
+    setUploading(false);
   };
-
-  const handleAvatarClick = () => setOpenDialog(true);
-  const handleDialogClose = () => setOpenDialog(false);
 
   const ProfileDetailList = () => (
     <List>
@@ -112,8 +94,8 @@ export default function ProfileComponent() {
             <TextField
               disabled={key === "id"}
               label={capitalizeFirstLetter(key)}
-              value={value}
-              onChange={(e) =>
+              defaultValue={value}
+              onBlur={(e) =>
                 setProfileData((prev) => ({
                   ...prev,
                   [key]: e.target.value,
@@ -139,15 +121,12 @@ export default function ProfileComponent() {
         <Grid item xs={12} md={8}>
           <Card sx={{ borderRadius: 2, boxShadow: 3, overflow: "hidden" }}>
             <CardContent>
-              <Typography variant="h4" align="center" gutterBottom>
-                Profile
-              </Typography>
               <Divider sx={{ my: 2 }} />
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <ProfilePhoto
+                    loading={photoUpload}
                     photo={convertToBlobLink(profileData.photo)}
-                    onAvatarClick={handleAvatarClick}
                     onPhotoChange={handlePhotoChange}
                   />
                   <ProfileRatings
@@ -160,7 +139,7 @@ export default function ProfileComponent() {
                   {profileData.changed && (
                     <Box sx={{ width: "100%", mt: 2 }}>
                       <Button
-                        color="primary"
+                        color="warning"
                         onClick={handleSaveChanges}
                         variant="contained"
                         sx={{ width: "100% !important" }}
@@ -184,9 +163,9 @@ export default function ProfileComponent() {
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <BasicTabs
               items={{
-                Friends: <Friends friends={friends} />,
-                Reputation: userHistory && (
-                  <UserHistoryComponent {...userHistory} />
+                Friends: <Friends />,
+                Reputation: profile_history && (
+                  <UserHistoryComponent {...profile_history} />
                 ),
                 ...(wallet && { Transactions: <TransactionHistory /> }),
               }}
@@ -194,11 +173,6 @@ export default function ProfileComponent() {
           </Box>
         </Grid>
       </Grid>
-      <ProfilePhotoDialog
-        open={openDialog}
-        onClose={handleDialogClose}
-        imageSrc={convertToBlobLink(profileData.photo)}
-      />
     </Container>
   );
 }

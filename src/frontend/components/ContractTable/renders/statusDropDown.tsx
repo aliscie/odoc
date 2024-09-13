@@ -1,7 +1,6 @@
-import { RenderEditCellProps } from "react-data-grid";
-import PaidIcon from "@mui/icons-material/Paid";
-import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
+import {RenderEditCellProps} from "react-data-grid";
 import convertCamelToTitle from "../../../utils/convertCamelToTitle";
+import {MenuItem, Select} from "@mui/material";
 
 const statuses = [
   "None",
@@ -16,19 +15,18 @@ const statuses = [
 
 export function statusDropDown({ row, onRowChange }: RenderEditCellProps) {
   return (
-    <select
-      className={"textEditorClassname"}
+    <Select
+      labelId="demo-simple-select-label"
+      id="demo-simple-select"
       value={row.status}
+      label="Age"
       onChange={(event) =>
         onRowChange({ ...row, status: event.target.value }, true)
       }
-      autoFocus
     >
       {statuses.map((status) => (
-        <option key={status} value={status}>
-          {convertCamelToTitle(status)}
-        </option>
+        <MenuItem value={status}>{convertCamelToTitle(status)}</MenuItem>
       ))}
-    </select>
+    </Select>
   );
 }

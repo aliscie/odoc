@@ -2,10 +2,6 @@ import {
   StoredContract,
   UserProfile,
 } from "../../../declarations/backend/backend.did";
-import {
-  custom_contract,
-  randomString,
-} from "../../data_processing/data_samples";
 import { assert } from "vitest";
 import { newContract } from "./data_samples";
 
@@ -100,7 +96,7 @@ async function userConfirm(user, g) {
   await Promise.all(
     notifications.map(async (value) => {
       let payment = value.content.CPaymentContract[0];
-      let contract_id = custom_contract.id;
+      let contract_id = "custom_contract.id";
       expect(payment.contract_id).toEqual(contract_id);
       let res = await global.actor.confirmed_c_payment(payment);
       expect(res).toEqual({ Ok: null });

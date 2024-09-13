@@ -18,8 +18,6 @@ import { canisterId, idlFactory } from "../../declarations/backend";
 import { _SERVICE } from "../../declarations/backend/backend.did";
 import { useDispatch } from "react-redux";
 import { handleRedux } from "../redux/store/handleRedux";
-import { logger } from "../DevUtils/logData";
-import { CircularProgress } from "@mui/material";
 
 interface State {
   principal: string | null;
@@ -162,10 +160,6 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({
       console.log("Failed to initialize auth client:", error);
     });
   }, []);
-
-  if (!state.backendActor) {
-    return <CircularProgress />;
-  }
 
   return (
     <BackendContext.Provider

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Box, Button } from "@mui/material";
+import { Box, ButtonGroup, Switch, Tooltip } from "@mui/material";
 import { PostUser } from "../../../declarations/backend/backend.did";
 import PostTags from "./TagsComponent";
 import { useBackendContext } from "../../contexts/BackendContext";
 import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 
 interface Props {
   setPosts: React.Dispatch<React.SetStateAction<any>>;
@@ -23,25 +24,25 @@ function FilterPosts(props: Props) {
 
   const { profile } = useSelector((state: any) => state.filesState);
   const [tags, setTags] = useState<[] | [Array<string>]>([]);
-  const [userIds, setUserIds] = useState<[] | [string]>([
-    profile ? profile.id : "",
-  ]);
-  const handleFilter = async () => {
-    // Constructing Option<Vec<String>> for tags
+  const [myPostsOnly, setMyPostsOnly] = useState<boolean>(false);
+
+  const viewOnlyMyPosts = async () => {
     const tagsOption: [] | [Array<string>] = tags;
-
-    // Constructing Option<String> for creator (user ID)
-    // const creatorOption = userIds.length > 0 ? {Some: userIds[0]} : {None: null};
-
-    try {
+    if (myPostsOnly) {
+      props.setPosts(init_posts || []);
+      props.setPage(0);
+      setMyPostsOnly(false);
+      return;
+    } else {
       const response =
         backendActor &&
-        (await backendActor.get_filtered_posts(tagsOption, userIds));
+        (await backendActor.get_filtered_posts(tagsOption, [
+          profile ? profile.id : "",
+        ]));
       // Assuming 'actor.get_filtered_posts' returns the response in the form of 'Vec<PostUser>'
       props.setPosts(response || []);
       props.setPage(0);
-    } catch (error) {
-      console.error("Error filtering posts:", error);
+      setMyPostsOnly(true);
     }
   };
   // let initial_tags = [
@@ -57,7 +58,6 @@ function FilterPosts(props: Props) {
           [options.map((opt) => opt.title)],
           [],
         ));
-      console.log({ response, t: options.map((opt) => opt.title) });
       response && props.setPosts(response || []);
       response && props.setPage(0);
     } else {
@@ -67,37 +67,22 @@ function FilterPosts(props: Props) {
   };
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      {/*<div>*/}
-      {/*    <label>Add Tags:</label>*/}
-      {/*    <input*/}
-      {/*        type="text"*/}
-      {/*        value={tags.join(',')}*/}
-      {/*        onChange={(e) => setTags(e.target.value.split(','))}*/}
-      {/*    />*/}
-      {/*</div>*/}
-      {/*<div>*/}
-      {/*    <label>Add User IDs:</label>*/}
-      {/*    <input*/}
-      {/*        type="text"*/}
-      {/*        value={userIds.join(',')}*/}
-      {/*        onChange={(e) => setUserIds(e.target.value.split(','))}*/}
-      {/*    />*/}
-      {/*</div>*/}
-      {profile && (
-        <Button variant="contained" color="primary" onClick={handleFilter}>
-          View my only posts
-        </Button>
-      )}
-      <Typography variant="h6" sx={{ fontWeight: "bold", mr: 2 }}>
-        Filter posts by tags:
-      </Typography>
-      <PostTags
-        style={{ backgroundColor: "backgroundColor.paper" }}
-        tags={tags}
-        setTags={(op) => {
-          onTagChange(op);
-        }}
-      />
+      {/*<ButtonGroup size="small" variant="contained">*/}
+        {profile && (
+          <Tooltip title="View your posts only">
+            <Switch onClick={viewOnlyMyPosts} />
+          </Tooltip>
+        )}
+
+        <PostTags
+          label={"Filter by tags"}
+          style={{ backgroundColor: "backgroundColor.paper" }}
+          tags={tags}
+          setTags={(op) => {
+            onTagChange(op);
+          }}
+        />
+      {/*</ButtonGroup>*/}
     </Box>
   );
 }

@@ -15,7 +15,6 @@ import { LoadingButton } from "@mui/lab";
 import PostTags from "./TagsComponent";
 import serialize_file_contents from "../../DataProcessing/serialize/serializeFileContents";
 import { useBackendContext } from "../../contexts/BackendContext";
-import { Typography } from "@mui/material";
 
 interface Props {
   post: PostUser;
@@ -87,6 +86,7 @@ function ViewPost(props: Props) {
   return (
     <div>
       <PostComponent
+        readOnly={!profile || props.post.creator.id !== profile.id}
         is_owner={is_owner}
         editable={!Anonymous}
         onChange={onChange}
@@ -119,23 +119,18 @@ function ViewPost(props: Props) {
         buttons={
           <>
             <ActionsButtons post={props.post} />
-            {profile && profile.id === props.post.creator.id && (
-              <>
-                <Typography variant="h6" sx={{ fontWeight: "bold", mr: 2 }}>
-                  Tags:
-                </Typography>
-                <PostTags
-                  post={props.post}
-                  setTags={(updatedTags) => {
-                    setPost((prevPost) => ({
-                      ...prevPost,
-                      tags: updatedTags.map((tag) => tag.title),
-                    }));
-                    setChanged(true);
-                  }}
-                />
-              </>
-            )}
+            <PostTags
+              readOnly={!profile || props.post.creator.id !== profile.id}
+              label={"Tags"}
+              post={props.post}
+              setTags={(updatedTags) => {
+                setPost((prevPost) => ({
+                  ...prevPost,
+                  tags: updatedTags.map((tag) => tag.title),
+                }));
+                setChanged(true);
+              }}
+            />
             {isChanged && (
               <LoadingButton loading={loading} onClick={handleSave}>
                 Save

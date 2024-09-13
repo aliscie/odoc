@@ -5,10 +5,10 @@ import { senderDropDown } from "../renders/senderDropDown";
 import { statusDropDown } from "../renders/statusDropDown";
 import { receiverDropDown } from "../renders/receiverDropDown";
 import { CPayment } from "../../../../declarations/backend/backend.did";
-import { renderUser } from "../renders/renderUser";
+import { renderSenderUser } from "../renders/renderSenderUser";
+import { renderReceiver } from "../renders/renderReceiver";
 
 function Payments(props) {
-  console.log("contract in payments: ", props.contract);
   let rows = [];
 
   let columns = [
@@ -24,7 +24,7 @@ function Payments(props) {
       key: "receiver",
       name: "receiver",
       width: "max-content",
-      renderCell: renderUser,
+      renderCell: renderReceiver,
       renderEditCell: receiverDropDown,
       frozen: true,
     },
@@ -33,7 +33,7 @@ function Payments(props) {
       name: "sender",
       width: "max-content",
       frozen: true,
-      renderCell: renderUser,
+      renderCell: renderSenderUser,
       renderEditCell: senderDropDown,
     },
     {

@@ -8,7 +8,6 @@ import { useSnackbar } from "notistack";
 import FilterPosts from "./PostsFilters";
 import ViewPost from "./ViewUpdatePost";
 import { useBackendContext } from "../../contexts/BackendContext";
-import Box from "@mui/material/Box";
 
 const Discover = () => {
   const { backendActor } = useBackendContext();
@@ -68,41 +67,38 @@ const Discover = () => {
   }, []);
 
   return (
-    <Box
+    <Grid
       sx={{
-        margin: "0 auto",
-        padding: 2,
-        maxWidth: "70%",
+        marginLeft: "20%",
+        marginRight: "20%",
       }}
     >
-      {isLoggedIn && (
-        <Box sx={{ marginBottom: 3 }}>
-          <CreatePost setPosts={setPosts} />
-        </Box>
-      )}
-      <Divider sx={{ marginBottom: 3 }} />
-      <Box sx={{ marginBottom: 3 }}>
-        <FilterPosts initPosts={posts} setPage={setPage} setPosts={setPosts} />
-      </Box>
-      <Grid container spacing={2}>
-        {posts.map((post: PostUser, index) => (
-          <Grid item xs={12} key={index}>
-            <ViewPost posts={posts} setPosts={setPosts} post={post} />
-          </Grid>
-        ))}
-      </Grid>
-      <Box sx={{ textAlign: "center", marginTop: 4 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={async () => {
-            await set_posts();
-          }}
-        >
-          Load more
-        </Button>
-      </Box>
-    </Box>
+      {isLoggedIn && <CreatePost setPosts={setPosts} />}
+      <Divider />
+      <FilterPosts initPosts={posts} setPage={setPage} setPosts={setPosts} />
+      {posts &&
+        posts.map((post: PostUser) => {
+          return (
+            <Grid
+              item
+              sx={{
+                my: 1,
+                // mx: 'auto',
+              }}
+            >
+              <ViewPost setPosts={setPosts} post={post} />
+            </Grid>
+          );
+        })}
+
+      <Button
+        onClick={async () => {
+          await set_posts();
+        }}
+      >
+        Load more
+      </Button>
+    </Grid>
   );
 };
 export default Discover;
