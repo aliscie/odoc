@@ -1,18 +1,14 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Deposit from "../../pages/profile/actions/Deposit";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import renderWithProviders from "./utils/frontendTestSetup";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import renderWithProviders from "./testsWrapper";
 import UserPage from "../../pages/user";
-import {
-  ActionRating,
-  Rating,
-  UserProfile,
-} from "../../../declarations/backend/backend.did";
-import { Principal } from "@dfinity/principal";
-import TestWrapper from "./utils/tests_wrapper";
+import React from "react";
+import { FriendCom } from "../../pages/profile/friends";
+import {Principal} from "@dfinity/principal";
 
 vi.mock("react-redux", () => ({
   useDispatch: vi.fn(),
@@ -27,17 +23,11 @@ vi.mock("../../contexts/BackendContext", () => ({
   useBackendContext: vi.fn(),
 }));
 
-vi.mock("@dfinity/principal", () => ({
-  Principal: {
-    fromText: vi.fn().mockReturnValue({}),
-  },
-}));
-
 describe("Deposit Component", () => {
   const mockDispatch = vi.fn();
   const mockEnqueueSnackbar = vi.fn();
   const mockBackendActor = {
-    get_user_profile: vi.fn(),
+    deposit_usdt: vi.fn(),
   };
 
   beforeEach(() => {
@@ -52,26 +42,9 @@ describe("Deposit Component", () => {
     vi.clearAllMocks();
   });
 
-  it("Re-render component after click on send friend request", async () => {
+  it("handles a successful deposit", async () => {
     // Mock successful response
-    let id = "trp5a-o2ilp-mov7c-jzihs-aepzm-ipkwf-msvc-rrrvz-p3jof-k4x7v-zae";
-    let user: UserProfile = {
-      id: Principal.fromText(id),
-      actions_rate: 0,
-      balance: 100,
-      rates_by_actions: [],
-      name: "John",
-      description: "any",
-      total_debt: 100,
-      spent: 10,
-      rates_by_others: [],
-      users_rate: 0,
-      users_interacted: 0,
-      photo: [],
-      debts: [],
-      received: 0,
-    };
-    mockBackendActor.get_user_profile({ Ok: user });
+    mockBackendActor.deposit_usdt.mockResolvedValue({ Ok: 100 });
 
     // Mock useBackendContext to return the correct structure
     useBackendContext.mockReturnValue({
@@ -82,12 +55,47 @@ describe("Deposit Component", () => {
       login: vi.fn(),
       logout: vi.fn(),
     });
+    let id = "z4gk5-xnlf4-xwuvn-txv6a-brmuq-hk36q-yzzqm-jeqs5-7dyrg-a2gii-2qe";
+    // let user_history = {
+    //   id: {
+    //     __principal__: id,
+    //   },
+    //   // id: Principal.fromText(id)
+    //   actions_rate: 0,
+    //   balance: 0,
+    //   rates_by_actions: [],
+    //   name: "New",
+    //   description: "safd",
+    //   total_debt: 0,
+    //   spent: 0,
+    //   rates_by_others: [],
+    //   users_rate: 0,
+    //   users_interacted: 0,
+    //   photo: {},
+    //   debts: [],
+    //   received: 0,
+    // };
+    let user = {
+      id: Principal.fromText(id),
+      actions_rate: 0,
+      balance: 0,
+      rates_by_actions: [],
+      name: "New",
+      description: "safd",
+      total_debt: 0,
+      spent: 0,
+      rates_by_others: [],
+      users_rate: 0,
+      users_interacted: 0,
+      photo: {},
+      debts: [],
+      received: 0,
+    };
 
-    const mockSearchValue = `?user_id=${id}`;
-    delete window.location;
-    window.location = { search: mockSearchValue } as any;
-    renderWithProviders(<UserPage />);
+    renderWithProviders(<FriendCom
+                        rate={0}
+                        {...user}
+                        labelId={"labelId"}
+                    />);
   });
-
-  it("does nothing if backendActor is not available", () => {});
 });
