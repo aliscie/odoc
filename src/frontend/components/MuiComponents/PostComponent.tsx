@@ -83,7 +83,7 @@ export function UserAvatar(props: UserFE | User) {
   );
 }
 
-export default function PostComponent(props: Props) {
+export default function PostComponent(props: any) {
   let content = deserializeContentTree(props.post.content_tree);
 
   let subheader = formatTimestamp(props.post.date_created);
@@ -101,6 +101,7 @@ export default function PostComponent(props: Props) {
 
       <CardContent>
         <EditorComponent
+          key={props.post.id}
           editable={props.editable}
           onChange={props.onChange}
           content={content}

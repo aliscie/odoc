@@ -1,12 +1,23 @@
-import React, {useState} from "react";
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tooltip,} from "@mui/material";
-import {useDispatch, useSelector} from "react-redux";
-import {LoadingButton} from "@mui/lab";
-import {useSnackbar} from "notistack";
-import {CPayment, StoredContract,} from "../../../declarations/backend/backend.did";
-import {handleRedux} from "../../redux/store/handleRedux";
+import React, { useState } from "react";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Tooltip,
+} from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { LoadingButton } from "@mui/lab";
+import { useSnackbar } from "notistack";
+import {
+  CPayment,
+  StoredContract,
+} from "../../../declarations/backend/backend.did";
+import { handleRedux } from "../../redux/store/handleRedux";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
-import {useBackendContext} from "../../contexts/BackendContext";
+import { useBackendContext } from "../../contexts/BackendContext";
 
 interface MultiSaveButtonProps {}
 

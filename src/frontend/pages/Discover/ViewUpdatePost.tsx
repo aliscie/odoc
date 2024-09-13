@@ -3,7 +3,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ActionsButtons from "./ActionsButtons";
 import PostComponent from "../../components/MuiComponents/PostComponent";
-import React from "react";
+import React, { useRef } from "react";
 import {
   ContentNode,
   Post,
@@ -15,6 +15,7 @@ import { LoadingButton } from "@mui/lab";
 import PostTags from "./TagsComponent";
 import serialize_file_contents from "../../DataProcessing/serialize/serializeFileContents";
 import { useBackendContext } from "../../contexts/BackendContext";
+import { logger } from "../../DevUtils/logData";
 
 interface Props {
   post: PostUser;
@@ -24,18 +25,14 @@ interface Props {
 
 function ViewPost(props: Props) {
   const { backendActor } = useBackendContext();
-
-  const [post, setPost] = React.useState(() => {
-    const initialPost: Post = {
-      id: props.post.id,
-      creator: props.post.creator.id,
-      date_created: props.post.date_created,
-      votes_up: props.post.votes_up,
-      tags: props.post.tags,
-      content_tree: props.post.content_tree,
-      votes_down: props.post.votes_down,
-    };
-    return initialPost;
+  const postRef = useRef<Post>({
+    id: props.post.id,
+    creator: props.post.creator.id,
+    date_created: props.post.date_created,
+    votes_up: props.post.votes_up,
+    tags: props.post.tags,
+    content_tree: props.post.content_tree,
+    votes_down: props.post.votes_down,
   });
 
   const [isChanged, setChanged] = React.useState(false);
@@ -43,12 +40,11 @@ function ViewPost(props: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const handleSave = async () => {
-    let new_change = {};
-    new_change[""] = post.content_tree;
-    const de_changes = serialize_file_contents(new_change);
-    let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
     setLoading(true);
-    const res = await backendActor?.save_post({ ...post, content_tree });
+    const res = await backendActor?.save_post({
+      ...postRef.current,
+      content_tree: postRef.current.content_tree,
+    });
     setLoading(false);
     if (res && "Ok" in res) {
       enqueueSnackbar("Post saved", { variant: "success" });
@@ -74,14 +70,15 @@ function ViewPost(props: Props) {
   const { profile, Anonymous } = useSelector((state: any) => state.filesState);
 
   const onChange = (changes: any) => {
-    // let new_change = {};
-    // new_change[''] = changes;
+    let new_change = {};
+    new_change[""] = changes;
 
-    // const normalizedChanges = serialize_file_contents(new_change);
-    // console.log({normalizedChanges})
-    setPost((prevPost) => ({ ...prevPost, content_tree: changes }));
+    const de_changes = serialize_file_contents(new_change);
+    let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
+    postRef.current = { ...postRef.current, content_tree: content_tree };
     setChanged(true);
   };
+
   let is_owner = props.post.creator.id == profile ? profile.id : "";
   return (
     <div>
@@ -90,7 +87,7 @@ function ViewPost(props: Props) {
         is_owner={is_owner}
         editable={!Anonymous}
         onChange={onChange}
-        post={props.post}
+        post={postRef.current}
         headerAction={
           profile &&
           props.post.creator.id === profile.id && (
@@ -124,10 +121,10 @@ function ViewPost(props: Props) {
               label={"Tags"}
               post={props.post}
               setTags={(updatedTags) => {
-                setPost((prevPost) => ({
-                  ...prevPost,
+                postRef.current = {
+                  ...postRef.current,
                   tags: updatedTags.map((tag) => tag.title),
-                }));
+                };
                 setChanged(true);
               }}
             />

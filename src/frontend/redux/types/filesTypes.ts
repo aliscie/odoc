@@ -46,7 +46,6 @@ export type FilesActions =
   | { type: "REMOVE_FRIEND" };
 
 export interface InitialState {
-  profile: User;
   inited: boolean;
   current_file: FileNode | null;
   is_files_saved: boolean;
@@ -89,7 +88,6 @@ export const initialState: InitialState = {
     delete_contracts: [],
     files_indexing: [],
   },
-  profile: {},
   profile_history: null,
   top_dialog: { open: false, content: null, title: null },
   workspaces: [],

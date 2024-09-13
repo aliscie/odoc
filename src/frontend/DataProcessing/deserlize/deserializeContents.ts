@@ -46,17 +46,17 @@ function nesting(
   return item;
 }
 
-export function deserializeContentTree(tree: Array<ContentNode>) {
-  let nested_file_content: Array<SlateNode> = [];
+export function deserializeContentTree(contentList: Array<ContentNode>) {
+  let contentTree: Array<SlateNode> = [];
   let visited = [];
-  tree.map((node: ContentNode) => {
+  contentList.map((node: ContentNode) => {
     if (!visited.includes(node.id) && node.parent && !node.parent.id) {
       visited.push(node.id);
-      let slate_node: SlateNode = nesting(node, tree, visited);
-      nested_file_content.push(slate_node);
+      let slate_node: SlateNode = nesting(node, contentList, visited);
+      contentTree.push(slate_node);
     }
   });
-  return nested_file_content;
+  return contentTree;
 }
 
 export function deserializeContents(

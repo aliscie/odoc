@@ -1,13 +1,10 @@
 import * as React from "react";
-import { useCallback } from "react";
-// import {custom_contract, data_grid} from "../../data_processing/data_samples";
 import { useDispatch, useSelector } from "react-redux";
 import OdocEditor, { MyMentionItem } from "odoc_editor_v2";
 import { Principal } from "@dfinity/principal";
 import createContractPlugin, {
   CONTRACT_KEY,
 } from "../ContractTable/ContractPlugin";
-import { debounce } from "lodash";
 
 import TableChartIcon from "@mui/icons-material/TableChart";
 import { handleRedux } from "../../redux/store/handleRedux";
