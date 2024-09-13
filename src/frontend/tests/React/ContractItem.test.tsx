@@ -6,7 +6,7 @@ import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
 import useGetUser from "../../utils/get_user_by_principal";
 import formatTimestamp from "../../utils/time";
-import renderWithProviders from "./testSetup";
+import renderWithProviders from "./testsWrapper";
 
 // Mock necessary hooks and functions
 vi.mock("react-redux", () => ({
