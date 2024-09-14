@@ -5,7 +5,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Button, Divider, Tooltip, Typography } from "@mui/material";
+import { Button, Divider, Tooltip } from "@mui/material";
 import useGetUser from "../../utils/get_user_by_principal";
 import { useBackendContext } from "../../contexts/BackendContext";
 import formatTimestamp from "../../utils/time";
@@ -18,10 +18,6 @@ interface ContractItemProps {
   date_created: string;
   canceled: boolean;
 }
-
-// interface User {
-//   name: string;
-// }
 
 const ContractItem: React.FC<ContractItemProps> = ({
   id,
@@ -41,7 +37,6 @@ const ContractItem: React.FC<ContractItemProps> = ({
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   const { getUser } = useGetUser();
-
 
   useEffect(() => {
     (async () => {
