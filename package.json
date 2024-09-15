@@ -124,7 +124,7 @@
     "@storybook/react-vite": "^8.2.9",
     "@storybook/test": "^8.2.9",
     "@testing-library/jest-dom": "^6.4.8",
-    "@testing-library/react": "^16.0.0",
+    "@testing-library/react": "^16.0.1",
     "@types/is-hotkey": "^0.1.10",
     "@types/isomorphic-fetch": "^0.0.39",
     "@types/jest": "^29.5.12",

@@ -57,7 +57,7 @@ const renderWithProviders = (
   store: ReturnType<typeof configureStore> = configureStore({
     reducer: rootReducer,
     preloadedState: {
-      files: filesInitialState,
+      files: { filesInitialState, profile: { id: "x" } },
       chats: chatsInitialState,
       ui: uiInitialState,
       notification: notificationInitialState,

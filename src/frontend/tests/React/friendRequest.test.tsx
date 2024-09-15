@@ -1,17 +1,14 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Deposit from "../../pages/profile/actions/Deposit";
-import { useDispatch } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, it, vi } from "vitest";
 import renderWithProviders from "./testsWrapper";
-import UserPage from "../../pages/user";
-import React from "react";
 import { FriendCom } from "../../pages/profile/friends";
-import {Principal} from "@dfinity/principal";
+import { Principal } from "@dfinity/principal";
 
 vi.mock("react-redux", () => ({
   useDispatch: vi.fn(),
+  // useSelector: vi.fn(),
 }));
 
 vi.mock("notistack", () => ({
@@ -25,12 +22,16 @@ vi.mock("../../contexts/BackendContext", () => ({
 
 describe("Deposit Component", () => {
   const mockDispatch = vi.fn();
+  // const mockSelector̦= vi.fn();
   const mockEnqueueSnackbar = vi.fn();
   const mockBackendActor = {
     deposit_usdt: vi.fn(),
   };
 
   beforeEach(() => {
+    // useSelector.mockReturnValue({
+    //   filesState: { profile: { id: "" } },
+    // });
     useDispatch.mockReturnValue(mockDispatch);
     useSnackbar.mockReturnValue({
       enqueueSnackbar: mockEnqueueSnackbar,
@@ -92,10 +93,20 @@ describe("Deposit Component", () => {
       received: 0,
     };
 
-    renderWithProviders(<FriendCom
-                        rate={0}
-                        {...user}
-                        labelId={"labelId"}
-                    />);
+    // renderWithProviders(<Deposit />);
+
+    renderWithProviders(<FriendCom rate={0} {...user} labelId={"labelId"} />);
+
+    //   const depositButton = screen.getByRole("button", { name: /deposit/i });
+    //   fireEvent.click(depositButton);
+    //
+    //   // Wait for async operations to complete
+    //   await waitFor(() => {
+    //     expect(mockBackendActor.deposit_usdt).toHaveBeenCalledWith(100);
+    //     expect(mockDispatch).toHaveBeenCalledWith(
+    //       expect.objectContaining({ type: "UPDATE_BALANCE", balance: 100 }),
+    //     );
+    //     expect(mockEnqueueSnackbar).not.toHaveBeenCalled();
+    //   });
   });
 });

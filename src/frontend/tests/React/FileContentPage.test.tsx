@@ -1,10 +1,8 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
+import { fireEvent, screen } from "@testing-library/react";
 import { vi } from "vitest";
 import FileContentPage from "../../pages/FileContentPage";
-import { filesReducer } from "../../redux/reducers/filesReducer";
+import renderWithProviders from "./testsWrapper";
 
 // Mock store and initial state
 const initialState = {
@@ -16,22 +14,9 @@ const initialState = {
   },
 };
 
-const renderWithProviders = (
-  ui,
-  {
-    preloadedState,
-    store = configureStore({
-      reducer: { filesState: filesReducer },
-      preloadedState,
-    }),
-  } = {},
-) => {
-  return render(<Provider store={store}>{ui}</Provider>);
-};
-
 describe("FileContentPage", () => {
   test("renders 404 when no current_file", () => {
-    renderWithProviders(<FileContentPage />, { preloadedState: initialState });
+    renderWithProviders(<FileContentPage />);
     expect(screen.getByText("404 Not Found")).toBeInTheDocument();
   });
 
@@ -50,7 +35,7 @@ describe("FileContentPage", () => {
         files_content: { file1: "Test content" },
       },
     };
-    renderWithProviders(<FileContentPage />, { preloadedState: stateWithFile });
+    renderWithProviders(<FileContentPage />);
 
     expect(screen.getByPlaceholderText("Untitled")).toHaveValue("Test File");
     expect(screen.getByText("Test content")).toBeInTheDocument();
@@ -73,19 +58,7 @@ describe("FileContentPage", () => {
       },
     };
 
-    renderWithProviders(<FileContentPage />, {
-      preloadedState: stateWithFile,
-      store: configureStore({
-        reducer: { filesState: filesReducer },
-        preloadedState: stateWithFile,
-        middleware: (getDefaultMiddleware) =>
-          getDefaultMiddleware({
-            thunk: {
-              dispatch,
-            },
-          }),
-      }),
-    });
+    renderWithProviders(<FileContentPage />);
 
     // Mock debounce
     fireEvent.change(screen.getByPlaceholderText("Untitled"), {
@@ -114,7 +87,7 @@ describe("FileContentPage", () => {
         files_content: { file1: "Test content" },
       },
     };
-    renderWithProviders(<FileContentPage />, { preloadedState: stateWithFile });
+    renderWithProviders(<FileContentPage />);
 
     const input = screen.getByPlaceholderText("Untitled");
     const keydownEvent = new KeyboardEvent("keydown", {

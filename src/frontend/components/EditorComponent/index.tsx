@@ -68,16 +68,17 @@ function EditorComponent(props: Props) {
   };
 
   return (
-    <OdocEditor
-      key={props.id}
-      id={props.id || ""}
-      readOnly={props.readOnly}
-      initialValue={content}
-      onChange={handleInputChange}
-      extraPlugins={extraPlugins}
-      onInsertComponent={handleOnInsertComponent}
-      userMentions={mentions}
-    />
+      <div>x</div>
+    // <OdocEditor
+    //   key={props.id}
+    //   id={props.id || ""}
+    //   readOnly={props.readOnly}
+    //   initialValue={content}
+    //   onChange={handleInputChange}
+    //   extraPlugins={extraPlugins}
+    //   onInsertComponent={handleOnInsertComponent}
+    //   userMentions={mentions}
+    // />
   );
 }
 
