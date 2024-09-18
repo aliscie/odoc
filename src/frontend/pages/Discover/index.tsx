@@ -15,6 +15,7 @@ const Discover = () => {
   const { isLoggedIn } = useSelector((state: any) => state.uiState);
 
   const [posts, setPosts] = React.useState<Array<PostUser>>([]); //TODO use redux for this
+
   const [current_page, setPage] = React.useState<number>(0);
   const { enqueueSnackbar } = useSnackbar();
   useEffect(() => {

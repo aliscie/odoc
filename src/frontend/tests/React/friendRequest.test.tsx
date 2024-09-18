@@ -1,19 +1,9 @@
-import {useDispatch, useSelector} from "react-redux";
-import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { afterEach, beforeEach, describe, it, vi } from "vitest";
 import renderWithProviders from "./testsWrapper";
 import { FriendCom } from "../../pages/profile/friends";
 import { Principal } from "@dfinity/principal";
-
-vi.mock("react-redux", () => ({
-  useDispatch: vi.fn(),
-  // useSelector: vi.fn(),
-}));
-
-vi.mock("notistack", () => ({
-  useSnackbar: vi.fn(),
-}));
+import { useSelector } from "react-redux";
 
 // Mock BackendContext
 vi.mock("../../contexts/BackendContext", () => ({
@@ -29,14 +19,25 @@ describe("Deposit Component", () => {
   };
 
   beforeEach(() => {
-    // useSelector.mockReturnValue({
-    //   filesState: { profile: { id: "" } },
-    // });
-    useDispatch.mockReturnValue(mockDispatch);
-    useSnackbar.mockReturnValue({
-      enqueueSnackbar: mockEnqueueSnackbar,
-      closeSnackbar: vi.fn(),
-    });
+    useSelector.mockImplementation((selectorFn) =>
+      selectorFn({
+        filesState: {
+          profile: { id: "1", name: "Test User" }, // Mock profile data
+          friends: [
+            {
+              receiver: { id: "2", name: "Friend 1", confirmed: false },
+              sender: { id: "1", name: "Test User" },
+              confirmed: false,
+            },
+            {
+              receiver: { id: "3", name: "Friend 2", confirmed: true },
+              sender: { id: "1", name: "Test User" },
+              confirmed: true,
+            },
+          ],
+        },
+      }),
+    );
   });
 
   afterEach(() => {
@@ -94,6 +95,7 @@ describe("Deposit Component", () => {
     };
 
     // renderWithProviders(<Deposit />);
+    global.URL.createObjectURL = vi.fn();
 
     renderWithProviders(<FriendCom rate={0} {...user} labelId={"labelId"} />);
 

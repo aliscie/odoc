@@ -25,9 +25,10 @@ interface Props {
 
 function ViewPost(props: Props) {
   const { backendActor } = useBackendContext();
-  const postRef = useRef<Post>({
+  const { profile, Anonymous } = useSelector((state: any) => state.filesState);
+  const postRef = useRef<PostUser>({
     id: props.post.id,
-    creator: props.post.creator.id,
+    creator: props.post.creator,
     date_created: props.post.date_created,
     votes_up: props.post.votes_up,
     tags: props.post.tags,
@@ -66,8 +67,6 @@ function ViewPost(props: Props) {
       enqueueSnackbar("Error deleting post", { variant: "error" });
     }
   };
-
-  const { profile, Anonymous } = useSelector((state: any) => state.filesState);
 
   const onChange = (changes: any) => {
     let new_change = {};

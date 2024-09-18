@@ -1,12 +1,20 @@
 import { vi } from "vitest";
+import React from "react";
+import { BackendProvider } from "../../contexts/BackendContext";
+import { Provider } from "react-redux";
+import { render } from "@testing-library/react";
+import configureStore from "redux-mock-store";
 
-// Mock react-redux hooks at the top level without relying on other variables
 vi.mock("react-redux", async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
     useDispatch: vi.fn(),
-    useSelector: vi.fn(),
+    useSelector: () => {
+      return {
+        filesState: { profile: { id: "" }, friends: [] },
+      };
+    },
   };
 });
 
@@ -41,30 +49,21 @@ vi.mock("indexedDB", async () => {
   };
 });
 
-import React from "react";
-import { BackendProvider } from "../../contexts/BackendContext";
-import { Provider } from "react-redux";
-import { render } from "@testing-library/react";
-import { configureStore } from "@reduxjs/toolkit";
-import rootReducer from "../../redux/reducers";
-import { initialState as filesInitialState } from "../../redux/types/filesTypes";
-import { initialChatsState as chatsInitialState } from "../../redux/types/chatsTypes";
-import { initialState as uiInitialState } from "../../redux/types/uiTypes";
-import { notificationInitialState } from "../../redux/types/notificationTypes";
-
 const renderWithProviders = (
   component: React.ReactElement,
-  store: ReturnType<typeof configureStore> = configureStore({
-    reducer: rootReducer,
-    preloadedState: {
-      files: { filesInitialState, profile: { id: "x" } },
-      chats: chatsInitialState,
-      ui: uiInitialState,
-      notification: notificationInitialState,
-    },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(),
-  }),
+  // store: ReturnType<typeof configureStore> = configureStore({
+  //   reducer: rootReducer,
+  //   preloadedState: {
+  //     files: { filesInitialState, profile: { id: "x" } },
+  //     chats: chatsInitialState,
+  //     ui: uiInitialState,
+  //     notification: notificationInitialState,
+  //   },
+  //   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(),
+  // }),
 ) => {
+  const mockConfigStore = configureStore();
+  const store: ReturnType<typeof configureStore> = mockConfigStore();
   return render(
     <Provider store={store}>
       <BackendProvider>

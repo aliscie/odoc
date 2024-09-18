@@ -62,9 +62,9 @@ function CreatePost(props: any) {
       >
         <AddCircleOutlineIcon />
       </LoadingButton>
-      <IconButton>
-        <MoreTimeIcon />
-      </IconButton>
+      {/*<IconButton>*/}
+      {/*  <MoreTimeIcon />*/}
+      {/*</IconButton>*/}
       <PostTags
         label={"Tags"}
         post={post}
@@ -103,7 +103,7 @@ function CreatePost(props: any) {
     >
       <PostComponent
         is_owner={true}
-        s
+        noHeaders={true}
         key={changes} // Use the key to force a re-render
         buttons={<CreateButtons />}
         post={post}

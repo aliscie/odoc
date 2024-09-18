@@ -87,17 +87,19 @@ export default function PostComponent(props: any) {
   let content = deserializeContentTree(props.post.content_tree);
 
   let subheader = formatTimestamp(props.post.date_created);
-  const { profile } = useSelector((state: any) => state.filesState);
+
 
   return (
     <Card>
-      <CardHeader
-        titleTypographyProps={{ textAlign: "left" }}
-        avatar={<UserAvatar {...props.post.creator} />}
-        action={props.headerAction}
-        // title={props.user.name}
-        subheader={subheader}
-      />
+      {!props.noHeaders && (
+        <CardHeader
+          titleTypographyProps={{ textAlign: "left" }}
+          avatar={<UserAvatar {...props.post.creator} />}
+          action={props.headerAction}
+          // title={props.user.name}
+          subheader={subheader}
+        />
+      )}
 
       <CardContent>
         <EditorComponent
