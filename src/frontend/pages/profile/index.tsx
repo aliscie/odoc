@@ -33,17 +33,13 @@ import { useBackendContext } from "../../contexts/BackendContext";
 export default function ProfileComponent() {
   const { backendActor } = useBackendContext();
   const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useDispatch();
   const { profile, friends, profile_history, wallet } = useSelector(
     (state: any) => state.filesState,
   );
 
   const [profileData, setProfileData] = useState({
-    id: profile?.id || "",
-    name: profile?.name || "",
-    description: profile?.description || "",
-    photo: profile?.photo || "",
     changed: false,
+    ...profile,
   });
 
   const [buttonLoading, setButtonLoading] = useState(false);

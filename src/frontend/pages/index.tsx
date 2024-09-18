@@ -3,7 +3,7 @@ import React from "react";
 import LandingPage from "./LandingPage";
 import FileContentPage from "./FileContentPage";
 import ShareFilePage from "./ShareFilePage";
-import ProfileComponent from "./profile";
+import ProfilePage from "./profile";
 import Discover from "./Discover";
 import UserPage from "./User";
 import ChatsPage from "./ChatsPage";
@@ -14,7 +14,7 @@ function Pages() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/discover" element={<Discover />} />
-      <Route path="/profile" element={<ProfileComponent />} />
+      <Route path="/profile" element={<ProfilePage />} />
       <Route path="/share/*" element={<ShareFilePage />} />
       <Route path="/user/*" element={<UserPage />} />
       <Route path="/chats/*" element={<ChatsPage />} />

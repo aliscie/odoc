@@ -40,7 +40,7 @@ export function filesReducer(
         wallet: action.data.Wallet,
         files_content: deserializeContents(action.data.FilesContents[0]),
         contracts: deserializeContracts(action.data.Contracts),
-        profile: { ...action.data.Profile, photo: [[]] },
+        profile: action.data.Profile,
         friends: action.data.Friends,
         inited: true,
         profile_history: action.data.ProfileHistory,
