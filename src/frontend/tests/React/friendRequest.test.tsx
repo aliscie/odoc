@@ -1,9 +1,8 @@
 import { useBackendContext } from "../../contexts/BackendContext";
-import { afterEach, beforeEach, describe, it, vi } from "vitest";
-import renderWithProviders from "./testsWrapper";
+import { afterEach, describe, it, vi } from "vitest";
+import renderWithProviders, { ExtendedRenderOptions } from "./testsWrapper";
 import { FriendCom } from "../../pages/profile/friends";
 import { Principal } from "@dfinity/principal";
-import { useSelector } from "react-redux";
 
 // Mock BackendContext
 vi.mock("../../contexts/BackendContext", () => ({
@@ -18,27 +17,27 @@ describe("Deposit Component", () => {
     deposit_usdt: vi.fn(),
   };
 
-  beforeEach(() => {
-    useSelector.mockImplementation((selectorFn) =>
-      selectorFn({
-        filesState: {
-          profile: { id: "1", name: "Test User" }, // Mock profile data
-          friends: [
-            {
-              receiver: { id: "2", name: "Friend 1", confirmed: false },
-              sender: { id: "1", name: "Test User" },
-              confirmed: false,
-            },
-            {
-              receiver: { id: "3", name: "Friend 2", confirmed: true },
-              sender: { id: "1", name: "Test User" },
-              confirmed: true,
-            },
-          ],
-        },
-      }),
-    );
-  });
+  // beforeEach(() => {
+  //   useSelector.mockImplementation((selectorFn) =>
+  //     selectorFn({
+  //       filesState: {
+  //         profile: { id: "1", name: "Test User" }, // Mock profile data
+  //         friends: [
+  //           {
+  //             receiver: { id: "2", name: "Friend 1", confirmed: false },
+  //             sender: { id: "1", name: "Test User" },
+  //             confirmed: false,
+  //           },
+  //           {
+  //             receiver: { id: "3", name: "Friend 2", confirmed: true },
+  //             sender: { id: "1", name: "Test User" },
+  //             confirmed: true,
+  //           },
+  //         ],
+  //       },
+  //     }),
+  //   );
+  // });
 
   afterEach(() => {
     vi.clearAllMocks();
@@ -96,8 +95,19 @@ describe("Deposit Component", () => {
 
     // renderWithProviders(<Deposit />);
     global.URL.createObjectURL = vi.fn();
+    const preloadedState: ExtendedRenderOptions = {
+      preloadedState: {
+        filesState: {
+          profile: { id: "test", name: "test" },
+          friends: [],
+        },
+      },
+    };
 
-    renderWithProviders(<FriendCom rate={0} {...user} labelId={"labelId"} />);
+    renderWithProviders(
+      <FriendCom rate={0} {...user} labelId={"labelId"} />,
+      preloadedState,
+    );
 
     //   const depositButton = screen.getByRole("button", { name: /deposit/i });
     //   fireEvent.click(depositButton);

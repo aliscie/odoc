@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { Card, CardContent, Divider, Typography, Box } from "@mui/material";
 import Deposit from "./actions/Deposit";
 import Withdraw from "./actions/Withdraw";
+import InternalTransaction from "./actions/internlTransaction";
 
 const WalletSection: React.FC = () => {
   const { wallet } = useSelector((state: any) => state.filesState);
@@ -27,6 +28,7 @@ const WalletSection: React.FC = () => {
         <Box style={{ display: "flex", justifyContent: "space-around" }}>
           <Deposit />
           <Withdraw />
+          <InternalTransaction />
         </Box>
       </CardContent>
     </Card>

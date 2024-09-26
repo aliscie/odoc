@@ -11,8 +11,9 @@ import {
   List,
   ListItem,
   TextField,
+  Typography,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import Friends from "./Friends";
 import { capitalizeFirstLetter } from "./utils";
@@ -20,15 +21,14 @@ import {
   convertToBlobLink,
   convertToBytes,
 } from "../../DataProcessing/imageToVec";
-import { handleRedux } from "../../redux/store/handleRedux";
 import BasicTabs from "./History";
 import TransactionHistory from "./TransactionHistory";
 import { UserHistoryComponent } from "../User";
-import ProfilePhotoDialog from "./actions/ProfilePhotoDialog";
 import ProfilePhoto from "./ProfilePhoto";
 import ProfileRatings from "./ProfileRating";
 import WalletSection from "./WalletSection";
 import { useBackendContext } from "../../contexts/BackendContext";
+import * as React from "react";
 
 export default function ProfileComponent() {
   const { backendActor } = useBackendContext();
@@ -80,6 +80,13 @@ export default function ProfileComponent() {
     }
     setUploading(false);
   };
+  if (!profile) {
+    return (
+      <Typography variant="h6">
+        please login
+      </Typography>
+    );
+  }
 
   const ProfileDetailList = () => (
     <List>

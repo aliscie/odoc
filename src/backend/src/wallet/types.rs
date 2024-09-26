@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::{WALLETS_STORE};
+use crate::{CPayment, PaymentStatus, WALLETS_STORE};
 use crate::user_history::UserHistory;
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 
@@ -7,6 +7,7 @@ use ic_stable_structures::{
     storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
 };
 use std::{borrow::Cow, cell::RefCell};
+use ic_cdk::caller;
 
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
@@ -154,6 +155,43 @@ impl Wallet {
         self.save();
         Ok(self.clone())
     }
+
+    // pub fn internal_transaction(&mut self, amount: f64, receiver: String, _type: ExchangeType)->Result<(), String>{
+    //     let payment = CPayment {
+    //         contract_id: "none".to_string(),
+    //         id: "".to_string(),
+    //         amount: 0.0,
+    //         sender: caller(),
+    //         receiver: Principal::from_text(receiver).unwrap(),
+    //         date_created: 0.0,
+    //         date_released: 0.0,
+    //         status: PaymentStatus::Released,
+    //         cells: vec![],
+    //     };
+    //
+    //     if self.balance >= amount {
+    //         let new_exchange = Exchange {
+    //             from: self.owner.clone(),
+    //             to: receiver.clone(),
+    //             amount,
+    //             _type,
+    //             date_created: ic_cdk::api::time() as f64,
+    //         };
+    //
+    //         self.exchanges.push(new_exchange);
+    //         self.balance -= amount.clone();
+    //
+    //         self.save();
+    //
+    //         Ok(())
+    //     } else {
+    //         Err(String::from("Insufficient balance"))
+    //     }
+    //
+    //     payment.pay()
+    //
+    //
+    // }
 
     pub fn withdraw(&mut self, amount: f64, to: String, _type: ExchangeType) -> Result<(), String> {
         if self.balance >= amount {

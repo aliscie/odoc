@@ -72,7 +72,7 @@ export function UserAvatar(props: UserFE | User) {
           <Avatar
             size={"small"}
             alt={props.name}
-            src={convertToBlobLink(props.photo)}
+            // src={convertToBlobLink(props.photo)}
           />
         }
         label={props.name}

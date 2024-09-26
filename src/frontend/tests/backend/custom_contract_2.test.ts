@@ -1,6 +1,6 @@
 import { UserProfile } from "../../../declarations/backend/backend.did";
-import { randomString } from "../../data_processing/data_samples";
 import { newContract } from "./data_samples";
+import { randomString } from "../../DataProcessing/dataSamples";
 
 test("Test actions rating", async () => {
   let contract_id: string = randomString();

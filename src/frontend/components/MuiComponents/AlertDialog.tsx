@@ -9,6 +9,7 @@ interface Props {
   children: React.ReactNode;
   content: React.ReactNode;
   handleSave: () => void;
+  submit: string | null;
 }
 
 export default function AlertDialog(props: Props) {
@@ -48,7 +49,7 @@ export default function AlertDialog(props: Props) {
         <DialogActions>
           <Button onClick={handleClose}>Close</Button>
           <Button onClick={handleSave} autoFocus>
-            Save
+            {props.submit || "Save"}
           </Button>
         </DialogActions>
       </Dialog>

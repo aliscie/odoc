@@ -1,10 +1,10 @@
-import { randomString } from "../../data_processing/data_samples";
 import {
   CPayment,
   CustomContract,
 } from "../../../declarations/backend/backend.did";
 import { createNewPromis } from "../../components/ContractTable/utils";
 import { Principal } from "@dfinity/principal";
+import {randomString} from "../../DataProcessing/dataSamples";
 
 export function newContract(): {
   custom_contract: CustomContract;

@@ -254,9 +254,10 @@ type RegisterUser = record {
 };
 type Result = variant { Ok : User; Err : text };
 type Result_1 = variant { Ok; Err : text };
-type Result_10 = variant { Ok; Err };
-type Result_11 = variant { Ok : WorkSpace; Err : text };
-type Result_12 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
+type Result_10 = variant { Ok : CPayment; Err : text };
+type Result_11 = variant { Ok; Err };
+type Result_12 = variant { Ok : WorkSpace; Err : text };
+type Result_13 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
 type Result_2 = variant { Ok : text; Err : text };
 type Result_3 = variant { Ok : float64; Err : text };
 type Result_4 = variant { Ok : StoredContract; Err : text };
@@ -402,9 +403,10 @@ service : () -> {
   get_user_notifications : () -> (vec Notification) query;
   get_user_profile : (principal) -> (Result_9) query;
   get_work_spaces : () -> (vec WorkSpace) query;
+  internal_transaction : (float64, text) -> (Result_10);
   make_new_chat_room : (Chat) -> (Result_2);
   message_is_seen : (Message) -> (Result_1);
-  move_file : (text, opt text) -> (Result_10);
+  move_file : (text, opt text) -> (Result_11);
   multi_updates : (
       vec FileNode,
       vec vec record { text; vec ContentNode },
@@ -418,7 +420,7 @@ service : () -> {
   register : (RegisterUser) -> (Result);
   reject_friend_request : (text) -> (Result);
   save_post : (Post) -> (Result_1);
-  save_work_space : (WorkSpace) -> (Result_11);
+  save_work_space : (WorkSpace) -> (Result_12);
   search_files_content : (text, bool) -> (
       vec record { text; vec ContentNode },
     ) query;
@@ -434,7 +436,7 @@ service : () -> {
   vote_up : (text) -> (Result_6);
   withdraw_usdt : (float64) -> (Result_3);
   ws_close : (CanisterWsCloseArguments) -> (Result_1);
-  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_12) query;
+  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_13) query;
   ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_1);
   ws_open : (CanisterWsOpenArguments) -> (Result_1);
 }

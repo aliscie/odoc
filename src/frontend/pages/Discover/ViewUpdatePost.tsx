@@ -44,6 +44,7 @@ function ViewPost(props: Props) {
     setLoading(true);
     const res = await backendActor?.save_post({
       ...postRef.current,
+      creator: postRef.current.creator.id,
       content_tree: postRef.current.content_tree,
     });
     setLoading(false);
@@ -79,6 +80,9 @@ function ViewPost(props: Props) {
   };
 
   let is_owner = props.post.creator.id == profile ? profile.id : "";
+
+  console.log({ view: postRef.current });
+
   return (
     <div>
       <PostComponent

@@ -35,7 +35,11 @@ function CreatePost(props: any) {
     let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
       serializeFileContents(changes);
     let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
-    let new_post = { ...post, content_tree: content_tree };
+    let new_post = {
+      ...post,
+      creator: post.creator,
+      content_tree: content_tree,
+    };
     setLoad(true);
     let res = await backendActor?.save_post(new_post);
     setLoad(false);

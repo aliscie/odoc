@@ -9,7 +9,7 @@ export default defineConfig({
     globals: true,
     threads: false,
     watch: true,
-    // setupFiles: process.env.VITE_TEST_ENV === "backend" ? "./setup_tests.ts" : [],
+    setupFiles: ["./src/frontend/tests/backend/backend_unit_test_setup.ts"],
     setupFilesAfterEnv: [
       "@testing-library/jest-dom/extend-expect",
       // "./src/frontend/tests/React/testSetup.ts",

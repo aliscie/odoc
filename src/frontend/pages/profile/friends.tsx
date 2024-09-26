@@ -208,6 +208,8 @@ function SecondaryActionSwitch(props) {
 }
 
 export function FriendCom(props: FriendProps) {
+  const { profile, friends } = useSelector((state: any) => state.filesState);
+
   return (
     <ListItem>
       <ListItemAvatar>

@@ -27,10 +27,10 @@ export function filesReducer(
     case "INIT_FILES_STATE":
       let all_friends = [];
       action.data.Friends.forEach((f: Friend) => {
-        if (f.sender.id !== action.data.Profile.id ){
-          all_friends.push(f.sender)
+        if (f.sender.id !== action.data.Profile.id) {
+          all_friends.push(f.sender);
         } else {
-          all_friends.push(f.receiver)
+          all_friends.push(f.receiver);
         }
       });
       return {
@@ -240,6 +240,7 @@ export function filesReducer(
       };
 
     case "UPDATE_BALANCE":
+      console.log({ action });
       return {
         ...state,
         wallet: { ...state.wallet, balance: action.balance },

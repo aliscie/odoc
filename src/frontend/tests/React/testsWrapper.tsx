@@ -1,22 +1,12 @@
-import { vi } from "vitest";
-import React from "react";
-import { BackendProvider } from "../../contexts/BackendContext";
-import { Provider } from "react-redux";
+import React, { PropsWithChildren } from "react";
+import type { RenderOptions } from "@testing-library/react";
 import { render } from "@testing-library/react";
-import configureStore from "redux-mock-store";
+import { Provider } from "react-redux";
+import rootReducer from "../../redux/reducers";
+import { setupStore } from "../../redux/store";
+import { BackendProvider } from "../../contexts/BackendContext";
 
-vi.mock("react-redux", async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    useDispatch: vi.fn(),
-    useSelector: () => {
-      return {
-        filesState: { profile: { id: "" }, friends: [] },
-      };
-    },
-  };
-});
+
 
 vi.mock("../../contexts/BackendContext", async (importOriginal) => {
   const { backendMocks } = await import("./utils/backendMocks");
@@ -34,7 +24,7 @@ vi.mock("../../contexts/BackendContext", async (importOriginal) => {
     BackendProvider: ({ children }) => <div>{children}</div>,
   };
 });
-
+//
 vi.mock("@dfinity/auth-client", async () => {
   const { authClientMock } = await import("./utils/authClientMock");
   return {
@@ -49,28 +39,37 @@ vi.mock("indexedDB", async () => {
   };
 });
 
-const renderWithProviders = (
-  component: React.ReactElement,
-  // store: ReturnType<typeof configureStore> = configureStore({
-  //   reducer: rootReducer,
-  //   preloadedState: {
-  //     files: { filesInitialState, profile: { id: "x" } },
-  //     chats: chatsInitialState,
-  //     ui: uiInitialState,
-  //     notification: notificationInitialState,
-  //   },
-  //   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(),
-  // }),
-) => {
-  const mockConfigStore = configureStore();
-  const store: ReturnType<typeof configureStore> = mockConfigStore();
-  return render(
+
+
+export type RootState = ReturnType<typeof rootReducer>;
+
+export interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
+  preloadedState?: Partial<RootState>;
+  store?: any;
+}
+
+export function renderWithProviders(
+  ui: React.ReactElement,
+  extendedRenderOptions: ExtendedRenderOptions = {},
+) {
+  const {
+    // preloadedState = {},
+    // Automatically create a store instance if no store was passed in
+    store = setupStore(extendedRenderOptions.preloadedState),
+    ...renderOptions
+  } = extendedRenderOptions;
+
+  const Wrapper = ({ children }: PropsWithChildren) => (
     <Provider store={store}>
-      <BackendProvider>
-        <div>{component}</div>
-      </BackendProvider>
-    </Provider>,
+      <BackendProvider>{children}</BackendProvider>
+    </Provider>
   );
-};
+
+  // Return an object with the store and all of RTL's query functions
+  return {
+    store,
+    ...render(ui, { wrapper: Wrapper, ...renderOptions }),
+  };
+}
 
 export default renderWithProviders;

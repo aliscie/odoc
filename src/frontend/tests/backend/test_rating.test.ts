@@ -4,8 +4,8 @@ import {
 } from "../../../declarations/backend/backend.did";
 import { Identity } from "@dfinity/agent";
 import { createIdentity } from "@hadronous/pic";
-import { randomString } from "../../data_processing/data_samples";
 import { Principal } from "@dfinity/principal";
+import { randomString } from "../../DataProcessing/dataSamples";
 
 test("Test render login", async () => {
   let input: RegisterUser = {
