@@ -16,6 +16,7 @@ import FullWidthTabs from "../welcome";
 import StyledAccordion from "../../components/MuiComponents/StyledAccordion";
 import FeatureModal from "../../components/MuiComponents/FeatureModal";
 import { features, roadMap } from "./data";
+import InfoCard from "../../components/MuiComponents/infoCard";
 
 interface Features {
   title: string;
@@ -79,26 +80,7 @@ const LandingPage: React.FC = () => {
 
         <Grid container spacing={2}>
           {features.map((feature, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card className="feature-card" sx={{ margin: 1 }}>
-                <CardContent className="feature-card-content">
-                  <Box
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    mb={2}
-                  >
-                    {feature.icon}
-                  </Box>
-                  <Typography variant="h5" className="feature-card-title">
-                    {feature.title}
-                  </Typography>
-                  <Typography variant="body2" className="feature-card-body">
-                    {feature.content}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+            <InfoCard {...feature} index={index} />
           ))}
         </Grid>
       </section>

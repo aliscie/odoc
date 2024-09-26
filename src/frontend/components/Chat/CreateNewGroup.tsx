@@ -163,13 +163,13 @@ function useCreateChatGroup() {
           <GroupAddIcon />
         </Button>
       </Tooltip>
-      <Input
-        value={searchValue}
-        onChange={(e) => setSearchValue(e.target.value)}
-        sx={{ ml: 1, flex: 1 }}
-        placeholder="Search username, content, group name"
-        inputProps={{ "aria-label": "search google maps" }}
-      />
+      {/*<Input*/}
+      {/*  defaultValue={searchValue}*/}
+      {/*  onChange={(e) => setSearchValue(e.target.value)}*/}
+      {/*  sx={{ ml: 1, flex: 1 }}*/}
+      {/*  placeholder="Search username, content, group name"*/}
+      {/*  inputProps={{ "aria-label": "search google maps" }}*/}
+      {/*/>*/}
     </div>
   );
 

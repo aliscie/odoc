@@ -81,11 +81,7 @@ export default function ProfileComponent() {
     setUploading(false);
   };
   if (!profile) {
-    return (
-      <Typography variant="h6">
-        please login
-      </Typography>
-    );
+    return <Typography variant="h6">please login</Typography>;
   }
 
   const ProfileDetailList = () => (
@@ -167,15 +163,18 @@ export default function ProfileComponent() {
             <BasicTabs
               items={{
                 Friends: <Friends />,
-                Reputation: profile_history && (
-                  <UserHistoryComponent {...profile_history} />
-                ),
+                // Reputation: profile_history && (
+                //   <UserHistoryComponent {...profile_history} />
+                // ),
                 ...(wallet && { Transactions: <TransactionHistory /> }),
               }}
             />
           </Box>
         </Grid>
       </Grid>
+
+      <Divider style={{ marginTop: "20px" }} />
+      <UserHistoryComponent {...profile_history} />
     </Container>
   );
 }
