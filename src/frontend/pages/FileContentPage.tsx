@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "lodash";
 
@@ -6,9 +6,7 @@ import { CircularProgress, Input } from "@mui/material";
 import { handleRedux } from "../redux/store/handleRedux";
 import EditorComponent from "../components/EditorComponent";
 
-interface Props {}
-
-const FileContentPage: React.FC<Props> = () => {
+const FileContentPage = () => {
   const { isLoggedIn } = useSelector((state: any) => state.uiState);
   let fileId = window.location.pathname.split("/")[1];
   const dispatch = useDispatch();
@@ -17,7 +15,6 @@ const FileContentPage: React.FC<Props> = () => {
   );
 
   let current_file = files.find((file: any) => file.id === fileId);
-
 
   const editorKey = (current_file && current_file.id) || "";
   const onChange = useCallback(
@@ -33,6 +30,7 @@ const FileContentPage: React.FC<Props> = () => {
     }, 250),
     [dispatch, current_file],
   );
+
   const handleDispatchChange = useCallback(
     debounce((title: string) => {
       if (title !== current_file.name) {
@@ -44,10 +42,8 @@ const FileContentPage: React.FC<Props> = () => {
     [dispatch, current_file],
   );
   const handleInputChange = (title) => {
-    // setTitle(title);
     handleDispatchChange(title);
   };
-
 
   if (!inited && isLoggedIn) {
     return <CircularProgress />;
@@ -66,7 +62,6 @@ const FileContentPage: React.FC<Props> = () => {
   return (
     <div style={{ marginTop: "3px", marginLeft: "10%", marginRight: "10%" }}>
       <Input
-        key={current_file.id + current_file.name}
         inputProps={{
           style: {
             width: "100%",
@@ -75,12 +70,9 @@ const FileContentPage: React.FC<Props> = () => {
             whiteSpace: "nowrap",
           },
         }}
-        defaultValue={current_file && current_file.name}
-        // value={current_file.name}
-        // value={current_file.name}
+        defaultValue={current_file.name}
         placeholder="Untitled"
-        // onKeyDown={preventEnter}
-        onBlur={(e) => handleInputChange(e.target.value)}
+        onChange={(e) => handleInputChange(e.target.value)}
       />
       <EditorComponent
         id={current_file.id}
