@@ -126,6 +126,20 @@ impl Chat {
             }
         })
     }
+    pub fn delete(&self) -> Result<String, String> {
+        CHATS.with(|store| {
+            let mut chats = store.borrow_mut();
+            // chats.retain(|c|c.id==self.id)
+            // Find the position of the chat by its ID
+            if let Some(pos) = chats.iter().position(|c| c.id == self.id) {
+                // Remove the chat from the list
+                chats.remove(pos);
+            }
+        });
+        return Ok("chat deleted".to_string());
+    }
+
+
     pub fn remove_from_my_chats(&self, user: Principal) {
         MY_CHATS.with(|store| {
             let mut my_chats = store.borrow_mut();

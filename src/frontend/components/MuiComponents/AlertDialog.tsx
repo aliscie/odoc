@@ -29,7 +29,7 @@ export default function AlertDialog(props: Props) {
 
   return (
     <React.Fragment>
-      <Button variant="outlined" onClick={handleClickOpen}>
+      <Button variant="outlined" onMouseDown={handleClickOpen}>
         {props.children}
       </Button>
       <Dialog

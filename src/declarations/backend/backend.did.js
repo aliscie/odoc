@@ -440,6 +440,7 @@ export const idlFactory = ({ IDL }) => {
     'counter' : IDL.Func([], [IDL.Nat64], ['query']),
     'create_new_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [FileNode], []),
     'create_share_contract' : IDL.Func([IDL.Vec(Share)], [Result_2], []),
+    'delete_chat' : IDL.Func([IDL.Text], [Result_2], []),
     'delete_custom_contract' : IDL.Func([IDL.Text], [Result_1], []),
     'delete_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], []),
     'delete_post' : IDL.Func([IDL.Text], [Result_1], []),

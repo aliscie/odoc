@@ -12,10 +12,9 @@ import BasicMenu from "./BasicMenu";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import { handleRedux } from "../../redux/store/handleRedux";
 import { Principal } from "@dfinity/principal";
-import useGetChats from "../Chat/utils/useGetChats";
+import useGetChats from "../Chat/useGetChats";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
-import { convertToBlobLink } from "../../DataProcessing/imageToVec";
 import { User } from "../../../../.dfx/local/canisters/backend/service.did";
 import EditorComponent from "../EditorComponent";
 
@@ -87,7 +86,6 @@ export default function PostComponent(props: any) {
   let content = deserializeContentTree(props.post.content_tree);
 
   let subheader = formatTimestamp(props.post.date_created);
-
 
   return (
     <Card>

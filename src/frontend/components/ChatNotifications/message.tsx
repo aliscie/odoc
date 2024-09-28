@@ -11,7 +11,7 @@ import {
 import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { Principal } from "@dfinity/principal";
-import useGetChats from "../Chat/utils/useGetChats";
+import useGetChats from "../Chat/useGetChats";
 import formatTimestamp, { formatRelativeTime } from "../../utils/time";
 
 export interface FrontendMessage {
@@ -35,7 +35,7 @@ const MessageComponent: React.FC<FrontendMessage> = (message) => {
     chats.find((chat: FEChat) => chat.id === message.chat_id);
   const otherUser: undefined | UserFE = currentChat && getOther(currentChat);
 
-  const isCurrentUser = message.sender.toString() === profile.id;
+  const isCurrentUser = profile && message.sender.toString() === profile.id;
 
   return (
     <ListItem
@@ -49,7 +49,7 @@ const MessageComponent: React.FC<FrontendMessage> = (message) => {
       <Box
         sx={{
           maxWidth: "180px",
-             whiteSpace: 'normal',
+          whiteSpace: "normal",
           overflow: "hidden",
           backgroundColor: isCurrentUser ? "primary.main" : "info.main",
           color: isCurrentUser ? "white" : "black",

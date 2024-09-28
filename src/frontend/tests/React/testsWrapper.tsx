@@ -2,11 +2,9 @@ import React, { PropsWithChildren } from "react";
 import type { RenderOptions } from "@testing-library/react";
 import { render } from "@testing-library/react";
 import { Provider } from "react-redux";
-import rootReducer from "../../redux/reducers";
+import { RootState } from "../../redux/reducers";
 import { setupStore } from "../../redux/store";
 import { BackendProvider } from "../../contexts/BackendContext";
-
-
 
 vi.mock("../../contexts/BackendContext", async (importOriginal) => {
   const { backendMocks } = await import("./utils/backendMocks");
@@ -38,10 +36,6 @@ vi.mock("indexedDB", async () => {
     indexedDB: indexedDBMock,
   };
 });
-
-
-
-export type RootState = ReturnType<typeof rootReducer>;
 
 export interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
   preloadedState?: Partial<RootState>;

@@ -175,9 +175,14 @@ function SecondaryActionSwitch(props) {
       return (
         <>
           <Tooltip title={"Send friend request"}>
-            <LoaderButton onClick={async () => await handleFriedReq(id)}>
-              <GroupAddIcon />
-            </LoaderButton>
+            <LoaderButton
+              startIcon={<GroupAddIcon />}
+              onClick={async () => {
+                let res = await handleFriedReq(id);
+                console.log({ res });
+                return { Ok: "" };
+              }}
+            />
           </Tooltip>
         </>
       );

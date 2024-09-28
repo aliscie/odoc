@@ -50,7 +50,6 @@ const App: React.FC = () => {
     <BrowserRouter>
       <SearchPopper />
       <SnackbarProvider maxSnack={3}>
-        <useInitialData />
         <RegistrationForm />
         <MessagesDialogBox />
         <TopNavBar />

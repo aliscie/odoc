@@ -38,12 +38,17 @@ fn send_message(user: Option<Principal>, mut message: Message) -> Result<String,
         if !(chat.members.contains(&caller()) || chat.admins.contains(&caller()) || (chat.creator == caller())) {
             return Err("You are not a member of this chat.".to_string());
         }
-        if chat.admins[0] != caller() {
+        if !chat.admins.contains( &caller()) {
             new_notification.receiver = chat.admins[0].clone();
         } else {
             new_notification.receiver = chat.creator.clone();
         }
         new_notification.send();
+        for member in chat.members.clone().into_iter().filter(|m| m != &new_notification.sender || m != &caller()) {
+            new_notification.id = COUNTER.fetch_add(1, Ordering::SeqCst).to_string();
+            new_notification.receiver = member;
+            new_notification.send();
+        };
         chat.messages.push(message.clone());
         // chat.save_to_my_chats();
         chat.save();
@@ -55,7 +60,7 @@ fn send_message(user: Option<Principal>, mut message: Message) -> Result<String,
         //     if chat.is_none() {
         //         chat = Some(Chat::new(user));
         //     }
-        let mut chat = Chat::new(user,message.chat_id.clone());
+        let mut chat = Chat::new(user, message.chat_id.clone());
         chat.messages.push(message.clone());
         new_notification.receiver = user;
         new_notification.send();
@@ -82,6 +87,16 @@ fn message_is_seen(message: Message) -> Result<(), String> {
         return Ok(());
     }
     Err("Chat not found".to_string())
+}
+
+#[update]
+fn delete_chat(id: String) -> Result<String, String> {
+    let chat = Chat::get(&id);
+    if let Some(chat) = chat {
+        chat.delete()
+    } else {
+        Err("Chat not found".to_string())
+    }
 }
 
 #[update]
@@ -127,7 +142,6 @@ fn update_chat(chat: Chat) -> Result<String, String> {
 
 #[update]
 fn make_new_chat_room(mut chat: Chat) -> Result<String, String> {
-
     if User::is_anonymous() {
         return Err("You are anonymous".to_string());
     };

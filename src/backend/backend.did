@@ -380,6 +380,7 @@ service : () -> {
   counter : () -> (nat64) query;
   create_new_file : (text, opt text) -> (FileNode);
   create_share_contract : (vec Share) -> (Result_2);
+  delete_chat : (text) -> (Result_2);
   delete_custom_contract : (text) -> (Result_1);
   delete_file : (text) -> (opt FileNode);
   delete_post : (text) -> (Result_1);

@@ -10,6 +10,10 @@ export const UPDATE_MESSAGE = "UPDATE_MESSAGE";
 export const ADD_NOTIFICATION = "ADD_NOTIFICATION";
 export const UPDATE_NOTIFICATION = "UPDATE_NOTIFICATION";
 export const SET_CHATS_NOTIFICATIONS = "SET_CHATS_NOTIFICATIONS";
+export const ADD_CHATS_NOTIFICATIONS = "ADD_CHATS_NOTIFICATIONS";
+export const DELETE_CHAT = "DELETE_CHAT";
+export const UPDATE_CHAT = "UPDATE_CHAT";
+export const ADD_CHAT = "ADD_CHAT";
 
 // Action Types
 export type ChatActions =
@@ -19,7 +23,11 @@ export type ChatActions =
   | { type: typeof UPDATE_MESSAGE; message: Message }
   | { type: typeof ADD_NOTIFICATION; message: Message }
   | { type: typeof UPDATE_NOTIFICATION; message: Message }
-  | { type: typeof SET_CHATS_NOTIFICATIONS; messages: Message[] };
+  | { type: typeof SET_CHATS_NOTIFICATIONS; messages: Message[] }
+  | { type: typeof DELETE_CHAT; id: String }
+  | { type: typeof UPDATE_CHAT; chat: FEChat }
+  | { type: typeof ADD_CHATS_NOTIFICATIONS; message: Message }
+  | { type: typeof ADD_CHAT; chat: FEChat };
 
 // State Types
 export type ChatState = {

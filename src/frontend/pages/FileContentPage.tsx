@@ -62,6 +62,7 @@ const FileContentPage = () => {
   return (
     <div style={{ marginTop: "3px", marginLeft: "10%", marginRight: "10%" }}>
       <Input
+        key={current_file.id}
         inputProps={{
           style: {
             width: "100%",

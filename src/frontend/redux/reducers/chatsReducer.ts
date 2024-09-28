@@ -9,6 +9,8 @@ import {
   ADD_NOTIFICATION,
   UPDATE_NOTIFICATION,
   SET_CHATS_NOTIFICATIONS,
+  DELETE_CHAT,
+  UPDATE_CHAT, ADD_CHAT, ADD_CHATS_NOTIFICATIONS,
 } from "../types/chatsTypes";
 import {
   FEChat,
@@ -31,10 +33,42 @@ export function chatsReducer(
       };
     }
 
+    case ADD_CHAT: {
+      return {
+        ...state,
+        chats: [...state.chats, action.chat],
+      };
+    }
+
     case SET_CHATS: {
       return {
         ...state,
         chats: action.chats,
+      };
+    }
+    case UPDATE_CHAT: {
+      const { chat } = action;
+
+      return {
+        ...state,
+        chats: state.chats.map((c) => {
+          if (c.id === chat.id) {
+            return chat;
+          }
+          return c;
+        }),
+      };
+    }
+    case DELETE_CHAT: {
+      const { chat_id } = action;
+      let current_chat_id = state.current_chat_id;
+      if (state.current_chat_id === chat_id) {
+        current_chat_id = "none";
+      }
+      return {
+        ...state,
+        chats: state.chats.filter((chat: FEChat) => chat.id !== chat_id),
+        current_chat_id,
       };
     }
 
@@ -134,6 +168,14 @@ export function chatsReducer(
       return {
         ...state,
         chats_notifications: action.messages,
+      };
+    }
+
+
+    case ADD_CHATS_NOTIFICATIONS: {
+      return {
+        ...state,
+        chats_notifications: [...state.chats_notifications, action.message],
       };
     }
 

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import useGetChats from "../components/Chat/utils/useGetChats";
+import useGetChats from "../components/Chat/useGetChats";
 import { FEChat } from "../../declarations/backend/backend.did";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -20,6 +20,8 @@ import {
   Grid,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import GroupIcon from "@mui/icons-material/Group";
+import { RootState } from "../redux/reducers";
 
 const useStyles = makeStyles((theme) => ({
   chatListContainer: {
@@ -50,11 +52,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ChatItem(props: FEChat) {
+
+  const { current_chat_id, chats } = useSelector(
+    (state: RootState) => state.chatsState,
+  );
+
   const classes = useStyles();
   const dispatch = useDispatch();
   let { getOther } = useGetChats();
   let user = getOther(props);
-
+  const isGroup = props.name !== "private_chat";
+  const name = user && !isGroup ? user.name : props.name;
   return (
     <ListItem
       key={props.id}
@@ -69,9 +77,13 @@ function ChatItem(props: FEChat) {
       }}
     >
       <ListItemAvatar>
-        <Avatar className={classes.avatar}>{user?.name?.[0]}</Avatar>
+        {isGroup ? (
+          <GroupIcon />
+        ) : (
+          <Avatar className={classes.avatar}>{user?.name?.[0]}</Avatar>
+        )}
       </ListItemAvatar>
-      <ListItemText primary={user ? user.name : "null"} />
+      <ListItemText primary={name} />
     </ListItem>
   );
 }
@@ -83,7 +95,10 @@ function ChatsPage(props: Props) {
   const dispatch = useDispatch();
   let { getChats } = useGetChats();
 
-  const [chats, setChats] = useState<Array<FEChat>>([]);
+  // const [chats, setChats] = useState<Array<FEChat>>([]);
+  const {  chats } = useSelector(
+    (state: RootState) => state.chatsState,
+  );
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -92,7 +107,9 @@ function ChatsPage(props: Props) {
       try {
         let res: undefined | Array<FEChat> = await getChats();
         if (res) {
-          setChats(res);
+          dispatch(handleRedux("SET_CHATS", { chats: res }));
+          // dispatch(handleRedux("SET_CHATS_NOTIFICATIONS", { messages: res }));
+          // setChats(res);
         } else {
           setError("No chats found.");
         }
@@ -104,7 +121,7 @@ function ChatsPage(props: Props) {
     };
 
     fetchChats();
-  }, []); // Only run once when the component mounts
+  }, [profile]); // Only run once when the component mounts
 
   return (
     <Container maxWidth="lg" style={{ marginTop: "20px" }}>
@@ -118,9 +135,6 @@ function ChatsPage(props: Props) {
                 alignItems="center"
               >
                 <Paper className={classes.chatListContainer}>
-                  <Typography variant="h6" className={classes.chatListHeader}>
-                    Chats
-                  </Typography>
                   {loading ? (
                     <Typography variant="body1">Loading...</Typography>
                   ) : error ? (

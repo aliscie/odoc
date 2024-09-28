@@ -4,8 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import { handleRedux } from "../../redux/store/handleRedux";
 import MessagesList from "../ChatNotifications/MessagesList";
-import MessageDialog from "../MuiComponents/MessageDialog";
-import { IconButton } from "@mui/material";
+import { Box, Dialog, DialogContent, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import OpenInFullIcon from "@mui/icons-material/OpenInFull";
 
@@ -33,37 +32,59 @@ const MessagesDialogBox: React.FC = () => {
     }
   };
 
-  const handleSend = (message: string) => {
-    if (message.trim()) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: message, isCurrentUser: true },
-      ]);
-    } else {
-      enqueueSnackbar("Message cannot be empty", { variant: "warning" });
-    }
-  };
+  // const handleSend = (message: string) => {
+  //   if (message.trim()) {
+  //     setMessages((prevMessages) => [
+  //       ...prevMessages,
+  //       { text: message, isCurrentUser: true },
+  //     ]);
+  //   } else {
+  //     enqueueSnackbar("Message cannot be empty", { variant: "warning" });
+  //   }
+  // };
+  let actions = [
+    <IconButton key="close" onClick={closeDialog}>
+      <CloseIcon color="action" />
+    </IconButton>,
+    <IconButton key="expand" component={Link} to="/chats" onClick={closeDialog}>
+      <OpenInFullIcon color="action" />
+    </IconButton>,
+  ];
 
   return (
-    <MessageDialog
+    <Dialog
       open={isOpen}
-      title="Messages"
-      inputFields={<MessagesList messages={messages} />}
-      actions={[
-        <IconButton key="close" onClick={closeDialog}>
-          <CloseIcon color="action" />
-        </IconButton>,
-        <IconButton
-          key="expand"
-          component={Link}
-          to="/chats"
-          onClick={closeDialog}
-        >
-          <OpenInFullIcon color="action" />
-        </IconButton>,
-      ]}
       onClose={closeDialog}
-    />
+      PaperProps={{
+        style: {
+          borderRadius: "16px",
+          padding: "16px",
+          position: "relative", // Ensure relative positioning for the Box components inside
+        },
+      }}
+    >
+      <Box sx={{ padding: "16px", position: "relative" }}>
+        {actions && actions[0] && (
+          <Box sx={{ position: "absolute", top: 8, right: 8 }}>
+            {actions[0]}
+          </Box>
+        )}
+      </Box>
+      <DialogContent sx={{ padding: "0" }}>
+        <MessagesList messages={messages} />
+      </DialogContent>
+      {actions && actions[1] && (
+        <Box
+          sx={{
+            padding: "8px 16px",
+            display: "flex",
+            justifyContent: "flex-start",
+          }}
+        >
+          {actions[1]}
+        </Box>
+      )}
+    </Dialog>
   );
 };
 

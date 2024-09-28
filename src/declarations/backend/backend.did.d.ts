@@ -411,6 +411,7 @@ export interface _SERVICE {
   'counter' : ActorMethod<[], bigint>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
   'create_share_contract' : ActorMethod<[Array<Share>], Result_2>,
+  'delete_chat' : ActorMethod<[string], Result_2>,
   'delete_custom_contract' : ActorMethod<[string], Result_1>,
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
   'delete_post' : ActorMethod<[string], Result_1>,

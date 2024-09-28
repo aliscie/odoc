@@ -21,7 +21,9 @@ const ChatsComponent: React.FC<ChatsComponentProps> = () => {
   const { backendActor } = useBackendContext();
   const { chatGroup, searchValue } = useCreateChatGroup();
   const { profile } = useSelector((state: any) => state.filesState);
-  const { chats_notifications } = useSelector((state: any) => state.chatsState);
+  const { chats_notifications, chats } = useSelector(
+    (state: any) => state.chatsState,
+  );
 
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -54,7 +56,7 @@ const ChatsComponent: React.FC<ChatsComponentProps> = () => {
     };
 
     fetchNotifications();
-  }, [backendActor, chats_notifications]);
+  }, [backendActor, chats_notifications, chats]);
 
   const searchedMessages =
     messages &&

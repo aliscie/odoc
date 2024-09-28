@@ -240,7 +240,6 @@ export function filesReducer(
       };
 
     case "UPDATE_BALANCE":
-      console.log({ action });
       return {
         ...state,
         wallet: { ...state.wallet, balance: action.balance },
