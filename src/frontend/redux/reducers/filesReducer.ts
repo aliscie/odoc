@@ -44,9 +44,38 @@ export function filesReducer(
         friends: action.data.Friends,
         inited: true,
         profile_history: action.data.ProfileHistory,
+        workspaces: action.data.workspaces,
         // friends: action.data.Friends.map(friend => friend.id === action.id ? {...friend, ...action} : friend)
       };
 
+    case "CHANGE_CURRENT_WORKSPACE":
+      return {
+        ...state,
+        currentWorkspace: action.currentWorkspace,
+      };
+
+    case "DELETE_WORKSPACE":
+      return {
+        ...state,
+        workspaces: state.workspaces.filter((w) => w != action.workspace.id),
+      };
+
+    case "UPDATE_WORKSPACE":
+      return {
+        ...state,
+        workspaces: state.workspaces.map((w) => {
+          if (w.id == action.workspace.id) {
+            return w;
+          }
+          return w;
+        }),
+      };
+
+    case "ADD_WORKSPACE":
+      return {
+        ...state,
+        workspaces: [...state.workspaces, action.workspace],
+      };
     case "ADD_CONTENT":
       return {
         ...state,
@@ -222,15 +251,24 @@ export function filesReducer(
       };
       return { ...state };
 
-    // case 'CONTRACT_CHANGES':
-    //
-    //     state.changes.contracts[action.changes.contract_id || action.changes.id] = action.changes;
-    //     return {...state};
+    case "UPDATE_FILE_WORKSPACES":
+      let newFile = state.files.find((file) => file.id === action.id)!;
+      newFile.workspaces = action.workspaces;
+      state = changeFile(newFile);
+      return <InitialState>{
+        ...state,
+        files: state.files.map((file) =>
+          file.id === action.id
+            ? { ...file, workspaces: action.workspaces }
+            : file,
+        ),
+        current_file: { ...state.current_file, workspaces: action.workspaces },
+      };
 
     case "UPDATE_FILE_TITLE":
-      let newFile = state.files.find((file) => file.id === action.id)!;
-      newFile.name = action.title;
-      state = changeFile(newFile);
+      let updatedFile = state.files.find((file) => file.id === action.id)!;
+      updatedFile.name = action.title;
+      state = changeFile(updatedFile);
       return <InitialState>{
         ...state,
         files: state.files.map((file) =>

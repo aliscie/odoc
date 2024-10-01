@@ -62,7 +62,6 @@ const TopNavBar = () => {
 
     const handleLogin = async () => {
         await login();
-        dispatch(handleRedux("LOGIN"));
     };
 
     const handleLogout = async () => {

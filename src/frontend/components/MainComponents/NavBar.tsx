@@ -20,7 +20,6 @@ import { Z_INDEX_SIDE_NAVBAR } from "../../constants/zIndex";
 const NavBar = (props: any) => {
   const dispatch = useDispatch();
   const { isNavOpen, isLoggedIn } = useSelector((state: any) => state.uiState);
-  const { files } = useSelector((state: any) => state.filesState);
 
   const navLinks = [
     { label: "About Us", to: "/", icon: <InfoIcon /> },
@@ -67,7 +66,7 @@ const NavBar = (props: any) => {
         <Divider />
         {isLoggedIn && (
           <>
-            <NestedList files={files} />
+            <NestedList />
             <Divider />
             <CreateFile />
           </>

@@ -20,7 +20,7 @@ pub struct Chat {
     // this used only for groups
     pub messages: Vec<Message>,
     pub creator: Principal,
-    pub workspace: String, // TODO We may not need this field
+    pub workspaces: Vec<String>, // TODO We may not need this field
 }
 
 #[derive(Eq, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
@@ -39,7 +39,7 @@ impl Chat {
             let mut chats = store.borrow_mut();
             let chat = Chat {
                 id,
-                workspace: "".to_string(),
+                workspaces: vec!["".to_string()],
                 name: "private_chat".to_string(),
                 admins: vec![user],
                 members: vec![],

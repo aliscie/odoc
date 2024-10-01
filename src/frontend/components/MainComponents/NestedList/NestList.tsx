@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import List from "@mui/material/List";
 import Draggable from "../../MuiComponents/Draggable";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { handleRedux } from "../../../redux/store/handleRedux";
 import DocComponent from "./ListItem";
 
@@ -16,7 +16,11 @@ interface NestedListProps {
   files: NestedDataItem[];
 }
 
-const NestedList: React.FC<NestedListProps> = ({ files }) => {
+const NestedList: React.FC<NestedListProps> = () => {
+  const { files, currentWorkspace } = useSelector(
+    (state: any) => state.filesState,
+  );
+
   const [openItems, setOpenItems] = useState<number[]>([]);
   const dispatch = useDispatch();
 
@@ -41,6 +45,12 @@ const NestedList: React.FC<NestedListProps> = ({ files }) => {
     );
   };
 
+  let filteredFiles = files.filter(
+    (f) =>
+      f.workspaces.includes(currentWorkspace.id) ||
+      !currentWorkspace ||
+      currentWorkspace.name.toLowerCase() == "default",
+  );
   return (
     <div>
       <List
@@ -54,13 +64,13 @@ const NestedList: React.FC<NestedListProps> = ({ files }) => {
         </Draggable>
 
         {/* Render root-level items in the list */}
-        {files?.map(
+        {filteredFiles?.map(
           (item, index) =>
             item.parent &&
             item.parent.length === 0 && (
               <DocComponent
                 key={item.id}
-                data={files}
+                data={filteredFiles}
                 item={item}
                 index={index}
                 openItems={openItems}

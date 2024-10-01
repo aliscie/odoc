@@ -13,15 +13,18 @@ const useInitialData = () => {
     const fetchInitialData = async () => {
       try {
         const res = await backendActor.get_initial_data();
+        const workspaces = await backendActor.get_work_spaces();
+
         if ("Err" in res && res.Err == "Anonymous user.") {
           dispatch(handleRedux("IS_REGISTERED", { isRegistered: false }));
         } else {
           const getProfileRes = await backendActor.get_user_profile(
             Principal.fromText(res.Ok.Profile.id),
           );
+          console.log({ workspaces });
           dispatch(
             handleRedux("INIT_FILES_STATE", {
-              data: { ...res.Ok, ProfileHistory: getProfileRes.Ok },
+              data: { ...res.Ok, ProfileHistory: getProfileRes.Ok, workspaces },
             }),
           );
         }

@@ -27,7 +27,7 @@ pub struct FileNode {
     pub permission: ShareFilePermission,
     pub users_permissions: HashMap<Principal, ShareFilePermission>,
     pub content_id: Option<String>,
-    pub workspace: String, // TODO we may not need this Field
+    pub workspaces: Vec<String>, // TODO we may not need this Field
 }
 
 
@@ -54,7 +54,7 @@ impl FileNode {
         // Similar ID generation
         let id: FileId = COUNTER.fetch_add(1, Ordering::Relaxed).to_string();
         let file = FileNode {
-            workspace: "".to_string(),
+            workspaces: vec![],
             id: id.clone(),
             parent,
             name,

@@ -25,7 +25,7 @@ const CreateFile: React.FC = () => {
             users_permissions: [],
             permission: {None: null},
             content_id: [],
-            workspace: "Default",
+            workspaces: [],
         };
 
         dispatch(handleRedux("ADD_FILE", {new_file: newFile}));

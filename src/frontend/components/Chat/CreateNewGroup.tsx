@@ -64,7 +64,7 @@ function useCreateChatGroup() {
       message: `${profile.name} just created a new Chat group.`,
       chat_id,
     };
-
+    let currentWorkspaceId = "";
     let chat: Chat = {
       id: chat_id,
       creator: Principal.fromText(profile.id),
@@ -75,7 +75,7 @@ function useCreateChatGroup() {
       name: "untitled",
       // admins: admins.map((a) => a.id),
       admins: [Principal.fromText(profile.id)],
-      workspace: "",
+      workspaces: [currentWorkspaceId],
     };
 
     const res = await backendActor?.make_new_chat_room(chat);

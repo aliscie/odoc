@@ -41,12 +41,12 @@ export const idlFactory = ({ IDL }) => {
     'content_id' : IDL.Opt(IDL.Text),
     'share_id' : IDL.Opt(IDL.Text),
     'name' : IDL.Text,
+    'workspaces' : IDL.Vec(IDL.Text),
     'children' : IDL.Vec(IDL.Text),
     'author' : IDL.Text,
     'users_permissions' : IDL.Vec(
       IDL.Tuple(IDL.Principal, ShareFilePermission)
     ),
-    'workspace' : IDL.Text,
     'parent' : IDL.Opt(IDL.Text),
   });
   const Share = IDL.Record({
@@ -363,8 +363,8 @@ export const idlFactory = ({ IDL }) => {
     'members' : IDL.Vec(IDL.Principal),
     'messages' : IDL.Vec(Message),
     'name' : IDL.Text,
+    'workspaces' : IDL.Vec(IDL.Text),
     'admins' : IDL.Vec(IDL.Principal),
-    'workspace' : IDL.Text,
   });
   const Result_11 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null });
   const FileIndexing = IDL.Record({

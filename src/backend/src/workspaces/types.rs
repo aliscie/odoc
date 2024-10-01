@@ -55,7 +55,7 @@ impl WorkSpace {
 
         WORK_SPACES.with(|store| {
             let mut work_spaces = store.borrow_mut();
-            if let Some(old_work_space) = old_work_space.clone() {
+            if let Some(_old_work_space) = old_work_space.clone() {
                 let index = work_spaces.iter().position(|ws| ws.id == self.id).unwrap();
                 work_spaces[index] = self.clone();
             } else {

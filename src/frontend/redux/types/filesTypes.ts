@@ -4,46 +4,11 @@ import {
   FileNode,
   Friend,
   InitialData,
-  StoredContract, User,
+  StoredContract,
+  User,
   UserProfile,
   WorkSpace,
 } from "../../../declarations/backend/backend.did";
-
-export type FilesActions =
-  | { type: "ADD_FILE"; new_file: FileNode }
-  | { type: "REMOVE"; id: string }
-  | { type: "UPDATE"; id: string; file: Partial<FileNode> }
-  | { type: "GET" }
-  | { type: "GET_ALL" }
-  | { type: "CURRENT_FILE"; file: FileNode }
-  | { type: "UPDATE_CONTENT"; id: string; content: any }
-  | { type: "ADD_CONTENT"; id: string; content: any }
-  | { type: "UPDATE_FILE_TITLE"; id: string; title: string }
-  | { type: "ADD_CONTRACT"; contract: StoredContract }
-  | { type: "UPDATE_CONTRACT"; contract: StoredContract }
-  | { type: "CONTENT_CHANGES"; id: string; changes: any }
-  | { type: "CONTRACT_CHANGES"; changes: StoredContract }
-  | { type: "RESOLVE_CHANGES" }
-  | { type: "CURRENT_USER_HISTORY"; profile_history: UserProfile }
-  | { type: "REMOVE_CONTRACT"; id: string }
-  | { type: "UPDATE_BALANCE"; balance: number }
-  | { type: "UPDATE_PROFILE"; profile: Partial<UserProfile> }
-  | {
-      type: "CHANGE_FILE_PARENT";
-      position: number;
-      id: string;
-      parent: string[];
-      index: number;
-    }
-  | { type: "UPDATE_FRIEND"; id: string }
-  | { type: "UPDATE_NOTE"; id: string }
-  | { type: "CONFIRM_FRIEND"; friend: Friend }
-  | { type: "TOP_DIALOG"; open: boolean; content: any; title: string }
-  | { type: "ADD_WORKSPACE"; new_workspace: WorkSpace }
-  | { type: "UPDATE_ANONYMOUS"; anonymous: boolean }
-  | { type: "INIT_FILES_STATE"; data: InitialData }
-  | { type: "ADD_FRIEND" }
-  | { type: "REMOVE_FRIEND" };
 
 export interface InitialState {
   inited: boolean;
@@ -71,6 +36,46 @@ export interface InitialState {
   anonymous: boolean;
 }
 
+export type FilesActions =
+  | { type: "ADD_FILE"; new_file: FileNode }
+  | { type: "REMOVE"; id: string }
+  | { type: "UPDATE"; id: string; file: Partial<FileNode> }
+  | { type: "GET" }
+  | { type: "GET_ALL" }
+  | { type: "CURRENT_FILE"; file: FileNode }
+  | { type: "UPDATE_CONTENT"; id: string; content: any }
+  | { type: "ADD_CONTENT"; id: string; content: any }
+  | { type: "UPDATE_FILE_TITLE"; id: string; title: string }
+  | { type: "UPDATE_FILE_WORKSPACES"; id: string; workspaces: string[] }
+  | { type: "ADD_CONTRACT"; contract: StoredContract }
+  | { type: "UPDATE_CONTRACT"; contract: StoredContract }
+  | { type: "CONTENT_CHANGES"; id: string; changes: any }
+  | { type: "CONTRACT_CHANGES"; changes: StoredContract }
+  | { type: "RESOLVE_CHANGES" }
+  | { type: "CURRENT_USER_HISTORY"; profile_history: UserProfile }
+  | { type: "REMOVE_CONTRACT"; id: string }
+  | { type: "UPDATE_BALANCE"; balance: number }
+  | { type: "UPDATE_PROFILE"; profile: Partial<UserProfile> }
+  | {
+      type: "CHANGE_FILE_PARENT";
+      position: number;
+      id: string;
+      parent: string[];
+      index: number;
+    }
+  | { type: "UPDATE_FRIEND"; id: string }
+  | { type: "UPDATE_NOTE"; id: string }
+  | { type: "CONFIRM_FRIEND"; friend: Friend }
+  | { type: "TOP_DIALOG"; open: boolean; content: any; title: string }
+  | { type: "ADD_WORKSPACE"; workspace: WorkSpace }
+  | { type: "UPDATE_WORKSPACE"; workspace: WorkSpace }
+  | { type: "DELETE_WORKSPACE"; workspace: WorkSpace }
+  | { type: "CHANGE_CURRENT_WORKSPACE"; currentWorkspace: WorkSpace }
+  | { type: "UPDATE_ANONYMOUS"; anonymous: boolean }
+  | { type: "INIT_FILES_STATE"; data: InitialData }
+  | { type: "ADD_FRIEND" }
+  | { type: "REMOVE_FRIEND" };
+
 export const initialState: InitialState = {
   inited: false,
   wallet: { balance: 0, address: "", mnemonic: "", exchanges: [] },
@@ -95,4 +100,5 @@ export const initialState: InitialState = {
   all_friends: [],
   all_users: [],
   anonymous: false,
+  currentWorkspace: { name: "default" },
 };

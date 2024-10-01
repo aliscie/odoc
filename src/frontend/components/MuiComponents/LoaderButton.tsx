@@ -5,6 +5,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { Tooltip } from "@mui/material";
 
 interface LoaderButtonProps {
+  fullWidth?: true;
   toolTip?: string;
   successMessage?: string;
   onClick: any;
@@ -41,6 +42,7 @@ function LoaderButton(props: LoaderButtonProps) {
 
   return (
     <LoadingButton
+      fullWidth={props.fullWidth}
       color={props.color}
       loading={loading}
       disabled={props.disabled}

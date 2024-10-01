@@ -75,8 +75,8 @@ export interface Chat {
   'members' : Array<Principal>,
   'messages' : Array<Message>,
   'name' : string,
+  'workspaces' : Array<string>,
   'admins' : Array<Principal>,
-  'workspace' : string,
 }
 export interface ClientKey {
   'client_principal' : Principal,
@@ -161,10 +161,10 @@ export interface FileNode {
   'content_id' : [] | [string],
   'share_id' : [] | [string],
   'name' : string,
+  'workspaces' : Array<string>,
   'children' : Array<string>,
   'author' : string,
   'users_permissions' : Array<[Principal, ShareFilePermission]>,
-  'workspace' : string,
   'parent' : [] | [string],
 }
 export interface Filter {

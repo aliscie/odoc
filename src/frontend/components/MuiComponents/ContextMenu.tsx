@@ -45,18 +45,22 @@ export default function ContextMenu(props: any) {
             : undefined
         }
       >
-        {props.options.map((item: any, index: number) => (
-          <MenuItem
-            key={index}
-            onClick={() => {
-              !item.preventClose && handleClose();
-              item.onClick && item.onClick();
-            }}
-          >
-            {item.icon && item.icon}
-            {item.content}
-          </MenuItem>
-        ))}
+        {props.options.map((item: any, index: number) => {
+            if (item.pure){
+                return item.content
+            }
+            return <MenuItem
+                key={index}
+                onClick={() => {
+                    !item.preventClose && handleClose();
+                    item.onClick && item.onClick();
+                }}
+            >
+                {item.icon && item.icon}
+                {item.content}
+            </MenuItem>
+        })
+        }
       </Menu>
     </div>
   );

@@ -16,6 +16,7 @@ const FileContentPage = () => {
 
   let current_file = files.find((file: any) => file.id === fileId);
 
+
   const editorKey = (current_file && current_file.id) || "";
   const onChange = useCallback(
     debounce((changes: any) => {
