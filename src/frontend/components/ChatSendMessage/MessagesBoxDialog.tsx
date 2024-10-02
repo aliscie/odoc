@@ -28,7 +28,7 @@ const MessagesDialogBox: React.FC = () => {
       dispatch(handleRedux("OPEN_CHAT", { current_chat_id: false }));
     } catch (error) {
       enqueueSnackbar("Failed to close the dialog", { variant: "error" });
-      console.error("Error closing dialog:", error);
+      console.log("Error closing dialog:", error);
     }
   };
 

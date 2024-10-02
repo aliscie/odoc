@@ -115,7 +115,7 @@ function MessagesGroupOption({ currentChat }) {
         disabled={!isAdmin}
         multiple={true}
         onChange={(event, value: any) => setAdmins(value)}
-        defaultValue={members}
+        defaultValue={admins}
         id="combo-box-demo"
         options={all_friends.map((f) => f.name)}
         sx={{ width: 300 }}

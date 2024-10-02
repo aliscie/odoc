@@ -9,7 +9,7 @@ import { Message } from "../../../declarations/backend/backend.did";
 import { Principal } from "@dfinity/principal";
 import LoaderButton from "../MuiComponents/LoaderButton";
 
-const SendMessageBox: React.FC = () => {
+const ChatSendMessage: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { backendActor } = useBackendContext();
   const [message, setMessage] = useState("");
@@ -33,9 +33,9 @@ const SendMessageBox: React.FC = () => {
       if (newMessage.chat_id === "chat_id") {
         console.log("chat_id is not set");
       }
-      let res: undefined | { Ok: string } | { Err: string } =
-        await backendActor.send_message([current_user], newMessage);
-      // TODO use ws.send_message in addition to actor.send_message because that would be faster.
+      let user = current_user ? [current_user] : [];
+      let res: { Ok: string } | { Err: string } =
+        await backendActor.send_message(user, newMessage);
       if ("Err" in res) {
         enqueueSnackbar("Error sending message: " + res.Err, {
           variant: "error",
@@ -78,4 +78,4 @@ const SendMessageBox: React.FC = () => {
   );
 };
 
-export default SendMessageBox;
+export default ChatSendMessage;

@@ -158,7 +158,6 @@ export function chatsReducer(
     }
 
     case UPDATE_NOTIFICATION: {
-      console.log({ action });
       return {
         ...state,
         chats_notifications: state.chats_notifications.map((m: Message) => {

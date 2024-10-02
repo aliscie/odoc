@@ -88,7 +88,7 @@ function useCreateChatGroup() {
   }
   const GroupOptions = () => (
     <div>
-      <LoaderButton startIcon={<GroupAddIcon />} onClick={createChatGroup} />
+      <LoaderButton fullWidth={true} startIcon={<GroupAddIcon />} onClick={createChatGroup} />
 
       {/*<Button onClick={createNewGroup}>*/}
       {/*  <GroupAddIcon />*/}

@@ -42,7 +42,7 @@ impl Chat {
                 workspaces: vec![],
                 name: "private_chat".to_string(),
                 admins: vec![user],
-                members: vec![],
+                members: vec![user],
                 messages: vec![],
                 creator: caller(),
             };

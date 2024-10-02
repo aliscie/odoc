@@ -1,14 +1,14 @@
 import React, { useRef, useState } from "react";
-import { handleRedux } from "../../redux/store/handleRedux";
+import { handleRedux } from "../../../redux/store/handleRedux";
 import { useDispatch, useSelector } from "react-redux";
 import { TextField, Button, Tooltip, Input } from "@mui/material";
-import { WorkSpace } from "../../../declarations/backend/backend.did";
+import { WorkSpace } from "../../../../declarations/backend/backend.did";
 import { Principal } from "@dfinity/principal";
-import { randomString } from "../../DataProcessing/dataSamples";
+import { randomString } from "../../../DataProcessing/dataSamples";
 import { useSnackbar } from "notistack";
-import { useBackendContext } from "../../contexts/BackendContext";
+import { useBackendContext } from "../../../contexts/BackendContext";
 import AddIcon from "@mui/icons-material/Add";
-import { Result_11 } from "../../../declarations/backend/backend.did";
+import { Result_11 } from "../../../../declarations/backend/backend.did";
 
 function useCreateWorkSpace() {
   const { backendActor } = useBackendContext();

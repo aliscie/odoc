@@ -30,7 +30,7 @@ import ShareFileButton from "../MuiComponents/CopyLink";
 import MultiSaveButton from "../Actions/MultiSave";
 
 import { Notifications } from "../NotifcationList";
-import ChatsComponent from "../Chat/NavBarChatButton";
+import ChatsComponent from "../Chat";
 import WorkSpaces from "./Workspaces";
 
 import { handleRedux } from "../../redux/store/handleRedux";

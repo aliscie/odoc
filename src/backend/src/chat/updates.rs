@@ -38,12 +38,12 @@ fn send_message(user: Option<Principal>, mut message: Message) -> Result<String,
         if !(chat.members.contains(&caller()) || chat.admins.contains(&caller()) || (chat.creator == caller())) {
             return Err("You are not a member of this chat.".to_string());
         }
-        if !chat.admins.contains(&caller()) {
-            new_notification.receiver = chat.admins[0].clone();
-        } else {
-            new_notification.receiver = chat.creator.clone();
-        }
-        new_notification.send();
+        // if !chat.admins.contains(&caller()) && !chat.admins.is_empty() {
+        //     new_notification.receiver = chat.admins[0].clone();
+        // } else {
+        //     new_notification.receiver = chat.creator.clone();
+        // }
+        // new_notification.send();
         for member in chat.members.clone().into_iter().filter(|m| m != &new_notification.sender || m != &caller()) {
             new_notification.id = COUNTER.fetch_add(1, Ordering::SeqCst).to_string();
             new_notification.receiver = member;

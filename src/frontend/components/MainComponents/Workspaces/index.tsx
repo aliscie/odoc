@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Tooltip } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import BasicMenu from "../../MuiComponents/BasicMenu";
-import useCreateWorkSpace from "../../Chat/CreateNewWorkspace";
+import useCreateWorkSpace from "./CreateNewWorkspace";
 import { WorkSpace } from "../../../../declarations/backend/backend.did";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useBackendContext } from "../../../contexts/BackendContext";

@@ -81,7 +81,6 @@ function ViewPost(props: Props) {
 
   let is_owner = props.post.creator.id == profile ? profile.id : "";
 
-  console.log({ view: postRef.current });
 
   return (
     <div>

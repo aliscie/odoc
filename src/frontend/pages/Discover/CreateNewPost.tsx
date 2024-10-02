@@ -73,7 +73,6 @@ function CreatePost(props: any) {
         label={"Tags"}
         post={post}
         setTags={(updatedTags) => {
-          // console.log({ valute:updatedTags });
           setPost((prevPost) => ({
             ...prevPost,
             tags: updatedTags.map((tag) => tag.title),

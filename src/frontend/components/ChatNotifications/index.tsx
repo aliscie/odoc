@@ -27,7 +27,9 @@ function ChatNotification(message: Message) {
 
   const chat = chats.find((chat: FEChat) => chat.id === message.chat_id);
   const isGroupChat = chat && chat.name !== "private_chat";
-  const [sender, setSender] = useState<User | null>(null);
+  const [sender, setSender] = useState<User>(
+    chat?.admins[0] || chat?.creator,
+  );
 
   useEffect(() => {
     (async () => {
@@ -45,12 +47,11 @@ function ChatNotification(message: Message) {
       }
     })();
   }, [chats]);
-
   const handleChatClick = async () => {
     dispatch(
       handleRedux(OPEN_CHAT, {
         current_chat_id: message.chat_id,
-        current_user: sender && Principal.fromText(sender?.id.toString()),
+        current_user: sender.id && Principal.fromText(sender.id),
       }),
     );
 

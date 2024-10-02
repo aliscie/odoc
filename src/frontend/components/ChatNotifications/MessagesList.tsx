@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Box, Typography } from "@mui/material";
 import { Message } from "../../../declarations/backend/backend.did";
-import SendMessageBox from "../ChatSendMessage/SendMessageBox";
+import ChatSendMessage from "../ChatSendMessage";
 import MessageComponent from "./Message";
 import { RootState } from "../../redux/reducers";
 import MessagesGroupOption from "./groupOptions";
@@ -43,7 +43,7 @@ const MessagesList: React.FC = () => {
         ) : (
           <Typography type={"info"}>No messages yet.</Typography>
         )}
-        <SendMessageBox />
+        <ChatSendMessage />
       </Box>
     </Box>
   );
