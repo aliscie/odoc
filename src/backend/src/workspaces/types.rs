@@ -43,30 +43,44 @@ impl WorkSpace {
             work_spaces.iter().find(|ws| ws.name == name).cloned()
         })
     }
+    pub fn delete(&self) -> Result<Self, String> {
+        WORK_SPACES.with(|store| {
+            let mut work_spaces = store.borrow_mut();
+            let index = work_spaces.iter().position(|ws| ws.id == self.id);
+            if let Some(index) = index {
+                let deleted_workspace = work_spaces.remove(index);
+                Ok(deleted_workspace)
+            } else {
+                Err("Workspace not found".to_string())
+            }
+        })
+    }
 
     pub fn save(&self) -> Result<Self, String> {
+        // Get the existing workspace by ID
         let old_work_space = Self::get(self.id.clone());
 
-        if let Some(old_work_space) = old_work_space.clone() {
+        // Check if the caller is allowed to update this workspace
+        if let Some(ref old_work_space) = old_work_space {
             if old_work_space.creator != caller() || !old_work_space.admins.contains(&caller()) {
                 return Err("You are not allowed to update this workspace".to_string());
             }
-        };
+        }
 
+        // Access the WORK_SPACES and either update or insert
         WORK_SPACES.with(|store| {
             let mut work_spaces = store.borrow_mut();
-            if let Some(_old_work_space) = old_work_space.clone() {
-                let index = work_spaces.iter().position(|ws| ws.id == self.id).unwrap();
+
+            // Find the index of the workspace if it exists
+            if let Some(index) = work_spaces.iter().position(|ws| ws.id == self.id) {
+                // Update the existing workspace
                 work_spaces[index] = self.clone();
             } else {
+                // Insert a new workspace if it doesn't exist
                 work_spaces.push(self.clone());
             }
         });
 
-        //TODO if old_work_space.name != self.name {
-        //     // create notifications for all members
-        //
-        // }
         Ok(self.clone())
     }
 }

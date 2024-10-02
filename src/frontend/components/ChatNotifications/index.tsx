@@ -17,7 +17,7 @@ import MessageComponent from "./Message";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { OPEN_CHAT, UPDATE_NOTIFICATION } from "../../redux/types/chatsTypes";
 
-function ChatNotification(props: Message) {
+function ChatNotification(message: Message) {
   const { backendActor } = useBackendContext();
   const dispatch = useDispatch();
   const { getChats } = useGetChats();
@@ -25,7 +25,7 @@ function ChatNotification(props: Message) {
   const { profile } = useSelector((state: any) => state.filesState);
   const { chats } = useSelector((state: any) => state.chatsState);
 
-  const chat = chats.find((chat: FEChat) => chat.id === props.chat_id);
+  const chat = chats.find((chat: FEChat) => chat.id === message.chat_id);
   const isGroupChat = chat && chat.name !== "private_chat";
   const [sender, setSender] = useState<User | null>(null);
 
@@ -40,7 +40,7 @@ function ChatNotification(props: Message) {
       if (sender) {
         return;
       }
-      if (props.sender.toText() === profile.id) {
+      if (message.sender.toText() === profile.id) {
         setSender(chat?.admins[0] || chat?.creator);
       }
     })();
@@ -49,22 +49,22 @@ function ChatNotification(props: Message) {
   const handleChatClick = async () => {
     dispatch(
       handleRedux(OPEN_CHAT, {
-        current_chat_id: props.chat_id,
-        current_user: Principal.fromText(sender?.id.toString() || ""),
+        current_chat_id: message.chat_id,
+        current_user: sender && Principal.fromText(sender?.id.toString()),
       }),
     );
 
-    if (!props.seen_by.includes(Principal.fromText(profile.id))) {
-      props.seen_by.push(Principal.fromText(profile.id));
-      dispatch(handleRedux(UPDATE_NOTIFICATION, { message: props }));
-
+    if (profile && !message.seen_by.includes(Principal.fromText(profile.id))) {
+      message.seen_by.push(Principal.fromText(profile.id));
       if (backendActor) {
-        await backendActor.message_is_seen(props);
+        let res = await backendActor.message_is_seen(message);
+        // console.log({ res });
       } else {
-        console.error(
+        console.log(
           "backendActor is null. Unable to mark the message as seen.",
         );
       }
+      dispatch(handleRedux(UPDATE_NOTIFICATION, { message: message }));
     }
   };
 
@@ -81,7 +81,7 @@ function ChatNotification(props: Message) {
           <Avatar alt={sender.name} src={convertToBlobLink(sender.photo)} />
         </ListItemAvatar>
       )}
-      <MessageComponent current_chat_id={props.chat_id} {...props} />
+      <MessageComponent current_chat_id={message.chat_id} {...message} />
     </ListItem>
   );
 }

@@ -29,7 +29,7 @@ export default function ContextMenu(props: any) {
   };
 
   return (
-    <div onContextMenu={handleContextMenu} style={{ cursor: "context-menu" }}>
+    <div onClick={props.onClick} onContextMenu={handleContextMenu} style={{ cursor: 'context-menu' }}>
       {props.children}
       <Menu
         id="basic-menu"

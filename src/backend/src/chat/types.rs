@@ -39,7 +39,7 @@ impl Chat {
             let mut chats = store.borrow_mut();
             let chat = Chat {
                 id,
-                workspaces: vec!["".to_string()],
+                workspaces: vec![],
                 name: "private_chat".to_string(),
                 admins: vec![user],
                 members: vec![],
@@ -80,6 +80,7 @@ impl Chat {
                 chat.members = self.members.clone();
                 chat.messages = self.messages.clone();
                 chat.creator = self.creator.clone();
+                chat.workspaces = self.workspaces.clone();
             }
             self.clone()
         })

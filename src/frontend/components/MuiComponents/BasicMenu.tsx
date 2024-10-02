@@ -5,6 +5,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { Link } from "react-router-dom";
 
 interface MenuOption {
+  preventClose?: boolean;
   content: any;
   icon?: React.ReactNode;
   onClick?: () => void;
@@ -29,7 +30,10 @@ const BasicMenu: React.FC<BasicMenuProps> = ({ options, children }) => {
   };
 
   const handleOptionClick = (option: MenuOption) => {
-    handleClose();
+    if (!option.preventClose) {
+      handleClose();
+    }
+
     if (option.onClick) {
       option.onClick();
     }

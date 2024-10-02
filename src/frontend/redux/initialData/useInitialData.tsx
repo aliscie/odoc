@@ -21,7 +21,6 @@ const useInitialData = () => {
           const getProfileRes = await backendActor.get_user_profile(
             Principal.fromText(res.Ok.Profile.id),
           );
-          console.log({ workspaces });
           dispatch(
             handleRedux("INIT_FILES_STATE", {
               data: { ...res.Ok, ProfileHistory: getProfileRes.Ok, workspaces },

@@ -132,6 +132,7 @@ type FEChat = record {
   members : vec principal;
   messages : vec Message;
   name : text;
+  workspaces : vec text;
   admins : vec UserFE;
 };
 type FileIndexing = record { id : text; new_index : nat64; parent : opt text };
@@ -254,21 +255,21 @@ type RegisterUser = record {
 };
 type Result = variant { Ok : User; Err : text };
 type Result_1 = variant { Ok; Err : text };
-type Result_10 = variant { Ok : CPayment; Err : text };
-type Result_11 = variant { Ok; Err };
-type Result_12 = variant { Ok : WorkSpace; Err : text };
+type Result_10 = variant { Ok : UserProfile; Err : text };
+type Result_11 = variant { Ok : CPayment; Err : text };
+type Result_12 = variant { Ok; Err };
 type Result_13 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
 type Result_2 = variant { Ok : text; Err : text };
-type Result_3 = variant { Ok : float64; Err : text };
-type Result_4 = variant { Ok : StoredContract; Err : text };
-type Result_5 = variant { Ok : InitialData; Err : text };
-type Result_6 = variant { Ok : Post; Err : text };
-type Result_7 = variant { Ok : ShareFile; Err : text };
-type Result_8 = variant {
+type Result_3 = variant { Ok : WorkSpace; Err : text };
+type Result_4 = variant { Ok : float64; Err : text };
+type Result_5 = variant { Ok : StoredContract; Err : text };
+type Result_6 = variant { Ok : InitialData; Err : text };
+type Result_7 = variant { Ok : Post; Err : text };
+type Result_8 = variant { Ok : ShareFile; Err : text };
+type Result_9 = variant {
   Ok : record { FileNode; vec ContentNode };
   Err : text;
 };
-type Result_9 = variant { Ok : UserProfile; Err : text };
 type Row = record {
   id : text;
   contract : opt Contract;
@@ -384,30 +385,31 @@ service : () -> {
   delete_custom_contract : (text) -> (Result_1);
   delete_file : (text) -> (opt FileNode);
   delete_post : (text) -> (Result_1);
-  deposit_usdt : (float64) -> (Result_3);
+  delete_work_space : (WorkSpace) -> (Result_3);
+  deposit_usdt : (float64) -> (Result_4);
   get_all_files : () -> (vec FileNode) query;
   get_all_files_content : () -> (vec record { text; vec ContentNode }) query;
   get_all_users : () -> (vec record { text; User }) query;
   get_chats_notifications : () -> (vec Message) query;
-  get_contract : (text, text) -> (Result_4) query;
+  get_contract : (text, text) -> (Result_5) query;
   get_file : (text) -> (opt FileNode) query;
   get_file_content : (text) -> (opt vec ContentNode) query;
   get_filtered_posts : (opt vec text, opt text) -> (vec PostUser) query;
   get_friends : () -> (vec Friend) query;
-  get_initial_data : () -> (Result_5) query;
+  get_initial_data : () -> (Result_6) query;
   get_my_chats : () -> (vec FEChat) query;
-  get_post : (text) -> (Result_6) query;
+  get_post : (text) -> (Result_7) query;
   get_posts : (nat64, nat64) -> (vec PostUser) query;
-  get_share_file : (text) -> (Result_7) query;
-  get_shared_file : (text) -> (Result_8);
+  get_share_file : (text) -> (Result_8) query;
+  get_shared_file : (text) -> (Result_9);
   get_user : (text) -> (Result) query;
   get_user_notifications : () -> (vec Notification) query;
-  get_user_profile : (principal) -> (Result_9) query;
+  get_user_profile : (principal) -> (Result_10) query;
   get_work_spaces : () -> (vec WorkSpace) query;
-  internal_transaction : (float64, text) -> (Result_10);
+  internal_transaction : (float64, text) -> (Result_11);
   make_new_chat_room : (Chat) -> (Result_2);
   message_is_seen : (Message) -> (Result_1);
-  move_file : (text, opt text) -> (Result_11);
+  move_file : (text, opt text) -> (Result_12);
   multi_updates : (
       vec FileNode,
       vec vec record { text; vec ContentNode },
@@ -421,7 +423,7 @@ service : () -> {
   register : (RegisterUser) -> (Result);
   reject_friend_request : (text) -> (Result);
   save_post : (Post) -> (Result_1);
-  save_work_space : (WorkSpace) -> (Result_12);
+  save_work_space : (WorkSpace) -> (Result_3);
   search_files_content : (text, bool) -> (
       vec record { text; vec ContentNode },
     ) query;
@@ -429,13 +431,13 @@ service : () -> {
   see_notifications : (text) -> ();
   send_friend_request : (text) -> (Result);
   send_message : (opt principal, Message) -> (Result_2);
-  share_file : (ShareFileInput) -> (Result_7);
+  share_file : (ShareFileInput) -> (Result_8);
   unfriend : (text) -> (Result);
   update_chat : (Chat) -> (Result_2);
   update_user_profile : (RegisterUser) -> (Result);
-  vote_down : (text) -> (Result_6);
-  vote_up : (text) -> (Result_6);
-  withdraw_usdt : (float64) -> (Result_3);
+  vote_down : (text) -> (Result_7);
+  vote_up : (text) -> (Result_7);
+  withdraw_usdt : (float64) -> (Result_4);
   ws_close : (CanisterWsCloseArguments) -> (Result_1);
   ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_13) query;
   ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_1);

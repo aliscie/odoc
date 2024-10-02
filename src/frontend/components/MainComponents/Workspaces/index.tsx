@@ -1,18 +1,22 @@
 import React, { useState } from "react";
 import { Tooltip } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import BasicMenu from "../MuiComponents/BasicMenu";
-import useCreateWorkSpace from "../Chat/CreateNewWorkspace";
-import { WorkSpace } from "../../../declarations/backend/backend.did";
+import BasicMenu from "../../MuiComponents/BasicMenu";
+import useCreateWorkSpace from "../../Chat/CreateNewWorkspace";
+import { WorkSpace } from "../../../../declarations/backend/backend.did";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { useBackendContext } from "../../contexts/BackendContext";
+import { useBackendContext } from "../../../contexts/BackendContext";
 import { Principal } from "@dfinity/principal";
-import { randomString } from "../../DataProcessing/dataSamples";
-import { handleRedux } from "../../redux/store/handleRedux";
-import LoaderButton from "../MuiComponents/LoaderButton";
+import { randomString } from "../../../DataProcessing/dataSamples";
+import { handleRedux } from "../../../redux/store/handleRedux";
+import LoaderButton from "../../MuiComponents/LoaderButton";
+import ContextMenu from "../../MuiComponents/ContextMenu";
+import RenameWorkspace from "./renameWorkspaces";
+import DeleteWorkspace from "./deleteWorkspace";
+
 interface Props {}
 
-const Workspaces = (props: Props) => {
+const WorkSpaces = (props: Props) => {
   const { profile } = useSelector((state: any) => state.filesState);
 
   const dispatch = useDispatch();
@@ -29,10 +33,26 @@ const Workspaces = (props: Props) => {
     setSelectedWorkspace(workspace.name);
   };
 
+  const contextMenuOptions = (options: WorkSpace) => [
+    {
+      content: <RenameWorkspace {...options} />,
+      pure: true,
+    },
+
+    {
+      pure: true,
+      content: <DeleteWorkspace {...options} />,
+    },
+  ];
   const options = [
     createWorkspace,
     ...workspaces.map((workspace: WorkSpace) => ({
-      content: workspace.name,
+      preventClose: true,
+      content: (
+        <ContextMenu options={contextMenuOptions(workspace)}>
+          {workspace.name}
+        </ContextMenu>
+      ),
       onClick: () => selectWorkSpace(workspace),
     })),
   ];
@@ -86,4 +106,4 @@ const Workspaces = (props: Props) => {
   );
 };
 
-export default Workspaces;
+export default WorkSpaces;

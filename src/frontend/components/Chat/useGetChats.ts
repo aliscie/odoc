@@ -30,7 +30,7 @@ function useGetChats() {
         return res;
       } catch (error) {
         // Handle error
-        console.error("Error fetching chats:", error);
+        console.log("Error fetching chats:", error);
         return undefined;
       }
     } else {

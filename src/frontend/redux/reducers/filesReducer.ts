@@ -57,7 +57,7 @@ export function filesReducer(
     case "DELETE_WORKSPACE":
       return {
         ...state,
-        workspaces: state.workspaces.filter((w) => w != action.workspace.id),
+        workspaces: state.workspaces.filter((w) => w.id !== action.workspace.id),
       };
 
     case "UPDATE_WORKSPACE":
@@ -65,7 +65,7 @@ export function filesReducer(
         ...state,
         workspaces: state.workspaces.map((w) => {
           if (w.id == action.workspace.id) {
-            return w;
+            return action.workspace;
           }
           return w;
         }),

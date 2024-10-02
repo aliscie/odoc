@@ -1,23 +1,25 @@
 import {
+  ADD_CHAT,
+  ADD_CHATS_NOTIFICATIONS,
+  ADD_NOTIFICATION,
   ChatActions,
   ChatState,
+  DELETE_CHAT,
+  DELETE_CHATS_NOTIFICATIONS,
   initialChatsState,
   OPEN_CHAT,
-  SET_CHATS,
   SEND_MESSAGE,
-  UPDATE_MESSAGE,
-  ADD_NOTIFICATION,
-  UPDATE_NOTIFICATION,
+  SET_CHATS,
   SET_CHATS_NOTIFICATIONS,
-  DELETE_CHAT,
-  UPDATE_CHAT, ADD_CHAT, ADD_CHATS_NOTIFICATIONS,
+  UPDATE_CHAT,
+  UPDATE_MESSAGE,
+  UPDATE_NOTIFICATION,
 } from "../types/chatsTypes";
 import {
   FEChat,
   Message,
   UserFE,
 } from "../../../declarations/backend/backend.did";
-import message from "../../components/ChatNotifications/message";
 
 export function chatsReducer(
   state: ChatState = initialChatsState,
@@ -156,11 +158,15 @@ export function chatsReducer(
     }
 
     case UPDATE_NOTIFICATION: {
+      console.log({ action });
       return {
         ...state,
-        chats_notifications: state.chats_notifications.map((m: Message) =>
-          m.chat_id === action.message.chat_id ? action.message : m,
-        ),
+        chats_notifications: state.chats_notifications.map((m: Message) => {
+          if (m.chat_id === action.message.chat_id) {
+            return action.message;
+          }
+          return m;
+        }),
       };
     }
 
@@ -171,6 +177,15 @@ export function chatsReducer(
       };
     }
 
+    case DELETE_CHATS_NOTIFICATIONS: {
+      console.log({ action, x: state.chats_notifications });
+      return {
+        ...state,
+        chats_notifications: state.chats_notifications.filter(
+          (message) => message.chat_id !== action.chat_id,
+        ),
+      };
+    }
 
     case ADD_CHATS_NOTIFICATIONS: {
       return {

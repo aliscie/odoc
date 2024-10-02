@@ -38,7 +38,7 @@ fn send_message(user: Option<Principal>, mut message: Message) -> Result<String,
         if !(chat.members.contains(&caller()) || chat.admins.contains(&caller()) || (chat.creator == caller())) {
             return Err("You are not a member of this chat.".to_string());
         }
-        if !chat.admins.contains( &caller()) {
+        if !chat.admins.contains(&caller()) {
             new_notification.receiver = chat.admins[0].clone();
         } else {
             new_notification.receiver = chat.creator.clone();
@@ -100,7 +100,7 @@ fn delete_chat(id: String) -> Result<String, String> {
 }
 
 #[update]
-fn update_chat(chat: Chat) -> Result<String, String> {
+fn update_chat(mut chat: Chat) -> Result<String, String> {
     // add admins, remove admins, add members, remove members, But you can't update messages
     if User::is_anonymous() {
         return Err("You are anonymous".to_string());
@@ -108,8 +108,10 @@ fn update_chat(chat: Chat) -> Result<String, String> {
     let old_chat = Chat::get(&chat.id);
     if let Some(mut old_chat) = old_chat {
         if old_chat.creator == caller() {
+            chat.creator = caller();
             old_chat.admins = chat.admins.clone();
             old_chat.members = chat.members.clone();
+            old_chat.workspaces = chat.workspaces.clone();
 
             for member in chat.members.clone() {
                 old_chat.add_to_my_chats(member);

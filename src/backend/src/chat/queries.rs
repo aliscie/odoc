@@ -4,6 +4,7 @@ use crate::websocket::{AppMessage, Notification};
 use candid::{CandidType, Deserialize, Principal};
 use crate::discover::UserFE;
 use crate::user::User;
+use crate::workspaces::WorkSpace;
 
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
@@ -18,6 +19,7 @@ pub struct FEChat {
     // this used only for groups
     pub messages: Vec<Message>,
     pub creator: UserFE,
+    pub workspaces: Vec<String>
 }
 
 
@@ -53,6 +55,7 @@ fn get_my_chats() -> Vec<FEChat> {
             members: chat.members,
             messages: chat.messages,
             creator: creator_fe_user,
+            workspaces: chat.workspaces,
         };
 
         fe_chats.push(fe_chat);

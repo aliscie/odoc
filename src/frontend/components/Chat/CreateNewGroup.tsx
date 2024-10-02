@@ -17,7 +17,10 @@ import { useBackendContext } from "../../contexts/BackendContext";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import AlertDialog from "../MuiComponents/AlertDialog";
 import LoaderButton from "../MuiComponents/LoaderButton";
-import {ADD_CHAT, ADD_CHATS_NOTIFICATIONS} from "../../redux/types/chatsTypes";
+import {
+  ADD_CHAT,
+  ADD_CHATS_NOTIFICATIONS,
+} from "../../redux/types/chatsTypes";
 
 // interface SelectMembersProps {
 //   onChange: (friends: any) => void;
@@ -47,7 +50,7 @@ import {ADD_CHAT, ADD_CHATS_NOTIFICATIONS} from "../../redux/types/chatsTypes";
 function useCreateChatGroup() {
   const dispatch = useDispatch();
   const { backendActor } = useBackendContext();
-  const { all_friends, profile, workspaces } = useSelector(
+  const { all_friends, profile, workspaces, currentWorkspace } = useSelector(
     (state: any) => state.filesState,
   );
 
@@ -64,7 +67,6 @@ function useCreateChatGroup() {
       message: `${profile.name} just created a new Chat group.`,
       chat_id,
     };
-    let currentWorkspaceId = "";
     let chat: Chat = {
       id: chat_id,
       creator: Principal.fromText(profile.id),
@@ -75,7 +77,7 @@ function useCreateChatGroup() {
       name: "untitled",
       // admins: admins.map((a) => a.id),
       admins: [Principal.fromText(profile.id)],
-      workspaces: [currentWorkspaceId],
+      workspaces: currentWorkspace.id ? [currentWorkspace.id] : [],
     };
 
     const res = await backendActor?.make_new_chat_room(chat);

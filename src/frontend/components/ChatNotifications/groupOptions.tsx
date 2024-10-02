@@ -1,5 +1,5 @@
 import { Input, TextField } from "@mui/material";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/reducers";
 import { Principal } from "@dfinity/principal";
@@ -8,7 +8,12 @@ import { Chat } from "../../../declarations/backend/backend.did";
 import { useBackendContext } from "../../contexts/BackendContext";
 import LoaderButton from "../MuiComponents/LoaderButton";
 import { handleRedux } from "../../redux/store/handleRedux";
-import { DELETE_CHAT, UPDATE_CHAT } from "../../redux/types/chatsTypes";
+import {
+  DELETE_CHAT,
+  DELETE_CHATS_NOTIFICATIONS,
+  UPDATE_CHAT,
+} from "../../redux/types/chatsTypes";
+import ConformationMessage from "../MuiComponents/conformationButton";
 
 function MessagesGroupOption({ currentChat }) {
   const dispatch = useDispatch();
@@ -22,16 +27,16 @@ function MessagesGroupOption({ currentChat }) {
     (state: RootState) => state.filesState,
   );
 
-  const getUserByPrincopal = (p) => {
-    return [profile, ...all_friends].find((u) => u.id == p.toText());
+  const getUserByPrincopal = (p: string) => {
+    return [profile, ...all_friends].find((u) => u.id == p);
   };
   const [members, setMembers] = useState(
-    currentChat.members.map((m) => getUserByPrincopal(m).name),
+    currentChat.members.map((m) => getUserByPrincopal(m.toText()).name),
   );
 
   const [name, setName] = useState(currentChat.name);
   const [admins, setAdmins] = useState(currentChat.admins.map((m) => m.name));
-  const [workSpaces, setWorkspaces] = useState([currentChat.workspace]);
+  const { workspaces } = useSelector((state: any) => state.filesState);
 
   const isAdmin = currentChat?.creator.id == profile.id;
 
@@ -49,6 +54,9 @@ function MessagesGroupOption({ currentChat }) {
       }),
     );
   };
+
+  const workSpacesRef = useRef(currentChat.workspaces);
+
   const handleUpdateChat = async () => {
     const chat: Chat = {
       ...currentChat,
@@ -56,7 +64,7 @@ function MessagesGroupOption({ currentChat }) {
       creator: Principal.fromText(currentChat.creator.id),
       members: getUsersByName(members),
       admins: getUsersByName(admins),
-      workspace: String(workSpaces[0]),
+      workspaces: workSpacesRef.current,
     };
     let res = await backendActor?.update_chat(chat);
     return res;
@@ -64,21 +72,35 @@ function MessagesGroupOption({ currentChat }) {
   const handleDeleteChat = async () => {
     let res = await backendActor?.delete_chat(currentChat.id);
     dispatch(handleRedux(DELETE_CHAT, { chat_id: currentChat.id }));
+    dispatch(
+      handleRedux(DELETE_CHATS_NOTIFICATIONS, { chat_id: currentChat.id }),
+    );
+    dispatch(handleRedux("OPEN_CHAT", { current_chat_id: false }));
     return res;
   };
 
+  const defaultValueWorkspaces = currentChat.workspaces.map((id) => {
+    const res = workspaces.find((w) => w.id == id);
+    return res ? res.name : "Error";
+  });
   return (
     <div>
       <Input
+        label={"chat name"}
         key={currentChat?.id}
         onChange={onNameChange}
         disabled={!isAdmin}
-        defaultValue={currentChat?.name || ""}
+        value={name || ""}
       />
+      <div>
+        This group created by:{" "}
+        {profile && profile.id === currentChat.creator.id
+          ? "You"
+          : getUserByPrincopal(currentChat.creator.id).name}
+      </div>
 
       <Autocomplete
         disabled={!isAdmin}
-        label="members"
         multiple={true}
         onChange={(event, value: any) => setMembers(value)}
         defaultValue={members}
@@ -86,11 +108,10 @@ function MessagesGroupOption({ currentChat }) {
         id="combo-box-demo"
         options={all_friends.map((f) => f.name)}
         sx={{ width: 300 }}
-        renderInput={(params) => <TextField {...params} />}
+        renderInput={(params) => <TextField {...params} label="members" />}
       />
 
       <Autocomplete
-        label="Admins"
         disabled={!isAdmin}
         multiple={true}
         onChange={(event, value: any) => setAdmins(value)}
@@ -98,28 +119,32 @@ function MessagesGroupOption({ currentChat }) {
         id="combo-box-demo"
         options={all_friends.map((f) => f.name)}
         sx={{ width: 300 }}
-        renderInput={(params) => <TextField {...params} />}
+        renderInput={(params) => <TextField {...params} label="Admins" />}
       />
 
       <Autocomplete
         disabled={!isAdmin}
-        label={"workspaces"}
-        multiple={true}
+        multiple
         onChange={(event, value: any) => {
-          setWorkspaces(value);
+          workSpacesRef.current = value.map((name) => {
+            return workspaces.find((w) => w.name == name).id;
+          });
         }}
-        defaultValue={members}
+        defaultValue={defaultValueWorkspaces}
         disablePortal
         id="combo-box-demo"
-        options={["defaults", "odoc", "ish"]}
-        sx={{ width: 300 }}
-        renderInput={(params) => <TextField {...params} />}
+        options={workspaces.map((w) => w.name)}
+        renderInput={(params) => <TextField {...params} label={"workspaces"} />}
       />
 
       <LoaderButton onClick={handleUpdateChat}>Save</LoaderButton>
-      <LoaderButton type={"error"} onClick={handleDeleteChat}>
+      <ConformationMessage
+        message={"Yes delete it!"}
+        conformationMessage={`Are you sure you want to delete ${currentChat.name} group chat? `}
+        onClick={handleDeleteChat}
+      >
         Delete
-      </LoaderButton>
+      </ConformationMessage>
     </div>
   );
 }
