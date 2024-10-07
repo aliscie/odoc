@@ -1,4 +1,5 @@
 ## old version of Odoc can be found [here](https://github.com/aliscie/Odoc-old)
+![Green Simple Did You Know Instagram Post](https://github.com/user-attachments/assets/4a562a78-6ec5-4fe5-b213-f6aba414cb2d)
 
 ## to get started
 1. first download the pocketic https://github.com/dfinity/pocketic/releases
