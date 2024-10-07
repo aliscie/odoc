@@ -4,6 +4,7 @@
 
 1. first download the pocketic https://github.com/dfinity/pocketic/releases
 2. add this to dfx.json
+
    ```json
    "internet_identity": {
    "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
@@ -18,6 +19,7 @@
    ```
 
 3. in your .env file add
+
     1. When you run `dfx deploy` you will get 3 links, frontend, backend and internet_identity copy the value with
        localhost and the port after it
     2. `VITE_IC_HOST='http://localhost:<the port of your of the canister, after runing dfx deploy backend you will get   backend: http://127.0.0.1:<port>/?canisterId=<...>&id=<...>>`
@@ -44,8 +46,6 @@
 
 <h1 align="center">Odoc</h1>
 <h3 align="center">SAVES YOUR TIME</h3>
-
-
 
 <img align="left" src="https://i.ibb.co/xzJXxWK/logo2.png" style="width:100%">
 Odoc
@@ -77,6 +77,7 @@ these note-taking apps but to make an all-in-one **Open source note-taking app**
    other word you don't need to create new plugin and component for every user, instead one user can create all of them
    and share it with others.
 4. **search** : We will have 6 search functionaries.
+
     - search for words in file
     - search for files names
     - global search for words in any files in any directory you choose
@@ -160,7 +161,7 @@ these note-taking apps but to make an all-in-one **Open source note-taking app**
 3. $`cd Odoc-tauri`
 4. $`cargo tauri dev`
 
-# Dealing with  wasm32-unknown-unknown errors
+# Dealing with wasm32-unknown-unknown errors
 
 `rustup target remove wasm32-unknown-unknown`
 `rustup self uninstall`
@@ -176,3 +177,6 @@ these note-taking apps but to make an all-in-one **Open source note-taking app**
 `sudo port uninstall rustup`
 ` history | grep cargo`
 
+our canisters
+backend: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=lrcwp-yiaaa-aaaal-acwdq-cai
+frontend: https://lwdq3-vqaaa-aaaal-acwda-cai.icp0.io/

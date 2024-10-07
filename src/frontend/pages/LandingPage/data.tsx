@@ -98,6 +98,25 @@ const roadMap = [
       "",
   },
   {
+    is_done: true,
+    title: "Group chats",
+    content:
+      "You can create a group chat and add people to it, as you create group-chat you will automatically get a channel where only admins can post in it",
+  },
+  {
+    is_done: true,
+    title: "Workspaces",
+    content:
+      "If you are working with different contentpanes, you can categorize your files and chat groups into different spaces.",
+    //     not just files and chats but also groups names should not be accessible from different workspaces
+  },
+  {
+    is_done: false,
+    title: "Upload files in chat",
+    content:
+      "You can share your files in the chat and you can get a short link for your files to share it in other platforms",
+  },
+  {
     is_done: false,
     title: "USDC wallet",
     content: "User can deposit USDC and withdraw to external wallets",
@@ -114,22 +133,9 @@ const roadMap = [
   },
   {
     is_done: false,
-    title: "Group chats",
-    content:
-      "You can create a group chat and add people to it, as you create group-chat you will automatically get a channel where only admins can post in it",
-  },
-  {
-    is_done: false,
     title: "Group permissions",
     content:
       "In the tables and documents where you set who can view and who can edite you can set a group in addition to the options EveryOneCanView, EveryOneCanEdite, UserCanView, UserCanEdite you can have GroupCanView, GrouCanEdite. For exampl,e PerusesCanView, DoctorsCanEdite if you are managing hospital",
-  },
-  {
-    is_done: false,
-    title: "Workspaces",
-    content:
-      "If you are working with different contentpanes, you can categorize your files and chat groups into different spaces.",
-    //     not just files and chats but also groups names should not be accessible from different workspaces
   },
   {
     is_done: false,

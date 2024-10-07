@@ -45,9 +45,6 @@ function FilterPosts(props: Props) {
       setMyPostsOnly(true);
     }
   };
-  // let initial_tags = [
-  //     {title: "hiring"}, {title: "seeking"}
-  // ];
   const onTagChange = async (options: any) => {
     options && setTags(options);
 

@@ -48,23 +48,10 @@ const LandingPage: React.FC = () => {
                 <Typography variant="h2" align="left" gutterBottom>
                   Welcome to ODOC
                 </Typography>
-                <Typography variant="body1" align="left" paragraph>
-                  Empowering freelancers, employers, and employees with
-                  transparent and liberating smart contracts...
+                <Typography color={'var(--color)'} variant="body" align="left" paragraph>
+                  Save your time, money and secure your agreements.
                 </Typography>
               </header>
-
-              <Box
-                component="iframe"
-                src="https://www.youtube.com/embed/z3L_pdmDMe8"
-                width="100%"
-                height="400px"
-                title="What is Odoc"
-                frameBorder="0"
-                allowFullScreen
-                sx={{ my: 2 }}
-              />
-
               <FullWidthTabs />
             </CardContent>
           </Card>
