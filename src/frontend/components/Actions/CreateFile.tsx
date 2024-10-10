@@ -17,7 +17,10 @@ const CreateFile: React.FC = () => {
   );
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
+  let workspaces = [];
+  if (currentWorkspace.id) {
+    workspaces = [currentWorkspace.id];
+  }
   const handleCreateFile = async () => {
     const id = randomString();
     const newFile: FileNode = {
@@ -30,7 +33,7 @@ const CreateFile: React.FC = () => {
       users_permissions: [],
       permission: { None: null },
       content_id: [],
-      workspaces: [currentWorkspace.id],
+      workspaces,
     };
 
     dispatch(handleRedux("ADD_FILE", { new_file: newFile }));

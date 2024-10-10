@@ -4,21 +4,20 @@ import ListItem from "@mui/material/ListItem";
 import Button from "@mui/material/Button";
 import { Principal } from "@dfinity/principal";
 import { CustomContractComponent } from "../../components/ContractTable";
-import {
-  custom_contract,
-  randomString,
-} from "../../DataProcessing/dataSamples";
+import { custom_contract } from "../../DataProcessing/dataSamples";
 import { handleRedux } from "../../redux/store/handleRedux";
 import { CustomContract } from "../../../declarations/backend/backend.did";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Divider from "@mui/material/Divider";
 import { v4 as uuidv4 } from "uuid";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from 'react-dnd';
 
 function ContractsHistory(props: any) {
   const dispatch = useDispatch();
   const { contracts, profile } = useSelector((state: any) => state.filesState);
+  console.log({ profile });
 
   const handleClick = () => {
     try {
@@ -65,7 +64,9 @@ function ContractsHistory(props: any) {
                     },
                   }}
                 >
-                  <CustomContractComponent contract={contract} />
+                  <DndProvider backend={HTML5Backend}>
+                    <CustomContractComponent contract={contract} />
+                  </DndProvider>
                 </Paper>
               </ListItem>
             );
