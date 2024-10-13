@@ -1,11 +1,10 @@
 import {
-  ToggleNavAction,
-  PostVoteAction,
-  ToggleDarkModeAction,
-  SearchAction,
-  LogoutAction,
   LoginAction,
-  ToggleSearchToolAction,
+  LogoutAction,
+  PostVoteAction,
+  SearchAction,
+  ToggleDarkModeAction,
+  ToggleNavAction,
 } from "../types/uiTypes";
 
 // Action Creators with Type Annotations
@@ -33,8 +32,4 @@ export const logout = (): LogoutAction => ({
 
 export const login = (): LoginAction => ({
   type: "LOGIN",
-});
-
-export const toggleSearchTool = (): ToggleSearchToolAction => ({
-  type: "SEARCH_TOOL",
 });

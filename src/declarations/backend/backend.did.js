@@ -17,7 +17,11 @@ export const idlFactory = ({ IDL }) => {
     'ApproveHighPromise' : IDL.Null,
     'HighPromise' : IDL.Null,
   });
-  const CCell = IDL.Record({ 'field' : IDL.Text, 'value' : IDL.Text });
+  const CCell = IDL.Record({
+    'id' : IDL.Text,
+    'field' : IDL.Text,
+    'value' : IDL.Text,
+  });
   const CPayment = IDL.Record({
     'id' : IDL.Text,
     'status' : PaymentStatus,
@@ -446,6 +450,7 @@ export const idlFactory = ({ IDL }) => {
     'delete_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], []),
     'delete_post' : IDL.Func([IDL.Text], [Result_1], []),
     'delete_work_space' : IDL.Func([WorkSpace], [Result_3], []),
+    'deposit_principal' : IDL.Func([], [IDL.Text], ['query']),
     'deposit_usdt' : IDL.Func([IDL.Float64], [Result_4], []),
     'get_all_files' : IDL.Func([], [IDL.Vec(FileNode)], ['query']),
     'get_all_files_content' : IDL.Func(

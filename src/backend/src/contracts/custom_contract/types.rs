@@ -33,6 +33,7 @@ pub struct CColumn {
 pub(crate) struct CCell {
     pub value: String,
     pub field: String,
+    pub id: String,
     // pub index: u64,
 }
 

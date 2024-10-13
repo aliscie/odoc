@@ -7,7 +7,7 @@ function rowToCells(row): Array<CCell> {
   let cells = [];
   cellsKeys.forEach((key) => {
     if (key != "id") {
-      cells.push({ field: key, value: row[key] });
+      cells.push({ id: key, field: key, value: row[key] });
     }
   });
   return cells;

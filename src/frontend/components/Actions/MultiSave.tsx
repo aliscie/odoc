@@ -71,7 +71,7 @@ const MultiSaveButton: React.FC<MultiSaveButtonProps> = () => {
         dispatch(handleRedux("RESOLVE_CHANGES"));
       }
     } catch (error) {
-      console.log({ saveError: error });
+      console.error({ saveError: error });
       // enqueueSnackbar("An error occurred while saving", {variant: "error"});
     } finally {
       closeSnackbar(loadingSnackbar);

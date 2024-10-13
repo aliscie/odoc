@@ -14,6 +14,7 @@ import DataGrid, {
   RenderRowProps,
   Row,
   SortColumn,
+  textEditor,
 } from "react-data-grid";
 import { DraggableRowRenderer } from "./DraggableRowRenderer";
 import { createPortal } from "react-dom";
@@ -55,6 +56,7 @@ interface Props {
   onDeleteRow: (rowId: string) => void;
   onAddColumn: (newColumn: CColumn) => void;
   onRenameColumn: (key, name) => void;
+  onDeleteColumn: (index, key) => void;
 }
 
 export default function DataGridSheet(props: Props) {
@@ -235,6 +237,7 @@ export default function DataGridSheet(props: Props) {
       editable: true,
       deletable: true,
       name: "Untitled",
+      renderEditCell: textEditor,
     };
     setColumns([
       ...columns.slice(0, index + 1),
@@ -245,14 +248,16 @@ export default function DataGridSheet(props: Props) {
     props.onAddColumn(newColumn);
   };
 
-  const onDeleteColumn = () => {
-    const key = contextMenuProps?.column.key;
-    let index = columns.findIndex((column) => column.key === key);
+  const onDeleteColumn = (column) => {
+    // const key = column.key;
+    let index = columns.findIndex((c) => c.key === column.key);
+    let newColumnsList = [
+      ...columns.slice(0, index),
+      ...columns.slice(index + 1),
+    ];
     setColumns([...columns.slice(0, index), ...columns.slice(index + 1)]);
-    setColumnsOrder([
-      ...columnsOrder.slice(0, index),
-      ...columnsOrder.slice(index + 1),
-    ]);
+    setColumnsOrder(newColumnsList.map((c, i) => i));
+    props.onDeleteColumn(index, column);
   };
 
   const onAddFormula = (formula) => {
@@ -321,9 +326,7 @@ export default function DataGridSheet(props: Props) {
     height = rows.length * 50;
   }
   return (
-    <div
-    className={'data-grid-container'}
-    >
+    <div className={"data-grid-container"}>
       <DataGrid
         style={{ width: "100%", height, maxHeight: 400 }}
         key={props.contract.id}
@@ -392,7 +395,7 @@ export default function DataGridSheet(props: Props) {
               />,
               <MenuItem
                 onClick={() => {
-                  onDeleteColumn();
+                  onDeleteColumn(column);
                   setContextMenuProps(null);
                 }}
               >

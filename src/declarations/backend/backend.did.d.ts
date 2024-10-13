@@ -19,7 +19,7 @@ export interface AppMessage {
   'notification' : [] | [Notification],
   'timestamp' : bigint,
 }
-export interface CCell { 'field' : string, 'value' : string }
+export interface CCell { 'id' : string, 'field' : string, 'value' : string }
 export interface CColumn {
   'id' : string,
   'field' : string,
@@ -417,6 +417,7 @@ export interface _SERVICE {
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
   'delete_post' : ActorMethod<[string], Result_1>,
   'delete_work_space' : ActorMethod<[WorkSpace], Result_3>,
+  'deposit_principal' : ActorMethod<[], string>,
   'deposit_usdt' : ActorMethod<[number], Result_4>,
   'get_all_files' : ActorMethod<[], Array<FileNode>>,
   'get_all_files_content' : ActorMethod<

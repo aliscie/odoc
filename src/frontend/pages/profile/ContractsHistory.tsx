@@ -12,12 +12,11 @@ import Paper from "@mui/material/Paper";
 import Divider from "@mui/material/Divider";
 import { v4 as uuidv4 } from "uuid";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { DndProvider } from 'react-dnd';
+import { DndProvider } from "react-dnd";
 
 function ContractsHistory(props: any) {
   const dispatch = useDispatch();
   const { contracts, profile } = useSelector((state: any) => state.filesState);
-  console.log({ profile });
 
   const handleClick = () => {
     try {
@@ -38,7 +37,9 @@ function ContractsHistory(props: any) {
       //we can display error for user with snack bar here
     }
   };
-
+  if (!profile) {
+    return <div>please login to see this page</div>;
+  }
   return (
     <Box sx={{ padding: 3, margin: 2 }}>
       <Button

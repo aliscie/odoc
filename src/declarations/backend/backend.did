@@ -14,7 +14,7 @@ type AppMessage = record {
   notification : opt Notification;
   timestamp : nat64;
 };
-type CCell = record { field : text; value : text };
+type CCell = record { id : text; field : text; value : text };
 type CColumn = record {
   id : text;
   field : text;
@@ -386,6 +386,7 @@ service : () -> {
   delete_file : (text) -> (opt FileNode);
   delete_post : (text) -> (Result_1);
   delete_work_space : (WorkSpace) -> (Result_3);
+  deposit_principal : () -> (text) query;
   deposit_usdt : (float64) -> (Result_4);
   get_all_files : () -> (vec FileNode) query;
   get_all_files_content : () -> (vec record { text; vec ContentNode }) query;

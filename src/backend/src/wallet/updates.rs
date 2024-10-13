@@ -4,7 +4,6 @@ use ic_cdk_macros::update;
 
 use crate::{CPayment, ExchangeType, PaymentStatus, Wallet};
 
-//
 #[update]
 fn deposit_usdt(amount: f64) -> Result<f64, String> {
     let mut wallet = Wallet::get(caller());

@@ -5,6 +5,7 @@ import { useBackendContext } from "../../../contexts/BackendContext";
 import LoaderButton from "../../MuiComponents/LoaderButton";
 import { handleRedux } from "../../../redux/store/handleRedux";
 import { useDispatch } from "react-redux";
+import ConformationMessage from "../../MuiComponents/conformationButton";
 
 function DeleteContract({ id }) {
   const dispatch = useDispatch();
@@ -25,9 +26,16 @@ function DeleteContract({ id }) {
   };
   let icon = <DeleteIcon color={"error"} />;
   return (
-    <LoaderButton startIcon={icon} onClick={onClick}>
-      Delete contract
-    </LoaderButton>
+    <ConformationMessage
+      message={"Yes delete it!"}
+      conformationMessage={`Are you sure you want to delete this contract table`}
+      onClick={onClick}
+    >
+      {icon} Delete
+    </ConformationMessage>
+    // <LoaderButton startIcon={icon} onClick={onClick}>
+    //   Delete contract
+    // </LoaderButton>
   );
 }
 

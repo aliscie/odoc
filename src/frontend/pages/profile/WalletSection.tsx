@@ -1,13 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Card, CardContent, Divider, Typography, Box } from "@mui/material";
 import Deposit from "./actions/Deposit";
 import Withdraw from "./actions/Withdraw";
 import InternalTransaction from "./actions/internlTransaction";
+import { useBackendContext } from "../../contexts/BackendContext";
 
 const WalletSection: React.FC = () => {
-  const { wallet } = useSelector((state: any) => state.filesState);
+  const { backendActor } = useBackendContext();
+  const { wallet, profile } = useSelector((state: any) => state.filesState);
   const balance = wallet?.balance;
+
+
   return (
     <Card
       style={{

@@ -10,12 +10,14 @@ interface Props {
   content: React.ReactNode;
   handleSave: () => void;
   submit: string | null;
+  onClick?: any;
 }
 
 export default function AlertDialog(props: Props) {
   const [open, setOpen] = React.useState(false);
 
-  const handleClickOpen = () => {
+  const handleClickOpen = async () => {
+    props.onClick && (await props.onClick());
     setOpen(true);
   };
 

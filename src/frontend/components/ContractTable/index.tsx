@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { CustomContract } from "../../../declarations/backend/backend.did";
-import BasicMenu from "../MuiComponents/DropDown";
 import { Box, Button, Input, MenuItem, Select, Tooltip } from "@mui/material";
 import DeleteContract from "./actions/DeleteContract";
 import { CONTRACT, CREATE_CONTRACT, PAYMENTS, PROMISES } from "./types";
@@ -15,6 +14,7 @@ import DeleteTableContract from "./actions/DeleteTableContract";
 import RenameTableContract from "./actions/RenameTableContract";
 import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
 import OpenInFullIcon from "@mui/icons-material/OpenInFull";
+import BasicMenu from "../MuiComponents/BasicMenu";
 
 export function CustomContractComponent({
   contract,
@@ -28,6 +28,7 @@ export function CustomContractComponent({
   let options = [
     {
       content: <DeleteContract id={contract && contract.id} />,
+      pure: true,
     },
   ];
   if (view.contract) {
@@ -133,7 +134,7 @@ export function CustomContractComponent({
             transformOrigin={{ vertical: "top", horizontal: "right" }}
             options={options}
           >
-            <MoreVertIcon />
+             <MoreVertIcon />
           </BasicMenu>
         </Box>
         <Button onClick={() => setExpanded(!expanded)} sx={{ ml: 1 }}>

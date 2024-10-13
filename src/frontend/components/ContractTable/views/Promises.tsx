@@ -132,16 +132,17 @@ function Promises(props) {
     let promises = rows.map((row) => {
       let status = {};
       let cells = rowToCells(row);
-      status[row.status] = null;
+      status[row.status || "None"] = null;
 
       let sender = [...all_friends, profile].find(
         (f) => f.id === row.sender || f.name === row.sender,
       );
+
       let receiver = [...all_friends, profile].find(
         (f) => f.id === row.receiver || f.name === row.receiver,
       );
 
-      sender = Principal.fromText(sender ? sender.id : "2vxsx-fae");
+      sender = Principal.fromText(sender ? sender.id : profile.id);
       receiver = Principal.fromText(receiver ? receiver.id : "2vxsx-fae");
       let updatedPayment: CPayment = {
         id: row.id,
@@ -167,18 +168,18 @@ function Promises(props) {
   }
 
   function onAddColumn(column: any) {
-    // if (props.contract.promises.length == 0) {
-    //   props.contract.promises = [{
-    //
-    //   }]
-    // }
     let promises = props.contract.promises.map((p) => {
-      let newCell: CCell = { field: column.id, value: column.name };
+      let newCell: CCell = {
+        id: column.id,
+        field: column.id,
+        value: column.name,
+      };
       return {
         ...p,
         cells: [...p.cells, newCell],
       };
     });
+    console.log({ promises });
     let updateContract = {
       ...props.contract,
       promises,
@@ -191,7 +192,7 @@ function Promises(props) {
       ...props.contract,
       promises: props.contract.promises.map((p) => {
         let cells = p.cells.map((c: CCell) => {
-          if (c.field == k) {
+          if (c.id == k) {
             return { ...c, field: n };
           }
           return c;
@@ -204,10 +205,24 @@ function Promises(props) {
     };
     dispatch(handleRedux("UPDATE_CONTRACT", { contract: updateContract }));
   }
+  const onDeleteColumn = (index: number, column: any) => {
+    let updateContract = {
+      ...props.contract,
+      promises: props.contract.promises.map((p) => {
+        let cells = p.cells.filter((c: CCell) => c.field !== column.key);
+        return {
+          ...p,
+          cells,
+        };
+      }),
+    };
+    dispatch(handleRedux("UPDATE_CONTRACT", { contract: updateContract }));
+  };
 
   return (
     <DataGridSheet
       contract={props.contract}
+      onDeleteColumn={onDeleteColumn}
       onRenameColumn={onRenameColumn}
       onDeleteRow={onDeleteRow}
       onChangeRow={onChangeRow}
