@@ -7,7 +7,7 @@ function ConformationMessage(props) {
   return (
     <div>
       {!state && (
-        <Button onClick={() => setState(true)}>{props.children}</Button>
+        <Button color={props.color} onClick={() => setState(true)}>{props.children}</Button>
       )}
       {state && (
         <>

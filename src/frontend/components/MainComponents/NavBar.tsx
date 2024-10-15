@@ -1,9 +1,7 @@
 import React from "react";
 import "./style/navBar.css";
 import { useDispatch, useSelector } from "react-redux";
-import NestedList from "./NestedList/nestList";
 import {
-  Button,
   Divider,
   Drawer,
   List,
@@ -16,8 +14,15 @@ import { handleRedux } from "../../redux/store/handleRedux";
 import InfoIcon from "@mui/icons-material/Info";
 import ExploreIcon from "@mui/icons-material/Explore";
 import { Z_INDEX_SIDE_NAVBAR } from "../../constants/zIndex";
+import SortableTree from "./SortableTree";
+import convertToTreeItems from "../../DataProcessing/convertToTree";
+import { logger } from "../../DevUtils/logData";
 
 const NavBar = (props: any) => {
+  const { files } = useSelector((state: any) => state.filesState);
+
+  // logger({ files });
+
   const dispatch = useDispatch();
   const { isNavOpen, isLoggedIn } = useSelector((state: any) => state.uiState);
 
@@ -25,6 +30,72 @@ const NavBar = (props: any) => {
     { label: "About Us", to: "/", icon: <InfoIcon /> },
     { label: "Discover", to: "/discover", icon: <ExploreIcon /> },
   ];
+  const dragEnd = ({ active, over }) => {
+    let sample = {
+      active: {
+        id: "rq2yk8",
+        data: {
+          current: {
+            sortable: {
+              containerId: "Sortable-1",
+              index: 3,
+              items: ["v4gbi3", "91ndg2", "noskko", "rq2yk8"],
+            },
+          },
+        },
+        rect: {
+          current: {
+            initial: {
+              top: 265.3984375,
+              left: 26,
+              width: 129.0625,
+              height: 35.1328125,
+              bottom: 300.53125,
+              right: 155.0625,
+            },
+            translated: {
+              top: 133.4375,
+              left: 39.92578125,
+              width: 129.0625,
+              height: 35.1328125,
+              bottom: 168.5703125,
+              right: 168.98828125,
+            },
+          },
+        },
+      },
+      over: {
+        id: "v4gbi3",
+        rect: {
+          width: 217,
+          height: 45.1328125,
+          top: 153,
+          bottom: 198.1328125,
+          right: 233,
+          left: 16,
+        },
+        data: {
+          current: {
+            sortable: {
+              containerId: "Sortable-1",
+              index: 0,
+              items: ["v4gbi3", "91ndg2", "noskko", "rq2yk8"],
+            },
+          },
+        },
+        disabled: false,
+      },
+    };
+
+    // dispatch(
+    //   handleRedux("CHANGE_FILE_PARENT", {
+    //     position: dragOverPosition,
+    //     id: active.id,
+    //     parent: [over.id],
+    //     index: over.data.index,
+    //   }),
+    // );
+  };
 
   return (
     <div>
@@ -66,7 +137,11 @@ const NavBar = (props: any) => {
         <Divider />
         {isLoggedIn && (
           <>
-            <NestedList />
+            {/*<NestedList />*/}
+            <SortableTree
+              dragEnd={dragEnd}
+              defaultItems={convertToTreeItems(files)}
+            />
             <Divider />
             <CreateFile />
           </>

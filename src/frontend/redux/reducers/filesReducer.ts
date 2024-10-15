@@ -57,7 +57,9 @@ export function filesReducer(
     case "DELETE_WORKSPACE":
       return {
         ...state,
-        workspaces: state.workspaces.filter((w) => w.id !== action.workspace.id),
+        workspaces: state.workspaces.filter(
+          (w) => w.id !== action.workspace.id,
+        ),
       };
 
     case "UPDATE_WORKSPACE":
@@ -113,7 +115,8 @@ export function filesReducer(
       };
 
     case "CURRENT_FILE":
-      localStorage.setItem("current_file", JSON.stringify({ ...action.file }));
+      console.log({ action });
+      // localStorage.setItem("current_file", JSON.stringify({ ...action.file }));
       return {
         ...state,
         current_file: action.file,

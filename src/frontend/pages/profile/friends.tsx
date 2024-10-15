@@ -29,6 +29,8 @@ function SecondaryActionSwitch(props) {
   const { backendActor } = useBackendContext();
   let { id, confirmed } = props;
   const { friends, profile } = useSelector((state: any) => state.filesState);
+  // let p = Principal.fromText(profile).toHex()
+  // console.log({p})
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const dispatch = useDispatch();

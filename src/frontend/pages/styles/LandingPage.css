@@ -101,7 +101,7 @@ header p {
 .feature-carousel .slick-prev,
 .feature-carousel .slick-next {
   top: calc(25%);
-  z-index: 10;
+  z-index: 3;
 }
 
 .feature-carousel .slick-track {

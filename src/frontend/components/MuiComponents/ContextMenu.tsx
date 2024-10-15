@@ -1,7 +1,6 @@
 import * as React from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { ListItemIcon } from "@mui/material";
 
 export default function ContextMenu(props: any) {
   const [contextMenu, setContextMenu] = React.useState<{
@@ -29,7 +28,11 @@ export default function ContextMenu(props: any) {
   };
 
   return (
-    <div onClick={props.onClick} onContextMenu={handleContextMenu} style={{ cursor: 'context-menu' }}>
+    <div
+      onClick={props.onClick}
+      onContextMenu={handleContextMenu}
+      style={{ cursor: "context-menu" }}
+    >
       {props.children}
       <Menu
         id="basic-menu"
@@ -46,21 +49,22 @@ export default function ContextMenu(props: any) {
         }
       >
         {props.options.map((item: any, index: number) => {
-            if (item.pure){
-                return item.content
-            }
-            return <MenuItem
-                key={index}
-                onClick={() => {
-                    !item.preventClose && handleClose();
-                    item.onClick && item.onClick();
-                }}
+          if (item.pure) {
+            return item.content;
+          }
+          return (
+            <MenuItem
+              key={index}
+              onClick={() => {
+                !item.preventClose && handleClose();
+                item.onClick && item.onClick();
+              }}
             >
-                {item.icon && item.icon}
-                {item.content}
+              {item.icon && item.icon}
+              {item.content}
             </MenuItem>
-        })
-        }
+          );
+        })}
       </Menu>
     </div>
   );
