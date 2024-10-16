@@ -177,7 +177,6 @@ export function chatsReducer(
     }
 
     case DELETE_CHATS_NOTIFICATIONS: {
-      console.log({ action, x: state.chats_notifications });
       return {
         ...state,
         chats_notifications: state.chats_notifications.filter(

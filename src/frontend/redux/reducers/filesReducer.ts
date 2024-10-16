@@ -115,7 +115,6 @@ export function filesReducer(
       };
 
     case "CURRENT_FILE":
-      console.log({ action });
       // localStorage.setItem("current_file", JSON.stringify({ ...action.file }));
       return {
         ...state,
@@ -124,7 +123,6 @@ export function filesReducer(
 
     case "CHANGE_FILE_PARENT": {
       const { updatedFile1, updatedFile2, reIndexing } = action;
-
       return {
         ...state,
         changes: {

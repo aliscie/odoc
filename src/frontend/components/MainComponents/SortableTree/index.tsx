@@ -35,48 +35,7 @@ import {
 } from "./utilities";
 import type { FlattenedItem, SensorContext, TreeItems } from "./types";
 import { SortableTreeItem } from "./components";
-
-// const initialItems: TreeItems = [
-//   {
-//     id: "Course",
-//     children: [
-//       {
-//         id: "Module",
-//         children: [
-//           { id: "Lesson", children: [{ id: "Learning Object", children: [] }] },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     id: "Course 1",
-//     children: [
-//       {
-//         id: "Module 1",
-//         children: [
-//           {
-//             id: "Lesson 1",
-//             children: [{ id: "Learning Object 1", children: [] }],
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     id: "Course 2",
-//     children: [
-//       {
-//         id: "Module 2",
-//         children: [
-//           {
-//             id: "Lesson 2",
-//             children: [{ id: "Learning Object 2", children: [] }],
-//           },
-//         ],
-//       },
-//     ],
-//   },
-// ];
+import { useSelector } from "react-redux";
 
 const measuring = {
   droppable: {
@@ -106,10 +65,8 @@ export default function SortableTree({
   removable,
   dragEnd,
 }: Props) {
-  const [items, setItems] = useState(() => defaultItems);
-  // useEffect(() => {
-  //   setItems(defaultItems);
-  // }, []);
+  const [items, setItems] = useState(defaultItems);
+
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const [offsetLeft, setOffsetLeft] = useState(0);
@@ -130,7 +87,8 @@ export default function SortableTree({
       flattenedTree,
       activeId ? [activeId, ...collapsedItems] : collapsedItems,
     );
-  }, [activeId, items]);
+  }, [activeId, items, defaultItems]);
+
   const projected =
     activeId && overId
       ? getProjection(
@@ -185,6 +143,8 @@ export default function SortableTree({
     },
   };
 
+  const { files } = useSelector((state: any) => state.filesState);
+
   return (
     <DndContext
       announcements={announcements}
@@ -202,7 +162,7 @@ export default function SortableTree({
           <SortableTreeItem
             key={id}
             id={id}
-            value={name}
+            value={files.find((f) => f.id == id)?.name || "Untitled"}
             depth={id === activeId && projected ? projected.depth : depth}
             indentationWidth={indentationWidth}
             indicator={indicator}
@@ -277,8 +237,8 @@ export default function SortableTree({
 
       const sortedItems = arrayMove(clonedItems, activeIndex, overIndex);
       const newItems = buildTree(sortedItems);
-      setItems(newItems);
       dragEnd({ active, over, newItems });
+      setItems(newItems);
     }
   }
 

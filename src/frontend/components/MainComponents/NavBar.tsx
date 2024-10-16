@@ -46,21 +46,22 @@ const NavBar = (props: any) => {
       parent: updatedFile2.parentId ? [updatedFile2.parentId] : [],
       children: updatedFile2.children,
     };
-    console.log({ updatedFile1, updatedFile2 });
-    let reIndexing: FileIndexing = {
+
+    const reIndexing: FileIndexing = {
       id: updatedFile1.id,
       new_index: BigInt(over.data.current.sortable.index),
       parent: updatedFile1.parent,
     };
+
     dispatch(
       handleRedux("CHANGE_FILE_PARENT", {
         updatedFile1,
         updatedFile2,
         reIndexing,
+        flattenedFiles
       }),
     );
   };
-
   return (
     <div>
       <Drawer
@@ -101,11 +102,10 @@ const NavBar = (props: any) => {
         <Divider />
         {isLoggedIn && (
           <>
-            {/*<NestedList />*/}
             <SortableTree
               key={files}
               dragEnd={dragEnd}
-              defaultItems={convertToTreeItems(files)}
+              defaultItems={files.length > 0 ? convertToTreeItems(files) : []}
             />
             <Divider />
             <CreateFile />
