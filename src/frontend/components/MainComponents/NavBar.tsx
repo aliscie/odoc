@@ -17,11 +17,12 @@ import { Z_INDEX_SIDE_NAVBAR } from "../../constants/zIndex";
 import SortableTree from "./SortableTree";
 import convertToTreeItems from "../../DataProcessing/convertToTree";
 import { logger } from "../../DevUtils/logData";
+import { FileIndexing } from "../../../declarations/backend/backend.did";
+import { convertAllDataBack } from "../../DataProcessing/serialize/serializeFiles";
+import flattenTree from "../../DataProcessing/deserlize/flatenFiles";
 
 const NavBar = (props: any) => {
   const { files } = useSelector((state: any) => state.filesState);
-
-  // logger({ files });
 
   const dispatch = useDispatch();
   const { isNavOpen, isLoggedIn } = useSelector((state: any) => state.uiState);
@@ -30,71 +31,34 @@ const NavBar = (props: any) => {
     { label: "About Us", to: "/", icon: <InfoIcon /> },
     { label: "Discover", to: "/discover", icon: <ExploreIcon /> },
   ];
-  const dragEnd = ({ active, over }) => {
-    let sample = {
-      active: {
-        id: "rq2yk8",
-        data: {
-          current: {
-            sortable: {
-              containerId: "Sortable-1",
-              index: 3,
-              items: ["v4gbi3", "91ndg2", "noskko", "rq2yk8"],
-            },
-          },
-        },
-        rect: {
-          current: {
-            initial: {
-              top: 265.3984375,
-              left: 26,
-              width: 129.0625,
-              height: 35.1328125,
-              bottom: 300.53125,
-              right: 155.0625,
-            },
-            translated: {
-              top: 133.4375,
-              left: 39.92578125,
-              width: 129.0625,
-              height: 35.1328125,
-              bottom: 168.5703125,
-              right: 168.98828125,
-            },
-          },
-        },
-      },
-      over: {
-        id: "v4gbi3",
-        rect: {
-          width: 217,
-          height: 45.1328125,
-          top: 153,
-          bottom: 198.1328125,
-          right: 233,
-          left: 16,
-        },
-        data: {
-          current: {
-            sortable: {
-              containerId: "Sortable-1",
-              index: 0,
-              items: ["v4gbi3", "91ndg2", "noskko", "rq2yk8"],
-            },
-          },
-        },
-        disabled: false,
-      },
+  const dragEnd = ({ active, over, newItems }) => {
+    const flattenedFiles = flattenTree(newItems);
+    let updatedFile1 = flattenedFiles.find((f) => f.id == active.id);
+    let updatedFile2 = flattenedFiles.find((f) => f.id == over.id);
+    updatedFile1 = {
+      ...files.find((f) => f.id == updatedFile1.id),
+      parent: updatedFile1.parentId ? [updatedFile1.parentId] : [],
+      children: updatedFile1.children,
     };
 
-    // dispatch(
-    //   handleRedux("CHANGE_FILE_PARENT", {
-    //     position: dragOverPosition,
-    //     id: active.id,
-    //     parent: [over.id],
-    //     index: over.data.index,
-    //   }),
-    // );
+    updatedFile2 = {
+      ...files.find((f) => f.id == updatedFile2.id),
+      parent: updatedFile2.parentId ? [updatedFile2.parentId] : [],
+      children: updatedFile2.children,
+    };
+    console.log({ updatedFile1, updatedFile2 });
+    let reIndexing: FileIndexing = {
+      id: updatedFile1.id,
+      new_index: BigInt(over.data.current.sortable.index),
+      parent: updatedFile1.parent,
+    };
+    dispatch(
+      handleRedux("CHANGE_FILE_PARENT", {
+        updatedFile1,
+        updatedFile2,
+        reIndexing,
+      }),
+    );
   };
 
   return (
@@ -139,6 +103,7 @@ const NavBar = (props: any) => {
           <>
             {/*<NestedList />*/}
             <SortableTree
+              key={files}
               dragEnd={dragEnd}
               defaultItems={convertToTreeItems(files)}
             />

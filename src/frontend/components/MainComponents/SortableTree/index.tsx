@@ -107,9 +107,9 @@ export default function SortableTree({
   dragEnd,
 }: Props) {
   const [items, setItems] = useState(() => defaultItems);
-  useEffect(() => {
-    setItems(defaultItems);
-  }, [defaultItems]);
+  // useEffect(() => {
+  //   setItems(defaultItems);
+  // }, []);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const [offsetLeft, setOffsetLeft] = useState(0);
@@ -277,8 +277,8 @@ export default function SortableTree({
 
       const sortedItems = arrayMove(clonedItems, activeIndex, overIndex);
       const newItems = buildTree(sortedItems);
-      dragEnd({ active, over });
       setItems(newItems);
+      dragEnd({ active, over, newItems });
     }
   }
 

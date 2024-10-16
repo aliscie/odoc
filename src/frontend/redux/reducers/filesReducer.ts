@@ -123,51 +123,18 @@ export function filesReducer(
       };
 
     case "CHANGE_FILE_PARENT": {
-      const { position, id, parent, index } = action;
-      let file = state.files.find((f) => f.id === id)!;
+      const { updatedFile1, updatedFile2, reIndexing } = action;
 
-      state.files = state.files.filter((f) => f.id !== id);
-
-      const oldParentIndex = state.files.findIndex(
-        (f) => f.id === file.parent[0],
-      );
-      if (oldParentIndex !== -1) {
-        state.files[oldParentIndex].children = state.files[
-          oldParentIndex
-        ].children.filter((childId) => childId !== id);
-      }
-
-      const newParentIndex = state.files.findIndex((f) => f.id === parent[0]);
-      file.parent = parent;
-
-      if (newParentIndex !== -1) {
-        if (index !== -1) {
-          state.files[newParentIndex].children.splice(index, 0, id);
-        } else {
-          state.files[newParentIndex].children.push(id);
-        }
-      }
-
-      if (index !== -1) {
-        state.files = [
-          ...state.files.slice(0, index),
-          file,
-          ...state.files.slice(index),
-        ];
-      } else {
-        state.files.push(file);
-      }
-
-      let change: FileIndexing = {
-        id,
-        new_index: BigInt(index),
-        parent,
+      return {
+        ...state,
+        changes: {
+          ...state.changes,
+          files_indexing: [...state.changes.files_indexing, reIndexing], // Create a new array with reIndexing added
+          files: [...state.changes.files, updatedFile1, updatedFile2], // Create a new array with updatedFile1 and updatedFile2 added
+        },
       };
-
-      state.changes.files_indexing.push(change);
-      state.changes.files.push(file);
-      return { ...state };
     }
+
     // case 'INIT_CONTRACTS':
     //     return {
     //         ...state,
