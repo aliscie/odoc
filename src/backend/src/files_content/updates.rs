@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use ic_cdk::caller;
-use ic_cdk_macros::update;
+use ic_cdk::update;
 use candid::{CandidType, Deserialize, Principal};
 
 use crate::{SharesContract, StoredContract};

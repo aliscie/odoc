@@ -1,5 +1,4 @@
 import { useSnackbar } from "notistack";
-
 import { useDispatch } from "react-redux";
 import LoaderButton from "../../../components/MuiComponents/LoaderButton";
 import { handleRedux } from "../../../redux/store/handleRedux";
@@ -8,9 +7,13 @@ import { useBackendContext } from "../../../contexts/BackendContext";
 import { Result_3 } from "../../../../declarations/backend/backend.did";
 
 const Deposit = () => {
+  // const { profile } = useSelector((state: any) => state.filesState);
+
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { backendActor } = useBackendContext();
   const dispatch = useDispatch();
+
+  const address = await getSmartContractAddress({});
 
   const handleDeposit = async () => {
     if (!backendActor) return;

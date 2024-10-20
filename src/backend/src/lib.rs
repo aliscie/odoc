@@ -9,9 +9,13 @@ use candid::{decode_one, encode_one, Principal};
 //     common::rest::{BlobCompression, SubnetConfigSet, SubnetKind},
 //     PocketIc, PocketIcBuilder, WasmResult,
 // };
+use evm_rpc_canister_types::{
+    BlockTag, EthMainnetService, EthSepoliaService, EvmRpcCanister, GetTransactionCountArgs,
+    GetTransactionCountResult, MultiGetTransactionCountResult, RequestResult, RpcService,
+};
 use ic_cdk::api::management_canister::provisional::CanisterId;
 use ic_websocket_cdk::*;
-
+use candid::Nat;
 use chat::*;
 pub use contracts::*;
 use contracts::*;

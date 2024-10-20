@@ -1,7 +1,7 @@
 
 
 
-use ic_cdk_macros::update;
+use ic_cdk::update;
 
 
 use crate::files::FileNode;

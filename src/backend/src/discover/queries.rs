@@ -1,7 +1,7 @@
 // make a query that get post order from older to newer
 
 use std::collections::HashMap;
-use ic_cdk_macros::query;
+use ic_cdk::query;
 use crate::discover::{Post, PostUser, UserFE};
 
 

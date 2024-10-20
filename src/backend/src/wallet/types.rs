@@ -221,3 +221,12 @@ impl Wallet {
     }
 }
 
+
+// #[init]
+// pub fn init(maybe_init: Option<InitArg>) {
+//     if let Some(init_arg) = maybe_init {
+//         init_state(init_arg)
+//     }
+// }
+
+

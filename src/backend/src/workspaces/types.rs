@@ -1,8 +1,27 @@
 use ic_cdk::caller;
 use ic_websocket_cdk::{CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments, CanisterWsOpenResult, WsHandlers, WsInitParams};
-use crate::{WORK_SPACES};
-use candid::{CandidType, Deserialize, Principal};
+use crate::{init_state, WORK_SPACES};
+use num::ToPrimitive;
 
+
+// use crate::state::{init_state, read_state};
+use alloy_consensus::{SignableTransaction, TxEip1559, TxEnvelope};
+use alloy_primitives::{hex, Signature, TxKind, U256};
+use candid::{CandidType, Deserialize, Nat, Principal};
+use evm_rpc_canister_types::{
+    BlockTag, EthMainnetService, EthSepoliaService, EvmRpcCanister, GetTransactionCountArgs,
+    GetTransactionCountResult, MultiGetTransactionCountResult, RequestResult, RpcService,
+};
+use ic_cdk::api::management_canister::ecdsa::{EcdsaCurve, EcdsaKeyId};
+use ic_cdk::{init, update};
+use ic_ethereum_types::Address;
+use num::{BigUint, Num};
+use std::str::FromStr;
+// use crate::workspaces::init_state;
+
+pub const EVM_RPC_CANISTER_ID: Principal =
+    Principal::from_slice(b"\x00\x00\x00\x00\x02\x30\x00\xCC\x01\x01"); // 7hfb6-caaaa-aaaar-qadga-cai
+pub const EVM_RPC: EvmRpcCanister = EvmRpcCanister(EVM_RPC_CANISTER_ID);
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct WorkSpace {
@@ -84,3 +103,87 @@ impl WorkSpace {
         Ok(self.clone())
     }
 }
+
+
+pub fn estimate_transaction_fees() -> (u128, u128, u128) {
+    /// Standard gas limit for an Ethereum transfer to an EOA.
+    /// Other transactions, in particular ones interacting with a smart contract (e.g., ERC-20), would require a higher gas limit.
+    const GAS_LIMIT: u128 = 21_000;
+
+    /// Very crude estimates of max_fee_per_gas and max_priority_fee_per_gas.
+    /// A real world application would need to estimate this more accurately by for example fetching the fee history from the last 5 blocks.
+    const MAX_FEE_PER_GAS: u128 = 50_000_000_000;
+    const MAX_PRIORITY_FEE_PER_GAS: u128 = 1_500_000_000;
+    (GAS_LIMIT, MAX_FEE_PER_GAS, MAX_PRIORITY_FEE_PER_GAS)
+}
+
+#[derive(CandidType, Deserialize, Debug, Default, PartialEq, Eq)]
+pub struct InitArg {
+    pub ethereum_network: Option<EthereumNetwork>,
+    pub ecdsa_key_name: Option<EcdsaKeyName>,
+}
+
+#[derive(CandidType, Deserialize, Debug, Default, PartialEq, Eq, Clone, Copy)]
+pub enum EthereumNetwork {
+    Mainnet,
+    #[default]
+    Sepolia,
+}
+
+impl EthereumNetwork {
+    pub fn chain_id(&self) -> u64 {
+        match self {
+            EthereumNetwork::Mainnet => 1,
+            EthereumNetwork::Sepolia => 11155111,
+        }
+    }
+}
+
+#[derive(CandidType, Deserialize, Debug, Default, PartialEq, Eq, Clone)]
+pub enum EcdsaKeyName {
+    #[default]
+    TestKeyLocalDevelopment,
+    TestKey1,
+    ProductionKey1,
+}
+
+impl From<&EcdsaKeyName> for EcdsaKeyId {
+    fn from(value: &EcdsaKeyName) -> Self {
+        EcdsaKeyId {
+            curve: EcdsaCurve::Secp256k1,
+            name: match value {
+                EcdsaKeyName::TestKeyLocalDevelopment => "dfx_test_key",
+                EcdsaKeyName::TestKey1 => "test_key_1",
+                EcdsaKeyName::ProductionKey1 => "key_1",
+            }
+            .to_string(),
+        }
+    }
+}
+
+pub fn validate_caller_not_anonymous() -> Principal {
+    let principal = ic_cdk::caller();
+    if principal == Principal::anonymous() {
+        panic!("anonymous principal is not allowed");
+    }
+    principal
+}
+
+pub fn nat_to_u64(nat: Nat) -> u64 {
+    nat.0
+        .to_u64()
+        .unwrap_or_else(|| ic_cdk::trap(&format!("Nat {} doesn't fit into a u64", nat)))
+}
+
+pub fn nat_to_u256(value: Nat) -> U256 {
+    let value_bytes = value.0.to_bytes_be();
+    assert!(
+        value_bytes.len() <= 32,
+        "Nat does not fit in a U256: {}",
+        value
+    );
+    let mut value_u256 = [0u8; 32];
+    value_u256[32 - value_bytes.len()..].copy_from_slice(&value_bytes);
+    U256::from_be_bytes(value_u256)
+}
+

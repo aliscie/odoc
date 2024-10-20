@@ -2,7 +2,7 @@ use std::sync::atomic::Ordering;
 
 use candid::Principal;
 use ic_cdk::{caller, println};
-use ic_cdk_macros::update;
+use ic_cdk::update;
 
 use crate::{FRIENDS_STORE, websocket};
 use crate::COUNTER;

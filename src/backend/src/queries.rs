@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use ic_cdk::{caller};
 use candid::{CandidType, Deserialize, Principal};
 use candid::types::principal::PrincipalError;
-use ic_cdk_macros::query;
+use ic_cdk::query;
 
 use crate::{PROFILE_STORE, StoredContract, Wallet};
 use crate::contracts::Contract;

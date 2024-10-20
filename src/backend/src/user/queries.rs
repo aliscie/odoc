@@ -3,7 +3,8 @@ use candid::Principal;
 use candid::types::principal::PrincipalError;
 
 
-use ic_cdk_macros::query;
+// use ic_cdk::query;
+use ic_cdk::query;
 
 use crate::{PROFILE_STORE};
 use crate::user::User;
@@ -58,17 +59,17 @@ use crate::user_history::UserHistory;
 // get all users
 
 
-#[query]
-fn get_all_users() -> HashMap<String, User> {
-    PROFILE_STORE.with(|profile_store| {
-        profile_store
-            .borrow()
-            .iter()
-            .map(|(principal, user)| (principal.clone(), user.clone()))
-            .map(|(principal, user)| (principal.to_string(), user))
-            .collect()
-    })
-}
+// #[query]
+// fn get_all_users() -> HashMap<String, User> {
+//     PROFILE_STORE.with(|profile_store| {
+//         profile_store
+//             .borrow()
+//             .iter()
+//             .map(|(principal, user)| (principal.clone(), user.clone()))
+//             .map(|(principal, user)| (principal.to_string(), user))
+//             .collect()
+//     })
+// }
 
 
 #[query]

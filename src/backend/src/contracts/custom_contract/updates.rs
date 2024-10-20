@@ -1,6 +1,6 @@
 use candid::Error::Custom;
 use ic_cdk::caller;
-use ic_cdk_macros::update;
+use ic_cdk::update;
 
 use crate::{CPayment, PaymentStatus, Wallet};
 use crate::CustomContract;

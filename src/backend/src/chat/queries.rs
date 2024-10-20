@@ -1,4 +1,4 @@
-use ic_cdk_macros::query;
+use ic_cdk::query;
 use crate::chat::{Chat, Message};
 use crate::websocket::{AppMessage, Notification};
 use candid::{CandidType, Deserialize, Principal};
