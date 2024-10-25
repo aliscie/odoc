@@ -1,7 +1,7 @@
 use std::sync::atomic::Ordering;
 use candid::Principal;
 use ic_cdk::caller;
-use ic_cdk::update;
+use ic_cdk_macros::update;
 use crate::chat::{Chat, Message};
 use crate::COUNTER;
 

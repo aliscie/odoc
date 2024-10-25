@@ -1,4 +1,4 @@
-use ic_cdk::update;
+use ic_cdk_macros::update;
 
 
 

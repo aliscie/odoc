@@ -180,3 +180,4 @@ these note-taking apps but to make an all-in-one **Open source note-taking app**
 our canisters
 backend: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=lrcwp-yiaaa-aaaal-acwdq-cai
 frontend: https://lwdq3-vqaaa-aaaal-acwda-cai.icp0.io/
+Local fake eth addresses : "0xEBbfA18c99FF8526A6C32e9eDF41ED48b6F10Cdd"

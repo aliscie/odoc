@@ -58,7 +58,6 @@ const MultiSaveButton: React.FC<MultiSaveButtonProps> = () => {
         changes.files,
         serializedContent,
         serializedContracts,
-        deleteContracts,
         changes.files_indexing || [],
       );
 

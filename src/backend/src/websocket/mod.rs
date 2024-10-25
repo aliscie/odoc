@@ -5,8 +5,8 @@ use crate::{NOTIFICATIONS};
 use ic_cdk::caller;
 pub use notification::*;
 pub use handlers::*;
-use ic_cdk::update;
-use ic_cdk::query;
+use ic_cdk_macros::update;
+use ic_cdk_macros::query;
 
 // use ic_cdk_macros::*;
 use ic_websocket_cdk::{CanisterWsCloseArguments, CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments, CanisterWsOpenResult, WsHandlers, WsInitParams};

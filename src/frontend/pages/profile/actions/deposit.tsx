@@ -1,42 +1,82 @@
-import { useSnackbar } from "notistack";
-import { useDispatch } from "react-redux";
-import LoaderButton from "../../../components/MuiComponents/LoaderButton";
-import { handleRedux } from "../../../redux/store/handleRedux";
+import { useSelector } from "react-redux";
 import { MonetizationOn } from "@mui/icons-material";
 import { useBackendContext } from "../../../contexts/BackendContext";
-import { Result_3 } from "../../../../declarations/backend/backend.did";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import { Principal } from "@dfinity/principal";
+import AlertDialog from "../../../components/MuiComponents/AlertDialog";
+import React, { useEffect } from "react";
+import Card from "../../../components/MuiComponents/Card";
+import {
+  Button,
+  CardContent,
+  CircularProgress,
+  Fade,
+  Typography,
+} from "@mui/material";
 
-const Deposit = () => {
-  // const { profile } = useSelector((state: any) => state.filesState);
+function Content(props: any) {
+  const { profile } = useSelector((state: any) => state.filesState);
 
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  // const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { backendActor } = useBackendContext();
-  const dispatch = useDispatch();
+  const principal = Principal.fromText(profile.id);
 
-  const address = await getSmartContractAddress({});
+  const [copy, setCopy] = React.useState(false);
+  const [addrss, setAddrss] = React.useState(null);
+  const copyAddress = async () => {
+    navigator.clipboard.writeText(addrss);
+    setCopy(true);
+    setTimeout(() => {
+      setCopy(false);
+    }, 2000);
+  };
+  useEffect(() => {
+    (async () => {
+      const ethereum_address = await backendActor?.ethereum_address([
+        principal,
+      ]);
+      setAddrss(ethereum_address);
+    })();
+  }, []);
 
+  return (
+    <Card className="feature-card" sx={{ margin: 1 }}>
+      <CardContent className="feature-card-content">
+        <Typography variant="h5" className="feature-card-title">
+          Your USDC wallet address
+        </Typography>
+        {addrss ? (
+          <Button
+            color={copy ? "success" : "primary"}
+            onClick={copyAddress}
+            variant="body2"
+            className="feature-card-body"
+          >
+            address
+          </Button>
+        ) : (
+          <CircularProgress />
+        )}
+
+        <Fade in={copy}>
+          <span>
+            <DoneAllIcon color={"success"} />
+            <span> You successfully copied the address</span>
+          </span>
+        </Fade>
+      </CardContent>
+    </Card>
+  );
+}
+const Deposit = () => {
   const handleDeposit = async () => {
-    if (!backendActor) return;
-
-    const res = (await backendActor.deposit_usdt(100)) as Result_3; // Result_3 represent the return type of the function
-
-    if ("Ok" in res) {
-      dispatch(handleRedux("UPDATE_BALANCE", { balance: res.Ok }));
-    } else if ("Err" in res) {
-      enqueueSnackbar(res.Err, { variant: "error" });
-    }
-
-    return res;
+    return { Ok: null };
   };
 
   return (
-    <LoaderButton
-      variant="outlined"
-      startIcon={<MonetizationOn />}
-      onClick={handleDeposit}
-    >
-      Deposit
-    </LoaderButton>
+    <AlertDialog handleSave={handleDeposit} content={<Content />}>
+      <MonetizationOn /> Deposit
+    </AlertDialog>
   );
 };
 

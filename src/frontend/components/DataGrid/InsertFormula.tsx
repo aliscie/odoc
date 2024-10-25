@@ -37,7 +37,7 @@ function InsertFormula(props: Props) {
 
   return (
     <>
-      <AlertDialog handleSave={handleSave} content={content}>
+      <AlertDialog submit={'Save'} handleSave={handleSave} content={content}>
         Formula
       </AlertDialog>
     </>

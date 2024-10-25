@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use ic_cdk::caller;
 
-use ic_cdk::query;
+use ic_cdk_macros::query;
 use crate::{FILE_CONTENTS, USER_FILES};
 
 

@@ -16,7 +16,6 @@ const FileContentPage = () => {
 
   let current_file = files.find((file: any) => file.id === fileId);
 
-
   const editorKey = (current_file && current_file.id) || "";
   const onChange = useCallback(
     debounce((changes: any) => {
@@ -46,7 +45,10 @@ const FileContentPage = () => {
     handleDispatchChange(title);
   };
 
-  if (!inited && isLoggedIn) {
+  if (inited && files.length == 0) {
+    return <span>404 Not Found</span>;
+  }
+  if (files.length == 0 && isLoggedIn) {
     return <CircularProgress />;
   }
   if (!current_file) {

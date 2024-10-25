@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use ic_cdk::caller;
-use ic_cdk::update;
+use ic_cdk_macros::update;
 
 use crate::{SHARED_USER_FILES, ShareFile, ShareFilePermission};
 use crate::files::FileNode;

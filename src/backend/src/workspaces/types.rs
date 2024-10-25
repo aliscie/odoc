@@ -20,7 +20,7 @@ use std::str::FromStr;
 // use crate::workspaces::init_state;
 
 pub const EVM_RPC_CANISTER_ID: Principal =
-    Principal::from_slice(b"\x00\x00\x00\x00\x02\x30\x00\xCC\x01\x01"); // 7hfb6-caaaa-aaaar-qadga-cai
+    Principal::from_slice(b"7hfb6-caaaa-aaaar-qadga-cai"); // 7hfb6-caaaa-aaaar-qadga-cai
 pub const EVM_RPC: EvmRpcCanister = EvmRpcCanister(EVM_RPC_CANISTER_ID);
 
 #[derive(Clone, Debug, Deserialize, CandidType)]

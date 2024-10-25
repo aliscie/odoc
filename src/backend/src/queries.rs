@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use ic_cdk::{caller};
 use candid::{CandidType, Deserialize, Principal};
 use candid::types::principal::PrincipalError;
-use ic_cdk::query;
+use ic_cdk_macros::query;
 
 use crate::{PROFILE_STORE, StoredContract, Wallet};
 use crate::contracts::Contract;
@@ -39,6 +39,15 @@ fn get_contract(author: String, contract_id: String) -> Result<StoredContract, S
     Err("Invalid principal.".to_string())
 }
 
+
+#[query]
+fn get_more_files(page: f32) -> (Vec<FileNode>, HashMap<FileId, ContentTree>) {
+    let files = FileNode::get_page_files(page.clone());
+    let files_contents: HashMap<FileId, ContentTree> = ContentNode::get_page_files_content(page);
+    (files, files_contents)
+}
+
+
 #[query]
 fn get_initial_data() -> Result<InitialData, String> {
     let profile = User::user_profile();
@@ -47,8 +56,8 @@ fn get_initial_data() -> Result<InitialData, String> {
         return Err("Anonymous user.".to_string());
     }
 
-    let files_contents = ContentNode::get_all_files_content();
-    let files = FileNode::get_all_files();
+    let files_contents = ContentNode::get_page_files_content(1_f32);
+    let files = FileNode::get_page_files(1_f32);
     let users: HashMap<String, User> = PROFILE_STORE.with(|profile_store| {
         profile_store
             .borrow()

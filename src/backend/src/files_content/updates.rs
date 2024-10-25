@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use ic_cdk::caller;
-use ic_cdk::update;
+use ic_cdk_macros::update;
 use candid::{CandidType, Deserialize, Principal};
 
 use crate::{SharesContract, StoredContract};
@@ -48,7 +48,7 @@ fn multi_updates(
     files: Vec<FileNode>,
     content_trees: Vec<HashMap<FileId, ContentTree>>,
     contracts: Vec<StoredContract>,
-    delete_contracts: Vec<ContractId>,
+    // delete_contracts: Vec<ContractId>,
     files_indexing: Vec<FileIndexing>,
 ) -> Result<String, String> {
     let mut messages = "".to_string();
@@ -56,13 +56,7 @@ fn multi_updates(
     for file in files.clone() {
         file.save()?;
     }
-    for indexing in files_indexing {
-        if let Some(parent) = indexing.parent {
-            let _ = FileNode::rearrange_child(parent, indexing.id, indexing.new_index);
-        } else {
-            let _ = FileNode::rearrange_file(indexing.id, indexing.new_index);
-        }
-    }
+
     // let ids: Vec<String> = files.iter().map(|file_node| file_node.id.clone()).collect();
 
     // TODO handle files reordering more effectinetly
@@ -92,9 +86,18 @@ fn multi_updates(
         }
     };
 
-    for contract_id in delete_contracts {
-        // let contract = ...;
-        // contract.delete();
+    // for contract_id in delete_contracts {
+    //     // let contract = ...;
+    //     // contract.delete();
+    // }
+
+
+    for indexing in files_indexing {
+        if let Some(parent) = indexing.parent {
+            let _ = FileNode::rearrange_child(parent, indexing.id, indexing.new_index);
+        } else {
+            let _ = FileNode::rearrange_file(indexing.id, indexing.new_index);
+        }
     }
 
     messages.push_str("Updates applied successfully.");

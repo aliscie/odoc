@@ -47,8 +47,6 @@ impl Storable for FileNode {
 }
 
 
-
-
 impl FileNode {
     pub fn new(name: String, parent: Option<FileId>) -> Self {
         // Similar ID generation
@@ -197,29 +195,35 @@ impl FileNode {
         })
     }
 
-    // pub fn get_page_files(page: u32) -> Vec<FileNode> {
-    //     const FILES_PER_PAGE: usize = 15; // Number of files per page
-    //
-    //     USER_FILES.with(|files_store| {
-    //         let principal_id = ic_cdk::api::caller();
-    //
-    //         if let Some(user_files_vec) = files_store.borrow().get(&principal_id) {
-    //             // Calculate the starting index for the requested page
-    //             let start_index = ((page - 1) as usize) * FILES_PER_PAGE;
-    //             let end_index = std::cmp::min(start_index + FILES_PER_PAGE, user_files_vec.len());
-    //
-    //             // If the start index is beyond the total number of files, return an empty vector
-    //             if start_index >= user_files_vec.len() {
-    //                 return Vec::new();
-    //             }
-    //
-    //             // Return the files corresponding to the requested page
-    //             user_files_vec[start_index..end_index].to_vec()
-    //         } else {
-    //             Vec::new() // No files found for the caller
-    //         }
-    //     })
-    // }
+    pub fn get_page_files(page: f32) -> Vec<FileNode> {
+        const FILES_PER_PAGE: usize = 15; // Number of files per page
+        let mut all_files: Vec<FileNode> = Vec::new();
+
+        // Access shared files and user-specific files, then add them to all_files.
+        let shared_files: Vec<ShareFile> = ShareFile::get_shared();
+        for share_file in shared_files {
+            if let Ok((file_node, _)) = ShareFile::get_file(&share_file.id) {
+                all_files.push(file_node);
+            }
+        }
+
+        USER_FILES.with(|files_store| {
+            let principal_id = ic_cdk::api::caller();
+            if let Some(user_files_vec) = files_store.borrow().get(&principal_id) {
+                all_files.extend(user_files_vec.iter().cloned());
+            }
+        });
+
+        // Calculate the start and end indices for the requested page
+        let start_index = (page - 1.0) as usize * FILES_PER_PAGE;
+        if start_index >= all_files.len() {
+            return vec![]; // Return an empty list if start index is out of range
+        }
+        let end_index = usize::min(start_index + FILES_PER_PAGE, all_files.len());
+
+        // Return the files for the requested page
+        all_files[start_index..end_index].to_vec()
+    }
 
 
     pub fn get_all_files() -> Vec<FileNode> {

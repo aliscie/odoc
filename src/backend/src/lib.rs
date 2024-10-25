@@ -13,6 +13,7 @@ use evm_rpc_canister_types::{
     BlockTag, EthMainnetService, EthSepoliaService, EvmRpcCanister, GetTransactionCountArgs,
     GetTransactionCountResult, MultiGetTransactionCountResult, RequestResult, RpcService,
 };
+use ic_websocket_cdk::*;
 use ic_cdk::api::management_canister::provisional::CanisterId;
 use ic_websocket_cdk::*;
 use candid::Nat;

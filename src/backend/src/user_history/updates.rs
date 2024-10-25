@@ -1,6 +1,6 @@
 use candid::Principal;
 use ic_cdk::caller;
-use ic_cdk::update;
+use ic_cdk_macros::update;
 
 use crate::user::User;
 use crate::user_history::{Rating, UserHistory};

@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use ic_cdk::query;
+use ic_cdk_macros::query;
 
 
 use crate::files::FileNode;

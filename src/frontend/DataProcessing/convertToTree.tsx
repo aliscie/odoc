@@ -9,6 +9,9 @@ function convertToTreeItems(items: FileNode[]): any[] {
 
   // Function to recursively build the tree
   function buildTree(item: FileNode): any {
+    if (!item) {
+      return null
+    }
     const { id, children: childIds, parent, ...rest } = item;
     const children = childIds.map((childId) => buildTree(idToItemMap[childId]));
 

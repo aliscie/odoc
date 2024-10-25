@@ -65,7 +65,13 @@ export default function SortableTree({
   removable,
   dragEnd,
 }: Props) {
-  const [items, setItems] = useState(defaultItems);
+
+  const [items, setItems] = useState(
+    defaultItems &&
+      defaultItems.map((i) => {
+        return { ...i, collapsed: true };
+      }),
+  );
 
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);

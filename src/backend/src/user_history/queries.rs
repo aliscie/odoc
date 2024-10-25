@@ -1,6 +1,6 @@
 use candid::{Principal};
 use candid::CandidType;
-use ic_cdk::query;
+use ic_cdk_macros::query;
 
 use crate::{PROFILE_STORE, Wallet};
 use crate::user::User;

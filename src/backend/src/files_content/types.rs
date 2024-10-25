@@ -85,6 +85,49 @@ impl ContentNode {
         res
     }
 
+    pub fn get_page_files_content(page: f32) -> HashMap<FileId, ContentTree> {
+        const FILES_PER_PAGE: usize = 15; // Number of files per page
+        let mut all_files: Vec<(FileId, ContentTree)> = Vec::new();
+
+        // Access user-specific files
+        FILE_CONTENTS.with(|file_contents| {
+            let file_contents = file_contents.borrow();
+            if let Some(file_map) = file_contents.get(&caller()) {
+                all_files.extend(file_map.clone().into_iter());
+            }
+        });
+
+        // Access shared files
+        let shared_files: Vec<ShareFile> = ShareFile::get_shared();
+        for file in shared_files {
+            if let Ok((file_node, content)) = ShareFile::get_file(&file.id) {
+                all_files.push((file.id.clone(), content));
+            } else {
+                let err = ShareFile::get_file(&file.id).unwrap_err();
+                print(
+                    format!(
+                        "Error getting file {} from shared files: {}",
+                        file.id, err
+                    )
+                        .as_str(),
+                );
+            }
+        }
+
+        // Calculate the start and end indices for the requested page
+        let start_index = (page - 1.0) as usize * FILES_PER_PAGE;
+        if start_index >= all_files.len() {
+            return HashMap::new(); // Return an empty list if start index is out of range
+        }
+        let end_index = usize::min(start_index + FILES_PER_PAGE, all_files.len());
+
+        // Return the files for the requested page
+        all_files[start_index..end_index]
+            .iter()
+            .cloned()
+            .collect::<HashMap<FileId, ContentTree>>()
+    }
+
 
     // pub fn new(file_id: FileId, content_parent_id: Option<ContentId>, node_type: String, text: String, odoc_intro: Option<ContentData>, value: String) -> Option<ContentNode> {
     //     let caller_principal = ic_cdk::api::caller();

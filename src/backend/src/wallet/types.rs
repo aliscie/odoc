@@ -2,12 +2,26 @@ use std::collections::HashMap;
 use crate::{CPayment, PaymentStatus, WALLETS_STORE};
 use crate::user_history::UserHistory;
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
-
+use ethers_core::abi::ethereum_types::H160;
 use ic_stable_structures::{
     storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
 };
 use std::{borrow::Cow, cell::RefCell};
 use ic_cdk::caller;
+use serde_bytes::ByteBuf;
+use serde::Serialize;
+
+pub const MAX_SYMBOL_LENGTH: usize = 20;
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Eq, PartialEq, Debug)]
+pub struct UserToken {
+    pub contract_address: String,
+    pub chain_id: u64,
+    pub symbol: Option<String>,
+    pub decimals: Option<u8>,
+    pub version: Option<u64>,
+    pub enabled: Option<bool>,
+}
 
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
@@ -49,8 +63,6 @@ pub struct Wallet {
 }
 
 
-
-
 // impl Storable for Wallet {
 //     fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
 //         Cow::Owned(Encode!(self).unwrap())
@@ -74,7 +86,7 @@ impl Wallet {
         Ok(())
     }
     pub fn add_dept(mut self, amount: f64, id: String) -> Result<(), String> {
-        if self.balance.clone()  < self.total_debt + amount.clone() {
+        if self.balance.clone() < self.total_debt + amount.clone() {
             return Err(String::from("Insufficient balance"));
         }
         self.debts.insert(id, amount);
@@ -221,6 +233,49 @@ impl Wallet {
     }
 }
 
+pub fn parse_eth_address(address: &str) -> [u8; 20] {
+    match address.parse() {
+        Ok(H160(addr)) => addr,
+        Err(err) => ic_cdk::trap(&format!(
+            "failed to parse contract address {address}: {err}",
+        )),
+    }
+}
+
+pub fn assert_token_symbol_length(token: &UserToken) -> Result<(), String> {
+    if let Some(symbol) = token.symbol.as_ref() {
+        if symbol.len() > MAX_SYMBOL_LENGTH {
+            return Err(format!(
+                "Token symbol should not exceed {MAX_SYMBOL_LENGTH} bytes",
+            ));
+        }
+    }
+
+    Ok(())
+}
+
+// pub fn get_ecdsa_key_name() -> String {
+//     #[allow(clippy::option_env_unwrap)]
+//     let dfx_network = option_env!("DFX_NETWORK").unwrap();
+//     match dfx_network {
+//         "local" => "dfx_test_key".to_string(),
+//         "ic" => "key_1".to_string(),
+//         _ => panic!("Unsupported network."),
+//     }
+// }
+//
+// pub // The derivation path determines the Ethereum address generated
+// // by the signer.
+// fn create_derivation_path(principal: &Principal) -> Vec<Vec<u8>> {
+//     const SCHEMA_V1: u8 = 1;
+//     [
+//         ByteBuf::from(vec![SCHEMA_V1]),
+//         ByteBuf::from(principal.as_slice().to_vec()),
+//     ]
+//     .iter()
+//     .map(|x| x.to_vec())
+//     .collect()
+// }
 
 // #[init]
 // pub fn init(maybe_init: Option<InitArg>) {

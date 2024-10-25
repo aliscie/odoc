@@ -3,8 +3,8 @@ use candid::Principal;
 use candid::types::principal::PrincipalError;
 
 
-// use ic_cdk::query;
-use ic_cdk::query;
+// use ic_cdk_macros::query;
+use ic_cdk_macros::query;
 
 use crate::{PROFILE_STORE};
 use crate::user::User;

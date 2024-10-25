@@ -1,9 +1,9 @@
 use candid::Principal;
 use ic_cdk::caller;
-use ic_cdk::update;
+use ic_cdk_macros::update;
 use serde_json::{self, Value};
 use candid::{Nat};
-use crate::{EthereumWallet, read_state};
+use crate::{assert_token_symbol_length, EthereumWallet, parse_eth_address, read_state, UserToken};
 use crate::workspaces::{estimate_transaction_fees, EthereumNetwork, EVM_RPC, nat_to_u256, nat_to_u64, validate_caller_not_anonymous};
 use evm_rpc_canister_types::{
     BlockTag, EthMainnetService, EthSepoliaService, EvmRpcCanister, GetTransactionCountArgs,
@@ -141,7 +141,7 @@ pub async fn transaction_count(owner: Option<Principal>, block: Option<BlockTag>
 }
 
 #[update]
-pub async fn send_eth(to: String, amount: Nat) -> String {
+pub async fn send_eth(to: String, amount: f32) -> String {
     use alloy_eips::eip2718::Encodable2718;
 
     let caller = validate_caller_not_anonymous();
@@ -156,11 +156,11 @@ pub async fn send_eth(to: String, amount: Nat) -> String {
     let transaction = TxEip1559 {
         chain_id,
         nonce,
-        gas_limit:gas_limit as u64,
+        gas_limit: gas_limit as u64,
         max_fee_per_gas,
         max_priority_fee_per_gas,
         to: TxKind::Call(to.parse().expect("failed to parse recipient address")),
-        value: nat_to_u256(amount),
+        value: U256::from(amount),
         access_list: Default::default(),
         input: Default::default(),
     };
@@ -210,4 +210,22 @@ pub async fn send_eth(to: String, amount: Nat) -> String {
     );
 
     raw_transaction_hash.to_string()
+}
+
+
+#[update]
+#[allow(clippy::needless_pass_by_value)]
+fn set_user_token(token: UserToken) {
+    // assert_token_symbol_length(&token).unwrap_or_else(|e| ic_cdk::trap(&e));
+    // assert_token_enabled_is_some(&token).unwrap_or_else(|e| ic_cdk::trap(&e));
+
+    let addr = crate::parse_eth_address(&token.contract_address);
+
+    // let stored_principal = StoredPrincipal(ic_cdk::caller());
+
+    let find = |t: &UserToken| {
+        t.chain_id == token.chain_id && parse_eth_address(&t.contract_address) == addr
+    };
+
+    // mutate_state(|s| add_to_user_token(stored_principal, &mut s.user_token, &token, &find));
 }

@@ -50,9 +50,11 @@ export default function AlertDialog(props: Props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Close</Button>
-          <Button onClick={handleSave} autoFocus>
-            {props.submit || "Save"}
-          </Button>
+          {props.submit && (
+            <Button onClick={handleSave} autoFocus>
+              {props.submit}
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </React.Fragment>

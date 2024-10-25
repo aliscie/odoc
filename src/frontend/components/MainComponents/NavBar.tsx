@@ -16,10 +16,9 @@ import ExploreIcon from "@mui/icons-material/Explore";
 import { Z_INDEX_SIDE_NAVBAR } from "../../constants/zIndex";
 import SortableTree from "./SortableTree";
 import convertToTreeItems from "../../DataProcessing/convertToTree";
-import { logger } from "../../DevUtils/logData";
 import { FileIndexing } from "../../../declarations/backend/backend.did";
-import { convertAllDataBack } from "../../DataProcessing/serialize/serializeFiles";
 import flattenTree from "../../DataProcessing/deserlize/flatenFiles";
+import GetMoreFiles from "../Actions/GetMoreFiles";
 
 const NavBar = (props: any) => {
   const { files } = useSelector((state: any) => state.filesState);
@@ -46,10 +45,20 @@ const NavBar = (props: any) => {
       parent: updatedFile2.parentId ? [updatedFile2.parentId] : [],
       children: updatedFile2.children,
     };
+    let new_index = over.data.current.sortable.index;
+
+    // console.log({ updatedFile1 });
+
+    if (updatedFile1.parent.length > 0 && new_index > 0) {
+      const parentIndex = flattenedFiles.findIndex(
+        (f) => f.id == updatedFile1.parent[0],
+      );
+      new_index = Math.abs(new_index - parentIndex - 1);
+    }
 
     const reIndexing: FileIndexing = {
       id: updatedFile1.id,
-      new_index: BigInt(over.data.current.sortable.index),
+      new_index: new_index,
       parent: updatedFile1.parent,
     };
 
@@ -58,7 +67,7 @@ const NavBar = (props: any) => {
         updatedFile1,
         updatedFile2,
         reIndexing,
-        flattenedFiles
+        flattenedFiles,
       }),
     );
   };
@@ -109,6 +118,7 @@ const NavBar = (props: any) => {
             />
             <Divider />
             <CreateFile />
+            <GetMoreFiles />
           </>
         )}
       </Drawer>

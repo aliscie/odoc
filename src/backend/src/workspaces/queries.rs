@@ -1,5 +1,5 @@
 use ic_cdk::caller;
-use ic_cdk::query;
+use ic_cdk_macros::query;
 
 use crate::WORK_SPACES;
 use crate::workspaces::types::WorkSpace;
