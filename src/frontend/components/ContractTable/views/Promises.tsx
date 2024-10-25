@@ -179,7 +179,6 @@ function Promises(props) {
         cells: [...p.cells, newCell],
       };
     });
-    console.log({ promises });
     let updateContract = {
       ...props.contract,
       promises,

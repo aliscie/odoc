@@ -42,8 +42,6 @@ function useSocket() {
       };
 
       ws.onmessage = async (event) => {
-        console.log({ event });
-
         let data: AppMessage = event.data;
 
         // console.log("Received message:", data);

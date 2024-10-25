@@ -47,7 +47,6 @@ const NavBar = (props: any) => {
     };
     let new_index = over.data.current.sortable.index;
 
-    // console.log({ updatedFile1 });
 
     if (updatedFile1.parent.length > 0 && new_index > 0) {
       const parentIndex = flattenedFiles.findIndex(

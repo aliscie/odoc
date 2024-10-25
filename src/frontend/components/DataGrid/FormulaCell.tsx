@@ -12,7 +12,6 @@ function FormulaCell(props: Props) {
   // Object.keys(props.row).forEach(key => {
   //     values[key] = props.row[key]
   // })
-  // console.log({values})
   // const contract = {};
   // const main_contract = {};
   const parsedFormula: EvalFunction = compile(formula);

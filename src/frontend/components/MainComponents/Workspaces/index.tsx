@@ -91,7 +91,6 @@ const WorkSpaces = (props: Props) => {
     ),
   });
   const handleChoseWorkspace = (event: any) => {
-    console.log({});
   };
   return (
     <BasicMenu

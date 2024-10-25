@@ -181,7 +181,6 @@ function SecondaryActionSwitch(props) {
               startIcon={<GroupAddIcon />}
               onClick={async () => {
                 let res = await handleFriedReq(id);
-                console.log({ res });
                 return { Ok: "" };
               }}
             />

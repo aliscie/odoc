@@ -22,9 +22,9 @@ function Content(props: any) {
   const principal = Principal.fromText(profile.id);
 
   const [copy, setCopy] = React.useState(false);
-  const [addrss, setAddrss] = React.useState(null);
+  const [address, setAddress] = React.useState(null);
   const copyAddress = async () => {
-    navigator.clipboard.writeText(addrss);
+    navigator.clipboard.writeText(address);
     setCopy(true);
     setTimeout(() => {
       setCopy(false);
@@ -35,7 +35,7 @@ function Content(props: any) {
       const ethereum_address = await backendActor?.ethereum_address([
         principal,
       ]);
-      setAddrss(ethereum_address);
+      setAddress(ethereum_address);
     })();
   }, []);
 
@@ -45,14 +45,14 @@ function Content(props: any) {
         <Typography variant="h5" className="feature-card-title">
           Your USDC wallet address
         </Typography>
-        {addrss ? (
+        {address ? (
           <Button
             color={copy ? "success" : "primary"}
             onClick={copyAddress}
             variant="body2"
             className="feature-card-body"
           >
-            address
+            {address}
           </Button>
         ) : (
           <CircularProgress />

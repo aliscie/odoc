@@ -33,7 +33,6 @@ export function filesReducer(
           all_friends.push(f.receiver);
         }
       });
-      console.log({ Files: action.data.Files });
       return {
         ...state,
         all_friends,
@@ -132,7 +131,6 @@ export function filesReducer(
       };
 
     case "CHANGE_FILE_PARENT": {
-      console.log({ action });
       const { updatedFile1, updatedFile2, reIndexing } = action;
       return {
         ...state,
