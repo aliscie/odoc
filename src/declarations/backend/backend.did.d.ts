@@ -12,8 +12,7 @@ export interface ActionRating {
   'received' : number,
   'promises' : number,
 }
-export type ActionType = { 'Share' : SharePayment } |
-  { 'Payment' : CPayment };
+export type ActionType = { 'Payment' : CPayment };
 export interface AppMessage {
   'text' : string,
   'notification' : [] | [Notification],
@@ -210,10 +209,7 @@ export type NoteContent = { 'CustomContract' : [string, CPayment] } |
   { 'ApproveShareRequest' : string } |
   { 'CPaymentContract' : [CPayment, PaymentAction] } |
   { 'Unfriend' : null } |
-  { 'ShareRequestApplied' : SharesContract } |
-  { 'ShareRequestApproved' : SharesContract } |
   { 'ConformShare' : string } |
-  { 'SharePayment' : SharesContract } |
   { 'ApplyShareRequest' : string } |
   { 'NewMessage' : Message } |
   { 'RemovedFromChat' : string };
@@ -311,14 +307,6 @@ export interface Row {
   'contract' : [] | [Contract],
   'cells' : [] | [Array<[string, string]>],
 }
-export interface Share {
-  'extra_cells' : Array<[string, string]>,
-  'share_contract_id' : string,
-  'accumulation' : bigint,
-  'share' : bigint,
-  'confirmed' : boolean,
-  'receiver' : Principal,
-}
 export interface ShareFile { 'id' : string, 'owner' : Principal }
 export interface ShareFileInput {
   'id' : string,
@@ -330,33 +318,7 @@ export type ShareFilePermission = { 'CanComment' : null } |
   { 'None' : null } |
   { 'CanView' : null } |
   { 'CanUpdate' : null };
-export interface SharePayment { 'sender' : Principal, 'amount' : bigint }
-export interface SharePaymentOption {
-  'id' : string,
-  'title' : string,
-  'date' : string,
-  'description' : string,
-  'amount' : bigint,
-}
-export interface ShareRequest {
-  'id' : string,
-  'requester' : Principal,
-  'shares' : Array<Share>,
-  'is_applied' : boolean,
-  'name' : string,
-  'approvals' : Array<Principal>,
-}
-export interface SharesContract {
-  'payment_options' : Array<SharePaymentOption>,
-  'shares' : Array<Share>,
-  'payments' : Array<SharePayment>,
-  'name' : string,
-  'contract_id' : string,
-  'author' : string,
-  'shares_requests' : Array<[string, ShareRequest]>,
-}
-export type StoredContract = { 'CustomContract' : CustomContract } |
-  { 'SharesContract' : SharesContract };
+export type StoredContract = { 'CustomContract' : CustomContract };
 export interface Table { 'rows' : Array<Row>, 'columns' : Array<Column> }
 export interface User {
   'id' : string,
@@ -416,16 +378,12 @@ export interface WorkSpace {
 }
 export interface _SERVICE {
   'accept_friend_request' : ActorMethod<[string], Result>,
-  'apply_request' : ActorMethod<[string, string, string], Result_1>,
   'approve_high_promise' : ActorMethod<[CPayment], Result_1>,
-  'approve_request' : ActorMethod<[string, string, string], Result_1>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
   'confirmed_c_payment' : ActorMethod<[CPayment], Result_1>,
   'confirmed_cancellation' : ActorMethod<[CPayment], Result_1>,
-  'conform_share' : ActorMethod<[string, string, string], Result_1>,
   'counter' : ActorMethod<[], bigint>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
-  'create_share_contract' : ActorMethod<[Array<Share>], Result_2>,
   'delete_chat' : ActorMethod<[string], Result_2>,
   'delete_custom_contract' : ActorMethod<[string], Result_1>,
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
@@ -477,7 +435,6 @@ export interface _SERVICE {
     Result_2
   >,
   'object_on_cancel' : ActorMethod<[CPayment, string], Result_1>,
-  'pay_for_share_contract' : ActorMethod<[string, bigint, string], Result_1>,
   'rate_user' : ActorMethod<[Principal, Rating], Result_1>,
   'register' : ActorMethod<[RegisterUser], Result>,
   'reject_friend_request' : ActorMethod<[string], Result>,

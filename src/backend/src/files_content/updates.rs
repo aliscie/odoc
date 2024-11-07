@@ -4,7 +4,7 @@ use ic_cdk::caller;
 use ic_cdk_macros::update;
 use candid::{CandidType, Deserialize, Principal};
 
-use crate::{SharesContract, StoredContract};
+use crate::{StoredContract};
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
 use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId};
@@ -64,9 +64,9 @@ fn multi_updates(
     // let _ = FileNode::save_file_nodes(files);
 
     for contract in contracts.clone() {
-        if let StoredContract::SharesContract(share_contract) = contract.clone() {
-            share_contract.save()?;
-        }
+        // if let StoredContract::SharesContract(share_contract) = contract.clone() {
+        //     share_contract.save()?;
+        // }
         if let StoredContract::CustomContract(mut custom_contract) = contract {
             let res = custom_contract.save();
             if let Err(errors) = res {

@@ -28,35 +28,29 @@ fn search_files_content(search_text: String, case_insensitive: bool) -> HashMap<
     // also search in the SHARED_USER_FILES
     FILE_CONTENTS.with(|file_contents| {
         let file_contents = file_contents.borrow();
-        if let Some(file_map) = file_contents.get(&caller()) {
-            // filter by the file.content.values().content_node.text
-            let filtered_files = file_map
-                .iter()
-                .filter_map(|(file_id, content_tree)| {
-                    let filtered_content_tree = content_tree
-                        .iter()
-                        .filter(|content| {
+        let filtered_files = file_contents.iter()
+            .filter_map(|(file_id, content_node_vec)| {
+                let filtered_content_tree = content_node_vec.contents.iter()
+                    .flat_map(|(_, content_tree)| {
+                        content_tree.iter().filter(|content| {
                             if case_insensitive {
                                 content.text.to_lowercase().contains(&search_text.to_lowercase())
                             } else {
                                 content.text.contains(&search_text)
                             }
-                        })
-                        .map(|value| value.clone())
-                        .collect::<ContentTree>();
+                        }).cloned().collect::<ContentTree>()
+                    })
+                    .collect::<ContentTree>();
 
-                    if !filtered_content_tree.is_empty() {
-                        Some((file_id.clone(), filtered_content_tree))
-                    } else {
-                        None
-                    }
-                })
-                .collect::<HashMap<FileId, ContentTree>>();
+                if !filtered_content_tree.is_empty() {
+                    Some((file_id.clone(), filtered_content_tree))
+                } else {
+                    None
+                }
+            })
+            .collect::<HashMap<FileId, ContentTree>>();
 
-            filtered_files
-        } else {
-            HashMap::new()
-        }
+        filtered_files
     })
 }
 

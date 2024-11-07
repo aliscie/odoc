@@ -1,36 +1,90 @@
-import { handleRedux } from "../../../redux/store/handleRedux";
-import { useDispatch } from "react-redux";
-import LoaderButton from "../../../components/MuiComponents/LoaderButton";
-import { useBackendContext } from "../../../contexts/BackendContext";
-import { AccountBalanceWallet } from "@mui/icons-material";
-import { Result_3 } from "../../../../declarations/backend/backend.did";
+import { useSelector } from "react-redux";
+import { MonetizationOn } from "@mui/icons-material";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import AlertDialog from "../../../components/MuiComponents/AlertDialog";
+import React from "react";
+import Card from "../../../components/MuiComponents/Card";
+import {
+  Button,
+  CardContent,
+  CircularProgress,
+  Fade,
+  Input,
+} from "@mui/material";
 
-const Withdraw = (props: any) => {
-  const { backendActor } = useBackendContext();
-  const dispatch = useDispatch();
+function Content(props: any) {
+  const { profile } = useSelector((state: any) => state.filesState);
+  const [loading, setLoading] = React.useState(false);
+  const [copy, setCopy] = React.useState(false);
+  const [address, setAddress] = React.useState(null);
+  const [amount, setAmount] = React.useState(10);
+  const copyAddress = async () => {
+    navigator.clipboard.writeText(address);
+    setCopy(true);
+    setTimeout(() => {
+      setCopy(false);
+    }, 2000);
+  };
+  async function requestDepositAddress() {
+    // if (!isLoading) {
+    //   setLoading(true);
+    //   // const res = await withdraw(amount, address);
+    //   setLoading(false);
+    //   console.log({ withdraw_res: res });
+    // }
+  }
 
-  const handleWithdraw = async () => {
-    if (!backendActor) return;
+  return (
+    <Card className="feature-card" sx={{ margin: 1 }}>
+      <CardContent className="feature-card-content">
+        <Input
+          label="Amount"
+          type="number"
+          onChange={(e) => {
+            setAmount(e.target.value);
+            // setAddress(null);
+          }}
+        />
+        <Input
+          label="Withdraw address"
+          type="text"
+          onChange={(e) => {
+            // setAmount(e.target.value);
+            setAddress(e.target.value);
+          }}
+        />
+        {address && amount && (
+          <Button
+            disabled={loading}
+            color="primary"
+            variant="contained"
+            onClick={requestDepositAddress}
+            className="feature-card-body"
+          >
+            Withdraw
+          </Button>
+        )}
 
-    const res = (await backendActor.withdraw_usdt(100)) as Result_3; // Result_3 represent the return type of the function
+        <Fade in={copy}>
+          <span>
+            <DoneAllIcon color={"success"} />
+            <span> You successfully copied the address</span>
+          </span>
+        </Fade>
+      </CardContent>
+    </Card>
+  );
+}
 
-    if ("Ok" in res) {
-      dispatch(handleRedux("UPDATE_BALANCE", { balance: res.Ok }));
-    } else if ("Err" in res) {
-      console.error(`Withdraw failed: ${res.Err}`);
-    }
-
-    return res;
+const Withdraw = () => {
+  const handleDeposit = async () => {
+    return { Ok: null };
   };
 
   return (
-    <LoaderButton
-      variant="outlined"
-      startIcon={<AccountBalanceWallet />}
-      onClick={handleWithdraw}
-    >
-      Withdraw
-    </LoaderButton>
+    <AlertDialog handleSave={handleDeposit} content={<Content />}>
+      <MonetizationOn /> Withdraw
+    </AlertDialog>
   );
 };
 

@@ -1,6 +1,6 @@
 use ic_cdk::{caller};
 use crate::{FILE_CONTENTS, FILES_SHARE_STORE, USER_FILES, SHARED_USER_FILES};
-use crate::files::FileNode;
+use crate::files::{FileNode, FileNodeVector};
 
 use crate::storage_schema::{ContentTree};
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
@@ -41,6 +41,10 @@ pub struct ShareFile {
     //  contracts
 }
 
+#[derive(PartialEq, Clone, Debug, Deserialize, CandidType)]
+pub struct ShareFileNodeVector {
+    pub share_files: Vec<ShareFile>,
+}
 
 
 impl Storable for ShareFile {
@@ -53,7 +57,22 @@ impl Storable for ShareFile {
     }
 
     const BOUND: Bound = Bound::Bounded {
-        max_size: 200000,
+        max_size: 999999,
+        is_fixed_size: false,
+    };
+}
+
+impl Storable for ShareFileNodeVector {
+    fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Bounded {
+        max_size: 999999,
         is_fixed_size: false,
     };
 }
@@ -97,8 +116,8 @@ impl ShareFile {
 
     pub fn get_shared() -> Vec<ShareFile> {
         SHARED_USER_FILES.with(|files_share_store| {
-            files_share_store.borrow().get(&caller()).cloned().unwrap_or_default()
-        })
+            files_share_store.borrow().get(&caller().to_string())
+        }).unwrap_or_else(|| ShareFileNodeVector { share_files: vec![] }).share_files
     }
 
 
@@ -134,17 +153,9 @@ impl ShareFile {
 
         SHARED_USER_FILES.with(|shared_user_files| {
             let mut shared_user_files = shared_user_files.borrow_mut();
-            // get or insert caller()
-            let share_files = shared_user_files.entry(caller()).or_insert_with(Vec::new);
-            share_files.push(share_file);
+            let mut share_files_vec = shared_user_files.get(&caller().to_string()).unwrap_or_else(|| ShareFileNodeVector { share_files: vec![] });
+            share_files_vec.share_files.push(share_file);
             Ok(())
-            // if let Some(share_files) = shared_user_files.get_mut(&caller()) {
-            //     // Assuming you want to insert the share file into the current user's shared files
-            //     share_files.push(share_file);
-            //     Ok(())
-            // } else {
-            //     Err("No such user.".to_string())
-            // }
         })
     }
 
@@ -158,8 +169,8 @@ impl ShareFile {
         let file = USER_FILES.with(|files_store| {
             let user_files_vec = files_store.borrow();
             // Assuming user_files_vec is a HashMap<Principal, Vec<FileNode>>
-            let user_files_vec = user_files_vec.get(&shared_file.owner).ok_or("Owner not found.")?;
-            user_files_vec.iter().find(|f| f.id == shared_file.id).cloned().ok_or("No such file.")
+            let user_files_vec = user_files_vec.get(&shared_file.owner.to_string()).ok_or("Owner not found.")?;
+            user_files_vec.files.iter().find(|f| f.id == shared_file.id).cloned().ok_or("No such file.")
         })?;
 
         let can_view = file.check_permission(ShareFilePermission::CanView);
@@ -169,8 +180,8 @@ impl ShareFile {
 
         let content_tree = FILE_CONTENTS.with(|file_contents| {
             let file_contents = file_contents.borrow();
-            if let Some(file_map) = file_contents.get(&shared_file.owner) {
-                file_map.get(&shared_file.id).cloned()
+            if let Some(file_map) = file_contents.get(&shared_file.owner.to_string()) {
+                file_map.contents.get(&shared_file.id).cloned()
             } else {
                 None
             }

@@ -90,15 +90,15 @@ export function filesReducer(
     //         files_content: action.files_content
     //     };
     case "ADD_FILES_LIST":
-        return {
-            ...state,
-            files: [...state.files, ...action.files],
-        };
+      return {
+        ...state,
+        files: [...state.files, ...action.files],
+      };
     case "ADD_CONTENTS_LIST":
-        return {
-            ...state,
-            files_content: { ...state.files_content, ...action.contents },
-        };
+      return {
+        ...state,
+        files_content: { ...state.files_content, ...action.contents },
+      };
     case "ADD_FILE":
       return {
         ...state,
@@ -131,9 +131,18 @@ export function filesReducer(
       };
 
     case "CHANGE_FILE_PARENT": {
-      const { updatedFile1, updatedFile2, reIndexing } = action;
+      const { updatedFile1, updatedFile2, reIndexing, flattenedFiles } = action;
       return {
         ...state,
+        files: state.files.map((file) => {
+          if (file.id === updatedFile1.id) {
+            return updatedFile1;
+          }
+          if (file.id == updatedFile1.parent[0]) {
+            file.children.push(updatedFile1.id);
+          }
+          return file;
+        }),
         changes: {
           ...state.changes,
           files_indexing: [...state.changes.files_indexing, reIndexing], // Create a new array with reIndexing added
@@ -243,15 +252,17 @@ export function filesReducer(
       };
 
     case "UPDATE_FILE_TITLE":
-      let updatedFile = state.files.find((file) => file.id === action.id)!;
-      updatedFile.name = action.title;
+      const updatedFile = {
+        ...state.files.find((file) => file.id === action.id),
+        name: action.title,
+      };
       state = changeFile(updatedFile);
-      return <InitialState>{
+      return {
         ...state,
         files: state.files.map((file) =>
-          file.id === action.id ? { ...file, title: action.title } : file,
+          file.id === action.id ? { ...file, name: action.title } : file,
         ),
-        current_file: { ...state.current_file, title: action.title },
+        current_file: { ...state.current_file, name: action.title },
       };
 
     case "UPDATE_BALANCE":

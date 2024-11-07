@@ -57,15 +57,13 @@ pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
             let mut store = friends_store.borrow_mut();
 
             // Update the confirmed status of the friend request for the caller
-            if let Some(friend_request) = store.entry(caller()).or_default().iter_mut().find(|request| **request == f) {
+            if let Some(mut friend_request) = store.get(&caller().to_string()).unwrap_or_default().friends.iter_mut().find(|request| **request == f) {
                 friend_request.confirmed = true;
             }
 
             // Also update the confirmed status in the friend's list
-            if let Ok(user_principal_id) = user_principal.parse() {
-                if let Some(friend_request) = store.entry(user_principal_id).or_default().iter_mut().find(|request| **request == f) {
-                    friend_request.confirmed = true;
-                }
+            if let Some(mut friend_request) = store.get(&user_principal).unwrap_or_default().friends.iter_mut().find(|request| **request == f) {
+                friend_request.confirmed = true;
             }
         });
 

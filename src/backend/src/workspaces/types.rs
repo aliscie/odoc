@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use ic_cdk::caller;
 use ic_websocket_cdk::{CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments, CanisterWsOpenResult, WsHandlers, WsInitParams};
 use crate::{init_state, WORK_SPACES};
@@ -7,7 +8,7 @@ use num::ToPrimitive;
 // use crate::state::{init_state, read_state};
 use alloy_consensus::{SignableTransaction, TxEip1559, TxEnvelope};
 use alloy_primitives::{hex, Signature, TxKind, U256};
-use candid::{CandidType, Deserialize, Nat, Principal};
+use candid::{CandidType, Decode, Deserialize, Encode, Nat, Principal};
 use evm_rpc_canister_types::{
     BlockTag, EthMainnetService, EthSepoliaService, EvmRpcCanister, GetTransactionCountArgs,
     GetTransactionCountResult, MultiGetTransactionCountResult, RequestResult, RpcService,
@@ -17,11 +18,15 @@ use ic_cdk::{init, update};
 use ic_ethereum_types::Address;
 use num::{BigUint, Num};
 use std::str::FromStr;
+use ic_stable_structures::Storable;
+use ic_stable_structures::storable::Bound;
 // use crate::workspaces::init_state;
 
 pub const EVM_RPC_CANISTER_ID: Principal =
-    Principal::from_slice(b"7hfb6-caaaa-aaaar-qadga-cai"); // 7hfb6-caaaa-aaaar-qadga-cai
+    Principal::from_slice(b"7hfb6-caaaa-aaaar-qadga-cai");
+// 7hfb6-caaaa-aaaar-qadga-cai
 pub const EVM_RPC: EvmRpcCanister = EvmRpcCanister(EVM_RPC_CANISTER_ID);
+
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct WorkSpace {
@@ -32,6 +37,25 @@ pub struct WorkSpace {
     pub members: Vec<Principal>,
     pub admins: Vec<Principal>,
     pub creator: Principal,
+}
+
+#[derive(Clone, Debug, Deserialize, CandidType)]
+pub struct WorkSpaceVec {
+    pub workspaces: Vec<WorkSpace>,
+}
+
+
+
+impl Storable for WorkSpaceVec {
+    fn to_bytes(&self) -> Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Unbounded;
 }
 
 impl WorkSpace {
@@ -45,35 +69,43 @@ impl WorkSpace {
             admins: vec![caller()],
             creator: caller(),
         };
+
         WORK_SPACES.with(|store| {
             let mut work_spaces = store.borrow_mut();
-            if work_spaces.iter().any(|ws| ws.name == name) {
+            if work_spaces.iter().any(|(_, ws_vec)| ws_vec.workspaces.iter().any(|w| w.name == name)) {
                 return Err("Workspace with the same name already exists".to_string());
             } else {
-                work_spaces.push(new_work_space.clone());
+                let mut ws_vec = work_spaces.get(&new_work_space.id).unwrap_or_else(|| WorkSpaceVec { workspaces: vec![] });
+                ws_vec.workspaces.push(new_work_space.clone());
+                work_spaces.insert(new_work_space.id.clone(), ws_vec);
             }
-            return Ok(new_work_space);
+            Ok(new_work_space)
         })
     }
 
     pub fn get(name: String) -> Option<Self> {
         WORK_SPACES.with(|store| {
             let work_spaces = store.borrow();
-            work_spaces.iter().find(|ws| ws.name == name).cloned()
+            let all_workspaces: Vec<WorkSpace> = work_spaces.iter()
+                .flat_map(|(_, ws_vec)| ws_vec.workspaces.clone())
+                .collect();
+            all_workspaces
+                .into_iter()
+                .find(|ws| ws.name == name)
         })
     }
     pub fn delete(&self) -> Result<Self, String> {
         WORK_SPACES.with(|store| {
             let mut work_spaces = store.borrow_mut();
-            let index = work_spaces.iter().position(|ws| ws.id == self.id);
-            if let Some(index) = index {
-                let deleted_workspace = work_spaces.remove(index);
-                Ok(deleted_workspace)
+            if let Some(mut ws_vec) = work_spaces.get(&self.id) {
+                ws_vec.workspaces.retain(|ws| ws.id != self.id);
+                Ok(self.clone())
             } else {
                 Err("Workspace not found".to_string())
             }
         })
     }
+
 
     pub fn save(&self) -> Result<Self, String> {
         // Get the existing workspace by ID
@@ -89,15 +121,16 @@ impl WorkSpace {
         // Access the WORK_SPACES and either update or insert
         WORK_SPACES.with(|store| {
             let mut work_spaces = store.borrow_mut();
-
-            // Find the index of the workspace if it exists
-            if let Some(index) = work_spaces.iter().position(|ws| ws.id == self.id) {
-                // Update the existing workspace
-                work_spaces[index] = self.clone();
-            } else {
-                // Insert a new workspace if it doesn't exist
-                work_spaces.push(self.clone());
+            for (_, mut ws_vec) in work_spaces.iter() {
+                if let Some(pos) = ws_vec.workspaces.iter().position(|ws| ws.id == self.id) {
+                    ws_vec.workspaces[pos] = self.clone();
+                    return Ok::<WorkSpace, String>(self.clone());
+                }
             }
+            let mut new_ws_vec = work_spaces.get(&self.id).unwrap_or_else(|| WorkSpaceVec { workspaces: vec![] });
+            new_ws_vec.workspaces.push(self.clone());
+            work_spaces.insert(self.id.clone(), new_ws_vec);
+            Ok::<WorkSpace, String>(self.clone())
         });
 
         Ok(self.clone())
@@ -156,7 +189,7 @@ impl From<&EcdsaKeyName> for EcdsaKeyId {
                 EcdsaKeyName::TestKey1 => "test_key_1",
                 EcdsaKeyName::ProductionKey1 => "key_1",
             }
-            .to_string(),
+                .to_string(),
         }
     }
 }

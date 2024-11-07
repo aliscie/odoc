@@ -1,13 +1,18 @@
+use std::borrow::Cow;
+use std::cell::{Ref, RefCell};
+use std::collections::HashMap;
 use std::sync::atomic::Ordering;
 
-use candid::{CandidType, Deserialize, Principal};
+use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 use ic_cdk::{caller, print};
+use ic_stable_structures::{BTreeMap, Storable};
+use ic_stable_structures::storable::Bound;
 
 pub use queries::*;
 pub use types::*;
 pub use updates::*;
 
-use crate::COUNTER;
+use crate::{COUNTER, Memory};
 use crate::POSTS;
 use crate::storage_schema::ContentTree;
 use crate::user::User;
@@ -25,6 +30,19 @@ pub struct Post {
     date_created: u64,
     votes_up: Vec<Principal>,
     votes_down: Vec<Principal>,
+}
+
+
+impl Storable for Post {
+    fn to_bytes(&self) -> Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Unbounded;
 }
 
 
@@ -89,14 +107,10 @@ impl Post {
         POSTS.with(|posts| {
             let posts = posts.borrow();
             let mut posts_today = Vec::new();
-            for post in posts.values() {
+            for (_, post) in posts.iter() {
                 let date = ic_cdk::api::time();
                 let diff = date - post.date_created;
-                // Error creating post. Please wait 213503982 hours and 406799 minutes before you can post again
-                // let twenty_four_hours = 24 * 60 * 60 * 1000000;
                 if post.creator == caller().to_string() && diff < 86400000000 {
-                    // count += 1;
-
                     posts_today.push(post.clone());
                 }
             }
@@ -110,19 +124,19 @@ impl Post {
             let total_posts = posts.len();
 
             // If start is beyond the total number of posts, return an empty vector
-            if start.clone() >= total_posts {
+            if start >= total_posts as usize {
                 return Vec::new();
             }
 
             // Calculate the actual count based on the available posts
-            let actual_count = usize::min(count, total_posts - start.clone());
+            let actual_count = usize::min(count, (total_posts - start as u64).try_into().unwrap());
 
             // for each post get the user User::get_user_from_text_principal(user_principal.clone());
             posts
-                .values()
-                .skip(start)
+                .iter()
+                .skip((start as u64).try_into().unwrap())
                 .take(actual_count)
-                .map(|post| {
+                .map(|(_, post)| {
                     let user = User::get_user_from_text_principal(&post.creator).unwrap();
                     let creator = UserFE {
                         id: user.id.clone(),
@@ -133,7 +147,7 @@ impl Post {
                         content_tree: post.content_tree.clone(),
                         tags: post.tags.clone(),
                         creator,
-                        date_created: post.date_created.clone(),
+                        date_created: post.date_created,
                         votes_up: post.votes_up.clone(),
                         votes_down: post.votes_down.clone(),
                     }
@@ -145,8 +159,9 @@ impl Post {
 
     pub fn get_filtered(tags: Option<Vec<String>>, creator: Option<String>) -> Vec<PostUser> {
         POSTS.with(|posts| {
-            let posts = posts.borrow();
-            let mut filtered_posts = posts.values().collect::<Vec<&Post>>();
+            let posts: Ref<BTreeMap<String, Post, Memory>> = posts.borrow();
+            let map_posts : HashMap<String, Post> = posts.iter().map(|(k, v)| (k.clone(), v.clone())).collect();
+            let mut filtered_posts: Vec<&Post> = map_posts.values().collect();
             if let Some(tags) = tags {
                 filtered_posts = filtered_posts
                     .into_iter()
@@ -161,8 +176,6 @@ impl Post {
             }
             filtered_posts
                 .into_iter()
-                // .skip(start)
-                // .take(actual_count)
                 .map(|post| {
                     let user = User::get_user_from_text_principal(&post.creator).unwrap();
                     let creator = UserFE {
@@ -174,12 +187,12 @@ impl Post {
                         content_tree: post.content_tree.clone(),
                         tags: post.tags.clone(),
                         creator,
-                        date_created: post.date_created.clone(),
+                        date_created: post.date_created,
                         votes_up: post.votes_up.clone(),
                         votes_down: post.votes_down.clone(),
                     }
                 })
-                .collect()
+                .collect::<Vec<PostUser>>()
         })
     }
 

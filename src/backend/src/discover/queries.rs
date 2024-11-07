@@ -36,9 +36,10 @@ fn search_posts(text_to_find: String) -> Vec<PostUser> {
         let posts = posts.borrow();
 
         let filtered_user_posts = posts
-            .values()
-            .flat_map(|post| {
-                post.content_tree
+            .iter()
+            .flat_map(|(_, post)| {
+                let content_tree = post.content_tree.clone();
+                content_tree
                     .iter()
                     .filter(|node| node.text.contains(&text_to_find))
                     .map(move |node| {
@@ -57,6 +58,7 @@ fn search_posts(text_to_find: String) -> Vec<PostUser> {
                             votes_down: post.votes_down.clone(),
                         }
                     })
+                    .collect::<Vec<PostUser>>()
             })
             .collect::<Vec<PostUser>>();
 

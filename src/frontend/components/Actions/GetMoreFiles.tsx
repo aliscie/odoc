@@ -35,7 +35,7 @@ const GetMoreFiles: React.FC = () => {
   };
 
   return (
-    <Tooltip title="Create a new document" arrow>
+    <Tooltip title="Load more files" arrow>
       <Button onClick={handleCreateFile}>More files</Button>
     </Tooltip>
   );

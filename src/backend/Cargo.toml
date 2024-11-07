@@ -12,7 +12,7 @@ ic-crypto-ecdsa-secp256k1 = { git = "https://github.com/dfinity/ic", tag = "rele
 ic-crypto-sha3 = { git = "https://github.com/dfinity/ic", tag = "release-2024-06-26_23-01-base", package = "ic-crypto-sha3" }
 ic-ethereum-types = { git = "https://github.com/dfinity/ic", tag = "release-2024-06-26_23-01-base", package = "ic-ethereum-types" }
 getrandom = { version = "*", default-features = false, features = ["custom"] }
-ic-websocket-cdk = "0.4.0"
+ic-websocket-cdk = "0.4.1"
 candid = "0.10.10"
 ic-cdk = "0.16.0"
 ic-cdk-macros = "0.16.0"
@@ -25,11 +25,15 @@ evm-rpc-canister-types = "3.0.0"
 alloy-primitives = "0.8.8"
 alloy-consensus = "0.5.2"
 alloy-eips = "0.5.2"
-ic-stable-structures = "0.6.5"
 serde_json = "1.0.132"
 num = "0.4.3"
 serde_bytes = "0.11.15"
 ethers-core = "2.0.14"
+ic-stable-structures = "0.6.5"
+hex = "0.4.3"
+ic-ledger-types = "0.9.0"
+#bitcoin = "0.31.0"
+#secp256k1 = "0.28.0"
 
 [dev-dependencies]
 #pocket-ic = "2.0.1"

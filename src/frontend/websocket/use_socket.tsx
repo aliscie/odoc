@@ -11,14 +11,15 @@ import { AppMessage, Friend } from "../../declarations/backend/backend.did";
 function useSocket() {
   const { profile } = useSelector((state: any) => state.filesState);
   let gatewayUrl = "wss://gateway.icws.io";
-  let icUrl = `https://y43fd-5qaaa-aaaal-acbqa-cai.ic0.app`;
+  // let icUrl = `https://odoc.app`;
+  let icUrl = `https://lwdq3-vqaaa-aaaal-acwda-cai.icp0.io`;
   if (import.meta.env.VITE_DFX_NETWORK != "ic") {
     gatewayUrl = "ws://127.0.0.1:8084";
     icUrl = `http://127.0.0.1:${import.meta.env.VITE_DFX_PORT}`;
   }
+
   const dispatch = useDispatch();
   const [ws, setWs] = useState<IcWebSocket | undefined>(undefined);
-  // let anonymousIdentity = Principal.fromText("2vxsx-fae");
   useEffect(() => {
     (async () => {
       const authClient = await AuthClient.create();
@@ -43,9 +44,6 @@ function useSocket() {
 
       ws.onmessage = async (event) => {
         let data: AppMessage = event.data;
-
-        // console.log("Received message:", data);
-
         let keys =
           data.notification[0] &&
           data.notification[0].content &&
@@ -74,7 +72,9 @@ function useSocket() {
             dispatch(handleRedux("ADD_FRIEND", { friend }));
             dispatch(
               handleRedux("NOTIFY", { new_notification: data.notification[0] }),
-            );https://stackoverflow.com/questions/54182806/redux-seems-slow-when-saving-large-collection-to-store
+            );
+            // redux-seems-slow-when-saving-large-collection-to-store
+            // https://stackoverflow.com/questions/54182806/redux-seems-slow-when-saving-large-collection-to-store
             break;
           case "ContractUpdate":
             break;
@@ -113,8 +113,8 @@ function useSocket() {
         }
       };
 
-      ws.onclose = () => {
-        console.log("Disconnected from the ws canister");
+      ws.onclose = (closeMessage) => {
+        console.log(closeMessage, "Disconnected from the ws canister");
       };
 
       ws.onerror = (error) => {

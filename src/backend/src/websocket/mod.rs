@@ -70,7 +70,8 @@ fn get_user_notifications() -> Vec<Notification> {
 fn see_notifications(id: String) {
     NOTIFICATIONS.with(|notifications| {
         let mut user_notifications = notifications.borrow_mut();
-        let user_notifications = user_notifications.entry(caller()).or_insert_with(Vec::new);
+        let mut user_notifications = user_notifications.get(&caller().to_string())
+            .unwrap_or_else(|| NotificationVec { notifications: vec![] }).notifications;
         for notification in user_notifications.iter_mut() {
             if notification.id == id {
                 notification.is_seen = true;

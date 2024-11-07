@@ -23,20 +23,22 @@ const CreateFile: React.FC = () => {
   }
   const handleCreateFile = async () => {
     const id = randomString();
-    const newFile: FileNode = {
+    const new_file: FileNode = {
       id,
-      name: "Untitled",
-      parent: [],
-      children: [],
+      permission: {
+        None: null,
+      },
+      content_id: [],
       share_id: [],
+      name: "Untitled",
+      workspaces: [],
+      children: [],
       author: profile.id,
       users_permissions: [],
-      permission: { None: null },
-      content_id: [],
-      workspaces,
+      parent: [],
     };
 
-    dispatch(handleRedux("ADD_FILE", { new_file: newFile }));
+    dispatch(handleRedux("ADD_FILE", { new_file }));
     dispatch(handleRedux("ADD_CONTENT", { id, content: fileContentSample }));
     closeSnackbar();
     enqueueSnackbar("New file is created!", { variant: "success" });

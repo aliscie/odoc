@@ -2,8 +2,10 @@ use candid::{CandidType, encode_one, decode_one};
 use ic_cdk::{print, api::time, caller, println};
 use serde::{Deserialize, Serialize};
 use ic_websocket_cdk::{
-     ClientPrincipal, OnCloseCallbackArgs, OnMessageCallbackArgs, OnOpenCallbackArgs,
+    send,
+    ClientPrincipal, OnCloseCallbackArgs, OnMessageCallbackArgs, OnOpenCallbackArgs,
 };
+
 use crate::websocket::Notification;
 
 
@@ -40,9 +42,9 @@ pub fn on_message(args: OnMessageCallbackArgs) {
 }
 
 pub fn send_app_message(client_principal: ClientPrincipal, msg: AppMessage) {
-    // if let Err(e) = ws_send(client_principal, msg.candid_serialize()) {
-    //     println!("Could not send message: {}", e);
-    // }
+    if let Err(e) = send(client_principal, msg.candid_serialize()) {
+        println!("Could not send message: {}", e);
+    }
 }
 
 pub fn on_close(args: OnCloseCallbackArgs) {

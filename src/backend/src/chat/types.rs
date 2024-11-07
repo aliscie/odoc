@@ -1,7 +1,10 @@
+use std::borrow::Cow;
 use std::sync::atomic::Ordering;
 
-use candid::{CandidType, Deserialize, Principal};
+use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 use ic_cdk::caller;
+use ic_stable_structures::Storable;
+use ic_stable_structures::storable::Bound;
 use serde::Serialize;
 
 use crate::{CHATS, MY_CHATS};
@@ -21,6 +24,39 @@ pub struct Chat {
     pub messages: Vec<Message>,
     pub creator: Principal,
     pub workspaces: Vec<String>, // TODO We may not need this field
+}
+
+
+#[derive(Clone, Debug, Deserialize, CandidType, Default)]
+pub struct ChatsIdVec {
+    pub chats: Vec<String>,
+
+}
+
+
+impl Storable for ChatsIdVec {
+    fn to_bytes(&self) -> Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Unbounded;
+}
+
+
+impl Storable for Chat {
+    fn to_bytes(&self) -> Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
+
+    fn from_bytes(bytes: Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Unbounded;
 }
 
 #[derive(Eq, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
@@ -46,7 +82,7 @@ impl Chat {
                 messages: vec![],
                 creator: caller(),
             };
-            chats.push(chat.clone());
+            chats.insert(chat.id.clone(), chat.clone());
             chat
         })
     }
@@ -54,33 +90,29 @@ impl Chat {
     pub fn get(id: &str) -> Option<Self> {
         CHATS.with(|store| {
             let chats = store.borrow();
-            chats.iter().find(|c| c.id == id).cloned()
+            chats.iter().find(|(chat_id, chat)| chat.id == id).map(|(_, chat)| chat.clone())
         })
     }
 
     pub fn get_by_user(user: Principal) -> Option<Self> {
         CHATS.with(|store| {
             let chats = store.borrow();
-            // both caller and user are in admins
-            chats.iter().find(|c| c.admins.contains(&user) & c.admins.contains(&caller())).cloned()
+            chats.iter().find(|(_, chat)| chat.admins.contains(&user) && chat.admins.contains(&caller())).map(|(_, chat)| chat.clone())
         })
     }
 
     pub fn save(&self) -> Self {
         CHATS.with(|store| {
             let mut chats = store.borrow_mut();
-            // push the new chat if chat.id not exists in chats
-            let chat = chats.iter_mut().find(|c| c.id == self.id);
-            if chat.is_none() {
-                chats.push(self.clone());
-            } else {
-                let mut chat = chat.unwrap();
+            if let Some(mut chat) = chats.get(&self.id) {
                 chat.name = self.name.clone();
                 chat.admins = self.admins.clone();
                 chat.members = self.members.clone();
                 chat.messages = self.messages.clone();
                 chat.creator = self.creator.clone();
                 chat.workspaces = self.workspaces.clone();
+            } else {
+                chats.insert(self.id.clone(), self.clone());
             }
             self.clone()
         })
@@ -98,21 +130,21 @@ impl Chat {
     pub fn get_chats() -> Vec<Chat> {
         CHATS.with(|store| {
             let chats = store.borrow();
-            chats.clone()
+            chats.iter().map(|(_, chat)| chat.clone()).collect::<Vec<Chat>>()
         })
     }
 
     pub fn get_my_chats() -> Vec<Chat> {
         CHATS.with(|store| {
             let my_chats_ids = MY_CHATS.with(|my_chats_store| {
-                my_chats_store.borrow().get(&caller()).unwrap_or(&vec![]).clone()
+                my_chats_store.borrow().get(&caller().to_text()).unwrap_or_else(|| ChatsIdVec { chats: vec![] }).clone()
             });
 
             let chats = store.borrow();
             my_chats_ids
-                .iter()
-                .filter_map(|id| chats.iter().find(|c| c.id == *id).cloned())
-                .collect()
+                .chats.iter()
+                .filter_map(|id| chats.get(id))
+                .collect::<Vec<Chat>>()
         })
     }
 
@@ -120,35 +152,30 @@ impl Chat {
         MY_CHATS.with(|store| {
             let mut my_chats = store.borrow_mut();
             // get user or insert empty vec
-            let mut my_chats_store = my_chats.entry(user).or_default().clone();
-            if !my_chats_store.contains(&self.id) {
-                my_chats_store.push(self.id.clone());
-                my_chats.insert(user, my_chats_store);
+            let mut my_chats_store = my_chats.get(&user.to_string()).unwrap_or_else(|| ChatsIdVec { chats: vec![] }).clone();
+            if !my_chats_store.chats.contains(&self.id) {
+                my_chats_store.chats.push(self.id.clone());
+                my_chats.insert(user.to_string(), my_chats_store);
             }
         })
     }
+
     pub fn delete(&self) -> Result<String, String> {
         CHATS.with(|store| {
             let mut chats = store.borrow_mut();
-            // chats.retain(|c|c.id==self.id)
-            // Find the position of the chat by its ID
-            if let Some(pos) = chats.iter().position(|c| c.id == self.id) {
-                // Remove the chat from the list
-                chats.remove(pos);
-            }
+            chats.remove(&self.id);
         });
-        return Ok("chat deleted".to_string());
+        Ok("chat deleted".to_string())
     }
-
 
     pub fn remove_from_my_chats(&self, user: Principal) {
         MY_CHATS.with(|store| {
             let mut my_chats = store.borrow_mut();
             // get user or insert empty vec
-            let mut my_chats_store = my_chats.entry(user).or_default().clone();
-            if my_chats_store.contains(&self.id) {
-                my_chats_store.retain(|id| id != &self.id);
-                my_chats.insert(user, my_chats_store);
+            let mut my_chats_store = my_chats.get(&user.to_string()).unwrap_or_default().clone();
+            if my_chats_store.chats.contains(&self.id) {
+                my_chats_store.chats.retain(|id| id != &self.id);
+                my_chats.insert(user.to_string(), my_chats_store);
             }
         });
         let content = NoteContent::RemovedFromChat(self.id.clone());

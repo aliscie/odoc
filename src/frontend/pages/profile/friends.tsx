@@ -129,6 +129,7 @@ function SecondaryActionSwitch(props) {
       { variant: "info" },
     );
     let friend_request = await backendActor.send_friend_request(user);
+    console.log({ friend_request });
     dispatch(
       handleRedux("ADD_FRIEND", {
         friend: {

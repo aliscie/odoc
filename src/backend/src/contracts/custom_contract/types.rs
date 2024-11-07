@@ -5,7 +5,7 @@ use candid::Principal;
 use ic_cdk::{call, caller};
 use serde::Serialize;
 
-use crate::{CONTRACTS_STORE, ExchangeType, StoredContract, Wallet};
+use crate::{CONTRACTS_STORE, ExchangeType, StoredContract, StoredContractVec, Wallet};
 use crate::contracts::custom_contract::utils::{notify_about_promise};
 use crate::storage_schema::ContractId;
 use crate::tables::{Column, ContractPermissionType, Execute, Filter, Formula, PermissionType};
@@ -312,10 +312,17 @@ impl CustomContract {
     pub fn get(id: &String, creator: &Principal) -> Option<Self> {
         CONTRACTS_STORE.with(|contracts_store| {
             let caller_contracts = contracts_store.borrow();
-            let caller_contracts_map = caller_contracts.get(creator)?;
-            let contract = caller_contracts_map.get(id)?;
+            let stored_contract_vec = caller_contracts.get(&creator.to_text())?.stored_contracts.clone();
+
+            // Convert Vec<StoredContract> to HashMap<ContractId, StoredContract>
+            let mut contract_map = HashMap::new();
+            for (index, contract) in stored_contract_vec.into_iter().enumerate() {
+                contract_map.insert(index.to_string(), contract);
+            }
+
+            let contract = contract_map.get(id)?;
             match contract {
-                StoredContract::CustomContract(contract) => Some(contract.clone()), // Change here
+                StoredContract::CustomContract(contract) => Some(contract.clone()),
                 _ => None
             }
         })
@@ -325,8 +332,15 @@ impl CustomContract {
     pub fn get_for_user(id: String, user: Principal) -> Option<Self> {
         CONTRACTS_STORE.with(|contracts_store| {
             let caller_contracts = contracts_store.borrow();
-            let caller_contracts_map = caller_contracts.get(&user)?;
-            let contract = caller_contracts_map.get(&id)?;
+            let stored_contract_vec = caller_contracts.get(&user.to_string())?.stored_contracts.clone();
+
+            // Convert Vec<StoredContract> to HashMap<ContractId, StoredContract>
+            let mut contract_map = HashMap::new();
+            for (index, contract) in stored_contract_vec.into_iter().enumerate() {
+                contract_map.insert(index.to_string(), contract);
+            }
+
+            let contract = contract_map.get(&id)?;
             match contract {
                 StoredContract::CustomContract(contract) => Some(contract.clone()),
                 _ => None
@@ -360,16 +374,40 @@ impl CustomContract {
 
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
-            let mut caller_contracts_map = caller_contracts.get_mut(&caller()).unwrap();
-            caller_contracts_map.remove(&self.id);
+            let stored_contract_vec = caller_contracts.get(&caller().to_string()).unwrap().stored_contracts.clone();
+
+            // Convert Vec<StoredContract> to HashMap<ContractId, StoredContract>
+            let mut contract_map = HashMap::new();
+            for (index, contract) in stored_contract_vec.into_iter().enumerate() {
+                contract_map.insert(index.to_string(), contract);
+            }
+
+            contract_map.remove(&self.id);
+
+            // Convert HashMap<ContractId, StoredContract> back to Vec<StoredContract>
+            let updated_contract_vec: Vec<StoredContract> = contract_map.into_iter().map(|(_, contract)| contract).collect();
+            // caller_contracts.get_mut(&caller().to_string()).unwrap().stored_contracts = updated_contract_vec;
+            caller_contracts.insert(caller().to_string(), StoredContractVec { stored_contracts: updated_contract_vec });
         });
+
         Ok(())
     }
     pub fn pure_save(&self) -> Result<Self, String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
-            let caller_contracts_map = caller_contracts.entry(self.creator).or_insert_with(HashMap::new);
-            caller_contracts_map.insert(self.id.clone(), StoredContract::CustomContract(self.clone()));
+            if let Some(mut caller_contracts_map) = caller_contracts.get(&self.creator.to_text()) {
+                let mut caller_contracts_map = caller_contracts.get(&self.creator.to_text()).unwrap();
+                caller_contracts_map.stored_contracts.push(StoredContract::CustomContract(self.clone()));
+            } else {
+                let new_map = StoredContractVec { stored_contracts: vec![StoredContract::CustomContract(self.clone())] };
+                caller_contracts.insert(self.creator.to_text(), new_map);
+            }
+            // let mut caller_contracts_map = caller_contracts.get(&self.creator.to_text()).or_else(|| {
+            //     let new_map = StoredContractVec { stored_contracts: vec![] };
+            //     caller_contracts.insert(self.creator.to_text(), new_map.clone());
+            //     Some(new_map)
+            // }).unwrap();
+            // caller_contracts_map.stored_contracts.push(StoredContract::CustomContract(self.clone()));
         });
         Ok(self.clone())
     }

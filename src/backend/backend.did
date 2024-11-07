@@ -8,7 +8,7 @@ type ActionRating = record {
   received : float64;
   promises : float64;
 };
-type ActionType = variant { Share : SharePayment; Payment : CPayment };
+type ActionType = variant { Payment : CPayment };
 type AppMessage = record {
   "text" : text;
   notification : opt Notification;
@@ -189,10 +189,7 @@ type NoteContent = variant {
   ApproveShareRequest : text;
   CPaymentContract : record { CPayment; PaymentAction };
   Unfriend;
-  ShareRequestApplied : SharesContract;
-  ShareRequestApproved : SharesContract;
   ConformShare : text;
-  SharePayment : SharesContract;
   ApplyShareRequest : text;
   NewMessage : Message;
   RemovedFromChat : text;
@@ -283,14 +280,6 @@ type Row = record {
   contract : opt Contract;
   cells : opt vec record { text; text };
 };
-type Share = record {
-  extra_cells : vec record { text; text };
-  share_contract_id : text;
-  accumulation : nat64;
-  share : nat64;
-  confirmed : bool;
-  receiver : principal;
-};
 type ShareFile = record { id : text; owner : principal };
 type ShareFileInput = record {
   id : text;
@@ -299,35 +288,7 @@ type ShareFileInput = record {
   users_permissions : vec record { principal; ShareFilePermission };
 };
 type ShareFilePermission = variant { CanComment; None; CanView; CanUpdate };
-type SharePayment = record { sender : principal; amount : nat64 };
-type SharePaymentOption = record {
-  id : text;
-  title : text;
-  date : text;
-  description : text;
-  amount : nat64;
-};
-type ShareRequest = record {
-  id : text;
-  requester : principal;
-  shares : vec Share;
-  is_applied : bool;
-  name : text;
-  approvals : vec principal;
-};
-type SharesContract = record {
-  payment_options : vec SharePaymentOption;
-  shares : vec Share;
-  payments : vec SharePayment;
-  name : text;
-  contract_id : text;
-  author : text;
-  shares_requests : vec record { text; ShareRequest };
-};
-type StoredContract = variant {
-  CustomContract : CustomContract;
-  SharesContract : SharesContract;
-};
+type StoredContract = variant { CustomContract : CustomContract };
 type Table = record { rows : vec Row; columns : vec Column };
 type User = record { id : text; name : text; description : text; photo : blob };
 type UserFE = record { id : text; name : text };
@@ -382,16 +343,12 @@ type WorkSpace = record {
 };
 service : () -> {
   accept_friend_request : (text) -> (Result);
-  apply_request : (text, text, text) -> (Result_1);
   approve_high_promise : (CPayment) -> (Result_1);
-  approve_request : (text, text, text) -> (Result_1);
   cancel_friend_request : (text) -> (Result);
   confirmed_c_payment : (CPayment) -> (Result_1);
   confirmed_cancellation : (CPayment) -> (Result_1);
-  conform_share : (text, text, text) -> (Result_1);
   counter : () -> (nat64) query;
   create_new_file : (text, opt text) -> (FileNode);
-  create_share_contract : (vec Share) -> (Result_2);
   delete_chat : (text) -> (Result_2);
   delete_custom_contract : (text) -> (Result_1);
   delete_file : (text) -> (opt FileNode);
@@ -434,7 +391,6 @@ service : () -> {
       vec FileIndexing,
     ) -> (Result_2);
   object_on_cancel : (CPayment, text) -> (Result_1);
-  pay_for_share_contract : (text, nat64, text) -> (Result_1);
   rate_user : (principal, Rating) -> (Result_1);
   register : (RegisterUser) -> (Result);
   reject_friend_request : (text) -> (Result);

@@ -62,21 +62,19 @@ pub struct Wallet {
     // pub exchanges: Vec<CPayment>,
 }
 
+impl Storable for Wallet {
+    fn to_bytes(&self) -> Cow<[u8]> {
+        Cow::Owned(Encode!(self).unwrap())
+    }
 
-// impl Storable for Wallet {
-//     fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
-//         Cow::Owned(Encode!(self).unwrap())
-//     }
-//
-//     fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
-//         Decode!(bytes.as_ref(), Self).unwrap()
-//     }
-//
-//     const BOUND: Bound = Bound::Bounded {
-//         max_size: 200000,
-//         is_fixed_size: false,
-//     };
-// }
+    fn from_bytes(bytes: Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap()
+    }
+
+    const BOUND: Bound = Bound::Unbounded;
+}
+
+
 
 impl Wallet {
     pub fn check_dept(&self, amount: f64) -> Result<(), String> {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./style/navBar.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -47,7 +47,6 @@ const NavBar = (props: any) => {
     };
     let new_index = over.data.current.sortable.index;
 
-
     if (updatedFile1.parent.length > 0 && new_index > 0) {
       const parentIndex = flattenedFiles.findIndex(
         (f) => f.id == updatedFile1.parent[0],
@@ -69,7 +68,15 @@ const NavBar = (props: any) => {
         flattenedFiles,
       }),
     );
+
   };
+
+  const [defaultItems, setdefaultItems] = useState([]);
+
+  useEffect(() => {
+    setdefaultItems(convertToTreeItems(files));
+  }, [files]);
+
   return (
     <div>
       <Drawer
@@ -111,9 +118,9 @@ const NavBar = (props: any) => {
         {isLoggedIn && (
           <>
             <SortableTree
-              key={files}
+              key={defaultItems}
               dragEnd={dragEnd}
-              defaultItems={files.length > 0 ? convertToTreeItems(files) : []}
+              defaultItems={defaultItems}
             />
             <Divider />
             <CreateFile />

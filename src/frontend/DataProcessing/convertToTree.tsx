@@ -1,32 +1,27 @@
 import { FileNode } from "../../declarations/backend/backend.did";
 
-function convertToTreeItems(items: FileNode[]): any[] {
-  // Create a mapping of id to item for quick lookup
-  const idToItemMap: Record<string, FileNode> = {};
+function convertToTreeItems(items: FileNode[], rootId = null): any[] {
+  const itemMap = new Map<string, any>();
+
+  // First pass: create a map of all items by their id
   items.forEach((item) => {
-    idToItemMap[item.id] = item;
+    itemMap.set(item.id, { ...item, children: [] });
   });
 
-  // Function to recursively build the tree
-  function buildTree(item: FileNode): any {
-    if (!item) {
-      return null
+  // Second pass: assign children to their respective parents
+  const tree = [];
+
+  itemMap.forEach((item) => {
+    if (item.parent.length > 0 && itemMap.has(item.parent[0])) {
+      const parent = itemMap.get(item.parent[0]);
+      parent.children.push(item);
+    } else {
+      // If there's no parent, it's a root item
+      tree.push(item);
     }
-    const { id, children: childIds, parent, ...rest } = item;
-    const children = childIds.map((childId) => buildTree(idToItemMap[childId]));
-
-    return {
-      id,
-      children,
-      ...rest,
-    };
-  }
-
-  // Build the tree for each top-level item
-  const treeItems = items
-    .filter((item) => item.parent.length === 0) // Select top-level items
-    .map((topItem) => buildTree(topItem));
-  return treeItems;
+  });
+  console.log({ tree, items });
+  return tree;
 }
 
 export default convertToTreeItems;

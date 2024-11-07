@@ -28,11 +28,11 @@ pub struct InitialData {
 
 #[query]
 fn get_contract(author: String, contract_id: String) -> Result<StoredContract, String> {
-    let author: Result<Principal, PrincipalError> = Principal::from_text(author);
-    if author.is_err() {
-        return Err("Invalid principal.".to_string());
-    };
-    let contract = Contract::get_contract(author.unwrap(), contract_id);
+    // let author: Result<Principal, PrincipalError> = Principal::from_text(author);
+    // if author.is_err() {
+    //     return Err("Invalid principal.".to_string());
+    // };
+    let contract = Contract::get_contract(author, contract_id);
     if let Some(contract) = contract {
         return Ok(contract);
     }

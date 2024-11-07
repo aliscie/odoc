@@ -81,11 +81,11 @@ function flatten(
   depth = 0,
 ): FlattenedItem[] {
   return items.reduce<FlattenedItem[]>((acc, item, index) => {
-    return [
-      ...acc,
-      { ...item, parentId, depth, index },
-      ...flatten(item.children, item.id, depth + 1),
-    ];
+    let flattenedItems = [];
+    if (item && item.children) {
+      flattenedItems = flatten(item.children, item.id, depth + 1);
+    }
+    return [...acc, { ...item, parentId, depth, index }, ...flattenedItems];
   }, []);
 }
 
@@ -200,7 +200,7 @@ export function removeChildrenOf(items: FlattenedItem[], ids: string[]) {
 
   return items.filter((item) => {
     if (item.parentId && excludeParentIds.includes(item.parentId)) {
-      if (item.children.length) {
+      if (item.children && item.children.length) {
         excludeParentIds.push(item.id);
       }
       return false;

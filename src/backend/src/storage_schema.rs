@@ -28,7 +28,6 @@ use std::{borrow::Cow, cell::RefCell};
 type Memory = VirtualMemory<DefaultMemoryImpl>;
 
 
-
 impl Storable for User {
     fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
         Cow::Owned(Encode!(self).unwrap())
@@ -56,6 +55,8 @@ pub type ContractId = String;
 pub type ShareContractId = String;
 pub type ShareRequestId = String;
 pub type ShareId = String;
+
+
 
 // Stores types
 // pub type IdStore = BTreeMap<String, Principal>;
