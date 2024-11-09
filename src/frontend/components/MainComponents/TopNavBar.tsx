@@ -68,7 +68,8 @@ const TopNavBar = () => {
 
   const imageLink = profile ? convertToBlobLink(profile.photo) : "";
   const isOwnerCurrentFile =
-    current_file && files.find((file: any) => file.id === current_file.id);
+    current_file &&
+    files.find((file: any) => file && file.id === current_file.id);
 
   return (
     <AppBar

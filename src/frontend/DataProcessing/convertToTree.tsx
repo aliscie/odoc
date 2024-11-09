@@ -5,7 +5,7 @@ function convertToTreeItems(items: FileNode[], rootId = null): any[] {
 
   // First pass: create a map of all items by their id
   items.forEach((item) => {
-    itemMap.set(item.id, { ...item, children: [] });
+    item && itemMap.set(item.id, { ...item, children: [] });
   });
 
   // Second pass: assign children to their respective parents

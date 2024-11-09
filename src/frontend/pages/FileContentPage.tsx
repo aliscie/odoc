@@ -62,6 +62,7 @@ const FileContentPage = () => {
       ([userId, permissions]) => userId === profile.id && permissions.CanUpdate,
     );
 
+  const isAuthoer = current_file.author === profile.id;
   return (
     <div style={{ marginTop: "3px", marginLeft: "10%", marginRight: "10%" }}>
       <Input
@@ -74,11 +75,13 @@ const FileContentPage = () => {
             whiteSpace: "nowrap",
           },
         }}
+        disabled={!isAuthoer}
         defaultValue={current_file.name}
         placeholder="Untitled"
         onChange={(e) => handleInputChange(e.target.value)}
       />
       <EditorComponent
+        readOnly={!isAuthoer}
         id={current_file.id}
         contentEditable={editable}
         onChange={onChange}

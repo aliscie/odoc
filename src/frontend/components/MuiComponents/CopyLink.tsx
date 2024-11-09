@@ -75,7 +75,7 @@ let Dialog = (props: any) => {
     id: current_file.id, // TODO Note this is a security issue in which hackers may get the share file id from the browser
     permission: current_file.permission,
     owner: Principal.fromText(profile.id),
-    users_permissions: current_file.users_permissions,
+    users_permissions: current_file.users_permissions || [],
   };
   let [share_file, setShareFile] = useState(new_share_file);
 
@@ -126,7 +126,7 @@ let Dialog = (props: any) => {
                 setShareFile({ ...share_file, permission });
               }
             }}
-            value={Object.keys(share_file.permission)[0]}
+            value={Object.keys(share_file.permission || {})[0]}
             disablePortal
             id="combo-box-demo"
             options={options}
@@ -187,7 +187,7 @@ let Dialog = (props: any) => {
 const ShareFileButton = () => {
   const { files } = useSelector((state: any) => state.filesState);
   let currentPath = window.location.pathname.split("/").pop();
-  if (!files.find((file: any) => file.id === currentPath)) {
+  if (!files.find((file: any) => file && file.id === currentPath)) {
     return null;
   }
   return (

@@ -9,6 +9,7 @@ use ic_stable_structures::{
     storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
 };
 use std::{borrow::Cow, cell::RefCell};
+use crate::files_content::ContentNode;
 
 
 #[derive(PartialEq, Clone, Debug, Deserialize, CandidType)]
@@ -153,8 +154,14 @@ impl ShareFile {
 
         SHARED_USER_FILES.with(|shared_user_files| {
             let mut shared_user_files = shared_user_files.borrow_mut();
-            let mut share_files_vec = shared_user_files.get(&caller().to_string()).unwrap_or_else(|| ShareFileNodeVector { share_files: vec![] });
-            share_files_vec.share_files.push(share_file);
+            let mut share_files =  vec![];
+            if let Some(share_files_vec) = shared_user_files.get(&caller().to_string()) {
+                share_files.extend(share_files_vec.share_files.clone());
+            }
+            if !share_files.iter().any(|f| f.id == share_file.id) {
+                share_files.push(share_file.clone());
+            }
+            shared_user_files.insert(caller().to_string(), ShareFileNodeVector { share_files });
             Ok(())
         })
     }
@@ -170,7 +177,7 @@ impl ShareFile {
             let user_files_vec = files_store.borrow();
             // Assuming user_files_vec is a HashMap<Principal, Vec<FileNode>>
             let user_files_vec = user_files_vec.get(&shared_file.owner.to_string()).ok_or("Owner not found.")?;
-            user_files_vec.files.iter().find(|f| f.id == shared_file.id).cloned().ok_or("No such file.")
+            user_files_vec.files.iter().find(|f| f.id == shared_file.id.clone()).cloned().ok_or("No such file.")
         })?;
 
         let can_view = file.check_permission(ShareFilePermission::CanView);
@@ -178,14 +185,8 @@ impl ShareFile {
             return Err("No permission to view this file.".to_string());
         }
 
-        let content_tree = FILE_CONTENTS.with(|file_contents| {
-            let file_contents = file_contents.borrow();
-            if let Some(file_map) = file_contents.get(&shared_file.owner.to_string()) {
-                file_map.contents.get(&shared_file.id).cloned()
-            } else {
-                None
-            }
-        }).ok_or("No such file.")?;
+        let content_tree = ContentNode::get_file_content(shared_file.id).unwrap_or_else(|| ContentTree::new());
+
 
         Ok((file, content_tree))
     }

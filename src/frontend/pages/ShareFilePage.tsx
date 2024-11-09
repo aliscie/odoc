@@ -9,6 +9,8 @@ import {
   SlateNode,
 } from "../DataProcessing/deserlize/deserializeContents";
 import EditorComponent from "../components/EditorComponent";
+import { useBackendContext } from "../contexts/BackendContext";
+import {CircularProgress, Input} from "@mui/material";
 export type FileQuery =
   | undefined
   | { Ok: [FileNode, Array<[string, ContentNode]>] }
@@ -22,7 +24,7 @@ function ShareFilePage(props: any) {
     (state: any) => state.filesState,
   );
   let file_id: null | String = files.find(
-    (file: FileNode) => file.share_id[0] == id,
+    (file: FileNode) => file && file.share_id[0] == id,
   );
 
   let [file, setFile] = useState<null | FileNode>(files[file_id]);
@@ -30,6 +32,8 @@ function ShareFilePage(props: any) {
   const dispatch = useDispatch();
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { backendActor } = useBackendContext();
+
   useEffect(() => {
     if (!file) {
       (async () => {
@@ -38,7 +42,8 @@ function ShareFilePage(props: any) {
             <span className={"loader"} />
           </span>,
         );
-        let res: FileQuery = actor && (await actor.get_shared_file(id));
+
+        let res: FileQuery = await backendActor?.get_shared_file(id);
 
         closeSnackbar(loading);
 
@@ -64,17 +69,35 @@ function ShareFilePage(props: any) {
     }
   }, [file]);
 
+  if (!state) {
+    <CircularProgress />;
+  };
+
   return (
     <>
-      <h1>{file && file.name}</h1>
-      {state && (
+      <div style={{ marginTop: "3px", marginLeft: "10%", marginRight: "10%" }}>
+        <Input
+          key={file && file.name}
+          inputProps={{
+            style: {
+              width: "100%",
+              fontSize: "1.5rem",
+              overflow: "visible",
+              whiteSpace: "nowrap",
+            },
+          }}
+          defaultValue={file && file.name}
+          placeholder="Untitled"
+          disabled={true}
+        />
         <EditorComponent
+          key={state}
           id={"share-file-content"}
           editorKey={props.file_id}
           content={state || []}
           readOnly={true}
         />
-      )}
+      </div>
     </>
   );
 }
