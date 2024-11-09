@@ -46,7 +46,6 @@ function useCreateWorkSpace() {
         chats: [],
         admins: [],
       };
-
       let saveWorkSpace = (await backendActor.save_work_space(
         newWorkSpace,
       )) as Result_11;

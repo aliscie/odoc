@@ -12,9 +12,9 @@ use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 // }
 
 use crate::{PROFILE_STORE};
+use serde::Serialize;
 
-
-#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, Default, CandidType, Deserialize)]
+#[derive(Eq, PartialOrd, PartialEq, Clone, Debug, Default, Serialize,CandidType, Deserialize)]
 pub struct User {
     pub id: String,
     pub name: String,

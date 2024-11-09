@@ -15,7 +15,7 @@ use crate::websocket::{AppMessage, notification, send_app_message};
 
 #[derive(PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub struct FriendRequestNotification {
-    friend: Friend,
+    pub friend: Friend,
 }
 
 
@@ -133,20 +133,29 @@ impl Notification {
 
 
     pub fn save(&self) {
-        NOTIFICATIONS.with(|notifications| {
-            let mut user_notifications = notifications.borrow_mut();
-            let mut user_notifications = user_notifications
-                .get(&self.receiver.to_text())
-                .unwrap_or_else(|| NotificationVec { notifications: vec![] });
-            user_notifications.notifications.retain(|notification| notification.id != self.id);
-            user_notifications.notifications.push(self.clone());
-        });
+        self.pure_save();
         let msg: AppMessage = AppMessage {
             notification: Some(self.clone()),
             text: self.id.clone(),
             timestamp: ic_cdk::api::time(),
         };
         send_app_message(self.receiver, msg.clone());
+    }
+    pub fn pure_save(&self) {
+        NOTIFICATIONS.with(|notifications| {
+            let mut notifications = notifications.borrow_mut();
+            let mut user_notifications = notifications
+                .get(&self.receiver.to_text());
+            if let Some((mut user_notifications)) = user_notifications {
+                let mut notifications_list =user_notifications.notifications;
+                notifications_list.retain(|notification| notification.id != self.id);
+                notifications_list.push(self.clone());
+                notifications.insert(self.receiver.to_text(), NotificationVec { notifications: notifications_list });
+
+            } else {
+                notifications.insert(self.receiver.to_text(), NotificationVec { notifications: vec![self.clone()] });
+            }
+        });
     }
 
     pub fn send(&self) {
@@ -248,7 +257,7 @@ pub fn notify_friend_request(f: Friend) {
     // Example of creating a new Notification with the FriendRequest content
     let receiver: Principal = Principal::from_text(&f.receiver.id).unwrap();
     let new_notification = Notification {
-        id: caller().to_string() + &f.receiver.id.clone(),
+        id: f.id,
         sender: caller(),
         receiver,
         content: NoteContent::FriendRequest(friend_request_notification),

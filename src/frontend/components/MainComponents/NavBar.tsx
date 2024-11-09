@@ -68,14 +68,21 @@ const NavBar = (props: any) => {
         flattenedFiles,
       }),
     );
-
   };
 
   const [defaultItems, setdefaultItems] = useState([]);
 
+  const { profile, currentWorkspace } = useSelector(
+    (state: any) => state.filesState,
+  );
+
   useEffect(() => {
-    setdefaultItems(convertToTreeItems(files));
-  }, [files]);
+    let x = convertToTreeItems(files);
+    if (currentWorkspace.id) {
+      x = x.filter((f) => f.workspaces.includes(currentWorkspace.id));
+    }
+    setdefaultItems(x);
+  }, [files, currentWorkspace]);
 
   return (
     <div>
@@ -118,7 +125,7 @@ const NavBar = (props: any) => {
         {isLoggedIn && (
           <>
             <SortableTree
-              key={defaultItems}
+              key={defaultItems+defaultItems.map(i=>i.workspaces)}
               dragEnd={dragEnd}
               defaultItems={defaultItems}
             />

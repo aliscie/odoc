@@ -7,6 +7,9 @@ use evm_rpc_canister_types::{
     BlockTag, EthMainnetService, EthSepoliaService, EvmRpcCanister, GetTransactionCountArgs,
     GetTransactionCountResult, MultiGetTransactionCountResult, RequestResult, RpcService,
 };
+// use ic_ledger_types::BlockIndex;
+use icrc_ledger_types::icrc1::transfer::BlockIndex;
+use ic_cdk_macros;
 use ic_websocket_cdk::*;
 use ic_cdk::api::management_canister::provisional::CanisterId;
 use ic_websocket_cdk::*;
@@ -29,11 +32,12 @@ use user::*;
 use user_history::*;
 pub use wallet::*;
 use websocket::*;
+use contracts::StoredContractVec;
 
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
 
 use ic_stable_structures::{
-    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable, StableVec
+    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable, StableVec,
 };
 
 mod user;
@@ -101,17 +105,19 @@ thread_local! {
         )
     );
 
-    static FILE_CONTENTS: RefCell<StableBTreeMap<FileId, ContentNodeVec, Memory>> = RefCell::new(
+    static FILE_CONTENTS: RefCell<StableBTreeMap<String, ContentNodeVec, Memory>> = RefCell::new(
         StableBTreeMap::init(
             MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(5))),
         )
     );
 
-    static FRIENDS_STORE: RefCell<StableBTreeMap<String, FriendVec, Memory>> = RefCell::new(
+
+    static FRIENDS_STORE: RefCell<StableBTreeMap<String, Friend, Memory>> = RefCell::new(
         StableBTreeMap::init(
-            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(6))),
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(5))),
         )
     );
+
 
     static CONTRACTS_STORE: RefCell<StableBTreeMap<String, StoredContractVec, Memory>> = RefCell::new(
         StableBTreeMap::init(
@@ -125,12 +131,6 @@ thread_local! {
             MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(8))),
         )
     );
-
-    // static NOTIFICATIONS_STROE: RefCell<StableBTreeMap<String, NotificationVec, Memory>> = RefCell::new(
-    //     StableBTreeMap::init(
-    //         MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(9))),
-    //     )
-    // );
 
     static NOTIFICATIONS: RefCell<StableBTreeMap<String, NotificationVec, Memory>> = RefCell::new(
         StableBTreeMap::init(
@@ -168,6 +168,8 @@ pub static COUNTER: AtomicU64 = AtomicU64::new(0);
 #[cfg(test)]
 mod tests {
     use ic_cdk::caller;
+    use crate::friends::Friend;
+    use crate::user::User;
 
     #[test]
     fn test_one() {
@@ -180,3 +182,4 @@ fn backend_wasm() -> Vec<u8> {
     std::fs::read(wasm_path).unwrap()
 }
 
+ic_cdk_macros::export_candid!();

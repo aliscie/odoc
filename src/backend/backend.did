@@ -1,3 +1,4 @@
+type Account = record { owner : principal; subaccount : opt blob };
 type ActionRating = record {
   id : text;
   action_type : ActionType;
@@ -263,7 +264,8 @@ type Result_1 = variant { Ok; Err : text };
 type Result_10 = variant { Ok : UserProfile; Err : text };
 type Result_11 = variant { Ok : CPayment; Err : text };
 type Result_12 = variant { Ok; Err };
-type Result_13 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
+type Result_13 = variant { Ok : nat; Err : text };
+type Result_14 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
 type Result_2 = variant { Ok : text; Err : text };
 type Result_3 = variant { Ok : WorkSpace; Err : text };
 type Result_4 = variant { Ok : float64; Err : text };
@@ -290,6 +292,7 @@ type ShareFileInput = record {
 type ShareFilePermission = variant { CanComment; None; CanView; CanUpdate };
 type StoredContract = variant { CustomContract : CustomContract };
 type Table = record { rows : vec Row; columns : vec Column };
+type TransferArgs = record { to_account : Account; amount : nat };
 type User = record { id : text; name : text; description : text; photo : blob };
 type UserFE = record { id : text; name : text };
 type UserProfile = record {
@@ -400,13 +403,14 @@ service : () -> {
       vec record { text; vec ContentNode },
     ) query;
   search_posts : (text) -> (vec PostUser) query;
-  see_notifications : (text) -> ();
+  see_notifications : (text) -> (Result_2);
   send_eth : (text, float32) -> (text);
   send_friend_request : (text) -> (Result);
   send_message : (opt principal, Message) -> (Result_2);
   set_user_token : (UserToken) -> ();
   share_file : (ShareFileInput) -> (Result_8);
   transaction_count : (opt principal, opt BlockTag) -> (nat);
+  transfer : (TransferArgs) -> (Result_13);
   unfriend : (text) -> (Result);
   update_chat : (Chat) -> (Result_2);
   update_user_profile : (RegisterUser) -> (Result);
@@ -414,7 +418,7 @@ service : () -> {
   vote_up : (text) -> (Result_7);
   withdraw_usdt : (float64) -> (Result_4);
   ws_close : (CanisterWsCloseArguments) -> (Result_1);
-  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_13) query;
+  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_14) query;
   ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_1);
   ws_open : (CanisterWsOpenArguments) -> (Result_1);
 }

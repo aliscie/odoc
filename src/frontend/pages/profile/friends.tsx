@@ -57,6 +57,7 @@ function SecondaryActionSwitch(props) {
       id = id.toText();
     }
     let res = backendActor && (await backendActor.accept_friend_request(id));
+    console.log({ res });
     dispatch(
       handleRedux("UPDATE_NOTE", { id: id + profile.id, is_seen: true }),
     );

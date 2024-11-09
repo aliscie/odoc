@@ -13,6 +13,7 @@ function DeleteContract({ id }) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const onClick = async () => {
     const res = await backendActor?.delete_custom_contract(id);
+    console.log({ res, id });
     if ("Ok" in res) {
       enqueueSnackbar("Contract deleted", { variant: "success" });
     } else if ("Not found" === res.Err) {

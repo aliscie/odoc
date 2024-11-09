@@ -67,17 +67,15 @@ fn get_user_notifications() -> Vec<Notification> {
 }
 
 #[update]
-fn see_notifications(id: String) {
-    NOTIFICATIONS.with(|notifications| {
-        let mut user_notifications = notifications.borrow_mut();
-        let mut user_notifications = user_notifications.get(&caller().to_string())
-            .unwrap_or_else(|| NotificationVec { notifications: vec![] }).notifications;
-        for notification in user_notifications.iter_mut() {
-            if notification.id == id {
-                notification.is_seen = true;
-            }
-        }
-    });
+fn see_notifications(id: String) -> Result<String,String> {
+    let mut notification = Notification::get(id);
+    if notification.is_none() {
+        return Err("Notification not found".to_string());
+    }
+    let mut notification = notification.unwrap();
+    notification.is_seen = true;
+    notification.pure_save();
+    Ok("Notification seen".to_string())
 }
 
 

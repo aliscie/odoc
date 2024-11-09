@@ -45,7 +45,6 @@ pub struct WorkSpaceVec {
 }
 
 
-
 impl Storable for WorkSpaceVec {
     fn to_bytes(&self) -> Cow<[u8]> {
         Cow::Owned(Encode!(self).unwrap())
@@ -69,18 +68,8 @@ impl WorkSpace {
             admins: vec![caller()],
             creator: caller(),
         };
-
-        WORK_SPACES.with(|store| {
-            let mut work_spaces = store.borrow_mut();
-            if work_spaces.iter().any(|(_, ws_vec)| ws_vec.workspaces.iter().any(|w| w.name == name)) {
-                return Err("Workspace with the same name already exists".to_string());
-            } else {
-                let mut ws_vec = work_spaces.get(&new_work_space.id).unwrap_or_else(|| WorkSpaceVec { workspaces: vec![] });
-                ws_vec.workspaces.push(new_work_space.clone());
-                work_spaces.insert(new_work_space.id.clone(), ws_vec);
-            }
-            Ok(new_work_space)
-        })
+        new_work_space.pure_save();
+        Ok(new_work_space.clone())
     }
 
     pub fn get(name: String) -> Option<Self> {
@@ -93,6 +82,15 @@ impl WorkSpace {
                 .into_iter()
                 .find(|ws| ws.name == name)
         })
+    }
+    pub fn pure_save(&self) {
+        WORK_SPACES.with(|store| {
+            let mut work_spaces = store.borrow_mut();
+            let mut ws_vec = work_spaces.get(&self.id).unwrap_or_else(|| WorkSpaceVec { workspaces: vec![] });
+            ws_vec.workspaces.retain(|ws| ws.id != self.id);
+            ws_vec.workspaces.push(self.clone());
+            work_spaces.insert(self.id.clone(), ws_vec);
+        });
     }
     pub fn delete(&self) -> Result<Self, String> {
         WORK_SPACES.with(|store| {
@@ -119,19 +117,7 @@ impl WorkSpace {
         }
 
         // Access the WORK_SPACES and either update or insert
-        WORK_SPACES.with(|store| {
-            let mut work_spaces = store.borrow_mut();
-            for (_, mut ws_vec) in work_spaces.iter() {
-                if let Some(pos) = ws_vec.workspaces.iter().position(|ws| ws.id == self.id) {
-                    ws_vec.workspaces[pos] = self.clone();
-                    return Ok::<WorkSpace, String>(self.clone());
-                }
-            }
-            let mut new_ws_vec = work_spaces.get(&self.id).unwrap_or_else(|| WorkSpaceVec { workspaces: vec![] });
-            new_ws_vec.workspaces.push(self.clone());
-            work_spaces.insert(self.id.clone(), new_ws_vec);
-            Ok::<WorkSpace, String>(self.clone())
-        });
+        self.pure_save();
 
         Ok(self.clone())
     }

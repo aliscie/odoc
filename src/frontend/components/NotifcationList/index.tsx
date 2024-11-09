@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import BasicMenu from "../MuiComponents/BasicMenu";
 import { Badge } from "@mui/base";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import useGetUser from "../../utils/get_user_by_principal";
 import DialogOver from "../MuiComponents/DialogOver";
-import { Divider, Input, Typography } from "@mui/material";
+import {CircularProgress, Divider, Input, Typography} from "@mui/material";
 import LoaderButton from "../MuiComponents/LoaderButton";
 import {
   CPayment,
@@ -13,6 +13,7 @@ import {
 } from "../../../declarations/backend/backend.did";
 import { formatRelativeTime } from "../../utils/time";
 import { useBackendContext } from "../../contexts/BackendContext";
+import {handleRedux} from "../../redux/store/handleRedux";
 
 function CPaymentContractDialog(props: {
   notification: Notification;
@@ -156,6 +157,7 @@ function RenderNotification(props: {
 
   let { getUser, getUserByName } = useGetUser();
   const [sender, setSender] = useState<string>("");
+  const { backendActor } = useBackendContext();
 
   useEffect(() => {
     (async () => {
@@ -197,29 +199,41 @@ function NotificationComponent({
   // console.log("render Notification") // TODO this renders about 20 times.
   const { backendActor } = useBackendContext();
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+
   return (
     <div
       onClick={async () => {
         if (backendActor && !notification.is_seen) {
           setLoading(true);
           let res = await backendActor.see_notifications(notification.id);
-          notification.is_seen = true;
+          console.log({res})
+          dispatch(handleRedux("UPDATE_NOTE", { ...notification,is_seen: true }));
           setLoading(false);
-          // console.log(res)
         }
       }}
       style={{ color: notification.is_seen ? "gray" : "" }}
     >
-      {loading && "loading..."}
+      {loading && <CircularProgress />}
       <RenderNotification notification={notification} />
     </div>
   );
 }
 
 export function Notifications() {
+  const dispatch = useDispatch();
+  const { backendActor } = useBackendContext();
   const { notifications } = useSelector(
     (state: any) => state.notificationState,
   );
+  useEffect(() => {
+    (async () => {
+      if (backendActor) {
+        let res = await backendActor.get_user_notifications();
+        dispatch(handleRedux("UPDATE_NOT_LIST", { new_list: res }));
+      }
+    })();
+  }, [backendActor]);
 
   const new_notifications =
     notifications &&

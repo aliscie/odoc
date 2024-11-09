@@ -20,13 +20,13 @@ pub enum Contract {
     // CustomContract(Table),
 }
 
-#[derive(PartialEq, Clone, Debug, CandidType, Deserialize)]
+#[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub enum StoredContract {
     // SharesContract(SharesContract),
     CustomContract(CustomContract),
 }
 
-#[derive(Clone, Debug, Default, CandidType, Deserialize)]
+#[derive( PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub struct StoredContractVec {
     pub stored_contracts: Vec<StoredContract>,
 }

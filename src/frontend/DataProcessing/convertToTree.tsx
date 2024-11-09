@@ -20,7 +20,6 @@ function convertToTreeItems(items: FileNode[], rootId = null): any[] {
       tree.push(item);
     }
   });
-  console.log({ tree, items });
   return tree;
 }
 

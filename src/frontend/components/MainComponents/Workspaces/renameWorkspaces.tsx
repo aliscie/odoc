@@ -23,8 +23,8 @@ function RenameWorkspace(workspace: WorkSpace) {
       {state && (
         <LoaderButton
           onClick={() => {
-            let name = ref.current;
-            let res = backendActor?.save_work_space({ ...workspace, name });
+            const name = ref.current;
+            const res = backendActor?.save_work_space({ ...workspace, name });
             dispatch(
               handleRedux("UPDATE_WORKSPACE", {
                 workspace: { ...workspace, name },

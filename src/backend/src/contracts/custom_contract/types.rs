@@ -313,17 +313,18 @@ impl CustomContract {
         CONTRACTS_STORE.with(|contracts_store| {
             let caller_contracts = contracts_store.borrow();
             let stored_contract_vec = caller_contracts.get(&creator.to_text())?.stored_contracts.clone();
-
-            // Convert Vec<StoredContract> to HashMap<ContractId, StoredContract>
-            let mut contract_map = HashMap::new();
-            for (index, contract) in stored_contract_vec.into_iter().enumerate() {
-                contract_map.insert(index.to_string(), contract);
-            }
-
-            let contract = contract_map.get(id)?;
-            match contract {
-                StoredContract::CustomContract(contract) => Some(contract.clone()),
-                _ => None
+            if let Some(contract) = stored_contract_vec.iter().find(|contract| {
+                match contract {
+                    StoredContract::CustomContract(contract) => contract.id == *id,
+                    _ => false
+                }
+            }) {
+                match contract {
+                    StoredContract::CustomContract(contract) => Some(contract.clone()),
+                    _ => None
+                }
+            } else {
+                None
             }
         })
     }
@@ -367,41 +368,50 @@ impl CustomContract {
             self.promises.retain(|p| p.id != promise.id);
         }
 
-        // Note no need for this anymore as the payment are stored in the Wallet.
-        // if self.payments.len() > 0 {
-        //     return Err("Contract with payments can't be deleted".to_string());
-        // }
-
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
-            let stored_contract_vec = caller_contracts.get(&caller().to_string()).unwrap().stored_contracts.clone();
-
-            // Convert Vec<StoredContract> to HashMap<ContractId, StoredContract>
-            let mut contract_map = HashMap::new();
-            for (index, contract) in stored_contract_vec.into_iter().enumerate() {
-                contract_map.insert(index.to_string(), contract);
+            let mut new_map = StoredContractVec { stored_contracts: vec![StoredContract::CustomContract(self.clone())] };
+            if let Some(mut caller_contracts_map) = caller_contracts.get(&self.creator.to_text()) {
+                new_map.stored_contracts.extend(caller_contracts_map.stored_contracts.clone());
             }
-
-            contract_map.remove(&self.id);
-
-            // Convert HashMap<ContractId, StoredContract> back to Vec<StoredContract>
-            let updated_contract_vec: Vec<StoredContract> = contract_map.into_iter().map(|(_, contract)| contract).collect();
-            // caller_contracts.get_mut(&caller().to_string()).unwrap().stored_contracts = updated_contract_vec;
-            caller_contracts.insert(caller().to_string(), StoredContractVec { stored_contracts: updated_contract_vec });
+            // new_map.stored_contracts.push(StoredContract::CustomContract(self.clone()));
+            new_map.stored_contracts.retain(|contract| {
+                match contract {
+                    StoredContract::CustomContract(contract) => contract.id != self.id,
+                    _ => true
+                }
+            });
+            caller_contracts.insert(self.creator.to_text(), new_map);
         });
+
 
         Ok(())
     }
     pub fn pure_save(&self) -> Result<Self, String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
+            let mut new_map = StoredContractVec { stored_contracts: vec![StoredContract::CustomContract(self.clone())] };
             if let Some(mut caller_contracts_map) = caller_contracts.get(&self.creator.to_text()) {
-                let mut caller_contracts_map = caller_contracts.get(&self.creator.to_text()).unwrap();
-                caller_contracts_map.stored_contracts.push(StoredContract::CustomContract(self.clone()));
-            } else {
-                let new_map = StoredContractVec { stored_contracts: vec![StoredContract::CustomContract(self.clone())] };
-                caller_contracts.insert(self.creator.to_text(), new_map);
+                new_map.stored_contracts.extend(caller_contracts_map.stored_contracts.clone());
+                // let mut caller_contracts_map = caller_contracts.get(&self.creator.to_text()).unwrap();
+                // caller_contracts_map.stored_contracts.push(StoredContract::CustomContract(self.clone()));
             }
+            new_map.stored_contracts.retain(|contract| {
+                match contract {
+                    StoredContract::CustomContract(contract) => contract.id != self.id,
+                    _ => true
+                }
+            });
+            new_map.stored_contracts.push(StoredContract::CustomContract(self.clone()));
+            caller_contracts.insert(self.creator.to_text(), new_map);
+
+            // if let Some(mut caller_contracts_map) = caller_contracts.get(&self.creator.to_text()) {
+            //     let mut caller_contracts_map = caller_contracts.get(&self.creator.to_text()).unwrap();
+            //     caller_contracts_map.stored_contracts.push(StoredContract::CustomContract(self.clone()));
+            // } else {
+            //     let new_map = StoredContractVec { stored_contracts: vec![StoredContract::CustomContract(self.clone())] };
+            //     caller_contracts.insert(self.creator.to_text(), new_map);
+            // }
             // let mut caller_contracts_map = caller_contracts.get(&self.creator.to_text()).or_else(|| {
             //     let new_map = StoredContractVec { stored_contracts: vec![] };
             //     caller_contracts.insert(self.creator.to_text(), new_map.clone());
