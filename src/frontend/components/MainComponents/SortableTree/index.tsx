@@ -2,35 +2,33 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   Announcements,
-  DndContext,
   closestCenter,
+  defaultDropAnimation,
+  DndContext,
+  DragEndEvent,
+  DragMoveEvent,
+  DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
+  DropAnimation,
+  MeasuringStrategy,
+  Modifier,
   PointerSensor,
   useSensor,
   useSensors,
-  DragStartEvent,
-  DragOverlay,
-  DragMoveEvent,
-  DragEndEvent,
-  DragOverEvent,
-  MeasuringStrategy,
-  DropAnimation,
-  defaultDropAnimation,
-  Modifier,
 } from "@dnd-kit/core";
 import {
-  SortableContext,
   arrayMove,
+  SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import {
   buildTree,
   flattenTree,
-  getProjection,
   getChildCount,
-  removeItem,
+  getProjection,
   removeChildrenOf,
+  removeItem,
   setProperty,
 } from "./utilities";
 import type { FlattenedItem, SensorContext, TreeItems } from "./types";
@@ -65,7 +63,6 @@ export default function SortableTree({
   removable,
   dragEnd,
 }: Props) {
-
   const [items, setItems] = useState(
     defaultItems &&
       defaultItems.map((i) => {
@@ -174,7 +171,7 @@ export default function SortableTree({
             indicator={indicator}
             collapsed={Boolean(collapsed && children.length)}
             onCollapse={
-              collapsible && children.length
+              collapsible && children && children.length
                 ? () => handleCollapse(id)
                 : undefined
             }

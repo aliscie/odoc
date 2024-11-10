@@ -29,7 +29,10 @@ pub struct ContentNode {
     pub value: String,
     pub text: String,
     pub language: String,
+    pub indent: u64,
     pub data: Option<ContentData>,
+    pub listStyleType: String,
+    pub listStart: u64,
     #[serde(default)]
     pub children: Vec<ContentId>,
 }

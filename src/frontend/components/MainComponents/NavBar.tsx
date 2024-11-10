@@ -72,9 +72,7 @@ const NavBar = (props: any) => {
 
   const [defaultItems, setdefaultItems] = useState([]);
 
-  const { profile, currentWorkspace } = useSelector(
-    (state: any) => state.filesState,
-  );
+  const { currentWorkspace } = useSelector((state: any) => state.filesState);
 
   useEffect(() => {
     let x = convertToTreeItems(files);
@@ -125,7 +123,7 @@ const NavBar = (props: any) => {
         {isLoggedIn && (
           <>
             <SortableTree
-              key={defaultItems+defaultItems.map(i=>i.workspaces)}
+              key={defaultItems + defaultItems.map((i) => i.workspaces)}
               dragEnd={dragEnd}
               defaultItems={defaultItems}
             />

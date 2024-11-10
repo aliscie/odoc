@@ -23,15 +23,21 @@ function nesting(
     visited.push(child.id);
     return nesting(child, alL_contents, visited);
   });
-
+  const indent = content_node.indent ? Number(content_node.indent) : null;
   let item = {
     id: content_node.id,
     type: content_node._type,
     data: content_node.data,
     value: content_node.value,
-    // text: content_node.text,
-    // children
+    listStyleType: content_node.listStyleType,
   };
+
+  if (indent) {
+    item["indent"] = indent;
+  }
+  if (content_node.listStart) {
+    item["listStart"] = Number(content_node.listStart);
+  }
 
   if (content_node.language.length > 0) {
     item["language"] = content_node.language;

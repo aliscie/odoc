@@ -48,25 +48,16 @@ fn multi_updates(
     files: Vec<FileNode>,
     content_trees: Vec<HashMap<FileId, ContentTree>>,
     contracts: Vec<StoredContract>,
-    // delete_contracts: Vec<ContractId>,
     files_indexing: Vec<FileIndexing>,
 ) -> Result<String, String> {
     let mut messages = "".to_string();
-    // Update file names and parents or create
+
     for file in files.clone() {
         file.save()?;
     }
 
-    // let ids: Vec<String> = files.iter().map(|file_node| file_node.id.clone()).collect();
-
-    // TODO handle files reordering more effectinetly
-    //  this request sending too much data to the backend
-    // let _ = FileNode::save_file_nodes(files);
-
     for contract in contracts.clone() {
-        // if let StoredContract::SharesContract(share_contract) = contract.clone() {
-        //     share_contract.save()?;
-        // }
+
         if let StoredContract::CustomContract(mut custom_contract) = contract {
             let res = custom_contract.save();
             if let Err(errors) = res {
@@ -86,17 +77,18 @@ fn multi_updates(
         }
     };
 
-    // for contract_id in delete_contracts {
-    //     // let contract = ...;
-    //     // contract.delete();
-    // }
-
 
     for indexing in files_indexing {
         if let Some(parent) = indexing.parent {
-            let _ = FileNode::rearrange_child(parent, indexing.id, indexing.new_index);
+            let cild_m = FileNode::rearrange_child(parent, indexing.id, indexing.new_index);
+            if let Err(err) = cild_m {
+                messages.push_str(&format!("Error: {}", err));
+            }
         } else {
-            let _ = FileNode::rearrange_file(indexing.id, indexing.new_index);
+            let file_m = FileNode::rearrange_file(indexing.id, indexing.new_index);
+            if let Err(err) = file_m {
+                messages.push_str(&format!("Error: {}", err));
+            }
         }
     }
 

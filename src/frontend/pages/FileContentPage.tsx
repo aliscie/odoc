@@ -1,10 +1,11 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "lodash";
-
 import { CircularProgress, Input } from "@mui/material";
 import { handleRedux } from "../redux/store/handleRedux";
 import EditorComponent from "../components/EditorComponent";
+// import { logger } from "../DevUtils/logData";
+// import deepCompare from "../DataProcessing/deepCompare";
 
 const FileContentPage = () => {
   const { isLoggedIn } = useSelector((state: any) => state.uiState);
@@ -17,19 +18,23 @@ const FileContentPage = () => {
   let current_file = files.find((file: any) => file.id === fileId);
 
   const editorKey = (current_file && current_file.id) || "";
-  const onChange = useCallback(
-    debounce((changes: any) => {
-      if (current_file) {
-        dispatch(
-          handleRedux("UPDATE_CONTENT", {
-            id: current_file.id,
-            content: changes,
-          }),
-        );
-      }
-    }, 250),
-    [dispatch, current_file],
-  );
+
+  const onChange = debounce((changes: any) => {
+    const prevContent = JSON.stringify(files_content[current_file.id]);
+    const newContent = JSON.stringify(changes);
+    if (current_file && prevContent !== newContent) {
+      // console.log({
+      //   x: deepCompare(changes, files_content[current_file.id]),
+      // });
+
+      dispatch(
+        handleRedux("UPDATE_CONTENT", {
+          id: current_file.id,
+          content: changes,
+        }),
+      );
+    }
+  }, 250);
 
   const handleDispatchChange = useCallback(
     debounce((title: string) => {
@@ -41,9 +46,16 @@ const FileContentPage = () => {
     }, 250),
     [dispatch, current_file],
   );
+
   const handleInputChange = (title) => {
     handleDispatchChange(title);
   };
+
+  // useEffect(() => {
+  //   if (current_file) {
+  //     setInitialContent(files_content[current_file.id]);
+  //   }
+  // }, [current_file, files_content]);
 
   if (inited && files.length == 0) {
     return <span>404 Not Found</span>;

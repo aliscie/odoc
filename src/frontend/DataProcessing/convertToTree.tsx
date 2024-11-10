@@ -14,9 +14,12 @@ function convertToTreeItems(items: FileNode[], rootId = null): any[] {
   itemMap.forEach((item) => {
     if (item.parent.length > 0 && itemMap.has(item.parent[0])) {
       const parent = itemMap.get(item.parent[0]);
+      const children: string[] = items.find((f) => f.id == parent.id).children;
       parent.children.push(item);
+      parent.children = parent.children.sort((a, b) => {
+        return children.indexOf(a.id) - children.indexOf(b.id);
+      });
     } else {
-      // If there's no parent, it's a root item
       tree.push(item);
     }
   });

@@ -22,9 +22,12 @@ function de_nesting(nested: any[]) {
         _type: item.type || "",
         data: item.data || [],
         text: item.text || "",
+        indent: item.indent || 0,
+        listStyleType: item.listStyleType || "",
         language: item.language || "",
         parent: parent,
         children: children.map((child) => String(child.id)),
+        listStart: item.listStart || 0,
       };
 
       data.push(obj);

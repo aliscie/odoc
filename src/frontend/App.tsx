@@ -20,19 +20,6 @@ const App: React.FC = () => {
   const { backendActor } = useBackendContext();
   const {} = useInitialData();
   const { ws } = useSocket();
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (backendActor) {
-      setIsLoading(false);
-    }
-    if (profile) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1000);
-    }
-  }, [backendActor, profile]);
   let Loadder = (
     <Box
       style={{
@@ -45,6 +32,9 @@ const App: React.FC = () => {
       <CircularProgress size={100} />
     </Box>
   );
+  if (!backendActor){
+      return Loadder
+  }
 
   return (
     <BrowserRouter>
@@ -53,7 +43,7 @@ const App: React.FC = () => {
         <RegistrationForm />
         <MessagesDialogBox />
         <TopNavBar />
-        <NavBar>{isLoading ? Loadder : <Pages />}</NavBar>
+        <NavBar><Pages /></NavBar>
       </SnackbarProvider>
     </BrowserRouter>
   );

@@ -1,6 +1,5 @@
 import { FilesActions, InitialState, initialState } from "../types/filesTypes";
 import {
-  FileIndexing,
   FileNode,
   Friend,
   StoredContract,
@@ -121,6 +120,10 @@ export function filesReducer(
       return {
         ...state,
         files: state.files.filter((file) => file.id !== action.id),
+        changes: {
+          ...state.changes,
+          files: state.changes.files.filter((file) => file.id !== action.id),
+        },
       };
 
     case "CURRENT_FILE":
@@ -134,15 +137,7 @@ export function filesReducer(
       const { updatedFile1, updatedFile2, reIndexing, flattenedFiles } = action;
       return {
         ...state,
-        files: state.files.map((file) => {
-          if (file.id === updatedFile1.id) {
-            return updatedFile1;
-          }
-          if (file.id == updatedFile1.parent[0]) {
-            file.children.push(updatedFile1.id);
-          }
-          return file;
-        }),
+        files: flattenedFiles,
         changes: {
           ...state.changes,
           files_indexing: [...state.changes.files_indexing, reIndexing], // Create a new array with reIndexing added
@@ -151,11 +146,6 @@ export function filesReducer(
       };
     }
 
-    // case 'INIT_CONTRACTS':
-    //     return {
-    //         ...state,
-    //         contracts: action.contracts
-    //     }
     case "UPDATE_CONTENT":
       return {
         ...state,

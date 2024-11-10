@@ -8,6 +8,7 @@ use ic_stable_structures::{
     storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
 };
 use std::{borrow::Cow, cell::RefCell};
+use std::fs::File;
 
 // #[derive(Debug, Serialize, Deserialize)]
 #[derive(Clone, Debug, Deserialize, CandidType)]
@@ -107,44 +108,41 @@ impl FileNode {
 
         false
     }
-
     pub fn rearrange_child(parent_id: FileId, child_id: FileId, new_index: usize) -> Result<(), String> {
         USER_FILES.with(|files_store| {
-            let principal_id = ic_cdk::api::caller();
-            let mut user_files_vec = files_store.borrow_mut();
+            let principal_id = ic_cdk::api::caller().to_text();
+            let mut store = files_store.borrow_mut();
 
             // Retrieve the user's file vector
-            let user_files = user_files_vec.get(&principal_id.to_text()).unwrap_or_else(|| FileNodeVector { files: Vec::new() });
+            let user_files: FileNodeVector = store.get(&principal_id).unwrap_or_else(|| FileNodeVector { files: Vec::new() });
 
-            // Modify the file vector
-            let mut user_files = user_files.clone();
+            // Modify the file vector with re-ordered children
+            let files = user_files.files.into_iter().map(|mut f| {
+                if f.id == parent_id {
+                    // Clone to create a new parent node with reordered children
+                    let mut parent = f.clone();
 
-            // Find the parent node
-            if let Some(parent_node) = user_files.files.iter_mut().find(|f| f.id == parent_id) {
-                // Find the position of the child node
-                if let Some(old_index) = parent_node.children.iter().position(|id| id == &child_id) {
-                    // Remove the child ID from its current position
-                    let child_id = parent_node.children.remove(old_index);
+                    // Remove existing child_id
+                    parent.children.retain(|id| id != &child_id);
 
-                    // Insert the child ID at the new position
-                    if new_index >= parent_node.children.len() {
-                        parent_node.children.push(child_id);
+                    // Insert child_id at the new index
+                    if new_index >= parent.children.len() {
+                        parent.children.push(child_id.clone());
                     } else {
-                        parent_node.children.insert(new_index, child_id);
+                        parent.children.insert(new_index, child_id.clone());
                     }
 
-                    // Insert the modified file vector back into the map
-                    user_files_vec.insert(principal_id.to_text(), user_files);
-                    Ok(())
+                    Ok(parent)
                 } else {
-                    Err("Child ID not found in parent's children".to_string())
+                    Ok(f)
                 }
-            } else {
-                Err("Parent ID not found".to_string())
-            }
+            }).collect::<Result<Vec<FileNode>, String>>()?;
+
+            // Update the user's file vector in the store
+            store.insert(principal_id, FileNodeVector { files });
+            Ok(())
         })
     }
-
     pub fn rearrange_file(file_id: FileId, new_index: usize) -> Result<(), String> {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();
@@ -176,7 +174,6 @@ impl FileNode {
             }
         })
     }
-
 
     pub fn save(&self) -> Result<Self, String> {
         if caller().to_string() != self.author {
@@ -224,7 +221,6 @@ impl FileNode {
         Ok(self.clone())
     }
 
-
     pub fn get(file_id: &FileId) -> Option<Self> {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller();
@@ -265,7 +261,6 @@ impl FileNode {
         // Return the files for the requested page
         all_files[start_index..end_index].to_vec()
     }
-
 
     pub fn get_all_files() -> Vec<FileNode> {
         let mut all_files: Vec<FileNode> = Vec::new();
@@ -334,7 +329,6 @@ impl FileNode {
             }
         })
     }
-
 
     fn delete_children_recursive(file_id: &FileId, files: &mut Vec<FileNode>) {
         if let Some(pos) = files.iter().position(|f| &f.id == file_id) {
