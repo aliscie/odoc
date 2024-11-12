@@ -74,6 +74,13 @@ thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
         RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
 
+    static CK_USDC_STATE: RefCell<CkUsdcState> = RefCell::default();
+    // static CK_USDC_STATE: RefCell<CkUsdcState> = RefCell::new(
+    //     StableBTreeMap::init(
+    //         MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
+    //     )
+    // );
+    //
     static PROFILE_STORE: RefCell<StableBTreeMap<String, User, Memory>> = RefCell::new(
         StableBTreeMap::init(
             MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),

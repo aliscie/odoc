@@ -52,7 +52,7 @@ export function UserHistoryComponent(profile: UserProfile) {
     })();
   }, []);
 
-  let actions_len = profile.rates_by_actions.length;
+  // let actions_len = profile.rates_by_actions.length;
   const data = [
     {
       title: "id",

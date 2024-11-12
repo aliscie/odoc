@@ -20,6 +20,8 @@ const App: React.FC = () => {
   const { backendActor } = useBackendContext();
   const {} = useInitialData();
   const { ws } = useSocket();
+
+
   let Loadder = (
     <Box
       style={{
@@ -32,8 +34,8 @@ const App: React.FC = () => {
       <CircularProgress size={100} />
     </Box>
   );
-  if (!backendActor){
-      return Loadder
+  if (!backendActor) {
+    return Loadder;
   }
 
   return (
@@ -43,7 +45,9 @@ const App: React.FC = () => {
         <RegistrationForm />
         <MessagesDialogBox />
         <TopNavBar />
-        <NavBar><Pages /></NavBar>
+        <NavBar>
+          <Pages />
+        </NavBar>
       </SnackbarProvider>
     </BrowserRouter>
   );

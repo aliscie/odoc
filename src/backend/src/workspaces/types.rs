@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 use ic_cdk::caller;
 use ic_websocket_cdk::{CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments, CanisterWsOpenResult, WsHandlers, WsInitParams};
-use crate::{init_state, WORK_SPACES};
+use crate::{ WORK_SPACES};
 use num::ToPrimitive;
 
 
@@ -20,7 +20,6 @@ use num::{BigUint, Num};
 use std::str::FromStr;
 use ic_stable_structures::Storable;
 use ic_stable_structures::storable::Bound;
-// use crate::workspaces::init_state;
 
 pub const EVM_RPC_CANISTER_ID: Principal =
     Principal::from_slice(b"7hfb6-caaaa-aaaar-qadga-cai");
