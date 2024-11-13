@@ -70,6 +70,8 @@ export default function SortableTree({
       }),
   );
 
+  const { files } = useSelector((state: any) => state.filesState);
+
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const [offsetLeft, setOffsetLeft] = useState(0);
@@ -145,8 +147,6 @@ export default function SortableTree({
       return `Moving was cancelled. ${id} was dropped in its original position.`;
     },
   };
-
-  const { files } = useSelector((state: any) => state.filesState);
 
   return (
     <DndContext

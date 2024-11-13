@@ -137,7 +137,9 @@ export function filesReducer(
       const { updatedFile1, updatedFile2, reIndexing, flattenedFiles } = action;
       return {
         ...state,
-        files: flattenedFiles,
+        files: flattenedFiles.map((f) => {
+          return { ...f, name: state.files.find((i) => f.id === i.id).name };
+        }),
         changes: {
           ...state.changes,
           files_indexing: [...state.changes.files_indexing, reIndexing], // Create a new array with reIndexing added
