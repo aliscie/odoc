@@ -15,10 +15,10 @@ import InfoIcon from "@mui/icons-material/Info";
 import ExploreIcon from "@mui/icons-material/Explore";
 import { Z_INDEX_SIDE_NAVBAR } from "../../constants/zIndex";
 import SortableTree from "./SortableTree";
-import convertToTreeItems from "../../DataProcessing/convertToTree";
 import { FileIndexing } from "../../../declarations/backend/backend.did";
 import flattenTree from "../../DataProcessing/deserlize/flatenFiles";
 import GetMoreFiles from "../Actions/GetMoreFiles";
+import { buildTree } from "./SortableTree/utilities";
 
 const NavBar = (props: any) => {
   const { files } = useSelector((state: any) => state.filesState);
@@ -75,10 +75,11 @@ const NavBar = (props: any) => {
   const { currentWorkspace } = useSelector((state: any) => state.filesState);
 
   useEffect(() => {
-    let x = convertToTreeItems(files);
+    let x = buildTree(files);
     if (currentWorkspace.id) {
       x = x.filter((f) => f.workspaces.includes(currentWorkspace.id));
     }
+    console.log({ x, files });
     setdefaultItems(x);
   }, [files, currentWorkspace]);
 

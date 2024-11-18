@@ -100,11 +100,20 @@ export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
 
   for (const item of items) {
     const { id, children } = item;
-    const parentId = item.parentId ?? root.id;
-    const parent = nodes[parentId] ?? findItem(items, parentId);
+    let parentId = item.parentId ?? root.id;
+    if (item.parent && item.parent[0]) {
+      parentId = item.parent[0];
+    }
+    const parent = nodes[parentId] ?? findItem(flattenedItems, parentId);
 
     nodes[id] = { id, children };
     parent.children.push(item);
+
+    let childrenOrder = flattenedItems.find((f) => f.id == parentId);
+    childrenOrder = childrenOrder ? childrenOrder.children : [];
+    parent.children = parent.children.sort((a, b) => {
+      return childrenOrder.indexOf(a.id) - childrenOrder.indexOf(b.id);
+    });
   }
 
   return root.children;
