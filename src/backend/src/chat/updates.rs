@@ -1,18 +1,15 @@
-use std::sync::atomic::Ordering;
+use crate::chat::{Chat, Message};
+use crate::COUNTER;
 use candid::Principal;
 use ic_cdk::caller;
 use ic_cdk_macros::update;
-use crate::chat::{Chat, Message};
-use crate::COUNTER;
-
+use std::sync::atomic::Ordering;
 
 use crate::user::User;
 use crate::websocket::{NoteContent, Notification};
 
-
 #[update]
 fn send_message(user: Option<Principal>, mut message: Message) -> Result<String, String> {
-
     // TODO don't create new private
     //  if user is creator and caller() in admins
     //  or if user in admins and caller() is creator
@@ -33,9 +30,11 @@ fn send_message(user: Option<Principal>, mut message: Message) -> Result<String,
     // handle chat message
     message.date = ic_cdk::api::time();
     if let Some(mut chat) = Chat::get(&message.chat_id) {
-
         // permissions
-        if !(chat.members.contains(&caller()) || chat.admins.contains(&caller()) || (chat.creator == caller())) {
+        if !(chat.members.contains(&caller())
+            || chat.admins.contains(&caller())
+            || (chat.creator == caller()))
+        {
             return Err("You are not a member of this chat.".to_string());
         }
         // if !chat.admins.contains(&caller()) && !chat.admins.is_empty() {
@@ -44,11 +43,16 @@ fn send_message(user: Option<Principal>, mut message: Message) -> Result<String,
         //     new_notification.receiver = chat.creator.clone();
         // }
         // new_notification.send();
-        for member in chat.members.clone().into_iter().filter(|m| m != &new_notification.sender || m != &caller()) {
+        for member in chat
+            .members
+            .clone()
+            .into_iter()
+            .filter(|m| m != &new_notification.sender || m != &caller())
+        {
             new_notification.id = COUNTER.fetch_add(1, Ordering::SeqCst).to_string();
             new_notification.receiver = member;
             new_notification.send();
-        };
+        }
         chat.messages.push(message.clone());
         // chat.save_to_my_chats();
         chat.save();
@@ -77,12 +81,16 @@ fn send_message(user: Option<Principal>, mut message: Message) -> Result<String,
 #[update]
 fn message_is_seen(message: Message) -> Result<(), String> {
     if let Some(mut chat) = Chat::get(&message.chat_id) {
-        chat.messages = chat.messages.iter_mut().map(|m| {
-            if m.id == message.id {
-                m.seen_by.push(caller());
-            }
-            m.clone()
-        }).collect::<Vec<Message>>();
+        chat.messages = chat
+            .messages
+            .iter_mut()
+            .map(|m| {
+                if m.id == message.id {
+                    m.seen_by.push(caller());
+                }
+                m.clone()
+            })
+            .collect::<Vec<Message>>();
         chat.save();
         return Ok(());
     }
@@ -115,20 +123,30 @@ fn update_chat(mut chat: Chat) -> Result<String, String> {
 
             for member in chat.members.clone() {
                 old_chat.add_to_my_chats(member);
-            };
+            }
             for admin in chat.admins.clone() {
                 old_chat.add_to_my_chats(admin);
-            };
+            }
 
             // get the members/admins that are in old chat but not found in chat
-            let removed_members = old_chat.members.clone().into_iter().filter(|m| !chat.members.contains(m)).collect::<Vec<Principal>>();
-            let removed_admins = old_chat.admins.clone().into_iter().filter(|m| !chat.admins.contains(m)).collect::<Vec<Principal>>();
+            let removed_members = old_chat
+                .members
+                .clone()
+                .into_iter()
+                .filter(|m| !chat.members.contains(m))
+                .collect::<Vec<Principal>>();
+            let removed_admins = old_chat
+                .admins
+                .clone()
+                .into_iter()
+                .filter(|m| !chat.admins.contains(m))
+                .collect::<Vec<Principal>>();
             for member in removed_members {
                 old_chat.remove_from_my_chats(member);
-            };
+            }
             for admin in removed_admins {
                 old_chat.remove_from_my_chats(admin);
-            };
+            }
 
             old_chat.name = chat.name.clone();
             old_chat.save();
@@ -141,7 +159,6 @@ fn update_chat(mut chat: Chat) -> Result<String, String> {
     }
 }
 
-
 #[update]
 fn make_new_chat_room(mut chat: Chat) -> Result<String, String> {
     if User::is_anonymous() {
@@ -151,10 +168,10 @@ fn make_new_chat_room(mut chat: Chat) -> Result<String, String> {
 
     for member in chat.members.clone() {
         chat.add_to_my_chats(member);
-    };
+    }
     for admin in chat.admins.clone() {
         chat.add_to_my_chats(admin);
-    };
+    }
     chat.save();
     Ok(chat.id)
 }

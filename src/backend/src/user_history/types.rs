@@ -4,15 +4,12 @@ use std::time::Duration;
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 use ic_cdk::caller;
 
-use crate::{CPayment, PaymentStatus, PROFILE_HISTORY, Wallet};
 use crate::discover::time_diff;
-use crate::PROFILE_STORE;
 use crate::websocket::Notification;
-use ic_stable_structures::{
-    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
-};
+use crate::PROFILE_STORE;
+use crate::{CPayment, PaymentStatus, Wallet, PROFILE_HISTORY};
+use ic_stable_structures::{storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable};
 use std::{borrow::Cow, cell::RefCell};
-
 
 // export::{
 //     candid::{CandidType, Deserialize},
@@ -57,13 +54,11 @@ fn calculate_percentage(value: f64, total: f64) -> f64 {
     }
 }
 
-
 // This is to help others evaulaute wather to trust you.
 #[derive(PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub struct UserHistory {
     pub id: Principal,
     // payment bad marks
-
     pub users_interacted: HashSet<String>,
     // only the shares between at least two people that got approved by both
     pub rates_by_others: Vec<Rating>,
@@ -88,8 +83,6 @@ impl Storable for UserHistory {
     };
 }
 
-
-
 impl UserHistory {
     pub fn new(id: Principal) -> Self {
         let new_profile_history = UserHistory {
@@ -101,7 +94,8 @@ impl UserHistory {
             users_rate: 0.0,
         };
         PROFILE_HISTORY.with(|h| {
-            h.borrow_mut().insert(id.to_string(), new_profile_history.clone());
+            h.borrow_mut()
+                .insert(id.to_string(), new_profile_history.clone());
         });
         new_profile_history
     }
@@ -117,19 +111,26 @@ impl UserHistory {
     // }
 
     pub fn get_promises(&self) -> Vec<ActionRating> {
-        self.rates_by_actions.iter().filter(|r| {
-            if let ActionType::Payment(payment) = &r.action_type {
-                payment.status != PaymentStatus::Released || payment.status != PaymentStatus::None && payment.status != PaymentStatus::ConfirmedCancellation
-            } else {
-                false
-            }
-        }).cloned().collect()
+        self.rates_by_actions
+            .iter()
+            .filter(|r| {
+                if let ActionType::Payment(payment) = &r.action_type {
+                    payment.status != PaymentStatus::Released
+                        || payment.status != PaymentStatus::None
+                            && payment.status != PaymentStatus::ConfirmedCancellation
+                } else {
+                    false
+                }
+            })
+            .cloned()
+            .collect()
     }
 
     pub fn get_objections(&self) -> Vec<ActionRating> {
         let mut unique_receivers: HashSet<Principal> = HashSet::new();
 
-        self.rates_by_actions.iter()
+        self.rates_by_actions
+            .iter()
             .filter(|r| {
                 if let ActionType::Payment(payment) = &r.action_type {
                     if let PaymentStatus::Objected(_) = payment.status {
@@ -145,7 +146,6 @@ impl UserHistory {
             .cloned()
             .collect()
     }
-
 
     pub fn get_promises_value(&self) -> f64 {
         let mut promises: Vec<CPayment> = vec![];
@@ -175,16 +175,13 @@ impl UserHistory {
     //     }
     // }
     pub fn get(id: Principal) -> Self {
-        let res = PROFILE_HISTORY.with(|h| {
-            h.borrow_mut().get(&id.to_string())
-        });
+        let res = PROFILE_HISTORY.with(|h| h.borrow_mut().get(&id.to_string()));
         if let Some(res) = res {
             res
         } else {
             UserHistory::new(id)
         }
     }
-
 
     pub fn save(&mut self) {
         PROFILE_HISTORY.with(|h| {
@@ -193,7 +190,10 @@ impl UserHistory {
     }
 
     pub fn get_your_rating(&self) -> Option<Rating> {
-        self.rates_by_others.iter().find(|r| r.user_id == caller()).cloned()
+        self.rates_by_others
+            .iter()
+            .find(|r| r.user_id == caller())
+            .cloned()
     }
 
     pub fn rate(&mut self, rating: Rating) -> Result<(), String> {
@@ -203,10 +203,14 @@ impl UserHistory {
         let profiel = UserHistory::get(caller());
 
         if profiel.actions_rate < 2.0 {
-            return Err("You need to have at least 2 stars rating to be able to rate others".to_string());
+            return Err(
+                "You need to have at least 2 stars rating to be able to rate others".to_string(),
+            );
         }
         if profiel.users_interacted.len() < 3 {
-            return Err("You need to have at least 3 interactions to be able to rate others".to_string());
+            return Err(
+                "You need to have at least 3 interactions to be able to rate others".to_string(),
+            );
         }
 
         if let Some(rating) = self.get_your_rating() {
@@ -296,7 +300,8 @@ impl UserHistory {
 
     pub fn payment_action(&mut self, payment: CPayment) {
         let wallet = Wallet::get(self.id.clone());
-        self.rates_by_actions.retain(|action| action.id != payment.id);
+        self.rates_by_actions
+            .retain(|action| action.id != payment.id);
 
         let total_promises: f64 = self.get_promises_value();
         // get received promises from notifications
@@ -308,7 +313,7 @@ impl UserHistory {
             rating: self.calc_actions_rate(),
             spent: wallet.spent.clone(),
             received: wallet.received.clone(),
-            promises: total_promises + payment.amount.clone(),// employer profile.
+            promises: total_promises + payment.amount.clone(), // employer profile.
             received_promises, // This will be important for the employee profile.
             action_type: ActionType::Payment(payment.clone()),
             date: ic_cdk::api::time() as f64,
@@ -317,7 +322,8 @@ impl UserHistory {
     }
 
     pub fn confirm_cancellation(&mut self, payment: CPayment) {
-        self.rates_by_actions.retain(|action| action.id != payment.id);
+        self.rates_by_actions
+            .retain(|action| action.id != payment.id);
         self.calc_actions_rate();
     }
 

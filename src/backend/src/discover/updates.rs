@@ -1,10 +1,10 @@
 use std::time::{Duration, SystemTime};
 // use std::sync::atomic::Ordering;
 // use candid::Principal;
-use ic_cdk::{caller};
+use ic_cdk::caller;
 use ic_cdk_macros::update;
 
-use crate::discover::{Post};
+use crate::discover::Post;
 
 // Move it to util
 pub fn time_diff(i: u64, f: u64) -> Duration {
@@ -27,7 +27,6 @@ fn save_post(mut post: Post) -> Result<(), String> {
         let posts = Post::get_latest_posts();
         post.date_created = ic_cdk::api::time();
 
-
         if posts.len() >= 2 {
             // TODO make sure the ordering is correct, otherwise the hours, and minutes may be not accurate
             //     it should take the posted dates, but it may take the last post in the array instead of the actual last post
@@ -36,11 +35,18 @@ fn save_post(mut post: Post) -> Result<(), String> {
             //     print(x.to_string());
 
             let one_day = 86400;
-            let diff = time_diff(posts.last().unwrap().date_created.clone(), ic_cdk::api::time());
+            let diff = time_diff(
+                posts.last().unwrap().date_created.clone(),
+                ic_cdk::api::time(),
+            );
             if diff < Duration::from_secs(one_day.clone()) {
                 let hours = &one_day - diff.as_secs();
                 let remainder = (one_day - diff.as_secs()) % 3600;
-                let msg = format!("please wait {} hours and {} minutes", hours / 3600, remainder / 60);
+                let msg = format!(
+                    "please wait {} hours and {} minutes",
+                    hours / 3600,
+                    remainder / 60
+                );
                 return Err(msg);
             }
         }
@@ -54,7 +60,6 @@ fn save_post(mut post: Post) -> Result<(), String> {
     Ok(())
 }
 
-
 #[update]
 fn delete_post(id: String) -> Result<(), String> {
     let post = Post::get(id.clone())?;
@@ -63,7 +68,6 @@ fn delete_post(id: String) -> Result<(), String> {
     };
     Post::delete(id)
 }
-
 
 #[update]
 fn vote_up(id: String) -> Result<Post, String> {

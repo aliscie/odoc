@@ -1,7 +1,7 @@
-mod types;
-mod queries;
-mod updates;
 mod custom_contract;
+mod queries;
+mod types;
+mod updates;
 
 pub use custom_contract::*;
 pub use queries::*;

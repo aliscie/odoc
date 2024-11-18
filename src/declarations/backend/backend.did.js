@@ -84,7 +84,7 @@ export const idlFactory = ({ IDL }) => {
     'admins' : IDL.Vec(IDL.Principal),
   });
   const Result_4 = IDL.Variant({ 'Ok' : WorkSpace, 'Err' : IDL.Text });
-  const Result_5 = IDL.Variant({ 'Ok' : IDL.Float64, 'Err' : IDL.Text });
+  const Result_5 = IDL.Variant({ 'Ok' : IDL.Nat, 'Err' : Error });
   const Contract = IDL.Variant({ 'SharesContract' : IDL.Text });
   const Row = IDL.Record({
     'id' : IDL.Text,
@@ -307,7 +307,7 @@ export const idlFactory = ({ IDL }) => {
     'ApproveShareRequest' : IDL.Text,
     'CPaymentContract' : IDL.Tuple(CPayment, PaymentAction),
     'Unfriend' : IDL.Null,
-    'ConformShare' : IDL.Text,
+    'ReceivedDeposit' : IDL.Text,
     'ApplyShareRequest' : IDL.Text,
     'NewMessage' : Message,
     'RemovedFromChat' : IDL.Text,
@@ -393,11 +393,6 @@ export const idlFactory = ({ IDL }) => {
       IDL.Tuple(IDL.Principal, ShareFilePermission)
     ),
   });
-  const WithdrawBalanceArgs = IDL.Record({
-    'to' : IDL.Principal,
-    'token' : IDL.Principal,
-    'amount' : IDL.Nat,
-  });
   const ClientKey = IDL.Record({
     'client_principal' : IDL.Principal,
     'client_nonce' : IDL.Nat64,
@@ -451,8 +446,7 @@ export const idlFactory = ({ IDL }) => {
     'delete_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], []),
     'delete_post' : IDL.Func([IDL.Text], [Result_2], []),
     'delete_work_space' : IDL.Func([WorkSpace], [Result_4], []),
-    'deposit_principal' : IDL.Func([], [IDL.Text], ['query']),
-    'deposit_usdt' : IDL.Func([IDL.Float64], [Result_5], []),
+    'deposit_ckusdt' : IDL.Func([], [Result_5], []),
     'get_all_files' : IDL.Func([], [IDL.Vec(FileNode)], ['query']),
     'get_all_files_content' : IDL.Func(
         [],
@@ -540,7 +534,7 @@ export const idlFactory = ({ IDL }) => {
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
     'vote_down' : IDL.Func([IDL.Text], [Result_8], []),
     'vote_up' : IDL.Func([IDL.Text], [Result_8], []),
-    'withdraw_balance' : IDL.Func([WithdrawBalanceArgs], [Result_1], []),
+    'withdraw_ckusdt' : IDL.Func([IDL.Nat64, IDL.Text], [Result_5], []),
     'ws_close' : IDL.Func([CanisterWsCloseArguments], [Result_2], []),
     'ws_get_messages' : IDL.Func(
         [CanisterWsGetMessagesArguments],

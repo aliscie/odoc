@@ -1,5 +1,5 @@
-use std::sync::atomic::{AtomicU64, Ordering};
 use crate::COUNTER;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 // static COUNTER: AtomicU64 = AtomicU64::new(0);
 
@@ -7,7 +7,6 @@ use crate::COUNTER;
 fn counter() -> u64 {
     COUNTER.load(Ordering::Relaxed)
 }
-
 
 // #[ic_cdk::init]
 pub fn init_timers() {
@@ -18,7 +17,6 @@ pub fn init_timers() {
         COUNTER.fetch_add(1, Ordering::Relaxed);
     });
 }
-
 
 // #[ic_cdk::post_upgrade]
 // fn post_upgrade_timers(timer_interval_secs: u64) {

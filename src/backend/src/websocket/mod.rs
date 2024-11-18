@@ -1,21 +1,24 @@
 pub mod handlers;
 mod notification;
 
-use crate::{NOTIFICATIONS};
-use ic_cdk::caller;
-pub use notification::*;
+use crate::NOTIFICATIONS;
 pub use handlers::*;
-use ic_cdk_macros::update;
+use ic_cdk::caller;
 use ic_cdk_macros::query;
+use ic_cdk_macros::update;
+pub use notification::*;
 
 // use ic_cdk_macros::*;
-use ic_websocket_cdk::{CanisterWsCloseArguments, CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments, CanisterWsOpenResult, WsHandlers, WsInitParams};
+use ic_websocket_cdk::{
+    CanisterWsCloseArguments, CanisterWsCloseResult, CanisterWsGetMessagesArguments,
+    CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult,
+    CanisterWsOpenArguments, CanisterWsOpenResult, WsHandlers, WsInitParams,
+};
 
 use handlers::{on_close, on_message, on_open};
 // use crate::handlers::{AppMessage, send_app_message};
 
 // mod canister;
-
 
 // Paste here the principal of the gateway obtained when running the gateway
 
@@ -50,7 +53,10 @@ fn ws_close(args: CanisterWsCloseArguments) -> CanisterWsCloseResult {
 
 // method called by the client to send a message to the canister (relayed by the WS Gateway)
 #[update]
-fn ws_message(args: CanisterWsMessageArguments, msg_type: Option<AppMessage>) -> CanisterWsMessageResult {
+fn ws_message(
+    args: CanisterWsMessageArguments,
+    msg_type: Option<AppMessage>,
+) -> CanisterWsMessageResult {
     ic_websocket_cdk::ws_message(args, msg_type)
 }
 
@@ -60,14 +66,13 @@ fn ws_get_messages(args: CanisterWsGetMessagesArguments) -> CanisterWsGetMessage
     ic_websocket_cdk::ws_get_messages(args)
 }
 
-
 #[query]
 fn get_user_notifications() -> Vec<Notification> {
     Notification::get_list(&caller())
 }
 
 #[update]
-fn see_notifications(id: String) -> Result<String,String> {
+fn see_notifications(id: String) -> Result<String, String> {
     let mut notification = Notification::get(id);
     if notification.is_none() {
         return Err("Notification not found".to_string());
@@ -77,5 +82,3 @@ fn see_notifications(id: String) -> Result<String,String> {
     notification.pure_save();
     Ok("Notification seen".to_string())
 }
-
-

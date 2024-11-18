@@ -18,6 +18,7 @@ import { canisterId, idlFactory } from "../../declarations/backend";
 import { _SERVICE } from "../../declarations/backend/backend.did";
 import { useDispatch } from "react-redux";
 import { handleRedux } from "../redux/store/handleRedux";
+import getLedgerActor from "./ckudc_ledger_actor";
 
 interface State {
   principal: string | null;
@@ -140,9 +141,10 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({
       const client = await AuthClient.create();
       setAuthClient(client);
       const { actor, agent, principal, identity } = await handleAgent(client);
-
+      const ckUSDCActor = await getLedgerActor(agent);
       setState((pre) => {
         return {
+          ckUSDCActor,
           backendActor: actor,
           agent,
           principal,

@@ -1,5 +1,5 @@
-mod types;
 mod queries;
+mod types;
 mod updates;
 
 pub use queries::*;

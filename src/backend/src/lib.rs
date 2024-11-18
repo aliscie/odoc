@@ -8,19 +8,20 @@ use evm_rpc_canister_types::{
     GetTransactionCountResult, MultiGetTransactionCountResult, RequestResult, RpcService,
 };
 // use ic_ledger_types::BlockIndex;
-use icrc_ledger_types::icrc1::transfer::BlockIndex;
-use ic_cdk_macros;
-use ic_websocket_cdk::*;
-use ic_cdk::api::management_canister::provisional::CanisterId;
-use ic_websocket_cdk::*;
 use candid::Nat;
 use chat::*;
+use contracts::StoredContractVec;
 pub use contracts::*;
 use contracts::*;
 use discover::*;
 use files::*;
 use files_content::*;
 use friends::*;
+use ic_cdk::api::management_canister::provisional::CanisterId;
+use ic_cdk_macros;
+use ic_websocket_cdk::*;
+use ic_websocket_cdk::*;
+use icrc_ledger_types::icrc1::transfer::BlockIndex;
 use init::*;
 use queries::*;
 pub use share_files::*;
@@ -32,55 +33,82 @@ use user::*;
 use user_history::*;
 pub use wallet::*;
 use websocket::*;
-use contracts::StoredContractVec;
 
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
 
 use ic_stable_structures::{
-    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable, StableVec,
+    storable::Bound, DefaultMemoryImpl, StableBTreeMap, StableVec, Storable,
 };
 
-mod user;
-mod media;
+mod contracts;
 mod files;
 mod files_content;
-mod contracts;
+mod media;
+mod user;
 
+mod friends;
+mod queries;
+mod share_files;
 mod storage_schema;
 mod tables;
-mod queries;
 mod updates;
-mod friends;
-mod share_files;
 mod wallet;
 // mod timer;
-mod websocket;
-mod discover;
-mod timer;
-mod init;
 mod chat;
+mod discover;
+mod init;
+mod timer;
 mod user_history;
+mod websocket;
 mod workspaces;
 
-use workspaces::*;
 use ic_cdk::api::management_canister::bitcoin::{
     BitcoinNetwork, GetUtxosResponse, MillisatoshiPerByte,
 };
+use icrc_ledger_types::icrc1::account::Account;
+use workspaces::*;
 
 type Memory = VirtualMemory<DefaultMemoryImpl>;
+// pub type ConfigCell = StableCell<Option<Candid<Config>>, VMem>;
+
+// pub struct State {
+//     config: ConfigCell,
+//     /// Initially intended for ERC20 tokens only, this field stores the list of tokens set by the users.
+//     user_token: UserTokenMap,
+//     /// Introduced to support a broader range of user-defined custom tokens, beyond just ERC20.
+//     /// Future updates may include migrating existing ERC20 tokens to this more flexible structure.
+//     custom_token: CustomTokenMap,
+//     user_profile: UserProfileMap,
+//     user_profile_updated: UserProfileUpdatedMap,
+//     migration: Option<Migration>,
+// }
 
 thread_local! {
+
+    // TODO simplify state
+    //     static STATE: RefCell<State> = RefCell::new(
+    //         MEMORY_MANAGER.with(|mm| State {
+    //             profiles: ConfigCell::init(mm.borrow().get(CONFIG_MEMORY_ID), None).expect("config cell initialization should succeed"),
+    //             // user_token: UserTokenMap::init(mm.borrow().get(USER_TOKEN_MEMORY_ID)),
+    //             // custom_token: CustomTokenMap::init(mm.borrow().get(USER_CUSTOM_TOKEN_MEMORY_ID)),
+    //             // // Use `UserProfileModel` to access and manage access to these states
+    //             // user_profile: UserProfileMap::init(mm.borrow().get(USER_PROFILE_MEMORY_ID)),
+    //             // user_profile_updated: UserProfileUpdatedMap::init(mm.borrow().get(USER_PROFILE_UPDATED_MEMORY_ID)),
+    //             // migration: None,
+    //         })
+    //     );
 
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
         RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
 
     static CK_USDC_STATE: RefCell<CkUsdcState> = RefCell::default();
+
     // static CK_USDC_STATE: RefCell<CkUsdcState> = RefCell::new(
     //     StableBTreeMap::init(
     //         MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
     //     )
     // );
-    //
+
     static PROFILE_STORE: RefCell<StableBTreeMap<String, User, Memory>> = RefCell::new(
         StableBTreeMap::init(
             MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))),
@@ -174,9 +202,9 @@ pub static COUNTER: AtomicU64 = AtomicU64::new(0);
 
 #[cfg(test)]
 mod tests {
-    use ic_cdk::caller;
     use crate::friends::Friend;
     use crate::user::User;
+    use ic_cdk::caller;
 
     #[test]
     fn test_one() {

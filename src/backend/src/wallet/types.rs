@@ -1,15 +1,13 @@
-use std::collections::HashMap;
-use crate::{CPayment, PaymentStatus, WALLETS_STORE};
 use crate::user_history::UserHistory;
+use crate::{CPayment, PaymentStatus, WALLETS_STORE};
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 use ethers_core::abi::ethereum_types::H160;
-use ic_stable_structures::{
-    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
-};
-use std::{borrow::Cow, cell::RefCell};
 use ic_cdk::caller;
-use serde_bytes::ByteBuf;
+use ic_stable_structures::{storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable};
 use serde::Serialize;
+use serde_bytes::ByteBuf;
+use std::collections::HashMap;
+use std::{borrow::Cow, cell::RefCell};
 
 pub const MAX_SYMBOL_LENGTH: usize = 20;
 
@@ -22,7 +20,6 @@ pub struct UserToken {
     pub version: Option<u64>,
     pub enabled: Option<bool>,
 }
-
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub enum ExchangeType {
@@ -47,7 +44,6 @@ pub struct Exchange {
     pub date_created: f64,
 }
 
-
 #[derive(PartialEq, Clone, Debug, Default, CandidType, Deserialize)]
 pub struct Wallet {
     pub owner: String,
@@ -64,7 +60,10 @@ pub struct Wallet {
 
 impl Storable for Wallet {
     fn to_bytes(&self) -> Cow<[u8]> {
-        Cow::Owned(Encode!(self).unwrap())
+        if let Ok(bytes) = Encode!(self) {
+            return Cow::Owned(bytes);
+        }
+        Cow::Borrowed(&[])
     }
 
     fn from_bytes(bytes: Cow<[u8]>) -> Self {
@@ -73,8 +72,6 @@ impl Storable for Wallet {
 
     const BOUND: Bound = Bound::Unbounded;
 }
-
-
 
 impl Wallet {
     pub fn check_dept(&self, amount: f64) -> Result<(), String> {
@@ -143,7 +140,12 @@ impl Wallet {
         })
     }
 
-    pub fn deposit(&mut self, amount: f64, from: String, _type: ExchangeType) -> Result<Self, String> {
+    pub fn deposit(
+        &mut self,
+        amount: f64,
+        from: String,
+        _type: ExchangeType,
+    ) -> Result<Self, String> {
         let new_exchange = Exchange {
             from: from.clone(),
             to: self.owner.clone(),
@@ -153,7 +155,6 @@ impl Wallet {
         };
         self.exchanges.push(new_exchange);
         self.balance += amount.clone();
-
 
         // handle profile
         if from != "ExternalWallet" {
@@ -281,5 +282,3 @@ pub fn assert_token_symbol_length(token: &UserToken) -> Result<(), String> {
 //         init_state(init_arg)
 //     }
 // }
-
-

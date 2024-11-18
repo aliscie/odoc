@@ -1,10 +1,10 @@
-use candid::{Principal};
 use candid::CandidType;
+use candid::Principal;
 use ic_cdk_macros::query;
 
-use crate::{PROFILE_STORE, Wallet};
 use crate::user::User;
 use crate::user_history::{ActionRating, Rating, UserHistory};
+use crate::{Wallet, PROFILE_STORE};
 
 #[derive(CandidType)]
 pub struct UserProfile {
@@ -26,11 +26,8 @@ pub struct UserProfile {
 
 impl UserProfile {
     pub fn get(user_id: Principal) -> Result<Self, String> {
-        let user: Option<User> = PROFILE_STORE.with(|profile_store| {
-            profile_store
-                .borrow()
-                .get(&user_id.to_string())
-        });
+        let user: Option<User> =
+            PROFILE_STORE.with(|profile_store| profile_store.borrow().get(&user_id.to_string()));
         let mut user_profile = UserHistory::get(user_id);
         let wallet = Wallet::get(user_id);
         if let Some(user) = user {

@@ -1,14 +1,13 @@
-use std::collections::HashMap;
-use candid::Principal;
 use candid::types::principal::PrincipalError;
-
+use candid::Principal;
+use std::collections::HashMap;
 
 // use ic_cdk_macros::query;
 use ic_cdk_macros::query;
 
-use crate::{PROFILE_STORE};
 use crate::user::User;
 use crate::user_history::UserHistory;
+use crate::PROFILE_STORE;
 
 //
 // #[query(name = "getSelf")]
@@ -58,7 +57,6 @@ use crate::user_history::UserHistory;
 
 // get all users
 
-
 // #[query]
 // fn get_all_users() -> HashMap<String, User> {
 //     PROFILE_STORE.with(|profile_store| {
@@ -71,7 +69,6 @@ use crate::user_history::UserHistory;
 //     })
 // }
 
-
 #[query]
 fn get_user(usd_id: String) -> Result<User, String> {
     let user: Result<Principal, PrincipalError> = Principal::from_text(usd_id);
@@ -80,16 +77,11 @@ fn get_user(usd_id: String) -> Result<User, String> {
         return Err("Invalid principal.".to_string());
     };
 
-    let user: Option<User> = PROFILE_STORE.with(|profile_store| {
-        profile_store
-            .borrow()
-            .get(&user.unwrap().to_string())
-    });
+    let user: Option<User> =
+        PROFILE_STORE.with(|profile_store| profile_store.borrow().get(&user.unwrap().to_string()));
 
     if let Some(user) = user {
         return Ok(user);
     }
     Err("User not found.".to_string())
 }
-
-

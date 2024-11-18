@@ -211,7 +211,7 @@ type NoteContent = variant {
   ApproveShareRequest : text;
   CPaymentContract : record { CPayment; PaymentAction };
   Unfriend;
-  ConformShare : text;
+  ReceivedDeposit : text;
   ApplyShareRequest : text;
   NewMessage : Message;
   RemovedFromChat : text;
@@ -299,7 +299,7 @@ type Result_13 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
 type Result_2 = variant { Ok; Err : text };
 type Result_3 = variant { Ok : text; Err : text };
 type Result_4 = variant { Ok : WorkSpace; Err : text };
-type Result_5 = variant { Ok : float64; Err : text };
+type Result_5 = variant { Ok : nat; Err : Error };
 type Result_6 = variant { Ok : StoredContract; Err : text };
 type Result_7 = variant { Ok : InitialData; Err : text };
 type Result_8 = variant { Ok : Post; Err : text };
@@ -353,11 +353,6 @@ type WebsocketMessage = record {
   timestamp : nat64;
   is_service_message : bool;
 };
-type WithdrawBalanceArgs = record {
-  to : principal;
-  token : principal;
-  amount : nat;
-};
 type WorkSpace = record {
   id : text;
   files : vec text;
@@ -382,8 +377,7 @@ service : () -> {
   delete_file : (text) -> (opt FileNode);
   delete_post : (text) -> (Result_2);
   delete_work_space : (WorkSpace) -> (Result_4);
-  deposit_principal : () -> (text) query;
-  deposit_usdt : (float64) -> (Result_5);
+  deposit_ckusdt : () -> (Result_5);
   get_all_files : () -> (vec FileNode) query;
   get_all_files_content : () -> (vec record { text; vec ContentNode }) query;
   get_chats_notifications : () -> (vec Message) query;
@@ -440,7 +434,7 @@ service : () -> {
   update_user_profile : (RegisterUser) -> (Result);
   vote_down : (text) -> (Result_8);
   vote_up : (text) -> (Result_8);
-  withdraw_balance : (WithdrawBalanceArgs) -> (Result_1);
+  withdraw_ckusdt : (nat64, text) -> (Result_5);
   ws_close : (CanisterWsCloseArguments) -> (Result_2);
   ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_13) query;
   ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_2);

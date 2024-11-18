@@ -1,11 +1,10 @@
-use ic_cdk_macros::query;
 use crate::chat::{Chat, Message};
-use crate::websocket::{AppMessage, Notification};
-use candid::{CandidType, Deserialize, Principal};
 use crate::discover::UserFE;
 use crate::user::User;
+use crate::websocket::{AppMessage, Notification};
 use crate::workspaces::WorkSpace;
-
+use candid::{CandidType, Deserialize, Principal};
+use ic_cdk_macros::query;
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct FEChat {
@@ -19,9 +18,8 @@ pub struct FEChat {
     // this used only for groups
     pub messages: Vec<Message>,
     pub creator: UserFE,
-    pub workspaces: Vec<String>
+    pub workspaces: Vec<String>,
 }
-
 
 #[query]
 fn get_my_chats() -> Vec<FEChat> {
@@ -63,7 +61,6 @@ fn get_my_chats() -> Vec<FEChat> {
 
     fe_chats
 }
-
 
 #[query]
 fn get_chats_notifications() -> Vec<Message> {

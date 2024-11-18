@@ -1,15 +1,15 @@
-use ic_cdk::{caller};
 use candid::{CandidType, Deserialize, Principal};
+use ic_cdk::caller;
 
-use crate::{FRIENDS_STORE};
 use crate::user::User;
+use crate::FRIENDS_STORE;
 
 use candid::{Decode, Encode};
-use ic_stable_structures::{Storable};
+use ic_stable_structures::storable::Bound;
+use ic_stable_structures::Storable;
+use serde::Serialize;
 use std::borrow::Cow;
 use std::ptr::read_unaligned;
-use ic_stable_structures::storable::Bound;
-use serde::Serialize;
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub struct Friend {
@@ -44,7 +44,6 @@ impl Storable for Friend {
         is_fixed_size: false,
     };
 }
-
 
 impl Friend {
     pub fn new(sender: String, receiver: String) -> Self {

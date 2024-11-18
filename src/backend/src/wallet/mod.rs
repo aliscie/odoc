@@ -1,14 +1,14 @@
-pub mod types;
-mod queries;
-mod updates;
 mod ck_usdc;
 mod error;
 mod icpswap;
 mod log;
 mod merchant;
 mod owners;
+mod queries;
 mod swaps;
 mod token;
+pub mod types;
+mod updates;
 
 pub use error::*;
 pub use icpswap::*;

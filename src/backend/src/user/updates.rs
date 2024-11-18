@@ -1,7 +1,5 @@
 use ic_cdk_macros::update;
 
-
-
 use crate::user::{RegisterUser, User};
 
 #[update]
@@ -21,7 +19,6 @@ fn register(profile: RegisterUser) -> Result<User, String> {
     let user = User::new(profile.clone());
     Ok(user)
 }
-
 
 #[update]
 fn update_user_profile(updates: RegisterUser) -> Result<User, String> {

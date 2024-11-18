@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use std::sync::atomic::{AtomicU64, Ordering};
 
-
 use candid::{CandidType, Deserialize, Principal};
 
 use crate::contracts::Contract;
@@ -133,5 +132,3 @@ pub struct Row {
     contract: Option<Contract>,
     pub(crate) cells: Option<HashMap<ColumnName, TableCellValue>>,
 }
-
-

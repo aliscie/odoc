@@ -1,19 +1,18 @@
 use std::collections::HashMap;
 
-use candid::{CandidType, Deserialize};
 use candid::Principal;
+use candid::{CandidType, Deserialize};
 use ic_cdk::{call, caller};
 use serde::Serialize;
 
-use crate::{CONTRACTS_STORE, ExchangeType, StoredContract, StoredContractVec, Wallet};
-use crate::contracts::custom_contract::utils::{notify_about_promise};
+use crate::contracts::custom_contract::utils::notify_about_promise;
 use crate::storage_schema::ContractId;
 use crate::tables::{Column, ContractPermissionType, Execute, Filter, Formula, PermissionType};
 use crate::user_history::UserHistory;
 use crate::websocket::{NoteContent, Notification, PaymentAction};
+use crate::{ExchangeType, StoredContract, StoredContractVec, Wallet, CONTRACTS_STORE};
 
 // make me a function of list of days
-
 
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub struct CColumn {
@@ -28,7 +27,6 @@ pub struct CColumn {
     pub permissions: Vec<PermissionType>,
 }
 
-
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub(crate) struct CCell {
     pub value: String,
@@ -37,20 +35,17 @@ pub(crate) struct CCell {
     // pub index: u64,
 }
 
-
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub struct CRow {
     pub cells: Vec<CCell>,
     pub id: String,
 }
 
-
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub struct ContractError {
     pub message: String,
     // pub payment: CPayment,
 }
-
 
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub struct CContract {
@@ -121,7 +116,11 @@ impl CPayment {
         let mut receiver_wallet = Wallet::get(self.receiver.clone());
         let withdraw = ExchangeType::LocalSend;
         let deposit = ExchangeType::LocalSend;
-        sender_wallet.withdraw(self.amount.clone(), self.receiver.clone().to_string(), withdraw)?;
+        sender_wallet.withdraw(
+            self.amount.clone(),
+            self.receiver.clone().to_string(),
+            withdraw,
+        )?;
         let _ = sender_wallet.remove_dept(self.id.clone());
         receiver_wallet.deposit(self.amount, self.sender.clone().to_string(), deposit)?;
 
@@ -158,7 +157,6 @@ impl CPayment {
     }
 }
 
-
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub struct CustomContract {
     pub id: String,
@@ -175,10 +173,10 @@ pub struct CustomContract {
 
 impl CColumn {
     pub fn can_update(&self) -> bool {
-        self.permissions.contains(&PermissionType::Edit(caller())) || self.permissions.contains(&PermissionType::AnyOneEdite)
+        self.permissions.contains(&PermissionType::Edit(caller()))
+            || self.permissions.contains(&PermissionType::AnyOneEdite)
     }
 }
-
 
 impl CustomContract {
     // pub fn exec(&self, formula: Formula, target_column: CColumn) {
@@ -216,26 +214,48 @@ impl CustomContract {
             return self.clone();
         };
         let mut new_contract = self.clone();
-        new_contract.contracts = new_contract.contracts.iter().map(|contract| {
-            let mut new_contract = contract.clone();
-            new_contract.columns = new_contract.columns.iter().filter(|column| {
-                column.permissions.iter().any(|permission| {
-                    match permission {
-                        PermissionType::View(principal) => principal == &caller(),
-                        PermissionType::AnyOneView => true,
-                        _ => false
-                    }
-                })
-            }).cloned().collect();
-            new_contract.rows = new_contract.rows.iter().map(|row| {
-                let mut new_row = row.clone();
-                new_row.cells = new_row.cells.iter().filter(|cell| {
-                    new_contract.columns.iter().any(|column| column.field == cell.field)
-                }).cloned().collect();
-                new_row
-            }).collect();
-            new_contract
-        }).collect();
+        new_contract.contracts = new_contract
+            .contracts
+            .iter()
+            .map(|contract| {
+                let mut new_contract = contract.clone();
+                new_contract.columns = new_contract
+                    .columns
+                    .iter()
+                    .filter(|column| {
+                        column
+                            .permissions
+                            .iter()
+                            .any(|permission| match permission {
+                                PermissionType::View(principal) => principal == &caller(),
+                                PermissionType::AnyOneView => true,
+                                _ => false,
+                            })
+                    })
+                    .cloned()
+                    .collect();
+                new_contract.rows = new_contract
+                    .rows
+                    .iter()
+                    .map(|row| {
+                        let mut new_row = row.clone();
+                        new_row.cells = new_row
+                            .cells
+                            .iter()
+                            .filter(|cell| {
+                                new_contract
+                                    .columns
+                                    .iter()
+                                    .any(|column| column.field == cell.field)
+                            })
+                            .cloned()
+                            .collect();
+                        new_row
+                    })
+                    .collect();
+                new_contract
+            })
+            .collect();
         new_contract
     }
 
@@ -279,7 +299,10 @@ impl CustomContract {
     }
 
     pub fn get_c_contract(&self, contract_id: &str) -> Option<CContract> {
-        self.contracts.iter().find(|contract| contract.id == contract_id).map(|contract| contract.clone())
+        self.contracts
+            .iter()
+            .find(|contract| contract.id == contract_id)
+            .map(|contract| contract.clone())
     }
 
     pub fn get_columns(&self) -> Vec<CColumn> {
@@ -292,7 +315,11 @@ impl CustomContract {
 
     pub fn get_contract_of_column(&self, field: String) -> Option<CContract> {
         for contract in self.contracts.clone() {
-            let column = contract.columns.iter().find(|column| column.field == field).map(|column| column.clone());
+            let column = contract
+                .columns
+                .iter()
+                .find(|column| column.field == field)
+                .map(|column| column.clone());
             if let Some(column) = column {
                 return Some(contract.clone());
             }
@@ -306,22 +333,26 @@ impl CustomContract {
         for contract in self.contracts.clone() {
             columns.extend(contract.columns);
         }
-        columns.iter().find(|column| &column.field == field).map(|column| column.clone())
+        columns
+            .iter()
+            .find(|column| &column.field == field)
+            .map(|column| column.clone())
     }
 
     pub fn get(id: &String, creator: &Principal) -> Option<Self> {
         CONTRACTS_STORE.with(|contracts_store| {
             let caller_contracts = contracts_store.borrow();
-            let stored_contract_vec = caller_contracts.get(&creator.to_text())?.stored_contracts.clone();
-            if let Some(contract) = stored_contract_vec.iter().find(|contract| {
-                match contract {
-                    StoredContract::CustomContract(contract) => contract.id == *id,
-                    _ => false
-                }
+            let stored_contract_vec = caller_contracts
+                .get(&creator.to_text())?
+                .stored_contracts
+                .clone();
+            if let Some(contract) = stored_contract_vec.iter().find(|contract| match contract {
+                StoredContract::CustomContract(contract) => contract.id == *id,
+                _ => false,
             }) {
                 match contract {
                     StoredContract::CustomContract(contract) => Some(contract.clone()),
-                    _ => None
+                    _ => None,
                 }
             } else {
                 None
@@ -329,11 +360,13 @@ impl CustomContract {
         })
     }
 
-
     pub fn get_for_user(id: String, user: Principal) -> Option<Self> {
         CONTRACTS_STORE.with(|contracts_store| {
             let caller_contracts = contracts_store.borrow();
-            let stored_contract_vec = caller_contracts.get(&user.to_string())?.stored_contracts.clone();
+            let stored_contract_vec = caller_contracts
+                .get(&user.to_string())?
+                .stored_contracts
+                .clone();
 
             // Convert Vec<StoredContract> to HashMap<ContractId, StoredContract>
             let mut contract_map = HashMap::new();
@@ -344,7 +377,7 @@ impl CustomContract {
             let contract = contract_map.get(&id)?;
             match contract {
                 StoredContract::CustomContract(contract) => Some(contract.clone()),
-                _ => None
+                _ => None,
             }
         })
     }
@@ -370,39 +403,44 @@ impl CustomContract {
 
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
-            let mut new_map = StoredContractVec { stored_contracts: vec![StoredContract::CustomContract(self.clone())] };
+            let mut new_map = StoredContractVec {
+                stored_contracts: vec![StoredContract::CustomContract(self.clone())],
+            };
             if let Some(mut caller_contracts_map) = caller_contracts.get(&self.creator.to_text()) {
-                new_map.stored_contracts.extend(caller_contracts_map.stored_contracts.clone());
+                new_map
+                    .stored_contracts
+                    .extend(caller_contracts_map.stored_contracts.clone());
             }
             // new_map.stored_contracts.push(StoredContract::CustomContract(self.clone()));
-            new_map.stored_contracts.retain(|contract| {
-                match contract {
-                    StoredContract::CustomContract(contract) => contract.id != self.id,
-                    _ => true
-                }
+            new_map.stored_contracts.retain(|contract| match contract {
+                StoredContract::CustomContract(contract) => contract.id != self.id,
+                _ => true,
             });
             caller_contracts.insert(self.creator.to_text(), new_map);
         });
-
 
         Ok(())
     }
     pub fn pure_save(&self) -> Result<Self, String> {
         CONTRACTS_STORE.with(|contracts_store| {
             let mut caller_contracts = contracts_store.borrow_mut();
-            let mut new_map = StoredContractVec { stored_contracts: vec![StoredContract::CustomContract(self.clone())] };
+            let mut new_map = StoredContractVec {
+                stored_contracts: vec![StoredContract::CustomContract(self.clone())],
+            };
             if let Some(mut caller_contracts_map) = caller_contracts.get(&self.creator.to_text()) {
-                new_map.stored_contracts.extend(caller_contracts_map.stored_contracts.clone());
+                new_map
+                    .stored_contracts
+                    .extend(caller_contracts_map.stored_contracts.clone());
                 // let mut caller_contracts_map = caller_contracts.get(&self.creator.to_text()).unwrap();
                 // caller_contracts_map.stored_contracts.push(StoredContract::CustomContract(self.clone()));
             }
-            new_map.stored_contracts.retain(|contract| {
-                match contract {
-                    StoredContract::CustomContract(contract) => contract.id != self.id,
-                    _ => true
-                }
+            new_map.stored_contracts.retain(|contract| match contract {
+                StoredContract::CustomContract(contract) => contract.id != self.id,
+                _ => true,
             });
-            new_map.stored_contracts.push(StoredContract::CustomContract(self.clone()));
+            new_map
+                .stored_contracts
+                .push(StoredContract::CustomContract(self.clone()));
             caller_contracts.insert(self.creator.to_text(), new_map);
 
             // if let Some(mut caller_contracts_map) = caller_contracts.get(&self.creator.to_text()) {
@@ -422,21 +460,20 @@ impl CustomContract {
         Ok(self.clone())
     }
 
-
     pub fn save(&mut self) -> Result<Self, Vec<ContractError>> {
         let mut contract_errors: Vec<ContractError> = vec![];
         if let Some(old_contract) = Self::get(&self.id, &self.creator) {
             self.date_created = old_contract.date_created.clone();
             self.date_updated = ic_cdk::api::time() as f64;
             self.creator = old_contract.creator.clone(); // no need for this cuz Self::get() already check for this
-            // self.payments = old_contract.clone().update_payments(self.payments.clone());
+                                                         // self.payments = old_contract.clone().update_payments(self.payments.clone());
             self.payments = old_contract.payments.clone();
 
-
-            let contracts: Vec<CContract> = self.contracts.iter_mut().map(|contract| {
-                contract.update(&mut contract_errors, &old_contract)
-            }).collect();
-
+            let contracts: Vec<CContract> = self
+                .contracts
+                .iter_mut()
+                .map(|contract| contract.update(&mut contract_errors, &old_contract))
+                .collect();
 
             // for contract in old_contract.contracts {
             //     let old_contract = self.contracts.clone().get_c_contract(&contract.id, &contract.creator);
@@ -447,12 +484,24 @@ impl CustomContract {
             self.contracts = contracts;
 
             // rerun odl promos if payment.status == PaymentStatus::Canceled. else promise
-            self.promises = self.promises.clone().iter().map(|promise| self.clone().update_promise(&mut contract_errors, promise.clone(), old_contract.clone())).collect();
-
+            self.promises = self
+                .promises
+                .clone()
+                .iter()
+                .map(|promise| {
+                    self.clone().update_promise(
+                        &mut contract_errors,
+                        promise.clone(),
+                        old_contract.clone(),
+                    )
+                })
+                .collect();
 
             // prevent delete if Confirmed
             for old_promise in old_contract.promises {
-                if old_promise.status == PaymentStatus::Confirmed && !self.promises.iter().any(|p| p.id == old_promise.id) {
+                if old_promise.status == PaymentStatus::Confirmed
+                    && !self.promises.iter().any(|p| p.id == old_promise.id)
+                {
                     let message: String = "You can't delete confirmed payment".to_string();
                     contract_errors.push(ContractError { message });
                     self.promises.push(old_promise.clone());
@@ -473,12 +522,16 @@ impl CustomContract {
 
         // ------- handle formulas security ------- \\
         for formula in self.formulas.clone() {
-            let old_formula: Option<&Formula> = self.formulas.iter().find(|f| f.column_id == formula.column_id);
+            let old_formula: Option<&Formula> = self
+                .formulas
+                .iter()
+                .find(|f| f.column_id == formula.column_id);
             if let Some(old_formula) = old_formula {
                 if &formula != old_formula {
                     if let Execute::TransferUsdt(payment) = formula.execute {
                         if caller() != payment.sender {
-                            let message = "You can't save a formula for other people as senders".to_string();
+                            let message =
+                                "You can't save a formula for other people as senders".to_string();
                             contract_errors.push(ContractError { message });
                             self.formulas.retain(|f| f.column_id != formula.column_id);
                         }
@@ -535,15 +588,20 @@ impl CustomContract {
     //  ----------------------------------------------- Promise CRUD permissions -----------------------------------------------\\
     // pub fn delete_promise_permission(
     // pub fn create_promise_permission(
-    pub fn update_promise_permission(&self, mut promise: CPayment, old_promise: CPayment) -> Result<CPayment, String> {
-        if old_promise.status == PaymentStatus::None || old_promise.status == PaymentStatus::ApproveHighPromise {
+    pub fn update_promise_permission(
+        &self,
+        mut promise: CPayment,
+        old_promise: CPayment,
+    ) -> Result<CPayment, String> {
+        if old_promise.status == PaymentStatus::None
+            || old_promise.status == PaymentStatus::ApproveHighPromise
+        {
             return Ok(promise);
         }
 
         promise.amount = old_promise.amount.clone();
         promise.amount = old_promise.amount;
         promise.receiver = old_promise.receiver;
-
 
         if promise.sender == caller() && promise.status != old_promise.status {
             match promise.status {
@@ -617,7 +675,12 @@ impl CustomContract {
         Ok(promise)
     }
 
-    pub fn update_promise(&self, contract_errors: &mut Vec<ContractError>, mut promise: CPayment, old_contract: CustomContract) -> CPayment {
+    pub fn update_promise(
+        &self,
+        contract_errors: &mut Vec<ContractError>,
+        mut promise: CPayment,
+        old_contract: CustomContract,
+    ) -> CPayment {
         promise.contract_id = self.id.clone();
         // --------------------------------   handle update --------------------------------  \\
         if let Some(old_promise) = old_contract.promises.iter().find(|p| p.id == promise.id) {
@@ -643,8 +706,17 @@ impl CustomContract {
         // if status's request cancellation notify the receiver
         if promise.status == PaymentStatus::RequestCancellation {
             let not = Notification::get(promise.id.clone());
-            if not.is_none() || not.unwrap().content != NoteContent::CPaymentContract(promise.clone(), PaymentAction::RequestCancellation(promise.clone())) {
-                notify_about_promise(promise.clone(), PaymentAction::RequestCancellation(promise.clone()));
+            if not.is_none()
+                || not.unwrap().content
+                    != NoteContent::CPaymentContract(
+                        promise.clone(),
+                        PaymentAction::RequestCancellation(promise.clone()),
+                    )
+            {
+                notify_about_promise(
+                    promise.clone(),
+                    PaymentAction::RequestCancellation(promise.clone()),
+                );
             }
         }
         promise

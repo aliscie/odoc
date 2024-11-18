@@ -1,6 +1,6 @@
-use ic_cdk::caller;
-use crate::CPayment;
 use crate::websocket::{NoteContent, Notification, PaymentAction};
+use crate::CPayment;
+use ic_cdk::caller;
 
 pub fn notify_about_promise(payment: CPayment, _type: PaymentAction) {
     if let Some(mut old_note) = Notification::get(payment.id.clone()) {
@@ -23,5 +23,3 @@ pub fn notify_about_promise(payment: CPayment, _type: PaymentAction) {
         new_notification.save();
     }
 }
-
-

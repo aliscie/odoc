@@ -3,14 +3,14 @@ use std::sync::atomic::Ordering;
 
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 use ic_cdk::caller;
-use ic_stable_structures::Storable;
 use ic_stable_structures::storable::Bound;
+use ic_stable_structures::Storable;
 use serde::Serialize;
 
-use crate::{CHATS, MY_CHATS};
-use crate::COUNTER;
 use crate::storage_schema::MyChatsStore;
 use crate::websocket::{NoteContent, Notification};
+use crate::COUNTER;
+use crate::{CHATS, MY_CHATS};
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct Chat {
@@ -26,17 +26,17 @@ pub struct Chat {
     pub workspaces: Vec<String>, // TODO We may not need this field
 }
 
-
 #[derive(Clone, Debug, Deserialize, CandidType, Default)]
 pub struct ChatsIdVec {
     pub chats: Vec<String>,
-
 }
-
 
 impl Storable for ChatsIdVec {
     fn to_bytes(&self) -> Cow<[u8]> {
-        Cow::Owned(Encode!(self).unwrap())
+        if let Ok(bytes) = Encode!(self) {
+            return Cow::Owned(bytes);
+        }
+        Cow::Borrowed(&[])
     }
 
     fn from_bytes(bytes: Cow<[u8]>) -> Self {
@@ -46,10 +46,12 @@ impl Storable for ChatsIdVec {
     const BOUND: Bound = Bound::Unbounded;
 }
 
-
 impl Storable for Chat {
     fn to_bytes(&self) -> Cow<[u8]> {
-        Cow::Owned(Encode!(self).unwrap())
+        if let Ok(bytes) = Encode!(self) {
+            return Cow::Owned(bytes);
+        }
+        Cow::Borrowed(&[])
     }
 
     fn from_bytes(bytes: Cow<[u8]>) -> Self {
@@ -90,14 +92,20 @@ impl Chat {
     pub fn get(id: &str) -> Option<Self> {
         CHATS.with(|store| {
             let chats = store.borrow();
-            chats.iter().find(|(chat_id, chat)| chat.id == id).map(|(_, chat)| chat.clone())
+            chats
+                .iter()
+                .find(|(chat_id, chat)| chat.id == id)
+                .map(|(_, chat)| chat.clone())
         })
     }
 
     pub fn get_by_user(user: Principal) -> Option<Self> {
         CHATS.with(|store| {
             let chats = store.borrow();
-            chats.iter().find(|(_, chat)| chat.admins.contains(&user) && chat.admins.contains(&caller())).map(|(_, chat)| chat.clone())
+            chats
+                .iter()
+                .find(|(_, chat)| chat.admins.contains(&user) && chat.admins.contains(&caller()))
+                .map(|(_, chat)| chat.clone())
         })
     }
 
@@ -130,19 +138,27 @@ impl Chat {
     pub fn get_chats() -> Vec<Chat> {
         CHATS.with(|store| {
             let chats = store.borrow();
-            chats.iter().map(|(_, chat)| chat.clone()).collect::<Vec<Chat>>()
+            chats
+                .iter()
+                .map(|(_, chat)| chat.clone())
+                .collect::<Vec<Chat>>()
         })
     }
 
     pub fn get_my_chats() -> Vec<Chat> {
         CHATS.with(|store| {
             let my_chats_ids = MY_CHATS.with(|my_chats_store| {
-                my_chats_store.borrow().get(&caller().to_text()).unwrap_or_else(|| ChatsIdVec { chats: vec![] }).clone()
+                my_chats_store
+                    .borrow()
+                    .get(&caller().to_text())
+                    .unwrap_or_else(|| ChatsIdVec { chats: vec![] })
+                    .clone()
             });
 
             let chats = store.borrow();
             my_chats_ids
-                .chats.iter()
+                .chats
+                .iter()
                 .filter_map(|id| chats.get(id))
                 .collect::<Vec<Chat>>()
         })
@@ -152,7 +168,10 @@ impl Chat {
         MY_CHATS.with(|store| {
             let mut my_chats = store.borrow_mut();
             // get user or insert empty vec
-            let mut my_chats_store = my_chats.get(&user.to_string()).unwrap_or_else(|| ChatsIdVec { chats: vec![] }).clone();
+            let mut my_chats_store = my_chats
+                .get(&user.to_string())
+                .unwrap_or_else(|| ChatsIdVec { chats: vec![] })
+                .clone();
             if !my_chats_store.chats.contains(&self.id) {
                 my_chats_store.chats.push(self.id.clone());
                 my_chats.insert(user.to_string(), my_chats_store);
@@ -198,9 +217,7 @@ impl Chat {
             if let Some(message) = chat.messages.last() {
                 messages.push(message.clone());
             }
-        };
+        }
         messages
     }
 }
-
-

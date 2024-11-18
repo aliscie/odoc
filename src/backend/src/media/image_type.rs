@@ -24,31 +24,31 @@ pub struct Image {
 // }
 
 // impl Image {
-    // pub async fn new(file: File) -> Self {
-    //     let name: String = file.name();
-    //     let name = name.as_str();
-    //     let v: Vec<&str> = name.split('.').collect();
-    //     let name = v.get(0).unwrap().to_string();
-    //     let format = v.get(1).unwrap().to_string();
-    //
-    //     let buffer: Promise = file.array_buffer();
-    //     let result = wasm_bindgen_futures::JsFuture::from(buffer).await;
-    //     let bytes: Vec<u8> = Uint8Array::new(&result.unwrap()).to_vec();
-    //     Self {
-    //         name,
-    //         format,
-    //         data: bytes,
-    //     }
-    // }
+// pub async fn new(file: File) -> Self {
+//     let name: String = file.name();
+//     let name = name.as_str();
+//     let v: Vec<&str> = name.split('.').collect();
+//     let name = v.get(0).unwrap().to_string();
+//     let format = v.get(1).unwrap().to_string();
+//
+//     let buffer: Promise = file.array_buffer();
+//     let result = wasm_bindgen_futures::JsFuture::from(buffer).await;
+//     let bytes: Vec<u8> = Uint8Array::new(&result.unwrap()).to_vec();
+//     Self {
+//         name,
+//         format,
+//         data: bytes,
+//     }
+// }
 
-    // pub fn get_opt_link(image: Option<Vec<u8>>) -> Option<String> {
-    //     match image {
-    //         Some(image) => decode_image(&image),
-    //         None => None,
-    //     }
-    // }
+// pub fn get_opt_link(image: Option<Vec<u8>>) -> Option<String> {
+//     match image {
+//         Some(image) => decode_image(&image),
+//         None => None,
+//     }
+// }
 
-    // pub fn get_link(self: &Self) -> Option<String> {
-    //     decode_image(&self.data)
-    // }
+// pub fn get_link(self: &Self) -> Option<String> {
+//     decode_image(&self.data)
+// }
 // }

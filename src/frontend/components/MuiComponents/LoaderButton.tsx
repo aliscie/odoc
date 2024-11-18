@@ -35,7 +35,7 @@ function LoaderButton(props: LoaderButtonProps) {
       props.successMessage &&
         enqueueSnackbar(props.successMessage, { variant: "success" });
     } else {
-      enqueueSnackbar(res?.Err, { variant: "error" });
+      enqueueSnackbar(`${JSON.stringify(res?.Err)}`, { variant: "error" });
     }
     setLoading(false);
   }

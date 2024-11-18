@@ -1,12 +1,11 @@
-use std::collections::HashMap;
 use ic_cdk::caller;
 use ic_cdk_macros::update;
+use std::collections::HashMap;
 
-use crate::{SHARED_USER_FILES, ShareFile, ShareFilePermission};
 use crate::files::FileNode;
 use crate::storage_schema::{ContentTree, FileId};
+use crate::{ShareFile, ShareFilePermission, SHARED_USER_FILES};
 use candid::{CandidType, Deserialize, Principal};
-
 
 #[update]
 fn get_shared_file(share_id: String) -> Result<(FileNode, ContentTree), String> {
@@ -17,7 +16,6 @@ fn get_shared_file(share_id: String) -> Result<(FileNode, ContentTree), String> 
     ShareFile::get_file(&share_id)
 }
 
-
 #[derive(PartialEq, Clone, Debug, Deserialize, CandidType)]
 pub struct ShareFileInput {
     pub id: String,
@@ -26,10 +24,14 @@ pub struct ShareFileInput {
     pub users_permissions: HashMap<Principal, ShareFilePermission>,
 }
 
-
 #[update]
 fn share_file(new_share_file: ShareFileInput) -> Result<ShareFile, String> {
-    let ShareFileInput { id, owner, permission, users_permissions } = new_share_file.clone();
+    let ShareFileInput {
+        id,
+        owner,
+        permission,
+        users_permissions,
+    } = new_share_file.clone();
     let mut file = FileNode::get(&new_share_file.id).ok_or("No such file with this id.")?;
     file.permission = permission.clone();
     file.users_permissions = users_permissions.clone();

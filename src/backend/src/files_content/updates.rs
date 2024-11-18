@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
+use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::caller;
 use ic_cdk_macros::update;
-use candid::{CandidType, Deserialize, Principal};
 
-use crate::{StoredContract};
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
 use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId};
+use crate::StoredContract;
 
 // #[update]
 // fn content_updates(file_id: FileId, content_parent_id: Option<ContentId>, new_text: String) -> Result<String, String> {
@@ -57,7 +57,6 @@ fn multi_updates(
     }
 
     for contract in contracts.clone() {
-
         if let StoredContract::CustomContract(mut custom_contract) = contract {
             let res = custom_contract.save();
             if let Err(errors) = res {
@@ -69,14 +68,12 @@ fn multi_updates(
         }
     }
 
-
     // Update FILE_CONTENTS
     for update in content_trees {
         for (file_id, content_tree) in update {
             ContentNode::update_file_contents(file_id, content_tree);
         }
-    };
-
+    }
 
     for indexing in files_indexing {
         if let Some(parent) = indexing.parent {

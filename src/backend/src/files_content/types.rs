@@ -1,15 +1,15 @@
-use std::collections::HashMap;
-use std::sync::atomic::{AtomicU64, Ordering};
-use candid::{CandidType, Decode, Deserialize, Encode, Principal};
-use ic_cdk::{caller, print};
-use ic_stable_structures::Storable;
-use crate::{FILE_CONTENTS, ShareFile, USER_FILES};
 use crate::files::FileNode;
 use crate::storage_schema::{ContentId, ContentTree, FileId};
 use crate::tables::Table;
+use crate::{ShareFile, FILE_CONTENTS, USER_FILES};
+use candid::{CandidType, Decode, Deserialize, Encode, Principal};
+use ic_cdk::{caller, print};
+use ic_stable_structures::Storable;
+use std::collections::HashMap;
+use std::sync::atomic::{AtomicU64, Ordering};
 // use candid::{Decode, Encode};
-use std::borrow::Cow;
 use ic_stable_structures::storable::Bound;
+use std::borrow::Cow;
 
 static COUNTER: AtomicU64 = AtomicU64::new(0);
 
@@ -37,12 +37,10 @@ pub struct ContentNode {
     pub children: Vec<ContentId>,
 }
 
-
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct ContentNodeVec {
     pub contents: HashMap<FileId, ContentTree>,
 }
-
 
 impl Storable for ContentNodeVec {
     fn to_bytes(&self) -> Cow<[u8]> {
@@ -50,19 +48,24 @@ impl Storable for ContentNodeVec {
     }
 
     fn from_bytes(bytes: Cow<[u8]>) -> Self {
-        Decode!(bytes.as_ref(), Self).unwrap_or_else(|_| ContentNodeVec { contents: HashMap::new() })
+        Decode!(bytes.as_ref(), Self).unwrap_or_else(|_| ContentNodeVec {
+            contents: HashMap::new(),
+        })
     }
 
     const BOUND: Bound = Bound::Unbounded;
 }
-
 
 impl ContentNode {
     pub fn get_file_content(file_id: FileId) -> Option<ContentTree> {
         FILE_CONTENTS.with(|file_contents| {
             let file_contents = file_contents.borrow();
             file_contents.get(&file_id).map(|content_node_vec| {
-                content_node_vec.contents.get(&file_id).cloned().unwrap_or_else(Vec::new)
+                content_node_vec
+                    .contents
+                    .get(&file_id)
+                    .cloned()
+                    .unwrap_or_else(Vec::new)
             })
         })
     }
@@ -70,9 +73,20 @@ impl ContentNode {
     pub fn get_all_files_content() -> HashMap<FileId, ContentTree> {
         let mut res: HashMap<FileId, ContentTree> = FILE_CONTENTS.with(|file_contents| {
             let file_contents = file_contents.borrow();
-            file_contents.iter().map(|(file_id, content_node_vec)| {
-                (file_id.clone(), content_node_vec.contents.values().cloned().flatten().collect())
-            }).collect()
+            file_contents
+                .iter()
+                .map(|(file_id, content_node_vec)| {
+                    (
+                        file_id.clone(),
+                        content_node_vec
+                            .contents
+                            .values()
+                            .cloned()
+                            .flatten()
+                            .collect(),
+                    )
+                })
+                .collect()
         });
 
         // add content from shared files
@@ -84,11 +98,7 @@ impl ContentNode {
             } else {
                 let err = file_node.unwrap_err();
                 print(
-                    format!(
-                        "Error getting file {} from shared files: {}",
-                        file.id, err
-                    )
-                        .as_str(),
+                    format!("Error getting file {} from shared files: {}", file.id, err).as_str(),
                 );
             }
         }
@@ -103,11 +113,16 @@ impl ContentNode {
         // Access user-specific files
         FILE_CONTENTS.with(|file_contents| {
             let file_contents = file_contents.borrow();
-            let collected_files: Vec<(FileId, ContentTree)> = file_contents.iter().flat_map(|(file_id, content_node_vec)| {
-                content_node_vec.contents.iter().map(move |(_, content_tree)| {
-                    (file_id.clone(), content_tree.clone())
-                }).collect::<Vec<(FileId, ContentTree)>>()
-            }).collect();
+            let collected_files: Vec<(FileId, ContentTree)> = file_contents
+                .iter()
+                .flat_map(|(file_id, content_node_vec)| {
+                    content_node_vec
+                        .contents
+                        .iter()
+                        .map(move |(_, content_tree)| (file_id.clone(), content_tree.clone()))
+                        .collect::<Vec<(FileId, ContentTree)>>()
+                })
+                .collect();
             all_files.extend(collected_files);
         });
         // Access shared files
@@ -118,11 +133,7 @@ impl ContentNode {
             } else {
                 let err = ShareFile::get_file(&file.id).unwrap_err();
                 print(
-                    format!(
-                        "Error getting file {} from shared files: {}",
-                        file.id, err
-                    )
-                        .as_str(),
+                    format!("Error getting file {} from shared files: {}", file.id, err).as_str(),
                 );
             }
         }
@@ -146,7 +157,12 @@ impl ContentNode {
             let mut contents = file_contents.borrow_mut();
             let mut content_map = HashMap::new();
             content_map.insert(file_id.clone(), content_nodes);
-            contents.insert(file_id, ContentNodeVec { contents: content_map });
+            contents.insert(
+                file_id,
+                ContentNodeVec {
+                    contents: content_map,
+                },
+            );
         });
     }
 

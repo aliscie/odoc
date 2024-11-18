@@ -1,15 +1,13 @@
-use candid::{CandidType, encode_one, decode_one};
-use ic_cdk::{print, api::time, caller, println};
-use serde::{Deserialize, Serialize};
+use candid::{decode_one, encode_one, CandidType};
+use ic_cdk::{api::time, caller, print, println};
 use ic_websocket_cdk::{
-    send,
-    ClientPrincipal, OnCloseCallbackArgs, OnMessageCallbackArgs, OnOpenCallbackArgs,
+    send, ClientPrincipal, OnCloseCallbackArgs, OnMessageCallbackArgs, OnOpenCallbackArgs,
 };
+use serde::{Deserialize, Serialize};
 
 use crate::websocket::Notification;
 
-
-#[derive(CandidType, Clone, Debug, Deserialize,  PartialEq)]
+#[derive(CandidType, Clone, Debug, Deserialize, PartialEq)]
 pub struct AppMessage {
     pub notification: Option<Notification>,
     pub text: String,

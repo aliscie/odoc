@@ -1,16 +1,13 @@
-use ic_cdk::{caller};
-use crate::{FILE_CONTENTS, FILES_SHARE_STORE, USER_FILES, SHARED_USER_FILES};
 use crate::files::{FileNode, FileNodeVector};
+use crate::{FILES_SHARE_STORE, FILE_CONTENTS, SHARED_USER_FILES, USER_FILES};
+use ic_cdk::caller;
 
-use crate::storage_schema::{ContentTree};
+use crate::storage_schema::ContentTree;
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 
-use ic_stable_structures::{
-    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
-};
-use std::{borrow::Cow, cell::RefCell};
 use crate::files_content::ContentNode;
-
+use ic_stable_structures::{storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable};
+use std::{borrow::Cow, cell::RefCell};
 
 #[derive(PartialEq, Clone, Debug, Deserialize, CandidType)]
 pub enum ShareFilePermission {
@@ -47,7 +44,6 @@ pub struct ShareFileNodeVector {
     pub share_files: Vec<ShareFile>,
 }
 
-
 impl Storable for ShareFile {
     fn to_bytes(&self) -> std::borrow::Cow<[u8]> {
         Cow::Owned(Encode!(self).unwrap())
@@ -77,7 +73,6 @@ impl Storable for ShareFileNodeVector {
         is_fixed_size: false,
     };
 }
-
 
 impl ShareFile {
     // pub fn new(file_id: FileId, share_id: String) -> Result<String, String> {
@@ -116,11 +111,13 @@ impl ShareFile {
     // }
 
     pub fn get_shared() -> Vec<ShareFile> {
-        SHARED_USER_FILES.with(|files_share_store| {
-            files_share_store.borrow().get(&caller().to_string())
-        }).unwrap_or_else(|| ShareFileNodeVector { share_files: vec![] }).share_files
+        SHARED_USER_FILES
+            .with(|files_share_store| files_share_store.borrow().get(&caller().to_string()))
+            .unwrap_or_else(|| ShareFileNodeVector {
+                share_files: vec![],
+            })
+            .share_files
     }
-
 
     pub fn get(share_id: &String) -> Result<Self, String> {
         FILES_SHARE_STORE.with(|files_share_store| {
@@ -132,7 +129,6 @@ impl ShareFile {
             }
         })
     }
-
 
     pub fn save(&self) -> Result<Self, String> {
         if caller().to_string() != self.owner.to_string() {
@@ -146,15 +142,16 @@ impl ShareFile {
     }
 
     pub fn add_to_my_shared(share_id: &String) -> Result<(), String> {
-        let share_file = FILES_SHARE_STORE.with(|files_share_store| {
-            let files_share_store = files_share_store.borrow();
-            files_share_store.get(share_id)
-        }).ok_or("No such share id.")?;
-
+        let share_file = FILES_SHARE_STORE
+            .with(|files_share_store| {
+                let files_share_store = files_share_store.borrow();
+                files_share_store.get(share_id)
+            })
+            .ok_or("No such share id.")?;
 
         SHARED_USER_FILES.with(|shared_user_files| {
             let mut shared_user_files = shared_user_files.borrow_mut();
-            let mut share_files =  vec![];
+            let mut share_files = vec![];
             if let Some(share_files_vec) = shared_user_files.get(&caller().to_string()) {
                 share_files.extend(share_files_vec.share_files.clone());
             }
@@ -166,18 +163,26 @@ impl ShareFile {
         })
     }
 
-
     pub fn get_file(share_id: &String) -> Result<(FileNode, ContentTree), String> {
-        let shared_file: ShareFile = FILES_SHARE_STORE.with(|files_share_store| {
-            let files_share_store = files_share_store.borrow();
-            files_share_store.get(share_id)
-        }).ok_or("No such share id.")?;
+        let shared_file: ShareFile = FILES_SHARE_STORE
+            .with(|files_share_store| {
+                let files_share_store = files_share_store.borrow();
+                files_share_store.get(share_id)
+            })
+            .ok_or("No such share id.")?;
 
         let file = USER_FILES.with(|files_store| {
             let user_files_vec = files_store.borrow();
             // Assuming user_files_vec is a HashMap<Principal, Vec<FileNode>>
-            let user_files_vec = user_files_vec.get(&shared_file.owner.to_string()).ok_or("Owner not found.")?;
-            user_files_vec.files.iter().find(|f| f.id == shared_file.id.clone()).cloned().ok_or("No such file.")
+            let user_files_vec = user_files_vec
+                .get(&shared_file.owner.to_string())
+                .ok_or("Owner not found.")?;
+            user_files_vec
+                .files
+                .iter()
+                .find(|f| f.id == shared_file.id.clone())
+                .cloned()
+                .ok_or("No such file.")
         })?;
 
         let can_view = file.check_permission(ShareFilePermission::CanView);
@@ -185,8 +190,8 @@ impl ShareFile {
             return Err("No permission to view this file.".to_string());
         }
 
-        let content_tree = ContentNode::get_file_content(shared_file.id).unwrap_or_else(|| ContentTree::new());
-
+        let content_tree =
+            ContentNode::get_file_content(shared_file.id).unwrap_or_else(|| ContentTree::new());
 
         Ok((file, content_tree))
     }

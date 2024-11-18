@@ -1,15 +1,13 @@
 // make a query that get post order from older to newer
 
-use std::collections::HashMap;
-use ic_cdk_macros::query;
 use crate::discover::{Post, PostUser, UserFE};
+use ic_cdk_macros::query;
+use std::collections::HashMap;
 
-
-use crate::storage_schema::FileId;
-use crate::{POSTS};
 use crate::files_content::ContentNode;
+use crate::storage_schema::FileId;
 use crate::user::User;
-
+use crate::POSTS;
 
 #[query]
 fn get_posts(start: usize, count: usize) -> Vec<PostUser> {
@@ -66,7 +64,6 @@ fn search_posts(text_to_find: String) -> Vec<PostUser> {
     })
 }
 
-
 // #[query]
 // fn search_posts(text_to_find: String) -> Vec<String> {
 //
@@ -96,7 +93,6 @@ fn search_posts(text_to_find: String) -> Vec<PostUser> {
 //         filtered_node_ids
 //     })
 // }
-
 
 #[query]
 fn get_post(id: String) -> Result<Post, String> {

@@ -3,21 +3,20 @@ use std::sync::atomic::Ordering;
 
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 use ic_cdk::caller;
-use ic_stable_structures::Storable;
 use ic_stable_structures::storable::Bound;
+use ic_stable_structures::Storable;
 use serde::Serialize;
 
-use crate::{CPayment, NOTIFICATIONS, USER_FILES, websocket};
 use crate::chat::Message;
-use crate::COUNTER;
 use crate::friends::Friend;
-use crate::websocket::{AppMessage, notification, send_app_message};
+use crate::websocket::{notification, send_app_message, AppMessage};
+use crate::COUNTER;
+use crate::{websocket, CPayment, NOTIFICATIONS, USER_FILES};
 
 #[derive(PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub struct FriendRequestNotification {
     pub friend: Friend,
 }
-
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub struct ContractNotification {
@@ -46,7 +45,7 @@ pub enum NoteContent {
     AcceptFriendRequest,
     // ShareRequestApplied(SharesContract),
     // ShareRequestApproved(SharesContract),
-    ConformShare(String),
+    ReceivedDeposit(String),
     ApproveShareRequest(String),
     ApplyShareRequest(String),
     NewMessage(Message),
@@ -66,12 +65,10 @@ pub struct Notification {
     pub(crate) time: f64,
 }
 
-
 #[derive(PartialEq, Clone, Debug, CandidType, Deserialize)]
 pub struct NotificationVec {
     pub(crate) notifications: Vec<Notification>,
 }
-
 
 impl Storable for Notification {
     fn to_bytes(&self) -> Cow<[u8]> {
@@ -84,7 +81,6 @@ impl Storable for Notification {
 
     const BOUND: Bound = Bound::Unbounded;
 }
-
 
 impl Storable for NotificationVec {
     fn to_bytes(&self) -> Cow<[u8]> {
@@ -113,24 +109,35 @@ impl Notification {
     pub fn get_list(user: &Principal) -> Vec<Self> {
         NOTIFICATIONS.with(|notifications| {
             let user_notifications = notifications.borrow();
-            user_notifications.get(&user.to_string()).map_or_else(Vec::new, |notifications_for_user| notifications_for_user.notifications.clone())
+            user_notifications
+                .get(&user.to_string())
+                .map_or_else(Vec::new, |notifications_for_user| {
+                    notifications_for_user.notifications.clone()
+                })
         })
     }
     pub fn get_list_promises(user: &Principal) -> Vec<CPayment> {
         NOTIFICATIONS.with(|notifications| {
             let user_notifications = notifications.borrow();
-            user_notifications.get(&user.to_string()).map_or_else(Vec::new, |notifications_for_user| {
-                notifications_for_user.notifications.iter().filter_map(|notification| {
-                    if let NoteContent::CPaymentContract(payment, _) = &notification.content {
-                        Some(payment.clone())
-                    } else {
-                        None
-                    }
-                }).collect()
-            })
+            user_notifications.get(&user.to_string()).map_or_else(
+                Vec::new,
+                |notifications_for_user| {
+                    notifications_for_user
+                        .notifications
+                        .iter()
+                        .filter_map(|notification| {
+                            if let NoteContent::CPaymentContract(payment, _) = &notification.content
+                            {
+                                Some(payment.clone())
+                            } else {
+                                None
+                            }
+                        })
+                        .collect()
+                },
+            )
         })
     }
-
 
     pub fn save(&self) {
         self.pure_save();
@@ -144,16 +151,24 @@ impl Notification {
     pub fn pure_save(&self) {
         NOTIFICATIONS.with(|notifications| {
             let mut notifications = notifications.borrow_mut();
-            let mut user_notifications = notifications
-                .get(&self.receiver.to_text());
+            let mut user_notifications = notifications.get(&self.receiver.to_text());
             if let Some((mut user_notifications)) = user_notifications {
-                let mut notifications_list =user_notifications.notifications;
+                let mut notifications_list = user_notifications.notifications;
                 notifications_list.retain(|notification| notification.id != self.id);
                 notifications_list.push(self.clone());
-                notifications.insert(self.receiver.to_text(), NotificationVec { notifications: notifications_list });
-
+                notifications.insert(
+                    self.receiver.to_text(),
+                    NotificationVec {
+                        notifications: notifications_list,
+                    },
+                );
             } else {
-                notifications.insert(self.receiver.to_text(), NotificationVec { notifications: vec![self.clone()] });
+                notifications.insert(
+                    self.receiver.to_text(),
+                    NotificationVec {
+                        notifications: vec![self.clone()],
+                    },
+                );
             }
         });
     }
@@ -194,7 +209,9 @@ impl Notification {
             let mut user_notifications = notifications.borrow_mut();
             let mut user_notifications = user_notifications
                 .get(&caller().to_string())
-                .unwrap_or_else(|| NotificationVec { notifications: vec![] });
+                .unwrap_or_else(|| NotificationVec {
+                    notifications: vec![],
+                });
             user_notifications.notifications.retain(|n| n.id != self.id);
             let msg: AppMessage = AppMessage {
                 notification: Some(self.clone()),
@@ -210,7 +227,9 @@ impl Notification {
             let mut user_notifications = notifications.borrow_mut();
             let mut user_notifications = user_notifications
                 .get(&caller().to_string())
-                .unwrap_or_else(|| NotificationVec { notifications: vec![] });
+                .unwrap_or_else(|| NotificationVec {
+                    notifications: vec![],
+                });
 
             // Update the is_seen field of the relevant notifications
             for notification in &mut user_notifications.notifications {
@@ -236,7 +255,6 @@ impl Notification {
     }
 }
 
-
 pub fn get_friend_request_note(sender: Principal, receiver: Principal) -> Option<Notification> {
     NOTIFICATIONS.with(|notifications| {
         let user_notifications = notifications.borrow();
@@ -250,7 +268,6 @@ pub fn get_friend_request_note(sender: Principal, receiver: Principal) -> Option
         None
     })
 }
-
 
 pub fn notify_friend_request(f: Friend) {
     let friend_request_notification = FriendRequestNotification { friend: f.clone() };
@@ -269,8 +286,12 @@ pub fn notify_friend_request(f: Friend) {
 
 type id = String;
 
-
-pub fn contract_notification(receiver: Principal, sender: Principal, contract_type: String, contract_id: String) {
+pub fn contract_notification(
+    receiver: Principal,
+    sender: Principal,
+    contract_type: String,
+    contract_id: String,
+) {
     let new_notification = Notification {
         id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
         sender,

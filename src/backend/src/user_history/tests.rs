@@ -30,6 +30,9 @@ fn test_calic() {
     };
 
     println!("others_rate: {:?}", others_rate);
-    println!("total_rate: {:?}", (others_rate * 0.4) + (actions_rate * 0.6));
+    println!(
+        "total_rate: {:?}",
+        (others_rate * 0.4) + (actions_rate * 0.6)
+    );
     // user.save();
 }

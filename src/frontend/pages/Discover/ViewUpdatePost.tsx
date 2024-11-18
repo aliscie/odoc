@@ -16,6 +16,7 @@ import PostTags from "./TagsComponent";
 import serialize_file_contents from "../../DataProcessing/serialize/serializeFileContents";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { logger } from "../../DevUtils/logData";
+import ConformationMessage from "../../components/MuiComponents/conformationButton";
 
 interface Props {
   post: PostUser;
@@ -81,7 +82,6 @@ function ViewPost(props: Props) {
 
   let is_owner = props.post.creator.id == profile ? profile.id : "";
 
-
   return (
     <div>
       <PostComponent
@@ -105,9 +105,20 @@ function ViewPost(props: Props) {
               options={[
                 { content: "More actions in later versions." },
                 {
-                  content: "Delete",
-                  icon: <DeleteIcon />,
-                  onClick: () => handleDeletePost(props.post.id),
+                  pure: true,
+                  content: (
+                    <ConformationMessage
+                      message={"Yes delete it!"}
+                      conformationMessage={`Are you sure you want to delete This post? `}
+                      onClick={async () => {
+                        handleDeletePost(props.post.id)
+                      }}
+                    >
+                      Delete
+                    </ConformationMessage>
+                  ),
+                  // icon: <DeleteIcon />,
+                  // onClick: () => handleDeletePost(props.post.id),
                 },
               ]}
             >

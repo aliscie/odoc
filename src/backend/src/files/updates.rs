@@ -1,14 +1,8 @@
-
-
-
 use ic_cdk_macros::update;
 
-
 use crate::files::FileNode;
-use crate::files_content::{ContentNode};
+use crate::files_content::ContentNode;
 use crate::storage_schema::FileId;
-
-
 
 #[update]
 fn create_new_file(name: String, parent: Option<FileId>) -> FileNode {
@@ -22,13 +16,11 @@ fn move_file(id: String, parent: Option<FileId>) -> Result<(), ()> {
     Ok(())
 }
 
-
 #[update]
 fn delete_file(id: FileId) -> Option<FileNode> {
     ContentNode::delete_file_contents(id.clone());
     FileNode::delete_file(id)
 }
-
 
 // #[update]
 // fn rename_file(id: FileId, name: String) -> bool {

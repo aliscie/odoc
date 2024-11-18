@@ -1,9 +1,8 @@
-use std::collections::HashMap;
 use ic_cdk::caller;
+use std::collections::HashMap;
 
-use ic_cdk_macros::query;
 use crate::{FILE_CONTENTS, USER_FILES};
-
+use ic_cdk_macros::query;
 
 use crate::files_content::ContentNode;
 use crate::storage_schema::{ContentTree, FileId};
@@ -22,23 +21,35 @@ fn get_all_files_content() -> HashMap<FileId, ContentTree> {
     ContentNode::get_all_files_content()
 }
 
-
 #[query]
-fn search_files_content(search_text: String, case_insensitive: bool) -> HashMap<FileId, ContentTree> {
+fn search_files_content(
+    search_text: String,
+    case_insensitive: bool,
+) -> HashMap<FileId, ContentTree> {
     // also search in the SHARED_USER_FILES
     FILE_CONTENTS.with(|file_contents| {
         let file_contents = file_contents.borrow();
-        let filtered_files = file_contents.iter()
+        let filtered_files = file_contents
+            .iter()
             .filter_map(|(file_id, content_node_vec)| {
-                let filtered_content_tree = content_node_vec.contents.iter()
+                let filtered_content_tree = content_node_vec
+                    .contents
+                    .iter()
                     .flat_map(|(_, content_tree)| {
-                        content_tree.iter().filter(|content| {
-                            if case_insensitive {
-                                content.text.to_lowercase().contains(&search_text.to_lowercase())
-                            } else {
-                                content.text.contains(&search_text)
-                            }
-                        }).cloned().collect::<ContentTree>()
+                        content_tree
+                            .iter()
+                            .filter(|content| {
+                                if case_insensitive {
+                                    content
+                                        .text
+                                        .to_lowercase()
+                                        .contains(&search_text.to_lowercase())
+                                } else {
+                                    content.text.contains(&search_text)
+                                }
+                            })
+                            .cloned()
+                            .collect::<ContentTree>()
                     })
                     .collect::<ContentTree>();
 
@@ -53,5 +64,3 @@ fn search_files_content(search_text: String, case_insensitive: bool) -> HashMap<
         filtered_files
     })
 }
-
-

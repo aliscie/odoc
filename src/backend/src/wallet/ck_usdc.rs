@@ -1,10 +1,13 @@
 // #[macro_use]
 // extern crate ic_cdk;
-use ic_cdk_macros::update;
 use ic_cdk_macros::query;
+use ic_cdk_macros::update;
 use std::cell::RefCell;
 
+use crate::CK_USDC_STATE;
 use candid::{candid_method, CandidType, Nat, Principal};
+use ic_cdk::caller;
+use ic_ledger_types::Tokens;
 use icrc_ledger_types::{
     icrc1::{
         account::Account,
@@ -17,8 +20,6 @@ use icrc_ledger_types::{
     },
 };
 use serde::{Deserialize, Serialize};
-use crate::CK_USDC_STATE;
-
 
 use crate::wallet::error::{Error, USDCResult};
 use crate::wallet::icpswap::*;
@@ -220,68 +221,6 @@ fn remove_swap(data: RemoveSwapArgs) -> USDCResult<()> {
     Ok(())
 }
 
-
-#[query]
-#[candid_method(query)]
-async fn get_balance(data: PayArgs) -> USDCResult<f32> {
-
-
-    let transfer_from_args = TransferFromArgs {
-        amount: data.amount.clone(),
-        from: Account {
-            owner: ic_cdk::caller(),
-            subaccount: None,
-        },
-        to: Account {
-            owner: ic_cdk::id(),
-            subaccount: None,
-        },
-        fee: None,
-        memo: Some(Memo::from(data.memo)),
-        spender_subaccount: None,
-        created_at_time: None,
-    };
-
-
-    ic_cdk::call::<(TransferFromArgs, ), (core::result::Result<BlockIndex, TransferFromError>, )>(
-        data.token,
-        "icrc1_balance_of",
-        (transfer_from_args.clone(), ),
-    )
-        .await
-        .map_err(|(_, message)| {
-            CK_USDC_STATE.with(|state| {
-                state.borrow_mut().logs.add_log(
-                    LogLevel::Error,
-                    format!(
-                        "Failed to call icrc1_balance_of ({:?}): {:?}",
-                        transfer_from_args, message
-                    ),
-                );
-            });
-
-            Error::IcCdkError { message }
-        })?
-        .0
-        .map_err(|e| {
-            CK_USDC_STATE.with(|state| {
-                state.borrow_mut().logs.add_log(
-                    LogLevel::Error,
-                    format!(
-                        "Failed to call icrc1_balance_of ({:?}): {:?}",
-                        transfer_from_args, e
-                    ),
-                );
-            });
-
-            Error::IcCdkError {
-                message: format!("{:?}", e),
-            }
-        })?;
-    return Ok(0.0);
-}
-
-
 #[query]
 #[candid_method(query)]
 fn get_swaps() -> Vec<(Principal, Principal)> {
@@ -298,6 +237,13 @@ pub struct PayArgs {
     pub to_merchant: Principal,
     pub memo: u64,
 }
+
+// #[update]
+// #[candid_method(update)]
+// async fn get() -> String {
+//
+//
+// }
 
 #[update]
 #[candid_method(update)]
@@ -324,7 +270,7 @@ async fn pay(data: PayArgs) -> USDCResult<()> {
             subaccount: None,
         },
         to: Account {
-            owner: ic_cdk::id(),
+            owner: ic_cdk::id(), // the canister id
             subaccount: None,
         },
         fee: None,
@@ -333,41 +279,41 @@ async fn pay(data: PayArgs) -> USDCResult<()> {
         created_at_time: None,
     };
 
-    ic_cdk::call::<(TransferFromArgs, ), (core::result::Result<BlockIndex, TransferFromError>, )>(
+    ic_cdk::call::<(TransferFromArgs,), (core::result::Result<BlockIndex, TransferFromError>,)>(
         data.token,
         "icrc2_transfer_from",
-        (transfer_from_args.clone(), ),
+        (transfer_from_args.clone(),),
     )
-        .await
-        .map_err(|(_, message)| {
-            CK_USDC_STATE.with(|state| {
-                state.borrow_mut().logs.add_log(
-                    LogLevel::Error,
-                    format!(
-                        "Failed to call icrc2_transfer_from ({:?}): {:?}",
-                        transfer_from_args, message
-                    ),
-                );
-            });
+    .await
+    .map_err(|(_, message)| {
+        CK_USDC_STATE.with(|state| {
+            state.borrow_mut().logs.add_log(
+                LogLevel::Error,
+                format!(
+                    "Failed to call icrc2_transfer_from ({:?}): {:?}",
+                    transfer_from_args, message
+                ),
+            );
+        });
 
-            Error::IcCdkError { message }
-        })?
-        .0
-        .map_err(|e| {
-            CK_USDC_STATE.with(|state| {
-                state.borrow_mut().logs.add_log(
-                    LogLevel::Error,
-                    format!(
-                        "Failed to call icrc2_transfer_from ({:?}): {:?}",
-                        transfer_from_args, e
-                    ),
-                );
-            });
+        Error::IcCdkError { message }
+    })?
+    .0
+    .map_err(|e| {
+        CK_USDC_STATE.with(|state| {
+            state.borrow_mut().logs.add_log(
+                LogLevel::Error,
+                format!(
+                    "Failed to call icrc2_transfer_from ({:?}): {:?}",
+                    transfer_from_args, e
+                ),
+            );
+        });
 
-            Error::IcCdkError {
-                message: format!("{:?}", e),
-            }
-        })?;
+        Error::IcCdkError {
+            message: format!("{:?}", e),
+        }
+    })?;
 
     // Check allowance
     let allowance_args = AllowanceArgs {
@@ -381,26 +327,26 @@ async fn pay(data: PayArgs) -> USDCResult<()> {
         },
     };
 
-    let allowance = ic_cdk::call::<(AllowanceArgs, ), (Allowance, )>(
+    let allowance = ic_cdk::call::<(AllowanceArgs,), (Allowance,)>(
         data.token,
         "icrc2_allowance",
-        (allowance_args.clone(), ),
+        (allowance_args.clone(),),
     )
-        .await
-        .map_err(|(_, message)| {
-            CK_USDC_STATE.with(|state| {
-                state.borrow_mut().logs.add_log(
-                    LogLevel::Error,
-                    format!(
-                        "Failed to call icrc2_allowance ({:?}): {:?}",
-                        allowance_args, message
-                    ),
-                );
-            });
+    .await
+    .map_err(|(_, message)| {
+        CK_USDC_STATE.with(|state| {
+            state.borrow_mut().logs.add_log(
+                LogLevel::Error,
+                format!(
+                    "Failed to call icrc2_allowance ({:?}): {:?}",
+                    allowance_args, message
+                ),
+            );
+        });
 
-            Error::IcCdkError { message }
-        })?
-        .0;
+        Error::IcCdkError { message }
+    })?
+    .0;
 
     // Set allowance
     if allowance.allowance.lt(&data.amount) {
@@ -418,38 +364,38 @@ async fn pay(data: PayArgs) -> USDCResult<()> {
             fee: None,
         };
 
-        ic_cdk::call::<(ApproveArgs, ), (core::result::Result<Nat, ApproveError>, )>(
+        ic_cdk::call::<(ApproveArgs,), (core::result::Result<Nat, ApproveError>,)>(
             data.token,
             "icrc2_approve",
-            (approve_args.clone(), ),
+            (approve_args.clone(),),
         )
-            .await
-            .map_err(|(_, message)| {
-                CK_USDC_STATE.with(|state| {
-                    state.borrow_mut().logs.add_log(
-                        LogLevel::Error,
-                        format!(
-                            "Failed to call icrc2_approve ({:?}): {:?}",
-                            approve_args, message
-                        ),
-                    );
-                });
+        .await
+        .map_err(|(_, message)| {
+            CK_USDC_STATE.with(|state| {
+                state.borrow_mut().logs.add_log(
+                    LogLevel::Error,
+                    format!(
+                        "Failed to call icrc2_approve ({:?}): {:?}",
+                        approve_args, message
+                    ),
+                );
+            });
 
-                Error::IcCdkError { message }
-            })?
-            .0
-            .map_err(|e| {
-                CK_USDC_STATE.with(|state| {
-                    state.borrow_mut().logs.add_log(
-                        LogLevel::Error,
-                        format!("Failed to call icrc2_approve ({:?}): {:?}", approve_args, e),
-                    );
-                });
+            Error::IcCdkError { message }
+        })?
+        .0
+        .map_err(|e| {
+            CK_USDC_STATE.with(|state| {
+                state.borrow_mut().logs.add_log(
+                    LogLevel::Error,
+                    format!("Failed to call icrc2_approve ({:?}): {:?}", approve_args, e),
+                );
+            });
 
-                Error::IcCdkError {
-                    message: format!("{:?}", e),
-                }
-            })?;
+            Error::IcCdkError {
+                message: format!("{:?}", e),
+            }
+        })?;
     }
 
     // Deposit to pool
@@ -610,195 +556,41 @@ async fn pay(data: PayArgs) -> USDCResult<()> {
         created_at_time: None,
     };
 
-    ic_cdk::call::<(TransferArg, ), (core::result::Result<BlockIndex, TransferError>, )>(
+    ic_cdk::call::<(TransferArg,), (core::result::Result<BlockIndex, TransferError>,)>(
         swap_token,
         "icrc1_transfer",
-        (transfer_args.clone(), ),
+        (transfer_args.clone(),),
     )
-        .await
-        .map_err(|(_, message)| {
-            CK_USDC_STATE.with(|state| {
-                state.borrow_mut().logs.add_log(
-                    LogLevel::Error,
-                    format!(
-                        "Failed to call icrc1_transfer ({:?}): {:?}",
-                        transfer_args, message
-                    ),
-                );
-            });
+    .await
+    .map_err(|(_, message)| {
+        CK_USDC_STATE.with(|state| {
+            state.borrow_mut().logs.add_log(
+                LogLevel::Error,
+                format!(
+                    "Failed to call icrc1_transfer ({:?}): {:?}",
+                    transfer_args, message
+                ),
+            );
+        });
 
-            Error::IcCdkError { message }
-        })?
-        .0
-        .map_err(|e| {
-            CK_USDC_STATE.with(|state| {
-                state.borrow_mut().logs.add_log(
-                    LogLevel::Error,
-                    format!(
-                        "Failed to call icrc1_transfer ({:?}): {:?}",
-                        transfer_args, e
-                    ),
-                );
-            });
+        Error::IcCdkError { message }
+    })?
+    .0
+    .map_err(|e| {
+        CK_USDC_STATE.with(|state| {
+            state.borrow_mut().logs.add_log(
+                LogLevel::Error,
+                format!(
+                    "Failed to call icrc1_transfer ({:?}): {:?}",
+                    transfer_args, e
+                ),
+            );
+        });
 
-            Error::IcCdkError {
-                message: format!("{:?}", e),
-            }
-        })?;
+        Error::IcCdkError {
+            message: format!("{:?}", e),
+        }
+    })?;
 
     Ok(())
 }
-
-// #[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
-// pub struct MerchantWithdrawArgs {
-//     token: Principal,
-//     amount: NumTokens,
-//     to: Option<Principal>,
-// }
-
-// #[update]
-// #[candid_method(update)]
-// async fn merchant_withdraw(data: MerchantWithdrawArgs) -> Result<()> {
-//     let caller = ic_cdk::caller();
-//     let current_balance = CK_USDC_STATE.with(|state| {
-//         let state = state.borrow();
-//         state.merchants.get_amount(caller, data.token.clone())
-//     });
-
-//     if current_balance.lt(&data.amount) {
-//         return Err(Error::InsufficientBalance {
-//             balance: current_balance,
-//         });
-//     }
-
-//     let fee = get_fee(data.token)
-//         .await
-//         .map_err(|(_, message)| Error::IcCdkError { message })?;
-
-//     let amount = data.amount.clone();
-
-//     let transfer_args = TransferArg {
-//         amount,
-//         fee: Some(fee),
-//         to: match data.to {
-//             Some(to) => Account {
-//                 owner: to,
-//                 subaccount: None,
-//             },
-//             None => Account {
-//                 owner: caller,
-//                 subaccount: None,
-//             },
-//         },
-//         memo: None,
-//         from_subaccount: None,
-//         created_at_time: None,
-//     };
-
-//     ic_cdk::call::<(TransferArg,), (core::result::Result<BlockIndex, TransferError>,)>(
-//         data.token,
-//         "icrc1_transfer",
-//         (transfer_args,),
-//     )
-//     .await
-//     .map_err(|(_, message)| Error::IcCdkError { message })?
-//     .0
-//     .map_err(|e| {
-//         if let TransferError::InsufficientFunds { balance } = e {
-//             return Error::InsufficientBalance { balance };
-//         }
-
-//         Error::IcCdkError {
-//             message: format!("{:?}", e),
-//         }
-//     })?;
-
-//     CK_USDC_STATE.with(|state| {
-//         let mut state = state.borrow_mut();
-//         state
-//             .merchants
-//             .sub_amount(caller, data.token.clone(), data.amount.clone())
-//     });
-
-//     Ok(())
-// }
-
-// #[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
-// pub struct GetMerchantBalanceArgs {
-//     pub merchant: Principal,
-//     pub token: Principal,
-// }
-
-// #[query]
-// #[candid_method(query)]
-// fn get_merchant_balance(data: GetMerchantBalanceArgs) -> NumTokens {
-//     CK_USDC_STATE.with(|state| {
-//         let state = state.borrow();
-//         state.merchants.get_amount(data.merchant, data.token)
-//     })
-// }
-
-// #[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
-// pub struct GetMerchantBalancesArgs {
-//     pub merchant: Principal,
-// }
-
-// #[query]
-// #[candid_method(query)]
-// fn get_merchant_balances(data: GetMerchantBalancesArgs) -> Vec<(Principal, Nat)> {
-//     CK_USDC_STATE
-//         .with(|state| {
-//             let state = state.borrow();
-//             state.merchants.get_merchant_amounts(data.merchant)
-//         })
-//         .into_iter()
-//         .map(|(token, amount)| (token, amount))
-//         .collect()
-// }
-
-#[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
-pub struct WithdrawBalanceArgs {
-    pub token: Principal,
-    pub amount: NumTokens,
-    pub to: Principal,
-}
-
-#[update]
-#[candid_method(update)]
-async fn withdraw_balance(data: WithdrawBalanceArgs) -> USDCResult<()> {
-    is_owner()?;
-
-    let transfer_args = TransferArg {
-        amount: data.amount.clone(),
-        to: Account {
-            owner: data.to.clone(),
-            subaccount: None,
-        },
-        fee: None,
-        memo: None,
-        from_subaccount: None,
-        created_at_time: None,
-    };
-
-    ic_cdk::call::<(TransferArg, ), (core::result::Result<BlockIndex, TransferError>, )>(
-        data.token,
-        "icrc1_transfer",
-        (transfer_args, ),
-    )
-        .await
-        .map_err(|(_, message)| Error::IcCdkError { message })?
-        .0
-        .map_err(|e| {
-            if let TransferError::InsufficientFunds { balance } = e {
-                return Error::InsufficientBalance { balance };
-            }
-
-            Error::IcCdkError {
-                message: format!("{:?}", e),
-            }
-        })?;
-
-    Ok(())
-}
-
-// export_candid!();

@@ -1,14 +1,12 @@
-use std::collections::{HashMap, HashSet};
-use std::sync::atomic::{AtomicU64, Ordering};
+use crate::storage_schema::{ContentTree, FileId};
+use crate::{ShareFile, ShareFilePermission, COUNTER, USER_FILES};
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 use ic_cdk::{caller, print};
-use crate::{COUNTER, ShareFile, ShareFilePermission, USER_FILES};
-use crate::storage_schema::{ContentTree, FileId};
-use ic_stable_structures::{
-    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
-};
-use std::{borrow::Cow, cell::RefCell};
+use ic_stable_structures::{storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable};
+use std::collections::{HashMap, HashSet};
 use std::fs::File;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::{borrow::Cow, cell::RefCell};
 
 // #[derive(Debug, Serialize, Deserialize)]
 #[derive(Clone, Debug, Deserialize, CandidType)]
@@ -26,12 +24,10 @@ pub struct FileNode {
     pub workspaces: Vec<String>, // TODO we may not need this Field
 }
 
-
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct FileNodeVector {
     pub files: Vec<FileNode>,
 }
-
 
 impl Storable for FileNode {
     fn to_bytes(&self) -> Cow<[u8]> {
@@ -45,7 +41,6 @@ impl Storable for FileNode {
     const BOUND: Bound = Bound::Unbounded;
 }
 
-
 impl Storable for FileNodeVector {
     fn to_bytes(&self) -> Cow<[u8]> {
         Cow::Owned(Encode!(self).unwrap())
@@ -57,7 +52,6 @@ impl Storable for FileNodeVector {
 
     const BOUND: Bound = Bound::Unbounded;
 }
-
 
 impl FileNode {
     pub fn new(name: String, parent: Option<FileId>) -> Self {
@@ -82,7 +76,9 @@ impl FileNode {
             let principal_id = caller();
 
             // Retrieve the user's file vector
-            let user_files = files_vec.get(&principal_id.to_text().clone()).unwrap_or_else(|| FileNodeVector { files: Vec::new() });
+            let user_files = files_vec
+                .get(&principal_id.to_text().clone())
+                .unwrap_or_else(|| FileNodeVector { files: Vec::new() });
 
             // Modify the file vector
             let mut user_files = user_files.clone();
@@ -94,7 +90,6 @@ impl FileNode {
 
         file
     }
-
 
     pub fn check_permission(&self, permission: ShareFilePermission) -> bool {
         if self.permission.check(permission.clone()) {
@@ -108,35 +103,45 @@ impl FileNode {
 
         false
     }
-    pub fn rearrange_child(parent_id: FileId, child_id: FileId, new_index: usize) -> Result<(), String> {
+    pub fn rearrange_child(
+        parent_id: FileId,
+        child_id: FileId,
+        new_index: usize,
+    ) -> Result<(), String> {
         USER_FILES.with(|files_store| {
             let principal_id = ic_cdk::api::caller().to_text();
             let mut store = files_store.borrow_mut();
 
             // Retrieve the user's file vector
-            let user_files: FileNodeVector = store.get(&principal_id).unwrap_or_else(|| FileNodeVector { files: Vec::new() });
+            let user_files: FileNodeVector = store
+                .get(&principal_id)
+                .unwrap_or_else(|| FileNodeVector { files: Vec::new() });
 
             // Modify the file vector with re-ordered children
-            let files = user_files.files.into_iter().map(|mut f| {
-                if f.id == parent_id {
-                    // Clone to create a new parent node with reordered children
-                    let mut parent = f.clone();
+            let files = user_files
+                .files
+                .into_iter()
+                .map(|mut f| {
+                    if f.id == parent_id {
+                        // Clone to create a new parent node with reordered children
+                        let mut parent = f.clone();
 
-                    // Remove existing child_id
-                    parent.children.retain(|id| id != &child_id);
+                        // Remove existing child_id
+                        parent.children.retain(|id| id != &child_id);
 
-                    // Insert child_id at the new index
-                    if new_index >= parent.children.len() {
-                        parent.children.push(child_id.clone());
+                        // Insert child_id at the new index
+                        if new_index >= parent.children.len() {
+                            parent.children.push(child_id.clone());
+                        } else {
+                            parent.children.insert(new_index, child_id.clone());
+                        }
+
+                        Ok(parent)
                     } else {
-                        parent.children.insert(new_index, child_id.clone());
+                        Ok(f)
                     }
-
-                    Ok(parent)
-                } else {
-                    Ok(f)
-                }
-            }).collect::<Result<Vec<FileNode>, String>>()?;
+                })
+                .collect::<Result<Vec<FileNode>, String>>()?;
 
             // Update the user's file vector in the store
             store.insert(principal_id, FileNodeVector { files });
@@ -149,7 +154,9 @@ impl FileNode {
             let mut user_files_vec = files_store.borrow_mut();
 
             // Retrieve the user's file vector
-            let user_files = user_files_vec.get(&principal_id.to_text()).unwrap_or_else(|| FileNodeVector { files: Vec::new() });
+            let user_files = user_files_vec
+                .get(&principal_id.to_text())
+                .unwrap_or_else(|| FileNodeVector { files: Vec::new() });
 
             // Modify the file vector
             let mut user_files = user_files.clone();
@@ -188,7 +195,9 @@ impl FileNode {
             let author_principal = Principal::from_text(&self.author).unwrap();
 
             // Retrieve the user's file vector
-            let user_files = user_files_vec.get(&author_principal.to_text()).unwrap_or_else(|| FileNodeVector { files: Vec::new() });
+            let user_files = user_files_vec
+                .get(&author_principal.to_text())
+                .unwrap_or_else(|| FileNodeVector { files: Vec::new() });
 
             // Modify the file vector
             let mut user_files = user_files.clone();
@@ -227,7 +236,11 @@ impl FileNode {
             let user_files_vec = files_store.borrow().get(&principal_id.to_text());
 
             user_files_vec.and_then(|user_files| {
-                user_files.files.iter().find(|file| &file.id == file_id).cloned()
+                user_files
+                    .files
+                    .iter()
+                    .find(|file| &file.id == file_id)
+                    .cloned()
             })
         })
     }
@@ -295,7 +308,10 @@ impl FileNode {
             let mut files_store_borrow = files_store.borrow_mut();
 
             // Retrieve the user's file vector
-            let user_files = files_store_borrow.get(&principal_id.to_text()).map(|v| v.clone()).unwrap_or_else(|| FileNodeVector { files: Vec::new() });
+            let user_files = files_store_borrow
+                .get(&principal_id.to_text())
+                .map(|v| v.clone())
+                .unwrap_or_else(|| FileNodeVector { files: Vec::new() });
 
             // Modify the file vector
             let mut user_files = user_files.clone();
@@ -308,7 +324,6 @@ impl FileNode {
                         user_files.files.remove(file_index);
                     }
                 }
-
 
                 // Remove the file from its parent's children list
                 // if let Some(parent_id) = file.parent.clone() {
@@ -345,7 +360,10 @@ impl FileNode {
             let mut files_store_borrow = files_store.borrow_mut();
 
             // Retrieve the user's file vector
-            let user_files = files_store_borrow.get(&principal_id.to_text()).map(|v| v.clone()).unwrap_or_else(|| FileNodeVector { files: Vec::new() });
+            let user_files = files_store_borrow
+                .get(&principal_id.to_text())
+                .map(|v| v.clone())
+                .unwrap_or_else(|| FileNodeVector { files: Vec::new() });
 
             // Modify the file vector
             let mut user_files = user_files.clone();
@@ -357,18 +375,26 @@ impl FileNode {
 
                 // Process old parent if needed
                 if let Some(old_parent_id) = old_parent {
-                    user_files.files.iter_mut().filter(|f| f.id == old_parent_id).for_each(|parent_file| {
-                        parent_file.children.retain(|id| id != &file_id);
-                    });
+                    user_files
+                        .files
+                        .iter_mut()
+                        .filter(|f| f.id == old_parent_id)
+                        .for_each(|parent_file| {
+                            parent_file.children.retain(|id| id != &file_id);
+                        });
                 }
 
                 // Process new parent if needed
                 if let Some(new_parent_id) = &new_parent {
-                    user_files.files.iter_mut().filter(|f| &f.id == new_parent_id).for_each(|parent_file| {
-                        if !parent_file.children.contains(&file_id) {
-                            parent_file.children.push(file_id.clone());
-                        }
-                    });
+                    user_files
+                        .files
+                        .iter_mut()
+                        .filter(|f| &f.id == new_parent_id)
+                        .for_each(|parent_file| {
+                            if !parent_file.children.contains(&file_id) {
+                                parent_file.children.push(file_id.clone());
+                            }
+                        });
                 }
 
                 // Insert the modified file vector back into the map
@@ -379,7 +405,6 @@ impl FileNode {
             }
         })
     }
-
 
     // pub fn rename_file(file_id: FileId, new_name: String) -> bool {
     //     USER_FILES.with(|files_store| {

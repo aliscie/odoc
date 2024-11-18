@@ -108,7 +108,12 @@ const roadMap = [
     title: "Workspaces",
     content:
       "If you are working with different contentpanes, you can categorize your files and chat groups into different spaces.",
-    //     not just files and chats but also groups names should not be accessible from different workspaces
+  },
+  {
+    is_done: true,
+    title: "ckUSDC wallet",
+    content:
+      "You can deposit pay or receive ckUSDC and withdraw ckUSDC.",
   },
   {
     is_done: false,

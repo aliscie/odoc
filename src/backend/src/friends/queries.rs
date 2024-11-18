@@ -1,5 +1,5 @@
-use ic_cdk::caller;
 use crate::friends::Friend;
+use ic_cdk::caller;
 use ic_cdk_macros::query;
 
 #[query]

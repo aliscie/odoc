@@ -1,18 +1,14 @@
 use std::borrow::Cow;
-use std::collections::{HashMap};
+use std::collections::HashMap;
 
-
+use crate::{CustomContract, CONTRACTS_STORE};
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
-use ic_cdk::{caller};
+use ic_cdk::caller;
+use ic_stable_structures::{storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable};
 use serde::Serialize;
-use ic_stable_structures::{
-    storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable,
-};
-use crate::{CONTRACTS_STORE, CustomContract};
 
 use crate::storage_schema::ContractId;
 use crate::tables::Table;
-
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub enum Contract {
@@ -26,23 +22,26 @@ pub enum StoredContract {
     CustomContract(CustomContract),
 }
 
-#[derive( PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
+#[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Serialize, Deserialize)]
 pub struct StoredContractVec {
     pub stored_contracts: Vec<StoredContract>,
 }
 
-
 impl Storable for StoredContractVec {
     fn to_bytes(&self) -> Cow<[u8]> {
-        Cow::Owned(Encode!(self).unwrap_or_else(|e| {
-            ic_cdk::trap(&format!("Failed to encode StoredContractVec: {:?}", e));
-        }))
+        if let Ok(bytes) = Encode!(self) {
+            return Cow::Owned(bytes);
+        }
+        Cow::Borrowed(&[])
     }
 
     fn from_bytes(bytes: Cow<[u8]>) -> Self {
-        Decode!(bytes.as_ref(), Self).unwrap_or_else(|e| {
-            ic_cdk::trap(&format!("Failed to decode StoredContractVec: {:?}", e));
-        })
+        if let Ok(x) = Decode!(bytes.as_ref(), Self) {
+            return x;
+        }
+        return StoredContractVec {
+            stored_contracts: vec![],
+        };
     }
 
     const BOUND: Bound = Bound::Bounded {
@@ -60,12 +59,13 @@ impl Contract {
             if let Some(contracts) = caller_contracts.get(&caller().to_string()) {
                 for contract in contracts.stored_contracts.iter() {
                     if let StoredContract::CustomContract(custom_contract) = contract {
-                        contract_map.insert(custom_contract.id.clone(), StoredContract::CustomContract(custom_contract.check_view_permission()));
+                        contract_map.insert(
+                            custom_contract.id.clone(),
+                            StoredContract::CustomContract(custom_contract.check_view_permission()),
+                        );
                     }
                 }
             }
-
-
         });
         Some(contract_map)
     }
@@ -83,7 +83,9 @@ impl Contract {
 
             let contract = contract_map.get(&contract_id)?.clone();
             if let StoredContract::CustomContract(custom_contract) = contract {
-                return Some(StoredContract::CustomContract(custom_contract.check_view_permission()));
+                return Some(StoredContract::CustomContract(
+                    custom_contract.check_view_permission(),
+                ));
             }
             Some(contract.clone())
         })

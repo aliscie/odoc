@@ -5,11 +5,11 @@ use candid::Principal;
 use ic_cdk::{call, caller, println};
 use ic_cdk_macros::update;
 
-use crate::{FRIENDS_STORE, websocket};
-use crate::COUNTER;
-use crate::friends::{Friend};
+use crate::friends::Friend;
 use crate::user::User;
 use crate::websocket::{FriendRequestNotification, NoteContent, Notification};
+use crate::COUNTER;
+use crate::{websocket, FRIENDS_STORE};
 
 #[update]
 pub fn send_friend_request(user_principal: String) -> Result<User, String> {
@@ -41,7 +41,11 @@ pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
     };
     friend.pure_save();
     let note_content = NoteContent::AcceptFriendRequest;
-    let new_note = Notification::new(id2, Principal::from_text(user_principal.clone()).unwrap(), note_content);
+    let new_note = Notification::new(
+        id2,
+        Principal::from_text(user_principal.clone()).unwrap(),
+        note_content,
+    );
     new_note.save();
     let note = Notification::get(id);
     if let Some(mut notification) = note {
@@ -50,7 +54,6 @@ pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
     }
     return Ok(User::get_user_from_text_principal(&user_principal).unwrap());
 }
-
 
 #[update]
 pub fn unfriend(user_principal: String) -> Result<User, String> {
@@ -100,7 +103,6 @@ pub fn cancel_friend_request(user_principal: String) -> Result<User, String> {
     Ok(User::get_user_from_text_principal(&user_principal).unwrap())
 }
 
-
 #[update]
 pub fn reject_friend_request(user_principal: String) -> Result<User, String> {
     let id = user_principal.clone() + &caller().to_string();
@@ -120,4 +122,3 @@ pub fn reject_friend_request(user_principal: String) -> Result<User, String> {
 
     Ok(User::get_user_from_text_principal(&user_principal).unwrap())
 }
-

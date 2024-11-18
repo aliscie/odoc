@@ -1,18 +1,17 @@
 use std::collections::HashMap;
 
-
-use ic_cdk::{caller};
-use candid::{CandidType, Deserialize, Principal};
 use candid::types::principal::PrincipalError;
+use candid::{CandidType, Deserialize, Principal};
+use ic_cdk::caller;
 use ic_cdk_macros::query;
 
-use crate::{PROFILE_STORE, StoredContract, Wallet};
 use crate::contracts::Contract;
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
 use crate::friends::Friend;
 use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId};
 use crate::user::User;
+use crate::{StoredContract, Wallet, PROFILE_STORE};
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
 pub struct InitialData {
@@ -24,7 +23,6 @@ pub struct InitialData {
     Contracts: HashMap<ContractId, StoredContract>,
     Wallet: Wallet,
 }
-
 
 #[query]
 fn get_contract(author: String, contract_id: String) -> Result<StoredContract, String> {
@@ -39,14 +37,12 @@ fn get_contract(author: String, contract_id: String) -> Result<StoredContract, S
     Err("Invalid principal.".to_string())
 }
 
-
 #[query]
 fn get_more_files(page: f32) -> (Vec<FileNode>, HashMap<FileId, ContentTree>) {
     let files = FileNode::get_page_files(page.clone());
     let files_contents: HashMap<FileId, ContentTree> = ContentNode::get_page_files_content(page);
     (files, files_contents)
 }
-
 
 #[query]
 fn get_initial_data() -> Result<InitialData, String> {
@@ -67,7 +63,8 @@ fn get_initial_data() -> Result<InitialData, String> {
             .collect()
     });
 
-    let contracts: HashMap<ContractId, StoredContract> = Contract::get_all_contracts().unwrap_or(HashMap::new());
+    let contracts: HashMap<ContractId, StoredContract> =
+        Contract::get_all_contracts().unwrap_or(HashMap::new());
 
     // TODO Pagination
     //   DiscoverPosts should be shorter then 100 posts

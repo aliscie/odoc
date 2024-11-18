@@ -5,21 +5,21 @@ use std::sync::atomic::Ordering;
 
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 use ic_cdk::{caller, print};
-use ic_stable_structures::{BTreeMap, Storable};
 use ic_stable_structures::storable::Bound;
+use ic_stable_structures::{BTreeMap, Storable};
 
 pub use queries::*;
 pub use types::*;
 pub use updates::*;
 
-use crate::{COUNTER, Memory};
-use crate::POSTS;
 use crate::storage_schema::ContentTree;
 use crate::user::User;
+use crate::POSTS;
+use crate::{Memory, COUNTER};
 
 mod queries;
-mod updates;
 mod types;
+mod updates;
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct Post {
@@ -32,19 +32,32 @@ pub struct Post {
     votes_down: Vec<Principal>,
 }
 
-
 impl Storable for Post {
     fn to_bytes(&self) -> Cow<[u8]> {
-        Cow::Owned(Encode!(self).unwrap())
+        if let Ok(bytes) = Encode!(self) {
+            return Cow::Owned(bytes);
+        }
+        Cow::Borrowed(&[])
     }
 
     fn from_bytes(bytes: Cow<[u8]>) -> Self {
-        Decode!(bytes.as_ref(), Self).unwrap()
+        if let Ok(obj) = Decode!(bytes.as_ref(), Self) {
+            obj
+        } else {
+            Post {
+                id: String::new(),
+                content_tree: Default::default(),
+                tags: Default::default(),
+                creator: String::new(),
+                date_created: 0,
+                votes_up: Default::default(),
+                votes_down: Default::default(),
+            }
+        }
     }
 
     const BOUND: Bound = Bound::Unbounded;
 }
-
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct UserFE {
@@ -137,7 +150,10 @@ impl Post {
                 .skip((start as u64).try_into().unwrap())
                 .take(actual_count)
                 .map(|(_, post)| {
-                    let user = User::get_user_from_text_principal(&post.creator).unwrap();
+                    let mut user: User = User::default();
+                    if let Some(u) = User::get_user_from_text_principal(&post.creator) {
+                        user = u
+                    }
                     let creator = UserFE {
                         id: user.id.clone(),
                         name: user.name.clone(),
@@ -156,11 +172,11 @@ impl Post {
         })
     }
 
-
     pub fn get_filtered(tags: Option<Vec<String>>, creator: Option<String>) -> Vec<PostUser> {
         POSTS.with(|posts| {
             let posts: Ref<BTreeMap<String, Post, Memory>> = posts.borrow();
-            let map_posts : HashMap<String, Post> = posts.iter().map(|(k, v)| (k.clone(), v.clone())).collect();
+            let map_posts: HashMap<String, Post> =
+                posts.iter().map(|(k, v)| (k.clone(), v.clone())).collect();
             let mut filtered_posts: Vec<&Post> = map_posts.values().collect();
             if let Some(tags) = tags {
                 filtered_posts = filtered_posts
@@ -221,7 +237,6 @@ impl Post {
             }
         })
     }
-
 
     // TODO deep search
     // pub fn search_by_content(text: String) -> Vec<Post> {

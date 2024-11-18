@@ -236,7 +236,7 @@ export type NoteContent = { 'CustomContract' : [string, CPayment] } |
   { 'ApproveShareRequest' : string } |
   { 'CPaymentContract' : [CPayment, PaymentAction] } |
   { 'Unfriend' : null } |
-  { 'ConformShare' : string } |
+  { 'ReceivedDeposit' : string } |
   { 'ApplyShareRequest' : string } |
   { 'NewMessage' : Message } |
   { 'RemovedFromChat' : string };
@@ -326,8 +326,8 @@ export type Result_3 = { 'Ok' : string } |
   { 'Err' : string };
 export type Result_4 = { 'Ok' : WorkSpace } |
   { 'Err' : string };
-export type Result_5 = { 'Ok' : number } |
-  { 'Err' : string };
+export type Result_5 = { 'Ok' : bigint } |
+  { 'Err' : Error };
 export type Result_6 = { 'Ok' : StoredContract } |
   { 'Err' : string };
 export type Result_7 = { 'Ok' : InitialData } |
@@ -393,11 +393,6 @@ export interface WebsocketMessage {
   'timestamp' : bigint,
   'is_service_message' : boolean,
 }
-export interface WithdrawBalanceArgs {
-  'to' : Principal,
-  'token' : Principal,
-  'amount' : bigint,
-}
 export interface WorkSpace {
   'id' : string,
   'files' : Array<string>,
@@ -422,8 +417,7 @@ export interface _SERVICE {
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
   'delete_post' : ActorMethod<[string], Result_2>,
   'delete_work_space' : ActorMethod<[WorkSpace], Result_4>,
-  'deposit_principal' : ActorMethod<[], string>,
-  'deposit_usdt' : ActorMethod<[number], Result_5>,
+  'deposit_ckusdt' : ActorMethod<[], Result_5>,
   'get_all_files' : ActorMethod<[], Array<FileNode>>,
   'get_all_files_content' : ActorMethod<
     [],
@@ -490,7 +484,7 @@ export interface _SERVICE {
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
   'vote_down' : ActorMethod<[string], Result_8>,
   'vote_up' : ActorMethod<[string], Result_8>,
-  'withdraw_balance' : ActorMethod<[WithdrawBalanceArgs], Result_1>,
+  'withdraw_ckusdt' : ActorMethod<[bigint, string], Result_5>,
   'ws_close' : ActorMethod<[CanisterWsCloseArguments], Result_2>,
   'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_13>,
   'ws_message' : ActorMethod<

@@ -1,8 +1,8 @@
-use ic_cdk::{caller, api};
+use ic_cdk::{api, caller};
 
-use crate::{CColumn, CContract, ContractError, CRow, CustomContract};
 use crate::contracts::custom_contract::types::CCell;
 use crate::tables::PermissionType;
+use crate::{CColumn, CContract, CRow, ContractError, CustomContract};
 
 // Cell actions: 1. Add, 2. Delete, 3. Update
 // - Prevent updating id or field value
@@ -20,7 +20,11 @@ impl CContract {
         Ok(())
     }
 
-    fn update_column_permission(&self, new_column: CColumn, old_column: CColumn) -> Result<CColumn, String> {
+    fn update_column_permission(
+        &self,
+        new_column: CColumn,
+        old_column: CColumn,
+    ) -> Result<CColumn, String> {
         self.check_creator_permission()?;
         Ok(new_column.clone())
     }
@@ -37,32 +41,61 @@ impl CContract {
 
     // Row CRUD permissions
     fn has_cell_update_permission(&self, new_cell: &CCell, old_c_contract: &CContract) -> bool {
-        if let Some(column) = old_c_contract.columns.iter().find(|c| c.field == new_cell.field) {
+        if let Some(column) = old_c_contract
+            .columns
+            .iter()
+            .find(|c| c.field == new_cell.field)
+        {
             let permissions = &column.permissions;
             let perm_1 = PermissionType::Edit(caller());
             let perm_2 = PermissionType::AnyOneEdite;
-            return permissions.contains(&perm_1) || permissions.contains(&perm_2) || old_c_contract.creator == caller();
+            return permissions.contains(&perm_1)
+                || permissions.contains(&perm_2)
+                || old_c_contract.creator == caller();
         }
         old_c_contract.creator == caller()
     }
 
-    fn update_row_permission(&self, new_row: &CRow, old_c_contract: &CContract, contract_errors: &mut Vec<ContractError>) -> Result<CRow, String> {
-        let mut updated_cells: Vec<CCell> = new_row.cells.iter().map(|cell| {
-            let is_permitted = self.has_cell_update_permission(cell, old_c_contract);
-            if is_permitted {
-                return cell.clone();
-            }
-            if let Some(old_cell) = old_c_contract.rows.iter().find(|r| r.id == new_row.id).map(|r| r.cells.iter().find(|c| c.field == cell.field)) {
-                if let Some(column) = old_c_contract.columns.iter().find(|c| c.field == cell.field) {
-                    let name = column.name.clone();
-                    contract_errors.push(ContractError { message: format!("You don't have permission to update column: {}", name) });
-                };
-                if let Some(old_cell) = old_cell {
-                    return old_cell.clone();
+    fn update_row_permission(
+        &self,
+        new_row: &CRow,
+        old_c_contract: &CContract,
+        contract_errors: &mut Vec<ContractError>,
+    ) -> Result<CRow, String> {
+        let mut updated_cells: Vec<CCell> = new_row
+            .cells
+            .iter()
+            .map(|cell| {
+                let is_permitted = self.has_cell_update_permission(cell, old_c_contract);
+                if is_permitted {
+                    return cell.clone();
                 }
-            }
-            cell.clone()
-        }).collect();
+                if let Some(old_cell) = old_c_contract
+                    .rows
+                    .iter()
+                    .find(|r| r.id == new_row.id)
+                    .map(|r| r.cells.iter().find(|c| c.field == cell.field))
+                {
+                    if let Some(column) = old_c_contract
+                        .columns
+                        .iter()
+                        .find(|c| c.field == cell.field)
+                    {
+                        let name = column.name.clone();
+                        contract_errors.push(ContractError {
+                            message: format!(
+                                "You don't have permission to update column: {}",
+                                name
+                            ),
+                        });
+                    };
+                    if let Some(old_cell) = old_cell {
+                        return old_cell.clone();
+                    }
+                }
+                cell.clone()
+            })
+            .collect();
 
         Ok(CRow {
             id: new_row.id.clone(),
@@ -71,20 +104,32 @@ impl CContract {
     }
 
     // Update method
-    pub fn update(&mut self, contract_errors: &mut Vec<ContractError>, old_contract: &CustomContract) -> Self {
+    pub fn update(
+        &mut self,
+        contract_errors: &mut Vec<ContractError>,
+        old_contract: &CustomContract,
+    ) -> Self {
         if let Some(old_c_contract) = old_contract.contracts.iter().find(|c| c.id == self.id) {
             // Columns CRUD permissions
-            self.columns = self.columns.iter().map(|column| {
-                if let Some(old_column) = old_c_contract.columns.iter().find(|c| c.field == column.field) {
-                    let res = self.update_column_permission(column.clone(), old_column.clone());
-                    if let Ok(updated_column) = res {
-                        return updated_column;
-                    } else if let Err(err) = res {
-                        contract_errors.push(ContractError { message: err });
+            self.columns = self
+                .columns
+                .iter()
+                .map(|column| {
+                    if let Some(old_column) = old_c_contract
+                        .columns
+                        .iter()
+                        .find(|c| c.field == column.field)
+                    {
+                        let res = self.update_column_permission(column.clone(), old_column.clone());
+                        if let Ok(updated_column) = res {
+                            return updated_column;
+                        } else if let Err(err) = res {
+                            contract_errors.push(ContractError { message: err });
+                        }
                     }
-                }
-                column.clone()
-            }).collect();
+                    column.clone()
+                })
+                .collect();
 
             // Rows CRUD permissions
             let mut updated_rows: Vec<CRow> = vec![];
@@ -98,13 +143,26 @@ impl CContract {
             }
 
             // Prevent delete row if not permitted
-            for deleted_row in old_contract.contracts.clone().iter().find(|c| c.id == self.id)
-                .map(|c| c.rows.iter().filter(|r| !self.rows.iter().any(|new_row| new_row.id == r.id)).cloned().collect())
-                .unwrap_or(vec![]) {
+            for deleted_row in old_contract
+                .contracts
+                .clone()
+                .iter()
+                .find(|c| c.id == self.id)
+                .map(|c| {
+                    c.rows
+                        .iter()
+                        .filter(|r| !self.rows.iter().any(|new_row| new_row.id == r.id))
+                        .cloned()
+                        .collect()
+                })
+                .unwrap_or(vec![])
+            {
                 for cell in deleted_row.cells.clone() {
                     let is_permitted = self.has_cell_update_permission(&cell, old_c_contract);
                     if !is_permitted {
-                        contract_errors.push(ContractError { message: "You don't have permission to delete this cell".to_string() });
+                        contract_errors.push(ContractError {
+                            message: "You don't have permission to delete this cell".to_string(),
+                        });
                         updated_rows.push(deleted_row.clone());
                     }
                 }

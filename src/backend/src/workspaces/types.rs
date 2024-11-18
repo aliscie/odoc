@@ -1,9 +1,12 @@
-use std::borrow::Cow;
+use crate::WORK_SPACES;
 use ic_cdk::caller;
-use ic_websocket_cdk::{CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult, CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments, CanisterWsOpenResult, WsHandlers, WsInitParams};
-use crate::{ WORK_SPACES};
+use ic_websocket_cdk::{
+    CanisterWsCloseResult, CanisterWsGetMessagesArguments, CanisterWsGetMessagesResult,
+    CanisterWsMessageArguments, CanisterWsMessageResult, CanisterWsOpenArguments,
+    CanisterWsOpenResult, WsHandlers, WsInitParams,
+};
 use num::ToPrimitive;
-
+use std::borrow::Cow;
 
 // use crate::state::{init_state, read_state};
 use alloy_consensus::{SignableTransaction, TxEip1559, TxEnvelope};
@@ -16,16 +19,14 @@ use evm_rpc_canister_types::{
 use ic_cdk::api::management_canister::ecdsa::{EcdsaCurve, EcdsaKeyId};
 use ic_cdk::{init, update};
 use ic_ethereum_types::Address;
+use ic_stable_structures::storable::Bound;
+use ic_stable_structures::Storable;
 use num::{BigUint, Num};
 use std::str::FromStr;
-use ic_stable_structures::Storable;
-use ic_stable_structures::storable::Bound;
 
-pub const EVM_RPC_CANISTER_ID: Principal =
-    Principal::from_slice(b"7hfb6-caaaa-aaaar-qadga-cai");
+pub const EVM_RPC_CANISTER_ID: Principal = Principal::from_slice(b"7hfb6-caaaa-aaaar-qadga-cai");
 // 7hfb6-caaaa-aaaar-qadga-cai
 pub const EVM_RPC: EvmRpcCanister = EvmRpcCanister(EVM_RPC_CANISTER_ID);
-
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct WorkSpace {
@@ -42,7 +43,6 @@ pub struct WorkSpace {
 pub struct WorkSpaceVec {
     pub workspaces: Vec<WorkSpace>,
 }
-
 
 impl Storable for WorkSpaceVec {
     fn to_bytes(&self) -> Cow<[u8]> {
@@ -74,18 +74,19 @@ impl WorkSpace {
     pub fn get(name: String) -> Option<Self> {
         WORK_SPACES.with(|store| {
             let work_spaces = store.borrow();
-            let all_workspaces: Vec<WorkSpace> = work_spaces.iter()
+            let all_workspaces: Vec<WorkSpace> = work_spaces
+                .iter()
                 .flat_map(|(_, ws_vec)| ws_vec.workspaces.clone())
                 .collect();
-            all_workspaces
-                .into_iter()
-                .find(|ws| ws.name == name)
+            all_workspaces.into_iter().find(|ws| ws.name == name)
         })
     }
     pub fn pure_save(&self) {
         WORK_SPACES.with(|store| {
             let mut work_spaces = store.borrow_mut();
-            let mut ws_vec = work_spaces.get(&self.id).unwrap_or_else(|| WorkSpaceVec { workspaces: vec![] });
+            let mut ws_vec = work_spaces
+                .get(&self.id)
+                .unwrap_or_else(|| WorkSpaceVec { workspaces: vec![] });
             ws_vec.workspaces.retain(|ws| ws.id != self.id);
             ws_vec.workspaces.push(self.clone());
             work_spaces.insert(self.id.clone(), ws_vec);
@@ -102,7 +103,6 @@ impl WorkSpace {
             }
         })
     }
-
 
     pub fn save(&self) -> Result<Self, String> {
         // Get the existing workspace by ID
@@ -121,7 +121,6 @@ impl WorkSpace {
         Ok(self.clone())
     }
 }
-
 
 pub fn estimate_transaction_fees() -> (u128, u128, u128) {
     /// Standard gas limit for an Ethereum transfer to an EOA.
@@ -174,7 +173,7 @@ impl From<&EcdsaKeyName> for EcdsaKeyId {
                 EcdsaKeyName::TestKey1 => "test_key_1",
                 EcdsaKeyName::ProductionKey1 => "key_1",
             }
-                .to_string(),
+            .to_string(),
         }
     }
 }
@@ -204,4 +203,3 @@ pub fn nat_to_u256(value: Nat) -> U256 {
     value_u256[32 - value_bytes.len()..].copy_from_slice(&value_bytes);
     U256::from_be_bytes(value_u256)
 }
-
