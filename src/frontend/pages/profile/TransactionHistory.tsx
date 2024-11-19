@@ -14,7 +14,7 @@ const TransactionHistory = () => {
   return (
     <div style={{ height: "300px", overflowY: "auto" }}>
       <List dense>
-        {transactionRecords.map((item: any, index: number) => {
+        {transactionRecords.map((item: Exchange, index: number) => {
           return (
             <ContractItem
               {...item}

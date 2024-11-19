@@ -9,7 +9,7 @@ mod swaps;
 mod token;
 pub mod types;
 mod updates;
-
+pub mod ckusdc_index_types;
 pub use error::*;
 pub use icpswap::*;
 pub use log::*;

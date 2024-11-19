@@ -46,8 +46,8 @@ const ContractItem: React.FC<ContractItemProps> = ({
           ? { name: "ExternalWallet" }
           : await getUser(sender.toString());
       setUsers({
-        sender: senderUser ? senderUser.name : "Null",
-        receiver: receiverUser ? receiverUser.name : "Null",
+        sender: senderUser ? senderUser.name : String(sender),
+        receiver: receiverUser ? receiverUser.name : String(receiver),
       });
     })();
   }, [backendActor]);
@@ -119,7 +119,7 @@ const ContractItem: React.FC<ContractItemProps> = ({
         secondary={
           <div>
             <div>Receiver: {users.receiver}</div>
-            <div>Amount: {Number(amount)} USDTs</div>
+            <div>Amount: {Number(amount / 1000000)} USDTs</div>
             <div>Date Created: {formatTimestamp(BigInt(date_created))}</div>
           </div>
         }

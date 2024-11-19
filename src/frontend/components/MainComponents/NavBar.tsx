@@ -79,7 +79,6 @@ const NavBar = (props: any) => {
     if (currentWorkspace.id) {
       x = x.filter((f) => f.workspaces.includes(currentWorkspace.id));
     }
-    console.log({ x, files });
     setdefaultItems(x);
   }, [files, currentWorkspace]);
 

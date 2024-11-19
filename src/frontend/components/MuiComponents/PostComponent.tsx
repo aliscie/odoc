@@ -41,7 +41,11 @@ export function UserAvatar(props: UserFE | User) {
         );
         let current_user: string | Principal = props.id;
         if (typeof props.id === "string") {
-          current_user = Principal.fromText(current_user);
+          try {
+            current_user = Principal.fromText(current_user);
+          } catch (e) {
+            console.log({ current_user, e });
+          }
         }
         dispatch(
           handleRedux("OPEN_CHAT", {

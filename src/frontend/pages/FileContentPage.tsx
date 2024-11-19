@@ -23,9 +23,6 @@ const FileContentPage = () => {
     const prevContent = JSON.stringify(files_content[current_file.id]);
     const newContent = JSON.stringify(changes);
     if (current_file && prevContent !== newContent) {
-      // console.log({
-      //   x: deepCompare(changes, files_content[current_file.id]),
-      // });
 
       dispatch(
         handleRedux("UPDATE_CONTENT", {

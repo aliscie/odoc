@@ -20,6 +20,23 @@ type AppMessage = record {
   notification : opt Notification;
   timestamp : nat64;
 };
+type Approve = record {
+  fee : opt nat;
+  from : Index_Account;
+  memo : opt blob;
+  created_at_time : opt nat64;
+  amount : nat;
+  expected_allowance : opt nat;
+  expires_at : opt nat64;
+  spender : Index_Account;
+};
+type Burn = record {
+  from : Index_Account;
+  memo : opt blob;
+  created_at_time : opt nat64;
+  amount : nat;
+  spender : opt Index_Account;
+};
 type CCell = record { id : text; field : text; value : text };
 type CColumn = record {
   id : text;
@@ -184,6 +201,12 @@ type Friend = record {
 };
 type FriendRequestNotification = record { friend : Friend };
 type GetErrorLogsArgs = record { start : opt nat64; length : opt nat64 };
+type GetTransactions = record {
+  balance : nat;
+  transactions : vec TransactionWithId;
+  oldest_tx_id : opt nat;
+};
+type Index_Account = record { owner : principal; subaccount : opt blob };
 type InitialData = record {
   FilesContents : opt vec record { text; vec ContentNode };
   Contracts : vec record { text; StoredContract };
@@ -202,6 +225,12 @@ type Message = record {
   seen_by : vec principal;
   message : text;
   chat_id : text;
+};
+type Mint = record {
+  to : Index_Account;
+  memo : opt blob;
+  created_at_time : opt nat64;
+  amount : nat;
 };
 type NoteContent = variant {
   CustomContract : record { text; CPayment };
@@ -289,21 +318,23 @@ type RegisterUser = record {
 type RemoveSwapArgs = record { token0 : principal; token1 : principal };
 type Result = variant { Ok : User; Err : text };
 type Result_1 = variant { Ok; Err : Error };
-type Result_10 = variant {
+type Result_10 = variant { Ok : ShareFile; Err : text };
+type Result_11 = variant {
   Ok : record { FileNode; vec ContentNode };
   Err : text;
 };
-type Result_11 = variant { Ok : UserProfile; Err : text };
-type Result_12 = variant { Ok; Err };
-type Result_13 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
+type Result_12 = variant { Ok : UserProfile; Err : text };
+type Result_13 = variant { Ok; Err };
+type Result_14 = variant { Ok : nat; Err : Error };
+type Result_15 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
 type Result_2 = variant { Ok; Err : text };
-type Result_3 = variant { Ok : text; Err : text };
-type Result_4 = variant { Ok : WorkSpace; Err : text };
-type Result_5 = variant { Ok : nat; Err : Error };
-type Result_6 = variant { Ok : StoredContract; Err : text };
-type Result_7 = variant { Ok : InitialData; Err : text };
-type Result_8 = variant { Ok : Post; Err : text };
-type Result_9 = variant { Ok : ShareFile; Err : text };
+type Result_3 = variant { Ok : GetTransactions; Err : Error };
+type Result_4 = variant { Ok : text; Err : text };
+type Result_5 = variant { Ok : WorkSpace; Err : text };
+type Result_6 = variant { Ok : Wallet; Err : Error };
+type Result_7 = variant { Ok : StoredContract; Err : text };
+type Result_8 = variant { Ok : InitialData; Err : text };
+type Result_9 = variant { Ok : Post; Err : text };
 type Row = record {
   id : text;
   contract : opt Contract;
@@ -319,6 +350,24 @@ type ShareFileInput = record {
 type ShareFilePermission = variant { CanComment; None; CanView; CanUpdate };
 type StoredContract = variant { CustomContract : CustomContract };
 type Table = record { rows : vec Row; columns : vec Column };
+type Transaction = record {
+  burn : opt Burn;
+  kind : text;
+  mint : opt Mint;
+  approve : opt Approve;
+  timestamp : nat64;
+  transfer : opt Transfer;
+};
+type TransactionWithId = record { id : nat; transaction : Transaction };
+type Transfer = record {
+  to : Index_Account;
+  fee : opt nat;
+  from : Index_Account;
+  memo : opt blob;
+  created_at_time : opt nat64;
+  amount : nat;
+  spender : opt Index_Account;
+};
 type User = record { id : text; name : text; description : text; photo : blob };
 type UserFE = record { id : text; name : text };
 type UserProfile = record {
@@ -368,25 +417,26 @@ service : () -> {
   add_swap : (AddSwapArgs) -> (Result_1);
   approve_high_promise : (CPayment) -> (Result_2);
   cancel_friend_request : (text) -> (Result);
+  check_external_transactions : (nat) -> (Result_3);
   confirmed_c_payment : (CPayment) -> (Result_2);
   confirmed_cancellation : (CPayment) -> (Result_2);
   counter : () -> (nat64) query;
   create_new_file : (text, opt text) -> (FileNode);
-  delete_chat : (text) -> (Result_3);
+  delete_chat : (text) -> (Result_4);
   delete_custom_contract : (text) -> (Result_2);
   delete_file : (text) -> (opt FileNode);
   delete_post : (text) -> (Result_2);
-  delete_work_space : (WorkSpace) -> (Result_4);
-  deposit_ckusdt : () -> (Result_5);
+  delete_work_space : (WorkSpace) -> (Result_5);
+  deposit_ckusdt : () -> (Result_6);
   get_all_files : () -> (vec FileNode) query;
   get_all_files_content : () -> (vec record { text; vec ContentNode }) query;
   get_chats_notifications : () -> (vec Message) query;
-  get_contract : (text, text) -> (Result_6) query;
+  get_contract : (text, text) -> (Result_7) query;
   get_file : (text) -> (opt FileNode) query;
   get_file_content : (text) -> (opt vec ContentNode) query;
   get_filtered_posts : (opt vec text, opt text) -> (vec PostUser) query;
   get_friends : () -> (vec Friend) query;
-  get_initial_data : () -> (Result_7) query;
+  get_initial_data : () -> (Result_8) query;
   get_logs : (GetErrorLogsArgs) -> (vec Log) query;
   get_more_files : (float32) -> (
       vec FileNode,
@@ -394,24 +444,24 @@ service : () -> {
     ) query;
   get_my_chats : () -> (vec FEChat) query;
   get_owners : () -> (vec principal) query;
-  get_post : (text) -> (Result_8) query;
+  get_post : (text) -> (Result_9) query;
   get_posts : (nat64, nat64) -> (vec PostUser) query;
-  get_share_file : (text) -> (Result_9) query;
-  get_shared_file : (text) -> (Result_10);
+  get_share_file : (text) -> (Result_10) query;
+  get_shared_file : (text) -> (Result_11);
   get_swaps : () -> (vec record { principal; principal }) query;
   get_user : (text) -> (Result) query;
   get_user_notifications : () -> (vec Notification) query;
-  get_user_profile : (principal) -> (Result_11) query;
+  get_user_profile : (principal) -> (Result_12) query;
   get_work_spaces : () -> (vec WorkSpace) query;
-  make_new_chat_room : (Chat) -> (Result_3);
+  make_new_chat_room : (Chat) -> (Result_4);
   message_is_seen : (Message) -> (Result_2);
-  move_file : (text, opt text) -> (Result_12);
+  move_file : (text, opt text) -> (Result_13);
   multi_updates : (
       vec FileNode,
       vec vec record { text; vec ContentNode },
       vec StoredContract,
       vec FileIndexing,
-    ) -> (Result_3);
+    ) -> (Result_4);
   object_on_cancel : (CPayment, text) -> (Result_2);
   pay : (PayArgs) -> (Result_1);
   rate_user : (principal, Rating) -> (Result_2);
@@ -420,23 +470,23 @@ service : () -> {
   remove_owner : (AddOwnerArgs) -> (Result_1);
   remove_swap : (RemoveSwapArgs) -> (Result_1);
   save_post : (Post) -> (Result_2);
-  save_work_space : (WorkSpace) -> (Result_4);
+  save_work_space : (WorkSpace) -> (Result_5);
   search_files_content : (text, bool) -> (
       vec record { text; vec ContentNode },
     ) query;
   search_posts : (text) -> (vec PostUser) query;
-  see_notifications : (text) -> (Result_3);
+  see_notifications : (text) -> (Result_4);
   send_friend_request : (text) -> (Result);
-  send_message : (opt principal, Message) -> (Result_3);
-  share_file : (ShareFileInput) -> (Result_9);
+  send_message : (opt principal, Message) -> (Result_4);
+  share_file : (ShareFileInput) -> (Result_10);
   unfriend : (text) -> (Result);
-  update_chat : (Chat) -> (Result_3);
+  update_chat : (Chat) -> (Result_4);
   update_user_profile : (RegisterUser) -> (Result);
-  vote_down : (text) -> (Result_8);
-  vote_up : (text) -> (Result_8);
-  withdraw_ckusdt : (nat64, text) -> (Result_5);
+  vote_down : (text) -> (Result_9);
+  vote_up : (text) -> (Result_9);
+  withdraw_ckusdt : (nat64, text) -> (Result_14);
   ws_close : (CanisterWsCloseArguments) -> (Result_2);
-  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_13) query;
+  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_15) query;
   ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_2);
   ws_open : (CanisterWsOpenArguments) -> (Result_2);
 }

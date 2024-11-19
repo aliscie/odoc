@@ -61,7 +61,7 @@ mod timer;
 mod user_history;
 mod websocket;
 mod workspaces;
-
+use crate::ckusdc_index_types::*;
 use ic_cdk::api::management_canister::bitcoin::{
     BitcoinNetwork, GetUtxosResponse, MillisatoshiPerByte,
 };

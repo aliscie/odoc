@@ -23,7 +23,6 @@ test("Test custom contract", async () => {
 
   custom_contract.creator = global.user.getPrincipal();
   expect("Ok" in res).toBeTruthy();
-  // console.log({newUser, me: global.user});
 
   let to_store: StoredContract = {
     CustomContract: custom_contract,

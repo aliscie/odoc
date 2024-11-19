@@ -263,6 +263,12 @@ export function filesReducer(
         wallet: { ...state.wallet, balance: action.balance },
       };
 
+    case "SET_WALLET":
+      return {
+        ...state,
+        wallet: action.wallet,
+      };
+
     case "UPDATE_PROFILE":
       return {
         ...state,
