@@ -34,8 +34,7 @@ const ChatSendMessage: React.FC = () => {
         console.log("chat_id is not set");
       }
       let user = current_user ? [current_user] : [];
-      let res: { Ok: string } | { Err: string } =
-        await backendActor.send_message(user, newMessage);
+      let res = await backendActor.send_message(user, newMessage);
       if ("Err" in res) {
         enqueueSnackbar("Error sending message: " + res.Err, {
           variant: "error",
@@ -66,7 +65,6 @@ const ChatSendMessage: React.FC = () => {
         maxRows={5}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        inputProps={{ "aria-label": "Type a message" }}
       />
       <LoaderButton
         sx={{ p: 1 }}

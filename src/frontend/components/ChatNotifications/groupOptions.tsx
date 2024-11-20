@@ -79,10 +79,13 @@ function MessagesGroupOption({ currentChat }) {
     return res;
   };
 
-  const defaultValueWorkspaces = currentChat.workspaces.map((id) => {
-    const res = workspaces.find((w) => w.id == id);
-    return res ? res.name : "Error";
-  });
+  const defaultValueWorkspaces = currentChat.workspaces
+    ? currentChat.workspaces.map((id) => {
+        const res = workspaces.find((w) => w.id == id);
+        return res ? res.name : "Error";
+      })
+    : [];
+
   return (
     <div>
       <Input

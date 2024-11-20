@@ -30,7 +30,7 @@ const ChatsComponent: React.FC<ChatsComponentProps> = () => {
     .map((c) => c.id);
 
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -48,7 +48,7 @@ const ChatsComponent: React.FC<ChatsComponentProps> = () => {
         } catch (error) {
           console.log("Issue fetching notifications from backend: ", error);
         } finally {
-          setLoading(false);
+          // setLoading(false);
         }
       }
     };

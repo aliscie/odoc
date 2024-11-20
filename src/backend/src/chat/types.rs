@@ -112,16 +112,7 @@ impl Chat {
     pub fn save(&self) -> Self {
         CHATS.with(|store| {
             let mut chats = store.borrow_mut();
-            if let Some(mut chat) = chats.get(&self.id) {
-                chat.name = self.name.clone();
-                chat.admins = self.admins.clone();
-                chat.members = self.members.clone();
-                chat.messages = self.messages.clone();
-                chat.creator = self.creator.clone();
-                chat.workspaces = self.workspaces.clone();
-            } else {
-                chats.insert(self.id.clone(), self.clone());
-            }
+            chats.insert(self.id.clone(), self.clone());
             self.clone()
         })
     }

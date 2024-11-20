@@ -169,6 +169,8 @@ function RenderNotification(props: {
   let content = notification.content;
   let time = notification.time && formatRelativeTime(notification.time);
   switch (Object.keys(notification.content)[0]) {
+    case "ReceivedDeposit":
+      return <div>{notification.content["ReceivedDeposit"]}</div>;
     case "FriendRequest":
       return (
         <div>

@@ -1,51 +1,17 @@
-import React, { useRef, useState, ChangeEvent } from "react";
+import React, { useState } from "react";
 import { handleRedux } from "../../redux/store/handleRedux";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, MenuItem, Tooltip, Select, TextField } from "@mui/material";
-import MultiAutoComplete from "../MuiComponents/MultiAutocompelte";
-import {
-  Chat,
-  Message,
-  WorkSpace,
-} from "../../../declarations/backend/backend.did";
+import { Chat, Message } from "../../../declarations/backend/backend.did";
 import { Principal } from "@dfinity/principal";
-import { useSnackbar } from "notistack";
 import { randomString } from "../../DataProcessing/dataSamples";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import Input from "@mui/material/Input";
 import { useBackendContext } from "../../contexts/BackendContext";
-import PaymentsIcon from "@mui/icons-material/Payments";
-import AlertDialog from "../MuiComponents/AlertDialog";
 import LoaderButton from "../MuiComponents/LoaderButton";
 import {
   ADD_CHAT,
   ADD_CHATS_NOTIFICATIONS,
 } from "../../redux/types/chatsTypes";
 
-// interface SelectMembersProps {
-//   onChange: (friends: any) => void;
-// }
-
-// function SelectMembers({ onChange }: SelectMembersProps) {
-//   const { all_friends } = useSelector((state: any) => state.filesState);
-//   const [selectedFriends, setSelectedFriends] = useState([]);
-//
-//   return (
-//     <MultiAutoComplete
-//       onChange={(event, friends) => {
-//         console.log(friends);
-//         onChange(friends);
-//         setSelectedFriends(friends);
-//       }}
-//       value={selectedFriends}
-//       options={all_friends.map((friend) => ({
-//         title: friend.name,
-//         id: friend.id,
-//       }))}
-//       multiple
-//     />
-//   );
-// }
 
 function useCreateChatGroup() {
   const dispatch = useDispatch();
@@ -88,7 +54,11 @@ function useCreateChatGroup() {
   }
   const GroupOptions = () => (
     <div>
-      <LoaderButton fullWidth={true} startIcon={<GroupAddIcon />} onClick={createChatGroup} />
+      <LoaderButton
+        fullWidth={true}
+        startIcon={<GroupAddIcon />}
+        onClick={createChatGroup}
+      />
 
       {/*<Button onClick={createNewGroup}>*/}
       {/*  <GroupAddIcon />*/}

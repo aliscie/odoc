@@ -7,15 +7,16 @@ use std::sync::atomic::Ordering;
 
 use crate::user::User;
 use crate::websocket::{NoteContent, Notification};
-
 #[update]
 fn send_message(user: Option<Principal>, mut message: Message) -> Result<String, String> {
-    // TODO don't create new private
-    //  if user is creator and caller() in admins
-    //  or if user in admins and caller() is creator
+    if User::is_anonymous() {
+        return Err("You are anonymous".to_string());
+    }
+
     message.seen_by.push(caller());
+    let id = COUNTER.fetch_add(1, Ordering::SeqCst).to_string();
     let mut new_notification = Notification {
-        id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+        id: id.clone(),
         sender: caller(),
         receiver: caller(),
         content: NoteContent::NewMessage(message.clone()),
@@ -23,52 +24,24 @@ fn send_message(user: Option<Principal>, mut message: Message) -> Result<String,
         time: ic_cdk::api::time() as f64,
     };
 
-    if User::is_anonymous() {
-        return Err("You are anonymous".to_string());
-    }
-
-    // handle chat message
     message.date = ic_cdk::api::time();
     if let Some(mut chat) = Chat::get(&message.chat_id) {
-        // permissions
-        if !(chat.members.contains(&caller())
-            || chat.admins.contains(&caller())
-            || (chat.creator == caller()))
-        {
+        if !(chat.members.contains(&caller()) || chat.admins.contains(&caller()) || chat.creator == caller()) {
             return Err("You are not a member of this chat.".to_string());
         }
-        // if !chat.admins.contains(&caller()) && !chat.admins.is_empty() {
-        //     new_notification.receiver = chat.admins[0].clone();
-        // } else {
-        //     new_notification.receiver = chat.creator.clone();
-        // }
-        // new_notification.send();
-        for member in chat
-            .members
-            .clone()
-            .into_iter()
-            .filter(|m| m != &new_notification.sender || m != &caller())
-        {
+        for member in chat.members.iter().filter(|m| m != &&caller()) {
             new_notification.id = COUNTER.fetch_add(1, Ordering::SeqCst).to_string();
-            new_notification.receiver = member;
+            new_notification.receiver = *member;
             new_notification.send();
         }
         chat.messages.push(message.clone());
-        // chat.save_to_my_chats();
         chat.save();
-
         Ok(message.chat_id)
     } else if let Some(user) = user {
-        // TODO for group chats
-        //     let mut chat = Chat::get_by_user(user);
-        //     if chat.is_none() {
-        //         chat = Some(Chat::new(user));
-        //     }
         let mut chat = Chat::new(user, message.chat_id.clone());
         chat.messages.push(message.clone());
         new_notification.receiver = user;
         new_notification.send();
-        // chat.save_to_my_chats();
         chat.save();
         chat.add_to_my_chats(user);
         chat.add_to_my_chats(caller());
@@ -77,7 +50,6 @@ fn send_message(user: Option<Principal>, mut message: Message) -> Result<String,
         Err("Please provide a user principal or valid chat id.".to_string())
     }
 }
-
 #[update]
 fn message_is_seen(message: Message) -> Result<(), String> {
     if let Some(mut chat) = Chat::get(&message.chat_id) {

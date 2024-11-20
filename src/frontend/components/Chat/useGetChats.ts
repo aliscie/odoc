@@ -24,8 +24,7 @@ function useGetChats() {
   const getChats = React.useCallback(async () => {
     if (!chats || chats.length === 0) {
       try {
-        let res: undefined | Array<FEChat> =
-          backendActor && (await backendActor.get_my_chats());
+        let res: undefined | Array<FEChat> = await backendActor?.get_my_chats();
         res && dispatch(handleRedux("SET_CHATS", { chats: res }));
         return res;
       } catch (error) {
