@@ -31,11 +31,16 @@ pub fn send_friend_request(user_principal: String) -> Result<User, String> {
 // id sender_left + receiver_right
 #[update]
 pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
+    let sender = User::get_user_from_text_principal(&user_principal);
+    if sender.is_none() {
+        return Err("User not found".to_string());
+    }
+    let sender = sender.unwrap();
     let id = user_principal.clone() + &caller().to_string();
     let id2 = format!("{}{}", caller().to_string(), user_principal.clone());
     let friend = Friend {
         id: user_principal.clone() + &caller().to_string(),
-        sender: User::get_user_from_text_principal(&user_principal).unwrap(),
+        sender,
         receiver: User::get_user_from_text_principal(&caller().to_string()).unwrap(),
         confirmed: true,
     };

@@ -1,19 +1,19 @@
-import { useSnackbar } from "notistack";
-import { useDispatch, useSelector } from "react-redux";
-import { handleRedux } from "../../redux/store/handleRedux";
+import {useSnackbar} from "notistack";
+import {useDispatch, useSelector} from "react-redux";
+import {handleRedux} from "../../redux/store/handleRedux";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
-import { Box, Tooltip } from "@mui/material";
+import {Box, Tooltip} from "@mui/material";
 import * as React from "react";
 import LoaderButton from "../../components/MuiComponents/LoaderButton";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import { Friend } from "../../../declarations/backend/backend.did";
+import {Friend} from "../../../declarations/backend/backend.did";
 import RateUser from "../../components/Actions/RateUser";
-import { UserAvatar } from "../../components/MuiComponents/PostComponent";
+import {UserAvatar} from "../../components/MuiComponents/PostComponent";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { useBackendContext } from "../../contexts/BackendContext";
+import {useBackendContext} from "../../contexts/BackendContext";
 
 interface FriendProps {
   id: string;
@@ -56,8 +56,8 @@ function SecondaryActionSwitch(props) {
     if (typeof id != "string") {
       id = id.toText();
     }
+    console.log({ id });
     let res = backendActor && (await backendActor.accept_friend_request(id));
-    console.log({ res });
     dispatch(
       handleRedux("UPDATE_NOTE", { id: id + profile.id, is_seen: true }),
     );
@@ -251,11 +251,11 @@ function Friends(props: any) {
           let user =
             value.receiver.id !== profile.id ? value.receiver : value.sender;
           const labelId = `checkbox-list-secondary-label-${value.receiver.name}`;
+          console.log({ user });
           return (
             <ListItem key={user.id} disablePadding>
               <FriendCom
                 {...user}
-                {...value}
                 is_friend={value.confirmed}
                 labelId={labelId}
               />

@@ -68,7 +68,7 @@ const WalletSection: React.FC = () => {
         </Typography>
         <Divider style={{ margin: "16px 0" }} />
         <Typography variant="h6" align="center">
-          {wallet.balance / 1000000 || 0} ckUSDC
+          {wallet.balance || 0} ckUSDC
         </Typography>
         <Divider style={{ margin: "16px 0" }} />
         <Box style={{ display: "flex", justifyContent: "space-around" }}>

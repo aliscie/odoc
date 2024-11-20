@@ -163,9 +163,6 @@ export default function ProfileComponent() {
             <BasicTabs
               items={{
                 Friends: <Friends />,
-                // Reputation: profile_history && (
-                //   <UserHistoryComponent {...profile_history} />
-                // ),
                 ...(wallet && { Transactions: <TransactionHistory /> }),
               }}
             />

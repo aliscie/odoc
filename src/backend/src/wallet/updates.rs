@@ -157,10 +157,9 @@ async fn deposit_ckusdt() -> Result<Wallet, Error> {
     if balance > Nat::from(1 as u64) {
         let fee: Nat = get_fee().await;
         transfer_from(balance.clone() - fee, caller(), ic_cdk::id()).await?;
-
         wallet
             .deposit(
-                nat_to_u64(balance.clone()) as f64,
+                nat_to_u64(balance.clone()) as f64 / 1000000_f64,
                 "ExternalWallet".to_string(),
                 ExchangeType::Deposit,
             )
@@ -189,7 +188,7 @@ async fn withdraw_ckusdt(amount: u64, address: String) -> Result<Nat, Error> {
     let balance = balance.unwrap();
     if Nat::from(amount.clone()) >= balance {
         transfer_from(
-            Nat::from(amount.clone() as u64),
+            Nat::from(amount.clone() as u64 * 1000000),
             ic_cdk::id(),
             Principal::from_text(address.clone()).unwrap(),
         )

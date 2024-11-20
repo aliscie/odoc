@@ -119,7 +119,7 @@ const ContractItem: React.FC<ContractItemProps> = ({
         secondary={
           <div>
             <div>Receiver: {users.receiver}</div>
-            <div>Amount: {Number(amount / 1000000)} USDTs</div>
+            <div>Amount: {Number(amount)} USDTs</div>
             <div>Date Created: {formatTimestamp(BigInt(date_created))}</div>
           </div>
         }

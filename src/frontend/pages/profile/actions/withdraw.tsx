@@ -25,7 +25,7 @@ function Content(props: any) {
   };
 
   async function makeWithdraw() {
-    const res = await backendActor.withdraw_ckusdt(amount * 1000000, address);
+    const res = await backendActor.withdraw_ckusdt(amount , address);
     return res;
   }
 
