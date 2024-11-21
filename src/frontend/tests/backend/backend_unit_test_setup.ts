@@ -21,8 +21,9 @@ const WASM_PATH = resolve(
 );
 
 const setupTestEnvironment = async () => {
+  const url = import.meta.env.VITE_IC_HOST;
   const alice = createIdentity("1");
-  const pic = await PocketIc.create();
+  const pic = await PocketIc.create(url);
   const fixture = await pic.setupCanister<_SERVICE>(idlFactory, WASM_PATH);
   fixture.actor.setIdentity(alice);
 
