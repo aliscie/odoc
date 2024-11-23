@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { resolve } from "node:path";
-import { createIdentity, PocketIc } from "@hadronous/pic";
+import { createIdentity, PocketIc, PocketIcServer } from "@hadronous/pic";
 import { idlFactory } from "../../../declarations/backend";
 import { _SERVICE } from "../../../declarations/backend/backend.did";
 import { Identity } from "@dfinity/agent";
@@ -21,9 +21,17 @@ const WASM_PATH = resolve(
 );
 
 const setupTestEnvironment = async () => {
-  const url = import.meta.env.VITE_IC_HOST;
   const alice = createIdentity("1");
+  const picIcServer = await PocketIcServer.start({
+    showCanisterLogs: true,
+  });
+
+  const url = picIcServer.getUrl();
   const pic = await PocketIc.create(url);
+
+  process.env.PIC_URL = url;
+  global.__PIC__ = picIcServer;
+
   const fixture = await pic.setupCanister<_SERVICE>(idlFactory, WASM_PATH);
   fixture.actor.setIdentity(alice);
 

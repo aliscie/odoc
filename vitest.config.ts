@@ -16,7 +16,7 @@ export default defineConfig({
     setupFiles,
     setupFilesAfterEnv: [
       "@testing-library/jest-dom/extend-expect",
-      // "./src/frontend/tests/React/testSetup.ts",
+      "./src/frontend/tests/React/testSetup.ts",
     ],
   },
 });

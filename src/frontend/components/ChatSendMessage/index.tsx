@@ -8,6 +8,7 @@ import { useBackendContext } from "../../contexts/BackendContext";
 import { Message } from "../../../declarations/backend/backend.did";
 import { Principal } from "@dfinity/principal";
 import LoaderButton from "../MuiComponents/LoaderButton";
+import { randomId } from "@mui/x-data-grid-generator";
 
 const ChatSendMessage: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -32,6 +33,7 @@ const ChatSendMessage: React.FC = () => {
 
       if (newMessage.chat_id === "chat_id") {
         console.log("chat_id is not set");
+        newMessage.chat_id = randomId();
       }
       let user = current_user ? [current_user] : [];
       let res = await backendActor.send_message(user, newMessage);

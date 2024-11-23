@@ -11,8 +11,8 @@ import { AppMessage, Friend } from "../../declarations/backend/backend.did";
 function useSocket() {
   const { profile } = useSelector((state: any) => state.filesState);
   let gatewayUrl = "wss://gateway.icws.io";
-  // let icUrl = `https://odoc.app`;
-  let icUrl = `https://lwdq3-vqaaa-aaaal-acwda-cai.icp0.io`;
+  let icUrl = `https://odoc.app`;
+  // let icUrl = `https://lwdq3-vqaaa-aaaal-acwda-cai.icp0.io`;
   if (import.meta.env.VITE_DFX_NETWORK != "ic") {
     gatewayUrl = "ws://127.0.0.1:8084";
     icUrl = `http://127.0.0.1:${import.meta.env.VITE_DFX_PORT}`;

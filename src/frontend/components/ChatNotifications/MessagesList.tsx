@@ -11,6 +11,7 @@ import LoaderButton from "../MuiComponents/LoaderButton";
 import { Principal } from "@dfinity/principal";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useBackendContext } from "../../contexts/BackendContext";
+import ChatBox from "../MuiComponents/chatUi";
 
 const UpdateChatSettings = ({ currentChat }) => {
   if (!currentChat) {
@@ -102,30 +103,33 @@ const MessagesList: React.FC = () => {
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <MessagesGroupOption currentChat={currentChat} />
       <UpdateChatSettings currentChat={currentChat} />
-      <Box sx={{ flex: 1, overflowY: "auto", padding: 2 }}>
-        {messages && messages.length == 0 && (
-          <Typography variant="h6" gutterBottom>
-            You have no messages in this chat.
-          </Typography>
-        )}
 
-        {messages ? (
-          messages.map((message) => {
-            return (
-              <MessageComponent
-                key={message.id}
-                current_chat_id={current_chat_id!}
-                {...message}
-              />
-            );
-          })
-        ) : currentChat ? (
-          <CircularProgress />
-        ) : (
-          <Typography type={"info"}>No messages yet.</Typography>
-        )}
-        <ChatSendMessage />
-      </Box>
+      <ChatBox />
+
+      {/*<Box sx={{ flex: 1, overflowY: "auto", padding: 2 }}>*/}
+      {/*  {messages && messages.length == 0 && (*/}
+      {/*    <Typography variant="h6" gutterBottom>*/}
+      {/*      You have no messages in this chat.*/}
+      {/*    </Typography>*/}
+      {/*  )}*/}
+
+      {/*  {messages ? (*/}
+      {/*    messages.map((message) => {*/}
+      {/*      return (*/}
+      {/*        <MessageComponent*/}
+      {/*          key={message.id}*/}
+      {/*          current_chat_id={current_chat_id!}*/}
+      {/*          {...message}*/}
+      {/*        />*/}
+      {/*      );*/}
+      {/*    })*/}
+      {/*  ) : currentChat ? (*/}
+      {/*    <CircularProgress />*/}
+      {/*  ) : (*/}
+      {/*    <Typography type={"info"}>No messages yet.</Typography>*/}
+      {/*  )}*/}
+      {/*  <ChatSendMessage />*/}
+      {/*</Box>*/}
     </Box>
   );
 };

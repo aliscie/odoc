@@ -1,23 +1,50 @@
 import React from "react";
 import {
-  Stepper,
-  Step,
-  StepLabel,
-  Typography,
   Box,
   Button,
-  Link,
+  Step,
+  StepLabel,
+  Stepper,
+  Typography,
 } from "@mui/material";
+import { Link } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import CheckIcon from "@mui/icons-material/Check";
 
 const steps = [
   <>
-    After you login, go to the <Link href={"./discover"}>Discover</Link> page
+    After you login, go to the{" "}
+    <Link
+      style={{
+        color: "lightblue",
+        textDecoration: "underline",
+      }}
+      type={"text"}
+      to={"./Discover"}
+    >
+      Discover
+    </Link>{" "}
+    page
   </>,
   "Create a new post about yourself",
   "Check other people's posts and visit their profiles",
   "Send someone a friend request",
-  "Create a new document",
-  "Create a new contract",
+  "Create a new document from the side bar",
+  <>
+    Create a new contract from{" "}
+    <Link
+      style={{
+        color: "lightblue",
+        textDecoration: "underline",
+      }}
+      type={"text"}
+      to={"./Contracts"}
+    >
+      Contracts
+    </Link>{" "}
+    page, or inside any document
+  </>,
 ];
 
 const StepGuide: React.FC = () => {
@@ -37,16 +64,21 @@ const StepGuide: React.FC = () => {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Typography variant="h5" align="center">
-        What todo now
-      </Typography>
-      <Stepper activeStep={activeStep} alternativeLabel>
-        {steps.map((label, index) => (
-          <Step key={index}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+      <Box sx={{ width: "100%" }}>
+        <Typography variant="body" align="center">
+          What todo now
+        </Typography>
+      </Box>
+
+      <Box sx={{ width: "100%" }}>
+        <Stepper activeStep={activeStep} alternativeLabel>
+          {steps.map((label, index) => (
+            <Step key={index}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </Box>
       {activeStep === steps.length ? (
         <Box sx={{ mt: 2 }}>
           <Typography>All steps completed!</Typography>
@@ -56,18 +88,28 @@ const StepGuide: React.FC = () => {
         </Box>
       ) : (
         <Box sx={{ mt: 2 }}>
-          <Typography>{steps[activeStep]}</Typography>
-          <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              pt: 2,
+            }}
+          >
             <Button
               color="inherit"
               disabled={activeStep === 0}
               onClick={handleBack}
               sx={{ mr: 1 }}
             >
-              Back
+              <ArrowBackIcon />
             </Button>
             <Button variant="contained" onClick={handleNext}>
-              {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              {activeStep === steps.length - 1 ? (
+                <CheckIcon />
+              ) : (
+                <ArrowForwardIcon />
+              )}
             </Button>
           </Box>
         </Box>
