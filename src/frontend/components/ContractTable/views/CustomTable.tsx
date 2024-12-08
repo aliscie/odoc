@@ -27,7 +27,7 @@ function CustomTable(props: Props) {
 
   const columns = useMemo(() => {
     return props.view.contract.columns.map((c) => {
-      return { ...c, renderEditCell: textEditor, resizable: true };
+      return { ...c, cellRenderer: textEditor, resizable: true };
     });
   }, [props.view.contract.columns]);
 

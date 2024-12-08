@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -31,8 +31,6 @@ import { useBackendContext } from "../../contexts/BackendContext";
 import * as React from "react";
 
 export default function ProfileComponent() {
-  const { backendActor } = useBackendContext();
-  const { enqueueSnackbar } = useSnackbar();
   const { profile, friends, profile_history, wallet } = useSelector(
     (state: any) => state.filesState,
   );
@@ -41,6 +39,18 @@ export default function ProfileComponent() {
     changed: false,
     ...profile,
   });
+
+  useEffect(() => {
+    if (profile && !profileData.id) {
+      setProfileData({
+        changed: false,
+        ...profile,
+      });
+    }
+  }, [profile]);
+
+  const { backendActor } = useBackendContext();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [buttonLoading, setButtonLoading] = useState(false);
 

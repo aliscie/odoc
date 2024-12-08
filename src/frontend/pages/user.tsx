@@ -31,21 +31,22 @@ export function UserHistoryComponent(profile: UserProfile) {
     // Function to fetch names and update state
     (async () => {
       let values = await Promise.all(
-        profile.rates_by_actions.map(async (i: ActionRating, index) => {
-          let type: ActionType = i.action_type;
-          if (Object.keys(type)[0] == "Payment") {
-            let status: PaymentStatus = type["Payment"].status;
-            if (Object.keys(status)[0] == "Objected") {
-              let receiver: Principal = type["Payment"].receiver;
-              let receiver_name = await getUser(receiver.toString());
-              // todo add the type['Payment'].date
-              return {
-                name: receiver_name && receiver_name.name,
-                objection: status["Objected"],
-              };
+        profile.rates_by_actions &&
+          profile.rates_by_actions.map(async (i: ActionRating, index) => {
+            let type: ActionType = i.action_type;
+            if (Object.keys(type)[0] == "Payment") {
+              let status: PaymentStatus = type["Payment"].status;
+              if (Object.keys(status)[0] == "Objected") {
+                let receiver: Principal = type["Payment"].receiver;
+                let receiver_name = await getUser(receiver.toString());
+                // todo add the type['Payment'].date
+                return {
+                  name: receiver_name && receiver_name.name,
+                  objection: status["Objected"],
+                };
+              }
             }
-          }
-        }),
+          }),
       );
 
       setActionRatingsWithNames(values);
@@ -85,6 +86,9 @@ export function UserHistoryComponent(profile: UserProfile) {
       // icon: <FingerprintIcon />,
     },
   ];
+  if (!profile.rates_by_actions) {
+    return null;
+  }
   return (
     <>
       <Grid container spacing={2}>

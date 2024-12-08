@@ -447,7 +447,6 @@ export const idlFactory = ({ IDL }) => {
       IDL.Tuple(IDL.Principal, ShareFilePermission)
     ),
   });
-  const Result_14 = IDL.Variant({ 'Ok' : IDL.Nat, 'Err' : Error });
   const ClientKey = IDL.Record({
     'client_principal' : IDL.Principal,
     'client_nonce' : IDL.Nat64,
@@ -465,7 +464,7 @@ export const idlFactory = ({ IDL }) => {
     'tree' : IDL.Vec(IDL.Nat8),
     'is_end_of_queue' : IDL.Bool,
   });
-  const Result_15 = IDL.Variant({
+  const Result_14 = IDL.Variant({
     'Ok' : CanisterOutputCertifiedMessages,
     'Err' : IDL.Text,
   });
@@ -590,11 +589,11 @@ export const idlFactory = ({ IDL }) => {
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
     'vote_down' : IDL.Func([IDL.Text], [Result_9], []),
     'vote_up' : IDL.Func([IDL.Text], [Result_9], []),
-    'withdraw_ckusdt' : IDL.Func([IDL.Nat64, IDL.Text], [Result_14], []),
+    'withdraw_ckusdt' : IDL.Func([IDL.Nat64, IDL.Text], [Result_6], []),
     'ws_close' : IDL.Func([CanisterWsCloseArguments], [Result_2], []),
     'ws_get_messages' : IDL.Func(
         [CanisterWsGetMessagesArguments],
-        [Result_15],
+        [Result_14],
         ['query'],
       ),
     'ws_message' : IDL.Func(

@@ -87,7 +87,6 @@ export function CustomContractComponent({
       console.log("Error updating contract:", error);
     }
   }, 300);
-
   return (
     <Box
       sx={{
@@ -134,7 +133,7 @@ export function CustomContractComponent({
             transformOrigin={{ vertical: "top", horizontal: "right" }}
             options={options}
           >
-             <MoreVertIcon />
+            <MoreVertIcon />
           </BasicMenu>
         </Box>
         <Button onClick={() => setExpanded(!expanded)} sx={{ ml: 1 }}>

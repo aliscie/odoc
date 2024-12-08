@@ -352,9 +352,7 @@ export type Result_12 = { 'Ok' : UserProfile } |
   { 'Err' : string };
 export type Result_13 = { 'Ok' : null } |
   { 'Err' : null };
-export type Result_14 = { 'Ok' : bigint } |
-  { 'Err' : Error };
-export type Result_15 = { 'Ok' : CanisterOutputCertifiedMessages } |
+export type Result_14 = { 'Ok' : CanisterOutputCertifiedMessages } |
   { 'Err' : string };
 export type Result_2 = { 'Ok' : null } |
   { 'Err' : string };
@@ -542,9 +540,9 @@ export interface _SERVICE {
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
   'vote_down' : ActorMethod<[string], Result_9>,
   'vote_up' : ActorMethod<[string], Result_9>,
-  'withdraw_ckusdt' : ActorMethod<[bigint, string], Result_14>,
+  'withdraw_ckusdt' : ActorMethod<[bigint, string], Result_6>,
   'ws_close' : ActorMethod<[CanisterWsCloseArguments], Result_2>,
-  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_15>,
+  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_14>,
   'ws_message' : ActorMethod<
     [CanisterWsMessageArguments, [] | [AppMessage]],
     Result_2

@@ -85,7 +85,7 @@ function MessagesGroupOption({ currentChat }) {
         return res ? res.name : "Error";
       })
     : [];
-
+  const user = getUserByPrincopal(currentChat.creator.id);
   return (
     <div>
       <Input
@@ -99,7 +99,7 @@ function MessagesGroupOption({ currentChat }) {
         This group created by:{" "}
         {profile && profile.id === currentChat.creator.id
           ? "You"
-          : getUserByPrincopal(currentChat.creator.id).name}
+          : user?.name}
       </div>
 
       <Autocomplete

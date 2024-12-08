@@ -26,7 +26,7 @@ const ChatsComponent: React.FC<ChatsComponentProps> = () => {
     (state: any) => state.chatsState,
   );
   const chatsWorkspace = chats
-    .filter((c) => !c.workspaces.includes(currentWorkspace.id))
+    .filter((c) => c.workspaces && !c.workspaces.includes(currentWorkspace.id))
     .map((c) => c.id);
 
   const dispatch = useDispatch();

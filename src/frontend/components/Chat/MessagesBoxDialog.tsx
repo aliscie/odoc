@@ -18,7 +18,6 @@ const MessagesDialogBox: React.FC = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { current_chat_id } = useSelector((state: any) => state.chatsState);
 
-  const [messages, setMessages] = useState<Message[]>([]);
 
   const isPathChats = window.location.pathname.includes("/chats");
   const isOpen = !isPathChats && Boolean(current_chat_id);
@@ -32,16 +31,6 @@ const MessagesDialogBox: React.FC = () => {
     }
   };
 
-  // const handleSend = (message: string) => {
-  //   if (message.trim()) {
-  //     setMessages((prevMessages) => [
-  //       ...prevMessages,
-  //       { text: message, isCurrentUser: true },
-  //     ]);
-  //   } else {
-  //     enqueueSnackbar("Message cannot be empty", { variant: "warning" });
-  //   }
-  // };
   let actions = [
     <IconButton key="close" onClick={closeDialog}>
       <CloseIcon color="action" />
@@ -71,7 +60,7 @@ const MessagesDialogBox: React.FC = () => {
         )}
       </Box>
       <DialogContent sx={{ padding: "0" }}>
-        <MessagesList messages={messages} />
+        <MessagesList />
       </DialogContent>
       {actions && actions[1] && (
         <Box

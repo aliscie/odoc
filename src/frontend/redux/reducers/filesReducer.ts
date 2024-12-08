@@ -24,7 +24,7 @@ export function filesReducer(
 
   switch (action.type) {
     case "INIT_FILES_STATE":
-      let all_friends = [];
+      let all_friends = [action.data.Profile];
       action.data.Friends.forEach((f: Friend) => {
         if (f.sender.id !== action.data.Profile.id) {
           all_friends.push(f.sender);
@@ -304,6 +304,7 @@ export function filesReducer(
 
     case "ADD_FRIEND":
       return { ...state, friends: [...state.friends, action.friend] };
+
     case "CONFIRM_FRIEND":
       let sender = action.friend.sender;
       let receiver = action.friend.receiver;
@@ -311,7 +312,7 @@ export function filesReducer(
         ...state,
         friends: state.friends.map((f) => {
           if (f.sender.id === sender.id && receiver.id === f.receiver.id) {
-            return { ...f, confirmed: true };
+            f.confirmed = true;
           }
           return f;
         }),

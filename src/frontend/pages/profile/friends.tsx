@@ -251,7 +251,6 @@ function Friends(props: any) {
           let user =
             value.receiver.id !== profile.id ? value.receiver : value.sender;
           const labelId = `checkbox-list-secondary-label-${value.receiver.name}`;
-          console.log({ user });
           return (
             <ListItem key={user.id} disablePadding>
               <FriendCom

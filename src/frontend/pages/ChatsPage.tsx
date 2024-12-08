@@ -52,11 +52,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ChatItem(props: FEChat) {
-
-  const { current_chat_id, chats } = useSelector(
-    (state: RootState) => state.chatsState,
-  );
-
   const classes = useStyles();
   const dispatch = useDispatch();
   let { getOther } = useGetChats();
@@ -88,7 +83,10 @@ function ChatItem(props: FEChat) {
   );
 }
 
-function ChatsPage(props: Props) {
+function ChatsPage(props) {
+  const { current_chat_id } = useSelector(
+    (state: RootState) => state.chatsState,
+  );
   const classes = useStyles();
   const { current_user } = useSelector((state: any) => state.chatsState);
   const { profile } = useSelector((state: any) => state.filesState);
@@ -96,9 +94,7 @@ function ChatsPage(props: Props) {
   let { getChats } = useGetChats();
 
   // const [chats, setChats] = useState<Array<FEChat>>([]);
-  const {  chats } = useSelector(
-    (state: RootState) => state.chatsState,
-  );
+  const { chats } = useSelector((state: RootState) => state.chatsState);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -151,7 +147,7 @@ function ChatsPage(props: Props) {
                 </Paper>
 
                 <Paper className={classes.messagesContainer}>
-                  <MessagesList />
+                  <MessagesList key={current_chat_id} />
                 </Paper>
               </Box>
             </CardContent>

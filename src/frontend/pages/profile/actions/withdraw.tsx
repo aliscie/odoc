@@ -1,64 +1,64 @@
-import { useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import { MonetizationOn } from "@mui/icons-material";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import AlertDialog from "../../../components/MuiComponents/AlertDialog";
-import React from "react";
+import React, { useState } from "react";
 import Card from "../../../components/MuiComponents/Card";
 import { CardContent, Fade, Input } from "@mui/material";
 import { useBackendContext } from "../../../contexts/BackendContext";
 import LoaderButton from "../../../components/MuiComponents/LoaderButton";
-
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { useSnackbar } from "notistack";
+import {handleRedux} from "../../../redux/store/handleRedux";
 function Content(props: any) {
   const { backendActor, ckUSDCActor } = useBackendContext();
-
-  const { profile } = useSelector((state: any) => state.filesState);
-  const [loading, setLoading] = React.useState(false);
-  const [copy, setCopy] = React.useState(false);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [address, setAddress] = React.useState(null);
-  const [amount, setAmount] = React.useState(10);
-  const copyAddress = async () => {
-    navigator.clipboard.writeText(address);
-    setCopy(true);
-    setTimeout(() => {
-      setCopy(false);
-    }, 2000);
-  };
-
+  const [amount, setAmount] = React.useState(0);
+  const [isDone, setIsDone] = useState(false);
+  const dispatch = useDispatch();
   async function makeWithdraw() {
-    const res = await backendActor.withdraw_ckusdt(amount , address);
+    const res = await backendActor.withdraw_ckusdt(
+      BigInt(amount),
+      address,
+    );
+    if (res["Ok"]) {
+      dispatch(handleRedux("SET_WALLET", { wallet: res["Ok"] }));
+      setIsDone(true);
+    } else {
+      enqueueSnackbar(JSON.stringify(res), { variant: "error" });
+    }
+
+    console.log({ res });
     return res;
   }
 
   return (
     <Card className="feature-card" sx={{ margin: 1 }}>
-      <CardContent className="feature-card-content">
-        <Input
-          label="Amount"
-          type="number"
-          onChange={(e) => {
-            setAmount(e.target.value);
-            // setAddress(null);
-          }}
-        />
-        <Input
-          label="Withdraw address"
-          type="text"
-          onChange={(e) => {
-            // setAmount(e.target.value);
-            setAddress(e.target.value);
-          }}
-        />
-        {address && amount && (
-          <LoaderButton onClick={makeWithdraw}>withdraw</LoaderButton>
-        )}
-
-        <Fade in={copy}>
-          <span>
-            <DoneAllIcon color={"success"} />
-            <span> You successfully copied the address</span>
-          </span>
-        </Fade>
-      </CardContent>
+      {isDone && <CheckCircleOutlineIcon size={"large"} color={"success"} />}
+      {!isDone && (
+        <CardContent className="feature-card-content">
+          <Input
+            label="Amount"
+            type="number"
+            placeholder="Amount"
+            onChange={(e) => {
+              setAmount(Number(e.target.value));
+            }}
+          />
+          <Input
+            label="ckUSDC Address"
+            type="text"
+            placeholder="ckUSDC Address"
+            onChange={(e) => {
+              setAddress(e.target.value);
+            }}
+          />
+          {address && amount && (
+            <LoaderButton onClick={makeWithdraw}>withdraw</LoaderButton>
+          )}
+        </CardContent>
+      )}
     </Card>
   );
 }

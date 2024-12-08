@@ -1,6 +1,6 @@
-import {RenderEditCellProps} from "react-data-grid";
+import { RenderEditCellProps } from "react-data-grid";
 import convertCamelToTitle from "../../../utils/convertCamelToTitle";
-import {MenuItem, Select} from "@mui/material";
+import { MenuItem, Select } from "@mui/material";
 
 const statuses = [
   "None",
@@ -13,16 +13,16 @@ const statuses = [
   "HighPromise",
 ];
 
-export function statusDropDown({ row, onRowChange }: RenderEditCellProps) {
+export function StatusDropDown(props) {
+  // let contract = props.contract
+  // console.log({ contract });
   return (
     <Select
-      labelId="demo-simple-select-label"
-      id="demo-simple-select"
-      value={row.status}
-      label="Age"
-      onChange={(event) =>
-        onRowChange({ ...row, status: event.target.value }, true)
-      }
+      fullWidth={true}
+      value={props.value}
+      // onChange={(event) =>
+      //   onRowChange({ ...row, status: event.target.value }, true)
+      // }
     >
       {statuses.map((status) => (
         <MenuItem value={status}>{convertCamelToTitle(status)}</MenuItem>

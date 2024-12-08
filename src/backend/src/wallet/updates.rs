@@ -22,7 +22,7 @@ use icrc_ledger_types::icrc1::transfer::BlockIndex;
 use icrc_ledger_types::icrc2::transfer_from::{TransferFromArgs, TransferFromError};
 use num::Num;
 use serde_json::{self};
-use std::time;
+// use std::time;
 use crate::ckusdc_index_types::*;
 
 async fn get_user_balance() -> Result<Nat, String> {
@@ -130,7 +130,7 @@ async fn transfer_from(amount: Nat, from: Principal, to: Principal) -> Result<Bl
         memo: None,
         created_at_time: None,
     };
-    let res = ic_cdk::call::<(TransferFromArgs, ), (Result<BlockIndex, TransferFromError>, )>(
+    ic_cdk::call::<(TransferFromArgs, ), (Result<BlockIndex, TransferFromError>, )>(
         Principal::from_text("xevnm-gaaaa-aaaar-qafnq-cai").unwrap(),
         "icrc2_transfer_from",
         (args, ),
@@ -140,9 +140,15 @@ async fn transfer_from(amount: Nat, from: Principal, to: Principal) -> Result<Bl
         .0
         .map_err(|e| Error::IcCdkError {
             message: format!("{:?}", e),
-        });
-    res
+        })
 }
+
+
+// #[update]
+// async fn get_local_balance() -> Result<Nat, String> {
+//     get_user_balance().await
+// }
+
 
 #[update]
 async fn deposit_ckusdt() -> Result<Wallet, Error> {
@@ -154,31 +160,29 @@ async fn deposit_ckusdt() -> Result<Wallet, Error> {
         });
     }
     let balance = balance.unwrap();
-    if balance > Nat::from(1 as u64) {
+    if balance > Nat::from(3000000 as u64) {
         let fee: Nat = get_fee().await;
-        transfer_from(balance.clone() - fee, caller(), ic_cdk::id()).await?;
-        wallet
+        transfer_from(balance.clone() - fee.clone(), caller(), ic_cdk::id()).await?;
+        let res = wallet
             .deposit(
-                nat_to_u64(balance.clone()) as f64 / 1000000_f64,
+                nat_to_u64((balance.clone() - fee) / Nat::from(1000000 as u64)) as f64,
                 "ExternalWallet".to_string(),
                 ExchangeType::Deposit,
-            )
-            .map_err(|e| Error::IcCdkError {
-                message: format!("{:?}", e),
-            })?;
-        let message = format!("You received {} CKUSD", balance);
-        Notification::new(
-            format!("{:?}", time::SystemTime::now()),
-            caller(),
-            NoteContent::ReceivedDeposit(message),
-        )
-            .save();
+            );
+        if let Err(wallet_error) = res {
+            return Err(Error::IcCdkError {
+                message: format!("{:?}", wallet_error)
+            });
+        }
+        return Ok(wallet.clone());
     }
-    Ok(wallet.clone())
+    Err(Error::IcCdkError {
+        message: format!("{:?}", "falied to deposit".to_string())
+    })
 }
 
 #[update]
-async fn withdraw_ckusdt(amount: u64, address: String) -> Result<Nat, Error> {
+async fn withdraw_ckusdt(amount: u64, address: String) -> Result<Wallet, Error> {
     let balance = get_user_balance().await;
     if balance.is_err() {
         return Err(Error::IcCdkError {
@@ -186,6 +190,15 @@ async fn withdraw_ckusdt(amount: u64, address: String) -> Result<Nat, Error> {
         });
     }
     let balance = balance.unwrap();
+
+    let mut wallet = Wallet::get(caller());
+    let res = wallet.withdraw(amount as f64, address.clone(), ExchangeType::Withdraw);
+    if res.is_err() {
+        return Err(Error::IcCdkError {
+            message: format!("wallet error: {:?}", res),
+        });
+    }
+
     if Nat::from(amount.clone()) >= balance {
         transfer_from(
             Nat::from(amount.clone() as u64 * 1000000),
@@ -193,10 +206,6 @@ async fn withdraw_ckusdt(amount: u64, address: String) -> Result<Nat, Error> {
             Principal::from_text(address.clone()).unwrap(),
         )
             .await?;
-        let mut wallet = Wallet::get(caller());
-        wallet
-            .withdraw(amount as f64, address, ExchangeType::Withdraw)
-            .map_err(|e| Error::IcCdkError { message: e })?;
     }
-    Ok(balance)
+    Ok(wallet)
 }

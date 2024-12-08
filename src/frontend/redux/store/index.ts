@@ -3,7 +3,8 @@ import { uiReducer } from "../reducers/uiReducer";
 import { filesReducer } from "../reducers/filesReducer";
 import { chatsReducer } from "../reducers/chatsReducer";
 import { notificationReducer } from "../reducers/notificationReducer";
-import { RootState } from "../../tests/React/testsWrapper";
+import {RootState} from "../reducers";
+// import { RootState } from "../../tests/React/testsWrapper";
 
 // const store = configureStore({
 //     reducer: {
@@ -26,10 +27,10 @@ export function setupStore(preloadedState?: Partial<RootState>) {
       notificationState: notificationReducer,
     },
     preloadedState,
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        serializableCheck: false,
-      }),
+    // middleware: (getDefaultMiddleware) =>
+    //   getDefaultMiddleware({
+    //     serializableCheck: false,
+    //   }),
   });
 }
 const store = setupStore();

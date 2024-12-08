@@ -1,9 +1,8 @@
 import DataGridSheet from "../../DataGrid";
 import React from "react";
 import { textEditor } from "react-data-grid";
-import { senderDropDown } from "../renders/senderDropDown";
-import { statusDropDown } from "../renders/statusDropDown";
-import { receiverDropDown } from "../renders/receiverDropDown";
+import { RenderUser } from "../renders/renderUser";
+import { UserDropDown } from "../renders/userDropDown";
 import {
   CCell,
   CPayment,
@@ -12,11 +11,10 @@ import {
 import { Principal } from "@dfinity/principal";
 import { useDispatch, useSelector } from "react-redux";
 import { handleRedux } from "../../../redux/store/handleRedux";
-import { renderSenderUser } from "../renders/renderSenderUser";
 import { renderStatusCell } from "../renders/renderStatusCell";
 import rowToCells from "../serializers/rowToCells";
 import { randomString } from "../../../DataProcessing/dataSamples";
-import { renderReceiver } from "../renders/renderReceiver";
+import { StatusDropDown } from "../renders/statusDropDown";
 
 export const MAIN_FIELDS = [
   "id",
@@ -45,33 +43,45 @@ function Promises(props) {
     {
       key: "receiver",
       name: "receiver",
-      width: "max-content",
-      renderEditCell: receiverDropDown,
-      renderCell: renderReceiver,
+      // cellRenderer: ReceiverDropDown,
+      cellRenderer: RenderUser,
+      cellEditor: (p) => <UserDropDown {...p} {...props} />,
       frozen: true,
-      resizable: false,
-      draggable: false,
+      resizable: true,
+      rowDrag: true,
+      contextMenuItems: [
+        {
+          name: "Delete Row",
+          action: function () {
+            onDeleteRow(p.row.id);
+          },
+        },
+      ],
     },
     {
       key: "sender",
       name: "sender",
       width: 100,
       frozen: true,
-      renderCell: renderSenderUser,
-      renderEditCell: senderDropDown,
+      resizable: true,
+      // renderCell: RenderSenderUser,
+      cellRenderer: RenderUser,
+      cellEditor: (p) => <UserDropDown {...p} {...props} />,
     },
     {
+      resizable: true,
       key: "amount",
       name: "amount",
       width: "max-content",
-      renderEditCell: textEditor,
-      frozen: true,
+      // cellRenderer: textEditor,
     },
     {
+      resizable: true,
       key: "status",
       name: "status",
       width: "max-content",
-      renderEditCell: statusDropDown,
+      // cellRenderer: StatusDropDown,
+      cellEditor: (p) => <StatusDropDown {...p} {...props} />,
       renderCell: renderStatusCell,
       frozen: true,
       // resizable: true,
@@ -104,7 +114,7 @@ function Promises(props) {
         key: key,
         name: key,
         width: "max-content",
-        renderEditCell: textEditor,
+        cellRenderer: textEditor,
         resizable: true,
         draggable: true,
         frozen: false,
@@ -126,39 +136,6 @@ function Promises(props) {
         status: "",
       },
     ];
-  }
-
-  function onChangeRow(rows, column) {
-    let promises = rows.map((row) => {
-      let status = {};
-      let cells = rowToCells(row);
-      status[row.status || "None"] = null;
-
-      let sender = [...all_friends, profile].find(
-        (f) => f.id === row.sender || f.name === row.sender,
-      );
-
-      let receiver = [...all_friends, profile].find(
-        (f) => f.id === row.receiver || f.name === row.receiver,
-      );
-
-      sender = Principal.fromText(sender ? sender.id : profile.id);
-      receiver = Principal.fromText(receiver ? receiver.id : "2vxsx-fae");
-      let updatedPayment: CPayment = {
-        id: row.id,
-        status: status as PaymentStatus,
-        date_created: 0,
-        date_released: 0,
-        cells,
-        contract_id: props.contract.id,
-        amount: Number(row.amount),
-        sender,
-        receiver,
-      };
-      return updatedPayment;
-    });
-    let updateContract = { ...props.contract, promises };
-    dispatch(handleRedux("UPDATE_CONTRACT", { contract: updateContract }));
   }
 
   function onDeleteRow(id) {
@@ -186,46 +163,72 @@ function Promises(props) {
     dispatch(handleRedux("UPDATE_CONTRACT", { contract: updateContract }));
   }
 
-  function onRenameColumn(k, n) {
-    let updateContract = {
-      ...props.contract,
-      promises: props.contract.promises.map((p) => {
-        let cells = p.cells.map((c: CCell) => {
-          if (c.id == k) {
-            return { ...c, field: n };
+  // function onRenameColumn(k, n) {
+  //   let updateContract = {
+  //     ...props.contract,
+  //     promises: props.contract.promises.map((p) => {
+  //       let cells = p.cells.map((c: CCell) => {
+  //         if (c.id == k) {
+  //           return { ...c, field: n };
+  //         }
+  //         return c;
+  //       });
+  //       return {
+  //         ...p,
+  //         cells,
+  //       };
+  //     }),
+  //   };
+  //   dispatch(handleRedux("UPDATE_CONTRACT", { contract: updateContract }));
+  // }
+  // const onDeleteColumn = (index: number, column: any) => {
+  //   let updateContract = {
+  //     ...props.contract,
+  //     promises: props.contract.promises.map((p) => {
+  //       let cells = p.cells.filter((c: CCell) => c.field !== column.key);
+  //       return {
+  //         ...p,
+  //         cells,
+  //       };
+  //     }),
+  //   };
+  //   dispatch(handleRedux("UPDATE_CONTRACT", { contract: updateContract }));
+  // };
+  const onCellValueChanged = (event) => {
+    // let promise = props.contract.promises.find((p) => p.id === event.data.id);
+    let contract = { ...props.contract };
+    let columnField = event.colDef.field;
+    switch (columnField) {
+      case "amount":
+        contract.promises = contract.promises.map((p) => {
+          if (p.id === event.data.id) {
+            return {
+              ...p,
+              amount: Number(event.value),
+            };
           }
-          return c;
+          return p;
         });
-        return {
-          ...p,
-          cells,
-        };
-      }),
-    };
-    dispatch(handleRedux("UPDATE_CONTRACT", { contract: updateContract }));
-  }
-  const onDeleteColumn = (index: number, column: any) => {
-    let updateContract = {
-      ...props.contract,
-      promises: props.contract.promises.map((p) => {
-        let cells = p.cells.filter((c: CCell) => c.field !== column.key);
-        return {
-          ...p,
-          cells,
-        };
-      }),
-    };
-    dispatch(handleRedux("UPDATE_CONTRACT", { contract: updateContract }));
+
+        break;
+      case "receiver":
+        break;
+      default:
+        break;
+    }
+    dispatch(handleRedux("UPDATE_CONTRACT", { contract }));
   };
 
   return (
     <DataGridSheet
+      key={JSON.stringify(props.contract.promises)}
       contract={props.contract}
-      onDeleteColumn={onDeleteColumn}
-      onRenameColumn={onRenameColumn}
-      onDeleteRow={onDeleteRow}
-      onChangeRow={onChangeRow}
-      onAddColumn={onAddColumn}
+      // onDeleteColumn={onDeleteColumn}
+      // onRenameColumn={onRenameColumn}
+      // onDeleteRow={onDeleteRow}
+      // onChangeRow={onChangeRow}
+      // onAddColumn={onAddColumn}
+      onCellValueChanged={onCellValueChanged}
       initRows={rows}
       initColumns={columns}
     />

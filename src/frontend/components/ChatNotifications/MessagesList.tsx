@@ -1,20 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import CircularProgress from "@mui/material/CircularProgress";
-import { Box, TextField, Typography } from "@mui/material";
+import React, { useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Box, TextField } from "@mui/material";
 import { Chat, Message } from "../../../declarations/backend/backend.did";
-import ChatSendMessage from "../ChatSendMessage";
-import MessageComponent from "./Message";
 import { RootState } from "../../redux/reducers";
 import MessagesGroupOption from "./groupOptions";
 import LoaderButton from "../MuiComponents/LoaderButton";
 import { Principal } from "@dfinity/principal";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useBackendContext } from "../../contexts/BackendContext";
+import { randomId } from "@mui/x-data-grid-generator";
+import { handleRedux } from "../../redux/store/handleRedux";
+import { formatRelativeTime } from "../../utils/time";
 import ChatBox from "../MuiComponents/chatUi";
 
 const UpdateChatSettings = ({ currentChat }) => {
-  if (!currentChat) {
+  if (!currentChat || currentChat.name !== "private_chat") {
     return <></>;
   }
   const { profile, all_friends } = useSelector(
@@ -84,52 +84,80 @@ const UpdateChatSettings = ({ currentChat }) => {
     </>
   );
 };
+
 const MessagesList: React.FC = () => {
+  const { backendActor } = useBackendContext();
+  const dispatch = useDispatch();
   const { current_chat_id, chats } = useSelector(
     (state: RootState) => state.chatsState,
   );
 
-  const [messages, setMessages] = useState<Message[]>(null);
+  const currentChat: Chat = chats.find((chat) => chat.id === current_chat_id);
 
-  const currentChat = chats.find((chat) => chat.id === current_chat_id);
+  const { profile, all_friends } = useSelector(
+    (state: any) => state.filesState,
+  );
+  const { current_user } = useSelector((state: any) => state.chatsState);
 
-  useEffect(() => {
-    if (currentChat) {
-      setMessages(currentChat.messages || []);
+  const handleSendMessage = async (message) => {
+    if (message.trim()) {
+      const newMessage: Message = {
+        id: `${Date.now()}`,
+        date: BigInt(Date.now()),
+        sender: Principal.fromText(profile.id),
+        seen_by: [Principal.fromText(profile.id)],
+        message,
+        chat_id: current_chat_id,
+      };
+
+      if (newMessage.chat_id === "chat_id") {
+        console.log("chat_id is not set");
+        newMessage.chat_id = randomId();
+      }
+      let user = current_user ? [current_user] : [];
+      let res = await backendActor.send_message(user, newMessage);
+      if ("Err" in res) {
+        // enqueueSnackbar("Error sending message: " + res.Err, {
+        //   variant: "error",
+        // });
+      } else {
+        dispatch(handleRedux("UPDATE_MESSAGE", { message: newMessage }));
+      }
+      dispatch(handleRedux("SEND_MESSAGE", { message: newMessage }));
     }
-  }, [currentChat]);
-
+    return { Ok: true };
+  };
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <MessagesGroupOption currentChat={currentChat} />
       <UpdateChatSettings currentChat={currentChat} />
 
-      <ChatBox />
-
-      {/*<Box sx={{ flex: 1, overflowY: "auto", padding: 2 }}>*/}
-      {/*  {messages && messages.length == 0 && (*/}
-      {/*    <Typography variant="h6" gutterBottom>*/}
-      {/*      You have no messages in this chat.*/}
-      {/*    </Typography>*/}
-      {/*  )}*/}
-
-      {/*  {messages ? (*/}
-      {/*    messages.map((message) => {*/}
-      {/*      return (*/}
-      {/*        <MessageComponent*/}
-      {/*          key={message.id}*/}
-      {/*          current_chat_id={current_chat_id!}*/}
-      {/*          {...message}*/}
-      {/*        />*/}
-      {/*      );*/}
-      {/*    })*/}
-      {/*  ) : currentChat ? (*/}
-      {/*    <CircularProgress />*/}
-      {/*  ) : (*/}
-      {/*    <Typography type={"info"}>No messages yet.</Typography>*/}
-      {/*  )}*/}
-      {/*  <ChatSendMessage />*/}
-      {/*</Box>*/}
+      <ChatBox
+        key={currentChat && currentChat.messages.length}
+        profile={profile}
+        handleSendMessage={handleSendMessage}
+        messages={
+          currentChat &&
+          currentChat.messages &&
+          currentChat.messages.map((m: Message) => {
+            let name = all_friends.find(
+              (f) => f.id == m.sender.toString(),
+            )?.name;
+            if (name == profile.name) {
+              name = "";
+            }
+            return {
+              id: m.id,
+              text: m.message,
+              isOutgoing: profile.id == m.sender.toString(),
+              avatar: "m.sender.photo",
+              timestamp: formatRelativeTime(m.date),
+              name,
+              userId: m.sender.toString() !== profile.id && m.sender.toString(),
+            };
+          })
+        }
+      />
     </Box>
   );
 };

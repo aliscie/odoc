@@ -29,6 +29,9 @@ import {
 } from "../../../declarations/backend/backend.did";
 import { useTheme } from "@mui/material/styles";
 import "./dataGridStyles.css";
+
+import GridExample from "../MuiComponents/dataGridSheet";
+
 export interface Row {
   id: string;
   avatar: string;
@@ -62,6 +65,7 @@ interface Props {
 export default function DataGridSheet(props: Props) {
   const { initRows, initColumns, direction } = props;
   const [columns, setColumns] = useState(initColumns);
+  // console.log({ columns });
   const [rows, setRows] = useState(initRows);
   const [selectedRows, setSelectedRows] = useState(
     (): ReadonlySet<string> => new Set(),
@@ -111,10 +115,10 @@ export default function DataGridSheet(props: Props) {
     setSelectedRows(selectedRow);
   }
 
-  const handleRowsChange = (newRows, column) => {
-    props.onChangeRow(newRows, column);
-    setRows(newRows);
-  };
+  // const handleRowsChange = (newRows, column) => {
+  //   props.onChangeRow(newRows, column);
+  //   setRows(newRows);
+  // };
 
   function handleColumnResize(index: number, width: number) {
     // console.log({index, width});
@@ -237,7 +241,7 @@ export default function DataGridSheet(props: Props) {
       editable: true,
       deletable: true,
       name: "Untitled",
-      renderEditCell: textEditor,
+      cellRenderer: textEditor,
     };
     setColumns([
       ...columns.slice(0, index + 1),
@@ -325,106 +329,114 @@ export default function DataGridSheet(props: Props) {
   } else {
     height = rows.length * 50;
   }
+
   return (
-    <div className={"data-grid-container"}>
-      <DataGrid
-        style={{ width: "100%", height, maxHeight: 400 }}
-        key={props.contract.id}
-        rowHeight={35}
-        onCellClick={(args, event) => {
-          if (args.column.key === "title") {
-            event.preventGridDefault();
-            args.selectCell(true);
-          }
-        }}
-        columns={reorderedColumns}
-        sortColumns={sortColumns}
-        onSortColumnsChange={onSortColumnsChange}
-        defaultColumnOptions={{ width: "1fr" }}
-        onColumnsReorder={onColumnsReorder}
-        onColumnResize={handleColumnResize}
-        onRowsChange={handleRowsChange}
+    <div style={{ width: window.innerWidth - 100 + "px" }}>
+      {/*<DataGrid*/}
+      {/*  style={{ width: "100%", height, maxHeight: 400 }}*/}
+      {/*  key={props.contract.id}*/}
+      {/*  rowHeight={35}*/}
+      {/*  onCellClick={(args, event) => {*/}
+      {/*    if (args.column.key === "title") {*/}
+      {/*      event.preventGridDefault();*/}
+      {/*      args.selectCell(true);*/}
+      {/*    }*/}
+      {/*  }}*/}
+      {/*  columns={reorderedColumns}*/}
+      {/*  sortColumns={sortColumns}*/}
+      {/*  onSortColumnsChange={onSortColumnsChange}*/}
+      {/*  defaultColumnOptions={{ width: "1fr" }}*/}
+      {/*  onColumnsReorder={onColumnsReorder}*/}
+      {/*  onColumnResize={handleColumnResize}*/}
+      {/*  onRowsChange={handleRowsChange}*/}
+      {/*  rows={rows}*/}
+      {/*  renderers={{ renderRow, noRowsFallback: <h1>No rows to show.</h1> }}*/}
+      {/*  rowKeyGetter={rowKeyGetter}*/}
+      {/*  onFill={handleFill}*/}
+      {/*  onCopy={handleCopy}*/}
+      {/*  onPaste={handlePaste}*/}
+      {/*  selectedRows={selectedRows}*/}
+      {/*  onSelectedRowsChange={onSelectedRowsChange}*/}
+      {/*  className={isDarkMode ? "rdg-dark" : "rdg-light"}*/}
+      {/*  rowClass={(row, index) =>*/}
+      {/*    row.id.includes("7") || index === 0 ? "" : undefined*/}
+      {/*  }*/}
+      {/*  // direction={direction}*/}
+      {/*  onCellClick={(args, event) => {*/}
+      {/*    if (args.column.key === "title") {*/}
+      {/*      // setContextMenuProps(pre => {*/}
+      {/*      //     return {...pre}*/}
+      {/*      // });*/}
+      {/*      event.preventGridDefault();*/}
+      {/*      args.selectCell(true);*/}
+      {/*    }*/}
+      {/*  }}*/}
+      {/*  onCellContextMenu={(args, event) => {*/}
+      {/*    const { row, column } = args;*/}
+      {/*    // if (column.frozen) {*/}
+      {/*    //     return*/}
+      {/*    // }*/}
+
+      {/*    event.preventGridDefault();*/}
+      {/*    // Do not show the default context menu*/}
+      {/*    let contextPorps = {*/}
+      {/*      rowIdx: rows.indexOf(row),*/}
+      {/*      top: event.clientY,*/}
+      {/*      left: event.clientX,*/}
+      {/*      row,*/}
+      {/*      column,*/}
+      {/*    };*/}
+      {/*    event.preventDefault();*/}
+      {/*    if (!column.frozen) {*/}
+      {/*      contextPorps["extraOption"] = [*/}
+      {/*        <RenameColumn*/}
+      {/*          onRenameColumn={props.onRenameColumn}*/}
+      {/*          setColumns={setColumns}*/}
+      {/*          {...contextPorps}*/}
+      {/*        />,*/}
+      {/*        <InsertFormula*/}
+      {/*          contextMenuProps={contextPorps}*/}
+      {/*          onAddFormula={onAddFormula}*/}
+      {/*        />,*/}
+      {/*        <MenuItem*/}
+      {/*          onClick={() => {*/}
+      {/*            onDeleteColumn(column);*/}
+      {/*            setContextMenuProps(null);*/}
+      {/*          }}*/}
+      {/*        >*/}
+      {/*          Delete Column*/}
+      {/*        </MenuItem>,*/}
+      {/*      ];*/}
+      {/*    }*/}
+
+      {/*    setContextMenuProps(contextPorps);*/}
+      {/*  }}*/}
+      {/*/>*/}
+
+      {/*{isContextMenuOpen &&*/}
+      {/*  createPortal(*/}
+      {/*    <Menu*/}
+      {/*      open={isContextMenuOpen}*/}
+      {/*      onClose={() => setContextMenuProps(null)}*/}
+      {/*      anchorReference="anchorPosition"*/}
+      {/*      anchorPosition={*/}
+      {/*        contextMenuProps*/}
+      {/*          ? { top: contextMenuProps.top, left: contextMenuProps.left }*/}
+      {/*          : undefined*/}
+      {/*      }*/}
+      {/*    >*/}
+      {/*      {contextMenuProps.extraOption}*/}
+      {/*      {menuItems}*/}
+      {/*    </Menu>,*/}
+      {/*    document.body,*/}
+      {/*  )}*/}
+      <GridExample
+        onCellValueChanged={props.onCellValueChanged}
+        columns={columns.map((c) => {
+          return { ...c, field: c.key || c.id };
+        })}
         rows={rows}
-        renderers={{ renderRow, noRowsFallback: <h1>No rows to show.</h1> }}
-        rowKeyGetter={rowKeyGetter}
-        onFill={handleFill}
-        onCopy={handleCopy}
-        onPaste={handlePaste}
-        selectedRows={selectedRows}
-        onSelectedRowsChange={onSelectedRowsChange}
-        className={isDarkMode ? "rdg-dark" : "rdg-light"}
-        rowClass={(row, index) =>
-          row.id.includes("7") || index === 0 ? "" : undefined
-        }
-        // direction={direction}
-        onCellClick={(args, event) => {
-          if (args.column.key === "title") {
-            // setContextMenuProps(pre => {
-            //     return {...pre}
-            // });
-            event.preventGridDefault();
-            args.selectCell(true);
-          }
-        }}
-        onCellContextMenu={(args, event) => {
-          const { row, column } = args;
-          // if (column.frozen) {
-          //     return
-          // }
-
-          event.preventGridDefault();
-          // Do not show the default context menu
-          let contextPorps = {
-            rowIdx: rows.indexOf(row),
-            top: event.clientY,
-            left: event.clientX,
-            row,
-            column,
-          };
-          event.preventDefault();
-          if (!column.frozen) {
-            contextPorps["extraOption"] = [
-              <RenameColumn
-                onRenameColumn={props.onRenameColumn}
-                setColumns={setColumns}
-                {...contextPorps}
-              />,
-              <InsertFormula
-                contextMenuProps={contextPorps}
-                onAddFormula={onAddFormula}
-              />,
-              <MenuItem
-                onClick={() => {
-                  onDeleteColumn(column);
-                  setContextMenuProps(null);
-                }}
-              >
-                Delete Column
-              </MenuItem>,
-            ];
-          }
-
-          setContextMenuProps(contextPorps);
-        }}
       />
-
-      {isContextMenuOpen &&
-        createPortal(
-          <Menu
-            open={isContextMenuOpen}
-            onClose={() => setContextMenuProps(null)}
-            anchorReference="anchorPosition"
-            anchorPosition={
-              contextMenuProps
-                ? { top: contextMenuProps.top, left: contextMenuProps.left }
-                : undefined
-            }
-          >
-            {contextMenuProps.extraOption}
-            {menuItems}
-          </Menu>,
-          document.body,
-        )}
     </div>
   );
 }

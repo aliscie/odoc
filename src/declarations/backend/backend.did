@@ -325,8 +325,7 @@ type Result_11 = variant {
 };
 type Result_12 = variant { Ok : UserProfile; Err : text };
 type Result_13 = variant { Ok; Err };
-type Result_14 = variant { Ok : nat; Err : Error };
-type Result_15 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
+type Result_14 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
 type Result_2 = variant { Ok; Err : text };
 type Result_3 = variant { Ok : GetTransactions; Err : Error };
 type Result_4 = variant { Ok : text; Err : text };
@@ -484,9 +483,9 @@ service : () -> {
   update_user_profile : (RegisterUser) -> (Result);
   vote_down : (text) -> (Result_9);
   vote_up : (text) -> (Result_9);
-  withdraw_ckusdt : (nat64, text) -> (Result_14);
+  withdraw_ckusdt : (nat64, text) -> (Result_6);
   ws_close : (CanisterWsCloseArguments) -> (Result_2);
-  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_15) query;
+  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_14) query;
   ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_2);
   ws_open : (CanisterWsOpenArguments) -> (Result_2);
 }

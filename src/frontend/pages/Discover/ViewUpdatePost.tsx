@@ -1,12 +1,10 @@
 import BasicMenu from "../../components/MuiComponents/BasicMenu";
-import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ActionsButtons from "./ActionsButtons";
 import PostComponent from "../../components/MuiComponents/PostComponent";
 import React, { useRef } from "react";
 import {
   ContentNode,
-  Post,
   PostUser,
 } from "../../../declarations/backend/backend.did";
 import { useSelector } from "react-redux";
@@ -15,7 +13,6 @@ import { LoadingButton } from "@mui/lab";
 import PostTags from "./TagsComponent";
 import serialize_file_contents from "../../DataProcessing/serialize/serializeFileContents";
 import { useBackendContext } from "../../contexts/BackendContext";
-import { logger } from "../../DevUtils/logData";
 import ConformationMessage from "../../components/MuiComponents/conformationButton";
 
 interface Props {
@@ -111,7 +108,7 @@ function ViewPost(props: Props) {
                       message={"Yes delete it!"}
                       conformationMessage={`Are you sure you want to delete This post? `}
                       onClick={async () => {
-                        handleDeletePost(props.post.id)
+                        handleDeletePost(props.post.id);
                       }}
                     >
                       Delete
@@ -141,7 +138,7 @@ function ViewPost(props: Props) {
                 setChanged(true);
               }}
             />
-            {isChanged && (
+            {isChanged && is_owner && (
               <LoadingButton loading={loading} onClick={handleSave}>
                 Save
               </LoadingButton>

@@ -68,9 +68,9 @@ const LandingPage: React.FC = () => {
           align="left"
           paragraph
         >
-          Odoc where you can manage your tasks, payments contracts, agreements
-          and documents in one place. Odoc save your time, money and secure your
-          agreement. It fully runs on the{" "}
+          Odoc where you can manage your tasks, teams, payments, contracts,
+          agreements and documents in one place. Odoc save your time, money and
+          secure your agreement. It fully runs on the{" "}
           <Link
             href="https://internetcomputer.org/"
             underline="always"
@@ -89,7 +89,7 @@ const LandingPage: React.FC = () => {
             size={"large"}
             onClick={async () => await login()}
           >
-            try it now
+            Try it now
           </Button>
         )}
       </div>

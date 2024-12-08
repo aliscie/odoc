@@ -112,8 +112,7 @@ const roadMap = [
   {
     is_done: true,
     title: "ckUSDC wallet",
-    content:
-      "You can deposit pay or receive ckUSDC and withdraw ckUSDC.",
+    content: "You can deposit pay or receive ckUSDC and withdraw ckUSDC.",
   },
   {
     is_done: false,
@@ -156,6 +155,30 @@ const roadMap = [
     is_done: false,
     title: "Custom views",
     content: "You can customize your video with simple css editor.",
+  },
+  {
+    is_done: false,
+    title: "Connect with https://www.notion.so/",
+    content:
+      "You can access your notion data from Odoc, Where you can copy your notion files into odoc doc, and when you update your doc in odoc it will sync with notion",
+  },
+  {
+    is_done: false,
+    title: "Identity verification",
+    content:
+      "Using KYC to verify your are a real person and not having double accounts with finger print and faceid, In addition to community verification Where you can earn tokens by interacting in chats, completing transactions, and building your trust score. As you engage more, your verification level increases, and you’ll receive rewards in the form of tokens.",
+  },
+  {
+    is_done: false,
+    title: "Job Tracker",
+    content:
+      "You can track your jobs applications and jobs history and you can view it in different ways",
+  },
+  {
+    is_done: false,
+    title: "Odoc plugins",
+    content:
+      "We don't offer an API for automation but users can write plugins using javascript and publish it in the discover.",
   },
   // {
   //     is_done: false,

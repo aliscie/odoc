@@ -83,6 +83,7 @@ pub struct CPayment {
     // pub date_updated: f64,
     pub status: PaymentStatus,
     pub cells: Vec<CCell>,
+    // pub columns: Vec<CCell>,
     //TODO
     // pub other_columns: Vec<Column>,
     // Note if released == false then it is a promise not a payment

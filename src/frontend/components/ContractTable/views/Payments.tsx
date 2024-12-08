@@ -1,15 +1,10 @@
 import DataGridSheet from "../../DataGrid";
 import React from "react";
-import { textEditor } from "react-data-grid";
-import { senderDropDown } from "../renders/senderDropDown";
-import { statusDropDown } from "../renders/statusDropDown";
-import { receiverDropDown } from "../renders/receiverDropDown";
-import { CPayment } from "../../../../declarations/backend/backend.did";
-import { renderSenderUser } from "../renders/renderSenderUser";
-import { renderReceiver } from "../renders/renderReceiver";
+import { RenderUser } from "../renders/renderUser";
+
 
 function Payments(props) {
-  let rows = [];
+  // let rows = [];
 
   let columns = [
     // SelectColumn,
@@ -24,50 +19,81 @@ function Payments(props) {
       key: "receiver",
       name: "receiver",
       width: "max-content",
-      renderCell: renderReceiver,
-      renderEditCell: receiverDropDown,
+      cellRenderer: RenderUser,
       frozen: true,
+      editable: false,
     },
     {
       key: "sender",
       name: "sender",
       width: "max-content",
       frozen: true,
-      renderCell: renderSenderUser,
-      renderEditCell: senderDropDown,
+      cellRenderer: RenderUser,
+      editable: false,
     },
     {
       key: "amount",
       name: "amount",
       width: "max-content",
-      renderEditCell: textEditor,
       frozen: true,
+      editable: false,
     },
     {
       key: "status",
       name: "status",
       width: "max-content",
-      renderEditCell: statusDropDown,
       frozen: true,
+      editable: false,
       // resizable: true,
       // sortable: true,
       // draggable: true
     },
   ];
 
-  props.contract.payments.forEach((payment: CPayment) => {
-    let status = Object.keys(payment.status)[0];
-    rows.push({
-      sender: payment.sender.toString(),
-      receiver: payment.receiver.toString(),
-      status,
-      amount: payment.amount,
-      id: payment.id,
-    });
+  // props.contract.payments.forEach((payment: CPayment) => {
+  //   let status = Object.keys(payment.status)[0];
+  //   rows.push({
+  //     sender: payment.sender.toString(),
+  //     receiver: payment.receiver.toString(),
+  //     status,
+  //     amount: payment.amount,
+  //     id: payment.id,
+  //   });
+  // });
+  let newColumns = {};
+  let rows = props.contract.payments.map((promise, index) => {
+    if (promise.cells.length > 0) {
+      promise.cells.forEach((cell) => {
+        newColumns[cell.field] = cell.value;
+      });
+    }
+    return {
+      id: promise.id,
+      receiver: promise.receiver.toString(),
+      sender: promise.sender.toString(),
+      amount: promise.amount,
+      status: Object.keys(promise.status)[0],
+      ...newColumns,
+    };
+  });
+
+  Object.keys(newColumns).forEach((key) => {
+    if (!columns.find((c) => c.key == key)) {
+      columns.push({
+        id: key,
+        key,
+        name: key,
+        width: "max-content",
+        frozen: true,
+        editable: false,
+      });
+    }
   });
 
   return (
     <DataGridSheet
+
+      disableMenu={true}
       initRows={rows}
       initColumns={columns}
       contract={props.contract}

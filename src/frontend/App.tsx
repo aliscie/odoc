@@ -8,19 +8,19 @@ import { SnackbarProvider } from "notistack";
 import NavBar from "./components/MainComponents/NavBar";
 import TopNavBar from "./components/MainComponents/TopNavBar";
 import RegistrationForm from "./components/MainComponents/RegistrationForm";
-import MessagesDialogBox from "./components/ChatSendMessage/MessagesBoxDialog";
+import MessagesDialogBox from "./components/Chat/MessagesBoxDialog";
 import SearchPopper from "./components/SearchComponent";
 import useSocket from "./websocket/use_socket";
 import { useSelector } from "react-redux";
 import { useBackendContext } from "./contexts/BackendContext";
 import { Box, CircularProgress } from "@mui/material";
+import DataGridEcample from "./components/MuiComponents/dataGrid";
 
 const App: React.FC = () => {
   const { profile } = useSelector((state: any) => state.filesState);
   const { backendActor } = useBackendContext();
   const {} = useInitialData();
   const { ws } = useSocket();
-
 
   let Loadder = (
     <Box

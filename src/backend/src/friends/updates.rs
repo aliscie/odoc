@@ -55,7 +55,7 @@ pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
     let note = Notification::get(id);
     if let Some(mut notification) = note {
         notification.is_seen = true;
-        notification.save();
+        notification.pure_save();
     }
     return Ok(User::get_user_from_text_principal(&user_principal).unwrap());
 }

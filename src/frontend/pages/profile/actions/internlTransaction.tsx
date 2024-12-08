@@ -5,7 +5,7 @@ import { Result_3, User } from "../../../../declarations/backend/backend.did";
 import React, { useRef, useState } from "react";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import AlertDialog from "../../../components/MuiComponents/AlertDialog";
-import { receiverDropDown } from "../../../components/ContractTable/renders/receiverDropDown";
+import { UserDropDown } from "../../../components/ContractTable/renders/userDropDown";
 import useGetUser from "../../../utils/get_user_by_principal";
 import { Input } from "@mui/material";
 import { useSnackbar } from "notistack";
@@ -60,7 +60,7 @@ const InternalTransaction = () => {
             }}
           />
         </div>
-        <div>Select a receiver: {receiverDropDown({ row, onRowChange })}</div>
+        <div>Select a receiver: {UserDropDown({ row, onRowChange })}</div>
       </div>
     );
   };

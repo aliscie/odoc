@@ -33,3 +33,15 @@ add_balance:
 	dfx wallet --network ic redeem-faucet-coupon 64FCF-75653-A9433
 	dfx ledger --network ic balance
 	dfx wallet --network ic balance
+
+topup_cycles:
+	dfx ledger account-id --network=ic
+	#then send icp to ur address
+	dfx ledger balance --network=ic
+	dfx identity --network=ic get-wallet
+	dfx ledger --network=ic top-up --amount=0.5 2nvlk-tyaaa-aaaal-ab5ya-cai
+	dfx wallet send lwdq3-vqaaa-aaaal-acwda-cai 10000000000000 --network=ic
+
+
+
+

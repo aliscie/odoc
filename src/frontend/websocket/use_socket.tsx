@@ -2,125 +2,111 @@ import { backend, canisterId } from "../../declarations/backend";
 import IcWebSocket, { createWsConfig } from "ic-websocket-js";
 import { SignIdentity } from "@dfinity/agent";
 import { useDispatch, useSelector } from "react-redux";
-
 import React, { useEffect, useState } from "react";
 import { handleRedux } from "../redux/store/handleRedux";
 import { AuthClient } from "@dfinity/auth-client";
-import { AppMessage, Friend } from "../../declarations/backend/backend.did";
+import { AppMessage } from "../../declarations/backend/backend.did";
 
 function useSocket() {
   const { profile } = useSelector((state: any) => state.filesState);
-  let gatewayUrl = "wss://gateway.icws.io";
-  let icUrl = `https://odoc.app`;
-  // let icUrl = `https://lwdq3-vqaaa-aaaal-acwda-cai.icp0.io`;
-  if (import.meta.env.VITE_DFX_NETWORK != "ic") {
-    gatewayUrl = "ws://127.0.0.1:8084";
-    icUrl = `http://127.0.0.1:${import.meta.env.VITE_DFX_PORT}`;
-  }
-
   const dispatch = useDispatch();
   const [ws, setWs] = useState<IcWebSocket | undefined>(undefined);
+
+  const gatewayUrl =
+    import.meta.env.VITE_DFX_NETWORK !== "ic"
+      ? "ws://127.0.0.1:8081"
+      : "wss://gateway.icws.io";
+  const networkUrl =
+    import.meta.env.VITE_DFX_NETWORK !== "ic"
+      ? `http://127.0.0.1:${import.meta.env.VITE_DFX_PORT}`
+      : "https://icp-api.io";
+
   useEffect(() => {
     (async () => {
       const authClient = await AuthClient.create();
-      const _identity = authClient.getIdentity();
       if ((await authClient.isAuthenticated()) && !ws) {
         const wsConfig = createWsConfig({
-          canisterId: canisterId,
+          canisterId,
           canisterActor: backend,
-          identity: _identity as SignIdentity,
-          networkUrl: icUrl,
+          identity: authClient.getIdentity() as SignIdentity,
+          networkUrl,
         });
         setWs(new IcWebSocket(gatewayUrl, undefined, wsConfig));
       }
     })();
-  }, []);
+  }, [ws]);
 
   useEffect(() => {
-    if (ws) {
-      ws.onopen = () => {
-        console.log("Connected to the canister");
-      };
+    if (!ws) return;
 
-      ws.onmessage = async (event) => {
-        let data: AppMessage = event.data;
-        let keys =
-          data.notification[0] &&
-          data.notification[0].content &&
-          Object.keys(data.notification[0].content);
-        if (data.text == "Delete") {
+    ws.onopen = () => console.log("Connected to the canister");
+    ws.onmessage = async (event) => {
+      // console.log("Received message from the canister:", event.data);
+      const data: AppMessage = event.data;
+      const content = data.notification[0]?.content;
+      const key = content && Object.keys(content)[0];
+
+      if (data.text === "Delete") {
+        const { id, sender, receiver } = data.notification[0];
+        dispatch(handleRedux("DELETE_NOTIFY", { id }));
+        dispatch(
+          handleRedux("REMOVE_FRIEND", {
+            id:
+              sender.toText() !== profile.id
+                ? sender.toText()
+                : receiver.toText(),
+          }),
+        );
+        return;
+      }
+
+      switch (key) {
+        case "NewMessage":
           dispatch(
-            handleRedux("DELETE_NOTIFY", { id: data.notification[0].id }),
+            handleRedux("ADD_NOTIFICATION", { message: content.NewMessage }),
           );
-          let sender = event.data.notification[0].sender.toText();
-          let receiver = event.data.notification[0].receiver.toText();
-          let remove_id = sender !== profile.id ? sender : receiver;
-          dispatch(handleRedux("REMOVE_FRIEND", { id: remove_id }));
-          return;
-        }
-        switch (keys && keys[0]) {
-          case "NewMessage":
-            dispatch(
-              handleRedux("ADD_NOTIFICATION", {
-                message: data.notification[0].content.NewMessage,
-              }),
-            );
-            break;
-          case "FriendRequest":
-            let friend: Friend =
-              data.notification[0].content.FriendRequest.friend;
-            dispatch(handleRedux("ADD_FRIEND", { friend }));
-            dispatch(
-              handleRedux("NOTIFY", { new_notification: data.notification[0] }),
-            );
-            // redux-seems-slow-when-saving-large-collection-to-store
-            // https://stackoverflow.com/questions/54182806/redux-seems-slow-when-saving-large-collection-to-store
-            break;
-          case "ContractUpdate":
-            break;
-          case "SharePayment":
-            let share_payment = data.notification[0].content["SharePayment"];
-            dispatch(
-              handleRedux("UPDATE_CONTRACT", { contract: share_payment }),
-            );
-            break;
-          case "Unfriend":
-            let id = event.data.notification[0].id;
+          break;
+        case "FriendRequest":
+          dispatch(
+            handleRedux("ADD_FRIEND", { friend: content.FriendRequest.friend }),
+          );
+          dispatch(
+            handleRedux("NOTIFY", { new_notification: data.notification[0] }),
+          );
+          break;
+        case "SharePayment":
+          dispatch(
+            handleRedux("UPDATE_CONTRACT", { contract: content.SharePayment }),
+          );
+          break;
+        case "Unfriend":
+          const { id, sender, receiver } = data.notification[0];
+          dispatch(handleRedux("DELETE_NOTIFY", { id }));
+          dispatch(
+            handleRedux("REMOVE_FRIEND", {
+              id:
+                sender.toText() === profile.id
+                  ? receiver.toText()
+                  : sender.toText(),
+            }),
+          );
+          break;
+        case "AcceptFriendRequest":
+          dispatch(
+            handleRedux("UPDATE_FRIEND", {
+              receiver: data.notification[0].sender.toText(),
+            }),
+          );
+          dispatch(handleRedux("UPDATE_NOTE", data.notification[0]));
+          break;
+        default:
+          // console.log("No match");
+      }
+    };
 
-            dispatch(handleRedux("DELETE_NOTIFY", { id: id }));
-            let user_id = profile.id;
-            let sender = event.data.notification[0].sender.toText();
-            let receiver = event.data.notification[0].receiver.toText();
-            let remove_id = sender == user_id ? receiver : sender;
-            dispatch(handleRedux("REMOVE_FRIEND", { id: remove_id }));
-            break;
-          case "AcceptFriendRequest":
-            // dispatch(handleRedux("CONFIRM_FRIEND", {
-            //     friend: {
-            //         confirmed: true,
-            //         sender: props,
-            //         receiver: profile
-            //     }
-            // }));
-            dispatch(
-              handleRedux("UPDATE_FRIEND", {
-                receiver: event.data.notification[0].sender.toText(),
-              }),
-            );
-            dispatch(handleRedux("UPDATE_NOTE", event.data.notification[0]));
-          default:
-            console.log("No match");
-        }
-      };
-
-      ws.onclose = (closeMessage) => {
-        console.log(closeMessage, "Disconnected from the ws canister");
-      };
-
-      ws.onerror = (error) => {
-        console.error("use_socket Error:", error);
-      };
-    }
+    ws.onclose = (closeMessage) =>
+      console.log(closeMessage, "Disconnected from the ws canister");
+    ws.onerror = (error) => console.error("use_socket Error:", error);
   }, [ws]);
 
   return { ws };

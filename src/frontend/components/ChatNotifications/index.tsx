@@ -39,7 +39,7 @@ function ChatNotification(message: Message) {
   }, [chats, chat]);
 
   const handleChatClick = async () => {
-    let chatSender = chat?.admins[0] || chat?.creator;
+    let chatSender = chat?.admins.find((i) => i.id.toString() != profile.id);
     dispatch(
       handleRedux(OPEN_CHAT, {
         current_chat_id: message.chat_id,

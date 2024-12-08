@@ -7,7 +7,7 @@ import { handleRedux } from "../../redux/store/handleRedux";
 
 const ChangeWorkSpace = (props: any) => {
   const dispatch = useDispatch();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
 
   const { workspaces, files } = useSelector((state: any) => state.filesState);
   const fileId = window.location.pathname.split("/")[1];
