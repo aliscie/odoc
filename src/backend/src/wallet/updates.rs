@@ -4,7 +4,7 @@ use crate::workspaces::{
     estimate_transaction_fees, nat_to_u256, nat_to_u64, validate_caller_not_anonymous,
     EthereumNetwork, EVM_RPC,
 };
-use crate::{assert_token_symbol_length, parse_eth_address, wallet, UserToken};
+use crate::{assert_token_symbol_length, parse_eth_address, wallet, UserToken, Exchange};
 use crate::{CPayment, ExchangeType, PaymentStatus, Wallet};
 use alloy_consensus::{SignableTransaction, TxEip1559, TxEnvelope};
 use alloy_primitives::{address, hex, Signature, TxKind, U256};
@@ -208,4 +208,45 @@ async fn withdraw_ckusdt(amount: u64, address: String) -> Result<Wallet, Error> 
             .await?;
     }
     Ok(wallet)
+}
+
+
+#[update]
+pub fn internal_transaction(amount: f64, receiver: String, _type: ExchangeType) -> Result<(), String> {
+    // let mut wallet = Wallet::get(caller());
+    let payment = CPayment {
+        contract_id: "none".to_string(),
+        id: "".to_string(),
+        amount: amount,
+        sender: caller(),
+        receiver: Principal::from_text(receiver.clone()).unwrap(),
+        date_created: 0.0,
+        date_released: 0.0,
+        status: PaymentStatus::Released,
+        cells: vec![],
+    };
+    payment.pay()?;
+    Ok(())
+
+    // if wallet.balance >= amount {
+    //     let new_exchange = Exchange {
+    //         from: wallet.owner.clone(),
+    //         to: receiver.clone(),
+    //         amount,
+    //         _type,
+    //         date_created: ic_cdk::api::time() as f64,
+    //     };
+    //
+    //     wallet.exchanges.push(new_exchange);
+    //     wallet.balance -= amount.clone();
+    //
+    //     wallet.save();
+    //
+    //     return Ok(());
+    // } else {
+    //     return Err(String::from("Insufficient balance"));
+    // }
+
+    // let res = payment.pay()?;
+    // return Ok(());
 }

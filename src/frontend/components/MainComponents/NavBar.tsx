@@ -75,6 +75,7 @@ const NavBar = (props: any) => {
   const { currentWorkspace } = useSelector((state: any) => state.filesState);
 
   useEffect(() => {
+    console.log({ files });
     let x = buildTree(files);
     if (currentWorkspace.id) {
       x = x.filter((f) => f.workspaces.includes(currentWorkspace.id));

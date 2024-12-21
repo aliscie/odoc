@@ -134,7 +134,7 @@ type ContractPermissionType = variant {
 type CustomContract = record {
   id : text;
   permissions : vec ContractPermissionType;
-  creator : principal;
+  creator : text;
   date_created : float64;
   payments : vec CPayment;
   name : text;
@@ -452,6 +452,7 @@ service : () -> {
   get_user_notifications : () -> (vec Notification) query;
   get_user_profile : (principal) -> (Result_12) query;
   get_work_spaces : () -> (vec WorkSpace) query;
+  internal_transaction : (float64, text, ExchangeType) -> (Result_2);
   make_new_chat_room : (Chat) -> (Result_4);
   message_is_seen : (Message) -> (Result_2);
   move_file : (text, opt text) -> (Result_13);

@@ -34,32 +34,36 @@ function Promises(props) {
   let columns = [
     // SelectColumn,
     // {
-    //     key: 'id',
+    //     field:  'id',
     //     name: 'ID',
     //     width: 30,
     //     resizable: true,
     //     frozen: true,
     // },
     {
-      key: "receiver",
-      name: "receiver",
-      // cellRenderer: ReceiverDropDown,
-      cellRenderer: RenderUser,
+      headerName: "Receiver",
+      field: "receiver",
+      // editable: true,
+      // name: "receiver",
+      // cellRenderer: RenderUser,
       cellEditor: (p) => <UserDropDown {...p} {...props} />,
-      frozen: true,
-      resizable: true,
+      // frozen: true,
+      // resizable: true,
       rowDrag: true,
-      contextMenuItems: [
-        {
-          name: "Delete Row",
-          action: function () {
-            onDeleteRow(p.row.id);
-          },
-        },
-      ],
+      editable: true,
+      // draggable: true,
+      // contextMenuItems: [
+      //   {
+      //     name: "Delete Row",
+      //     action: function () {
+      //       onDeleteRow(p.row.id);
+      //     },
+      //   },
+      // ],
     },
     {
-      key: "sender",
+      headerName: "Sender",
+      field: "sender",
       name: "sender",
       width: 100,
       frozen: true,
@@ -69,15 +73,17 @@ function Promises(props) {
       cellEditor: (p) => <UserDropDown {...p} {...props} />,
     },
     {
+      headerName: "Amount",
       resizable: true,
-      key: "amount",
+      field: "amount",
       name: "amount",
       width: "max-content",
       // cellRenderer: textEditor,
     },
     {
+      headerName: "Status",
       resizable: true,
-      key: "status",
+      field: "status",
       name: "status",
       width: "max-content",
       // cellRenderer: StatusDropDown,
@@ -91,9 +97,8 @@ function Promises(props) {
   ];
 
   let newColumns = {};
-
   let rows = props.contract.promises.map((promise, index) => {
-    if (promise.cells.length > 0) {
+    if (promise.cells && promise.cells.length > 0) {
       promise.cells.forEach((cell) => {
         newColumns[cell.field] = cell.value;
       });
@@ -111,7 +116,7 @@ function Promises(props) {
   Object.keys(newColumns).forEach((key) => {
     if (!columns.find((c) => c.key == key)) {
       columns.push({
-        key: key,
+        field: key,
         name: key,
         width: "max-content",
         cellRenderer: textEditor,
@@ -144,24 +149,24 @@ function Promises(props) {
     dispatch(handleRedux("UPDATE_CONTRACT", { contract: updateContract }));
   }
 
-  function onAddColumn(column: any) {
-    let promises = props.contract.promises.map((p) => {
-      let newCell: CCell = {
-        id: column.id,
-        field: column.id,
-        value: column.name,
-      };
-      return {
-        ...p,
-        cells: [...p.cells, newCell],
-      };
-    });
-    let updateContract = {
-      ...props.contract,
-      promises,
-    };
-    dispatch(handleRedux("UPDATE_CONTRACT", { contract: updateContract }));
-  }
+  // function onAddColumn(column: any) {
+  //   let promises = props.contract.promises.map((p) => {
+  //     let newCell: CCell = {
+  //       id: column.id,
+  //       field: column.id,
+  //       value: column.name,
+  //     };
+  //     return {
+  //       ...p,
+  //       cells: [...p.cells, newCell],
+  //     };
+  //   });
+  //   let updateContract = {
+  //     ...props.contract,
+  //     promises,
+  //   };
+  //   dispatch(handleRedux("UPDATE_CONTRACT", { contract: updateContract }));
+  // }
 
   // function onRenameColumn(k, n) {
   //   let updateContract = {

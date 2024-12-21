@@ -261,7 +261,7 @@ export const idlFactory = ({ IDL }) => {
   const CustomContract = IDL.Record({
     'id' : IDL.Text,
     'permissions' : IDL.Vec(ContractPermissionType),
-    'creator' : IDL.Principal,
+    'creator' : IDL.Text,
     'date_created' : IDL.Float64,
     'payments' : IDL.Vec(CPayment),
     'name' : IDL.Text,
@@ -548,6 +548,11 @@ export const idlFactory = ({ IDL }) => {
     'get_user_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
     'get_user_profile' : IDL.Func([IDL.Principal], [Result_12], ['query']),
     'get_work_spaces' : IDL.Func([], [IDL.Vec(WorkSpace)], ['query']),
+    'internal_transaction' : IDL.Func(
+        [IDL.Float64, IDL.Text, ExchangeType],
+        [Result_2],
+        [],
+      ),
     'make_new_chat_room' : IDL.Func([Chat], [Result_4], []),
     'message_is_seen' : IDL.Func([Message], [Result_2], []),
     'move_file' : IDL.Func([IDL.Text, IDL.Opt(IDL.Text)], [Result_13], []),

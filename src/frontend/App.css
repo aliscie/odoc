@@ -49,21 +49,21 @@
     outline: 0 !important;
 }
 
-.progress-circle {
-    width: auto; /* Adjust to fit children */
-    height: auto; /* Adjust to fit children */
-    padding: 5px; /* Create the circular shape */
-    border-radius: 50%;
-    background: conic-gradient(
-            var(--progress-color) calc(var(--progress) * 1%),
-            #e0e0e0 0
-    );
-    display: flex; /* Flexbox to center children */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    position: relative;
-    transition: background 0.3s ease; /* Smooth transition */
-}
+/*.progress-circle {*/
+/*    width: auto; !* Adjust to fit children *!*/
+/*    height: auto; !* Adjust to fit children *!*/
+/*    padding: 5px; !* Create the circular shape *!*/
+/*    border-radius: 50%;*/
+/*    background: conic-gradient(*/
+/*            var(--progress-color) calc(var(--progress) * 1%),*/
+/*            #e0e0e0 0*/
+/*    );*/
+/*    display: flex; !* Flexbox to center children *!*/
+/*    justify-content: center; !* Center horizontally *!*/
+/*    align-items: center; !* Center vertically *!*/
+/*    position: relative;*/
+/*    transition: background 0.3s ease; !* Smooth transition *!*/
+/*}*/
 
 .progress-content {
     display: flex; /* Flexbox to center children */

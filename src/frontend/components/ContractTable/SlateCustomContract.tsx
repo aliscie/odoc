@@ -6,7 +6,7 @@ import {
 } from "../../../declarations/backend/backend.did";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { handleRedux } from "../../redux/store/handleRedux";
-import { CustomContractComponent } from "./index";
+import CustomContractComponent from "./index";
 
 export default function SlateCustomContract(props: any) {
   const { backendActor } = useBackendContext();
@@ -44,7 +44,7 @@ export default function SlateCustomContract(props: any) {
   return (
     <div
         contentEditable={false}>
-      <CustomContractComponent contract={contracts[id]} />
+      <CustomContractComponent contracts={[contracts[id]]} />
     </div>
   );
 }

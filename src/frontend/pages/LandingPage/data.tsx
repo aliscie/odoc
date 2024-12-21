@@ -9,185 +9,146 @@ import ProtectionIcon from "@mui/icons-material/Security";
 
 const features = [
   {
-    title: "Smart Contracts",
-    content: `ODOC decentralizes freelance contracts with smart contracts, 
-       providing freedom and trust for freelancers in challenging regions.`,
-    icon: <SmartContractIcon className="feature-card-icon" />,
+    title: "Secure Smart Contracts",
+    content:
+      "Experience truly decentralized freelancing through our blockchain-powered smart contracts. We empower freelancers in challenging regions with guaranteed payments and transparent transactions.",
+    icon: <SmartContractIcon />,
   },
   {
-    title: "Profile Trust Score",
-    content: `User profiles feature reliability histories and public ratings,
-       fostering trust and accountability by showcasing contract details.`,
-    icon: <ProfileIcon className="feature-card-icon" />,
+    title: "Trust & Reputation System",
+    content:
+      "Build your professional reputation through our comprehensive trust score system. Your profile showcases verified work history, client ratings, and detailed contract performance metrics.",
+    icon: <ProfileIcon />,
   },
   {
-    title: "Task Management",
-    content: `Our encrypted task management app supports spreadsheets, text styling,
-       and grammar correction, ensuring privacy and suitability for sensitive organizations.`,
-    icon: <TaskIcon className="feature-card-icon" />,
+    title: "Enterprise-Grade Task Management",
+    content:
+      "Manage projects with our military-grade encrypted task management system. Features include advanced spreadsheet functionality, intelligent text editing, and automated grammar enhancement - perfect for handling sensitive organizational data.",
+    icon: <TaskIcon />,
   },
   {
-    title: "Formulas and Tables",
-    content: `Our platform supports spreadsheet formulas and can serve as a backend,
-       interacting seamlessly with frontend components.`,
-    icon: <FormulaIcon className="feature-card-icon" />,
+    title: "Advanced Data Processing",
+    content:
+      "Leverage powerful spreadsheet capabilities with our formula engine. Seamlessly integrate with front-end components while maintaining data integrity and calculation accuracy.",
+    icon: <FormulaIcon />,
   },
   {
-    title: "Views",
-    content: `View data in various formats like charts or galleries, offering clean,
-       expressive presentations to enhance the visual experience.`,
-    icon: <ViewIcon className="feature-card-icon" />,
+    title: "Dynamic Data Visualization",
+    content:
+      "Transform your data into compelling visual stories. Choose from multiple view options including interactive charts, customizable galleries, and professional presentation formats.",
+    icon: <ViewIcon />,
   },
   {
-    title: "Social Platform",
-    content: `Post job listings or seek employment opportunities,
-       fostering a vibrant job market and community interaction within our platform.`,
-    icon: <SocialIcon className="feature-card-icon" />,
+    title: "Thriving Professional Network",
+    content:
+      "Connect with opportunities in our vibrant marketplace. Post jobs, discover projects, and build meaningful professional relationships within our secure ecosystem.",
+    icon: <SocialIcon />,
   },
   {
-    title: "Desktop Version",
-    content: `The desktop version focuses on productivity, offering web2 features
-       like note-taking without transaction functionalities.`,
-    icon: <DesktopIcon className="feature-card-icon" />,
+    title: "Optimized Desktop Experience",
+    content:
+      "Boost your productivity with our specialized desktop application. Enjoy seamless note-taking and collaboration features while maintaining the security of decentralized storage.",
+    icon: <DesktopIcon />,
   },
   {
-    title: "Minorities Protection",
-    content: `Our SNS-migration system allows migration or retention on old canisters,
-       with inactive canisters being automatically deleted for efficiency.`,
-    icon: <ProtectionIcon className="feature-card-icon" />,
+    title: "Inclusive Protection Framework",
+    content:
+      "Benefit from our advanced SNS-migration system that ensures data integrity and user protection. Smart resource management automatically optimizes inactive storage while preserving your important information.",
+    icon: <ProtectionIcon />,
   },
 ];
 
 const roadMap = [
   {
     is_done: true,
-    title: "Payment contract",
-    content:
-      "Transfer USDT between the Odoc users. Off-chain (they are off the Eth chain but they happen on the ICP canister) usdt transaction." +
-      "In the release column by default, they are false but when I click it, I should see a popup that asks me for confirmation, and then I can click conform",
+    title: "USDT Payment System",
+    content: "Secure off-chain USDT transactions between users on ICP canister with confirmation workflows"
   },
   {
     is_done: true,
-    title: "Shares contract",
-    content:
-      "When the user transfer to an accumulative contract part of the payment will go to one person and the other part will go to the other person\n" +
-      "The creator of the accumulative contract can’t update the contract after it gets approved by any of the parties.\n" +
-      "The creator of the accumulative contract/or any one of the parties can make changes but these changes will not be applied till the other party accept/approved them\n" +
-      "Users will be notified when others release them a payment in the payment contract (note accumulative contract will not have transaction notification)\n",
+    title: "Smart Revenue Sharing",
+    content: "Automated payment distribution with immutable approved contracts and change management system"
   },
   {
     is_done: true,
-    title: "Custom contract",
-    content:
-      "Custom contract where people can have a formula that automatically executes a transaction\n" +
-      "From the left sidebar, As the user clicks on create button, they can select the option custom contract\n" +
-      "As they select a custom contract they can enter the name and then hit Enter to create a new contract.\n" +
-      "In the custom contract, people can write a formula that looks like this if ( now() == “2022-08-03” ) { transfer_USDT({from @ali, to:@john}}\n",
+    title: "Programmable Payments",
+    content: "Custom smart contracts with time-based execution and conditional payment formulas"
   },
   {
     is_done: true,
-    title: "Notifications",
-    content:
-      "Users should be notified about their friend requests (WebSockets)\n",
+    title: "ckUSDC Integration",
+    content: "Complete ckUSDC wallet functionality for deposits, payments, and withdrawals"
   },
   {
     is_done: true,
-    title: "Rich editor",
-    content:
-      "In the text editor you can change text font, color, format, background, and lights it" +
-      "",
+    title: "Enhanced Communication",
+    content: "Real-time notifications, rich text editing, and organized workspace management"
   },
   {
     is_done: true,
-    title: "Group chats",
-    content:
-      "You can create a group chat and add people to it, as you create group-chat you will automatically get a channel where only admins can post in it",
-  },
-  {
-    is_done: true,
-    title: "Workspaces",
-    content:
-      "If you are working with different contentpanes, you can categorize your files and chat groups into different spaces.",
-  },
-  {
-    is_done: true,
-    title: "ckUSDC wallet",
-    content: "You can deposit pay or receive ckUSDC and withdraw ckUSDC.",
+    title: "Group Collaboration",
+    content: "Structured group chats with admin channels and workspace categorization"
   },
   {
     is_done: false,
-    title: "Upload files in chat",
-    content:
-      "You can share your files in the chat and you can get a short link for your files to share it in other platforms",
+    title: "Advanced File Sharing",
+    content: "Secure file uploads with shareable short links for cross-platform compatibility"
   },
   {
     is_done: false,
-    title: "USDC wallet",
-    content: "User can deposit USDC and withdraw to external wallets",
+    title: "Real-time Collaboration",
+    content: "Live document editing with instant updates for all participants"
   },
   {
     is_done: false,
-    title: "USDT wallet",
-    content: "User can deposit USDT and withdraw to external wallets",
+    title: "Multi-Currency Support",
+    content: "Integration of USDC, USDT, and ICP wallets with external transfer capabilities"
   },
   {
     is_done: false,
-    title: "ICP wallet",
-    content: "User can deposit USDT and withdraw to external wallets",
+    title: "Advanced Permissions",
+    content: "Group-based access control for documents and data with customizable roles"
   },
   {
     is_done: false,
-    title: "Group permissions",
-    content:
-      "In the tables and documents where you set who can view and who can edite you can set a group in addition to the options EveryOneCanView, EveryOneCanEdite, UserCanView, UserCanEdite you can have GroupCanView, GrouCanEdite. For exampl,e PerusesCanView, DoctorsCanEdite if you are managing hospital",
+    title: "Data Visualization",
+    content: "Customizable views including charts, calendars, and timelines with CSS editor"
   },
   {
     is_done: false,
-    title: "Live collaboration on editor",
-    content: "as user edite the text others should see the updates live",
+    title: "External Integration",
+    content: "Notion synchronization for seamless data transfer and updates"
   },
   {
     is_done: false,
-    title: "Table views",
-    content: "You can view your data as chart, salary, todo list, or timeline",
+    title: "Identity & Trust",
+    content: "Multi-factor verification combining KYC, biometrics, and community-based trust scoring"
   },
   {
     is_done: false,
-    title: "Custom views",
-    content: "You can customize your video with simple css editor.",
-  },
-  {
-    is_done: false,
-    title: "Connect with https://www.notion.so/",
-    content:
-      "You can access your notion data from Odoc, Where you can copy your notion files into odoc doc, and when you update your doc in odoc it will sync with notion",
-  },
-  {
-    is_done: false,
-    title: "Identity verification",
-    content:
-      "Using KYC to verify your are a real person and not having double accounts with finger print and faceid, In addition to community verification Where you can earn tokens by interacting in chats, completing transactions, and building your trust score. As you engage more, your verification level increases, and you’ll receive rewards in the form of tokens.",
-  },
-  {
-    is_done: false,
-    title: "Job Tracker",
-    content:
-      "You can track your jobs applications and jobs history and you can view it in different ways",
-  },
-  {
-    is_done: false,
-    title: "Odoc plugins",
-    content:
-      "We don't offer an API for automation but users can write plugins using javascript and publish it in the discover.",
-  },
-  // {
-  //     is_done: false,
-  //     title: "Plugins",
-  //     content: "You can install, 3 types of plugins\n" +
-  //         "1. Components plugins\n" +
-  //         "2. Formula plugins\n" +
-  //         "3. View plugins\n" + "For example you can install google translator formula and use it in the table. Or pi char plugins for the views or a grammar correction plugin for the text editor. etc..."
-  // },
+    title: "Developer Ecosystem",
+    content: "JavaScript plugin system for custom components, formulas, and visualizations"
+  }
 ];
 
-export { features, roadMap };
+
+
+const steps = [
+  {
+    label: "Create Your Account",
+    description:
+      "Sign up with your email or wallet to start exploring ODOC's features",
+  },
+  {
+    label: "Visit the Discover Page",
+    description:
+      "Browse projects, connect with professionals, and join our community",
+  },
+  {
+    label: "Start Collaborating",
+    description:
+      "Create contracts, manage tasks, and work securely with your team",
+  },
+];
+
+export { features, roadMap, steps };

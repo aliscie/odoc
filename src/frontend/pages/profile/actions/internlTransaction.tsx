@@ -1,7 +1,11 @@
 import { handleRedux } from "../../../redux/store/handleRedux";
 import { useDispatch } from "react-redux";
 import { useBackendContext } from "../../../contexts/BackendContext";
-import { Result_3, User } from "../../../../declarations/backend/backend.did";
+import {
+  ExchangeType,
+  Result_3,
+  User,
+} from "../../../../declarations/backend/backend.did";
 import React, { useRef, useState } from "react";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import AlertDialog from "../../../components/MuiComponents/AlertDialog";
@@ -19,10 +23,12 @@ const InternalTransaction = () => {
 
   const handlePayment = async () => {
     if (!backendActor) return;
-
-    const res = (await backendActor.internal_transaction(
-      amount.current,
+    const type: ExchangeType = { LocalSend: null };
+    console.log({ x: amount.current, y: receiver });
+    const res = (await backendActor?.internal_transaction(
+      Number(amount.current),
       receiver.id,
+      type,
     )) as Result_3;
 
     if ("Ok" in res) {
@@ -43,10 +49,9 @@ const InternalTransaction = () => {
   let { getUserByName } = useGetUser();
 
   let row = { receiver: receiver.name };
-  let onRowChange = (row, bool) => {
-    const receiverName: string = row.receiver;
-    const receiver: User | null = getUserByName(receiverName);
-    setReceiver(receiver);
+  let onChange = (row, bool) => {
+    const receiver: User | null = getUserByName(row);
+    receiver && setReceiver(receiver);
   };
   const Content = () => {
     return (
@@ -60,7 +65,9 @@ const InternalTransaction = () => {
             }}
           />
         </div>
-        <div>Select a receiver: {UserDropDown({ row, onRowChange })}</div>
+        <div>
+          Select a receiver: <UserDropDown onChange={onChange} {...row} />{" "}
+        </div>
       </div>
     );
   };

@@ -1,36 +1,14 @@
-import React, {
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import React, {useCallback, useLayoutEffect, useMemo, useReducer, useRef, useState,} from "react";
 import "react-data-grid/lib/styles.css";
-import DataGrid, {
-  CopyEvent,
-  FillEvent,
-  PasteEvent,
-  RenderRowProps,
-  Row,
-  SortColumn,
-  textEditor,
-} from "react-data-grid";
-import { DraggableRowRenderer } from "./DraggableRowRenderer";
-import { createPortal } from "react-dom";
-import { Menu, MenuItem } from "@mui/material";
-import RenameColumn from "./RenameColumn";
-import { randomString } from "../../DataProcessing/dataSamples";
-import InsertFormula from "./InsertFormula";
+import {CopyEvent, FillEvent, PasteEvent, RenderRowProps, Row, SortColumn, textEditor,} from "react-data-grid";
+import {DraggableRowRenderer} from "./DraggableRowRenderer";
+import {MenuItem} from "@mui/material";
+import {randomString} from "../../DataProcessing/dataSamples";
 import FormulaCell from "./FormulaCell";
-import {
-  CColumn,
-  CustomContract,
-} from "../../../declarations/backend/backend.did";
-import { useTheme } from "@mui/material/styles";
+import {CColumn, CustomContract,} from "../../../declarations/backend/backend.did";
 import "./dataGridStyles.css";
 
-import GridExample from "../MuiComponents/dataGridSheet";
+import AgGridDataGrid from "../MuiComponents/dataGridSheet";
 
 export interface Row {
   id: string;
@@ -65,14 +43,10 @@ interface Props {
 export default function DataGridSheet(props: Props) {
   const { initRows, initColumns, direction } = props;
   const [columns, setColumns] = useState(initColumns);
-  // console.log({ columns });
   const [rows, setRows] = useState(initRows);
   const [selectedRows, setSelectedRows] = useState(
     (): ReadonlySet<string> => new Set(),
   );
-  // const [gridId, setGridId] = useState(uuidv4());
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
 
   function handleFill({
     columnKey,
@@ -274,55 +248,6 @@ export default function DataGridSheet(props: Props) {
     });
   };
 
-  let menuItems = [
-    <MenuItem
-      onClick={() => {
-        onAddColumn();
-        setContextMenuProps(null);
-      }}
-    >
-      Add Column
-    </MenuItem>,
-
-    <MenuItem
-      onClick={() => {
-        const { rowIdx } = contextMenuProps;
-        const rowId = rows[rowIdx].id;
-        props.onDeleteRow(rowId);
-        if (rows.length <= 1) {
-          setRows([
-            {
-              id: nextId,
-            },
-          ]);
-          return;
-        }
-
-        setRows([...rows.slice(0, rowIdx), ...rows.slice(rowIdx + 1)]);
-        setContextMenuProps(null);
-      }}
-    >
-      Delete Row
-    </MenuItem>,
-    <MenuItem
-      onClick={() => {
-        const { rowIdx } = contextMenuProps;
-        insertRow(rowIdx);
-        setContextMenuProps(null);
-      }}
-    >
-      Insert Row Above
-    </MenuItem>,
-    <MenuItem
-      onClick={() => {
-        const { rowIdx } = contextMenuProps;
-        insertRow(rowIdx + 1);
-        setContextMenuProps(null);
-      }}
-    >
-      Insert Row Below
-    </MenuItem>,
-  ];
   let height = 100;
   if (rows.length < 3) {
     height = rows.length * 90;
@@ -430,7 +355,7 @@ export default function DataGridSheet(props: Props) {
       {/*    </Menu>,*/}
       {/*    document.body,*/}
       {/*  )}*/}
-      <GridExample
+      <AgGridDataGrid
         onCellValueChanged={props.onCellValueChanged}
         columns={columns.map((c) => {
           return { ...c, field: c.key || c.id };

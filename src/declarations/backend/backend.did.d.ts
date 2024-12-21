@@ -144,7 +144,7 @@ export type ContractPermissionType = { 'Add' : Principal } |
 export interface CustomContract {
   'id' : string,
   'permissions' : Array<ContractPermissionType>,
-  'creator' : Principal,
+  'creator' : string,
   'date_created' : number,
   'payments' : Array<CPayment>,
   'name' : string,
@@ -505,6 +505,10 @@ export interface _SERVICE {
   'get_user_notifications' : ActorMethod<[], Array<Notification>>,
   'get_user_profile' : ActorMethod<[Principal], Result_12>,
   'get_work_spaces' : ActorMethod<[], Array<WorkSpace>>,
+  'internal_transaction' : ActorMethod<
+    [number, string, ExchangeType],
+    Result_2
+  >,
   'make_new_chat_room' : ActorMethod<[Chat], Result_4>,
   'message_is_seen' : ActorMethod<[Message], Result_2>,
   'move_file' : ActorMethod<[string, [] | [string]], Result_13>,

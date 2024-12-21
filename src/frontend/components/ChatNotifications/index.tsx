@@ -43,7 +43,8 @@ function ChatNotification(message: Message) {
     dispatch(
       handleRedux(OPEN_CHAT, {
         current_chat_id: message.chat_id,
-        current_user: chatSender.id && Principal.fromText(chatSender.id),
+        current_user:
+          chatSender && chatSender.id && Principal.fromText(chatSender.id),
       }),
     );
 

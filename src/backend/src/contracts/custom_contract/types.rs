@@ -162,7 +162,7 @@ impl CPayment {
 pub struct CustomContract {
     pub id: String,
     pub name: String,
-    pub creator: Principal,
+    pub creator: String,
     pub date_created: f64,
     pub date_updated: f64,
     pub contracts: Vec<CContract>,
@@ -211,7 +211,7 @@ impl CustomContract {
     // }
 
     pub fn check_view_permission(&self) -> Self {
-        if self.creator == caller() {
+        if self.creator == caller().to_string() {
             return self.clone();
         };
         let mut new_contract = self.clone();
@@ -340,11 +340,11 @@ impl CustomContract {
             .map(|column| column.clone())
     }
 
-    pub fn get(id: &String, creator: &Principal) -> Option<Self> {
+    pub fn get(id: &String, creator: &String) -> Option<Self> {
         CONTRACTS_STORE.with(|contracts_store| {
             let caller_contracts = contracts_store.borrow();
             let stored_contract_vec = caller_contracts
-                .get(&creator.to_text())?
+                .get(&creator)?
                 .stored_contracts
                 .clone();
             if let Some(contract) = stored_contract_vec.iter().find(|contract| match contract {
@@ -384,7 +384,7 @@ impl CustomContract {
     }
 
     pub fn delete(mut self) -> Result<(), String> {
-        if caller() != self.creator {
+        if caller().to_string() != self.creator {
             return Err("You can't delete other people's contract".to_string());
         }
         if let Some(old_contract) = Self::get(&self.id, &self.creator.clone()) {
@@ -407,7 +407,7 @@ impl CustomContract {
             let mut new_map = StoredContractVec {
                 stored_contracts: vec![StoredContract::CustomContract(self.clone())],
             };
-            if let Some(mut caller_contracts_map) = caller_contracts.get(&self.creator.to_text()) {
+            if let Some(mut caller_contracts_map) = caller_contracts.get(&self.creator) {
                 new_map
                     .stored_contracts
                     .extend(caller_contracts_map.stored_contracts.clone());
@@ -417,7 +417,7 @@ impl CustomContract {
                 StoredContract::CustomContract(contract) => contract.id != self.id,
                 _ => true,
             });
-            caller_contracts.insert(self.creator.to_text(), new_map);
+            caller_contracts.insert(self.creator, new_map);
         });
 
         Ok(())
@@ -428,7 +428,7 @@ impl CustomContract {
             let mut new_map = StoredContractVec {
                 stored_contracts: vec![StoredContract::CustomContract(self.clone())],
             };
-            if let Some(mut caller_contracts_map) = caller_contracts.get(&self.creator.to_text()) {
+            if let Some(mut caller_contracts_map) = caller_contracts.get(&self.creator) {
                 new_map
                     .stored_contracts
                     .extend(caller_contracts_map.stored_contracts.clone());
@@ -442,7 +442,7 @@ impl CustomContract {
             new_map
                 .stored_contracts
                 .push(StoredContract::CustomContract(self.clone()));
-            caller_contracts.insert(self.creator.to_text(), new_map);
+            caller_contracts.insert(self.creator.clone(), new_map);
 
             // if let Some(mut caller_contracts_map) = caller_contracts.get(&self.creator.to_text()) {
             //     let mut caller_contracts_map = caller_contracts.get(&self.creator.to_text()).unwrap();
@@ -518,7 +518,7 @@ impl CustomContract {
         } else {
             self.date_created = ic_cdk::api::time() as f64;
             self.payments = vec![];
-            self.creator = caller();
+            self.creator = caller().to_string();
         }
 
         // ------- handle formulas security ------- \\

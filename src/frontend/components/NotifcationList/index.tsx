@@ -1,301 +1,149 @@
-import React, { useEffect, useState } from "react";
-import BasicMenu from "../MuiComponents/BasicMenu";
-import { Badge } from "@mui/base";
+import React, { useState } from "react";
+import IconButton from "@mui/material/IconButton";
+import Badge from "@mui/material/Badge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { useDispatch, useSelector } from "react-redux";
-import useGetUser from "../../utils/get_user_by_principal";
-import DialogOver from "../MuiComponents/DialogOver";
-import { CircularProgress, Divider, Input, Typography } from "@mui/material";
-import LoaderButton from "../MuiComponents/LoaderButton";
-import {
-  CPayment,
-  Notification,
-} from "../../../declarations/backend/backend.did";
-import { formatRelativeTime } from "../../utils/time";
-import { useBackendContext } from "../../contexts/BackendContext";
-import { handleRedux } from "../../redux/store/handleRedux";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import { styled } from "@mui/material/styles";
+import formatTimestamp, {formatRelativeTime} from "../../utils/time";
 
-function CPaymentContractDialog(props: {
-  notification: Notification;
-}): JSX.Element {
-  const { backendActor } = useBackendContext();
+// Styled component for the notification item
+const NotificationItem = styled(ListItem)(({ theme, isRead }) => ({
+  padding: theme.spacing(2),
+  backgroundColor: isRead ? theme.palette.action.hover : "inherit",
+  "&:hover": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  borderBottom: `1px solid ${theme.palette.divider}`,
+}));
 
-  const { notification } = props;
-  const c_payment: CPayment = notification.content.CPaymentContract[0];
-  const [status, setStatus] = useState<string>(() => {
-    const newStatus = Object.keys(c_payment.status)[0];
-    return newStatus;
-  });
-  const objection = status === "Objected" ? c_payment.status[status] : "";
+const NotificationsButton = ({ notifications }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
-  const handleButtonClick = async (action: string) => {
-    let res;
-    switch (action) {
-      case "approve_heigh_conform":
-        res =
-          backendActor && (await backendActor.approve_high_promise(c_payment));
-        break;
-      case "object_on_cancel":
-        res =
-          backendActor &&
-          (await backendActor.object_on_cancel(c_payment, "Reason"));
-        setStatus("Objected");
-        break;
-      case "confirmed_c_payment":
-        res =
-          backendActor && (await backendActor.confirmed_c_payment(c_payment));
-        setStatus("Confirmed");
-        break;
-      case "confirmed_cancellation":
-        res =
-          backendActor &&
-          (await backendActor.confirmed_cancellation(c_payment));
-        setStatus("ConfirmedCancellation");
-        break;
-      default:
-        break;
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const getNotificationMessage = (content) => {
+    if ("CustomContract" in content) {
+      return `New custom contract payment: ${content.CustomContract[1].amount}`;
     }
-    return res;
+    if ("ContractUpdate" in content) {
+      return `Contract updated: ${content.ContractUpdate.contract_id}`;
+    }
+    if ("FriendRequest" in content) {
+      return `Friend request from ${content.FriendRequest.friend.sender.name}`;
+    }
+    if ("AcceptFriendRequest" in content) {
+      return "Friend request accepted";
+    }
+    if ("ApproveShareRequest" in content) {
+      return `Share request approved: ${content.ApproveShareRequest}`;
+    }
+    if ("CPaymentContract" in content) {
+      return `Payment update: ${content.CPaymentContract[0].amount}`;
+    }
+    if ("Unfriend" in content) {
+      return "Someone removed you from their friends list";
+    }
+    if ("ReceivedDeposit" in content) {
+      return `Received deposit: ${content.ReceivedDeposit}`;
+    }
+    if ("ApplyShareRequest" in content) {
+      return `New share request: ${content.ApplyShareRequest}`;
+    }
+    if ("NewMessage" in content) {
+      return `New message: ${content.NewMessage.message}`;
+    }
+    if ("RemovedFromChat" in content) {
+      return `Removed from chat: ${content.RemovedFromChat}`;
+    }
+    return "Unknown notification type";
+  };
+
+  const unreadCount = notifications.filter(
+    (notification) => !notification.is_seen,
+  ).length;
+
+  const formatDate = (timestamp) => {
+    return formatRelativeTime(timestamp);
   };
 
   return (
     <>
-      {status === "HighPromise" && (
-        <>
-          You can confirm this contract to protect it from cancellation. The
-          sender set it to high confirm, which means they can't withdraw their
-          balance.
-          <LoaderButton
-            onClick={() => handleButtonClick("approve_heigh_conform")}
-          >
-            High Confirm
-          </LoaderButton>
-        </>
-      )}
-      {status === "Released" && <>Payment released</>}
-      {status !== "HighPromise" && status !== "Released" && (
-        <>
-          <h3>Status: {status}</h3>
-          {status !== "ConfirmedCancellation" && (
-            <>
-              <Divider>The objection reason here.</Divider>
-              <Input
-                defaultValue={objection}
-                onChange={(e) => e.target.value}
-              />
-              <LoaderButton
-                onClick={() => handleButtonClick("object_on_cancel")}
-              >
-                Object on cancellation
-              </LoaderButton>
-            </>
-          )}
-          <Divider />
-          {status !== "Confirmed" &&
-            status !== "Objected" &&
-            status !== "ConfirmedCancellation" && (
-              <>
-                <Divider>
-                  You can confirm this contract to protect it from cancellation.
-                </Divider>
-                <LoaderButton
-                  onClick={() => handleButtonClick("confirmed_c_payment")}
-                >
-                  Confirm
-                </LoaderButton>
-              </>
-            )}
-          <h3 style={{ color: "orange" }}>
-            {status === "RequestCancellation" &&
-              "The payer requested to cancel this promise"}
-          </h3>
-          {status !== "ConfirmedCancellation" && (
-            <>
-              <Divider>
-                You can approve the cancellation to allow renounce this payment.
-              </Divider>
-              <LoaderButton
-                onClick={() => handleButtonClick("confirmed_cancellation")}
-              >
-                Confirm Conciliation
-              </LoaderButton>
-            </>
-          )}
-        </>
-      )}
-    </>
-  );
-}
-
-function CPaymentContract(props: {
-  notification: Notification;
-}): string | JSX.Element {
-  const { sender, notification } = props;
-
-  let Dialog = (props: any) => {
-    return <CPaymentContractDialog {...props} notification={notification} />;
-  };
-  let c_payment: CPayment = notification.content.CPaymentContract[0];
-  let actions = notification.content.CPaymentContract
-    ? Object.keys(notification.content.CPaymentContract[1])[0].toLowerCase()
-    : "";
-  let time_stamp = notification.time && formatRelativeTime(notification.time);
-  let amount = c_payment.amount;
-  return (
-    <DialogOver variant="text" DialogContent={Dialog}>
-      <div>
-        {time_stamp}: {sender} {actions} you {amount}
-      </div>
-    </DialogOver>
-  );
-}
-
-function RenderNotification(props: {
-  notification: Notification;
-}): string | JSX.Element {
-  const { notification } = props;
-
-  let { getUser, getUserByName } = useGetUser();
-  const [sender, setSender] = useState<string>("");
-  const { backendActor } = useBackendContext();
-
-  useEffect(() => {
-    (async () => {
-      let sender = await getUser(notification.sender);
-      setSender(sender ? sender.name : "");
-    })();
-  }, []);
-
-  let content = notification.content;
-  let time = notification.time && formatRelativeTime(notification.time);
-  switch (Object.keys(notification.content)[0]) {
-    case "ReceivedDeposit":
-      return <div>{notification.content["ReceivedDeposit"]}</div>;
-    case "FriendRequest":
-      return (
-        <div>
-          {time}: {sender} sent you a friend request
-        </div>
-      );
-    case "ContractUpdate":
-      return `${time}: ${sender} accepted your friend request`;
-    case "SharePayment":
-      return `${time}: ${sender} have paid for your share contract`;
-    case "Unfriend":
-      return `${time}: ${sender} unfriended you`;
-    case "AcceptFriendRequest":
-      return `${time}: ${sender} accepted your friend request.`;
-    case "CPaymentContract":
-      return <CPaymentContract sender={sender} notification={notification} />;
-    default:
-      console.log("unknown action", notification);
-      return `${sender} ${JSON.stringify(content)} action`;
-  }
-}
-
-function NotificationComponent({
-  notification,
-}: {
-  notification: Notification;
-}) {
-  // console.log("render Notification") // TODO this renders about 20 times.
-  const { backendActor } = useBackendContext();
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-
-  return (
-    <div
-      onClick={async () => {
-        if (backendActor && !notification.is_seen) {
-          setLoading(true);
-          let res = await backendActor.see_notifications(notification.id);
-          console.log({ res });
-          dispatch(
-            handleRedux("UPDATE_NOTE", { ...notification, is_seen: true }),
-          );
-          setLoading(false);
-        }
-      }}
-      style={{ color: notification.is_seen ? "gray" : "" }}
-    >
-      {loading && <CircularProgress />}
-      <RenderNotification notification={notification} />
-    </div>
-  );
-}
-
-export function Notifications() {
-  const dispatch = useDispatch();
-  const { backendActor } = useBackendContext();
-  const { notifications } = useSelector(
-    (state: any) => state.notificationState,
-  );
-  useEffect(() => {
-    (async () => {
-      if (backendActor) {
-        let res = await backendActor.get_user_notifications();
-        dispatch(handleRedux("UPDATE_NOT_LIST", { new_list: res }));
-      }
-    })();
-  }, [backendActor]);
-
-  const new_notifications =
-    notifications &&
-    notifications.filter(
-      (notification: any) => notification && notification.is_seen == false,
-    );
-
-  return (
-    <>
-      <BasicMenu
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        options={
-          notifications.length > 0
-            ? notifications.map((notification: any) => {
-                if (!notification) {
-                  return { content: "", to: "" };
-                }
-                let item = {
-                  content: (
-                    <NotificationComponent notification={notification} />
-                  ),
-                  pure: true,
-                  // to: 'profile'
-                  // onClick: () => clickNotification(notification)
-                };
-                return item;
-              })
-            : [{ content: <Typography>You have no notifications.</Typography> }]
-        }
+      <IconButton
+        aria-label="notifications"
+        onClick={handleClick}
+        aria-controls={open ? "notifications-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
       >
-        <Badge
-          invisible={new_notifications.length == 0}
-          // color={'inherit'}
-          // anchorOrigin={{
-          //     vertical: 'bottom',
-          //     horizontal: 'left',
-          // }}
-          badgeContent={
-            new_notifications && (
-              <span style={{ color: "tomato" }}>
-                {new_notifications.length > 0 && new_notifications.length}
-              </span>
-            )
-          }
-          color={new_notifications.length > 0 ? "error" : "action"}
-        >
-          <NotificationsIcon
-            color={new_notifications.length > 0 ? "error" : "action"}
-          />
+        <Badge badgeContent={unreadCount} color="error">
+          <NotificationsIcon />
         </Badge>
-      </BasicMenu>
+      </IconButton>
+
+      <Menu
+        id="notifications-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          style: {
+            maxHeight: 400,
+            width: "320px",
+          },
+        }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        {notifications.length === 0 ? (
+          <MenuItem>
+            <Typography variant="body2" color="textSecondary">
+              No notifications
+            </Typography>
+          </MenuItem>
+        ) : (
+          <List sx={{ padding: 0 }}>
+            {notifications.map((notification) => (
+              <NotificationItem
+                key={notification.id}
+                onClick={handleClose}
+                button
+                isRead={notification.is_seen}
+              >
+                <ListItemText
+                  primary={
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: notification.is_seen ? "normal" : "bold",
+                      }}
+                    >
+                      {getNotificationMessage(notification.content)}
+                    </Typography>
+                  }
+                  secondary={formatDate(notification.time)}
+                  secondaryTypographyProps={{
+                    variant: "caption",
+                  }}
+                />
+              </NotificationItem>
+            ))}
+          </List>
+        )}
+      </Menu>
     </>
   );
-}
+};
+
+export default NotificationsButton;

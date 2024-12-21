@@ -19,7 +19,7 @@ import {
 import LinearProgressWithLabel from "../../components/MuiComponents/linearProgress";
 
 const WalletSection: React.FC = () => {
-  console.log("WalletSection");
+  // console.log("WalletSection");
   const dispatch = useDispatch();
   const { backendActor, ckUSDCActor } = useBackendContext();
   const { wallet, profile } = useSelector((state: any) => state.filesState);
@@ -118,10 +118,6 @@ const WalletSection: React.FC = () => {
       }}
     >
       <CardContent>
-        <Typography variant="h5" align="center" gutterBottom>
-          Wallet
-        </Typography>
-        <Divider style={{ margin: "16px 0" }} />
         {newDeposit &&
           "You got new deposit of " + Number(newDeposit) / 1000000 + " ckUSDC"}
         {depositing && <LinearProgressWithLabel value={depositing} />}

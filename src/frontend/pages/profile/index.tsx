@@ -1,187 +1,335 @@
-import { useEffect, useState } from "react";
+import React from "react";
+import { AgCharts } from "ag-charts-react";
 import {
+  Container,
   Box,
-  Button,
   Card,
   CardContent,
-  CircularProgress,
-  Container,
-  Divider,
-  Grid,
-  List,
-  ListItem,
-  TextField,
   Typography,
+  Grid,
+  Avatar,
+  Rating,
+  Divider,
+  Button,
 } from "@mui/material";
+import Friends from "./friends";
 import { useSelector } from "react-redux";
-import { useSnackbar } from "notistack";
-import Friends from "./Friends";
-import { capitalizeFirstLetter } from "./utils";
-import {
-  convertToBlobLink,
-  convertToBytes,
-} from "../../DataProcessing/imageToVec";
-import BasicTabs from "./History";
-import TransactionHistory from "./TransactionHistory";
-import { UserHistoryComponent } from "../User";
-import ProfilePhoto from "./ProfilePhoto";
-import ProfileRatings from "./ProfileRating";
-import WalletSection from "./WalletSection";
-import { useBackendContext } from "../../contexts/BackendContext";
-import * as React from "react";
 
-export default function ProfileComponent() {
-  const { profile, friends, profile_history, wallet } = useSelector(
-    (state: any) => state.filesState,
+const ProfilePage = ({
+  profile,
+  history,
+  friends,
+  onUnfriend,
+  onAcceptFriend,
+  onCancelFriend,
+}) => {
+  const { isDarkMode } = useSelector((state: any) => state.uiState);
+  // Handle completely missing props with default empty objects
+  const safeProfile = profile || {};
+  const safeHistory = history || {};
+  const safeFriends = friends || [];
+
+  const {
+    id = "",
+    name = "Anonymous",
+    description = "",
+    photo = new Uint8Array(),
+  } = safeProfile;
+
+  const {
+    rates_by_actions = [],
+    rates_by_others = [],
+    actions_rate = 0,
+    users_rate = 0,
+  } = safeHistory;
+
+  // Ensure arrays are defined
+  const safeRatesByActions = Array.isArray(rates_by_actions)
+    ? rates_by_actions
+    : [];
+  const safeRatesByOthers = Array.isArray(rates_by_others)
+    ? rates_by_others
+    : [];
+
+  // Convert action ratings to chart data with safe access
+  const actionRatingsData = safeRatesByActions.map((rating) => ({
+    date: new Date(rating?.date || 0).toLocaleDateString(),
+    rating: rating?.rating || 0,
+    spent: rating?.spent || 0,
+    received: rating?.received || 0,
+    promises: rating?.promises || 0,
+  }));
+
+  // Calculate statistics with safe calculations
+  const totalSpent = safeRatesByActions.reduce(
+    (sum, rating) => sum + (rating?.spent || 0),
+    0,
   );
+  const totalReceived = safeRatesByActions.reduce(
+    (sum, rating) => sum + (rating?.received || 0),
+    0,
+  );
+  const averageRating = safeRatesByOthers.length
+    ? safeRatesByOthers.reduce(
+        (sum, rating) => sum + (rating?.rating || 0),
+        0,
+      ) / safeRatesByOthers.length
+    : 0;
 
-  const [profileData, setProfileData] = useState({
-    changed: false,
-    ...profile,
-  });
+  // AG Charts configuration
+  const chartOptions = {
+    title: {
+      text: "Actions history",
+      fontSize: 18,
+      color: isDarkMode ? "#ffffff" : "#000000", // Responsive title color
+    },
+    data: actionRatingsData, // Your data input
+    background: {
+      fill: isDarkMode ? "#1e1e1e" : "#fefefe", // Dark/light background
+    },
+    theme: isDarkMode ? "ag-dark" : "ag-default", // Switch AG Charts theme dynamically
+    series: [
+      {
+        type: "line",
+        xKey: "date",
+        yKey: "rating",
+        yName: "Rating",
+        stroke: isDarkMode ? "#F44336" : "#D32F2F", // Responsive line color
+        marker: {
+          enabled: true,
+          fill: isDarkMode ? "#F44336" : "#D32F2F", // Marker color
+          stroke: isDarkMode ? "#ffffff" : "#000000", // Marker border
+        },
+        tooltip: { enabled: true },
+      },
+      {
+        type: "line",
+        xKey: "date",
+        yKey: "spent",
+        yName: "Spent",
+        stroke: isDarkMode ? "#4FC3F7" : "#0288D1",
+        marker: {
+          enabled: true,
+          fill: isDarkMode ? "#4FC3F7" : "#0288D1",
+          stroke: isDarkMode ? "#ffffff" : "#000000",
+        },
+        tooltip: { enabled: true },
+      },
+      {
+        type: "line",
+        xKey: "date",
+        yKey: "received",
+        yName: "Received",
+        stroke: isDarkMode ? "#81C784" : "#388E3C",
+        marker: {
+          enabled: true,
+          fill: isDarkMode ? "#81C784" : "#388E3C",
+          stroke: isDarkMode ? "#ffffff" : "#000000",
+        },
+        tooltip: { enabled: true },
+      },
+      {
+        type: "line",
+        xKey: "date",
+        yKey: "promises",
+        yName: "Promises",
+        stroke: isDarkMode ? "#FFD54F" : "#FBC02D",
+        marker: {
+          enabled: true,
+          fill: isDarkMode ? "#FFD54F" : "#FBC02D",
+          stroke: isDarkMode ? "#ffffff" : "#000000",
+        },
+        tooltip: { enabled: true },
+      },
+    ],
+    axes: [
+      {
+        type: "category",
+        position: "bottom",
+        line: { color: isDarkMode ? "#aaaaaa" : "#000000" }, // Axes line color
+        tick: { color: isDarkMode ? "#aaaaaa" : "#000000" }, // Axes tick color
+        label: { color: isDarkMode ? "#ffffff" : "#000000" }, // X-axis label color
+      },
+      {
+        type: "number",
+        position: "left",
+        line: { color: isDarkMode ? "#aaaaaa" : "#000000" },
+        tick: { color: isDarkMode ? "#aaaaaa" : "#000000" },
+        label: { color: isDarkMode ? "#ffffff" : "#000000" }, // Y-axis label color
+      },
+    ],
+    legend: {
+      position: "bottom",
+      item: {
+        label: {
+          color: isDarkMode ? "#ffffff" : "#000000", // Legend text color
+        },
+      },
+    },
+  };
 
-  useEffect(() => {
-    if (profile && !profileData.id) {
-      setProfileData({
-        changed: false,
-        ...profile,
-      });
-    }
-  }, [profile]);
-
-  const { backendActor } = useBackendContext();
-  const { enqueueSnackbar } = useSnackbar();
-
-  const [buttonLoading, setButtonLoading] = useState(false);
-
-  const handleSaveChanges = async () => {
-    setButtonLoading(true);
+  // Function to safely convert photo to base64
+  const getPhotoSrc = (photoData) => {
     try {
-      const res = await backendActor?.update_user_profile({
-        name: [profileData.name],
-        description: [profileData.description],
-        photo: [profileData.photo],
-      });
-      setProfileData((prev) => ({ ...prev, changed: false }));
-      enqueueSnackbar("Profile updated successfully!", {
-        variant: "success",
-      });
-      return res;
-    } catch (error) {
-      console.error("Error saving profile:", error);
-      enqueueSnackbar("Failed to update profile.", { variant: "error" });
-    } finally {
-      setButtonLoading(false);
+      return photoData && Object.keys(photoData).length > 0
+        ? `data:image/jpeg;base64,${Buffer.from(photoData).toString("base64")}`
+        : "";
+    } catch (e) {
+      console.error("Error converting photo:", e);
+      return "";
     }
   };
-  const [photoUpload, setUploading] = useState(false);
-  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUploading(true);
-    const fileInput = e.target;
-    if (fileInput.files && fileInput.files[0]) {
-      try {
-        const photo = await convertToBytes(fileInput.files[0]);
-        setProfileData((prev) => ({ ...prev, photo, changed: true }));
-        // dispatch(handleRedux("UPDATE_PROFILE", { profile: { photo } }));
-      } catch (error) {
-        console.error("Error processing photo:", error);
-      }
-      fileInput.value = "";
-    }
-    setUploading(false);
-  };
-  if (!profile) {
-    return <Typography variant="h6">please login</Typography>;
-  }
-
-  const ProfileDetailList = () => (
-    <List>
-      {Object.entries(profileData).map(([key, value]) => {
-        if (["photo", "changed"].includes(key)) return null;
-        return (
-          <ListItem key={key}>
-            <TextField
-              disabled={key === "id"}
-              label={capitalizeFirstLetter(key)}
-              defaultValue={value}
-              onBlur={(e) =>
-                setProfileData((prev) => ({
-                  ...prev,
-                  [key]: e.target.value,
-                  changed: true,
-                }))
-              }
-              fullWidth
-              multiline={key === "description"}
-              rows={key === "description" ? 4 : 1}
-              variant="outlined"
-              InputLabelProps={{ style: { fontWeight: "bold" } }}
-              InputProps={{ style: { borderRadius: 8 } }}
-            />
-          </ListItem>
-        );
-      })}
-    </List>
-  );
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={8}>
-          <Card sx={{ borderRadius: 2, boxShadow: 3, overflow: "hidden" }}>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      {/* User Header */}
+      <Card sx={{ mb: 4 }}>
+        <CardContent>
+          <Box display="flex" alignItems="flex-start" gap={3}>
+            <Avatar
+              src={getPhotoSrc(photo)}
+              alt={name}
+              sx={{ width: 96, height: 96 }}
+            >
+              {name?.charAt(0) || "A"}
+            </Avatar>
+            <Box>
+              <Typography variant="h4" gutterBottom>
+                {name || "Anonymous"}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {id || "No id available"}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {description || "No description available"}
+              </Typography>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Stats Overview */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} md={4}>
+          <Card>
             <CardContent>
-              <Divider sx={{ my: 2 }} />
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <ProfilePhoto
-                    loading={photoUpload}
-                    photo={convertToBlobLink(profileData.photo)}
-                    onPhotoChange={handlePhotoChange}
-                  />
-                  <ProfileRatings
-                    profile_history={profile_history}
-                    profileData={profileData}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <ProfileDetailList />
-                  {profileData.changed && (
-                    <Box sx={{ width: "100%", mt: 2 }}>
-                      <Button
-                        color="warning"
-                        onClick={handleSaveChanges}
-                        variant="contained"
-                        sx={{ width: "100% !important" }}
-                      >
-                        {buttonLoading ? (
-                          <CircularProgress size={20} />
-                        ) : (
-                          "Save changes"
-                        )}
-                      </Button>
-                    </Box>
-                  )}
-                </Grid>
-              </Grid>
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                Rating
+              </Typography>
+              <Box display="flex" flexDirection="column" gap={1}>
+                <Rating value={averageRating} precision={0.1} readOnly />
+                <Typography variant="h4">{averageRating.toFixed(2)}</Typography>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
+
         <Grid item xs={12} md={4}>
-          <WalletSection />
-          <Divider sx={{ my: 4 }} />
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <BasicTabs
-              items={{
-                Friends: <Friends />,
-                ...(wallet && { Transactions: <TransactionHistory /> }),
-              }}
-            />
-          </Box>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                Total Spent
+              </Typography>
+              <Typography variant="h4">${totalSpent.toFixed(2)}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                Total Received
+              </Typography>
+              <Typography variant="h4">${totalReceived.toFixed(2)}</Typography>
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
 
-      <Divider style={{ marginTop: "20px" }} />
-      <UserHistoryComponent {...profile_history} />
+      {/* Chart */}
+      <Card sx={{ mb: 4 }}>
+        <CardContent>
+          <Box sx={{ height: 400 }}>
+            {actionRatingsData.length > 0 ? (
+              <AgCharts options={chartOptions} />
+            ) : (
+              <Box
+                height="100%"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Typography color="text.secondary">
+                  No transaction history available
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Friends Section */}
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Friends
+          </Typography>
+          <Friends currentUser={profile} friends={friends} />
+        </CardContent>
+      </Card>
+
+      {/* Recent Ratings */}
+      <Card sx={{ mt: 4 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Recent Ratings
+          </Typography>
+          {safeRatesByOthers.length > 0 ? (
+            <Box>
+              {safeRatesByOthers.slice(0, 5).map((rating, index) => (
+                <Box key={rating?.id || index}>
+                  <Box py={2}>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="flex-start"
+                    >
+                      <Box>
+                        <Rating
+                          value={rating?.rating || 0}
+                          precision={0.1}
+                          readOnly
+                          size="small"
+                        />
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mt: 1 }}
+                        >
+                          {rating?.comment || "No comment"}
+                        </Typography>
+                      </Box>
+                      <Typography variant="caption" color="text.secondary">
+                        {new Date(rating?.date || 0).toLocaleDateString()}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  {index < safeRatesByOthers.length - 1 && <Divider />}
+                </Box>
+              ))}
+            </Box>
+          ) : (
+            <Box py={2} textAlign="center">
+              <Typography color="text.secondary">
+                No ratings available
+              </Typography>
+            </Box>
+          )}
+        </CardContent>
+      </Card>
     </Container>
   );
-}
+};
+
+export default ProfilePage;

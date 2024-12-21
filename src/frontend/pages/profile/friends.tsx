@@ -1,269 +1,359 @@
-import {useSnackbar} from "notistack";
-import {useDispatch, useSelector} from "react-redux";
-import {handleRedux} from "../../redux/store/handleRedux";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import {Box, Tooltip} from "@mui/material";
-import * as React from "react";
-import LoaderButton from "../../components/MuiComponents/LoaderButton";
-import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import {Friend} from "../../../declarations/backend/backend.did";
-import RateUser from "../../components/Actions/RateUser";
-import {UserAvatar} from "../../components/MuiComponents/PostComponent";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
-import {useBackendContext} from "../../contexts/BackendContext";
+import React, { useState, useCallback } from "react";
+import {
+  List,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  Rating,
+  Stack,
+  Chip,
+  IconButton, Paper, TextField, Divider,
+} from "@mui/material";
+import {
+  Check as CheckIcon,
+  Close as CloseIcon,
+  PersonRemove as PersonRemoveIcon,
+} from "@mui/icons-material";
+import ChatWindow from "../../components/Chat/chatWindow";
+interface Review {
+  rating: number;
+  comment: string;
+  timestamp: string;
+  reviewerId: string;
+  reviewerName: string;
+}
 
-interface FriendProps {
+interface User {
   id: string;
-  // is_friend?: boolean,
   name: string;
-  photo: any;
-  labelId: string;
-  rate?: number;
-  confirmed?: boolean;
+  description: string;
+  photo: string;
+  reviews?: Review[];
+  averageRating?: number;
 }
 
-function SecondaryActionSwitch(props) {
-  const { backendActor } = useBackendContext();
-  let { id, confirmed } = props;
-  const { friends, profile } = useSelector((state: any) => state.filesState);
-  // let p = Principal.fromText(profile).toHex()
-  // console.log({p})
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+interface Friend {
+  id: string;
+  sender: User;
+  receiver: User;
+  confirmed: boolean;
+}
 
-  const dispatch = useDispatch();
+interface Chat {
+  id: string;
+  name: string;
+  messages: Array<{
+    id: string;
+    sender: string;
+    content: string;
+    timestamp: string;
+  }>;
+  members: string[];
+  admins: string[];
+}
 
-  let is_sender = false;
-  let is_receiver = false;
-  let isFriend = friends.find((f: Friend) => {
-    confirmed = f.confirmed;
-    if (f.sender.id == profile.id) {
-      is_sender = true;
-      return true;
-    } else if (f.receiver.id == profile.id) {
-      is_receiver = true;
-      return true;
+interface ChatWindowPosition {
+  x: number;
+  y: number;
+}
+
+interface FriendsListProps {
+  friends: Friend[];
+  currentUser: User;
+  onAcceptFriend: (friendId: string) => void;
+  onRejectFriend: (friendId: string) => void;
+  onCancelRequest: (friendId: string) => void;
+  onUnfriend: (friendId: string) => void;
+  onSendMessage: (userId: string, message: string) => void;
+  onRateUser: (userId: string, rating: number) => void;
+}
+
+const FriendsList: React.FC<FriendsListProps> = ({
+  friends,
+  currentUser,
+  onAcceptFriend,
+  onRejectFriend,
+  onCancelRequest,
+  onUnfriend,
+  onSendMessage,
+  onRateUser,
+}) => {
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [rating, setRating] = useState<number>(0);
+  const [review, setReview] = useState<string>("");
+  const [activeChats, setActiveChats] = useState<Map<string, Chat>>(new Map());
+  const [chatPositions, setChatPositions] = useState<
+    Map<string, ChatWindowPosition>
+  >(new Map());
+
+  const handleProfileClose = () => {
+    setSelectedUser(null);
+    setRating(0);
+  };
+
+  const handleSubmitReview = () => {
+    if (selectedUser && rating > 0) {
+      const newReview: Review = {
+        rating,
+        comment: review,
+        timestamp: new Date().toISOString(),
+        reviewerId: currentUser?.id || "",
+        reviewerName: currentUser?.name || "",
+      };
+      onRateUser(selectedUser.id, rating);
+      // Reset form
+      setRating(0);
+      setReview("");
     }
+  };
 
-    return false;
-  });
+  const handleOpenChat = useCallback(
+    (user: User) => {
+      const chatId = `chat-${user.id}`;
+      if (!activeChats.has(chatId)) {
+        const newChat: Chat = {
+          id: chatId,
+          name: user.name,
+          messages: [],
+          members: [currentUser.id, user.id],
+          admins: [currentUser.id],
+        };
 
-  const state = `${is_sender ? "sender" : ""}${is_receiver ? "is_receiver" : ""}${confirmed ? "confirmed" : ""}${isFriend ? "friend" : ""}`;
+        setActiveChats(new Map(activeChats.set(chatId, newChat)));
 
-  async function handleConfirm(id: string) {
-    if (typeof id != "string") {
-      id = id.toText();
-    }
-    console.log({ id });
-    let res = backendActor && (await backendActor.accept_friend_request(id));
-    dispatch(
-      handleRedux("UPDATE_NOTE", { id: id + profile.id, is_seen: true }),
-    );
-    dispatch(
-      handleRedux("CONFIRM_FRIEND", {
-        friend: {
-          confirmed: true,
-          sender: props,
-          receiver: profile,
-        },
-      }),
-    );
-
-    // actor && dispatch(handleRedux('UPDATE_NOTIFY', {new_list: await actor.get_notifications()}));
-    return res;
-  }
-
-  async function handleUnfriend(id: string) {
-    if (typeof id != "string") {
-      id = id.toText();
-    }
-    let res = await backendActor.unfriend(id);
-    if (res.Ok) {
-      dispatch(handleRedux("REMOVE_FRIEND", { id: id }));
-      if (is_sender) {
-        dispatch(
-          handleRedux("UPDATE_NOTE", { id: profile.id + id, is_seen: true }),
-        );
-      } else {
-        dispatch(
-          handleRedux("UPDATE_NOTE", { id: id + profile.id, is_seen: true }),
-        );
+        // Set initial position for new chat window
+        const position = {
+          x: window.innerWidth - 350 - activeChats.size * 20,
+          y: window.innerHeight - 450 - activeChats.size * 20,
+        };
+        setChatPositions(new Map(chatPositions.set(chatId, position)));
       }
-    }
-    return res;
-  }
-
-  async function handleCancel(id: string) {
-    if (typeof id != "string") {
-      id = id.toText();
-    }
-    let res = await backendActor.cancel_friend_request(id);
-    if (res.Ok) {
-      dispatch(handleRedux("REMOVE_FRIEND", { id: id }));
-      dispatch(handleRedux("DELETE_NOTIFY", { id: profile.id + id }));
-    }
-    return res;
-  }
-
-  async function handleReject(id: string) {
-    if (typeof id != "string") {
-      id = id.toText();
-    }
-    let res = await backendActor.reject_friend_request(id);
-    if (res.Ok) {
-      dispatch(handleRedux("REMOVE_FRIEND", { id: id }));
-      dispatch(handleRedux("DELETE_NOTIFY", { id: id + profile.id }));
-    }
-    return res;
-  }
-
-  async function handleFriedReq(user) {
-    if (typeof user != "string") {
-      user = user.toText();
-    }
-    let loading = enqueueSnackbar(
-      <span>
-        sending friend request... <span className={"loader"} />
-      </span>,
-      { variant: "info" },
-    );
-    let friend_request = await backendActor.send_friend_request(user);
-    console.log({ friend_request });
-    dispatch(
-      handleRedux("ADD_FRIEND", {
-        friend: {
-          confirmed: false,
-          sender: profile,
-          receiver: { id: props.id.toString(), ...props },
-        },
-      }),
-    );
-    closeSnackbar(loading);
-    if (friend_request.Err) {
-      enqueueSnackbar(friend_request.Err, { variant: "error" });
-    }
-    if (friend_request.Ok) {
-      enqueueSnackbar("Friend request sent", { variant: "success" });
-    }
-    return friend_request;
-  }
-
-  switch (state) {
-    case "senderfriend":
-      return (
-        <LoaderButton onClick={async () => await handleCancel(id)}>
-          Cancel
-        </LoaderButton>
-      );
-    case "senderconfirmedfriend":
-      return (
-        <LoaderButton
-          onClick={async () => await handleUnfriend(id)}
-          color="error"
-        >
-          Unfriend
-        </LoaderButton>
-      );
-    case "is_receiverconfirmedfriend":
-      return (
-        <LoaderButton
-          onClick={async () => await handleUnfriend(id)}
-          color="error"
-        >
-          Unfriend
-        </LoaderButton>
-      );
-    case "":
-      return (
-        <>
-          <Tooltip title={"Send friend request"}>
-            <LoaderButton
-              startIcon={<GroupAddIcon />}
-              onClick={async () => {
-                let res = await handleFriedReq(id);
-                return { Ok: "" };
-              }}
-            />
-          </Tooltip>
-        </>
-      );
-    default:
-      return (
-        <>
-          {!confirmed && !is_sender && (
-            <Box display="flex" gap={1}>
-              <Tooltip title={"Confirm"}>
-                <LoaderButton
-                  onClick={async () => await handleConfirm(id)}
-                  color="success"
-                  startIcon={<CheckCircleIcon />}
-                />
-              </Tooltip>
-              <Tooltip title={"Reject"}>
-                <LoaderButton
-                  onClick={async () => await handleReject(id)}
-                  color="error"
-                  startIcon={<CancelIcon />}
-                />
-              </Tooltip>
-            </Box>
-          )}
-        </>
-      );
-  }
-}
-
-export function FriendCom(props: FriendProps) {
-  const { profile, friends } = useSelector((state: any) => state.filesState);
-
-  return (
-    <ListItem>
-      <ListItemAvatar>
-        <UserAvatar {...props} />
-      </ListItemAvatar>
-      <Box display="flex" alignItems="center" width="100%">
-        <Box flexGrow={1}>
-          <RateUser rate={props.rate || 0} id={props.id} />
-        </Box>
-        <Box display="flex" justifyContent="flex-end">
-          <SecondaryActionSwitch {...props} />
-        </Box>
-      </Box>
-    </ListItem>
+      setSelectedUser(null);
+    },
+    [activeChats, chatPositions, currentUser && currentUser.id],
   );
-}
 
-function Friends(props: any) {
-  const { profile, friends } = useSelector((state: any) => state.filesState);
+  const handleCloseChat = useCallback((chatId: string) => {
+    setActiveChats((prevChats) => {
+      const newChats = new Map(prevChats);
+      newChats.delete(chatId);
+      return newChats;
+    });
+    setChatPositions((prevPositions) => {
+      const newPositions = new Map(prevPositions);
+      newPositions.delete(chatId);
+      return newPositions;
+    });
+  }, []);
 
-  if (!friends) {
-    return <></>;
-  }
+  const handleChatPositionChange = useCallback(
+    (chatId: string, position: ChatWindowPosition) => {
+      setChatPositions(
+        (prevPositions) => new Map(prevPositions.set(chatId, position)),
+      );
+    },
+    [],
+  );
+
+  const getFriendStatus = (friend: Friend) => {
+    const isSender = friend.sender.id === currentUser?.id;
+    if (friend.confirmed) {
+      return {
+        status: "Friends",
+        actions: (
+          <IconButton
+            color="error"
+            onClick={() => onUnfriend(friend.id)}
+            title="Unfriend"
+          >
+            <PersonRemoveIcon />
+          </IconButton>
+        ),
+      };
+    }
+    if (isSender) {
+      return {
+        status: "Request Sent",
+        actions: (
+          <IconButton
+            color="warning"
+            onClick={() => onCancelRequest(friend.id)}
+            title="Cancel Request"
+          >
+            <CloseIcon />
+          </IconButton>
+        ),
+      };
+    }
+    return {
+      status: "Request Received",
+      actions: (
+        <Stack direction="row" spacing={1}>
+          <IconButton
+            color="success"
+            onClick={() => onAcceptFriend(friend.id)}
+            title="Accept"
+          >
+            <CheckIcon />
+          </IconButton>
+          <IconButton
+            color="error"
+            onClick={() => onRejectFriend(friend.id)}
+            title="Reject"
+          >
+            <CloseIcon />
+          </IconButton>
+        </Stack>
+      ),
+    };
+  };
 
   return (
-    <Box
-      sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-    >
-      <List dense>
-        {friends.map((value) => {
-          let user =
-            value.receiver.id !== profile.id ? value.receiver : value.sender;
-          const labelId = `checkbox-list-secondary-label-${value.receiver.name}`;
+    <>
+      <List>
+        {friends.map((friend) => {
+          const otherUser =
+            friend.sender.id === currentUser?.id
+              ? friend.receiver
+              : friend.sender;
+          const { status, actions } = getFriendStatus(friend);
+
           return (
-            <ListItem key={user.id} disablePadding>
-              <FriendCom
-                {...user}
-                is_friend={value.confirmed}
-                labelId={labelId}
+            <ListItem key={friend.id} secondaryAction={actions}>
+              <ListItemAvatar>
+                <Avatar
+                  src={`data:image/jpeg;base64,${otherUser.photo}`}
+                  onClick={() => setSelectedUser(otherUser)}
+                  sx={{ cursor: "pointer" }}
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary={otherUser.name}
+                secondary={
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Chip
+                      label={status}
+                      size="small"
+                      color={friend.confirmed ? "success" : "default"}
+                    />
+                  </Stack>
+                }
               />
             </ListItem>
           );
         })}
       </List>
-    </Box>
-  );
-}
 
-export default Friends;
+      <Dialog
+        open={!!selectedUser}
+        onClose={handleProfileClose}
+        maxWidth="md"
+        fullWidth
+      >
+        {selectedUser && (
+          <>
+            <DialogTitle>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <Avatar
+                  src={`data:image/jpeg;base64,${selectedUser.photo}`}
+                  sx={{ width: 56, height: 56 }}
+                />
+                <Typography variant="h6">{selectedUser.name}</Typography>
+              </Stack>
+            </DialogTitle>
+            <DialogContent>
+              <Stack spacing={3}>
+                <Typography variant="body1">
+                  {selectedUser.description}
+                </Typography>
+
+                <Stack spacing={2}>
+
+                  {selectedUser.reviews?.map((review, index) => (
+                    <Paper
+                      key={index}
+                      sx={{ p: 2, bgcolor: "background.default" }}
+                    >
+                      <Stack spacing={1}>
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Typography variant="subtitle2">
+                            {review.reviewerName}
+                          </Typography>
+                          <Rating value={review.rating} readOnly size="small" />
+                        </Stack>
+                        <Typography variant="body2">
+                          {review.comment}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {new Date(review.timestamp).toLocaleDateString()}
+                        </Typography>
+                      </Stack>
+                    </Paper>
+                  ))}
+
+                  <Divider sx={{ my: 2 }} />
+
+                  <Typography variant="subtitle1">Write a Review</Typography>
+                  <Rating
+                    value={rating}
+                    onChange={(_, newValue) => handleRating(newValue)}
+                  />
+                  <TextField
+                    label="Your Review"
+                    multiline
+                    rows={3}
+                    value={review}
+                    onChange={(e) => setReview(e.target.value)}
+                    fullWidth
+                  />
+                </Stack>
+              </Stack>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleProfileClose}>Close</Button>
+              <Button
+                onClick={handleSubmitReview}
+                variant="outlined"
+                color="primary"
+                disabled={!rating || !review.trim()}
+              >
+                Submit Review
+              </Button>
+              <Button
+                onClick={() => handleOpenChat(selectedUser)}
+                variant="contained"
+                color="primary"
+              >
+                Open Chat
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
+
+      {/* Render active chat windows */}
+      {Array.from(activeChats.entries()).map(([chatId, chat]) => (
+        <ChatWindow
+          key={chatId}
+          chat={chat}
+          onClose={handleCloseChat}
+          position={chatPositions.get(chatId) || { x: 0, y: 0 }}
+          onPositionChange={handleChatPositionChange}
+        />
+      ))}
+    </>
+  );
+};
+
+export default FriendsList;

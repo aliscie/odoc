@@ -1,146 +1,284 @@
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import logo from "../../public/logo.png";
 
-import React, { useState } from "react";
-import "../styles/LandingPage.css";
+import React from "react";
 import {
+  Box,
   Button,
+  Card,
+  CardContent,
   Container,
-  Divider,
   Grid,
-  Link,
+  Step,
+  StepContent,
+  StepLabel,
+  Stepper,
   Typography,
 } from "@mui/material";
-import StyledAccordion from "../../components/MuiComponents/StyledAccordion";
-import FeatureModal from "../../components/MuiComponents/FeatureModal";
-import { features, roadMap } from "./data";
-import InfoCard from "../../components/MuiComponents/infoCard";
-import { useBackendContext } from "../../contexts/BackendContext";
-import StepGuide from "./getStarted";
-import { useSelector } from "react-redux";
+import ArrowForward from "@mui/icons-material/ArrowForward";
+import CheckCircle from "@mui/icons-material/CheckCircle";
+import Schedule from "@mui/icons-material/Schedule";
+import { features, roadMap, steps } from "./data";
+import { Link } from "react-router-dom";
 
-interface Features {
-  title: string;
-  content: string;
-  icon: JSX.Element;
-}
-
-const LandingPage: React.FC = () => {
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedFeature, setSelectedFeature] = useState<Features | null>(null);
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setSelectedFeature(null);
-  };
-
-  const { login } = useBackendContext();
-
-  const { isLoggedIn } = useSelector((state: any) => state.uiState);
+export default function LandingPage(props) {
   return (
-    <Container maxWidth="lg" className="landing-page">
-      <header className="landing-header">
-        <div style={{ textAlign: "left" }}>
-          <div style={{ display: "inline-flex", alignItems: "center" }}>
+    <Box sx={{ minHeight: "100vh" }}>
+      {/* Hero Section */}
+      <Container maxWidth="lg" sx={{ pt: 10, pb: 8 }}>
+        <Box sx={{ maxWidth: "800px", mx: "auto" }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "left",
+              justifyContent: "left",
+              mb: 4,
+            }}
+          >
             <img
-              style={{
-                marginRight: "10px",
-              }}
-              width="100px"
               src={logo}
               alt="ODOC Logo"
+              style={{
+                width: "70px",
+                borderRadius: "12px",
+                marginRight: "1.5rem",
+              }}
             />
-
-            <Typography variant="h2" align="left" gutterBottom>
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: "4rem",
+                fontWeight: "bold",
+                background: "linear-gradient(90deg, #2563eb 0%, #0891b2 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
               ODOC
             </Typography>
-          </div>
-        </div>
+          </Box>
+          <Typography
+            variant="h2"
+            sx={{ fontSize: "2.5rem", fontWeight: "bold", mb: 2 }}
+          >
+            Build Your Contracts on Web3
+          </Typography>
+          <Typography variant="h5" color="text.secondary" sx={{ mb: 4 }}>
+            Manage your tasks, teams, payments, contracts, agreements, and
+            documents in one secure platform. Built on the Internet Computer for
+            maximum security and efficiency.
+          </Typography>
+          {props.isLoggedIn ? (
+            <Button
+              variant="contained"
+              size="large"
+              endIcon={<ArrowForward />}
+              component={Link}
+              sx={{
+                px: 4,
+                py: 2,
+                fontSize: "1.1rem",
+                bgcolor: "#ffac17",
+                "&:hover": {
+                  bgcolor: "#ff4747",
+                },
+              }}
+              to={"/discover"}
+              // onClick={async () => await props.login()}
+            >
+              Make sure to make your first post
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              size="large"
+              endIcon={<ArrowForward />}
+              sx={{
+                px: 4,
+                py: 2,
+                fontSize: "1.1rem",
+                bgcolor: "#2563eb",
+                "&:hover": {
+                  bgcolor: "#1d4ed8",
+                },
+              }}
+              onClick={async () => await props.login()}
+            >
+              Get Started
+            </Button>
+          )}
+        </Box>
+      </Container>
 
-        <Typography variant="h2" align="left" gutterBottom>
-          Build your contracts on web3
-        </Typography>
-
+      {/* Features Grid */}
+      <Container maxWidth="lg" sx={{ py: 8 }}>
         <Typography
-          color={"var(--color)"}
-          variant="body"
-          align="left"
-          paragraph
+          variant="h3"
+          sx={{ textAlign: "center", fontWeight: "bold", mb: 6 }}
         >
-          Odoc where you can manage your tasks, teams, payments, contracts,
-          agreements and documents in one place. Odoc save your time, money and
-          secure your agreement. It fully runs on the{" "}
-          <Link
-            href="https://internetcomputer.org/"
-            underline="always"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Internet Computer
-          </Link>
-          .
+          Platform Features
         </Typography>
-      </header>
-      <div style={{ textAlign: "left" }}>
-        {!isLoggedIn && (
-          <Button
-            variant={"contained"}
-            size={"large"}
-            onClick={async () => await login()}
-          >
-            Try it now
-          </Button>
-        )}
-      </div>
-      <StepGuide />
-
-      <Divider sx={{ my: 4 }} />
-
-      <section className="features-section">
-        <Typography variant="h4" align="center" gutterBottom>
-          Our Features
-        </Typography>
-
-        <Grid container spacing={2}>
+        <Grid container spacing={4}>
           {features.map((feature, index) => (
-            <InfoCard {...feature} index={index} />
+            <Grid item xs={12} md={6} lg={4} key={index}>
+              <Card
+                sx={{
+                  height: "100%",
+                  transition: "0.3s",
+                  "&:hover": { boxShadow: 6 },
+                }}
+              >
+                <CardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      mb: 2,
+                      "& .MuiSvgIcon-root": {
+                        fontSize: 40,
+                        color: "#2563eb",
+                      },
+                    }}
+                  >
+                    {feature.icon}
+                    <Typography variant="h6" sx={{ ml: 2, fontWeight: "bold" }}>
+                      {feature.title}
+                    </Typography>
+                  </Box>
+                  <Typography color="text.secondary">
+                    {feature.content}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
           ))}
         </Grid>
-      </section>
+      </Container>
 
-      <Divider sx={{ my: 4 }} />
+      {/* Getting Started Steps */}
+      <Box sx={{ py: 8 }}>
+        <Container maxWidth="lg">
+          <Typography
+            variant="h3"
+            sx={{ textAlign: "center", fontWeight: "bold", mb: 6 }}
+          >
+            Getting Started
+          </Typography>
+          <Box sx={{ maxWidth: "600px", mx: "auto" }}>
+            <Stepper orientation="vertical">
+              {steps.map((step, index) => (
+                <Step key={index} active={true}>
+                  <StepLabel>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      {step.label}
+                    </Typography>
+                  </StepLabel>
+                  <StepContent>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="body1" color="text.secondary">
+                        {step.description}
+                      </Typography>
+                    </Box>
+                  </StepContent>
+                </Step>
+              ))}
+            </Stepper>
+          </Box>
+        </Container>
+      </Box>
 
-      <section className="roadmap">
-        <Typography variant="h4" align="center" gutterBottom>
-          Road Map
+      {/* Current Progress */}
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Typography
+          variant="h3"
+          sx={{ textAlign: "center", fontWeight: "bold", mb: 6 }}
+        >
+          Platform Progress
         </Typography>
+        <Box sx={{ maxWidth: "800px", mx: "auto" }}>
+          {/* Completed Features */}
+          <Typography variant="h6" sx={{ mb: 3 }}>
+            Completed Features
+          </Typography>
+          <Box sx={{ mb: 4 }}>
+            {roadMap
+              .filter((item) => item.is_done)
+              .map((item, index) => (
+                <Box key={index} sx={{ mb: 2 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                    <CheckCircle sx={{ color: "#2563eb", mr: 2 }} />
+                    <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                      {item.title}
+                    </Typography>
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ ml: 6 }}
+                  >
+                    {item.content}
+                  </Typography>
+                </Box>
+              ))}
+          </Box>
 
-        {roadMap.map((item, index) => (
-          <StyledAccordion
-            key={index}
-            title={item.title}
-            content={item.content}
-            isDone={item.is_done}
-          />
-        ))}
-      </section>
+          {/* Upcoming Features */}
+          <Typography variant="h6" sx={{ mb: 3 }}>
+            Coming Soon
+          </Typography>
+          <Box>
+            {roadMap
+              .filter((item) => !item.is_done)
+              .map((item, index) => (
+                <Box key={index} sx={{ mb: 2 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                    <Schedule sx={{ color: "#64748b", mr: 2 }} />
+                    <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                      {item.title}
+                    </Typography>
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ ml: 6 }}
+                  >
+                    {item.content}
+                  </Typography>
+                </Box>
+              ))}
+          </Box>
+        </Box>
+      </Container>
 
-      <footer className="landing-footer">
-        <Typography variant="body2" align="center" color="textSecondary">
-          © 2024 ODOC. All rights reserved. Founded by Ali Al-Karaawi
-        </Typography>
-      </footer>
-
-      <FeatureModal
-        open={openModal}
-        handleClose={handleCloseModal}
-        title={selectedFeature?.title || ""}
-        content={selectedFeature?.content || ""}
-        icon={selectedFeature?.icon || null}
-      />
-    </Container>
+      {/* Call to Action */}
+      {!props.isLoggedIn && (
+        <Box sx={{ bgcolor: "#2563eb", color: "white", py: 8, mt: 8 }}>
+          <Container maxWidth="lg" sx={{ textAlign: "center" }}>
+            <Typography variant="h3" sx={{ fontWeight: "bold", mb: 2 }}>
+              Ready to Get Started?
+            </Typography>
+            <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
+              Join the future of decentralized collaboration
+            </Typography>
+            <Button
+              variant="contained"
+              size="large"
+              sx={{
+                px: 4,
+                py: 2,
+                fontSize: "1.1rem",
+                bgcolor: "white",
+                color: "#2563eb",
+                "&:hover": {
+                  bgcolor: "#f8fafc",
+                },
+              }}
+              onClick={async () => await props.login()}
+            >
+              Join ODOC Today
+            </Button>
+          </Container>
+        </Box>
+      )}
+    </Box>
   );
-};
-
-export default LandingPage;
+}

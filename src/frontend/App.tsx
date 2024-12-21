@@ -14,7 +14,6 @@ import useSocket from "./websocket/use_socket";
 import { useSelector } from "react-redux";
 import { useBackendContext } from "./contexts/BackendContext";
 import { Box, CircularProgress } from "@mui/material";
-import DataGridEcample from "./components/MuiComponents/dataGrid";
 
 const App: React.FC = () => {
   const { profile } = useSelector((state: any) => state.filesState);

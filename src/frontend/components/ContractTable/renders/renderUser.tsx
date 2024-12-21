@@ -10,5 +10,5 @@ export function RenderUser(props) {
     user = users.find((u) => u.id == props.value);
   }
 
-  return <>{user && user.name}</>;
+  return <dive {...props}>{user && user.name}</dive>;
 }

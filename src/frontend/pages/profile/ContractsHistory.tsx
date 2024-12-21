@@ -2,8 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Button from "@mui/material/Button";
-import { Principal } from "@dfinity/principal";
-import { CustomContractComponent } from "../../components/ContractTable";
+import CustomContractComponent from "../../components/ContractTable";
 import { custom_contract } from "../../DataProcessing/dataSamples";
 import { handleRedux } from "../../redux/store/handleRedux";
 import { CustomContract } from "../../../declarations/backend/backend.did";
@@ -11,12 +10,12 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Divider from "@mui/material/Divider";
 import { v4 as uuidv4 } from "uuid";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { DndProvider } from "react-dnd";
 
 function ContractsHistory(props: any) {
   const dispatch = useDispatch();
-  const { contracts, profile } = useSelector((state: any) => state.filesState);
+  const { contracts, profile, all_friends } = useSelector(
+    (state: any) => state.filesState,
+  );
 
   const handleClick = () => {
     try {
@@ -27,10 +26,9 @@ function ContractsHistory(props: any) {
       const newContract = {
         ...custom_contract,
         id: uuidv4(),
-        creator: Principal.fromText(profile.id),
+        creator: profile.id,
         date_created: Date.now() * 1e6,
       };
-
       dispatch(handleRedux("ADD_CONTRACT", { contract: newContract }));
     } catch (error) {
       console.error("Error creating new contract:", error);
@@ -40,6 +38,9 @@ function ContractsHistory(props: any) {
   if (!profile) {
     return <div>please login to see this page</div>;
   }
+  const onContractChange = (contract: CustomContract) => {
+    dispatch(handleRedux("UPDATE_CONTRACT", { contract }));
+  };
   return (
     <Box sx={{ padding: 3, margin: 2 }}>
       <Button
@@ -65,9 +66,13 @@ function ContractsHistory(props: any) {
                     },
                   }}
                 >
-                  <DndProvider backend={HTML5Backend}>
-                    <CustomContractComponent contract={contract} />
-                  </DndProvider>
+                  <CustomContractComponent
+                    key={JSON.stringify(contract)}
+                    onContractChange={onContractChange}
+                    profile={profile}
+                    all_friends={all_friends}
+                    contracts={[contract]}
+                  />
                 </Paper>
               </ListItem>
             );

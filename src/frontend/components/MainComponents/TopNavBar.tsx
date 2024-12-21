@@ -29,7 +29,7 @@ import BreadPage from "../MuiComponents/Breadcrumbs";
 import ShareFileButton from "../MuiComponents/CopyLink";
 import MultiSaveButton from "../Actions/MultiSave";
 
-import { Notifications } from "../NotifcationList";
+import NotificationsButton from "../NotifcationList";
 import ChatsComponent from "../Chat";
 import WorkSpaces from "./Workspaces";
 
@@ -38,7 +38,8 @@ import { useBackendContext } from "../../contexts/BackendContext";
 import { convertToBlobLink } from "../../DataProcessing/imageToVec";
 import { Z_INDEX_TOP_NAVBAR } from "../../constants/zIndex";
 import UserAvatar from "./UserAvatar";
-
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import { RootState } from "../../redux/reducers";
 const TopNavBar = () => {
   const dispatch = useDispatch();
   const { login, logout } = useBackendContext();
@@ -71,6 +72,19 @@ const TopNavBar = () => {
     current_file &&
     files.find((file: any) => file && file.id === current_file.id);
 
+  const { current_chat_id, chats } = useSelector(
+    (state: RootState) => state.chatsState,
+  );
+  const { backendActor } = useBackendContext();
+  const { notifications } = useSelector(
+    (state: any) => state.notificationState,
+  );
+  useEffect(() => {
+    (async () => {
+      const res = await backendActor.get_user_notifications();
+      dispatch(handleRedux("UPDATE_NOT_LIST", { new_list: res }));
+    })();
+  }, []);
   return (
     <AppBar
       position="fixed"
@@ -123,8 +137,8 @@ const TopNavBar = () => {
 
           {isLoggedIn && (
             <>
-              <Notifications />
-              <ChatsComponent />
+              <NotificationsButton notifications={notifications} />
+              <ChatsComponent chats={chats} />
               <BasicMenu
                 options={[
                   { content: "Profile", to: "profile", icon: <Person2Icon /> },
@@ -132,6 +146,11 @@ const TopNavBar = () => {
                     content: "Contracts",
                     to: "contracts",
                     icon: <GavelIcon />,
+                  },
+                  {
+                    to: "wallet",
+                    content: "wallet",
+                    icon: <AccountBalanceWalletIcon />,
                   },
                   { content: "Settings", icon: <SettingsIcon /> },
                   {

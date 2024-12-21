@@ -59,27 +59,8 @@ const TypingIndicator = styled(Box)({
   color: "#666"
 });
 
-const ChatBox = () => {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      text: "Hey! How are you?",
-      isOutgoing: false,
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330"
-    },
-    {
-      id: 2,
-      text: "I'm doing great! Thanks for asking.",
-      isOutgoing: true,
-      avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36"
-    },
-    {
-      id: 3,
-      text: "Would you like to grab coffee sometime?",
-      isOutgoing: false,
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330"
-    }
-  ]);
+const ChatBox = (props) => {
+  const [messages, setMessages] = useState(props.messages||[]);
 
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -99,22 +80,23 @@ const ChatBox = () => {
         id: messages.length + 1,
         text: newMessage,
         isOutgoing: true,
-        avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36"
+        // avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36"
       }]);
+      props.handleSendMessage(newMessage)
       setNewMessage("");
 
-      setTimeout(() => {
-        setIsTyping(true);
-        setTimeout(() => {
-          setIsTyping(false);
-          setMessages(prev => [...prev, {
-            id: prev.length + 1,
-            text: "Thanks for the message!",
-            isOutgoing: false,
-            avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330"
-          }]);
-        }, 2000);
-      }, 1000);
+      // setTimeout(() => {
+      //   setIsTyping(true);
+      //   setTimeout(() => {
+      //     setIsTyping(false);
+      //     setMessages(prev => [...prev, {
+      //       id: prev.length + 1,
+      //       text: "Thanks for the message!",
+      //       isOutgoing: false,
+      //       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330"
+      //     }]);
+      //   }, 2000);
+      // }, 1000);
     }
   };
 
