@@ -239,8 +239,15 @@ const SocialPosts = () => {
     }
   };
 
+  const [isDeletingPost, setIsDeletingPost] = useState<string | null>(null);
+
   const handleDeletePost = async (postId: string) => {
     if (!backendActor) return;
+    
+    const confirmed = window.confirm("Are you sure you want to delete this post?");
+    if (!confirmed) return;
+    
+    setIsDeletingPost(postId);
     try {
       const result = await backendActor.delete_post(postId);
       if ("Ok" in result) {
@@ -249,6 +256,8 @@ const SocialPosts = () => {
       }
     } catch (err) {
       console.error("Error deleting post:", err);
+    } finally {
+      setIsDeletingPost(null);
     }
   };
 
@@ -395,8 +404,9 @@ const SocialPosts = () => {
                       onClick={() => handleDeletePost(post.id)}
                       color="error"
                       size="small"
+                      disabled={isDeletingPost === post.id}
                     >
-                      Delete
+                      {isDeletingPost === post.id ? 'Deleting...' : 'Delete'}
                     </Button>
                     <Button
                       onClick={() => handleEditPost(post)}
