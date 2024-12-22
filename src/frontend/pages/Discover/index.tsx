@@ -192,6 +192,7 @@ const SocialPosts = () => {
   const [newPostContent, setNewPostContent] = useState<any>(null);
   const [newPostTags, setNewPostTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [tagInputs, setTagInputs] = useState<{[key: string]: string}>({});
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
   const [isPosting, setIsPosting] = useState(false);
