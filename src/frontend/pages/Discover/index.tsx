@@ -22,9 +22,15 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
 import { useBackendContext } from "../../contexts/BackendContext";
-import {Post, PostUser} from "../../../declarations/backend/backend.did";
+import {
+  ContentNode,
+  Post,
+  PostUser,
+} from "../../../declarations/backend/backend.did";
 import { useSelector } from "react-redux";
-import {randomString} from "../../DataProcessing/dataSamples";
+import { randomString } from "../../DataProcessing/dataSamples";
+import EditorComponent from "../../components/EditorComponent";
+import {logger} from "../../DevUtils/logData";
 
 const Comment = ({ comment, onReply, level = 0 }) => {
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -41,7 +47,7 @@ const Comment = ({ comment, onReply, level = 0 }) => {
     <Box sx={{ ml: level * 3, mb: 2 }}>
       <Paper variant="outlined" sx={{ p: 2 }}>
         <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
-          <UserAvatarMenu user={comment.user} size="small" />
+          {comment.user && <UserAvatarMenu user={comment.user} size="small" />}
           <Box>
             <Typography variant="subtitle2">{comment.user.name}</Typography>
             <Typography variant="caption" color="text.secondary">
@@ -136,35 +142,45 @@ const SocialPosts = () => {
     fetchPosts();
   }, [backendActor]);
 
-  const [newPostContent, setNewPostContent] = useState("");
+  const [newPostContent, setNewPostContent] = useState<Array<ContentNode>>(null);
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
 
   const handleNewPost = async () => {
-    if (!newPostContent.trim() || !backendActor) return;
+    // if (!newPostContent.trim() || !backendActor) return;
 
     try {
+      // const content: ContentNode = {}
       const newPost: Post = {
         id: randomString(),
-        creator: Principal.fromText("2vxsx-fae").toString(),
-        date_created: BigInt(Date.now()),
+        creator: profile.id,
+        date_created: BigInt(Date.now() * 1e6),
         votes_up: [],
-        votes_down: [],
         tags: [],
-        content_tree: newPostContent.split('\n').map(text => ({
-          id: crypto.randomUUID(),
-          _type: "paragraph",
-          value: text,
-          data: [],
-          text: text,
-          children: [],
-          language: "",
-          indent: BigInt(0),
-          listStart: BigInt(0),
-          parent: null,
-          listStyleType: "",
-        })),
+        content_tree: newPostContent,
+        votes_down: [],
       };
+      // const newPost: Post = {
+      //   id: randomString(),
+      //   creator: Principal.fromText("2vxsx-fae").toString(),
+      //   date_created: BigInt(Date.now()),
+      //   votes_up: [],
+      //   votes_down: [],
+      //   tags: [],
+      //   content_tree: newPostContent.split('\n').map(text => ({
+      //     id: crypto.randomUUID(),
+      //     _type: "paragraph",
+      //     value: text,
+      //     data: [],
+      //     text: text,
+      //     children: [],
+      //     language: "",
+      //     indent: BigInt(0),
+      //     listStart: BigInt(0),
+      //     parent: null,
+      //     listStyleType: "",
+      //   })),
+      // };
 
       const result = await backendActor.save_post(newPost);
       if ("Ok" in result) {
@@ -192,9 +208,11 @@ const SocialPosts = () => {
       .toLowerCase();
     return (
       contentText.includes(searchQuery.toLowerCase()) ||
-      post.creator.name.toLowerCase().includes(searchQuery.toLowerCase())
+      (post.creator &&
+        post.creator.name.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   });
+  logger({filteredPosts})
 
   const handleVoteUp = async (postId: string) => {
     try {
@@ -311,16 +329,24 @@ const SocialPosts = () => {
     <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+          <Box >
             {currentUser && <UserAvatarMenu user={currentUser} />}
-            <TextField
-              fullWidth
-              multiline
-              rows={2}
-              placeholder="What's on your mind?"
-              value={newPostContent}
-              onChange={(e) => setNewPostContent(e.target.value)}
+            <EditorComponent
+              // readOnly={!isAuthoer}
+              // id={current_file.id}
+              contentEditable={true}
+              onChange={setNewPostContent}
+              // editorKey={editorKey}
+              content={[]}
             />
+            {/*<TextField*/}
+            {/*  fullWidth*/}
+            {/*  multiline*/}
+            {/*  rows={2}*/}
+            {/*  placeholder="What's on your mind?"*/}
+            {/*  value={newPostContent}*/}
+            {/*  onChange={(e) => setNewPostContent(e.target.value)}*/}
+            {/*/>*/}
           </Box>
           <Button variant="contained" fullWidth onClick={handleNewPost}>
             Post
@@ -330,12 +356,12 @@ const SocialPosts = () => {
 
       <SearchField searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
-      {filteredPosts.map((post) => (
+      {filteredPosts.map((post: PostUser) => (
         <Card key={post.id} sx={{ mb: 2 }}>
           <CardHeader
-            avatar={<UserAvatarMenu user={post.user} />}
-            title={post.user.name}
-            subheader={`@${post.user.username}`}
+            avatar={post.user && <UserAvatarMenu user={post.user} />}
+            title={post.user && post.user.name}
+            subheader={`@${post.user && post.user.name}`}
           />
           <CardContent>
             <Typography variant="body1">
@@ -380,7 +406,7 @@ const SocialPosts = () => {
                   startIcon={<MessageCircleIcon />}
                   onClick={() => toggleComments(post.id)}
                 >
-                  {post.comments.length}
+                  {post.comments && post.comments.length}
                 </Button>
               </Box>
               <IconButton onClick={() => handleShare(post.id)}>
@@ -412,15 +438,16 @@ const SocialPosts = () => {
                 </Box>
 
                 <Box sx={{ mt: 2 }}>
-                  {post.comments.map((comment) => (
-                    <Comment
-                      key={comment.id}
-                      comment={comment}
-                      onReply={(commentId, content) =>
-                        handleReply(post.id, commentId, content)
-                      }
-                    />
-                  ))}
+                  {post.comments &&
+                    post.comments.map((comment) => (
+                      <Comment
+                        key={comment.id}
+                        comment={comment}
+                        onReply={(commentId, content) =>
+                          handleReply(post.id, commentId, content)
+                        }
+                      />
+                    ))}
                 </Box>
               </Box>
             )}
