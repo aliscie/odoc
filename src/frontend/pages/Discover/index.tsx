@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Principal } from "@dfinity/principal";
-import { useBackendActor } from "../../hooks/useBackendActor";
 import {
   Box,
   Button,
@@ -22,6 +21,10 @@ import {
 } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
 import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
+import { useBackendContext } from "../../contexts/BackendContext";
+import {Post, PostUser} from "../../../declarations/backend/backend.did";
+import { useSelector } from "react-redux";
+import {randomString} from "../../DataProcessing/dataSamples";
 
 const Comment = ({ comment, onReply, level = 0 }) => {
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -108,10 +111,12 @@ const SearchField = ({ searchQuery, setSearchQuery }) => {
 };
 
 const SocialPosts = () => {
-  const { backendActor } = useBackendActor();
+  const { backendActor } = useBackendContext();
   const [posts, setPosts] = useState<Array<PostUser>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { profile } = useSelector((state: any) => state.filesState);
+  const currentUser = profile;
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -121,8 +126,8 @@ const SocialPosts = () => {
         setPosts(result);
         setError(null);
       } catch (err) {
-        console.error('Failed to fetch posts:', err);
-        setError('Failed to load posts. Please try again later.');
+        console.error("Failed to fetch posts:", err);
+        setError("Failed to load posts. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -140,37 +145,42 @@ const SocialPosts = () => {
 
     try {
       const newPost: Post = {
-        id: crypto.randomUUID(),
-        creator: Principal.fromText('2vxsx-fae').toString(),
+        id: randomString(),
+        creator: Principal.fromText("2vxsx-fae").toString(),
         date_created: BigInt(Date.now()),
         votes_up: [],
         votes_down: [],
         tags: [],
-        content_tree: [{
-          id: crypto.randomUUID(),
-          _type: 'paragraph',
-          value: newPostContent,
-          data: null,
-          text: newPostContent,
-          children: [],
-          language: '',
-          indent: BigInt(0),
-          listStart: BigInt(0),
-          parent: null,
-          listStyleType: ''
-        }]
+        content_tree: [
+          {
+            id: crypto.randomUUID(),
+            _type: "paragraph",
+            value: newPostContent,
+            data: null,
+            text: newPostContent,
+            children: [],
+            language: "",
+            indent: BigInt(0),
+            listStart: BigInt(0),
+            parent: null,
+            listStyleType: "",
+          },
+        ],
       };
 
       const result = await backendActor.save_post(newPost);
-      if ('Ok' in result) {
-        const updatedPosts = await backendActor.get_posts(BigInt(0), BigInt(20));
+      if ("Ok" in result) {
+        const updatedPosts = await backendActor.get_posts(
+          BigInt(0),
+          BigInt(20),
+        );
         setPosts(updatedPosts);
-        setNewPostContent('');
+        setNewPostContent("");
       } else {
-        console.error('Failed to create post:', result.Err);
+        console.error("Failed to create post:", result.Err);
       }
     } catch (err) {
-      console.error('Error creating post:', err);
+      console.error("Error creating post:", err);
     }
   };
 
@@ -188,16 +198,16 @@ const SocialPosts = () => {
     try {
       if (!backendActor) return;
       const result = await backendActor.vote_up(postId);
-      if ('Ok' in result) {
-        const updatedPosts = posts.map(post => 
-          post.id === postId ? result.Ok : post
+      if ("Ok" in result) {
+        const updatedPosts = posts.map((post) =>
+          post.id === postId ? result.Ok : post,
         );
         setPosts(updatedPosts);
       } else {
-        console.error('Failed to vote up:', result.Err);
+        console.error("Failed to vote up:", result.Err);
       }
     } catch (err) {
-      console.error('Error voting up:', err);
+      console.error("Error voting up:", err);
     }
   };
 
@@ -205,16 +215,16 @@ const SocialPosts = () => {
     try {
       if (!backendActor) return;
       const result = await backendActor.vote_down(postId);
-      if ('Ok' in result) {
-        const updatedPosts = posts.map(post => 
-          post.id === postId ? result.Ok : post
+      if ("Ok" in result) {
+        const updatedPosts = posts.map((post) =>
+          post.id === postId ? result.Ok : post,
         );
         setPosts(updatedPosts);
       } else {
-        console.error('Failed to vote down:', result.Err);
+        console.error("Failed to vote down:", result.Err);
       }
     } catch (err) {
-      console.error('Error voting down:', err);
+      console.error("Error voting down:", err);
     }
   };
 
@@ -300,7 +310,7 @@ const SocialPosts = () => {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-            <UserAvatarMenu user={currentUser} />
+            {currentUser && <UserAvatarMenu user={currentUser} />}
             <TextField
               fullWidth
               multiline
@@ -335,14 +345,30 @@ const SocialPosts = () => {
                 <Button
                   startIcon={<HeartIcon />}
                   onClick={() => handleVoteUp(post.id)}
-                  color={post.votes_up.some(p => p.toString() === Principal.fromText('2vxsx-fae').toString()) ? "primary" : "inherit"}
+                  color={
+                    post.votes_up.some(
+                      (p) =>
+                        p.toString() ===
+                        Principal.fromText("2vxsx-fae").toString(),
+                    )
+                      ? "primary"
+                      : "inherit"
+                  }
                 >
                   {post.votes_up.length}
                 </Button>
                 <Button
                   startIcon={<ThumbsDownIcon />}
                   onClick={() => handleVoteDown(post.id)}
-                  color={post.votes_down.some(p => p.toString() === Principal.fromText('2vxsx-fae').toString()) ? "error" : "inherit"}
+                  color={
+                    post.votes_down.some(
+                      (p) =>
+                        p.toString() ===
+                        Principal.fromText("2vxsx-fae").toString(),
+                    )
+                      ? "error"
+                      : "inherit"
+                  }
                 >
                   {post.votes_down.length}
                 </Button>
