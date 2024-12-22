@@ -155,7 +155,7 @@ const SocialPosts = () => {
           id: crypto.randomUUID(),
           _type: "paragraph",
           value: text,
-          data: null,
+          data: [],
           text: text,
           children: [],
           language: "",
