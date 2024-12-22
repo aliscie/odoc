@@ -469,6 +469,48 @@ const SocialPosts = () => {
 
   return (
     <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Delete Post?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete this post? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={async () => {
+              setDeleteDialogOpen(false);
+              if (!backendActor || !postToDelete) return;
+              try {
+                const result = await backendActor.delete_post(postToDelete);
+                if ("Ok" in result) {
+                  const updatedPosts = posts.filter((post) => post.id !== postToDelete);
+                  setPosts(updatedPosts);
+                }
+              } catch (err) {
+                console.error("Error deleting post:", err);
+              } finally {
+                setIsDeletingPost(null);
+                setPostToDelete(null);
+              }
+            }}
+            color="error"
+            autoFocus
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}>
@@ -727,48 +769,6 @@ const SocialPosts = () => {
         </Card>
       ))}
     </Box>
-    <Dialog
-      open={deleteDialogOpen}
-      onClose={() => setDeleteDialogOpen(false)}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
-      <DialogTitle id="alert-dialog-title">
-        {"Delete Post?"}
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          Are you sure you want to delete this post? This action cannot be undone.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
-          Cancel
-        </Button>
-        <Button
-          onClick={async () => {
-            setDeleteDialogOpen(false);
-            if (!backendActor || !postToDelete) return;
-            try {
-              const result = await backendActor.delete_post(postToDelete);
-              if ("Ok" in result) {
-                const updatedPosts = posts.filter((post) => post.id !== postToDelete);
-                setPosts(updatedPosts);
-              }
-            } catch (err) {
-              console.error("Error deleting post:", err);
-            } finally {
-              setIsDeletingPost(null);
-              setPostToDelete(null);
-            }
-          }}
-          color="error"
-          autoFocus
-        >
-          Delete
-        </Button>
-      </DialogActions>
-    </Dialog>
   );
 };
 
