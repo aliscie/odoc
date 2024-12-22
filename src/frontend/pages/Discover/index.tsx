@@ -208,8 +208,7 @@ const SocialPosts = () => {
       .toLowerCase();
     return (
       contentText.includes(searchQuery.toLowerCase()) ||
-      (post.creator &&
-        post.creator.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      (post.creator?.name?.toLowerCase().includes(searchQuery.toLowerCase()) || false)
     );
   });
   logger({filteredPosts})
@@ -359,14 +358,22 @@ const SocialPosts = () => {
       {filteredPosts.map((post: PostUser) => (
         <Card key={post.id} sx={{ mb: 2 }}>
           <CardHeader
-            avatar={post.user && <UserAvatarMenu user={post.user} />}
-            title={post.user && post.user.name}
-            subheader={`@${post.user && post.user.name}`}
+            avatar={post.creator && <UserAvatarMenu user={post.creator} />}
+            title={post.creator && post.creator.name}
+            subheader={new Date(Number(post.date_created) / 1e6).toLocaleString()}
           />
           <CardContent>
-            <Typography variant="body1">
-              {post.content_tree.map((node) => node.text).join(" ")}
-            </Typography>
+            {post.content_tree && post.content_tree.length > 0 ? (
+              <EditorComponent
+                contentEditable={false}
+                content={post.content_tree}
+                onChange={() => {}}
+              />
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No content
+              </Typography>
+            )}
 
             <Box
               sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
