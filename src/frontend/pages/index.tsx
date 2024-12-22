@@ -12,6 +12,7 @@ import Web3WalletUI from "../components/MuiComponents/walletUi";
 import { useSelector } from "react-redux";
 import {logger} from "../DevUtils/logData";
 import {useBackendContext} from "../contexts/BackendContext";
+import UserProfile from "./User";
 
 function Pages() {
   const { profile, profile_history, wallet, friends } = useSelector(
@@ -30,7 +31,7 @@ function Pages() {
         element={<ProfilePage friends={friends} profile={profile} history={profile_history} />}
       />
       <Route path="/share/*" element={<ShareFilePage />} />
-      <Route path="/user/*" element={<ProfilePage />} />
+      <Route path="/user/*" element={<UserProfile />} />
       <Route path="/chats/*" element={<ChatsPage />} />
       <Route path="/contracts/*" element={<ContractsHistory />} />
       <Route path="/*" element={<FileContentPage />} />

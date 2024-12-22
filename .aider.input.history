@@ -4474,3 +4474,2432 @@
 
 # 2024-12-22 16:36:15.727599
 +y
+
+# 2024-12-22 16:41:20.659658
++note export interface Post {
++  'id' : string,
++  'creator' : string,
++  'date_created' : bigint,
++  'votes_up' : Array<Principal>,
++  'tags' : Array<string>,
++  'content_tree' : Array<ContentNode>,
++  'votes_down' : Array<Principal>,
++}
+
+# 2024-12-22 16:42:06.161660
++field data -> Invalid opt variant {Comment:text; Image:vec nat64; Table:record {rows:vec record {id:text; contract:opt variant {SharesContract:text}; cells:opt vec record {text; text}}; columns:vec record {id:text; _type:text; field:text; filters:vec record {name:text; operations:vec variant {Equal; Contains; Bigger; BiggerOrEqual}; formula:opt text}; permissions:vec variant {Edit:principal; View:principal; AnyOneView; AnyOneEdite}; dataValidator:opt text; editable:bool; formula:opt record {column_id:text; execute:variant {TransferNft; TransferToken; TransferUsdt:record {id:text; status:variant {None; RequestCancellation; Released; Objected:text; Confirmed; ConfirmedCancellation; ApproveHighPromise; HighPromise}; date_created:float64; date_released:float64; cells:vec record {id:text; field:text; value:text}; contract_id:text; sender:principal; amount:float64; receiver:principal}}}}}} argument: null
++
+
+# 2024-12-22 16:58:05.768728
++import React, { useState, useEffect } from "react";
++import { Principal } from "@dfinity/principal";
++import {
++  Box,
++  Button,
++  Card,
++  CardContent,
++  CardHeader,
++  IconButton,
++  Paper,
++  TextField,
++  Typography,
++} from "@mui/material";
++import {
++  Comment as MessageCircleIcon,
++  Favorite as HeartIcon,
++  Reply as ReplyIcon,
++  Send as SendIcon,
++  Share as ShareIcon,
++  ThumbDown as ThumbsDownIcon,
++} from "@mui/icons-material";
++import SearchIcon from "@mui/icons-material/Search";
++import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
++import { useBackendContext } from "../../contexts/BackendContext";
++import {
++  ContentNode,
++  Post,
++  PostUser,
++} from "../../../declarations/backend/backend.did";
++import { useSelector } from "react-redux";
++import { randomString } from "../../DataProcessing/dataSamples";
++import EditorComponent from "../../components/EditorComponent";
++
++const Comment = ({ comment, onReply, level = 0 }) => {
++  const [showReplyInput, setShowReplyInput] = useState(false);
++  const [replyContent, setReplyContent] = useState("");
++
++  const handleReplySubmit = () => {
++    if (!replyContent.trim()) return;
++    onReply(comment.id, replyContent);
++    setReplyContent("");
++    setShowReplyInput(false);
++  };
++
++  return (
++    <Box sx={{ ml: level * 3, mb: 2 }}>
++      <Paper variant="outlined" sx={{ p: 2 }}>
++        <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
++          {comment.user && <UserAvatarMenu user={comment.user} size="small" />}
++          <Box>
++            <Typography variant="subtitle2">{comment.user.name}</Typography>
++            <Typography variant="caption" color="text.secondary">
++              {comment.timestamp}
++            </Typography>
++          </Box>
++        </Box>
++        <Typography variant="body2" sx={{ mb: 1 }}>
++          {comment.content}
++        </Typography>
++        <Button
++          size="small"
++          startIcon={<ReplyIcon />}
++          onClick={() => setShowReplyInput(!showReplyInput)}
++        >
++          Reply
++        </Button>
++      </Paper>
++
++      {showReplyInput && (
++        <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
++          <TextField
++            size="small"
++            fullWidth
++            placeholder="Write a reply..."
++            value={replyContent}
++            onChange={(e) => setReplyContent(e.target.value)}
++          />
++          <IconButton onClick={handleReplySubmit} color="primary">
++            <SendIcon />
++          </IconButton>
++        </Box>
++      )}
++
++      {comment.replies?.map((reply) => (
++        <Comment
++          key={reply.id}
++          comment={reply}
++          onReply={onReply}
++          level={level + 1}
++        />
++      ))}
++    </Box>
++  );
++};
++
++const SearchField = ({ searchQuery, setSearchQuery }) => {
++  return (
++    <Card sx={{ mb: 3 }}>
++      <CardContent>
++        <TextField
++          fullWidth
++          placeholder="Search posts by content or user..."
++          value={searchQuery}
++          onChange={(e) => setSearchQuery(e.target.value)}
++          InputProps={{
++            startAdornment: (
++              <Box sx={{ color: "text.secondary", mr: 1 }}>
++                <SearchIcon />
++              </Box>
++            ),
++          }}
++        />
++      </CardContent>
++    </Card>
++  );
++};
++
++const SocialPosts = () => {
++  const { backendActor } = useBackendContext();
++  const [posts, setPosts] = useState<Array<PostUser>>([]);
++  const [loading, setLoading] = useState(true);
++  const [error, setError] = useState<string | null>(null);
++  const { profile } = useSelector((state: any) => state.filesState);
++  const currentUser = profile;
++
++  useEffect(() => {
++    const fetchPosts = async () => {
++      try {
++        if (!backendActor) return;
++        const result = await backendActor.get_posts(BigInt(0), BigInt(20));
++        setPosts(result);
++        setError(null);
++      } catch (err) {
++        console.error("Failed to fetch posts:", err);
++        setError("Failed to load posts. Please try again later.");
++      } finally {
++        setLoading(false);
++      }
++    };
++
++    fetchPosts();
++  }, [backendActor]);
++
++  const [newPostContent, setNewPostContent] = useState<Array<ContentNode>>(null);
++  const [commentInputs, setCommentInputs] = useState({});
++  const [showComments, setShowComments] = useState({});
++
++  const handleNewPost = async () => {
++    // if (!newPostContent.trim() || !backendActor) return;
++
++    try {
++      // const content: ContentNode = {}
++      const newPost: Post = {
++        id: randomString(),
++        creator: profile.id,
++        date_created: BigInt(Date.now() * 1e6),
++        votes_up: [],
++        tags: [],
++        content_tree: newPostContent,
++        votes_down: [],
++      };
++      // const newPost: Post = {
++      //   id: randomString(),
++      //   creator: Principal.fromText("2vxsx-fae").toString(),
++      //   date_created: BigInt(Date.now()),
++      //   votes_up: [],
++      //   votes_down: [],
++      //   tags: [],
++      //   content_tree: newPostContent.split('\n').map(text => ({
++      //     id: crypto.randomUUID(),
++      //     _type: "paragraph",
++      //     value: text,
++      //     data: [],
++      //     text: text,
++      //     children: [],
++      //     language: "",
++      //     indent: BigInt(0),
++      //     listStart: BigInt(0),
++      //     parent: null,
++      //     listStyleType: "",
++      //   })),
++      // };
++
++      const result = await backendActor.save_post(newPost);
++      if ("Ok" in result) {
++        const updatedPosts = await backendActor.get_posts(
++          BigInt(0),
++          BigInt(20),
++        );
++        setPosts(updatedPosts);
++        setNewPostContent("");
++      } else {
++        console.error("Failed to create post:", result.Err);
++      }
++    } catch (err) {
++      console.error("Error creating post:", err);
++    }
++  };
++
++  const [searchQuery, setSearchQuery] = useState("");
++
++  // Add this function after other handler functions
++  const filteredPosts = posts.filter((post) => {
++    const contentText = post.content_tree
++      .map((node) => node.text)
++      .join(" ")
++      .toLowerCase();
++    return (
++      contentText.includes(searchQuery.toLowerCase()) ||
++      (post.creator &&
++        post.creator.name.toLowerCase().includes(searchQuery.toLowerCase()))
++    );
++  });
++
++  const handleVoteUp = async (postId: string) => {
++    try {
++      if (!backendActor) return;
++      const result = await backendActor.vote_up(postId);
++      if ("Ok" in result) {
++        const updatedPosts = posts.map((post) =>
++          post.id === postId ? result.Ok : post,
++        );
++        setPosts(updatedPosts);
++      } else {
++        console.error("Failed to vote up:", result.Err);
++      }
++    } catch (err) {
++      console.error("Error voting up:", err);
++    }
++  };
++
++  const handleVoteDown = async (postId: string) => {
++    try {
++      if (!backendActor) return;
++      const result = await backendActor.vote_down(postId);
++      if ("Ok" in result) {
++        const updatedPosts = posts.map((post) =>
++          post.id === postId ? result.Ok : post,
++        );
++        setPosts(updatedPosts);
++      } else {
++        console.error("Failed to vote down:", result.Err);
++      }
++    } catch (err) {
++      console.error("Error voting down:", err);
++    }
++  };
++
++  const handleShare = (postId) => {
++    alert("Share functionality would go here!");
++  };
++
++  const toggleComments = (postId) => {
++    setShowComments((prev) => ({
++      ...prev,
++      [postId]: !prev[postId],
++    }));
++  };
++
++  const handleComment = (postId) => {
++    if (!commentInputs[postId]?.trim()) return;
++
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          return {
++            ...post,
++            comments: [
++              ...post.comments,
++              {
++                id: Date.now(),
++                content: commentInputs[postId],
++                timestamp: new Date().toLocaleString(),
++                replies: [],
++                user: currentUser,
++              },
++            ],
++          };
++        }
++        return post;
++      }),
++    );
++
++    setCommentInputs((prev) => ({
++      ...prev,
++      [postId]: "",
++    }));
++  };
++
++  const handleReply = (postId, commentId, replyContent) => {
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          const updatedComments = addReplyToComment(post.comments, commentId, {
++            id: Date.now(),
++            content: replyContent,
++            timestamp: new Date().toLocaleString(),
++            replies: [],
++            user: currentUser,
++          });
++          return { ...post, comments: updatedComments };
++        }
++        return post;
++      }),
++    );
++  };
++
++  const addReplyToComment = (comments, commentId, reply) => {
++    return comments.map((comment) => {
++      if (comment.id === commentId) {
++        return {
++          ...comment,
++          replies: [...(comment.replies || []), reply],
++        };
++      }
++      if (comment.replies?.length) {
++        return {
++          ...comment,
++          replies: addReplyToComment(comment.replies, commentId, reply),
++        };
++      }
++      return comment;
++    });
++  };
++
++  return (
++    <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
++      <Card sx={{ mb: 3 }}>
++        <CardContent>
++          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
++            {currentUser && <UserAvatarMenu user={currentUser} />}
++            <EditorComponent
++              // readOnly={!isAuthoer}
++              // id={current_file.id}
++              contentEditable={true}
++              onChange={setNewPostContent}
++              // editorKey={editorKey}
++              content={[]}
++            />
++            {/*<TextField*/}
++            {/*  fullWidth*/}
++            {/*  multiline*/}
++            {/*  rows={2}*/}
++            {/*  placeholder="What's on your mind?"*/}
++            {/*  value={newPostContent}*/}
++            {/*  onChange={(e) => setNewPostContent(e.target.value)}*/}
++            {/*/>*/}
++          </Box>
++          <Button variant="contained" fullWidth onClick={handleNewPost}>
++            Post
++          </Button>
++        </CardContent>
++      </Card>
++
++      <SearchField searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
++
++      {filteredPosts.map((post: PostUser) => (
++        <Card key={post.id} sx={{ mb: 2 }}>
++          <CardHeader
++            avatar={post.user && <UserAvatarMenu user={post.user} />}
++            title={post.user && post.user.name}
++            subheader={`@${post.user && post.user.name}`}
++          />
++          <CardContent>
++            <Typography variant="body1">
++              {post.content_tree.map((node) => node.text).join(" ")}
++            </Typography>
++
++            <Box
++              sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
++            >
++              <Box sx={{ display: "flex", gap: 1 }}>
++                <Button
++                  startIcon={<HeartIcon />}
++                  onClick={() => handleVoteUp(post.id)}
++                  color={
++                    post.votes_up.some(
++                      (p) =>
++                        p.toString() ===
++                        Principal.fromText("2vxsx-fae").toString(),
++                    )
++                      ? "primary"
++                      : "inherit"
++                  }
++                >
++                  {post.votes_up.length}
++                </Button>
++                <Button
++                  startIcon={<ThumbsDownIcon />}
++                  onClick={() => handleVoteDown(post.id)}
++                  color={
++                    post.votes_down.some(
++                      (p) =>
++                        p.toString() ===
++                        Principal.fromText("2vxsx-fae").toString(),
++                    )
++                      ? "error"
++                      : "inherit"
++                  }
++                >
++                  {post.votes_down.length}
++                </Button>
++                <Button
++                  startIcon={<MessageCircleIcon />}
++                  onClick={() => toggleComments(post.id)}
++                >
++                  {post.comments && post.comments.length}
++                </Button>
++              </Box>
++              <IconButton onClick={() => handleShare(post.id)}>
++                <ShareIcon />
++              </IconButton>
++            </Box>
++
++            {showComments[post.id] && (
++              <Box sx={{ mt: 2 }}>
++                <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
++                  <TextField
++                    size="small"
++                    fullWidth
++                    placeholder="Write a comment..."
++                    value={commentInputs[post.id] || ""}
++                    onChange={(e) =>
++                      setCommentInputs((prev) => ({
++                        ...prev,
++                        [post.id]: e.target.value,
++                      }))
++                    }
++                  />
++                  <IconButton
++                    onClick={() => handleComment(post.id)}
++                    color="primary"
++                  >
++                    <SendIcon />
++                  </IconButton>
++                </Box>
++
++                <Box sx={{ mt: 2 }}>
++                  {post.comments &&
++                    post.comments.map((comment) => (
++                      <Comment
++                        key={comment.id}
++                        comment={comment}
++                        onReply={(commentId, content) =>
++                          handleReply(post.id, commentId, content)
++                        }
++                      />
++                    ))}
++                </Box>
++              </Box>
++            )}
++          </CardContent>
++        </Card>
++      ))}
++    </Box>
++  );
++};
++
++export default SocialPosts;
++ fix this 1. use <EditorComponent for post content 2. note the data look like this {  "filteredPosts": [    {      "id": "o0bduo",      "creator": {        "id": "omwxg-jy7vb-dyi54-xw2ih-rx2a3-yan33-dwkbw-bjjb5-h6gd2-e5eq4-nae",        "name": "a"      },      "date_created": "1734857075048701000",      "votes_up": [],      "tags": [],      "content_tree": [],      "votes_down": []    }  ]} render them acordencly 
+
+# 2024-12-22 17:01:50.474239
++note {  "newPostContent": [    {      "children": [        {          "text": "test"        }      ],      "type": "p",      "id": "8d2q1"    }  ]} while export interface ContentNode {
++  'id' : string,
++  '_type' : string,
++  'value' : string,
++  'data' : [] | [ContentData],
++  'text' : string,
++  'children' : Array<string>,
++  'language' : string,
++  'indent' : bigint,
++  'listStart' : bigint,
++  'parent' : [] | [string],
++  'listStyleType' : string,
++} serlize the data acordengly import React, { useState, useEffect } from "react";
++import { Principal } from "@dfinity/principal";
++import {
++  Box,
++  Button,
++  Card,
++  CardContent,
++  CardHeader,
++  IconButton,
++  Paper,
++  TextField,
++  Typography,
++} from "@mui/material";
++import {
++  Comment as MessageCircleIcon,
++  Favorite as HeartIcon,
++  Reply as ReplyIcon,
++  Send as SendIcon,
++  Share as ShareIcon,
++  ThumbDown as ThumbsDownIcon,
++} from "@mui/icons-material";
++import SearchIcon from "@mui/icons-material/Search";
++import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
++import { useBackendContext } from "../../contexts/BackendContext";
++import {
++  ContentNode,
++  Post,
++  PostUser,
++} from "../../../declarations/backend/backend.did";
++import { useSelector } from "react-redux";
++import { randomString } from "../../DataProcessing/dataSamples";
++import EditorComponent from "../../components/EditorComponent";
++import { logger } from "../../DevUtils/logData";
++
++const Comment = ({ comment, onReply, level = 0 }) => {
++  const [showReplyInput, setShowReplyInput] = useState(false);
++  const [replyContent, setReplyContent] = useState("");
++
++  const handleReplySubmit = () => {
++    if (!replyContent.trim()) return;
++    onReply(comment.id, replyContent);
++    setReplyContent("");
++    setShowReplyInput(false);
++  };
++
++  return (
++    <Box sx={{ ml: level * 3, mb: 2 }}>
++      <Paper variant="outlined" sx={{ p: 2 }}>
++        <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
++          {comment.user && <UserAvatarMenu user={comment.user} size="small" />}
++          <Box>
++            <Typography variant="subtitle2">{comment.user.name}</Typography>
++            <Typography variant="caption" color="text.secondary">
++              {comment.timestamp}
++            </Typography>
++          </Box>
++        </Box>
++        <Typography variant="body2" sx={{ mb: 1 }}>
++          {comment.content}
++        </Typography>
++        <Button
++          size="small"
++          startIcon={<ReplyIcon />}
++          onClick={() => setShowReplyInput(!showReplyInput)}
++        >
++          Reply
++        </Button>
++      </Paper>
++
++      {showReplyInput && (
++        <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
++          <TextField
++            size="small"
++            fullWidth
++            placeholder="Write a reply..."
++            value={replyContent}
++            onChange={(e) => setReplyContent(e.target.value)}
++          />
++          <IconButton onClick={handleReplySubmit} color="primary">
++            <SendIcon />
++          </IconButton>
++        </Box>
++      )}
++
++      {comment.replies?.map((reply) => (
++        <Comment
++          key={reply.id}
++          comment={reply}
++          onReply={onReply}
++          level={level + 1}
++        />
++      ))}
++    </Box>
++  );
++};
++
++const SearchField = ({ searchQuery, setSearchQuery }) => {
++  return (
++    <Card sx={{ mb: 3 }}>
++      <CardContent>
++        <TextField
++          fullWidth
++          placeholder="Search posts by content or user..."
++          value={searchQuery}
++          onChange={(e) => setSearchQuery(e.target.value)}
++          InputProps={{
++            startAdornment: (
++              <Box sx={{ color: "text.secondary", mr: 1 }}>
++                <SearchIcon />
++              </Box>
++            ),
++          }}
++        />
++      </CardContent>
++    </Card>
++  );
++};
++
++const SocialPosts = () => {
++  const { backendActor } = useBackendContext();
++  const [posts, setPosts] = useState<Array<PostUser>>([]);
++  const [loading, setLoading] = useState(true);
++  const [error, setError] = useState<string | null>(null);
++  const { profile } = useSelector((state: any) => state.filesState);
++  const currentUser = profile;
++
++  useEffect(() => {
++    const fetchPosts = async () => {
++      try {
++        if (!backendActor) return;
++        const result = await backendActor.get_posts(BigInt(0), BigInt(20));
++        setPosts(result);
++        setError(null);
++      } catch (err) {
++        console.error("Failed to fetch posts:", err);
++        setError("Failed to load posts. Please try again later.");
++      } finally {
++        setLoading(false);
++      }
++    };
++
++    fetchPosts();
++  }, [backendActor]);
++
++  const [newPostContent, setNewPostContent] =
++    useState<Array<ContentNode>>(null);
++  const [commentInputs, setCommentInputs] = useState({});
++  const [showComments, setShowComments] = useState({});
++  logger({ newPostContent });
++
++  const handleNewPost = async () => {
++    // if (!newPostContent.trim() || !backendActor) return;
++
++    try {
++      // const content: ContentNode = {}
++      const newPost: Post = {
++        id: randomString(),
++        creator: profile.id,
++        date_created: BigInt(Date.now() * 1e6),
++        votes_up: [],
++        tags: [],
++        content_tree: newPostContent,
++        votes_down: [],
++      };
++      // const newPost: Post = {
++      //   id: randomString(),
++      //   creator: Principal.fromText("2vxsx-fae").toString(),
++      //   date_created: BigInt(Date.now()),
++      //   votes_up: [],
++      //   votes_down: [],
++      //   tags: [],
++      //   content_tree: newPostContent.split('\n').map(text => ({
++      //     id: crypto.randomUUID(),
++      //     _type: "paragraph",
++      //     value: text,
++      //     data: [],
++      //     text: text,
++      //     children: [],
++      //     language: "",
++      //     indent: BigInt(0),
++      //     listStart: BigInt(0),
++      //     parent: null,
++      //     listStyleType: "",
++      //   })),
++      // };
++
++      const result = await backendActor.save_post(newPost);
++      if ("Ok" in result) {
++        const updatedPosts = await backendActor.get_posts(
++          BigInt(0),
++          BigInt(20),
++        );
++        setPosts(updatedPosts);
++        setNewPostContent("");
++      } else {
++        console.error("Failed to create post:", result.Err);
++      }
++    } catch (err) {
++      console.error("Error creating post:", err);
++    }
++  };
++
++  const [searchQuery, setSearchQuery] = useState("");
++
++  // Add this function after other handler functions
++  const filteredPosts = posts.filter((post) => {
++    const contentText = post.content_tree
++      .map((node) => node.text)
++      .join(" ")
++      .toLowerCase();
++    return (
++      contentText.includes(searchQuery.toLowerCase()) ||
++      post.creator?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
++      false
++    );
++  });
++  logger({ filteredPosts });
++
++  const handleVoteUp = async (postId: string) => {
++    try {
++      if (!backendActor) return;
++      const result = await backendActor.vote_up(postId);
++      if ("Ok" in result) {
++        const updatedPosts = posts.map((post) =>
++          post.id === postId ? result.Ok : post,
++        );
++        setPosts(updatedPosts);
++      } else {
++        console.error("Failed to vote up:", result.Err);
++      }
++    } catch (err) {
++      console.error("Error voting up:", err);
++    }
++  };
++
++  const handleVoteDown = async (postId: string) => {
++    try {
++      if (!backendActor) return;
++      const result = await backendActor.vote_down(postId);
++      if ("Ok" in result) {
++        const updatedPosts = posts.map((post) =>
++          post.id === postId ? result.Ok : post,
++        );
++        setPosts(updatedPosts);
++      } else {
++        console.error("Failed to vote down:", result.Err);
++      }
++    } catch (err) {
++      console.error("Error voting down:", err);
++    }
++  };
++
++  const handleShare = (postId) => {
++    alert("Share functionality would go here!");
++  };
++
++  const toggleComments = (postId) => {
++    setShowComments((prev) => ({
++      ...prev,
++      [postId]: !prev[postId],
++    }));
++  };
++
++  const handleComment = (postId) => {
++    if (!commentInputs[postId]?.trim()) return;
++
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          return {
++            ...post,
++            comments: [
++              ...post.comments,
++              {
++                id: Date.now(),
++                content: commentInputs[postId],
++                timestamp: new Date().toLocaleString(),
++                replies: [],
++                user: currentUser,
++              },
++            ],
++          };
++        }
++        return post;
++      }),
++    );
++
++    setCommentInputs((prev) => ({
++      ...prev,
++      [postId]: "",
++    }));
++  };
++
++  const handleReply = (postId, commentId, replyContent) => {
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          const updatedComments = addReplyToComment(post.comments, commentId, {
++            id: Date.now(),
++            content: replyContent,
++            timestamp: new Date().toLocaleString(),
++            replies: [],
++            user: currentUser,
++          });
++          return { ...post, comments: updatedComments };
++        }
++        return post;
++      }),
++    );
++  };
++
++  const addReplyToComment = (comments, commentId, reply) => {
++    return comments.map((comment) => {
++      if (comment.id === commentId) {
++        return {
++          ...comment,
++          replies: [...(comment.replies || []), reply],
++        };
++      }
++      if (comment.replies?.length) {
++        return {
++          ...comment,
++          replies: addReplyToComment(comment.replies, commentId, reply),
++        };
++      }
++      return comment;
++    });
++  };
++
++  return (
++    <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
++      <Card sx={{ mb: 3 }}>
++        <CardContent>
++          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}>
++            <Box>
++              <EditorComponent
++                contentEditable={true}
++                onChange={setNewPostContent}
++                content={[]}
++              />
++            </Box>
++          </Box>
++          <Button variant="contained" fullWidth onClick={handleNewPost}>
++            Post
++          </Button>
++        </CardContent>
++      </Card>
++
++      <SearchField searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
++
++      {filteredPosts.map((post: PostUser) => (
++        <Card key={post.id} sx={{ mb: 2 }}>
++          <CardHeader
++            avatar={post.creator && <UserAvatarMenu user={post.creator} />}
++            title={post.creator && post.creator.name}
++            subheader={new Date(
++              Number(post.date_created) / 1e6,
++            ).toLocaleString()}
++          />
++          <CardContent>
++            {post.content_tree && post.content_tree.length > 0 ? (
++              <EditorComponent
++                contentEditable={false}
++                content={post.content_tree}
++                onChange={() => {}}
++              />
++            ) : (
++              <Typography variant="body2" color="text.secondary">
++                No content
++              </Typography>
++            )}
++
++            <Box
++              sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
++            >
++              <Box sx={{ display: "flex", gap: 1 }}>
++                <Button
++                  startIcon={<HeartIcon />}
++                  onClick={() => handleVoteUp(post.id)}
++                  color={
++                    post.votes_up.some(
++                      (p) =>
++                        p.toString() ===
++                        Principal.fromText("2vxsx-fae").toString(),
++                    )
++                      ? "primary"
++                      : "inherit"
++                  }
++                >
++                  {post.votes_up.length}
++                </Button>
++                <Button
++                  startIcon={<ThumbsDownIcon />}
++                  onClick={() => handleVoteDown(post.id)}
++                  color={
++                    post.votes_down.some(
++                      (p) =>
++                        p.toString() ===
++                        Principal.fromText("2vxsx-fae").toString(),
++                    )
++                      ? "error"
++                      : "inherit"
++                  }
++                >
++                  {post.votes_down.length}
++                </Button>
++                <Button
++                  startIcon={<MessageCircleIcon />}
++                  onClick={() => toggleComments(post.id)}
++                >
++                  {post.comments && post.comments.length}
++                </Button>
++              </Box>
++              <IconButton onClick={() => handleShare(post.id)}>
++                <ShareIcon />
++              </IconButton>
++            </Box>
++
++            {showComments[post.id] && (
++              <Box sx={{ mt: 2 }}>
++                <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
++                  <TextField
++                    size="small"
++                    fullWidth
++                    placeholder="Write a comment..."
++                    value={commentInputs[post.id] || ""}
++                    onChange={(e) =>
++                      setCommentInputs((prev) => ({
++                        ...prev,
++                        [post.id]: e.target.value,
++                      }))
++                    }
++                  />
++                  <IconButton
++                    onClick={() => handleComment(post.id)}
++                    color="primary"
++                  >
++                    <SendIcon />
++                  </IconButton>
++                </Box>
++
++                <Box sx={{ mt: 2 }}>
++                  {post.comments &&
++                    post.comments.map((comment) => (
++                      <Comment
++                        key={comment.id}
++                        comment={comment}
++                        onReply={(commentId, content) =>
++                          handleReply(post.id, commentId, content)
++                        }
++                      />
++                    ))}
++                </Box>
++              </Box>
++            )}
++          </CardContent>
++        </Card>
++      ))}
++    </Box>
++  );
++};
++
++export default SocialPosts;
++
+
+# 2024-12-22 17:17:55.500522
++serilize and deserilize should be done like this import { Divider, Grid, Typography } from "@mui/material";
++import React from "react";
++import IconButton from "@mui/material/IconButton";
++import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
++import MoreTimeIcon from "@mui/icons-material/MoreTime";
++import { ContentNode, Post } from "../../../declarations/backend/backend.did";
++import { randomId } from "@mui/x-data-grid-generator";
++import { useSelector } from "react-redux";
++import { useSnackbar } from "notistack";
++import { LoadingButton } from "@mui/lab";
++import PostComponent from "../../components/MuiComponents/PostComponent";
++import { useBackendContext } from "../../contexts/BackendContext";
++import PostTags from "./TagsComponent";
++import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
++
++function CreatePost(props: any) {
++  let post_id = randomId();
++  const { profile } = useSelector((state: any) => state.filesState);
++  const [post, setPost] = React.useState<Post>({
++    id: post_id,
++    creator: profile ? profile.id : "",
++    date_created: BigInt(0),
++    votes_up: [],
++    tags: [],
++    content_tree: [],
++    votes_down: [],
++  });
++
++  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
++  let [isEnter, setEnter] = React.useState(false);
++  let [loading, setLoad] = React.useState(false);
++  let [changes, setChanges] = React.useState<any>(null);
++  const { backendActor } = useBackendContext();
++  const handleCreatePost = async () => {
++    let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
++      serializeFileContents(changes);
++    let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
++    let new_post = {
++      ...post,
++      creator: post.creator,
++      content_tree: content_tree,
++    };
++    setLoad(true);
++    let res = await backendActor?.save_post(new_post);
++    setLoad(false);
++    if ("Ok" in res) {
++      props.setPosts((pre) => {
++        new_post.creator = { name: profile.name, id: profile.id };
++        if (pre.length > 0) {
++          return [new_post, ...pre];
++        }
++        return [new_post];
++      });
++      enqueueSnackbar("Post created", { variant: "success" });
++      setChanges(null);
++    } else {
++      enqueueSnackbar("Error creating post. " + res.Err, { variant: "error" });
++    }
++  };
++  let CreateButtons = (props: any) => (
++    <>
++      <LoadingButton
++        // disabled={loading}
++        loading={loading}
++        onClick={handleCreatePost}
++      >
++        <AddCircleOutlineIcon />
++      </LoadingButton>
++      {/*<IconButton>*/}
++      {/*  <MoreTimeIcon />*/}
++      {/*</IconButton>*/}
++      <PostTags
++        label={"Tags"}
++        post={post}
++        setTags={(updatedTags) => {
++          setPost((prevPost) => ({
++            ...prevPost,
++            tags: updatedTags.map((tag) => tag.title),
++          }));
++        }}
++      />
++    </>
++  );
++
++  function onChange(changes: any) {
++    let new_change = {};
++    new_change[""] = changes;
++    setChanges(new_change);
++  }
++
++  return (
++    <Grid
++      onMouseEnter={() => setEnter(true)}
++      onMouseLeave={() => setEnter(false)}
++      item
++      sx={{
++        my: 1,
++        mx: "auto",
++        p: 2,
++        // marginLeft: '20%',
++        // marginRight: '20%',
++        // marginBottom: '20%',
++        opacity: isEnter ? 1 : 0.2,
++        // height: '10%', // adjust the value accordingly
++      }}
++    >
++      <PostComponent
++        is_owner={true}
++        noHeaders={true}
++        key={changes} // Use the key to force a re-render
++        buttons={<CreateButtons />}
++        post={post}
++        onChange={onChange}
++      />
++      <Divider />
++    </Grid>
++  );
++}
++
++export default CreatePost;
++import React, { useState, useEffect } from "react";
++import { Principal } from "@dfinity/principal";
++import {
++  Box,
++  Button,
++  Card,
++  CardContent,
++  CardHeader,
++  IconButton,
++  Paper,
++  TextField,
++  Typography,
++} from "@mui/material";
++import {
++  Comment as MessageCircleIcon,
++  Favorite as HeartIcon,
++  Reply as ReplyIcon,
++  Send as SendIcon,
++  Share as ShareIcon,
++  ThumbDown as ThumbsDownIcon,
++} from "@mui/icons-material";
++import SearchIcon from "@mui/icons-material/Search";
++import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
++import { useBackendContext } from "../../contexts/BackendContext";
++import {
++  ContentNode,
++  Post,
++  PostUser,
++} from "../../../declarations/backend/backend.did";
++import { useSelector } from "react-redux";
++import { randomString } from "../../DataProcessing/dataSamples";
++import EditorComponent from "../../components/EditorComponent";
++import { logger } from "../../DevUtils/logData";
++import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
++import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
++
++const Comment = ({ comment, onReply, level = 0 }) => {
++  const [showReplyInput, setShowReplyInput] = useState(false);
++  const [replyContent, setReplyContent] = useState("");
++
++  const handleReplySubmit = () => {
++    if (!replyContent.trim()) return;
++    onReply(comment.id, replyContent);
++    setReplyContent("");
++    setShowReplyInput(false);
++  };
++
++  return (
++    <Box sx={{ ml: level * 3, mb: 2 }}>
++      <Paper variant="outlined" sx={{ p: 2 }}>
++        <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
++          {comment.user && <UserAvatarMenu user={comment.user} size="small" />}
++          <Box>
++            <Typography variant="subtitle2">{comment.user.name}</Typography>
++            <Typography variant="caption" color="text.secondary">
++              {comment.timestamp}
++            </Typography>
++          </Box>
++        </Box>
++        <Typography variant="body2" sx={{ mb: 1 }}>
++          {comment.content}
++        </Typography>
++        <Button
++          size="small"
++          startIcon={<ReplyIcon />}
++          onClick={() => setShowReplyInput(!showReplyInput)}
++        >
++          Reply
++        </Button>
++      </Paper>
++
++      {showReplyInput && (
++        <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
++          <TextField
++            size="small"
++            fullWidth
++            placeholder="Write a reply..."
++            value={replyContent}
++            onChange={(e) => setReplyContent(e.target.value)}
++          />
++          <IconButton onClick={handleReplySubmit} color="primary">
++            <SendIcon />
++          </IconButton>
++        </Box>
++      )}
++
++      {comment.replies?.map((reply) => (
++        <Comment
++          key={reply.id}
++          comment={reply}
++          onReply={onReply}
++          level={level + 1}
++        />
++      ))}
++    </Box>
++  );
++};
++
++const SearchField = ({ searchQuery, setSearchQuery }) => {
++  return (
++    <Card sx={{ mb: 3 }}>
++      <CardContent>
++        <TextField
++          fullWidth
++          placeholder="Search posts by content or user..."
++          value={searchQuery}
++          onChange={(e) => setSearchQuery(e.target.value)}
++          InputProps={{
++            startAdornment: (
++              <Box sx={{ color: "text.secondary", mr: 1 }}>
++                <SearchIcon />
++              </Box>
++            ),
++          }}
++        />
++      </CardContent>
++    </Card>
++  );
++};
++
++const SocialPosts = () => {
++  const { backendActor } = useBackendContext();
++  const [posts, setPosts] = useState<Array<PostUser>>([]);
++  const [loading, setLoading] = useState(true);
++  const [error, setError] = useState<string | null>(null);
++  const { profile } = useSelector((state: any) => state.filesState);
++  const currentUser = profile;
++
++  useEffect(() => {
++    const fetchPosts = async () => {
++      try {
++        if (!backendActor) return;
++        const result = await backendActor.get_posts(BigInt(0), BigInt(20));
++        setPosts(result);
++        setError(null);
++      } catch (err) {
++        console.error("Failed to fetch posts:", err);
++        setError("Failed to load posts. Please try again later.");
++      } finally {
++        setLoading(false);
++      }
++    };
++
++    fetchPosts();
++  }, [backendActor]);
++
++  const [newPostContent, setNewPostContent] =
++    useState<Array<ContentNode>>(null);
++  const [commentInputs, setCommentInputs] = useState({});
++  const [showComments, setShowComments] = useState({});
++  // logger({ newPostContent });
++
++  const handleNewPost = async () => {
++    if (!newPostContent || !backendActor) return;
++
++    try {
++      // Transform editor content into ContentNode format
++      // const contentNodes: Array<ContentNode> = newPostContent.map((node) => ({
++      //   id: node.id || randomString(),
++      //   _type: node.type || "paragraph",
++      //   value: node.children?.[0]?.text || "",
++      //   data: [],
++      //   text: node.children?.[0]?.text || "",
++      //   children: [],
++      //   language: "",
++      //   indent: BigInt(0),
++      //   listStart: BigInt(0),
++      //   parent: [],
++      //   listStyleType: "",
++      // }));
++      let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
++        serializeFileContents(newPostContent);
++      let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
++      const newPost: Post = {
++        id: randomString(),
++        creator: profile.id,
++        date_created: BigInt(Date.now() * 1e6),
++        votes_up: [],
++        tags: [],
++        content_tree,
++        votes_down: [],
++      };
++      // const newPost: Post = {
++      //   id: randomString(),
++      //   creator: Principal.fromText("2vxsx-fae").toString(),
++      //   date_created: BigInt(Date.now()),
++      //   votes_up: [],
++      //   votes_down: [],
++      //   tags: [],
++      //   content_tree: newPostContent.split('\n').map(text => ({
++      //     id: crypto.randomUUID(),
++      //     _type: "paragraph",
++      //     value: text,
++      //     data: [],
++      //     text: text,
++      //     children: [],
++      //     language: "",
++      //     indent: BigInt(0),
++      //     listStart: BigInt(0),
++      //     parent: null,
++      //     listStyleType: "",
++      //   })),
++      // };
++      console.log({ newPost });
++      const result = await backendActor.save_post(newPost);
++      if ("Ok" in result) {
++        const updatedPosts = await backendActor.get_posts(
++          BigInt(0),
++          BigInt(20),
++        );
++        setPosts(updatedPosts);
++        setNewPostContent("");
++      } else {
++        console.error("Failed to create post:", result.Err);
++      }
++    } catch (err) {
++      console.error("Error creating post:", err);
++    }
++  };
++
++  const [searchQuery, setSearchQuery] = useState("");
++
++  // Add this function after other handler functions
++  const filteredPosts = posts.filter((post) => {
++    const contentText = post.content_tree
++      .map((node) => node.text)
++      .join(" ")
++      .toLowerCase();
++    return (
++      contentText.includes(searchQuery.toLowerCase()) ||
++      post.creator?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
++      false
++    );
++  });
++
++  const handleVoteUp = async (postId: string) => {
++    try {
++      if (!backendActor) return;
++      const result = await backendActor.vote_up(postId);
++      if ("Ok" in result) {
++        const updatedPosts = posts.map((post) =>
++          post.id === postId ? result.Ok : post,
++        );
++        setPosts(updatedPosts);
++      } else {
++        console.error("Failed to vote up:", result.Err);
++      }
++    } catch (err) {
++      console.error("Error voting up:", err);
++    }
++  };
++
++  const handleVoteDown = async (postId: string) => {
++    try {
++      if (!backendActor) return;
++      const result = await backendActor.vote_down(postId);
++      if ("Ok" in result) {
++        const updatedPosts = posts.map((post) =>
++          post.id === postId ? result.Ok : post,
++        );
++        setPosts(updatedPosts);
++      } else {
++        console.error("Failed to vote down:", result.Err);
++      }
++    } catch (err) {
++      console.error("Error voting down:", err);
++    }
++  };
++
++  const handleShare = (postId) => {
++    alert("Share functionality would go here!");
++  };
++
++  const toggleComments = (postId) => {
++    setShowComments((prev) => ({
++      ...prev,
++      [postId]: !prev[postId],
++    }));
++  };
++
++  const handleComment = (postId) => {
++    if (!commentInputs[postId]?.trim()) return;
++
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          return {
++            ...post,
++            comments: [
++              ...post.comments,
++              {
++                id: Date.now(),
++                content: commentInputs[postId],
++                timestamp: new Date().toLocaleString(),
++                replies: [],
++                user: currentUser,
++              },
++            ],
++          };
++        }
++        return post;
++      }),
++    );
++
++    setCommentInputs((prev) => ({
++      ...prev,
++      [postId]: "",
++    }));
++  };
++
++  const handleReply = (postId, commentId, replyContent) => {
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          const updatedComments = addReplyToComment(post.comments, commentId, {
++            id: Date.now(),
++            content: replyContent,
++            timestamp: new Date().toLocaleString(),
++            replies: [],
++            user: currentUser,
++          });
++          return { ...post, comments: updatedComments };
++        }
++        return post;
++      }),
++    );
++  };
++
++  const addReplyToComment = (comments, commentId, reply) => {
++    return comments.map((comment) => {
++      if (comment.id === commentId) {
++        return {
++          ...comment,
++          replies: [...(comment.replies || []), reply],
++        };
++      }
++      if (comment.replies?.length) {
++        return {
++          ...comment,
++          replies: addReplyToComment(comment.replies, commentId, reply),
++        };
++      }
++      return comment;
++    });
++  };
++
++  return (
++    <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
++      <Card sx={{ mb: 3 }}>
++        <CardContent>
++          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}>
++            <Box>
++              <EditorComponent
++                contentEditable={true}
++                onChange={(changes) => {
++                  let new_change = {};
++                  new_change[""] = changes;
++                  setNewPostContent(new_change);
++                }}
++                content={[]}
++              />
++            </Box>
++          </Box>
++          <Button variant="contained" fullWidth onClick={handleNewPost}>
++            Post
++          </Button>
++        </CardContent>
++      </Card>
++
++      <SearchField searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
++
++      {filteredPosts.map((post: PostUser) => (
++        <Card key={post.id} sx={{ mb: 2 }}>
++          <CardHeader
++            avatar={post.creator && <UserAvatarMenu user={post.creator} />}
++            title={post.creator && post.creator.name}
++            subheader={new Date(
++              Number(post.date_created) / 1e6,
++            ).toLocaleString()}
++          />
++          <CardContent>
++            {post.content_tree && post.content_tree.length > 0 ? (
++              <EditorComponent
++                contentEditable={false}
++                content={deserializeContentTree(post.content_tree)}
++                onChange={() => {}}
++              />
++            ) : (
++              <Typography variant="body2" color="text.secondary">
++                No content
++              </Typography>
++            )}
++
++            <Box
++              sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
++            >
++              <Box sx={{ display: "flex", gap: 1 }}>
++                <Button
++                  startIcon={<HeartIcon />}
++                  onClick={() => handleVoteUp(post.id)}
++                  color={
++                    post.votes_up.some(
++                      (p) =>
++                        p.toString() ===
++                        Principal.fromText("2vxsx-fae").toString(),
++                    )
++                      ? "primary"
++                      : "inherit"
++                  }
++                >
++                  {post.votes_up.length}
++                </Button>
++                <Button
++                  startIcon={<ThumbsDownIcon />}
++                  onClick={() => handleVoteDown(post.id)}
++                  color={
++                    post.votes_down.some(
++                      (p) =>
++                        p.toString() ===
++                        Principal.fromText("2vxsx-fae").toString(),
++                    )
++                      ? "error"
++                      : "inherit"
++                  }
++                >
++                  {post.votes_down.length}
++                </Button>
++                <Button
++                  startIcon={<MessageCircleIcon />}
++                  onClick={() => toggleComments(post.id)}
++                >
++                  {post.comments && post.comments.length}
++                </Button>
++              </Box>
++              <IconButton onClick={() => handleShare(post.id)}>
++                <ShareIcon />
++              </IconButton>
++            </Box>
++
++            {showComments[post.id] && (
++              <Box sx={{ mt: 2 }}>
++                <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
++                  <TextField
++                    size="small"
++                    fullWidth
++                    placeholder="Write a comment..."
++                    value={commentInputs[post.id] || ""}
++                    onChange={(e) =>
++                      setCommentInputs((prev) => ({
++                        ...prev,
++                        [post.id]: e.target.value,
++                      }))
++                    }
++                  />
++                  <IconButton
++                    onClick={() => handleComment(post.id)}
++                    color="primary"
++                  >
++                    <SendIcon />
++                  </IconButton>
++                </Box>
++
++                <Box sx={{ mt: 2 }}>
++                  {post.comments &&
++                    post.comments.map((comment) => (
++                      <Comment
++                        key={comment.id}
++                        comment={comment}
++                        onReply={(commentId, content) =>
++                          handleReply(post.id, commentId, content)
++                        }
++                      />
++                    ))}
++                </Box>
++              </Box>
++            )}
++          </CardContent>
++        </Card>
++      ))}
++    </Box>
++  );
++};
++
++export default SocialPosts;
++ fix index.tsx discover
+
+# 2024-12-22 17:18:59.653296
++ok apply the changs
+
+# 2024-12-22 17:25:36.856124
++when user hit post button clear out the content tree to [] also show loadig progress while waiting for save_post, also revers the order of the posts make the laitest apear at the top, also enable delete posts and edite post if post.creator === profile.id
+
+# 2024-12-22 17:28:32.571245
++when user hit delete ask them for conformation, then if yes show progrees loading while calling backendActor.delete
+
+# 2024-12-22 17:30:09.007320
++do not show edite button instead when the content change <EditorComponent
++                contentEditable={false}
++                content={deserializeContentTree(post.content_tree)}
++                onChange={() => {}}
++              /> show a button named save and call save_post and show loading progress as well
+
+# 2024-12-22 17:39:20.616796
++import React, { useState, useEffect } from "react";
++import { Principal } from "@dfinity/principal";
++import {
++  Box,
++  Button,
++  Card,
++  CardContent,
++  CardHeader,
++  IconButton,
++  Paper,
++  TextField,
++  Typography,
++} from "@mui/material";
++import {
++  Comment as MessageCircleIcon,
++  Favorite as HeartIcon,
++  Reply as ReplyIcon,
++  Send as SendIcon,
++  Share as ShareIcon,
++  ThumbDown as ThumbsDownIcon,
++} from "@mui/icons-material";
++import SearchIcon from "@mui/icons-material/Search";
++import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
++import { useBackendContext } from "../../contexts/BackendContext";
++import {
++  ContentNode,
++  Post,
++  PostUser,
++} from "../../../declarations/backend/backend.did";
++import { useSelector } from "react-redux";
++import { randomString } from "../../DataProcessing/dataSamples";
++import EditorComponent from "../../components/EditorComponent";
++import { logger } from "../../DevUtils/logData";
++import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
++import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
++
++const Comment = ({ comment, onReply, level = 0 }) => {
++  const [showReplyInput, setShowReplyInput] = useState(false);
++  const [replyContent, setReplyContent] = useState("");
++
++  const handleReplySubmit = () => {
++    if (!replyContent.trim()) return;
++    onReply(comment.id, replyContent);
++    setReplyContent("");
++    setShowReplyInput(false);
++  };
++
++  return (
++    <Box sx={{ ml: level * 3, mb: 2 }}>
++      <Paper variant="outlined" sx={{ p: 2 }}>
++        <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
++          {comment.user && <UserAvatarMenu user={comment.user} size="small" />}
++          <Box>
++            <Typography variant="subtitle2">{comment.user.name}</Typography>
++            <Typography variant="caption" color="text.secondary">
++              {comment.timestamp}
++            </Typography>
++          </Box>
++        </Box>
++        <Typography variant="body2" sx={{ mb: 1 }}>
++          {comment.content}
++        </Typography>
++        <Button
++          size="small"
++          startIcon={<ReplyIcon />}
++          onClick={() => setShowReplyInput(!showReplyInput)}
++        >
++          Reply
++        </Button>
++      </Paper>
++
++      {showReplyInput && (
++        <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
++          <TextField
++            size="small"
++            fullWidth
++            placeholder="Write a reply..."
++            value={replyContent}
++            onChange={(e) => setReplyContent(e.target.value)}
++          />
++          <IconButton onClick={handleReplySubmit} color="primary">
++            <SendIcon />
++          </IconButton>
++        </Box>
++      )}
++
++      {comment.replies?.map((reply) => (
++        <Comment
++          key={reply.id}
++          comment={reply}
++          onReply={onReply}
++          level={level + 1}
++        />
++      ))}
++    </Box>
++  );
++};
++
++const SearchField = ({ searchQuery, setSearchQuery }) => {
++  return (
++    <Card sx={{ mb: 3 }}>
++      <CardContent>
++        <TextField
++          fullWidth
++          placeholder="Search posts by content or user..."
++          value={searchQuery}
++          onChange={(e) => setSearchQuery(e.target.value)}
++          InputProps={{
++            startAdornment: (
++              <Box sx={{ color: "text.secondary", mr: 1 }}>
++                <SearchIcon />
++              </Box>
++            ),
++          }}
++        />
++      </CardContent>
++    </Card>
++  );
++};
++
++const SocialPosts = () => {
++  const { backendActor } = useBackendContext();
++  const [posts, setPosts] = useState<Array<PostUser>>([]);
++  const [loading, setLoading] = useState(true);
++  const [error, setError] = useState<string | null>(null);
++  const { profile } = useSelector((state: any) => state.filesState);
++  const currentUser = profile;
++
++  useEffect(() => {
++    const fetchPosts = async () => {
++      try {
++        if (!backendActor) return;
++        const result = await backendActor.get_posts(BigInt(0), BigInt(20));
++        setPosts(result.reverse());
++        setError(null);
++      } catch (err) {
++        console.error("Failed to fetch posts:", err);
++        setError("Failed to load posts. Please try again later.");
++      } finally {
++        setLoading(false);
++      }
++    };
++
++    fetchPosts();
++  }, [backendActor]);
++
++  const [newPostContent, setNewPostContent] = useState<any>(null);
++  const [commentInputs, setCommentInputs] = useState({});
++  const [showComments, setShowComments] = useState({});
++  const [isPosting, setIsPosting] = useState(false);
++  const [isSaving, setIsSaving] = useState(false);
++
++  const handleNewPost = async () => {
++    if (!newPostContent || !backendActor) return;
++    setIsPosting(true);
++
++    try {
++      let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
++        serializeFileContents(newPostContent);
++      let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
++      console.log({ content_tree });
++      const newPost: Post = {
++        id: randomString(),
++        creator: profile.id,
++        date_created: BigInt(Date.now() * 1e6),
++        votes_up: [],
++        tags: [],
++        content_tree,
++        votes_down: [],
++      };
++      console.log({ newPost });
++      try {
++        const result = await backendActor.save_post(newPost);
++        if ("Ok" in result) {
++          const updatedPosts = await backendActor.get_posts(
++            BigInt(0),
++            BigInt(20),
++          );
++          setPosts(updatedPosts.reverse());
++          setNewPostContent(null);
++        } else {
++          console.error("Failed to create post:", result.Err);
++        }
++      } catch (err) {
++        console.error("Error save_post:", err);
++      }
++    } catch (err) {
++      console.error("Error creating post:", err);
++    } finally {
++      setIsPosting(false);
++    }
++  };
++
++  const [searchQuery, setSearchQuery] = useState("");
++
++  // Add this function after other handler functions
++  const filteredPosts = posts.filter((post) => {
++    const contentText = post.content_tree
++      .map((node) => node.text)
++      .join(" ")
++      .toLowerCase();
++    return (
++      contentText.includes(searchQuery.toLowerCase()) ||
++      post.creator?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
++      false
++    );
++  });
++
++  const handleVoteUp = async (postId: string) => {
++    try {
++      if (!backendActor) return;
++      const result = await backendActor.vote_up(postId);
++      if ("Ok" in result) {
++        const updatedPosts = posts.map((post) =>
++          post.id === postId ? result.Ok : post,
++        );
++        setPosts(updatedPosts);
++      } else {
++        console.error("Failed to vote up:", result.Err);
++      }
++    } catch (err) {
++      console.error("Error voting up:", err);
++    }
++  };
++
++  const handleVoteDown = async (postId: string) => {
++    try {
++      if (!backendActor) return;
++      const result = await backendActor.vote_down(postId);
++      if ("Ok" in result) {
++        const updatedPosts = posts.map((post) =>
++          post.id === postId ? result.Ok : post,
++        );
++        setPosts(updatedPosts);
++      } else {
++        console.error("Failed to vote down:", result.Err);
++      }
++    } catch (err) {
++      console.error("Error voting down:", err);
++    }
++  };
++
++  const [isDeletingPost, setIsDeletingPost] = useState<string | null>(null);
++
++  const handleDeletePost = async (postId: string) => {
++    if (!backendActor) return;
++
++    const confirmed = window.confirm(
++      "Are you sure you want to delete this post?",
++    );
++    if (!confirmed) return;
++
++    setIsDeletingPost(postId);
++    try {
++      const result = await backendActor.delete_post(postId);
++      if ("Ok" in result) {
++        const updatedPosts = posts.filter((post) => post.id !== postId);
++        setPosts(updatedPosts);
++      }
++    } catch (err) {
++      console.error("Error deleting post:", err);
++    } finally {
++      setIsDeletingPost(null);
++    }
++  };
++
++  const handleSavePost = async (post: PostUser) => {
++    if (!newPostContent || !backendActor) return;
++
++    setIsSaving(true);
++    try {
++      let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
++        serializeFileContents(newPostContent);
++      let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
++
++      const updatedPost: Post = {
++        ...post,
++        creator: profile.id,
++        content_tree,
++      };
++
++      const result = await backendActor.save_post(updatedPost);
++      if ("Ok" in result) {
++        const updatedPosts = await backendActor.get_posts(
++          BigInt(0),
++          BigInt(20),
++        );
++        setPosts(updatedPosts.reverse());
++        setNewPostContent(null);
++      }
++    } catch (err) {
++      console.error("Error saving post:", err);
++    } finally {
++      setIsSaving(false);
++    }
++  };
++
++  const handleShare = (postId) => {
++    alert("Share functionality would go here!");
++  };
++
++  const toggleComments = (postId) => {
++    setShowComments((prev) => ({
++      ...prev,
++      [postId]: !prev[postId],
++    }));
++  };
++
++  const handleComment = (postId) => {
++    if (!commentInputs[postId]?.trim()) return;
++
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          return {
++            ...post,
++            comments: [
++              ...post.comments,
++              {
++                id: Date.now(),
++                content: commentInputs[postId],
++                timestamp: new Date().toLocaleString(),
++                replies: [],
++                user: currentUser,
++              },
++            ],
++          };
++        }
++        return post;
++      }),
++    );
++
++    setCommentInputs((prev) => ({
++      ...prev,
++      [postId]: "",
++    }));
++  };
++
++  const handleReply = (postId, commentId, replyContent) => {
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          const updatedComments = addReplyToComment(post.comments, commentId, {
++            id: Date.now(),
++            content: replyContent,
++            timestamp: new Date().toLocaleString(),
++            replies: [],
++            user: currentUser,
++          });
++          return { ...post, comments: updatedComments };
++        }
++        return post;
++      }),
++    );
++  };
++
++  const addReplyToComment = (comments, commentId, reply) => {
++    return comments.map((comment) => {
++      if (comment.id === commentId) {
++        return {
++          ...comment,
++          replies: [...(comment.replies || []), reply],
++        };
++      }
++      if (comment.replies?.length) {
++        return {
++          ...comment,
++          replies: addReplyToComment(comment.replies, commentId, reply),
++        };
++      }
++      return comment;
++    });
++  };
++  console.log({ filteredPosts });
++
++  return (
++    <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
++      <Card sx={{ mb: 3 }}>
++        <CardContent>
++          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}>
++            <Box>
++              <EditorComponent
++                contentEditable={true}
++                onChange={(changes) => {
++                  let new_change = {};
++                  new_change[""] = changes;
++                  setNewPostContent(new_change);
++                }}
++                content={[]}
++              />
++            </Box>
++          </Box>
++          <Button
++            variant="contained"
++            fullWidth
++            onClick={handleNewPost}
++            disabled={isPosting}
++          >
++            {isPosting ? "Posting..." : "Post"}
++          </Button>
++        </CardContent>
++      </Card>
++
++      <SearchField searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
++
++      {filteredPosts.map((post: PostUser) => (
++        <Card key={post.id} sx={{ mb: 2 }}>
++          <CardHeader
++            avatar={post.creator && <UserAvatarMenu user={post.creator} />}
++            title={post.creator && post.creator.name}
++            subheader={new Date(
++              Number(post.date_created) / 1e6,
++            ).toLocaleString()}
++          />
++          <CardContent>
++            {post.content_tree && post.content_tree.length > 0 ? (
++              <EditorComponent
++                readOnly={
++                  post && post.creator?.id && post.creator.id !== profile?.id
++                }
++                content={deserializeContentTree(post.content_tree)}
++                onChange={(changes) => {
++                  let new_change = {};
++                  new_change[""] = changes;
++                  setNewPostContent(new_change);
++                }}
++              />
++            ) : (
++              <Typography variant="body2" color="text.secondary">
++                No content
++              </Typography>
++            )}
++
++            <Box
++              sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
++            >
++              <Box sx={{ display: "flex", gap: 1 }}>
++                {post.creator?.id === profile?.id && (
++                  <>
++                    <Button
++                      onClick={() => handleDeletePost(post.id)}
++                      color="error"
++                      size="small"
++                      disabled={isDeletingPost === post.id}
++                    >
++                      {isDeletingPost === post.id ? "Deleting..." : "Delete"}
++                    </Button>
++
++                    <Button
++                      onClick={() => handleSavePost(post)}
++                      color="primary"
++                      size="small"
++                      disabled={isSaving}
++                    >
++                      {isSaving ? "Saving..." : "Save"}
++                    </Button>
++
++                  </>
++                )}
++                <Button
++                  startIcon={<HeartIcon />}
++                  onClick={() => handleVoteUp(post.id)}
++                  color={
++                    post.votes_up.some(
++                      (p) =>
++                        p.toString() ===
++                        Principal.fromText("2vxsx-fae").toString(),
++                    )
++                      ? "primary"
++                      : "inherit"
++                  }
++                >
++                  {post.votes_up.length}
++                </Button>
++                <Button
++                  startIcon={<ThumbsDownIcon />}
++                  onClick={() => handleVoteDown(post.id)}
++                  color={
++                    post.votes_down.some(
++                      (p) =>
++                        p.toString() ===
++                        Principal.fromText("2vxsx-fae").toString(),
++                    )
++                      ? "error"
++                      : "inherit"
++                  }
++                >
++                  {post.votes_down.length}
++                </Button>
++                <Button
++                  startIcon={<MessageCircleIcon />}
++                  onClick={() => toggleComments(post.id)}
++                >
++                  {post.comments && post.comments.length}
++                </Button>
++              </Box>
++              <IconButton onClick={() => handleShare(post.id)}>
++                <ShareIcon />
++              </IconButton>
++            </Box>
++
++            {showComments[post.id] && (
++              <Box sx={{ mt: 2 }}>
++                <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
++                  <TextField
++                    size="small"
++                    fullWidth
++                    placeholder="Write a comment..."
++                    value={commentInputs[post.id] || ""}
++                    onChange={(e) =>
++                      setCommentInputs((prev) => ({
++                        ...prev,
++                        [post.id]: e.target.value,
++                      }))
++                    }
++                  />
++                  <IconButton
++                    onClick={() => handleComment(post.id)}
++                    color="primary"
++                  >
++                    <SendIcon />
++                  </IconButton>
++                </Box>
++
++                <Box sx={{ mt: 2 }}>
++                  {post.comments &&
++                    post.comments.map((comment) => (
++                      <Comment
++                        key={comment.id}
++                        comment={comment}
++                        onReply={(commentId, content) =>
++                          handleReply(post.id, commentId, content)
++                        }
++                      />
++                    ))}
++                </Box>
++              </Box>
++            )}
++          </CardContent>
++        </Card>
++      ))}
++    </Box>
++  );
++};
++
++export default SocialPosts;
++enable users to add tags and edite tags and search by tags 
+
+# 2024-12-22 17:41:27.289072
++1. during posting also enable adding a list of tags, 2. show the tags of a post
+
+# 2024-12-22 17:42:18.750629
++[plugin:vite:esbuild] Transform failed with 2 errors:
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:244:8: ERROR: The symbol "setTagInput" has already been declared
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:244:8: ERROR: The symbol "tagInput" has already been declared
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:244:8
++The symbol "setTagInput" has already been declared
++242|  
++243|    const [searchQuery, setSearchQuery] = useState("");
++244|    const [tagInput, setTagInput] = useState("");
++   |          ^
+
+# 2024-12-22 17:43:53.558295
++I can't edite tags? I should be able to add new tags, and remove old tags
+
+# 2024-12-22 17:45:49.532779
++there is a bug when I edite one a tag of one post all other posts render the same tag name, 
+
+# 2024-12-22 17:46:27.710153
++Uncaught ReferenceError: tagInput is not defined
++    at SearchField (index.tsx:135:20)
++    at renderWithHooks (chunk-WMDJOG6V.js?v=8d5024c3:11548:26)
++    at mountIndeterminateComponent (chunk-WMDJOG6V.js?v=8d5024c3:14926:21)
++    at beginWork (chunk-WMDJOG6V.js?v=8d5024c3:15914:22)
++    at beginWork$1 (chunk-WMDJOG6V.js?v=8d5024c3:19753:22)
++    at performUnitOfWork (chunk-WMDJOG6V.js?v=8d5024c3:19198:20)
++    at workLoopSync (chunk-WMDJOG6V.js?v=8d5024c3:19137:13)
++    at renderRootSync (chunk-WMDJOG6V.js?v=8d5024c3:19116:15)
++    at recoverFromConcurrentError (chunk-WMDJOG6V.js?v=8d5024c3:18736:28)
++    at performConcurrentWorkOnRoot (chunk-WMDJOG6V.js?v=8d5024c3:18684:30)
++SearchField @ index.tsx:135
++renderWithHooks @ chunk-WMDJOG6V.js?v=8d5024c3:11548
++mountIndeterminateComponent @ chunk-WMDJOG6V.js?v=8d5024c3:14926
++beginWork @ chunk-WMDJOG6V.js?v=8d5024c3:15914
++beginWork$1 @ chunk-WMDJOG6V.js?v=8d5024c3:19753
++performUnitOfWork @ chunk-WMDJOG6V.js?v=8d5024c3:19198
++workLoopSync @ chunk-WMDJOG6V.js?v=8d5024c3:19137
++renderRootSync @ chunk-WMDJOG6V.js?v=8d5024c3:19116
++recoverFromConcurrentError @ chunk-WMDJOG6V.js?v=8d5024c3:18736
++performConcurrentWorkOnRoot @ chunk-WMDJOG6V.js?v=8d5024c3:18684
++workLoop @ chunk-WMDJOG6V.js?v=8d5024c3:197
++flushWork @ chunk-WMDJOG6V.js?v=8d5024c3:176
++performWorkUntilDeadline @ chunk-WMDJOG6V.js?v=8d5024c3:384
+
+# 2024-12-22 17:47:11.361991
++chunk-WMDJOG6V.js?v=8d5024c3:9129 Uncaught ReferenceError: tagInputs is not defined
++    at index.tsx:549:28
++    at Array.map (<anonymous>)
++    at SocialPosts (index.tsx:500:22)
++
+
+# 2024-12-22 17:50:00.328812
++that is a very good job. Now let's enhance the UI. 1. When click delete show online message ask for are your sure to delete 2. make the search button, adn tags all inline, 3. in the search make the tags in forum of autocomelete imput, 3. enhance the look a little bit make it look more profsional UI UX
+
+# 2024-12-22 17:50:44.745483
++[plugin:vite:esbuild] Transform failed with 1 error:
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:731:6: ERROR: Expected ")" but found "open"
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:731:6
++Expected ")" but found "open"
++729|      </Box>
++730|      <Dialog
++731|        open={deleteDialogOpen}
++   |        ^
++732|        onClose={() => setDeleteDialogOpen(false)}
++733|        aria-labelledby="alert-dialog-title"
++
+
+# 2024-12-22 17:55:55.994587
++notice I made ./src/frontend/pages/user.tsx which shows the user profile by the url from browser https://odoc.app/user?id=omwxg-jy7vb-dyi54-xw2ih-rx2a3-yan33-dwkbw-bjjb5-h6gd2-e5eq4-nae and it should be able to call the backend to fetch the user data, in meanhwile it should show progress loading
+
+# 2024-12-22 17:55:57.981652
++yes
+
+# 2024-12-22 17:56:26.471867
++y
+
+# 2024-12-22 17:57:41.060553
++from window.url or window.link you should get the data /user?id=omwxg-jy7vb-dyi54-xw2ih-rx2a3-yan33-dwkbw-bjjb5-h6gd2-e5eq4-nae    however id is the user id here import ProfilePage from "./profile";
++import React from "react";
++
++function UserProfile(props) {
++  return (
++    <ProfilePage
++      friends={[]}
++      profile={profile}
++      history={profile_history}
++    />
++  );
++}
++export default UserProfile
++ you need to compelte the data from backendActor?.get_user
+
+# 2024-12-22 17:57:58.089265
++y
+
+# 2024-12-22 17:59:01.441914
++1 ./src/frontend/pages/user.tsx 2 const { backendActor } = useBackendContext(); ./src/frontend/contexts/BackendContext.tsx
+
+# 2024-12-22 17:59:38.656611
++how to do that?
+
+# 2024-12-22 18:00:09.737474
++import React, {
++  createContext,
++  ReactNode,
++  useCallback,
++  useContext,
++  useEffect,
++  useState,
++} from "react";
++import { AuthClient } from "@dfinity/auth-client";
++import {
++  Actor,
++  ActorMethod,
++  ActorSubclass,
++  HttpAgent,
++  Identity,
++} from "@dfinity/agent";
++import { canisterId, idlFactory } from "../../declarations/backend";
++import { _SERVICE } from "../../declarations/backend/backend.did";
++import { useDispatch } from "react-redux";
++import { handleRedux } from "../redux/store/handleRedux";
++import getLedgerActor from "./ckudc_ledger_actor";
++
++interface State {
++  principal: string | null;
++  identity: Identity | null;
++  backendActor: ActorSubclass<
++    Record<string, ActorMethod<unknown[], unknown>>
++  > | null;
++  agent: HttpAgent | null;
++  isAuthenticating?: boolean;
++}
++
++interface BackendContextProps {
++  authClient: AuthClient | null;
++  agent: HttpAgent | null;
++  backendActor: ActorSubclass<Record<string, ActorMethod<unknown[], unknown>>>;
++  isAuthenticating: boolean;
++  login: () => Promise<void>;
++  logout: () => void;
++}
++
++const BackendContext = createContext<BackendContextProps | undefined>(
++  undefined,
++);
++
++export const useBackendContext = (): BackendContextProps => {
++  const context = useContext(BackendContext);
++  if (!context) {
++    throw new Error("useBackendContext must be used within a BackendProvider");
++  }
++  return context;
++};
++
++interface BackendProviderProps {
++  children: ReactNode;
++}
++
++async function handleAgent(client) {
++  let host = "https://ic0.app";
++  if (import.meta.env.VITE_DFX_NETWORK === "local") {
++    host = import.meta.env.VITE_IC_HOST;
++  }
++
++  const identity = await client.getIdentity();
++  const agent = new HttpAgent({
++    identity,
++    host,
++  });
++  const principal = identity.getPrincipal().toString();
++
++  // ---------------------- root key fetch ---------------------- \\
++  if (import.meta.env.VITE_DFX_NETWORK === "local") {
++    agent
++      .fetchRootKey()
++      .then((rootKey) => {
++        console.log("successfully fetched root key: ");
++      })
++      .catch((err) => {
++        console.log("Error fetching root key: ", err);
++      });
++  }
++
++  const actor = Actor.createActor<_SERVICE>(idlFactory, {
++    agent,
++    canisterId,
++  });
++  return { actor, agent, principal, identity, client };
++}
++
++export const BackendProvider: React.FC<BackendProviderProps> = ({
++  children,
++}) => {
++  const dispatch = useDispatch();
++
++  const port = import.meta.env.VITE_DFX_PORT;
++
++  const [state, setState] = useState<State>({
++    principal: null,
++    identity: null,
++    backendActor: null,
++    agent: null,
++  });
++
++  const [authClient, setAuthClient] = useState<AuthClient | null>(null);
++
++  const login = useCallback(async () => {
++    if (!authClient) {
++      console.log("Auth client not initialized");
++      return;
++    }
++
++    const alreadyAuthenticated = await authClient.isAuthenticated();
++
++    if (alreadyAuthenticated) {
++      dispatch(handleRedux("LOGIN"));
++    } else {
++      let identityProvider = "https://identity.ic0.app/#authorize";
++      if (import.meta.env.VITE_DFX_NETWORK === "local") {
++        identityProvider = `http://${import.meta.env.VITE_INTERNET_IDENTITY}.localhost:${port}`;
++      }
++
++      await authClient.login({
++        identityProvider: identityProvider,
++        onSuccess: async () => {
++          setState((prevState: State) => {
++            return { ...prevState, isAuthenticating: false };
++          });
++          window.location.reload();
++        },
++      });
++    }
++  }, [authClient, port]);
++
++  const logout = () => {
++    dispatch(handleRedux("LOGIN"));
++    authClient?.logout({ returnTo: "/" });
++  };
++
++  useEffect(() => {
++    const initializeAuthClient = async () => {
++      const client = await AuthClient.create();
++      setAuthClient(client);
++      const { actor, agent, principal, identity } = await handleAgent(client);
++      const ckUSDCActor = await getLedgerActor(agent);
++      setState((pre) => {
++        return {
++          ckUSDCActor,
++          backendActor: actor,
++          agent,
++          principal,
++          identity,
++        };
++      });
++
++      const alreadyAuthenticated = await client.isAuthenticated();
++      if (alreadyAuthenticated) {
++        dispatch(handleRedux("LOGIN"));
++      }
++    };
++
++    initializeAuthClient().catch((error) => {
++      console.log("Failed to initialize auth client:", error);
++    });
++  }, []);
++
++  return (
++    <BackendContext.Provider
++      value={{
++        ...state,
++        login,
++        logout,
++      }}
++    >
++      {children}
++    </BackendContext.Provider>
++  );
++};
++
+
+# 2024-12-22 18:00:15.461334
++y
+
+# 2024-12-22 18:10:52.817343
++at ./frontend/pages/user.tsx amek me a compentn fetch data from window.location and call backendActor.get_user then render it in <ProfilePage
++      friends={[]}
++      profile={profile}
++      history={profile_history}
++    /> note url is http://localhost:5173/user?id=omwxg-jy7vb-dyi54-xw2ih-rx2a3-yan33-dwkbw-bjjb5-h6gd2-e5eq4-nae
+
+# 2024-12-22 18:10:59.732595
++n
+
+# 2024-12-22 18:11:16.246129
++y
+
+# 2024-12-22 18:11:43.458049
++n

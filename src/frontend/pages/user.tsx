@@ -2,6 +2,7 @@ import ProfilePage from "./profile";
 import React, { useEffect, useState } from "react";
 import { useBackendContext } from "../contexts/BackendContext";
 import { useSearchParams } from "react-router-dom";
+import { Principal } from "@dfinity/principal";
 
 function UserProfile() {
   const [searchParams] = useSearchParams();
@@ -13,14 +14,16 @@ function UserProfile() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userId = searchParams.get('id');
+        const userId = searchParams.get("id");
         if (!userId || !backendActor) return;
 
         const userData = await backendActor.get_user(userId);
-        const userHistory = await backendActor.get_user_history(userId);
-        
-        setProfile(userData);
-        setProfileHistory(userHistory);
+        const userHistory = await backendActor.get_user_profile(
+          Principal.fromText(userId),
+        );
+
+        setProfile(userData.Ok);
+        setProfileHistory(userHistory.Ok);
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {
@@ -34,13 +37,8 @@ function UserProfile() {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
   return (
-    <ProfilePage
-      friends={[]}
-      profile={profile}
-      history={profileHistory}
-    />
+    <ProfilePage friends={[]} profile={profile} history={profileHistory} />
   );
 }
 

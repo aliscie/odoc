@@ -244,7 +244,6 @@ const SocialPosts = () => {
       let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
         serializeFileContents(newPostContent);
       let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
-      console.log({ content_tree });
       const newPost: Post = {
         id: randomString(),
         creator: profile.id,
@@ -465,7 +464,6 @@ const SocialPosts = () => {
       return comment;
     });
   };
-  console.log({ filteredPosts });
 
   return (
     <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>

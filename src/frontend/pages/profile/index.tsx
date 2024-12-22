@@ -85,7 +85,6 @@ const ProfilePage = ({
   const safeProfile = profile || {};
   const safeHistory = history || {};
   const safeFriends = friends || [];
-
   const {
     id = "",
     name = "Anonymous",

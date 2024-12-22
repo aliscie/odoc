@@ -37,3 +37,4 @@ yarn.lock
 .vscode
 
 *storybook.log
+.aider*
