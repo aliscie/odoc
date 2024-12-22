@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Principal } from "@dfinity/principal";
+import { useBackendActor } from "../../hooks/useBackendActor";
 import {
   Box,
   Button,
@@ -106,52 +108,70 @@ const SearchField = ({ searchQuery, setSearchQuery }) => {
 };
 
 const SocialPosts = () => {
-  const currentUser = {
-    id: 1,
-    name: "John Doe",
-    username: "johndoe",
-    avatarUrl: null,
-  };
+  const { backendActor } = useBackendActor();
+  const [posts, setPosts] = useState<Array<PostUser>>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      content: "This is my first post!",
-      likes: 0,
-      dislikes: 0,
-      comments: [],
-      isLiked: false,
-      isDisliked: false,
-      user: {
-        id: 2,
-        name: "Jane Smith",
-        username: "janesmith",
-        avatarUrl: null,
-      },
-    },
-  ]);
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        if (!backendActor) return;
+        const result = await backendActor.get_posts(BigInt(0), BigInt(20));
+        setPosts(result);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch posts:', err);
+        setError('Failed to load posts. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, [backendActor]);
 
   const [newPostContent, setNewPostContent] = useState("");
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
 
-  const handleNewPost = () => {
-    if (!newPostContent.trim()) return;
+  const handleNewPost = async () => {
+    if (!newPostContent.trim() || !backendActor) return;
 
-    setPosts([
-      {
-        id: Date.now(),
-        content: newPostContent,
-        likes: 0,
-        dislikes: 0,
-        comments: [],
-        isLiked: false,
-        isDisliked: false,
-        user: currentUser,
-      },
-      ...posts,
-    ]);
-    setNewPostContent("");
+    try {
+      const newPost: Post = {
+        id: crypto.randomUUID(),
+        creator: Principal.fromText('2vxsx-fae').toString(),
+        date_created: BigInt(Date.now()),
+        votes_up: [],
+        votes_down: [],
+        tags: [],
+        content_tree: [{
+          id: crypto.randomUUID(),
+          _type: 'paragraph',
+          value: newPostContent,
+          data: null,
+          text: newPostContent,
+          children: [],
+          language: '',
+          indent: BigInt(0),
+          listStart: BigInt(0),
+          parent: null,
+          listStyleType: ''
+        }]
+      };
+
+      const result = await backendActor.save_post(newPost);
+      if ('Ok' in result) {
+        const updatedPosts = await backendActor.get_posts(BigInt(0), BigInt(20));
+        setPosts(updatedPosts);
+        setNewPostContent('');
+      } else {
+        console.error('Failed to create post:', result.Err);
+      }
+    } catch (err) {
+      console.error('Error creating post:', err);
+    }
   };
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -164,52 +184,38 @@ const SocialPosts = () => {
       post.user.username.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const handleLike = (postId) => {
-    setPosts(
-      posts.map((post) => {
-        if (post.id === postId) {
-          if (post.isLiked) {
-            return { ...post, likes: post.likes - 1, isLiked: false };
-          } else {
-            if (post.isDisliked) {
-              return {
-                ...post,
-                likes: post.likes + 1,
-                dislikes: post.dislikes - 1,
-                isLiked: true,
-                isDisliked: false,
-              };
-            }
-            return { ...post, likes: post.likes + 1, isLiked: true };
-          }
-        }
-        return post;
-      }),
-    );
+  const handleVoteUp = async (postId: string) => {
+    try {
+      if (!backendActor) return;
+      const result = await backendActor.vote_up(postId);
+      if ('Ok' in result) {
+        const updatedPosts = posts.map(post => 
+          post.id === postId ? result.Ok : post
+        );
+        setPosts(updatedPosts);
+      } else {
+        console.error('Failed to vote up:', result.Err);
+      }
+    } catch (err) {
+      console.error('Error voting up:', err);
+    }
   };
 
-  const handleDislike = (postId) => {
-    setPosts(
-      posts.map((post) => {
-        if (post.id === postId) {
-          if (post.isDisliked) {
-            return { ...post, dislikes: post.dislikes - 1, isDisliked: false };
-          } else {
-            if (post.isLiked) {
-              return {
-                ...post,
-                likes: post.likes - 1,
-                dislikes: post.dislikes + 1,
-                isLiked: false,
-                isDisliked: true,
-              };
-            }
-            return { ...post, dislikes: post.dislikes + 1, isDisliked: true };
-          }
-        }
-        return post;
-      }),
-    );
+  const handleVoteDown = async (postId: string) => {
+    try {
+      if (!backendActor) return;
+      const result = await backendActor.vote_down(postId);
+      if ('Ok' in result) {
+        const updatedPosts = posts.map(post => 
+          post.id === postId ? result.Ok : post
+        );
+        setPosts(updatedPosts);
+      } else {
+        console.error('Failed to vote down:', result.Err);
+      }
+    } catch (err) {
+      console.error('Error voting down:', err);
+    }
   };
 
   const handleShare = (postId) => {
@@ -328,17 +334,17 @@ const SocialPosts = () => {
               <Box sx={{ display: "flex", gap: 1 }}>
                 <Button
                   startIcon={<HeartIcon />}
-                  onClick={() => handleLike(post.id)}
-                  color={post.isLiked ? "primary" : "inherit"}
+                  onClick={() => handleVoteUp(post.id)}
+                  color={post.votes_up.some(p => p.toString() === Principal.fromText('2vxsx-fae').toString()) ? "primary" : "inherit"}
                 >
-                  {post.likes}
+                  {post.votes_up.length}
                 </Button>
                 <Button
                   startIcon={<ThumbsDownIcon />}
-                  onClick={() => handleDislike(post.id)}
-                  color={post.isDisliked ? "error" : "inherit"}
+                  onClick={() => handleVoteDown(post.id)}
+                  color={post.votes_down.some(p => p.toString() === Principal.fromText('2vxsx-fae').toString()) ? "error" : "inherit"}
                 >
-                  {post.dislikes}
+                  {post.votes_down.length}
                 </Button>
                 <Button
                   startIcon={<MessageCircleIcon />}
