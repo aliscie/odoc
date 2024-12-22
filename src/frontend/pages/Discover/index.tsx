@@ -98,7 +98,7 @@ const Comment = ({ comment, onReply, level = 0 }) => {
 };
 
 const SearchField = ({ searchQuery, setSearchQuery, selectedTags, setSelectedTags }) => {
-  const [tagInput, setTagInput] = useState("");
+  const [tagInputs, setTagInputs] = useState<{[key: string]: string}>({});
 
   const handleAddTag = () => {
     if (tagInput.trim() && !selectedTags.includes(tagInput.trim())) {
@@ -546,16 +546,16 @@ const SocialPosts = () => {
                   <TextField
                     size="small"
                     placeholder="Add tag..."
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
+                    value={tagInputs[post.id] || ""}
+                    onChange={(e) => setTagInputs(prev => ({...prev, [post.id]: e.target.value}))}
                     onKeyPress={(e) => {
-                      if (e.key === 'Enter' && tagInput.trim()) {
+                      if (e.key === 'Enter' && tagInputs[post.id]?.trim()) {
                         const updatedPost = {
                           ...post,
-                          tags: [...new Set([...post.tags, tagInput.trim()])]
+                          tags: [...new Set([...post.tags, tagInputs[post.id].trim()])]
                         };
                         handleSavePost(updatedPost);
-                        setTagInput("");
+                        setTagInputs(prev => ({...prev, [post.id]: ""}));
                       }
                     }}
                     sx={{ width: 120 }}
@@ -564,13 +564,13 @@ const SocialPosts = () => {
                     variant="outlined"
                     size="small"
                     onClick={() => {
-                      if (tagInput.trim()) {
+                      if (tagInputs[post.id]?.trim()) {
                         const updatedPost = {
                           ...post,
-                          tags: [...new Set([...post.tags, tagInput.trim()])]
+                          tags: [...new Set([...post.tags, tagInputs[post.id].trim()])]
                         };
                         handleSavePost(updatedPost);
-                        setTagInput("");
+                        setTagInputs(prev => ({...prev, [post.id]: ""}));
                       }
                     }}
                   >
