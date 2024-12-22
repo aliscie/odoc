@@ -4028,3 +4028,42 @@
 
 # 2024-12-22 16:18:17.172578
 +ye
+
+# 2024-12-22 16:25:31.767416
++./src/frontend/pages/Discover/index.tsx use react data from backendActor?.search_posts(searchValue); to render the real posts 
+
+# 2024-12-22 16:26:02.120111
++yes
+
+# 2024-12-22 16:27:02.558987
++ther ewas a mistake retrwite again
+
+# 2024-12-22 16:27:14.049176
++y
+
+# 2024-12-22 16:27:50.586067
++[plugin:vite:esbuild] Transform failed with 1 error:
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:443:12: ERROR: Expected ")" but found "sx"
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:443:12
++Expected ")" but found "sx"
++441|        </Button>
++442|      </Grid>
++443|        <Card sx={{ mb: 3 }}>
++   |              ^
++444|          <CardContent>
++445|            <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
++    at failureErrorWithLog (/Users/ahmed/Desktop/odoc/node_modules/vite/node_modules/esbuild/lib/main.js:1472:15)
++    at /Users/ahmed/Desktop/odoc/node_modules/vite/node_modules/esbuild/lib/main.js:755:50
++    at responseCallbacks.<computed> (/Users/ahmed/Desktop/odoc/node_modules/vite/node_modules/esbuild/lib/main.js:622:9)
++    at handleIncomingPacket (/Users/ahmed/Desktop/odoc/node_modules/vite/node_modules/esbuild/lib/main.js:677:12)
++    at Socket.readFromStdout (/Users/ahmed/Desktop/odoc/node_modules/vite/node_modules/esbuild/lib/main.js:600:7)
++    at Socket.emit (node:events:520:28)
++    at addChunk (node:internal/streams/readable:559:12)
++    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
++    at Readable.push (node:internal/streams/readable:390:5)
++    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23
++Click outside, press Esc key, or fix the code to dismiss.
++You can also disable this overlay by setting server.hmr.overlay to false in vite.config.ts.
+
+# 2024-12-22 16:27:52.290884
++y

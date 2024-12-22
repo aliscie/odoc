@@ -10,7 +10,7 @@ import {
   DialogActions,
   Button,
   TextField,
-  Typography,
+  Typography, Rating as UiRating,
 } from "@mui/material";
 import ChatWindow from "../../components/Chat/chatWindow";
 import { useNavigate } from "react-router-dom";
@@ -187,7 +187,7 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
         <DialogTitle>Review {user.name}</DialogTitle>
         <DialogContent>
           <Typography component="legend">Rating</Typography>
-          <Rating
+          <UiRating
             value={rating}
             onChange={(_, newValue) => setRating(newValue || 0)}
           />
