@@ -542,7 +542,7 @@ const SocialPosts = () => {
                 />
               ))}
               {post.creator?.id === profile?.id && (
-                <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
+                <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
                   <TextField
                     size="small"
                     placeholder="Add tag..."
@@ -560,6 +560,22 @@ const SocialPosts = () => {
                     }}
                     sx={{ width: 120 }}
                   />
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => {
+                      if (tagInput.trim()) {
+                        const updatedPost = {
+                          ...post,
+                          tags: [...new Set([...post.tags, tagInput.trim()])]
+                        };
+                        handleSavePost(updatedPost);
+                        setTagInput("");
+                      }
+                    }}
+                  >
+                    Add Tag
+                  </Button>
                 </Box>
               )}
             </Box>
