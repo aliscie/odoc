@@ -30,7 +30,7 @@ import {
 import { useSelector } from "react-redux";
 import { randomString } from "../../DataProcessing/dataSamples";
 import EditorComponent from "../../components/EditorComponent";
-import {logger} from "../../DevUtils/logData";
+import { logger } from "../../DevUtils/logData";
 
 const Comment = ({ comment, onReply, level = 0 }) => {
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -142,9 +142,11 @@ const SocialPosts = () => {
     fetchPosts();
   }, [backendActor]);
 
-  const [newPostContent, setNewPostContent] = useState<Array<ContentNode>>(null);
+  const [newPostContent, setNewPostContent] =
+    useState<Array<ContentNode>>(null);
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
+  logger({ newPostContent });
 
   const handleNewPost = async () => {
     // if (!newPostContent.trim() || !backendActor) return;
@@ -208,10 +210,11 @@ const SocialPosts = () => {
       .toLowerCase();
     return (
       contentText.includes(searchQuery.toLowerCase()) ||
-      (post.creator?.name?.toLowerCase().includes(searchQuery.toLowerCase()) || false)
+      post.creator?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      false
     );
   });
-  logger({filteredPosts})
+  logger({ filteredPosts });
 
   const handleVoteUp = async (postId: string) => {
     try {
@@ -329,8 +332,7 @@ const SocialPosts = () => {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}>
-            {currentUser && <UserAvatarMenu user={currentUser} />}
-            <Box sx={{ border: "1px solid #e0e0e0", borderRadius: 1, p: 2 }}>
+            <Box>
               <EditorComponent
                 contentEditable={true}
                 onChange={setNewPostContent}
@@ -351,7 +353,9 @@ const SocialPosts = () => {
           <CardHeader
             avatar={post.creator && <UserAvatarMenu user={post.creator} />}
             title={post.creator && post.creator.name}
-            subheader={new Date(Number(post.date_created) / 1e6).toLocaleString()}
+            subheader={new Date(
+              Number(post.date_created) / 1e6,
+            ).toLocaleString()}
           />
           <CardContent>
             {post.content_tree && post.content_tree.length > 0 ? (
