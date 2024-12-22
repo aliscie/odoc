@@ -2,20 +2,23 @@ import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
+  Button,
   CircularProgress,
+  Container,
   IconButton,
+  Paper,
+  Stack,
   TextField,
   Typography,
+  useTheme,
 } from "@mui/material";
-
-import { Add } from "@mui/icons-material";
+import { Add, PhotoCamera } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import { convertToBytes } from "../../DataProcessing/imageToVec";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { RegisterUser, User } from "../../../declarations/backend/backend.did";
 import { handleRedux } from "../../redux/store/handleRedux";
-import RegistrationFormDialog from "../MuiComponents/RegistrationFormDialog";
 
 interface FormValues {
   username: string;
@@ -26,6 +29,7 @@ interface FormValues {
 }
 
 const RegistrationForm: React.FC = () => {
+  const theme = useTheme();
   const dispatch = useDispatch();
   const { isLoggedIn, isRegistered } = useSelector(
     (state: any) => state.uiState,
@@ -41,10 +45,11 @@ const RegistrationForm: React.FC = () => {
     last_name: "",
     email: "",
   });
-  const [open, setOpen] = useState(isLoggedIn && !isRegistered);
+
+  const [showForm, setShowForm] = useState(isLoggedIn && !isRegistered);
 
   useEffect(() => {
-    setOpen(isLoggedIn && !isRegistered);
+    setShowForm(isLoggedIn && !isRegistered);
   }, [isLoggedIn, isRegistered]);
 
   const [photo, setPhoto] = useState<File | null>(null);
@@ -116,115 +121,159 @@ const RegistrationForm: React.FC = () => {
     }
   };
 
+  if (!showForm) return null;
+
   return (
-    <RegistrationFormDialog
-      title="Register yourself here."
-      description=""
-      inputFields={
-        <>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              marginBottom: 2,
-            }}
-          >
-            <input
-              accept="image/*"
-              id="photo"
-              type="file"
-              style={{ display: "none" }}
-              onChange={handleUploadPhoto}
-            />
-            <label htmlFor="photo">
-              <IconButton component="span">
-                <Avatar
-                  src={photo ? URL.createObjectURL(photo) : undefined}
-                  alt="Profile Photo"
-                  sx={{ width: 100, height: 100 }}
-                >
-                  <Add />
-                </Avatar>
-              </IconButton>
-            </label>
-            <Typography variant="subtitle1">Upload Photo</Typography>
-            {loading && (
-              <CircularProgress size={20} style={{ marginTop: 10 }} />
-            )}
-          </Box>
-          <Box sx={{ marginBottom: 2 }}>
-            <TextField
-              required
-              id="username"
-              label="Username"
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={formValues.username}
-              onChange={handleChange}
-            />
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginBottom: 2,
-            }}
-          >
+    <Container maxWidth="sm">
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          mt: 4,
+          borderRadius: 2,
+          backgroundColor: theme.palette.background.paper,
+        }}
+      >
+        <Typography variant="h4" align="center" gutterBottom>
+          Welcome to Odoc
+        </Typography>
+        <Typography variant="subtitle1" align="center" color="textSecondary" sx={{ mb: 4 }}>
+          Complete your profile to get started
+        </Typography>
+
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            mb: 4,
+          }}
+        >
+          <input
+            accept="image/*"
+            id="photo"
+            type="file"
+            style={{ display: "none" }}
+            onChange={handleUploadPhoto}
+          />
+          <label htmlFor="photo">
+            <IconButton 
+              component="span"
+              sx={{
+                position: 'relative',
+                '&:hover': {
+                  '& .MuiAvatar-root': {
+                    opacity: 0.8,
+                  },
+                  '& .upload-icon': {
+                    opacity: 1,
+                  },
+                },
+              }}
+            >
+              <Avatar
+                src={photo ? URL.createObjectURL(photo) : undefined}
+                alt="Profile Photo"
+                sx={{
+                  width: 120,
+                  height: 120,
+                  transition: 'opacity 0.3s',
+                  border: `4px solid ${theme.palette.primary.main}`,
+                }}
+              >
+                {!photo && <Add />}
+              </Avatar>
+              <PhotoCamera 
+                className="upload-icon"
+                sx={{
+                  position: 'absolute',
+                  opacity: 0,
+                  transition: 'opacity 0.3s',
+                  color: 'white',
+                  backgroundColor: 'rgba(0,0,0,0.5)',
+                  borderRadius: '50%',
+                  padding: 1,
+                }}
+              />
+            </IconButton>
+          </label>
+          {loading && <CircularProgress size={24} sx={{ mt: 2 }} />}
+        </Box>
+
+        <Stack spacing={3}>
+          <TextField
+            required
+            id="username"
+            label="Username"
+            fullWidth
+            variant="outlined"
+            value={formValues.username}
+            onChange={handleChange}
+          />
+
+          <Stack direction="row" spacing={2}>
             <TextField
               id="first_name"
               label="First Name"
-              type="text"
               fullWidth
               variant="outlined"
               value={formValues.first_name || ""}
               onChange={handleChange}
-              sx={{ marginRight: 1 }}
             />
             <TextField
               id="last_name"
               label="Last Name"
-              type="text"
               fullWidth
               variant="outlined"
               value={formValues.last_name || ""}
               onChange={handleChange}
             />
-          </Box>
-          <Box sx={{ marginBottom: 2 }}>
-            <TextField
-              id="email"
-              label="Email"
-              type="email"
+          </Stack>
+
+          <TextField
+            id="email"
+            label="Email"
+            type="email"
+            fullWidth
+            variant="outlined"
+            value={formValues.email || ""}
+            onChange={handleChange}
+          />
+
+          <TextField
+            required
+            multiline
+            rows={4}
+            id="bio"
+            label="Bio"
+            fullWidth
+            variant="outlined"
+            value={formValues.bio}
+            onChange={handleChange}
+            helperText="Tell us a bit about yourself"
+          />
+
+          <Stack direction="row" spacing={2} sx={{ mt: 4 }}>
+            <Button
               fullWidth
               variant="outlined"
-              value={formValues.email || ""}
-              onChange={handleChange}
-            />
-          </Box>
-          <Box sx={{ marginBottom: 2 }}>
-            <TextField
-              required
-              multiline
-              id="bio"
-              label="Bio"
-              type="text"
+              onClick={() => setShowForm(false)}
+              sx={{ py: 1.5 }}
+            >
+              Cancel
+            </Button>
+            <Button
               fullWidth
-              variant="outlined"
-              value={formValues.bio}
-              onChange={handleChange}
-            />
-          </Box>
-        </>
-      }
-      buttons={[
-        { name: "Cancel", onClick: () => setOpen(false) },
-        { name: "Submit", onClick: handleRegister },
-      ]}
-      open={open}
-      maxWidth="md"
-    />
+              variant="contained"
+              onClick={handleRegister}
+              sx={{ py: 1.5 }}
+            >
+              Complete Registration
+            </Button>
+          </Stack>
+        </Stack>
+      </Paper>
+    </Container>
   );
 };
 
