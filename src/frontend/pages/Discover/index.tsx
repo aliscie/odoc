@@ -190,6 +190,8 @@ const SocialPosts = () => {
   }, [backendActor]);
 
   const [newPostContent, setNewPostContent] = useState<any>(null);
+  const [newPostTags, setNewPostTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
   const [isPosting, setIsPosting] = useState(false);
@@ -223,6 +225,8 @@ const SocialPosts = () => {
           );
           setPosts(updatedPosts.reverse());
           setNewPostContent(null);
+          setNewPostTags([]);
+          setTagInput("");
         } else {
           console.error("Failed to create post:", result.Err);
         }
@@ -438,6 +442,42 @@ const SocialPosts = () => {
                 }}
                 content={[]}
               />
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <TextField
+                size="small"
+                placeholder="Add tag..."
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && tagInput.trim()) {
+                    setNewPostTags([...new Set([...newPostTags, tagInput.trim()])]);
+                    setTagInput("");
+                  }
+                }}
+              />
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => {
+                  if (tagInput.trim()) {
+                    setNewPostTags([...new Set([...newPostTags, tagInput.trim()])]);
+                    setTagInput("");
+                  }
+                }}
+              >
+                Add Tag
+              </Button>
+            </Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {newPostTags.map((tag) => (
+                <Chip
+                  key={tag}
+                  label={tag}
+                  onDelete={() => setNewPostTags(newPostTags.filter(t => t !== tag))}
+                  size="small"
+                />
+              ))}
             </Box>
           </Box>
           <Button
