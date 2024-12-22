@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import CreatePost, { CreatePostRef } from "../../components/CreatePost";
 import { Principal } from "@dfinity/principal";
 import {
   Autocomplete,
@@ -227,29 +228,27 @@ const SocialPosts = () => {
     fetchPosts();
   }, [backendActor]);
 
-  const [newPostContent, setNewPostContent] = useState<any>(null);
-  const [newPostTags, setNewPostTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState("");
+  const createPostRef = useRef<CreatePostRef>(null);
   const [tagInputs, setTagInputs] = useState<{[key: string]: string}>({});
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
   const [isPosting, setIsPosting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleNewPost = async () => {
-    if (!newPostContent || !backendActor) return;
+  const handleNewPost = async (content: any, tags: string[]) => {
+    if (!content || !backendActor) return;
     setIsPosting(true);
 
     try {
       let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
-        serializeFileContents(newPostContent);
+        serializeFileContents(content);
       let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
       const newPost: Post = {
         id: randomString(),
         creator: profile.id,
         date_created: BigInt(Date.now() * 1e6),
         votes_up: [],
-        tags: newPostTags,
+        tags,
         content_tree,
         votes_down: [],
       };
@@ -509,67 +508,11 @@ const SocialPosts = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}>
-            <Box>
-              <EditorComponent
-                contentEditable={true}
-                onChange={(changes) => {
-                  let new_change = {};
-                  new_change[""] = changes;
-                  setNewPostContent(new_change);
-                }}
-                content={[]}
-              />
-            </Box>
-            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-              <TextField
-                size="small"
-                placeholder="Add tag..."
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && tagInput.trim()) {
-                    setNewPostTags([...new Set([...newPostTags, tagInput.trim()])]);
-                    setTagInput("");
-                  }
-                }}
-              />
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => {
-                  if (tagInput.trim()) {
-                    setNewPostTags([...new Set([...newPostTags, tagInput.trim()])]);
-                    setTagInput("");
-                  }
-                }}
-              >
-                Add Tag
-              </Button>
-            </Box>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {newPostTags.map((tag) => (
-                <Chip
-                  key={tag}
-                  label={tag}
-                  onDelete={() => setNewPostTags(newPostTags.filter(t => t !== tag))}
-                  size="small"
-                />
-              ))}
-            </Box>
-          </Box>
-          <Button
-            variant="contained"
-            fullWidth
-            onClick={handleNewPost}
-            disabled={isPosting}
-          >
-            {isPosting ? "Posting..." : "Post"}
-          </Button>
-        </CardContent>
-      </Card>
+      <CreatePost
+        ref={createPostRef}
+        onSubmit={handleNewPost}
+        isPosting={isPosting}
+      />
 
       <SearchField 
         searchQuery={searchQuery} 
