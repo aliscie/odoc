@@ -151,21 +151,19 @@ const SocialPosts = () => {
         votes_up: [],
         votes_down: [],
         tags: [],
-        content_tree: [
-          {
-            id: crypto.randomUUID(),
-            _type: "paragraph",
-            value: newPostContent,
-            data: null,
-            text: newPostContent,
-            children: [],
-            language: "",
-            indent: BigInt(0),
-            listStart: BigInt(0),
-            parent: null,
-            listStyleType: "",
-          },
-        ],
+        content_tree: newPostContent.split('\n').map(text => ({
+          id: crypto.randomUUID(),
+          _type: "paragraph",
+          value: text,
+          data: null,
+          text: text,
+          children: [],
+          language: "",
+          indent: BigInt(0),
+          listStart: BigInt(0),
+          parent: null,
+          listStyleType: "",
+        })),
       };
 
       const result = await backendActor.save_post(newPost);
@@ -187,12 +185,16 @@ const SocialPosts = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Add this function after other handler functions
-  const filteredPosts = posts.filter(
-    (post) =>
-      post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.user.username.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredPosts = posts.filter((post) => {
+    const contentText = post.content_tree
+      .map((node) => node.text)
+      .join(" ")
+      .toLowerCase();
+    return (
+      contentText.includes(searchQuery.toLowerCase()) ||
+      post.creator.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
 
   const handleVoteUp = async (postId: string) => {
     try {
@@ -336,7 +338,9 @@ const SocialPosts = () => {
             subheader={`@${post.user.username}`}
           />
           <CardContent>
-            <Typography variant="body1">{post.content}</Typography>
+            <Typography variant="body1">
+              {post.content_tree.map((node) => node.text).join(" ")}
+            </Typography>
 
             <Box
               sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
