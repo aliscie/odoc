@@ -131,7 +131,7 @@ const SocialPosts = () => {
       try {
         if (!backendActor) return;
         const result = await backendActor.get_posts(BigInt(0), BigInt(20));
-        setPosts(result);
+        setPosts(result.reverse());
         setError(null);
       } catch (err) {
         console.error("Failed to fetch posts:", err);
@@ -147,9 +147,11 @@ const SocialPosts = () => {
   const [newPostContent, setNewPostContent] = useState<any>(null);
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
+  const [isPosting, setIsPosting] = useState(false);
 
   const handleNewPost = async () => {
     if (!newPostContent || !backendActor) return;
+    setIsPosting(true);
 
     try {
       let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
@@ -173,8 +175,8 @@ const SocialPosts = () => {
             BigInt(0),
             BigInt(20),
           );
-          setPosts(updatedPosts);
-          setNewPostContent("");
+          setPosts(updatedPosts.reverse());
+          setNewPostContent(null);
         } else {
           console.error("Failed to create post:", result.Err);
         }
@@ -183,6 +185,8 @@ const SocialPosts = () => {
       }
     } catch (err) {
       console.error("Error creating post:", err);
+    } finally {
+      setIsPosting(false);
     }
   };
 
@@ -233,6 +237,23 @@ const SocialPosts = () => {
     } catch (err) {
       console.error("Error voting down:", err);
     }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!backendActor) return;
+    try {
+      const result = await backendActor.delete_post(postId);
+      if ("Ok" in result) {
+        const updatedPosts = posts.filter(post => post.id !== postId);
+        setPosts(updatedPosts);
+      }
+    } catch (err) {
+      console.error("Error deleting post:", err);
+    }
+  };
+
+  const handleEditPost = (post: PostUser) => {
+    setNewPostContent(deserializeContentTree(post.content_tree));
   };
 
   const handleShare = (postId) => {
@@ -329,8 +350,13 @@ const SocialPosts = () => {
               />
             </Box>
           </Box>
-          <Button variant="contained" fullWidth onClick={handleNewPost}>
-            Post
+          <Button 
+            variant="contained" 
+            fullWidth 
+            onClick={handleNewPost}
+            disabled={isPosting}
+          >
+            {isPosting ? 'Posting...' : 'Post'}
           </Button>
         </CardContent>
       </Card>
@@ -363,6 +389,24 @@ const SocialPosts = () => {
               sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
             >
               <Box sx={{ display: "flex", gap: 1 }}>
+                {post.creator?.id === profile?.id && (
+                  <>
+                    <Button
+                      onClick={() => handleDeletePost(post.id)}
+                      color="error"
+                      size="small"
+                    >
+                      Delete
+                    </Button>
+                    <Button
+                      onClick={() => handleEditPost(post)}
+                      color="primary"
+                      size="small"
+                    >
+                      Edit
+                    </Button>
+                  </>
+                )}
                 <Button
                   startIcon={<HeartIcon />}
                   onClick={() => handleVoteUp(post.id)}
