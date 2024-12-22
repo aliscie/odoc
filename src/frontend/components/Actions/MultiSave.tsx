@@ -41,7 +41,6 @@ const MultiSaveButton: React.FC<MultiSaveButtonProps> = () => {
   const serializedContracts = Object.values(
     changes.contracts,
   ) as StoredContract[];
-  const deleteContracts = changes.delete_contracts || [];
 
   const confirm = async () => {
     setOpenDialog(0);

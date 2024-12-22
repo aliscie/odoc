@@ -1,4 +1,4 @@
-import React, { MouseEvent } from "react";
+import { MouseEvent } from "react";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import DeleteIcon from "@mui/icons-material/Delete";

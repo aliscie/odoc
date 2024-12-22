@@ -27,7 +27,6 @@ import {
   AppBar,
   Toolbar,
 } from "@mui/material";
-import { DragIndicator as DragHandle } from "@mui/icons-material";
 
 import {
   Chat as ChatIcon,
@@ -316,7 +315,6 @@ const ChatNotifications = () => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedChat, setSelectedChat] = useState(null);
-  // const [isFullView, setIsFullView] = useState(false);
   const [createGroupOpen, setCreateGroupOpen] = useState(false);
 
   // Sample data
