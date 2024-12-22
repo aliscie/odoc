@@ -7,7 +7,7 @@ dfx identity use default
 export USER_PRINCIPAL=$(dfx identity get-principal)
 export USER_ACCOUNT_ID=$(dfx ledger account-id)
 
-#dfx start --background --clean
+dfx start --background --clean
 
 dfx deploy --network local --specified-id ryjl3-tyaaa-aaaaa-aaaba-cai icp_ledger --argument '
   (variant {
