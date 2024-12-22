@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Principal } from "@dfinity/principal";
 import {
+  Autocomplete,
   Box,
   Button,
   Card,
   CardContent,
   CardHeader,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
   Paper,
   TextField,
@@ -99,6 +105,10 @@ const Comment = ({ comment, onReply, level = 0 }) => {
 
 const SearchField = ({ searchQuery, setSearchQuery, selectedTags, setSelectedTags }) => {
   const [tagInput, setTagInput] = useState("");
+  const [suggestedTags] = useState([
+    "technology", "programming", "design", "business", 
+    "marketing", "science", "art", "music", "travel", "food"
+  ]); // You can replace these with actual tags from your backend
 
   const handleAddTag = () => {
     if (tagInput.trim() && !selectedTags.includes(tagInput.trim())) {
@@ -111,39 +121,60 @@ const SearchField = ({ searchQuery, setSearchQuery, selectedTags, setSelectedTag
     setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
   };
 
+  const filteredSuggestions = suggestedTags.filter(
+    tag => tag.toLowerCase().includes(tagInput.toLowerCase()) && !selectedTags.includes(tag)
+  );
+
   return (
-    <Card sx={{ mb: 3 }}>
+    <Card sx={{ mb: 3, boxShadow: 3 }}>
       <CardContent>
-        <TextField
-          fullWidth
-          placeholder="Search posts by content or user..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <Box sx={{ color: "text.secondary", mr: 1 }}>
-                <SearchIcon />
-              </Box>
-            ),
-          }}
-          sx={{ mb: 2 }}
-        />
-        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
           <TextField
+            fullWidth
+            placeholder="Search posts by content or user..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <Box sx={{ color: "text.secondary", mr: 1 }}>
+                  <SearchIcon />
+                </Box>
+              ),
+            }}
             size="small"
-            placeholder="Add tag..."
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleAddTag();
+            sx={{ flexGrow: 1 }}
+          />
+          <Autocomplete
+            freeSolo
+            size="small"
+            options={filteredSuggestions}
+            inputValue={tagInput}
+            onInputChange={(_, newValue) => setTagInput(newValue)}
+            onChange={(_, newValue) => {
+              if (newValue) {
+                setSelectedTags([...new Set([...selectedTags, newValue])]);
+                setTagInput("");
               }
             }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Add tag..."
+                size="small"
+                sx={{ width: 200 }}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleAddTag();
+                  }
+                }}
+              />
+            )}
           />
           <Button
-            variant="outlined"
+            variant="contained"
             size="small"
             onClick={handleAddTag}
+            sx={{ minWidth: 100 }}
           >
             Add Tag
           </Button>
@@ -155,6 +186,13 @@ const SearchField = ({ searchQuery, setSearchQuery, selectedTags, setSelectedTag
               label={tag}
               onDelete={() => handleRemoveTag(tag)}
               size="small"
+              sx={{ 
+                bgcolor: 'primary.light',
+                color: 'white',
+                '&:hover': {
+                  bgcolor: 'primary.main',
+                }
+              }}
             />
           ))}
         </Box>
@@ -296,15 +334,17 @@ const SocialPosts = () => {
 
   const [isDeletingPost, setIsDeletingPost] = useState<string | null>(null);
 
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [postToDelete, setPostToDelete] = useState<string | null>(null);
+
   const handleDeletePost = async (postId: string) => {
-    if (!backendActor) return;
+    setPostToDelete(postId);
+    setDeleteDialogOpen(true);
+  };
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this post?",
-    );
-    if (!confirmed) return;
-
-    setIsDeletingPost(postId);
+  const confirmDelete = async () => {
+    if (!backendActor || !postToDelete) return;
+    setIsDeletingPost(postToDelete);
     try {
       const result = await backendActor.delete_post(postId);
       if ("Ok" in result) {
@@ -687,6 +727,48 @@ const SocialPosts = () => {
         </Card>
       ))}
     </Box>
+    <Dialog
+      open={deleteDialogOpen}
+      onClose={() => setDeleteDialogOpen(false)}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">
+        {"Delete Post?"}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          Are you sure you want to delete this post? This action cannot be undone.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+          Cancel
+        </Button>
+        <Button
+          onClick={async () => {
+            setDeleteDialogOpen(false);
+            if (!backendActor || !postToDelete) return;
+            try {
+              const result = await backendActor.delete_post(postToDelete);
+              if ("Ok" in result) {
+                const updatedPosts = posts.filter((post) => post.id !== postToDelete);
+                setPosts(updatedPosts);
+              }
+            } catch (err) {
+              console.error("Error deleting post:", err);
+            } finally {
+              setIsDeletingPost(null);
+              setPostToDelete(null);
+            }
+          }}
+          color="error"
+          autoFocus
+        >
+          Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
