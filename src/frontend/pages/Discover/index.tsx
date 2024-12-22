@@ -234,6 +234,7 @@ const SocialPosts = () => {
   const [showComments, setShowComments] = useState({});
   const [isPosting, setIsPosting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [newPostContent, setNewPostContent] = useState<any>(null);
 
   const handleNewPost = async (content: any, tags: string[]) => {
     if (!content || !backendActor) return;
@@ -261,9 +262,7 @@ const SocialPosts = () => {
             BigInt(20),
           );
           setPosts(updatedPosts.reverse());
-          setNewPostContent(null);
-          setNewPostTags([]);
-          setTagInput("");
+          createPostRef.current?.reset();
         } else {
           console.error("Failed to create post:", result.Err);
         }
