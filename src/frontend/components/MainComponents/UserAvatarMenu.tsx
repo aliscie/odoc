@@ -63,15 +63,26 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ user, onMessageClick })
     if (newMessage.trim()) {
       try {
         if (onMessageClick) {
-          onMessageClick();
+          await onMessageClick();
         }
-        // Here you would typically call your backend to send the message
-        setNewMessage('');
-        setMessageDialogOpen(false);
-        enqueueSnackbar('Message sent successfully', { variant: 'success' });
+        
+        // Call backend to send message
+        const result = await backendActor?.send_message({
+          recipient: user.id,
+          content: newMessage,
+          timestamp: BigInt(Date.now())
+        });
+
+        if (result?.Ok) {
+          setNewMessage('');
+          setMessageDialogOpen(false);
+          enqueueSnackbar('Message sent successfully', { variant: 'success' });
+        } else if (result?.Err) {
+          throw new Error(result.Err);
+        }
       } catch (error) {
         console.error('Error sending message:', error);
-        enqueueSnackbar('Failed to send message', { variant: 'error' });
+        enqueueSnackbar(error.message || 'Failed to send message', { variant: 'error' });
       }
     }
   };
