@@ -148,7 +148,6 @@ const SocialPosts = () => {
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
   const [isPosting, setIsPosting] = useState(false);
-  const [editingPost, setEditingPost] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleNewPost = async () => {
@@ -245,15 +244,17 @@ const SocialPosts = () => {
 
   const handleDeletePost = async (postId: string) => {
     if (!backendActor) return;
-    
-    const confirmed = window.confirm("Are you sure you want to delete this post?");
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this post?",
+    );
     if (!confirmed) return;
-    
+
     setIsDeletingPost(postId);
     try {
       const result = await backendActor.delete_post(postId);
       if ("Ok" in result) {
-        const updatedPosts = posts.filter(post => post.id !== postId);
+        const updatedPosts = posts.filter((post) => post.id !== postId);
         setPosts(updatedPosts);
       }
     } catch (err) {
@@ -265,23 +266,26 @@ const SocialPosts = () => {
 
   const handleSavePost = async (post: PostUser) => {
     if (!newPostContent || !backendActor) return;
-    
+
     setIsSaving(true);
     try {
       let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
         serializeFileContents(newPostContent);
       let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
-      
+
       const updatedPost: Post = {
         ...post,
+        creator: profile.id,
         content_tree,
       };
-      
+
       const result = await backendActor.save_post(updatedPost);
       if ("Ok" in result) {
-        const updatedPosts = await backendActor.get_posts(BigInt(0), BigInt(20));
+        const updatedPosts = await backendActor.get_posts(
+          BigInt(0),
+          BigInt(20),
+        );
         setPosts(updatedPosts.reverse());
-        setEditingPost(null);
         setNewPostContent(null);
       }
     } catch (err) {
@@ -367,6 +371,7 @@ const SocialPosts = () => {
       return comment;
     });
   };
+  console.log({ filteredPosts });
 
   return (
     <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
@@ -385,13 +390,13 @@ const SocialPosts = () => {
               />
             </Box>
           </Box>
-          <Button 
-            variant="contained" 
-            fullWidth 
+          <Button
+            variant="contained"
+            fullWidth
             onClick={handleNewPost}
             disabled={isPosting}
           >
-            {isPosting ? 'Posting...' : 'Post'}
+            {isPosting ? "Posting..." : "Post"}
           </Button>
         </CardContent>
       </Card>
@@ -410,7 +415,9 @@ const SocialPosts = () => {
           <CardContent>
             {post.content_tree && post.content_tree.length > 0 ? (
               <EditorComponent
-                contentEditable={editingPost === post.id}
+                readOnly={
+                  post && post.creator?.id && post.creator.id !== profile?.id
+                }
                 content={deserializeContentTree(post.content_tree)}
                 onChange={(changes) => {
                   let new_change = {};
@@ -436,26 +443,18 @@ const SocialPosts = () => {
                       size="small"
                       disabled={isDeletingPost === post.id}
                     >
-                      {isDeletingPost === post.id ? 'Deleting...' : 'Delete'}
+                      {isDeletingPost === post.id ? "Deleting..." : "Delete"}
                     </Button>
-                    {editingPost === post.id ? (
-                      <Button
-                        onClick={() => handleSavePost(post)}
-                        color="primary"
-                        size="small"
-                        disabled={isSaving}
-                      >
-                        {isSaving ? 'Saving...' : 'Save'}
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() => setEditingPost(post.id)}
-                        color="primary"
-                        size="small"
-                      >
-                        Edit
-                      </Button>
-                    )}
+
+                    <Button
+                      onClick={() => handleSavePost(post)}
+                      color="primary"
+                      size="small"
+                      disabled={isSaving}
+                    >
+                      {isSaving ? "Saving..." : "Save"}
+                    </Button>
+
                   </>
                 )}
                 <Button
