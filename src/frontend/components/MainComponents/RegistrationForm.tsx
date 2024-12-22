@@ -85,7 +85,6 @@ const RegistrationForm: React.FC = () => {
       return;
     }
 
-    setOpen(false);
     const loaderMessage = (
       <span>
         Creating account...{" "}
@@ -101,16 +100,20 @@ const RegistrationForm: React.FC = () => {
     };
 
     try {
-      let register: { Ok: User } | { Err: string } | undefined;
-      if (backendActor) {
-        register = await backendActor.register(input);
-        closeSnackbar(loadingSnackbar);
+      if (!backendActor) {
+        throw new Error("Backend actor not initialized");
       }
+
+      const register = await backendActor.register(input);
+      closeSnackbar(loadingSnackbar);
+
       if (register?.Ok) {
         dispatch(handleRedux("UPDATE_PROFILE", { profile: register.Ok }));
         enqueueSnackbar(`Welcome ${register.Ok.name}, to Odoc`, {
           variant: "success",
         });
+        // Force a complete app refresh
+        window.location.href = window.location.origin;
       } else if (register?.Err) {
         enqueueSnackbar(register.Err, { variant: "error" });
         setOpen(true);
