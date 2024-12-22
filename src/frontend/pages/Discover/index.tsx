@@ -98,7 +98,7 @@ const Comment = ({ comment, onReply, level = 0 }) => {
 };
 
 const SearchField = ({ searchQuery, setSearchQuery, selectedTags, setSelectedTags }) => {
-  const [tagInputs, setTagInputs] = useState<{[key: string]: string}>({});
+  const [tagInput, setTagInput] = useState("");
 
   const handleAddTag = () => {
     if (tagInput.trim() && !selectedTags.includes(tagInput.trim())) {
