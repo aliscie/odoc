@@ -1,15 +1,34 @@
-use crate::files::FileNode;
-use crate::{FILES_SHARE_STORE, SHARED_USER_FILES, USER_FILES};
+use crate::files::{FileNode, FileNodeVector};
+use crate::{FILES_SHARE_STORE, FILE_CONTENTS, SHARED_USER_FILES, USER_FILES};
 use ic_cdk::caller;
 
 use crate::storage_schema::ContentTree;
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 
 use crate::files_content::ContentNode;
-use ic_stable_structures::storable::Bound;
-use ic_stable_structures::Storable;
-use std::borrow::Cow;
+use ic_stable_structures::{storable::Bound, DefaultMemoryImpl, StableBTreeMap, Storable};
+use std::{borrow::Cow, cell::RefCell};
 
+#[derive(PartialEq, Clone, Debug, Deserialize, CandidType)]
+pub enum ShareFilePermission {
+    None,
+    CanUpdate,
+    CanView,
+    CanComment,
+}
+
+impl ShareFilePermission {
+    pub fn check(&self, permission: ShareFilePermission) -> bool {
+        match (self, permission) {
+            (ShareFilePermission::None, _) => false,
+            (ShareFilePermission::CanUpdate, _) => true,
+            (ShareFilePermission::CanComment, ShareFilePermission::CanComment) => true,
+            (ShareFilePermission::CanComment, ShareFilePermission::CanView) => true,
+            (ShareFilePermission::CanView, ShareFilePermission::CanView) => true,
+            _ => false,
+        }
+    }
+}
 
 #[derive(PartialEq, Clone, Debug, Deserialize, CandidType)]
 pub struct ShareFile {
@@ -56,6 +75,40 @@ impl Storable for ShareFileNodeVector {
 }
 
 impl ShareFile {
+    // pub fn new(file_id: FileId, share_id: String) -> Result<String, String> {
+    //     let file = FileNode::get(&file_id).ok_or("No such file with this id.")?;
+    //
+    //     let share_file = ShareFile {
+    //         id: share_id.clone(),
+    //         file: file.id,
+    //         owner: caller(),
+    //         permission: ShareFilePermission::CanUpdate,
+    //         users_permissions: Default::default(),
+    //     };
+    //
+    //     let _shared_file = FILES_SHARE_STORE.with(|files_share_store| {
+    //         let mut files_share_store = files_share_store.borrow_mut();
+    //         if let Some(share_file) = files_share_store.get(&share_id) {
+    //             Some(share_file.clone())
+    //         } else {
+    //             let share_id = share_id.clone();
+    //             files_share_store.insert(share_id, share_file.clone());
+    //             Some(share_file)
+    //         }
+    //     });
+    //
+    //     let new_file = FileNode {
+    //         id: file_id.clone(),
+    //         parent: file.parent.clone(),
+    //         name: file.name.clone(),
+    //         children: file.children.clone(),
+    //         share_id: Some(share_id.clone()),
+    //         author: file.author,
+    //     };
+    //     new_file.save()?;
+    //
+    //     Ok(share_id)
+    // }
 
     pub fn get_shared() -> Vec<ShareFile> {
         SHARED_USER_FILES

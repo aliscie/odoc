@@ -2,15 +2,17 @@ use std::collections::HashMap;
 
 use candid::Principal;
 use candid::{CandidType, Deserialize};
-use ic_cdk::caller;
+use ic_cdk::{call, caller};
 use serde::Serialize;
 
 use crate::contracts::custom_contract::utils::notify_about_promise;
 use crate::storage_schema::ContractId;
-use crate::tables::{ContractPermissionType, Execute, Filter, Formula, PermissionType};
+use crate::tables::{Column, ContractPermissionType, Execute, Filter, Formula, PermissionType};
 use crate::user_history::UserHistory;
 use crate::websocket::{NoteContent, Notification, PaymentAction};
 use crate::{ExchangeType, StoredContract, StoredContractVec, Wallet, CONTRACTS_STORE};
+
+// make me a function of list of days
 
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub struct CColumn {
@@ -30,6 +32,7 @@ pub(crate) struct CCell {
     pub value: String,
     pub field: String,
     pub id: String,
+    // pub index: u64,
 }
 
 #[derive(Eq, PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
@@ -52,6 +55,7 @@ pub struct CContract {
     pub rows: Vec<CRow>,
     pub creator: Principal,
     pub date_created: f64,
+    // pub rows: Vec<HashMap<String, String>>
 }
 
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
@@ -76,8 +80,15 @@ pub struct CPayment {
     pub receiver: Principal,
     pub date_created: f64,
     pub date_released: f64,
+    // pub date_updated: f64,
     pub status: PaymentStatus,
     pub cells: Vec<CCell>,
+    // pub columns: Vec<CCell>,
+    //TODO
+    // pub other_columns: Vec<Column>,
+    // Note if released == false then it is a promise not a payment
+    // Note if conformed == true then the receiver is claiming the promos
+    // Note if conformed == true the the promos should be protected and updatable.
 }
 
 impl CPayment {

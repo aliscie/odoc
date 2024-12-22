@@ -1,0 +1,4030 @@
+
+# 2024-12-22 12:03:56.724648
++yes
+
+# 2024-12-22 12:04:18.714474
++give me list of unused functions 
+
+# 2024-12-22 12:08:10.050169
++yes
+
+# 2024-12-22 12:08:19.609900
++is it working?
+
+# 2024-12-22 12:09:56.773667
++test
+
+# 2024-12-22 12:10:17.620887
++no
+
+# 2024-12-22 12:10:21.319317
++hello world
+
+# 2024-12-22 12:17:57.128494
++test aider is here?
+
+# 2024-12-22 12:18:17.030957
++give me a list of unused functions and compnents 
+
+# 2024-12-22 12:18:45.878505
++yes
+
+# 2024-12-22 12:19:38.151256
++remove unused files, remove unused imports, remove unused functions, remove unused packages
+
+# 2024-12-22 12:20:47.459628
++inside the ./src/frontend remove unused functions and imports
+
+# 2024-12-22 12:22:22.409347
++how to do that give me step by step?
+
+# 2024-12-22 12:23:00.977039
++yes
+
+# 2024-12-22 12:23:00.981540
++/run find ./src/frontend -type f -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx"
+
+# 2024-12-22 12:23:00.981641
++/run find ./src/frontend -type f -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx"
+
+# 2024-12-22 12:23:05.632831
++yes
+
+# 2024-12-22 12:23:14.349219
++/run cat <file_path>
+
+# 2024-12-22 12:23:14.349574
++/run cat <file_path>
+
+# 2024-12-22 12:23:16.359237
++yes
+
+# 2024-12-22 12:23:18.010436
++/run cat ./src/frontend/components/SomeComponent.tsx
+
+# 2024-12-22 12:23:18.010506
++/run cat ./src/frontend/components/SomeComponent.tsx
+
+# 2024-12-22 12:23:19.893058
++yes
+
+# 2024-12-22 12:23:39.979494
++remove unused functions and unused imports from the frontend 
+
+# 2024-12-22 12:23:50.025872
++yes
+
+# 2024-12-22 12:23:50.030845
++/run cat ./src/frontend/FILE_PATH
+
+# 2024-12-22 12:23:50.030946
++/run cat ./src/frontend/FILE_PATH
+
+# 2024-12-22 12:23:51.909131
++yes
+
+# 2024-12-22 12:23:53.429847
++/run cat ./src/frontend/App.tsx
+
+# 2024-12-22 12:23:53.429978
++/run cat ./src/frontend/App.tsx
+
+# 2024-12-22 12:23:55.168077
++yes
+
+# 2024-12-22 12:24:38.023865
++give me a list of unused files in the frontend 
+
+# 2024-12-22 12:25:25.143414
++yes
+
+# 2024-12-22 12:25:57.208442
++/run cat ./src/frontend/websocket/use_socket.tsx
+
+# 2024-12-22 12:25:57.208825
++/run cat ./src/frontend/websocket/use_socket.tsx
+
+# 2024-12-22 12:26:01.835478
++y
+
+# 2024-12-22 12:26:03.180932
++/run cat ./src/frontend/redux/initialData/useInitialData.tsx
+
+# 2024-12-22 12:26:03.181154
++/run cat ./src/frontend/redux/initialData/useInitialData.tsx
+
+# 2024-12-22 12:26:04.465545
++y
+
+# 2024-12-22 12:26:05.533049
++/run cat ./src/frontend/contexts/BackendContext.tsx
+
+# 2024-12-22 12:26:05.533186
++/run cat ./src/frontend/contexts/BackendContext.tsx
+
+# 2024-12-22 12:26:06.623444
++y
+
+# 2024-12-22 12:27:00.160631
++scan ./src/frontend/components and remove unused functions and unused import ./src/frontend/components
+
+# 2024-12-22 12:27:28.946988
++add ./src/frontend/components to the chat
+
+# 2024-12-22 12:27:46.313397
++chat ./src/frontend/components
+
+# 2024-12-22 12:27:54.526029
++yes
+
+# 2024-12-22 12:27:54.529381
++/run cat ./src/frontend/components/Actions/DeleteFile.tsx
+
+# 2024-12-22 12:27:54.529426
++/run cat ./src/frontend/components/Actions/DeleteFile.tsx
+
+# 2024-12-22 12:27:54.705826
++/run cat ./src/frontend/components/Actions/MultiSave.tsx
+
+# 2024-12-22 12:27:54.705896
++/run cat ./src/frontend/components/Actions/MultiSave.tsx
+
+# 2024-12-22 12:27:56.030507
++yes
+
+# 2024-12-22 12:27:57.246727
++/run find ./src/frontend/components -type f -name "*.tsx" -exec cat {} \;
+
+# 2024-12-22 12:27:57.246857
++/run find ./src/frontend/components -type f -name "*.tsx" -exec cat {} \;
+
+# 2024-12-22 12:27:58.884320
++yes
+
+# 2024-12-22 12:28:13.827977
++remove unused imports and unused functions ./src/frontend/components
+
+# 2024-12-22 12:28:52.798204
++yes
+
+# 2024-12-22 12:35:20.436000
++check ./src/frontend/components/NotifcationList/index.tsx and enable users to click on a notification to set is_seen to true, also when a users click on a new promise shoudl expand the notifation tap and see more options like request release, object on promise with text for objections message
+
+# 2024-12-22 12:35:37.049843
++check ./src/frontend/components/NotifcationList/index.tsx and enable users to click on a notification to set is_seen to true, also when a users c
++lick on a new promise shoudl expand the notifation tap and see more options like request release, object on promise with text for objections messag
++e   '
+
+# 2024-12-22 12:36:06.086010
++check ./src/frontend/components/NotifcationList/index.tsx and enable users to click on a notification to set is_seen to true, also when a users c
++ 
++lick on a new promise shoudl expand the notifation tap and see more options like request release, object on promise with text for objections messag
++ 
++e 
+
+# 2024-12-22 12:37:26.049011
++yes
+
+# 2024-12-22 12:37:33.385714
++test
+
+# 2024-12-22 12:37:52.197701
++how to do that?
+
+# 2024-12-22 13:30:11.898725
++test
+
+# 2024-12-22 13:32:37.727641
++Test
+
+# 2024-12-22 13:33:23.905616
++at ./src/frontend/components/NotifcationList/index.tsx the ExpandedNotificationContent does not show as a decent UI make it a popover compnent 
+
+# 2024-12-22 13:33:58.524702
++add ./src/frontend/components/NotifcationList/index.tsx to the chat
+
+# 2024-12-22 13:34:16.235542
++how to do that?
+
+# 2024-12-22 13:34:45.499165
++yes
+
+# 2024-12-22 13:34:45.506471
++/run cat ./src/frontend/components/NotifcationList/index.tsx
+
+# 2024-12-22 13:34:45.506572
++/run cat ./src/frontend/components/NotifcationList/index.tsx
+
+# 2024-12-22 13:34:47.836942
++y
+
+# 2024-12-22 13:35:24.733690
++ at ./src/frontend/components/NotifcationList/index.tsx the ExpandedNotificationContent does not show as a decent UI make it a popover compnent 
+
+# 2024-12-22 13:35:42.861467
++y
+
+# 2024-12-22 13:36:26.971748
++can you make it draggable ?
+
+# 2024-12-22 13:36:43.653814
++y
+
+# 2024-12-22 13:36:43.658390
++/run npm install react-draggable
+
+# 2024-12-22 13:36:43.658509
++/run npm install react-draggable
+
+# 2024-12-22 13:36:57.890860
++y
+
+# 2024-12-22 13:37:45.426941
++undo the last commit
+
+# 2024-12-22 13:38:08.330150
++y
+
+# 2024-12-22 13:38:08.336454
++/run git reset --hard HEAD~1
+
+# 2024-12-22 13:38:08.336613
++/run git reset --hard HEAD~1
+
+# 2024-12-22 13:38:25.551754
++y
+
+# 2024-12-22 13:41:17.817608
++there is a strange issue with scrolling when ExpandedNotificationContent spear. Also, enable users to scroll over all notofication even when ExpandedNotificationContent, also allow users to close the ExpandedNotificationContent
+
+# 2024-12-22 13:42:09.034636
++the close button is not working
+
+# 2024-12-22 13:44:28.928171
++add this to the chat ./src/frontend/components/MainComponents/RegistrationForm.tsx and enhnace the UI of the registration forum make it look like profotional UI UX
+
+# 2024-12-22 13:45:08.247206
++share ./src/frontend/components/MainComponents/RegistrationForm.tsx
+
+# 2024-12-22 13:45:13.566978
++y
+
+# 2024-12-22 13:45:43.196947
++/run npm install @mui/icons-material @mui/material @emotion/styled @emotion/react
+
+# 2024-12-22 13:45:43.197297
++/run npm install @mui/icons-material @mui/material @emotion/styled @emotion/react
+
+# 2024-12-22 13:45:59.567468
++y
+
+# 2024-12-22 13:46:52.707182
++rewreite this import React, { useEffect, useState } from "react";
++import {
++  Avatar,
++  Box,
++  CircularProgress,
++  IconButton,
++  TextField,
++  Typography,
++  Paper,
++  Stepper,
++  Step,
++  StepLabel,
++  Button,
++  useTheme,
++} from "@mui/material";
++import { styled } from "@mui/material/styles";
++import { Add, PhotoCamera, ArrowForward, ArrowBack } from "@mui/icons-material";
++import { useDispatch, useSelector } from "react-redux";
++import { useSnackbar } from "notistack";
++import { convertToBytes } from "../../DataProcessing/imageToVec";
++import { useBackendContext } from "../../contexts/BackendContext";
++import { RegisterUser, User } from "../../../declarations/backend/backend.did";
++import { handleRedux } from "../../redux/store/handleRedux";
++import RegistrationFormDialog from "../MuiComponents/RegistrationFormDialog";
++
++interface FormValues {
++  username: string;
++  bio: string;
++  first_name?: string;
++  last_name?: string;
++  email?: string;
++}
++
++const RegistrationForm: React.FC = () => {
++  const dispatch = useDispatch();
++  const { isLoggedIn, isRegistered } = useSelector(
++    (state: any) => state.uiState,
++  );
++
++  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
++  const { backendActor } = useBackendContext();
++
++  const [formValues, setFormValues] = useState<FormValues>({
++    username: "",
++    bio: "",
++    first_name: "",
++    last_name: "",
++    email: "",
++  });
++  const [open, setOpen] = useState(isLoggedIn && !isRegistered);
++
++  useEffect(() => {
++    setOpen(isLoggedIn && !isRegistered);
++  }, [isLoggedIn, isRegistered]);
++
++  const [photo, setPhoto] = useState<File | null>(null);
++  const [photoByte, setPhotoByte] = useState<Uint8Array | number[] | undefined>(
++    null,
++  );
++  const [loading, setLoading] = useState(false);
++
++  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
++    const { id, value } = event.target;
++    setFormValues((prevValues) => ({ ...prevValues, [id]: value }));
++  };
++
++  const handleUploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
++    const image = e.target.files?.[0];
++    if (image) {
++      try {
++        setLoading(true);
++        const imageByteData = await convertToBytes(image);
++        setPhoto(image);
++        setPhotoByte(imageByteData);
++      } catch (error) {
++        enqueueSnackbar(error.message, { variant: "error" });
++      } finally {
++        setLoading(false);
++      }
++    }
++  };
++
++  const handleRegister = async () => {
++    if (!formValues.username || !formValues.bio) {
++      enqueueSnackbar("Please fill all required fields", { variant: "error" });
++      return;
++    }
++
++    setOpen(false);
++    const loaderMessage = (
++      <span>
++        Creating account...{" "}
++        <CircularProgress size={20} style={{ marginLeft: 10 }} />
++      </span>
++    );
++    const loadingSnackbar = enqueueSnackbar(loaderMessage, { variant: "info" });
++
++    const input: RegisterUser = {
++      name: [formValues.username],
++      description: [formValues.bio],
++      photo: photoByte ? [photoByte] : [[]],
++    };
++
++    try {
++      let register: { Ok: User } | { Err: string } | undefined;
++      if (backendActor) {
++        register = await backendActor.register(input);
++        closeSnackbar(loadingSnackbar);
++      }
++      if (register?.Ok) {
++        dispatch(handleRedux("UPDATE_PROFILE", { profile: register.Ok }));
++        enqueueSnackbar(`Welcome ${register.Ok.name}, to Odoc`, {
++          variant: "success",
++        });
++      } else if (register?.Err) {
++        enqueueSnackbar(register.Err, { variant: "error" });
++        setOpen(true);
++      }
++    } catch (error) {
++      console.error("There was an issue with registration: ", error);
++      enqueueSnackbar(error.message, { variant: "error" });
++    }
++  };
++
++  const theme = useTheme();
++  const [activeStep, setActiveStep] = useState(0);
++  
++  const steps = ['Basic Info', 'Profile Details', 'Review'];
++
++  const handleNext = () => {
++    setActiveStep((prevStep) => prevStep + 1);
++    if (activeStep === steps.length - 1) {
++      handleRegister();
++    }
++  };
++
++  const handleBack = () => {
++    setActiveStep((prevStep) => prevStep - 1);
++  };
++
++  const StyledPaper = styled(Paper)(({ theme }) => ({
++    padding: theme.spacing(4),
++    borderRadius: theme.spacing(2),
++    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
++    background: 'rgba(255, 255, 255, 0.95)',
++    backdropFilter: 'blur(10px)',
++  }));
++
++  const StyledAvatar = styled(Avatar)(({ theme }) => ({
++    width: 120,
++    height: 120,
++    cursor: 'pointer',
++    transition: 'transform 0.2s, box-shadow 0.2s',
++    '&:hover': {
++      transform: 'scale(1.05)',
++      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
++    },
++  }));
++
++  const renderStepContent = (step: number) => {
++    switch (step) {
++      case 0:
++        return (
++          <Box sx={{ mt: 2 }}>
++            <TextField
++              required
++              id="username"
++              label="Username"
++              type="text"
++              fullWidth
++              variant="outlined"
++              value={formValues.username}
++              onChange={handleChange}
++              sx={{ mb: 3 }}
++            />
++            <TextField
++              id="email"
++              label="Email"
++              type="email"
++              fullWidth
++              variant="outlined"
++              value={formValues.email || ""}
++              onChange={handleChange}
++            />
++          </Box>
++        );
++      case 1:
++        return (
++          <Box sx={{ mt: 2 }}>
++            <Box
++              sx={{
++                display: "flex",
++                flexDirection: "column",
++                alignItems: "center",
++                mb: 3,
++              }}
++            >
++              <input
++                accept="image/*"
++                id="photo"
++                type="file"
++                style={{ display: "none" }}
++                onChange={handleUploadPhoto}
++              />
++              <label htmlFor="photo">
++                <StyledAvatar
++                  src={photo ? URL.createObjectURL(photo) : undefined}
++                  alt="Profile Photo"
++                >
++                  {!photo && <PhotoCamera sx={{ fontSize: 40 }} />}
++                </StyledAvatar>
++              </label>
++              <Typography variant="subtitle1" sx={{ mt: 1, mb: 1 }}>
++                Upload Profile Photo
++              </Typography>
++              {loading && <CircularProgress size={24} />}
++            </Box>
++            <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
++              <TextField
++                id="first_name"
++                label="First Name"
++                type="text"
++                fullWidth
++                variant="outlined"
++                value={formValues.first_name || ""}
++                onChange={handleChange}
++              />
++              <TextField
++                id="last_name"
++                label="Last Name"
++                type="text"
++                fullWidth
++                variant="outlined"
++                value={formValues.last_name || ""}
++                onChange={handleChange}
++              />
++            </Box>
++            <TextField
++              required
++              multiline
++              rows={4}
++              id="bio"
++              label="Bio"
++              type="text"
++              fullWidth
++              variant="outlined"
++              value={formValues.bio}
++              onChange={handleChange}
++              placeholder="Tell us about yourself..."
++            />
++          </Box>
++        );
++      case 2:
++        return (
++          <Box sx={{ mt: 2 }}>
++            <Typography variant="h6" gutterBottom>
++              Review Your Information
++            </Typography>
++            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
++              <StyledAvatar
++                src={photo ? URL.createObjectURL(photo) : undefined}
++                sx={{ width: 80, height: 80, mr: 2 }}
++              />
++              <Box>
++                <Typography variant="h6">
++                  {formValues.username}
++                </Typography>
++                <Typography color="textSecondary">
++                  {formValues.email}
++                </Typography>
++              </Box>
++            </Box>
++            <Typography variant="body1" paragraph>
++              {formValues.bio}
++            </Typography>
++            <Typography variant="body2" color="textSecondary">
++              {formValues.first_name} {formValues.last_name}
++            </Typography>
++          </Box>
++        );
++      default:
++        return null;
++    }
++  };
++
++  return (
++    <RegistrationFormDialog
++      title="Create Your Account"
++      description="Join our community in just a few steps"
++      inputFields={
++        <StyledPaper>
++          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
++            {steps.map((label) => (
++              <Step key={label}>
++                <StepLabel>{label}</StepLabel>
++              </Step>
++            ))}
++          </Stepper>
++        <>
++          <Box
++            sx={{
++              display: "flex",
++              flexDirection: "column",
++              alignItems: "center",
++              marginBottom: 2,
++            }}
++          >
++            <input
++              accept="image/*"
++              id="photo"
++              type="file"
++              style={{ display: "none" }}
++              onChange={handleUploadPhoto}
++            />
++            <label htmlFor="photo">
++              <IconButton component="span">
++                <Avatar
++                  src={photo ? URL.createObjectURL(photo) : undefined}
++                  alt="Profile Photo"
++                  sx={{ width: 100, height: 100 }}
++                >
++                  <Add />
++                </Avatar>
++              </IconButton>
++            </label>
++            <Typography variant="subtitle1">Upload Photo</Typography>
++            {loading && (
++              <CircularProgress size={20} style={{ marginTop: 10 }} />
++            )}
++          </Box>
++          <Box sx={{ marginBottom: 2 }}>
++            <TextField
++              required
++              id="username"
++              label="Username"
++              type="text"
++              fullWidth
++              variant="outlined"
++              value={formValues.username}
++              onChange={handleChange}
++            />
++          </Box>
++          <Box
++            sx={{
++              display: "flex",
++              justifyContent: "space-between",
++              marginBottom: 2,
++            }}
++          >
++            <TextField
++              id="first_name"
++              label="First Name"
++              type="text"
++              fullWidth
++              variant="outlined"
++              value={formValues.first_name || ""}
++              onChange={handleChange}
++              sx={{ marginRight: 1 }}
++            />
++            <TextField
++              id="last_name"
++              label="Last Name"
++              type="text"
++              fullWidth
++              variant="outlined"
++              value={formValues.last_name || ""}
++              onChange={handleChange}
++            />
++          </Box>
++          <Box sx={{ marginBottom: 2 }}>
++            <TextField
++              id="email"
++              label="Email"
++              type="email"
++              fullWidth
++              variant="outlined"
++              value={formValues.email || ""}
++              onChange={handleChange}
++            />
++          </Box>
++          <Box sx={{ marginBottom: 2 }}>
++            <TextField
++              required
++              multiline
++              id="bio"
++              label="Bio"
++              type="text"
++              fullWidth
++              variant="outlined"
++              value={formValues.bio}
++              onChange={handleChange}
++            />
++          </Box>
++        </>
++      }
++      buttons={[
++        {
++          name: "Back",
++          onClick: handleBack,
++          disabled: activeStep === 0,
++          startIcon: <ArrowBack />,
++          sx: { mr: 1 }
++        },
++        {
++          name: activeStep === steps.length - 1 ? "Complete Registration" : "Next",
++          onClick: handleNext,
++          endIcon: activeStep === steps.length - 1 ? undefined : <ArrowForward />,
++          variant: "contained",
++          color: "primary"
++        }
++      ]}
++      open={open}
++      maxWidth="md"
++    />
++  );
++};
++
++export default RegistrationForm;
++
+
+# 2024-12-22 13:48:18.522811
++enhance the look of the registeration forum and do not use RegistrationFormDialog
+
+# 2024-12-22 13:50:23.474738
++share the files ./src/frontend/App.tsx and ./src/frontend/components/MainComponents/TopNavBar.tsx
+
+# 2024-12-22 13:50:41.226640
++how to do that
+
+# 2024-12-22 13:50:47.846252
++y
+
+# 2024-12-22 13:51:37.641257
++there is an issue now, the registeration forum apear behinde the top nav bar, eather make it show on top or make it show a bit bellow 
+
+# 2024-12-22 13:53:37.494634
++Uncaught (in promise) ReferenceError: setOpen is not defined
++
+
+# 2024-12-22 13:54:12.388052
++after registeration refresh the page
+
+# 2024-12-22 13:57:23.344580
++1. when registeration complete refresh the entire app, 2. when registeration capmplete call the backend backendActor?.register... 
+
+# 2024-12-22 13:59:44.946362
++how to add ./src/frontend/pages/profile/index.tsx to the chat
+
+# 2024-12-22 13:59:55.051096
++how to do that
+
+# 2024-12-22 14:00:25.153786
++./src/frontend/pages/profile/index.tsx can you enable users to update, name, descrption and photo
+
+# 2024-12-22 14:00:43.283039
++how ?
+
+# 2024-12-22 14:00:51.303887
++do it
+
+# 2024-12-22 14:01:23.689451
++./src/frontend/pages/profile/index.tsxyes
+
+# 2024-12-22 14:01:26.183829
++y
+
+# 2024-12-22 14:01:41.412913
++enable uers to update, name, descrption and photo
+
+# 2024-12-22 14:03:59.758994
++1. keep the rest of the compnent and the rest of the data showing also check if currentUser.id ==profile.id otherwise do not allow users to update  import React from "react";
++import { AgCharts } from "ag-charts-react";
++import {
++  Container,
++  Box,
++  Card,
++  CardContent,
++  Typography,
++  Grid,
++  Avatar,
++  Rating,
++  Divider,
++  Button,
++} from "@mui/material";
++import Friends from "./friends";
++import { useSelector } from "react-redux";
++
++const ProfilePage = ({
++  profile,
++  history,
++  friends,
++  onUnfriend,
++  onAcceptFriend,
++  onCancelFriend,
++}) => {
++  const { isDarkMode } = useSelector((state: any) => state.uiState);
++  // Handle completely missing props with default empty objects
++  const safeProfile = profile || {};
++  const safeHistory = history || {};
++  const safeFriends = friends || [];
++
++  const {
++    id = "",
++    name = "Anonymous",
++    description = "",
++    photo = new Uint8Array(),
++  } = safeProfile;
++
++  const {
++    rates_by_actions = [],
++    rates_by_others = [],
++    actions_rate = 0,
++    users_rate = 0,
++  } = safeHistory;
++
++  // Ensure arrays are defined
++  const safeRatesByActions = Array.isArray(rates_by_actions)
++    ? rates_by_actions
++    : [];
++  const safeRatesByOthers = Array.isArray(rates_by_others)
++    ? rates_by_others
++    : [];
++
++  // Convert action ratings to chart data with safe access
++  const actionRatingsData = safeRatesByActions.map((rating) => ({
++    date: new Date(rating?.date || 0).toLocaleDateString(),
++    rating: rating?.rating || 0,
++    spent: rating?.spent || 0,
++    received: rating?.received || 0,
++    promises: rating?.promises || 0,
++  }));
++
++  // Calculate statistics with safe calculations
++  const totalSpent = safeRatesByActions.reduce(
++    (sum, rating) => sum + (rating?.spent || 0),
++    0,
++  );
++  const totalReceived = safeRatesByActions.reduce(
++    (sum, rating) => sum + (rating?.received || 0),
++    0,
++  );
++  const averageRating = safeRatesByOthers.length
++    ? safeRatesByOthers.reduce(
++        (sum, rating) => sum + (rating?.rating || 0),
++        0,
++      ) / safeRatesByOthers.length
++    : 0;
++
++  // AG Charts configuration
++  const chartOptions = {
++    title: {
++      text: "Actions history",
++      fontSize: 18,
++      color: isDarkMode ? "#ffffff" : "#000000", // Responsive title color
++    },
++    data: actionRatingsData, // Your data input
++    background: {
++      fill: isDarkMode ? "#1e1e1e" : "#fefefe", // Dark/light background
++    },
++    theme: isDarkMode ? "ag-dark" : "ag-default", // Switch AG Charts theme dynamically
++    series: [
++      {
++        type: "line",
++        xKey: "date",
++        yKey: "rating",
++        yName: "Rating",
++        stroke: isDarkMode ? "#F44336" : "#D32F2F", // Responsive line color
++        marker: {
++          enabled: true,
++          fill: isDarkMode ? "#F44336" : "#D32F2F", // Marker color
++          stroke: isDarkMode ? "#ffffff" : "#000000", // Marker border
++        },
++        tooltip: { enabled: true },
++      },
++      {
++        type: "line",
++        xKey: "date",
++        yKey: "spent",
++        yName: "Spent",
++        stroke: isDarkMode ? "#4FC3F7" : "#0288D1",
++        marker: {
++          enabled: true,
++          fill: isDarkMode ? "#4FC3F7" : "#0288D1",
++          stroke: isDarkMode ? "#ffffff" : "#000000",
++        },
++        tooltip: { enabled: true },
++      },
++      {
++        type: "line",
++        xKey: "date",
++        yKey: "received",
++        yName: "Received",
++        stroke: isDarkMode ? "#81C784" : "#388E3C",
++        marker: {
++          enabled: true,
++          fill: isDarkMode ? "#81C784" : "#388E3C",
++          stroke: isDarkMode ? "#ffffff" : "#000000",
++        },
++        tooltip: { enabled: true },
++      },
++      {
++        type: "line",
++        xKey: "date",
++        yKey: "promises",
++        yName: "Promises",
++        stroke: isDarkMode ? "#FFD54F" : "#FBC02D",
++        marker: {
++          enabled: true,
++          fill: isDarkMode ? "#FFD54F" : "#FBC02D",
++          stroke: isDarkMode ? "#ffffff" : "#000000",
++        },
++        tooltip: { enabled: true },
++      },
++    ],
++    axes: [
++      {
++        type: "category",
++        position: "bottom",
++        line: { color: isDarkMode ? "#aaaaaa" : "#000000" }, // Axes line color
++        tick: { color: isDarkMode ? "#aaaaaa" : "#000000" }, // Axes tick color
++        label: { color: isDarkMode ? "#ffffff" : "#000000" }, // X-axis label color
++      },
++      {
++        type: "number",
++        position: "left",
++        line: { color: isDarkMode ? "#aaaaaa" : "#000000" },
++        tick: { color: isDarkMode ? "#aaaaaa" : "#000000" },
++        label: { color: isDarkMode ? "#ffffff" : "#000000" }, // Y-axis label color
++      },
++    ],
++    legend: {
++      position: "bottom",
++      item: {
++        label: {
++          color: isDarkMode ? "#ffffff" : "#000000", // Legend text color
++        },
++      },
++    },
++  };
++
++  // Function to safely convert photo to base64
++  const getPhotoSrc = (photoData) => {
++    try {
++      return photoData && Object.keys(photoData).length > 0
++        ? `data:image/jpeg;base64,${Buffer.from(photoData).toString("base64")}`
++        : "";
++    } catch (e) {
++      console.error("Error converting photo:", e);
++      return "";
++    }
++  };
++
++  return (
++    <Container maxWidth="lg" sx={{ py: 4 }}>
++      {/* User Header */}
++      <Card sx={{ mb: 4 }}>
++        <CardContent>
++          <Box display="flex" alignItems="flex-start" gap={3}>
++            <Avatar
++              src={getPhotoSrc(photo)}
++              alt={name}
++              sx={{ width: 96, height: 96 }}
++            >
++              {name?.charAt(0) || "A"}
++            </Avatar>
++            <Box>
++              <Typography variant="h4" gutterBottom>
++                {name || "Anonymous"}
++              </Typography>
++              <Typography variant="body1" color="text.secondary">
++                {id || "No id available"}
++              </Typography>
++              <Typography variant="body1" color="text.secondary">
++                {description || "No description available"}
++              </Typography>
++            </Box>
++          </Box>
++        </CardContent>
++      </Card>
++
++      {/* Stats Overview */}
++      <Grid container spacing={3} sx={{ mb: 4 }}>
++        <Grid item xs={12} md={4}>
++          <Card>
++            <CardContent>
++              <Typography variant="h6" color="text.secondary" gutterBottom>
++                Rating
++              </Typography>
++              <Box display="flex" flexDirection="column" gap={1}>
++                <Rating value={averageRating} precision={0.1} readOnly />
++                <Typography variant="h4">{averageRating.toFixed(2)}</Typography>
++              </Box>
++            </CardContent>
++          </Card>
++        </Grid>
++
++        <Grid item xs={12} md={4}>
++          <Card>
++            <CardContent>
++              <Typography variant="h6" color="text.secondary" gutterBottom>
++                Total Spent
++              </Typography>
++              <Typography variant="h4">${totalSpent.toFixed(2)}</Typography>
++            </CardContent>
++          </Card>
++        </Grid>
++
++        <Grid item xs={12} md={4}>
++          <Card>
++            <CardContent>
++              <Typography variant="h6" color="text.secondary" gutterBottom>
++                Total Received
++              </Typography>
++              <Typography variant="h4">${totalReceived.toFixed(2)}</Typography>
++            </CardContent>
++          </Card>
++        </Grid>
++      </Grid>
++
++      {/* Chart */}
++      <Card sx={{ mb: 4 }}>
++        <CardContent>
++          <Box sx={{ height: 400 }}>
++            {actionRatingsData.length > 0 ? (
++              <AgCharts options={chartOptions} />
++            ) : (
++              <Box
++                height="100%"
++                display="flex"
++                alignItems="center"
++                justifyContent="center"
++              >
++                <Typography color="text.secondary">
++                  No transaction history available
++                </Typography>
++              </Box>
++            )}
++          </Box>
++        </CardContent>
++      </Card>
++
++      {/* Friends Section */}
++      <Card>
++        <CardContent>
++          <Typography variant="h6" gutterBottom>
++            Friends
++          </Typography>
++          <Friends currentUser={profile} friends={friends} />
++        </CardContent>
++      </Card>
++
++      {/* Recent Ratings */}
++      <Card sx={{ mt: 4 }}>
++        <CardContent>
++          <Typography variant="h6" gutterBottom>
++            Recent Ratings
++          </Typography>
++          {safeRatesByOthers.length > 0 ? (
++            <Box>
++              {safeRatesByOthers.slice(0, 5).map((rating, index) => (
++                <Box key={rating?.id || index}>
++                  <Box py={2}>
++                    <Box
++                      display="flex"
++                      justifyContent="space-between"
++                      alignItems="flex-start"
++                    >
++                      <Box>
++                        <Rating
++                          value={rating?.rating || 0}
++                          precision={0.1}
++                          readOnly
++                          size="small"
++                        />
++                        <Typography
++                          variant="body2"
++                          color="text.secondary"
++                          sx={{ mt: 1 }}
++                        >
++                          {rating?.comment || "No comment"}
++                        </Typography>
++                      </Box>
++                      <Typography variant="caption" color="text.secondary">
++                        {new Date(rating?.date || 0).toLocaleDateString()}
++                      </Typography>
++                    </Box>
++                  </Box>
++                  {index < safeRatesByOthers.length - 1 && <Divider />}
++                </Box>
++              ))}
++            </Box>
++          ) : (
++            <Box py={2} textAlign="center">
++              <Typography color="text.secondary">
++                No ratings available
++              </Typography>
++            </Box>
++          )}
++        </CardContent>
++      </Card>
++    </Container>
++  );
++};
++
++export default ProfilePage;
++import React, { useState, useEffect } from 'react';
++import {
++  Container,
++  Paper,
++  Typography,
++  TextField,
++  Button,
++  Avatar,
++  Box,
++  IconButton,
++  CircularProgress,
++  Stack,
++  useTheme,
++} from '@mui/material';
++import { PhotoCamera, Edit } from '@mui/icons-material';
++import { useDispatch, useSelector } from 'react-redux';
++import { useSnackbar } from 'notistack';
++import { convertToBytes } from '../../DataProcessing/imageToVec';
++import { useBackendContext } from '../../contexts/BackendContext';
++import { handleRedux } from '../../redux/store/handleRedux';
++import { convertToBlobLink } from '../../DataProcessing/imageToVec';
++
++const ProfilePage = () => {
++  const theme = useTheme();
++  const dispatch = useDispatch();
++  const { enqueueSnackbar } = useSnackbar();
++  const { backendActor } = useBackendContext();
++  const profile = useSelector((state: any) => state.filesState.profile);
++
++  const [isEditing, setIsEditing] = useState(false);
++  const [loading, setLoading] = useState(false);
++  const [formValues, setFormValues] = useState({
++    name: '',
++    description: '',
++  });
++  const [photo, setPhoto] = useState<File | null>(null);
++  const [photoByte, setPhotoByte] = useState<Uint8Array | number[] | undefined>(null);
++
++  useEffect(() => {
++    if (profile) {
++      setFormValues({
++        name: profile.name,
++        description: profile.description || '',
++      });
++    }
++  }, [profile]);
++
++  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
++    const { name, value } = event.target;
++    setFormValues((prev) => ({ ...prev, [name]: value }));
++  };
++
++  const handleUploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
++    const image = e.target.files?.[0];
++    if (image) {
++      try {
++        setLoading(true);
++        const imageByteData = await convertToBytes(image);
++        setPhoto(image);
++        setPhotoByte(imageByteData);
++      } catch (error) {
++        enqueueSnackbar(error.message, { variant: 'error' });
++      } finally {
++        setLoading(false);
++      }
++    }
++  };
++
++  const handleUpdate = async () => {
++    if (!backendActor) {
++      enqueueSnackbar('Backend not initialized', { variant: 'error' });
++      return;
++    }
++
++    try {
++      setLoading(true);
++      const updateData = {
++        name: [formValues.name],
++        description: [formValues.description],
++        photo: photoByte ? [photoByte] : undefined,
++      };
++
++      const result = await backendActor.update_profile(updateData);
++      
++      if (result.Ok) {
++        dispatch(handleRedux('UPDATE_PROFILE', { profile: result.Ok }));
++        enqueueSnackbar('Profile updated successfully', { variant: 'success' });
++        setIsEditing(false);
++      } else if (result.Err) {
++        enqueueSnackbar(result.Err, { variant: 'error' });
++      }
++    } catch (error) {
++      console.error('Profile update error:', error);
++      enqueueSnackbar('Failed to update profile', { variant: 'error' });
++    } finally {
++      setLoading(false);
++    }
++  };
++
++  if (!profile) {
++    return (
++      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
++        <CircularProgress />
++      </Box>
++    );
++  }
++
++  const imageLink = convertToBlobLink(profile.photo);
++
++  return (
++    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
++      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
++        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
++          <Typography variant="h4">Profile</Typography>
++          <IconButton 
++            onClick={() => setIsEditing(!isEditing)}
++            color={isEditing ? 'primary' : 'default'}
++          >
++            <Edit />
++          </IconButton>
++        </Box>
++
++        <Box display="flex" flexDirection="column" alignItems="center" mb={4}>
++          <input
++            accept="image/*"
++            id="profile-photo"
++            type="file"
++            style={{ display: 'none' }}
++            onChange={handleUploadPhoto}
++            disabled={!isEditing}
++          />
++          <label htmlFor="profile-photo">
++            <Box position="relative" display="inline-block">
++              <Avatar
++                src={photo ? URL.createObjectURL(photo) : imageLink}
++                alt={profile.name}
++                sx={{
++                  width: 150,
++                  height: 150,
++                  border: `4px solid ${theme.palette.primary.main}`,
++                  cursor: isEditing ? 'pointer' : 'default',
++                  transition: 'opacity 0.3s',
++                  '&:hover': isEditing ? {
++                    opacity: 0.8,
++                  } : {},
++                }}
++              />
++              {isEditing && (
++                <IconButton
++                  sx={{
++                    position: 'absolute',
++                    bottom: 0,
++                    right: 0,
++                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
++                    '&:hover': {
++                      backgroundColor: 'rgba(0, 0, 0, 0.7)',
++                    },
++                  }}
++                  component="span"
++                >
++                  <PhotoCamera sx={{ color: 'white' }} />
++                </IconButton>
++              )}
++            </Box>
++          </label>
++        </Box>
++
++        <Stack spacing={3}>
++          <TextField
++            fullWidth
++            label="Name"
++            name="name"
++            value={formValues.name}
++            onChange={handleChange}
++            disabled={!isEditing}
++            variant="outlined"
++          />
++
++          <TextField
++            fullWidth
++            label="Bio"
++            name="description"
++            value={formValues.description}
++            onChange={handleChange}
++            disabled={!isEditing}
++            multiline
++            rows={4}
++            variant="outlined"
++          />
++
++          {isEditing && (
++            <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
++              <Button
++                fullWidth
++                variant="outlined"
++                onClick={() => {
++                  setIsEditing(false);
++                  setFormValues({
++                    name: profile.name,
++                    description: profile.description || '',
++                  });
++                  setPhoto(null);
++                  setPhotoByte(null);
++                }}
++              >
++                Cancel
++              </Button>
++              <Button
++                fullWidth
++                variant="contained"
++                onClick={handleUpdate}
++                disabled={loading}
++              >
++                {loading ? <CircularProgress size={24} /> : 'Save Changes'}
++              </Button>
++            </Stack>
++          )}
++        </Stack>
++      </Paper>
++    </Container>
++  );
++};
++
++export default ProfilePage;
++
+
+# 2024-12-22 14:07:19.060705
++enable users to update name, and sescrption wile keeping the rest of the fetures
+
+# 2024-12-22 14:14:32.620442
++add this ./frontend/pages/profile/friends.tsx to the chat
+
+# 2024-12-22 14:14:46.561282
++yes
+
+# 2024-12-22 14:15:07.977617
++add this to the chat ./src/frontend/components/Chat/chatWindow.tsx
+
+# 2024-12-22 14:15:13.688841
++yes
+
+# 2024-12-22 14:17:01.166263
++add ./src/frontend/pages/Discover/index.tsx to the chat
+
+# 2024-12-22 14:17:06.478233
++yes
+
+# 2024-12-22 14:21:01.151104
++Notice there is a user avatar with messages option and with profile options in Dsocver page and another one in Friends compnent. Make One compnent called user avatar that has profile, messages, and review, also when click profile it should take you to user?id=<profile.id>, when click on messages it should show messages window with that user, when click on review should be able to sbumit a rview and call backendActor?.rate_user(user: Principal, mut rating: Rating) -> Result<(), String>
+
+# 2024-12-22 14:21:51.947279
++y
+
+# 2024-12-22 14:22:30.749692
++use the UserAvatarMenu in dscover and in friends
+
+# 2024-12-22 14:22:50.813636
++yes
+
+# 2024-12-22 14:24:18.852022
++how to do that?
+
+# 2024-12-22 14:25:23.351267
++yes
+
+# 2024-12-22 14:26:16.315676
++use messsage from ./src/frontend/components/Chat/chatWindow.tsx
+
+# 2024-12-22 14:26:23.945521
++y
+
+# 2024-12-22 14:26:56.251140
++how to do that?
+
+# 2024-12-22 14:35:22.769104
++for UserAvatarmenu when click open chat open the chat just like here import React, { useState, useCallback } from "react";
++import {
++  List,
++  ListItem,
++  ListItemAvatar,
++  Avatar,
++  ListItemText,
++  Button,
++  Dialog,
++  DialogTitle,
++  DialogContent,
++  DialogActions,
++  Typography,
++  Rating,
++  Stack,
++  Chip,
++  IconButton, Paper, TextField, Divider,
++} from "@mui/material";
++import {
++  Check as CheckIcon,
++  Close as CloseIcon,
++  PersonRemove as PersonRemoveIcon,
++} from "@mui/icons-material";
++import ChatWindow from "../../components/Chat/chatWindow";
++interface Review {
++  rating: number;
++  comment: string;
++  timestamp: string;
++  reviewerId: string;
++  reviewerName: string;
++}
++
++interface User {
++  id: string;
++  name: string;
++  description: string;
++  photo: string;
++  reviews?: Review[];
++  averageRating?: number;
++}
++
++interface Friend {
++  id: string;
++  sender: User;
++  receiver: User;
++  confirmed: boolean;
++}
++
++interface Chat {
++  id: string;
++  name: string;
++  messages: Array<{
++    id: string;
++    sender: string;
++    content: string;
++    timestamp: string;
++  }>;
++  members: string[];
++  admins: string[];
++}
++
++interface ChatWindowPosition {
++  x: number;
++  y: number;
++}
++
++interface FriendsListProps {
++  friends: Friend[];
++  currentUser: User;
++  onAcceptFriend: (friendId: string) => void;
++  onRejectFriend: (friendId: string) => void;
++  onCancelRequest: (friendId: string) => void;
++  onUnfriend: (friendId: string) => void;
++  onSendMessage: (userId: string, message: string) => void;
++  onRateUser: (userId: string, rating: number) => void;
++}
++
++const FriendsList: React.FC<FriendsListProps> = ({
++  friends,
++  currentUser,
++  onAcceptFriend,
++  onRejectFriend,
++  onCancelRequest,
++  onUnfriend,
++  onSendMessage,
++  onRateUser,
++}) => {
++  const [selectedUser, setSelectedUser] = useState<User | null>(null);
++  const [rating, setRating] = useState<number>(0);
++  const [review, setReview] = useState<string>("");
++  const [activeChats, setActiveChats] = useState<Map<string, Chat>>(new Map());
++  const [chatPositions, setChatPositions] = useState<
++    Map<string, ChatWindowPosition>
++  >(new Map());
++
++  const handleProfileClose = () => {
++    setSelectedUser(null);
++    setRating(0);
++  };
++
++  const handleSubmitReview = () => {
++    if (selectedUser && rating > 0) {
++      const newReview: Review = {
++        rating,
++        comment: review,
++        timestamp: new Date().toISOString(),
++        reviewerId: currentUser?.id || "",
++        reviewerName: currentUser?.name || "",
++      };
++      onRateUser(selectedUser.id, rating);
++      // Reset form
++      setRating(0);
++      setReview("");
++    }
++  };
++
++  const handleOpenChat = useCallback(
++    (user: User) => {
++      const chatId = `chat-${user.id}`;
++      if (!activeChats.has(chatId)) {
++        const newChat: Chat = {
++          id: chatId,
++          name: user.name,
++          messages: [],
++          members: [currentUser.id, user.id],
++          admins: [currentUser.id],
++        };
++
++        setActiveChats(new Map(activeChats.set(chatId, newChat)));
++
++        // Set initial position for new chat window
++        const position = {
++          x: window.innerWidth - 350 - activeChats.size * 20,
++          y: window.innerHeight - 450 - activeChats.size * 20,
++        };
++        setChatPositions(new Map(chatPositions.set(chatId, position)));
++      }
++      setSelectedUser(null);
++    },
++    [activeChats, chatPositions, currentUser && currentUser.id],
++  );
++
++  const handleCloseChat = useCallback((chatId: string) => {
++    setActiveChats((prevChats) => {
++      const newChats = new Map(prevChats);
++      newChats.delete(chatId);
++      return newChats;
++    });
++    setChatPositions((prevPositions) => {
++      const newPositions = new Map(prevPositions);
++      newPositions.delete(chatId);
++      return newPositions;
++    });
++  }, []);
++
++  const handleChatPositionChange = useCallback(
++    (chatId: string, position: ChatWindowPosition) => {
++      setChatPositions(
++        (prevPositions) => new Map(prevPositions.set(chatId, position)),
++      );
++    },
++    [],
++  );
++
++  const getFriendStatus = (friend: Friend) => {
++    const isSender = friend.sender.id === currentUser?.id;
++    if (friend.confirmed) {
++      return {
++        status: "Friends",
++        actions: (
++          <IconButton
++            color="error"
++            onClick={() => onUnfriend(friend.id)}
++            title="Unfriend"
++          >
++            <PersonRemoveIcon />
++          </IconButton>
++        ),
++      };
++    }
++    if (isSender) {
++      return {
++        status: "Request Sent",
++        actions: (
++          <IconButton
++            color="warning"
++            onClick={() => onCancelRequest(friend.id)}
++            title="Cancel Request"
++          >
++            <CloseIcon />
++          </IconButton>
++        ),
++      };
++    }
++    return {
++      status: "Request Received",
++      actions: (
++        <Stack direction="row" spacing={1}>
++          <IconButton
++            color="success"
++            onClick={() => onAcceptFriend(friend.id)}
++            title="Accept"
++          >
++            <CheckIcon />
++          </IconButton>
++          <IconButton
++            color="error"
++            onClick={() => onRejectFriend(friend.id)}
++            title="Reject"
++          >
++            <CloseIcon />
++          </IconButton>
++        </Stack>
++      ),
++    };
++  };
++
++  return (
++    <>
++      <List>
++        {friends.map((friend) => {
++          const otherUser =
++            friend.sender.id === currentUser?.id
++              ? friend.receiver
++              : friend.sender;
++          const { status, actions } = getFriendStatus(friend);
++
++          return (
++            <ListItem key={friend.id} secondaryAction={actions}>
++              <ListItemAvatar>
++                <Avatar
++                  src={`data:image/jpeg;base64,${otherUser.photo}`}
++                  onClick={() => setSelectedUser(otherUser)}
++                  sx={{ cursor: "pointer" }}
++                />
++              </ListItemAvatar>
++              <ListItemText
++                primary={otherUser.name}
++                secondary={
++                  <Stack direction="row" spacing={1} alignItems="center">
++                    <Chip
++                      label={status}
++                      size="small"
++                      color={friend.confirmed ? "success" : "default"}
++                    />
++                  </Stack>
++                }
++              />
++            </ListItem>
++          );
++        })}
++      </List>
++
++      <Dialog
++        open={!!selectedUser}
++        onClose={handleProfileClose}
++        maxWidth="md"
++        fullWidth
++      >
++        {selectedUser && (
++          <>
++            <DialogTitle>
++              <Stack direction="row" spacing={2} alignItems="center">
++                <Avatar
++                  src={`data:image/jpeg;base64,${selectedUser.photo}`}
++                  sx={{ width: 56, height: 56 }}
++                />
++                <Typography variant="h6">{selectedUser.name}</Typography>
++              </Stack>
++            </DialogTitle>
++            <DialogContent>
++              <Stack spacing={3}>
++                <Typography variant="body1">
++                  {selectedUser.description}
++                </Typography>
++
++                <Stack spacing={2}>
++
++                  {selectedUser.reviews?.map((review, index) => (
++                    <Paper
++                      key={index}
++                      sx={{ p: 2, bgcolor: "background.default" }}
++                    >
++                      <Stack spacing={1}>
++                        <Stack
++                          direction="row"
++                          justifyContent="space-between"
++                          alignItems="center"
++                        >
++                          <Typography variant="subtitle2">
++                            {review.reviewerName}
++                          </Typography>
++                          <Rating value={review.rating} readOnly size="small" />
++                        </Stack>
++                        <Typography variant="body2">
++                          {review.comment}
++                        </Typography>
++                        <Typography variant="caption" color="text.secondary">
++                          {new Date(review.timestamp).toLocaleDateString()}
++                        </Typography>
++                      </Stack>
++                    </Paper>
++                  ))}
++
++                  <Divider sx={{ my: 2 }} />
++
++                  <Typography variant="subtitle1">Write a Review</Typography>
++                  <Rating
++                    value={rating}
++                    onChange={(_, newValue) => handleRating(newValue)}
++                  />
++                  <TextField
++                    label="Your Review"
++                    multiline
++                    rows={3}
++                    value={review}
++                    onChange={(e) => setReview(e.target.value)}
++                    fullWidth
++                  />
++                </Stack>
++              </Stack>
++            </DialogContent>
++            <DialogActions>
++              <Button onClick={handleProfileClose}>Close</Button>
++              <Button
++                onClick={handleSubmitReview}
++                variant="outlined"
++                color="primary"
++                disabled={!rating || !review.trim()}
++              >
++                Submit Review
++              </Button>
++              <Button
++                onClick={() => handleOpenChat(selectedUser)}
++                variant="contained"
++                color="primary"
++              >
++                Open Chat
++              </Button>
++            </DialogActions>
++          </>
++        )}
++      </Dialog>
++
++      {/* Render active chat windows */}
++      {Array.from(activeChats.entries()).map(([chatId, chat]) => (
++        <ChatWindow
++          key={chatId}
++          chat={chat}
++          onClose={handleCloseChat}
++          position={chatPositions.get(chatId) || { x: 0, y: 0 }}
++          onPositionChange={handleChatPositionChange}
++        />
++      ))}
++    </>
++  );
++};
++
++export default FriendsList;
++ as you can see we are using import ChatWindow from "../../components/Chat/chatWindow";
++from ./src/frontend/components/Chat/chatWindow.tsx
+
+# 2024-12-22 14:37:19.928794
++use the UserAvatarMenu here ./src/frontend/pages/profile/friends.tsx and remove the current avtar 
+
+# 2024-12-22 14:37:35.963562
++how to do that?
+
+# 2024-12-22 14:37:47.060355
++how to do that
+
+# 2024-12-22 14:37:53.159916
++y
+
+# 2024-12-22 14:39:34.562005
++import React, { useState, useCallback } from 'react';
++import { 
++  Avatar, 
++  IconButton, 
++  Menu, 
++  MenuItem, 
++  Dialog,
++  DialogTitle,
++  DialogContent,
++  DialogActions,
++  Button,
++  Rating,
++  TextField,
++  Typography
++} from '@mui/material';
++import ChatWindow from '../../components/Chat/chatWindow';
++import { useNavigate } from 'react-router-dom';
++import { Person, Message, Star } from '@mui/icons-material';
++import { useBackendContext } from '../../contexts/BackendContext';
++import { useSnackbar } from 'notistack';
++
++interface UserAvatarMenuProps {
++  user: {
++    id: string;
++    name: string;
++    photo?: Uint8Array;
++  };
++  onMessageClick?: () => void;
++}
++
++const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ user, onMessageClick }) => {
++  const navigate = useNavigate();
++  const { backendActor } = useBackendContext();
++  const { enqueueSnackbar } = useSnackbar();
++  
++  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
++  const [reviewOpen, setReviewOpen] = useState(false);
++  const [rating, setRating] = useState<number>(0);
++  const [comment, setComment] = useState('');
++
++  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
++    setAnchorEl(event.currentTarget);
++  };
++
++  const handleClose = () => {
++    setAnchorEl(null);
++  };
++
++  const handleProfile = () => {
++    navigate(`/user?id=${user.id}`);
++    handleClose();
++  };
++
++  const [activeChat, setActiveChat] = useState<any>(null);
++  const [chatPosition, setChatPosition] = useState({ x: 0, y: 0 });
++
++  const handleMessage = useCallback(() => {
++    const chatId = `chat-${user.id}`;
++    if (!activeChat) {
++      const newChat = {
++        id: chatId,
++        name: user.name,
++        messages: [],
++        members: [user.id],
++        admins: [user.id]
++      };
++
++      // Set initial position for chat window
++      const position = {
++        x: window.innerWidth - 350,
++        y: window.innerHeight - 450
++      };
++      setChatPosition(position);
++      setActiveChat(newChat);
++    }
++    handleClose();
++  }, [user, activeChat]);
++
++  const handleCloseChat = useCallback(() => {
++    setActiveChat(null);
++  }, []);
++
++  const handleChatPositionChange = useCallback((chatId: string, position: { x: number, y: number }) => {
++    setChatPosition(position);
++  }, []);
++
++  const handleSendMessage = async (chatId: string, message: string) => {
++    try {
++      if (onMessageClick) {
++        await onMessageClick();
++      }
++      
++      const result = await backendActor?.send_message({
++        recipient: user.id,
++        content: message,
++        timestamp: BigInt(Date.now())
++      });
++
++      if (result?.Ok) {
++        enqueueSnackbar('Message sent successfully', { variant: 'success' });
++      } else if (result?.Err) {
++        throw new Error(result.Err);
++      }
++    } catch (error) {
++      console.error('Error sending message:', error);
++      enqueueSnackbar(error.message || 'Failed to send message', { variant: 'error' });
++    }
++  };
++
++  const handleReviewClick = () => {
++    setReviewOpen(true);
++    handleClose();
++  };
++
++  const handleReviewSubmit = async () => {
++    try {
++      const result = await backendActor?.rate_user(user.id, {
++        rating,
++        comment,
++        date: BigInt(Date.now())
++      });
++
++      if (result?.Ok) {
++        enqueueSnackbar('Review submitted successfully', { variant: 'success' });
++      } else if (result?.Err) {
++        enqueueSnackbar(result.Err, { variant: 'error' });
++      }
++    } catch (error) {
++      console.error('Error submitting review:', error);
++      enqueueSnackbar('Failed to submit review', { variant: 'error' });
++    }
++    setReviewOpen(false);
++    setRating(0);
++    setComment('');
++  };
++
++  const getPhotoSrc = (photoData?: Uint8Array) => {
++    try {
++      return photoData && photoData.length > 0
++        ? `data:image/jpeg;base64,${Buffer.from(photoData).toString('base64')}`
++        : '';
++    } catch (e) {
++      console.error('Error converting photo:', e);
++      return '';
++    }
++  };
++
++  return (
++    <>
++      <IconButton onClick={handleClick}>
++        <Avatar 
++          src={getPhotoSrc(user.photo)}
++          alt={user.name}
++        >
++          {user.name?.charAt(0) || 'A'}
++        </Avatar>
++      </IconButton>
++
++      <Menu
++        anchorEl={anchorEl}
++        open={Boolean(anchorEl)}
++        onClose={handleClose}
++      >
++        <MenuItem onClick={handleProfile}>
++          <Person sx={{ mr: 1 }} /> Profile
++        </MenuItem>
++        <MenuItem onClick={handleMessage}>
++          <Message sx={{ mr: 1 }} /> Message
++        </MenuItem>
++        <MenuItem onClick={handleReviewClick}>
++          <Star sx={{ mr: 1 }} /> Review
++        </MenuItem>
++      </Menu>
++
++      <Dialog open={reviewOpen} onClose={() => setReviewOpen(false)}>
++        <DialogTitle>Review {user.name}</DialogTitle>
++        <DialogContent>
++          <Typography component="legend">Rating</Typography>
++          <Rating
++            value={rating}
++            onChange={(_, newValue) => setRating(newValue || 0)}
++          />
++          <TextField
++            autoFocus
++            margin="dense"
++            label="Comment"
++            fullWidth
++            multiline
++            rows={4}
++            value={comment}
++            onChange={(e) => setComment(e.target.value)}
++          />
++        </DialogContent>
++        <DialogActions>
++          <Button onClick={() => setReviewOpen(false)}>Cancel</Button>
++          <Button onClick={handleReviewSubmit}>Submit Review</Button>
++        </DialogActions>
++      </Dialog>
++
++      {activeChat && (
++        <ChatWindow
++          chat={activeChat}
++          onClose={handleCloseChat}
++          position={chatPosition}
++          onPositionChange={handleChatPositionChange}
++          onSendMessage={handleSendMessage}
++        />
++      )}
++    </>
++  );
++};
++
++export default UserAvatarMenu;
++when submit a review call backendActor?.fn rate_user(user: Principal, mut rating: Rating) -> Result<(), String> {
+
+# 2024-12-22 14:42:13.103674
++note export interface Rating {
++  'id' : string,
++  'date' : number,
++  'user_id' : Principal,
++  'comment' : string,
++  'rating' : number,
++}
+
+# 2024-12-22 15:45:23.686197
++yes
+
+# 2024-12-22 15:45:26.684399
++Uncaught SyntaxError: Unexpected identifier 'ActionRating' (at backend.did?t=1734853316012&import:1:6)
+
+# 2024-12-22 15:45:51.386215
++y
+
+# 2024-12-22 15:46:21.289783
++how to set the api provider key
+
+# 2024-12-22 15:47:20.627027
++test
+
+# 2024-12-22 15:47:32.528982
++no
+
+# 2024-12-22 15:47:38.979462
++Uncaught SyntaxError: Unexpected identifier 'ActionRating' (at backend.did?t=1734853316012&import:1:6)
+
+# 2024-12-22 15:48:29.078119
++type ActionRating = record {
++  id : text;
++  action_type : ActionType;
++  date : float64;
++  received_promises : float64;
++  spent : float64;
++  rating : float64;
++  received : float64;
++  promises : float64;
++};
++type ActionType = variant { Payment : CPayment };
++type AddOwnerArgs = record { owner : principal };
++type AddSwapArgs = record {
++  token0 : principal;
++  token1 : principal;
++  pool_canister : principal;
++};
++type AppMessage = record {
++  "text" : text;
++  notification : opt Notification;
++  timestamp : nat64;
++};
++type Approve = record {
++  fee : opt nat;
++  from : Index_Account;
++  memo : opt blob;
++  created_at_time : opt nat64;
++  amount : nat;
++  expected_allowance : opt nat;
++  expires_at : opt nat64;
++  spender : Index_Account;
++};
++type Burn = record {
++  from : Index_Account;
++  memo : opt blob;
++  created_at_time : opt nat64;
++  amount : nat;
++  spender : opt Index_Account;
++};
++type CCell = record { id : text; field : text; value : text };
++type CColumn = record {
++  id : text;
++  field : text;
++  formula_string : text;
++  column_type : text;
++  filters : vec Filter;
++  permissions : vec PermissionType;
++  name : text;
++  editable : bool;
++  deletable : bool;
++};
++type CContract = record {
++  id : text;
++  creator : principal;
++  date_created : float64;
++  name : text;
++  rows : vec CRow;
++  columns : vec CColumn;
++};
++type CPayment = record {
++  id : text;
++  status : PaymentStatus;
++  date_created : float64;
++  date_released : float64;
++  cells : vec CCell;
++  contract_id : text;
++  sender : principal;
++  amount : float64;
++  receiver : principal;
++};
++type CRow = record { id : text; cells : vec CCell };
++type CanisterOutputCertifiedMessages = record {
++  messages : vec CanisterOutputMessage;
++  cert : blob;
++  tree : blob;
++  is_end_of_queue : bool;
++};
++type CanisterOutputMessage = record {
++  key : text;
++  content : blob;
++  client_key : ClientKey;
++};
++type CanisterWsCloseArguments = record { client_key : ClientKey };
++type CanisterWsGetMessagesArguments = record { nonce : nat64 };
++type CanisterWsMessageArguments = record { msg : WebsocketMessage };
++type CanisterWsOpenArguments = record {
++  gateway_principal : principal;
++  client_nonce : nat64;
++};
++type Chat = record {
++  id : text;
++  creator : principal;
++  members : vec principal;
++  messages : vec Message;
++  name : text;
++  workspaces : vec text;
++  admins : vec principal;
++};
++type ClientKey = record { client_principal : principal; client_nonce : nat64 };
++type Column = record {
++  id : text;
++  _type : text;
++  field : text;
++  filters : vec Filter;
++  permissions : vec PermissionType;
++  dataValidator : opt text;
++  editable : bool;
++  formula : opt Formula;
++};
++type ContentData = variant { Comment : text; Image : vec nat64; Table : Table };
++type ContentNode = record {
++  id : text;
++  _type : text;
++  value : text;
++  data : opt ContentData;
++  "text" : text;
++  children : vec text;
++  language : text;
++  indent : nat64;
++  listStart : nat64;
++  parent : opt text;
++  listStyleType : text;
++};
++type Contract = variant { SharesContract : text };
++type ContractNotification = record { contract_type : text; contract_id : text };
++type ContractPermissionType = variant {
++  Add : principal;
++  Edit : principal;
++  View : principal;
++  AnyOneView;
++  AnyOneEdite;
++  AnyOneAdd;
++};
++type CustomContract = record {
++  id : text;
++  permissions : vec ContractPermissionType;
++  creator : text;
++  date_created : float64;
++  payments : vec CPayment;
++  name : text;
++  formulas : vec Formula;
++  contracts : vec CContract;
++  date_updated : float64;
++  promises : vec CPayment;
++};
++type Error = variant {
++  OwnerAlreadyExists;
++  InsufficientAllowance : record { allowance : nat };
++  SwapAlreadyExists;
++  InsufficientBalance : record { balance : nat };
++  InvalidPrincipal;
++  IcCdkError : record { message : text };
++  OwnerNotFound;
++  SwapNotFound;
++  SwapTokenNotFound;
++  Forbidden;
++  AmountTooSmall;
++};
++type Exchange = record {
++  to : text;
++  _type : ExchangeType;
++  date_created : float64;
++  from : text;
++  amount : float64;
++};
++type ExchangeType = variant { Withdraw; Deposit; LocalSend; LocalReceive };
++type Execute = variant { TransferNft; TransferToken; TransferUsdt : CPayment };
++type FEChat = record {
++  id : text;
++  creator : UserFE;
++  members : vec principal;
++  messages : vec Message;
++  name : text;
++  workspaces : vec text;
++  admins : vec UserFE;
++};
++type FileIndexing = record { id : text; new_index : nat64; parent : opt text };
++type FileNode = record {
++  id : text;
++  permission : ShareFilePermission;
++  content_id : opt text;
++  share_id : opt text;
++  name : text;
++  workspaces : vec text;
++  children : vec text;
++  author : text;
++  users_permissions : vec record { principal; ShareFilePermission };
++  parent : opt text;
++};
++type Filter = record {
++  name : text;
++  operations : vec Operation;
++  formula : opt text;
++};
++type Formula = record { column_id : text; execute : Execute };
++type Friend = record {
++  id : text;
++  sender : User;
++  confirmed : bool;
++  receiver : User;
++};
++type FriendRequestNotification = record { friend : Friend };
++type GetErrorLogsArgs = record { start : opt nat64; length : opt nat64 };
++type GetTransactions = record {
++  balance : nat;
++  transactions : vec TransactionWithId;
++  oldest_tx_id : opt nat;
++};
++type Index_Account = record { owner : principal; subaccount : opt blob };
++type InitialData = record {
++  FilesContents : opt vec record { text; vec ContentNode };
++  Contracts : vec record { text; StoredContract };
++  Files : vec FileNode;
++  Friends : vec Friend;
++  Profile : User;
++  DiscoverUsers : vec record { text; User };
++  Wallet : Wallet;
++};
++type Log = record { level : LogLevel; message : text; timestamp : nat64 };
++type LogLevel = variant { Error; Info; Debug };
++type Message = record {
++  id : text;
++  date : nat64;
++  sender : principal;
++  seen_by : vec principal;
++  message : text;
++  chat_id : text;
++};
++type Mint = record {
++  to : Index_Account;
++  memo : opt blob;
++  created_at_time : opt nat64;
++  amount : nat;
++};
++type NoteContent = variant {
++  CustomContract : record { text; CPayment };
++  ContractUpdate : ContractNotification;
++  FriendRequest : FriendRequestNotification;
++  AcceptFriendRequest;
++  ApproveShareRequest : text;
++  CPaymentContract : record { CPayment; PaymentAction };
++  Unfriend;
++  ReceivedDeposit : text;
++  ApplyShareRequest : text;
++  NewMessage : Message;
++  RemovedFromChat : text;
++};
++type Notification = record {
++  id : text;
++  is_seen : bool;
++  content : NoteContent;
++  time : float64;
++  sender : principal;
++  receiver : principal;
++};
++type Operation = variant { Equal; Contains; Bigger; BiggerOrEqual };
++type PayArgs = record {
++  token : principal;
++  memo : nat64;
++  to_merchant : principal;
++  amount : nat;
++};
++type PaymentAction = variant {
++  RequestCancellation : CPayment;
++  Released;
++  Objected;
++  Accepted;
++  Update;
++  Cancelled;
++  Promise;
++};
++type PaymentStatus = variant {
++  None;
++  RequestCancellation;
++  Released;
++  Objected : text;
++  Confirmed;
++  ConfirmedCancellation;
++  ApproveHighPromise;
++  HighPromise;
++};
++type PermissionType = variant {
++  Edit : principal;
++  View : principal;
++  AnyOneView;
++  AnyOneEdite;
++};
++type Post = record {
++  id : text;
++  creator : text;
++  date_created : nat64;
++  votes_up : vec principal;
++  tags : vec text;
++  content_tree : vec ContentNode;
++  votes_down : vec principal;
++};
++type PostUser = record {
++  id : text;
++  creator : UserFE;
++  date_created : nat64;
++  votes_up : vec principal;
++  tags : vec text;
++  content_tree : vec ContentNode;
++  votes_down : vec principal;
++};
++type Rating = record {
++  id : text;
++  date : float64;
++  user_id : principal;
++  comment : text;
++  rating : float64;
++};
++type RegisterUser = record {
++  name : opt text;
++  description : opt text;
++  photo : opt blob;
++};
++type RemoveSwapArgs = record { token0 : principal; token1 : principal };
++type Result = variant { Ok : User; Err : text };
++type Result_1 = variant { Ok; Err : Error };
++type Result_10 = variant { Ok : ShareFile; Err : text };
++type Result_11 = variant {
++  Ok : record { FileNode; vec ContentNode };
++  Err : text;
++};
++type Result_12 = variant { Ok : UserProfile; Err : text };
++type Result_13 = variant { Ok; Err };
++type Result_14 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
++type Result_2 = variant { Ok; Err : text };
++type Result_3 = variant { Ok : GetTransactions; Err : Error };
++type Result_4 = variant { Ok : text; Err : text };
++type Result_5 = variant { Ok : WorkSpace; Err : text };
++type Result_6 = variant { Ok : Wallet; Err : Error };
++type Result_7 = variant { Ok : StoredContract; Err : text };
++type Result_8 = variant { Ok : InitialData; Err : text };
++type Result_9 = variant { Ok : Post; Err : text };
++type Row = record {
++  id : text;
++  contract : opt Contract;
++  cells : opt vec record { text; text };
++};
++type ShareFile = record { id : text; owner : principal };
++type ShareFileInput = record {
++  id : text;
++  permission : ShareFilePermission;
++  owner : principal;
++  users_permissions : vec record { principal; ShareFilePermission };
++};
++type ShareFilePermission = variant { CanComment; None; CanView; CanUpdate };
++type StoredContract = variant { CustomContract : CustomContract };
++type Table = record { rows : vec Row; columns : vec Column };
++type Transaction = record {
++  burn : opt Burn;
++  kind : text;
++  mint : opt Mint;
++  approve : opt Approve;
++  timestamp : nat64;
++  transfer : opt Transfer;
++};
++type TransactionWithId = record { id : nat; transaction : Transaction };
++type Transfer = record {
++  to : Index_Account;
++  fee : opt nat;
++  from : Index_Account;
++  memo : opt blob;
++  created_at_time : opt nat64;
++  amount : nat;
++  spender : opt Index_Account;
++};
++type User = record { id : text; name : text; description : text; photo : blob };
++type UserFE = record { id : text; name : text };
++type UserProfile = record {
++  id : principal;
++  actions_rate : float64;
++  balance : float64;
++  rates_by_actions : vec ActionRating;
++  name : text;
++  description : text;
++  total_debt : float64;
++  spent : float64;
++  rates_by_others : vec Rating;
++  users_rate : float64;
++  users_interacted : float64;
++  photo : blob;
++  debts : vec text;
++  received : float64;
++};
++type Wallet = record {
++  balance : float64;
++  owner : text;
++  total_debt : float64;
++  spent : float64;
++  exchanges : vec Exchange;
++  debts : vec record { text; float64 };
++  received : float64;
++};
++type WebsocketMessage = record {
++  sequence_num : nat64;
++  content : blob;
++  client_key : ClientKey;
++  timestamp : nat64;
++  is_service_message : bool;
++};
++type WorkSpace = record {
++  id : text;
++  files : vec text;
++  creator : principal;
++  members : vec principal;
++  chats : vec text;
++  name : text;
++  admins : vec principal;
++};
++service : () -> {
++  accept_friend_request : (text) -> (Result);
++  add_owner : (AddOwnerArgs) -> (Result_1);
++  add_swap : (AddSwapArgs) -> (Result_1);
++  approve_high_promise : (CPayment) -> (Result_2);
++  cancel_friend_request : (text) -> (Result);
++  check_external_transactions : (nat) -> (Result_3);
++  confirmed_c_payment : (CPayment) -> (Result_2);
++  confirmed_cancellation : (CPayment) -> (Result_2);
++  counter : () -> (nat64) query;
++  create_new_file : (text, opt text) -> (FileNode);
++  delete_chat : (text) -> (Result_4);
++  delete_custom_contract : (text) -> (Result_2);
++  delete_file : (text) -> (opt FileNode);
++  delete_post : (text) -> (Result_2);
++  delete_work_space : (WorkSpace) -> (Result_5);
++  deposit_ckusdt : () -> (Result_6);
++  get_all_files : () -> (vec FileNode) query;
++  get_all_files_content : () -> (vec record { text; vec ContentNode }) query;
++  get_chats_notifications : () -> (vec Message) query;
++  get_contract : (text, text) -> (Result_7) query;
++  get_file : (text) -> (opt FileNode) query;
++  get_file_content : (text) -> (opt vec ContentNode) query;
++  get_filtered_posts : (opt vec text, opt text) -> (vec PostUser) query;
++  get_friends : () -> (vec Friend) query;
++  get_initial_data : () -> (Result_8) query;
++  get_logs : (GetErrorLogsArgs) -> (vec Log) query;
++  get_more_files : (float32) -> (
++      vec FileNode,
++      vec record { text; vec ContentNode },
++    ) query;
++  get_my_chats : () -> (vec FEChat) query;
++  get_owners : () -> (vec principal) query;
++  get_post : (text) -> (Result_9) query;
++  get_posts : (nat64, nat64) -> (vec PostUser) query;
++  get_share_file : (text) -> (Result_10) query;
++  get_shared_file : (text) -> (Result_11);
++  get_swaps : () -> (vec record { principal; principal }) query;
++  get_user : (text) -> (Result) query;
++  get_user_notifications : () -> (vec Notification) query;
++  get_user_profile : (principal) -> (Result_12) query;
++  get_work_spaces : () -> (vec WorkSpace) query;
++  internal_transaction : (float64, text, ExchangeType) -> (Result_2);
++  make_new_chat_room : (Chat) -> (Result_4);
++  message_is_seen : (Message) -> (Result_2);
++  move_file : (text, opt text) -> (Result_13);
++  multi_updates : (
++      vec FileNode,
++      vec vec record { text; vec ContentNode },
++      vec StoredContract,
++      vec FileIndexing,
++    ) -> (Result_4);
++  object_on_cancel : (CPayment, text) -> (Result_2);
++  pay : (PayArgs) -> (Result_1);
++  rate_user : (principal, Rating) -> (Result_2);
++  register : (RegisterUser) -> (Result);
++  reject_friend_request : (text) -> (Result);
++  remove_owner : (AddOwnerArgs) -> (Result_1);
++  remove_swap : (RemoveSwapArgs) -> (Result_1);
++  save_post : (Post) -> (Result_2);
++  save_work_space : (WorkSpace) -> (Result_5);
++  search_files_content : (text, bool) -> (
++      vec record { text; vec ContentNode },
++    ) query;
++  search_posts : (text) -> (vec PostUser) query;
++  see_notifications : (text) -> (Result_4);
++  send_friend_request : (text) -> (Result);
++  send_message : (opt principal, Message) -> (Result_4);
++  share_file : (ShareFileInput) -> (Result_10);
++  unfriend : (text) -> (Result);
++  update_chat : (Chat) -> (Result_4);
++  update_user_profile : (RegisterUser) -> (Result);
++  vote_down : (text) -> (Result_9);
++  vote_up : (text) -> (Result_9);
++  withdraw_ckusdt : (nat64, text) -> (Result_6);
++  ws_close : (CanisterWsCloseArguments) -> (Result_2);
++  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_14) query;
++  ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_2);
++  ws_open : (CanisterWsOpenArguments) -> (Result_2);
++}
++
+
+# 2024-12-22 15:48:40.582060
++y
+
+# 2024-12-22 15:49:04.054849
++yes
+
+# 2024-12-22 15:50:43.097157
++restart everything dfx start --clean and dfx deploy backend internet identy sh scripts/deploy_ledger.sh and yarn start and make suer to update .env by updating internet identiy id
+
+# 2024-12-22 15:50:45.068452
++y
+
+# 2024-12-22 15:50:58.057170
++/run dfx stop
+
+# 2024-12-22 15:50:58.057381
++/run dfx stop
+
+# 2024-12-22 15:50:59.357829
++/run dfx start --clean
+
+# 2024-12-22 15:50:59.357969
++/run dfx start --clean
+
+# 2024-12-22 15:50:59.938625
++/run dfx deploy internet_identity --network local
+
+# 2024-12-22 15:50:59.938854
++/run dfx deploy internet_identity --network local
+
+# 2024-12-22 15:51:00.675110
++/run dfx deploy backend --network local
+
+# 2024-12-22 15:51:00.675325
++/run dfx deploy backend --network local
+
+# 2024-12-22 15:51:01.409227
++/run sh scripts/deploy_ledger.sh
+
+# 2024-12-22 15:51:01.409524
++/run sh scripts/deploy_ledger.sh
+
+# 2024-12-22 15:51:45.748339
++y
+
+# 2024-12-22 15:51:50.935701
++/run dfx canister id internet_identity
+
+# 2024-12-22 15:51:50.936094
++/run dfx canister id internet_identity
+
+# 2024-12-22 15:51:53.081698
++y
+
+# 2024-12-22 15:51:54.450351
++/run yarn start
+
+# 2024-12-22 15:51:54.450511
++/run yarn start
+
+# 2024-12-22 15:51:58.078386
++y
+
+# 2024-12-22 15:52:27.180195
++run dfx deploy internet idenjty and get the id and update .env file
+
+# 2024-12-22 15:52:39.779426
++n
+
+# 2024-12-22 15:52:48.883501
++no
+
+# 2024-12-22 15:52:58.402263
++y
+
+# 2024-12-22 16:08:25.612944
++load posts in ./src/frontend/pages/index.tsx then store them in redux ./src/frontend/redux/reducers/filesReducer.ts then view posts in ./src/frontend/pages/Discover/index.tsx giving that export interface PostUser {
++  'id' : string,
++  'creator' : UserFE,
++  'date_created' : bigint,
++  'votes_up' : Array<Principal>,
++  'tags' : Array<string>,
++  'content_tree' : Array<ContentNode>,
++  'votes_down' : Array<Principal>,
++} export interface UserFE { 'id' : string, 'name' : string } export interface ContentNode {
++  'id' : string,
++  '_type' : string,
++  'value' : string,
++  'data' : [] | [ContentData],
++  'text' : string,
++  'children' : Array<string>,
++  'language' : string,
++  'indent' : bigint,
++  'listStart' : bigint,
++  'parent' : [] | [string],
++  'listStyleType' : string,
++}
+
+# 2024-12-22 16:08:33.145684
++yes
+
+# 2024-12-22 16:10:16.305639
++/undo
+
+# 2024-12-22 16:15:24.041640
++// import React, { useEffect } from "react";
++// import "../styles/LandingPage.css";
++// import { Button, Divider, Grid } from "@mui/material";
++// import { useSelector } from "react-redux";
++// import CreatePost from "./CreateNewPost";
++// import { PostUser } from "../../../declarations/backend/backend.did";
++// import { useSnackbar } from "notistack";
++// import FilterPosts from "./PostsFilters";
++// import ViewPost from "./ViewUpdatePost";
++// import { useBackendContext } from "../../contexts/BackendContext";
++//
++// const Discover = () => {
++//   const { backendActor } = useBackendContext();
++//   const { searchValue } = useSelector((state: any) => state.uiState);
++//   const { isLoggedIn } = useSelector((state: any) => state.uiState);
++//
++//   const [posts, setPosts] = React.useState<Array<PostUser>>([]); //TODO use redux for this
++//
++//   const [current_page, setPage] = React.useState<number>(0);
++//   const { enqueueSnackbar } = useSnackbar();
++//   useEffect(() => {
++//     let timeoutId: NodeJS.Timeout;
++//
++//     const delayedSearch = async () => {
++//       // TODO later add a Button for deep search_popper in cuz query can cost cycles.
++//       if (searchValue.length > 0) {
++//         let res: Array<PostUser> = await backendActor.search_posts(searchValue);
++//         res && setPosts(res);
++//       } else {
++//         setPage(0);
++//         setPosts([]);
++//         await set_posts();
++//       }
++//     };
++//
++//     // Clear the previous timeout
++//     clearTimeout(timeoutId);
++//
++//     // Set a new timeout
++//     timeoutId = setTimeout(delayedSearch, 300);
++//
++//     // Cleanup function
++//     return () => clearTimeout(timeoutId);
++//   }, [searchValue]);
++//
++//   async function set_posts() {
++//     posts.length > 0 && setPage(posts.length);
++//     let res: Array<PostUser> = await backendActor.get_posts(
++//       BigInt(current_page),
++//       BigInt(current_page + 10),
++//     );
++//
++//     if (res && res.length > 0) {
++//       setPosts((pre) => {
++//         return posts.length == 0 ? [...res] : [...pre, ...res];
++//       });
++//     } else if (res && res.length == 0) {
++//       enqueueSnackbar("There are no more posts to load.", { variant: "info" });
++//     } else {
++//       enqueueSnackbar("undefined Error getting posts.", { variant: "error" });
++//     }
++//   }
++//
++//   useEffect(() => {
++//     (async () => {
++//       await set_posts();
++//     })();
++//   }, []);
++//
++//   return (
++//     <Grid
++//       sx={{
++//         marginLeft: "20%",
++//         marginRight: "20%",
++//       }}
++//     >
++//       {isLoggedIn && <CreatePost setPosts={setPosts} />}
++//       <Divider />
++//       <FilterPosts initPosts={posts} setPage={setPage} setPosts={setPosts} />
++//       {posts &&
++//         posts.map((post: PostUser) => {
++//           return (
++//             <Grid
++//               item
++//               sx={{
++//                 my: 1,
++//                 // mx: 'auto',
++//               }}
++//             >
++//               <ViewPost setPosts={setPosts} post={post} />
++//             </Grid>
++//           );
++//         })}
++//
++//       <Button
++//         onClick={async () => {
++//           await set_posts();
++//         }}
++//       >
++//         Load more
++//       </Button>
++//     </Grid>
++//   );
++// };
++// export default Discover;
++
++import React, { useState } from "react";
++import {
++  Card,
++  CardContent,
++  CardHeader,
++  Avatar,
++  Button,
++  TextField,
++  IconButton,
++  Typography,
++  Popover,
++  Box,
++  Paper,
++} from "@mui/material";
++import {
++  Favorite as HeartIcon,
++  ThumbDown as ThumbsDownIcon,
++  Share as ShareIcon,
++  Comment as MessageCircleIcon,
++  Send as SendIcon,
++  Reply as ReplyIcon,
++  Email as MailIcon,
++  Person as UserIcon,
++} from "@mui/icons-material";
++import SearchIcon from "@mui/icons-material/Search";
++
++const UserAvatar = ({ user, size = "medium" }) => {
++  const [anchorEl, setAnchorEl] = useState(null);
++
++  const handleClick = (event) => {
++    setAnchorEl(event.currentTarget);
++  };
++
++  const handleClose = () => {
++    setAnchorEl(null);
++  };
++
++  const open = Boolean(anchorEl);
++
++  return (
++    <>
++      <Avatar
++        src={user.avatarUrl}
++        alt={user.name}
++        onClick={handleClick}
++        sx={{
++          width: size === "small" ? 32 : 40,
++          height: size === "small" ? 32 : 40,
++          cursor: "pointer",
++        }}
++      >
++        {!user.avatarUrl && user.name.charAt(0)}
++      </Avatar>
++
++      <Popover
++        open={open}
++        anchorEl={anchorEl}
++        onClose={handleClose}
++        anchorOrigin={{
++          vertical: "bottom",
++          horizontal: "center",
++        }}
++        transformOrigin={{
++          vertical: "top",
++          horizontal: "center",
++        }}
++      >
++        <Box sx={{ p: 2, width: 250 }}>
++          <Box
++            sx={{
++              display: "flex",
++              flexDirection: "column",
++              alignItems: "center",
++              mb: 2,
++            }}
++          >
++            <Avatar
++              src={user.avatarUrl}
++              alt={user.name}
++              sx={{ width: 60, height: 60, mb: 1 }}
++            >
++              {!user.avatarUrl && user.name.charAt(0)}
++            </Avatar>
++            <Typography variant="subtitle1">{user.name}</Typography>
++            <Typography variant="body2" color="text.secondary">
++              @{user.username}
++            </Typography>
++          </Box>
++          <Box sx={{ display: "flex", gap: 1 }}>
++            <Button
++              variant="contained"
++              fullWidth
++              startIcon={<UserIcon />}
++              onClick={() =>
++                (window.location.href = `/profile/${user.username}`)
++              }
++            >
++              Profile
++            </Button>
++            <Button
++              variant="outlined"
++              fullWidth
++              startIcon={<MailIcon />}
++              onClick={() =>
++                (window.location.href = `/messages/${user.username}`)
++              }
++            >
++              Message
++            </Button>
++          </Box>
++        </Box>
++      </Popover>
++    </>
++  );
++};
++
++const Comment = ({ comment, onReply, level = 0 }) => {
++  const [showReplyInput, setShowReplyInput] = useState(false);
++  const [replyContent, setReplyContent] = useState("");
++
++  const handleReplySubmit = () => {
++    if (!replyContent.trim()) return;
++    onReply(comment.id, replyContent);
++    setReplyContent("");
++    setShowReplyInput(false);
++  };
++
++  return (
++    <Box sx={{ ml: level * 3, mb: 2 }}>
++      <Paper variant="outlined" sx={{ p: 2 }}>
++        <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
++          <UserAvatar user={comment.user} size="small" />
++          <Box>
++            <Typography variant="subtitle2">{comment.user.name}</Typography>
++            <Typography variant="caption" color="text.secondary">
++              {comment.timestamp}
++            </Typography>
++          </Box>
++        </Box>
++        <Typography variant="body2" sx={{ mb: 1 }}>
++          {comment.content}
++        </Typography>
++        <Button
++          size="small"
++          startIcon={<ReplyIcon />}
++          onClick={() => setShowReplyInput(!showReplyInput)}
++        >
++          Reply
++        </Button>
++      </Paper>
++
++      {showReplyInput && (
++        <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
++          <TextField
++            size="small"
++            fullWidth
++            placeholder="Write a reply..."
++            value={replyContent}
++            onChange={(e) => setReplyContent(e.target.value)}
++          />
++          <IconButton onClick={handleReplySubmit} color="primary">
++            <SendIcon />
++          </IconButton>
++        </Box>
++      )}
++
++      {comment.replies?.map((reply) => (
++        <Comment
++          key={reply.id}
++          comment={reply}
++          onReply={onReply}
++          level={level + 1}
++        />
++      ))}
++    </Box>
++  );
++};
++
++const SearchField = ({ searchQuery, setSearchQuery }) => {
++  return (
++    <Card sx={{ mb: 3 }}>
++      <CardContent>
++        <TextField
++          fullWidth
++          placeholder="Search posts by content or user..."
++          value={searchQuery}
++          onChange={(e) => setSearchQuery(e.target.value)}
++          InputProps={{
++            startAdornment: (
++              <Box sx={{ color: "text.secondary", mr: 1 }}>
++                <SearchIcon />
++              </Box>
++            ),
++          }}
++        />
++      </CardContent>
++    </Card>
++  );
++};
++
++const SocialPosts = () => {
++  const currentUser = {
++    id: 1,
++    name: "John Doe",
++    username: "johndoe",
++    avatarUrl: null,
++  };
++
++  const [posts, setPosts] = useState([
++    {
++      id: 1,
++      content: "This is my first post!",
++      likes: 0,
++      dislikes: 0,
++      comments: [],
++      isLiked: false,
++      isDisliked: false,
++      user: {
++        id: 2,
++        name: "Jane Smith",
++        username: "janesmith",
++        avatarUrl: null,
++      },
++    },
++  ]);
++
++  const [newPostContent, setNewPostContent] = useState("");
++  const [commentInputs, setCommentInputs] = useState({});
++  const [showComments, setShowComments] = useState({});
++
++  const handleNewPost = () => {
++    if (!newPostContent.trim()) return;
++
++    setPosts([
++      {
++        id: Date.now(),
++        content: newPostContent,
++        likes: 0,
++        dislikes: 0,
++        comments: [],
++        isLiked: false,
++        isDisliked: false,
++        user: currentUser,
++      },
++      ...posts,
++    ]);
++    setNewPostContent("");
++  };
++
++  const [searchQuery, setSearchQuery] = useState("");
++
++  // Add this function after other handler functions
++  const filteredPosts = posts.filter(
++    (post) =>
++      post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
++      post.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
++      post.user.username.toLowerCase().includes(searchQuery.toLowerCase()),
++  );
++
++  const handleLike = (postId) => {
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          if (post.isLiked) {
++            return { ...post, likes: post.likes - 1, isLiked: false };
++          } else {
++            if (post.isDisliked) {
++              return {
++                ...post,
++                likes: post.likes + 1,
++                dislikes: post.dislikes - 1,
++                isLiked: true,
++                isDisliked: false,
++              };
++            }
++            return { ...post, likes: post.likes + 1, isLiked: true };
++          }
++        }
++        return post;
++      }),
++    );
++  };
++
++  const handleDislike = (postId) => {
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          if (post.isDisliked) {
++            return { ...post, dislikes: post.dislikes - 1, isDisliked: false };
++          } else {
++            if (post.isLiked) {
++              return {
++                ...post,
++                likes: post.likes - 1,
++                dislikes: post.dislikes + 1,
++                isLiked: false,
++                isDisliked: true,
++              };
++            }
++            return { ...post, dislikes: post.dislikes + 1, isDisliked: true };
++          }
++        }
++        return post;
++      }),
++    );
++  };
++
++  const handleShare = (postId) => {
++    alert("Share functionality would go here!");
++  };
++
++  const toggleComments = (postId) => {
++    setShowComments((prev) => ({
++      ...prev,
++      [postId]: !prev[postId],
++    }));
++  };
++
++  const handleComment = (postId) => {
++    if (!commentInputs[postId]?.trim()) return;
++
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          return {
++            ...post,
++            comments: [
++              ...post.comments,
++              {
++                id: Date.now(),
++                content: commentInputs[postId],
++                timestamp: new Date().toLocaleString(),
++                replies: [],
++                user: currentUser,
++              },
++            ],
++          };
++        }
++        return post;
++      }),
++    );
++
++    setCommentInputs((prev) => ({
++      ...prev,
++      [postId]: "",
++    }));
++  };
++
++  const handleReply = (postId, commentId, replyContent) => {
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          const updatedComments = addReplyToComment(post.comments, commentId, {
++            id: Date.now(),
++            content: replyContent,
++            timestamp: new Date().toLocaleString(),
++            replies: [],
++            user: currentUser,
++          });
++          return { ...post, comments: updatedComments };
++        }
++        return post;
++      }),
++    );
++  };
++
++  const addReplyToComment = (comments, commentId, reply) => {
++    return comments.map((comment) => {
++      if (comment.id === commentId) {
++        return {
++          ...comment,
++          replies: [...(comment.replies || []), reply],
++        };
++      }
++      if (comment.replies?.length) {
++        return {
++          ...comment,
++          replies: addReplyToComment(comment.replies, commentId, reply),
++        };
++      }
++      return comment;
++    });
++  };
++
++  return (
++    <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
++      <Card sx={{ mb: 3 }}>
++        <CardContent>
++          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
++            <UserAvatar user={currentUser} />
++            <TextField
++              fullWidth
++              multiline
++              rows={2}
++              placeholder="What's on your mind?"
++              value={newPostContent}
++              onChange={(e) => setNewPostContent(e.target.value)}
++            />
++          </Box>
++          <Button variant="contained" fullWidth onClick={handleNewPost}>
++            Post
++          </Button>
++        </CardContent>
++      </Card>
++
++      <SearchField searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
++
++      {filteredPosts.map((post) => (
++        <Card key={post.id} sx={{ mb: 2 }}>
++          <CardHeader
++            avatar={<UserAvatar user={post.user} />}
++            title={post.user.name}
++            subheader={`@${post.user.username}`}
++          />
++          <CardContent>
++            <Typography variant="body1">{post.content}</Typography>
++
++            <Box
++              sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
++            >
++              <Box sx={{ display: "flex", gap: 1 }}>
++                <Button
++                  startIcon={<HeartIcon />}
++                  onClick={() => handleLike(post.id)}
++                  color={post.isLiked ? "primary" : "inherit"}
++                >
++                  {post.likes}
++                </Button>
++                <Button
++                  startIcon={<ThumbsDownIcon />}
++                  onClick={() => handleDislike(post.id)}
++                  color={post.isDisliked ? "error" : "inherit"}
++                >
++                  {post.dislikes}
++                </Button>
++                <Button
++                  startIcon={<MessageCircleIcon />}
++                  onClick={() => toggleComments(post.id)}
++                >
++                  {post.comments.length}
++                </Button>
++              </Box>
++              <IconButton onClick={() => handleShare(post.id)}>
++                <ShareIcon />
++              </IconButton>
++            </Box>
++
++            {showComments[post.id] && (
++              <Box sx={{ mt: 2 }}>
++                <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
++                  <TextField
++                    size="small"
++                    fullWidth
++                    placeholder="Write a comment..."
++                    value={commentInputs[post.id] || ""}
++                    onChange={(e) =>
++                      setCommentInputs((prev) => ({
++                        ...prev,
++                        [post.id]: e.target.value,
++                      }))
++                    }
++                  />
++                  <IconButton
++                    onClick={() => handleComment(post.id)}
++                    color="primary"
++                  >
++                    <SendIcon />
++                  </IconButton>
++                </Box>
++
++                <Box sx={{ mt: 2 }}>
++                  {post.comments.map((comment) => (
++                    <Comment
++                      key={comment.id}
++                      comment={comment}
++                      onReply={(commentId, content) =>
++                        handleReply(post.id, commentId, content)
++                      }
++                    />
++                  ))}
++                </Box>
++              </Box>
++            )}
++          </CardContent>
++        </Card>
++      ))}
++    </Box>
++  );
++};
++
++export default SocialPosts;
++ remove the commented code, get posts from backendActor?.search_posts... enable users to create new posts by calling backendAcotr?.save_post also enable all other actions use std::time::{Duration, SystemTime};
++// use std::sync::atomic::Ordering;
++// use candid::Principal;
++use ic_cdk::caller;
++use ic_cdk_macros::update;
++
++use crate::discover::Post;
++
++// Move it to util
++pub fn time_diff(i: u64, f: u64) -> Duration {
++    let date_created_duration = Duration::from_nanos(f);
++    let current_time_duration = Duration::from_nanos(i);
++    current_time_duration - date_created_duration
++}
++
++#[update]
++fn save_post(mut post: Post) -> Result<(), String> {
++    if caller().to_string() == *"2vxsx-fae" {
++        return Err("Anonymous users not allowed to create posts".to_string());
++    }
++    let original_post = Post::get(post.id.clone());
++    if let Ok(p) = original_post.clone() {
++        post.votes_up = p.votes_up;
++        post.votes_down = p.votes_down;
++        post.date_created = p.date_created.clone();
++    } else {
++        let posts = Post::get_latest_posts();
++        post.date_created = ic_cdk::api::time();
++
++        if posts.len() >= 2 {
++            // TODO make sure the ordering is correct, otherwise the hours, and minutes may be not accurate
++            //     it should take the posted dates, but it may take the last post in the array instead of the actual last post
++            //     print("dif is hre----");
++            //     let x = posts.last().unwrap().date_created.clone() - posts.first().unwrap().date_created.clone();
++            //     print(x.to_string());
++
++            let one_day = 86400;
++            let diff = time_diff(
++                posts.last().unwrap().date_created.clone(),
++                ic_cdk::api::time(),
++            );
++            if diff < Duration::from_secs(one_day.clone()) {
++                let hours = &one_day - diff.as_secs();
++                let remainder = (one_day - diff.as_secs()) % 3600;
++                let msg = format!(
++                    "please wait {} hours and {} minutes",
++                    hours / 3600,
++                    remainder / 60
++                );
++                return Err(msg);
++            }
++        }
++        post.votes_up = vec![];
++        post.votes_down = vec![];
++        post.date_created = ic_cdk::api::time();
++    }
++    // if post.creator != caller().to_string(); {Err}
++    post.creator = caller().to_string();
++    post.save();
++    Ok(())
++}
++
++#[update]
++fn delete_post(id: String) -> Result<(), String> {
++    let post = Post::get(id.clone())?;
++    if post.creator != caller().to_string() {
++        return Err("Only the post creator can delete this.".to_string());
++    };
++    Post::delete(id)
++}
++
++#[update]
++fn vote_up(id: String) -> Result<Post, String> {
++    let mut post = Post::get(id.clone())?;
++    if caller().to_string() == post.creator {
++        return Err("You can't vote on your own post".to_string());
++    }
++    if post.votes_up.contains(&caller()) {
++        return Err("You have already voted on this post.".to_string());
++    }
++
++    post.votes_up.push(caller());
++    if post.votes_down.contains(&caller()) {
++        post.votes_down.retain(|x| x != &caller());
++    }
++    post.save();
++
++    Ok(post)
++}
++
++#[update]
++fn vote_down(id: String) -> Result<Post, String> {
++    let mut post = Post::get(id.clone())?;
++    if caller().to_string() == post.creator {
++        return Err("You can't vote on your own post".to_string());
++    }
++    if post.votes_down.contains(&caller()) {
++        return Err("You have already voted on this post.".to_string());
++    }
++    post.votes_down.push(caller());
++    if post.votes_up.contains(&caller()) {
++        post.votes_up.retain(|x| x != &caller());
++    }
++    post.save();
++    // let content: NoteContent = NoteContent::PostVote(id.clone());
++    // let new_note = Notification {
++    //     id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
++    //     sender: caller(),
++    //     receiver: Principal::from_text("2vxsx-fae").unwrap(),
++    //     content,
++    //     is_seen: false,
++    // };
++    // new_note.send();
++    // Send to everyone
++    // TODO in the frontend connect two websockts
++    //  1. with the user principal
++    //  2. with the `2vxsx-fae` principal
++    Ok(post)
++}
++
+
+# 2024-12-22 16:16:45.570309
++
++import React, { useState } from "react";
++import {
++  Card,
++  CardContent,
++  CardHeader,
++  Avatar,
++  Button,
++  TextField,
++  IconButton,
++  Typography,
++  Popover,
++  Box,
++  Paper,
++} from "@mui/material";
++import {
++  Favorite as HeartIcon,
++  ThumbDown as ThumbsDownIcon,
++  Share as ShareIcon,
++  Comment as MessageCircleIcon,
++  Send as SendIcon,
++  Reply as ReplyIcon,
++  Email as MailIcon,
++  Person as UserIcon,
++} from "@mui/icons-material";
++import SearchIcon from "@mui/icons-material/Search";
++
++const UserAvatar = ({ user, size = "medium" }) => {
++  const [anchorEl, setAnchorEl] = useState(null);
++
++  const handleClick = (event) => {
++    setAnchorEl(event.currentTarget);
++  };
++
++  const handleClose = () => {
++    setAnchorEl(null);
++  };
++
++  const open = Boolean(anchorEl);
++
++  return (
++    <>
++      <Avatar
++        src={user.avatarUrl}
++        alt={user.name}
++        onClick={handleClick}
++        sx={{
++          width: size === "small" ? 32 : 40,
++          height: size === "small" ? 32 : 40,
++          cursor: "pointer",
++        }}
++      >
++        {!user.avatarUrl && user.name.charAt(0)}
++      </Avatar>
++
++      <Popover
++        open={open}
++        anchorEl={anchorEl}
++        onClose={handleClose}
++        anchorOrigin={{
++          vertical: "bottom",
++          horizontal: "center",
++        }}
++        transformOrigin={{
++          vertical: "top",
++          horizontal: "center",
++        }}
++      >
++        <Box sx={{ p: 2, width: 250 }}>
++          <Box
++            sx={{
++              display: "flex",
++              flexDirection: "column",
++              alignItems: "center",
++              mb: 2,
++            }}
++          >
++            <Avatar
++              src={user.avatarUrl}
++              alt={user.name}
++              sx={{ width: 60, height: 60, mb: 1 }}
++            >
++              {!user.avatarUrl && user.name.charAt(0)}
++            </Avatar>
++            <Typography variant="subtitle1">{user.name}</Typography>
++            <Typography variant="body2" color="text.secondary">
++              @{user.username}
++            </Typography>
++          </Box>
++          <Box sx={{ display: "flex", gap: 1 }}>
++            <Button
++              variant="contained"
++              fullWidth
++              startIcon={<UserIcon />}
++              onClick={() =>
++                (window.location.href = `/profile/${user.username}`)
++              }
++            >
++              Profile
++            </Button>
++            <Button
++              variant="outlined"
++              fullWidth
++              startIcon={<MailIcon />}
++              onClick={() =>
++                (window.location.href = `/messages/${user.username}`)
++              }
++            >
++              Message
++            </Button>
++          </Box>
++        </Box>
++      </Popover>
++    </>
++  );
++};
++
++const Comment = ({ comment, onReply, level = 0 }) => {
++  const [showReplyInput, setShowReplyInput] = useState(false);
++  const [replyContent, setReplyContent] = useState("");
++
++  const handleReplySubmit = () => {
++    if (!replyContent.trim()) return;
++    onReply(comment.id, replyContent);
++    setReplyContent("");
++    setShowReplyInput(false);
++  };
++
++  return (
++    <Box sx={{ ml: level * 3, mb: 2 }}>
++      <Paper variant="outlined" sx={{ p: 2 }}>
++        <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
++          <UserAvatar user={comment.user} size="small" />
++          <Box>
++            <Typography variant="subtitle2">{comment.user.name}</Typography>
++            <Typography variant="caption" color="text.secondary">
++              {comment.timestamp}
++            </Typography>
++          </Box>
++        </Box>
++        <Typography variant="body2" sx={{ mb: 1 }}>
++          {comment.content}
++        </Typography>
++        <Button
++          size="small"
++          startIcon={<ReplyIcon />}
++          onClick={() => setShowReplyInput(!showReplyInput)}
++        >
++          Reply
++        </Button>
++      </Paper>
++
++      {showReplyInput && (
++        <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
++          <TextField
++            size="small"
++            fullWidth
++            placeholder="Write a reply..."
++            value={replyContent}
++            onChange={(e) => setReplyContent(e.target.value)}
++          />
++          <IconButton onClick={handleReplySubmit} color="primary">
++            <SendIcon />
++          </IconButton>
++        </Box>
++      )}
++
++      {comment.replies?.map((reply) => (
++        <Comment
++          key={reply.id}
++          comment={reply}
++          onReply={onReply}
++          level={level + 1}
++        />
++      ))}
++    </Box>
++  );
++};
++
++const SearchField = ({ searchQuery, setSearchQuery }) => {
++  return (
++    <Card sx={{ mb: 3 }}>
++      <CardContent>
++        <TextField
++          fullWidth
++          placeholder="Search posts by content or user..."
++          value={searchQuery}
++          onChange={(e) => setSearchQuery(e.target.value)}
++          InputProps={{
++            startAdornment: (
++              <Box sx={{ color: "text.secondary", mr: 1 }}>
++                <SearchIcon />
++              </Box>
++            ),
++          }}
++        />
++      </CardContent>
++    </Card>
++  );
++};
++
++const SocialPosts = () => {
++  const currentUser = {
++    id: 1,
++    name: "John Doe",
++    username: "johndoe",
++    avatarUrl: null,
++  };
++
++  const [posts, setPosts] = useState([
++    {
++      id: 1,
++      content: "This is my first post!",
++      likes: 0,
++      dislikes: 0,
++      comments: [],
++      isLiked: false,
++      isDisliked: false,
++      user: {
++        id: 2,
++        name: "Jane Smith",
++        username: "janesmith",
++        avatarUrl: null,
++      },
++    },
++  ]);
++
++  const [newPostContent, setNewPostContent] = useState("");
++  const [commentInputs, setCommentInputs] = useState({});
++  const [showComments, setShowComments] = useState({});
++
++  const handleNewPost = () => {
++    if (!newPostContent.trim()) return;
++
++    setPosts([
++      {
++        id: Date.now(),
++        content: newPostContent,
++        likes: 0,
++        dislikes: 0,
++        comments: [],
++        isLiked: false,
++        isDisliked: false,
++        user: currentUser,
++      },
++      ...posts,
++    ]);
++    setNewPostContent("");
++  };
++
++  const [searchQuery, setSearchQuery] = useState("");
++
++  // Add this function after other handler functions
++  const filteredPosts = posts.filter(
++    (post) =>
++      post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
++      post.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
++      post.user.username.toLowerCase().includes(searchQuery.toLowerCase()),
++  );
++
++  const handleLike = (postId) => {
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          if (post.isLiked) {
++            return { ...post, likes: post.likes - 1, isLiked: false };
++          } else {
++            if (post.isDisliked) {
++              return {
++                ...post,
++                likes: post.likes + 1,
++                dislikes: post.dislikes - 1,
++                isLiked: true,
++                isDisliked: false,
++              };
++            }
++            return { ...post, likes: post.likes + 1, isLiked: true };
++          }
++        }
++        return post;
++      }),
++    );
++  };
++
++  const handleDislike = (postId) => {
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          if (post.isDisliked) {
++            return { ...post, dislikes: post.dislikes - 1, isDisliked: false };
++          } else {
++            if (post.isLiked) {
++              return {
++                ...post,
++                likes: post.likes - 1,
++                dislikes: post.dislikes + 1,
++                isLiked: false,
++                isDisliked: true,
++              };
++            }
++            return { ...post, dislikes: post.dislikes + 1, isDisliked: true };
++          }
++        }
++        return post;
++      }),
++    );
++  };
++
++  const handleShare = (postId) => {
++    alert("Share functionality would go here!");
++  };
++
++  const toggleComments = (postId) => {
++    setShowComments((prev) => ({
++      ...prev,
++      [postId]: !prev[postId],
++    }));
++  };
++
++  const handleComment = (postId) => {
++    if (!commentInputs[postId]?.trim()) return;
++
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          return {
++            ...post,
++            comments: [
++              ...post.comments,
++              {
++                id: Date.now(),
++                content: commentInputs[postId],
++                timestamp: new Date().toLocaleString(),
++                replies: [],
++                user: currentUser,
++              },
++            ],
++          };
++        }
++        return post;
++      }),
++    );
++
++    setCommentInputs((prev) => ({
++      ...prev,
++      [postId]: "",
++    }));
++  };
++
++  const handleReply = (postId, commentId, replyContent) => {
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          const updatedComments = addReplyToComment(post.comments, commentId, {
++            id: Date.now(),
++            content: replyContent,
++            timestamp: new Date().toLocaleString(),
++            replies: [],
++            user: currentUser,
++          });
++          return { ...post, comments: updatedComments };
++        }
++        return post;
++      }),
++    );
++  };
++
++  const addReplyToComment = (comments, commentId, reply) => {
++    return comments.map((comment) => {
++      if (comment.id === commentId) {
++        return {
++          ...comment,
++          replies: [...(comment.replies || []), reply],
++        };
++      }
++      if (comment.replies?.length) {
++        return {
++          ...comment,
++          replies: addReplyToComment(comment.replies, commentId, reply),
++        };
++      }
++      return comment;
++    });
++  };
++
++  return (
++    <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
++      <Card sx={{ mb: 3 }}>
++        <CardContent>
++          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
++            <UserAvatar user={currentUser} />
++            <TextField
++              fullWidth
++              multiline
++              rows={2}
++              placeholder="What's on your mind?"
++              value={newPostContent}
++              onChange={(e) => setNewPostContent(e.target.value)}
++            />
++          </Box>
++          <Button variant="contained" fullWidth onClick={handleNewPost}>
++            Post
++          </Button>
++        </CardContent>
++      </Card>
++
++      <SearchField searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
++
++      {filteredPosts.map((post) => (
++        <Card key={post.id} sx={{ mb: 2 }}>
++          <CardHeader
++            avatar={<UserAvatar user={post.user} />}
++            title={post.user.name}
++            subheader={`@${post.user.username}`}
++          />
++          <CardContent>
++            <Typography variant="body1">{post.content}</Typography>
++
++            <Box
++              sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
++            >
++              <Box sx={{ display: "flex", gap: 1 }}>
++                <Button
++                  startIcon={<HeartIcon />}
++                  onClick={() => handleLike(post.id)}
++                  color={post.isLiked ? "primary" : "inherit"}
++                >
++                  {post.likes}
++                </Button>
++                <Button
++                  startIcon={<ThumbsDownIcon />}
++                  onClick={() => handleDislike(post.id)}
++                  color={post.isDisliked ? "error" : "inherit"}
++                >
++                  {post.dislikes}
++                </Button>
++                <Button
++                  startIcon={<MessageCircleIcon />}
++                  onClick={() => toggleComments(post.id)}
++                >
++                  {post.comments.length}
++                </Button>
++              </Box>
++              <IconButton onClick={() => handleShare(post.id)}>
++                <ShareIcon />
++              </IconButton>
++            </Box>
++
++            {showComments[post.id] && (
++              <Box sx={{ mt: 2 }}>
++                <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
++                  <TextField
++                    size="small"
++                    fullWidth
++                    placeholder="Write a comment..."
++                    value={commentInputs[post.id] || ""}
++                    onChange={(e) =>
++                      setCommentInputs((prev) => ({
++                        ...prev,
++                        [post.id]: e.target.value,
++                      }))
++                    }
++                  />
++                  <IconButton
++                    onClick={() => handleComment(post.id)}
++                    color="primary"
++                  >
++                    <SendIcon />
++                  </IconButton>
++                </Box>
++
++                <Box sx={{ mt: 2 }}>
++                  {post.comments.map((comment) => (
++                    <Comment
++                      key={comment.id}
++                      comment={comment}
++                      onReply={(commentId, content) =>
++                        handleReply(post.id, commentId, content)
++                      }
++                    />
++                  ))}
++                </Box>
++              </Box>
++            )}
++          </CardContent>
++        </Card>
++      ))}
++    </Box>
++  );
++};
++
++export default SocialPosts;
++ get real posts from backendActor.searchPosts instead of deummy posts also enable all other actions use std::time::{Duration, SystemTime};
++// use std::sync::atomic::Ordering;
++// use candid::Principal;
++use ic_cdk::caller;
++use ic_cdk_macros::update;
++
++use crate::discover::Post;
++
++// Move it to util
++pub fn time_diff(i: u64, f: u64) -> Duration {
++    let date_created_duration = Duration::from_nanos(f);
++    let current_time_duration = Duration::from_nanos(i);
++    current_time_duration - date_created_duration
++}
++
++#[update]
++fn save_post(mut post: Post) -> Result<(), String> {
++    if caller().to_string() == *"2vxsx-fae" {
++        return Err("Anonymous users not allowed to create posts".to_string());
++    }
++    let original_post = Post::get(post.id.clone());
++    if let Ok(p) = original_post.clone() {
++        post.votes_up = p.votes_up;
++        post.votes_down = p.votes_down;
++        post.date_created = p.date_created.clone();
++    } else {
++        let posts = Post::get_latest_posts();
++        post.date_created = ic_cdk::api::time();
++
++        if posts.len() >= 2 {
++            // TODO make sure the ordering is correct, otherwise the hours, and minutes may be not accurate
++            //     it should take the posted dates, but it may take the last post in the array instead of the actual last post
++            //     print("dif is hre----");
++            //     let x = posts.last().unwrap().date_created.clone() - posts.first().unwrap().date_created.clone();
++            //     print(x.to_string());
++
++            let one_day = 86400;
++            let diff = time_diff(
++                posts.last().unwrap().date_created.clone(),
++                ic_cdk::api::time(),
++            );
++            if diff < Duration::from_secs(one_day.clone()) {
++                let hours = &one_day - diff.as_secs();
++                let remainder = (one_day - diff.as_secs()) % 3600;
++                let msg = format!(
++                    "please wait {} hours and {} minutes",
++                    hours / 3600,
++                    remainder / 60
++                );
++                return Err(msg);
++            }
++        }
++        post.votes_up = vec![];
++        post.votes_down = vec![];
++        post.date_created = ic_cdk::api::time();
++    }
++    // if post.creator != caller().to_string(); {Err}
++    post.creator = caller().to_string();
++    post.save();
++    Ok(())
++}
++
++#[update]
++fn delete_post(id: String) -> Result<(), String> {
++    let post = Post::get(id.clone())?;
++    if post.creator != caller().to_string() {
++        return Err("Only the post creator can delete this.".to_string());
++    };
++    Post::delete(id)
++}
++
++#[update]
++fn vote_up(id: String) -> Result<Post, String> {
++    let mut post = Post::get(id.clone())?;
++    if caller().to_string() == post.creator {
++        return Err("You can't vote on your own post".to_string());
++    }
++    if post.votes_up.contains(&caller()) {
++        return Err("You have already voted on this post.".to_string());
++    }
++
++    post.votes_up.push(caller());
++    if post.votes_down.contains(&caller()) {
++        post.votes_down.retain(|x| x != &caller());
++    }
++    post.save();
++
++    Ok(post)
++}
++
++#[update]
++fn vote_down(id: String) -> Result<Post, String> {
++    let mut post = Post::get(id.clone())?;
++    if caller().to_string() == post.creator {
++        return Err("You can't vote on your own post".to_string());
++    }
++    if post.votes_down.contains(&caller()) {
++        return Err("You have already voted on this post.".to_string());
++    }
++    post.votes_down.push(caller());
++    if post.votes_up.contains(&caller()) {
++        post.votes_up.retain(|x| x != &caller());
++    }
++    post.save();
++    // let content: NoteContent = NoteContent::PostVote(id.clone());
++    // let new_note = Notification {
++    //     id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
++    //     sender: caller(),
++    //     receiver: Principal::from_text("2vxsx-fae").unwrap(),
++    //     content,
++    //     is_seen: false,
++    // };
++    // new_note.send();
++    // Send to everyone
++    // TODO in the frontend connect two websockts
++    //  1. with the user principal
++    //  2. with the `2vxsx-fae` principal
++    Ok(post)
++}
++ // make a query that get post order from older to newer
++
++use crate::discover::{Post, PostUser, UserFE};
++use ic_cdk_macros::query;
++use std::collections::HashMap;
++
++use crate::files_content::ContentNode;
++use crate::storage_schema::FileId;
++use crate::user::User;
++use crate::POSTS;
++
++#[query]
++fn get_posts(start: usize, count: usize) -> Vec<PostUser> {
++    Post::get_pagination(start, count)
++}
++
++#[query]
++fn get_filtered_posts(tags: Option<Vec<String>>, creator: Option<String>) -> Vec<PostUser> {
++    Post::get_filtered(tags, creator)
++    // paginate the first 50 posts
++    // let start = 0;
++    // let count = 50;
++    // let actual_count = usize::min(count, posts.len() - start.clone());
++    // posts
++    //     .into_iter()
++    //     .skip(start)
++    //     .take(actual_count)
++    //     .collect()
++}
++
++#[query]
++fn search_posts(text_to_find: String) -> Vec<PostUser> {
++    POSTS.with(|posts| {
++        let posts = posts.borrow();
++
++        let filtered_user_posts = posts
++            .iter()
++            .flat_map(|(_, post)| {
++                let content_tree = post.content_tree.clone();
++                content_tree
++                    .iter()
++                    .filter(|node| node.text.contains(&text_to_find))
++                    .map(move |node| {
++                        let user = User::get_user_from_text_principal(&post.creator).unwrap();
++                        let creator = UserFE {
++                            id: user.id.clone(),
++                            name: user.name.clone(),
++                        };
++                        PostUser {
++                            id: post.id.clone(),
++                            content_tree: post.content_tree.clone(),
++                            tags: post.tags.clone(),
++                            creator,
++                            date_created: post.date_created,
++                            votes_up: post.votes_up.clone(),
++                            votes_down: post.votes_down.clone(),
++                        }
++                    })
++                    .collect::<Vec<PostUser>>()
++            })
++            .collect::<Vec<PostUser>>();
++
++        filtered_user_posts
++    })
++}
++
++// #[query]
++// fn search_posts(text_to_find: String) -> Vec<String> {
++//
++//     POSTS.with(|posts| {
++//         let posts = posts.borrow();
++//
++//         let filtered_post_ids = posts
++//             .values()
++//             .filter(|post| post.content_tree.values().any(|node| node.text.contains(&text_to_find)))
++//             .map(|post| post.id.clone())
++//             .collect::<Vec<String>>();
++//
++//         filtered_post_ids
++//     })
++// }
++
++// #[query]
++// fn search_posts(text_to_find: String) -> Vec<String> {
++//     POSTS.with(|posts| {
++//         let posts = posts.borrow();
++//
++//         let filtered_node_ids = posts
++//             .values()
++//             .flat_map(|post| post.content_tree.values().filter(|node| node.text.contains(&text_to_find)).map(|node| node.id.clone()))
++//             .collect::<Vec<String>>();
++//
++//         filtered_node_ids
++//     })
++// }
++
++#[query]
++fn get_post(id: String) -> Result<Post, String> {
++    Post::get(id)
++}
++
+
+# 2024-12-22 16:17:01.637284
++yes
+
+# 2024-12-22 16:18:02.152804
++you don't understand, this file ./src/frontend/pages/Discover/index.tsx have dummy data, also does not create real post in the backend fix that 
+
+# 2024-12-22 16:18:08.804735
++yes
+
+# 2024-12-22 16:18:15.077393
++/run cat ./src/frontend/pages/Discover/index.tsx
+
+# 2024-12-22 16:18:15.077552
++/run cat ./src/frontend/pages/Discover/index.tsx
+
+# 2024-12-22 16:18:17.172578
++ye
