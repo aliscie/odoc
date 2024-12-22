@@ -1,24 +1,24 @@
-import React, { useState, useCallback } from 'react';
-import { 
-  Avatar, 
-  IconButton, 
-  Menu, 
-  MenuItem, 
+import React, { useState, useCallback } from "react";
+import {
+  Avatar,
+  IconButton,
+  Menu,
+  MenuItem,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Button,
-  Rating,
   TextField,
-  Typography
-} from '@mui/material';
-import ChatWindow from '../../components/Chat/chatWindow';
-import { useNavigate } from 'react-router-dom';
-import { Person, Message, Star } from '@mui/icons-material';
-import { useBackendContext } from '../../contexts/BackendContext';
-import { useSnackbar } from 'notistack';
-import { Principal } from '@dfinity/principal';
+  Typography,
+} from "@mui/material";
+import ChatWindow from "../../components/Chat/chatWindow";
+import { useNavigate } from "react-router-dom";
+import { Person, Message, Star } from "@mui/icons-material";
+import { useBackendContext } from "../../contexts/BackendContext";
+import { useSnackbar } from "notistack";
+import { Principal } from "@dfinity/principal";
+import {Rating} from "../../../declarations/backend/backend.did";
 
 interface UserAvatarMenuProps {
   user: {
@@ -29,15 +29,18 @@ interface UserAvatarMenuProps {
   onMessageClick?: () => void;
 }
 
-const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ user, onMessageClick }) => {
+const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
+  user,
+  onMessageClick,
+}) => {
   const navigate = useNavigate();
   const { backendActor } = useBackendContext();
   const { enqueueSnackbar } = useSnackbar();
-  
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [rating, setRating] = useState<number>(0);
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -63,13 +66,13 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ user, onMessageClick })
         name: user.name,
         messages: [],
         members: [user.id],
-        admins: [user.id]
+        admins: [user.id],
       };
 
       // Set initial position for chat window
       const position = {
         x: window.innerWidth - 350,
-        y: window.innerHeight - 450
+        y: window.innerHeight - 450,
       };
       setChatPosition(position);
       setActiveChat(newChat);
@@ -81,30 +84,35 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ user, onMessageClick })
     setActiveChat(null);
   }, []);
 
-  const handleChatPositionChange = useCallback((chatId: string, position: { x: number, y: number }) => {
-    setChatPosition(position);
-  }, []);
+  const handleChatPositionChange = useCallback(
+    (chatId: string, position: { x: number; y: number }) => {
+      setChatPosition(position);
+    },
+    [],
+  );
 
   const handleSendMessage = async (chatId: string, message: string) => {
     try {
       if (onMessageClick) {
         await onMessageClick();
       }
-      
+
       const result = await backendActor?.send_message({
         recipient: user.id,
         content: message,
-        timestamp: BigInt(Date.now())
+        timestamp: BigInt(Date.now()),
       });
 
       if (result?.Ok) {
-        enqueueSnackbar('Message sent successfully', { variant: 'success' });
+        enqueueSnackbar("Message sent successfully", { variant: "success" });
       } else if (result?.Err) {
         throw new Error(result.Err);
       }
     } catch (error) {
-      console.error('Error sending message:', error);
-      enqueueSnackbar(error.message || 'Failed to send message', { variant: 'error' });
+      console.error("Error sending message:", error);
+      enqueueSnackbar(error.message || "Failed to send message", {
+        variant: "error",
+      });
     }
   };
 
@@ -117,56 +125,51 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ user, onMessageClick })
     try {
       // Convert user.id string to Principal
       const userPrincipal = Principal.fromText(user.id);
-      
-      const ratingData = {
+
+      const ratingData: Rating = {
         rating: rating,
         comment: [comment], // Optional comment as array
-        date: BigInt(Date.now())
+        date: BigInt(Date.now()),
       };
 
       const result = await backendActor?.rate_user(userPrincipal, ratingData);
 
       if (result?.Ok) {
-        enqueueSnackbar('Review submitted successfully', { variant: 'success' });
+        enqueueSnackbar("Review submitted successfully", {
+          variant: "success",
+        });
       } else if (result?.Err) {
-        enqueueSnackbar(result.Err, { variant: 'error' });
+        enqueueSnackbar(result.Err, { variant: "error" });
       }
     } catch (error) {
-      console.error('Error submitting review:', error);
-      enqueueSnackbar('Failed to submit review', { variant: 'error' });
+      // console.error('Error submitting review:', error);
+      enqueueSnackbar("Failed to submit review " + error, { variant: "error" });
     }
     setReviewOpen(false);
     setRating(0);
-    setComment('');
+    setComment("");
   };
 
   const getPhotoSrc = (photoData?: Uint8Array) => {
     try {
       return photoData && photoData.length > 0
-        ? `data:image/jpeg;base64,${Buffer.from(photoData).toString('base64')}`
-        : '';
+        ? `data:image/jpeg;base64,${Buffer.from(photoData).toString("base64")}`
+        : "";
     } catch (e) {
-      console.error('Error converting photo:', e);
-      return '';
+      console.error("Error converting photo:", e);
+      return "";
     }
   };
 
   return (
     <>
       <IconButton onClick={handleClick}>
-        <Avatar 
-          src={getPhotoSrc(user.photo)}
-          alt={user.name}
-        >
-          {user.name?.charAt(0) || 'A'}
+        <Avatar src={getPhotoSrc(user.photo)} alt={user.name}>
+          {user.name?.charAt(0) || "A"}
         </Avatar>
       </IconButton>
 
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         <MenuItem onClick={handleProfile}>
           <Person sx={{ mr: 1 }} /> Profile
         </MenuItem>
