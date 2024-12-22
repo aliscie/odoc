@@ -155,6 +155,7 @@ const SocialPosts = () => {
       let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
         serializeFileContents(newPostContent);
       let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
+      console.log({ content_tree });
       const newPost: Post = {
         id: randomString(),
         creator: profile.id,
@@ -164,38 +165,21 @@ const SocialPosts = () => {
         content_tree,
         votes_down: [],
       };
-      // const newPost: Post = {
-      //   id: randomString(),
-      //   creator: Principal.fromText("2vxsx-fae").toString(),
-      //   date_created: BigInt(Date.now()),
-      //   votes_up: [],
-      //   votes_down: [],
-      //   tags: [],
-      //   content_tree: newPostContent.split('\n').map(text => ({
-      //     id: crypto.randomUUID(),
-      //     _type: "paragraph",
-      //     value: text,
-      //     data: [],
-      //     text: text,
-      //     children: [],
-      //     language: "",
-      //     indent: BigInt(0),
-      //     listStart: BigInt(0),
-      //     parent: null,
-      //     listStyleType: "",
-      //   })),
-      // };
       console.log({ newPost });
-      const result = await backendActor.save_post(newPost);
-      if ("Ok" in result) {
-        const updatedPosts = await backendActor.get_posts(
-          BigInt(0),
-          BigInt(20),
-        );
-        setPosts(updatedPosts);
-        setNewPostContent("");
-      } else {
-        console.error("Failed to create post:", result.Err);
+      try {
+        const result = await backendActor.save_post(newPost);
+        if ("Ok" in result) {
+          const updatedPosts = await backendActor.get_posts(
+            BigInt(0),
+            BigInt(20),
+          );
+          setPosts(updatedPosts);
+          setNewPostContent("");
+        } else {
+          console.error("Failed to create post:", result.Err);
+        }
+      } catch (err) {
+        console.error("Error save_post:", err);
       }
     } catch (err) {
       console.error("Error creating post:", err);
