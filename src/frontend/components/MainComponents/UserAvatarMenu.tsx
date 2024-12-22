@@ -18,7 +18,7 @@ import { Person, Message, Star } from "@mui/icons-material";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { useSnackbar } from "notistack";
 import { Principal } from "@dfinity/principal";
-import {Rating} from "../../../declarations/backend/backend.did";
+import { Rating } from "../../../declarations/backend/backend.did";
 
 interface UserAvatarMenuProps {
   user: {
@@ -127,9 +127,11 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
       const userPrincipal = Principal.fromText(user.id);
 
       const ratingData: Rating = {
+        id: '', // This will be set by the backend
         rating: rating,
-        comment: [comment], // Optional comment as array
+        comment: comment,
         date: BigInt(Date.now()),
+        user_id: Principal.fromText(user.id)
       };
 
       const result = await backendActor?.rate_user(userPrincipal, ratingData);
