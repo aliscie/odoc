@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { AgCharts } from "ag-charts-react";
 import {
   Container,
@@ -11,9 +11,14 @@ import {
   Rating,
   Divider,
   Button,
+  TextField,
+  Stack,
 } from "@mui/material";
+import { Edit } from '@mui/icons-material';
 import Friends from "./friends";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useSnackbar } from 'notistack';
+import { useBackendContext } from '../../contexts/BackendContext';
 
 const ProfilePage = ({
   profile,
@@ -23,7 +28,59 @@ const ProfilePage = ({
   onAcceptFriend,
   onCancelFriend,
 }) => {
+  const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+  const { backendActor } = useBackendContext();
   const { isDarkMode } = useSelector((state: any) => state.uiState);
+  const currentUser = useSelector((state: any) => state.filesState.profile);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [formValues, setFormValues] = useState({
+    name: '',
+    description: '',
+  });
+
+  useEffect(() => {
+    if (profile) {
+      setFormValues({
+        name: profile.name,
+        description: profile.description || '',
+      });
+    }
+  }, [profile]);
+
+  const canEdit = currentUser?.id === profile?.id;
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormValues((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdate = async () => {
+    if (!backendActor) {
+      enqueueSnackbar('Backend not initialized', { variant: 'error' });
+      return;
+    }
+
+    try {
+      const updateData = {
+        name: [formValues.name],
+        description: [formValues.description],
+      };
+
+      const result = await backendActor.update_profile(updateData);
+      
+      if (result.Ok) {
+        enqueueSnackbar('Profile updated successfully', { variant: 'success' });
+        setIsEditing(false);
+      } else if (result.Err) {
+        enqueueSnackbar(result.Err, { variant: 'error' });
+      }
+    } catch (error) {
+      console.error('Profile update error:', error);
+      enqueueSnackbar('Failed to update profile', { variant: 'error' });
+    }
+  };
   // Handle completely missing props with default empty objects
   const safeProfile = profile || {};
   const safeHistory = history || {};
@@ -185,25 +242,86 @@ const ProfilePage = ({
       {/* User Header */}
       <Card sx={{ mb: 4 }}>
         <CardContent>
-          <Box display="flex" alignItems="flex-start" gap={3}>
-            <Avatar
-              src={getPhotoSrc(photo)}
-              alt={name}
-              sx={{ width: 96, height: 96 }}
-            >
-              {name?.charAt(0) || "A"}
-            </Avatar>
-            <Box>
-              <Typography variant="h4" gutterBottom>
-                {name || "Anonymous"}
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                {id || "No id available"}
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                {description || "No description available"}
-              </Typography>
+          <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+            <Box display="flex" alignItems="flex-start" gap={3}>
+              <Avatar
+                src={getPhotoSrc(photo)}
+                alt={name}
+                sx={{ width: 96, height: 96 }}
+              >
+                {name?.charAt(0) || "A"}
+              </Avatar>
+              <Box>
+                {isEditing ? (
+                  <Stack spacing={2}>
+                    <TextField
+                      fullWidth
+                      label="Name"
+                      name="name"
+                      value={formValues.name}
+                      onChange={handleChange}
+                      variant="outlined"
+                    />
+                    <TextField
+                      fullWidth
+                      label="Bio"
+                      name="description"
+                      value={formValues.description}
+                      onChange={handleChange}
+                      multiline
+                      rows={2}
+                      variant="outlined"
+                    />
+                  </Stack>
+                ) : (
+                  <>
+                    <Typography variant="h4" gutterBottom>
+                      {name || "Anonymous"}
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                      {id || "No id available"}
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                      {description || "No description available"}
+                    </Typography>
+                  </>
+                )}
+              </Box>
             </Box>
+            {canEdit && (
+              <Box>
+                {isEditing ? (
+                  <Stack direction="row" spacing={1}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        setIsEditing(false);
+                        setFormValues({
+                          name: profile.name,
+                          description: profile.description || '',
+                        });
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={handleUpdate}
+                    >
+                      Save
+                    </Button>
+                  </Stack>
+                ) : (
+                  <Button
+                    startIcon={<Edit />}
+                    onClick={() => setIsEditing(true)}
+                    variant="outlined"
+                  >
+                    Edit Profile
+                  </Button>
+                )}
+              </Box>
+            )}
           </Box>
         </CardContent>
       </Card>
