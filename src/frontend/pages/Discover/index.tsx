@@ -328,24 +328,15 @@ const SocialPosts = () => {
     <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Box >
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}>
             {currentUser && <UserAvatarMenu user={currentUser} />}
-            <EditorComponent
-              // readOnly={!isAuthoer}
-              // id={current_file.id}
-              contentEditable={true}
-              onChange={setNewPostContent}
-              // editorKey={editorKey}
-              content={[]}
-            />
-            {/*<TextField*/}
-            {/*  fullWidth*/}
-            {/*  multiline*/}
-            {/*  rows={2}*/}
-            {/*  placeholder="What's on your mind?"*/}
-            {/*  value={newPostContent}*/}
-            {/*  onChange={(e) => setNewPostContent(e.target.value)}*/}
-            {/*/>*/}
+            <Box sx={{ border: "1px solid #e0e0e0", borderRadius: 1, p: 2 }}>
+              <EditorComponent
+                contentEditable={true}
+                onChange={setNewPostContent}
+                content={[]}
+              />
+            </Box>
           </Box>
           <Button variant="contained" fullWidth onClick={handleNewPost}>
             Post
