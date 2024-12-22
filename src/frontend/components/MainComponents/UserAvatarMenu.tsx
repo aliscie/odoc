@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { Person, Message, Star } from '@mui/icons-material';
 import { useBackendContext } from '../../contexts/BackendContext';
 import { useSnackbar } from 'notistack';
+import { Principal } from '@dfinity/principal';
 
 interface UserAvatarMenuProps {
   user: {
@@ -114,11 +115,16 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ user, onMessageClick })
 
   const handleReviewSubmit = async () => {
     try {
-      const result = await backendActor?.rate_user(user.id, {
-        rating,
-        comment,
+      // Convert user.id string to Principal
+      const userPrincipal = Principal.fromText(user.id);
+      
+      const ratingData = {
+        rating: rating,
+        comment: [comment], // Optional comment as array
         date: BigInt(Date.now())
-      });
+      };
+
+      const result = await backendActor?.rate_user(userPrincipal, ratingData);
 
       if (result?.Ok) {
         enqueueSnackbar('Review submitted successfully', { variant: 'success' });
