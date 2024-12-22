@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   Avatar, 
   IconButton, 
@@ -13,6 +13,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import ChatWindow from '../../components/Chat/chatWindow';
 import { useNavigate } from 'react-router-dom';
 import { Person, Message, Star } from '@mui/icons-material';
 import { useBackendContext } from '../../contexts/BackendContext';
@@ -50,40 +51,59 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ user, onMessageClick })
     handleClose();
   };
 
-  const [newMessage, setNewMessage] = useState('');
-  const [messageDialogOpen, setMessageDialogOpen] = useState(false);
+  const [activeChat, setActiveChat] = useState<any>(null);
+  const [chatPosition, setChatPosition] = useState({ x: 0, y: 0 });
 
-  const handleMessage = () => {
-    setMessageDialogOpen(true);
+  const handleMessage = useCallback(() => {
+    const chatId = `chat-${user.id}`;
+    if (!activeChat) {
+      const newChat = {
+        id: chatId,
+        name: user.name,
+        messages: [],
+        members: [user.id],
+        admins: [user.id]
+      };
+
+      // Set initial position for chat window
+      const position = {
+        x: window.innerWidth - 350,
+        y: window.innerHeight - 450
+      };
+      setChatPosition(position);
+      setActiveChat(newChat);
+    }
     handleClose();
-  };
+  }, [user, activeChat]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newMessage.trim()) {
-      try {
-        if (onMessageClick) {
-          await onMessageClick();
-        }
-        
-        // Call backend to send message
-        const result = await backendActor?.send_message({
-          recipient: user.id,
-          content: newMessage,
-          timestamp: BigInt(Date.now())
-        });
+  const handleCloseChat = useCallback(() => {
+    setActiveChat(null);
+  }, []);
 
-        if (result?.Ok) {
-          setNewMessage('');
-          setMessageDialogOpen(false);
-          enqueueSnackbar('Message sent successfully', { variant: 'success' });
-        } else if (result?.Err) {
-          throw new Error(result.Err);
-        }
-      } catch (error) {
-        console.error('Error sending message:', error);
-        enqueueSnackbar(error.message || 'Failed to send message', { variant: 'error' });
+  const handleChatPositionChange = useCallback((chatId: string, position: { x: number, y: number }) => {
+    setChatPosition(position);
+  }, []);
+
+  const handleSendMessage = async (chatId: string, message: string) => {
+    try {
+      if (onMessageClick) {
+        await onMessageClick();
       }
+      
+      const result = await backendActor?.send_message({
+        recipient: user.id,
+        content: message,
+        timestamp: BigInt(Date.now())
+      });
+
+      if (result?.Ok) {
+        enqueueSnackbar('Message sent successfully', { variant: 'success' });
+      } else if (result?.Err) {
+        throw new Error(result.Err);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      enqueueSnackbar(error.message || 'Failed to send message', { variant: 'error' });
     }
   };
 
@@ -177,26 +197,15 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ user, onMessageClick })
         </DialogActions>
       </Dialog>
 
-      <Dialog open={messageDialogOpen} onClose={() => setMessageDialogOpen(false)}>
-        <DialogTitle>Message {user.name}</DialogTitle>
-        <DialogContent>
-          <form onSubmit={handleSendMessage} style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 8 }}>
-            <TextField
-              autoFocus
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type your message..."
-              fullWidth
-              multiline
-              rows={4}
-              variant="outlined"
-            />
-            <Button type="submit" variant="contained" color="primary">
-              Send Message
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {activeChat && (
+        <ChatWindow
+          chat={activeChat}
+          onClose={handleCloseChat}
+          position={chatPosition}
+          onPositionChange={handleChatPositionChange}
+          onSendMessage={handleSendMessage}
+        />
+      )}
     </>
   );
 };
