@@ -50,11 +50,30 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ user, onMessageClick })
     handleClose();
   };
 
+  const [newMessage, setNewMessage] = useState('');
+  const [messageDialogOpen, setMessageDialogOpen] = useState(false);
+
   const handleMessage = () => {
-    if (onMessageClick) {
-      onMessageClick();
-    }
+    setMessageDialogOpen(true);
     handleClose();
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newMessage.trim()) {
+      try {
+        if (onMessageClick) {
+          onMessageClick();
+        }
+        // Here you would typically call your backend to send the message
+        setNewMessage('');
+        setMessageDialogOpen(false);
+        enqueueSnackbar('Message sent successfully', { variant: 'success' });
+      } catch (error) {
+        console.error('Error sending message:', error);
+        enqueueSnackbar('Failed to send message', { variant: 'error' });
+      }
+    }
   };
 
   const handleReviewClick = () => {
@@ -145,6 +164,27 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ user, onMessageClick })
           <Button onClick={() => setReviewOpen(false)}>Cancel</Button>
           <Button onClick={handleReviewSubmit}>Submit Review</Button>
         </DialogActions>
+      </Dialog>
+
+      <Dialog open={messageDialogOpen} onClose={() => setMessageDialogOpen(false)}>
+        <DialogTitle>Message {user.name}</DialogTitle>
+        <DialogContent>
+          <form onSubmit={handleSendMessage} style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 8 }}>
+            <TextField
+              autoFocus
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type your message..."
+              fullWidth
+              multiline
+              rows={4}
+              variant="outlined"
+            />
+            <Button type="submit" variant="contained" color="primary">
+              Send Message
+            </Button>
+          </form>
+        </DialogContent>
       </Dialog>
     </>
   );
