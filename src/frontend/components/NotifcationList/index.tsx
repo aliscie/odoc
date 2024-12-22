@@ -14,6 +14,7 @@ import { Box, Button, Divider } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import SendIcon from "@mui/icons-material/Send";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import CloseIcon from "@mui/icons-material/Close";
 import { logger } from "../../DevUtils/logData";
 // Styled component for the notification item
 const NotificationItem = styled(ListItem)(({ theme, isRead }) => ({
@@ -45,17 +46,25 @@ const ExpandedNotificationContent = ({
   return (
     <Box
       sx={{
-        position: "absolute",
-        top: "100%",
-        left: 0,
-        width: "100%",
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "400px",
+        maxHeight: "80vh",
         backgroundColor: "background.paper",
         boxShadow: 3,
-        zIndex: 1000,
+        zIndex: 1300,
         padding: 2,
         borderRadius: 1,
+        overflowY: "auto"
       }}
     >
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+        <IconButton size="small" onClick={onClose}>
+          <CloseIcon />
+        </IconButton>
+      </Box>
       <Box sx={{ mb: 2 }}>
         <Typography variant="body2" color="text.secondary" gutterBottom>
           ID:{" "}
@@ -275,9 +284,15 @@ const NotificationsButton = ({
         onClose={handleClose}
         PaperProps={{
           style: {
-            maxHeight: 400,
+            maxHeight: "80vh",
             width: "320px",
+            overflowY: "auto"
           },
+        }}
+        sx={{
+          "& .MuiMenu-paper": {
+            maxHeight: "80vh"
+          }
         }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
