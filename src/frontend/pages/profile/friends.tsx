@@ -2,8 +2,6 @@ import React, { useState, useCallback } from "react";
 import {
   List,
   ListItem,
-  ListItemAvatar,
-  Avatar,
   ListItemText,
   Button,
   Dialog,
@@ -227,13 +225,10 @@ const FriendsList: React.FC<FriendsListProps> = ({
 
           return (
             <ListItem key={friend.id} secondaryAction={actions}>
-              <ListItemAvatar>
-                <Avatar
-                  src={`data:image/jpeg;base64,${otherUser.photo}`}
-                  onClick={() => setSelectedUser(otherUser)}
-                  sx={{ cursor: "pointer" }}
-                />
-              </ListItemAvatar>
+              <UserAvatarMenu 
+                user={otherUser}
+                onMessageClick={() => setSelectedUser(otherUser)}
+              />
               <ListItemText
                 primary={otherUser.name}
                 secondary={

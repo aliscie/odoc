@@ -24,6 +24,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { formatDate } from "@storybook/blocks";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { AdminsSelect, MembersSelect } from "./index";
+import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
 
 const ChatSettings = memo(
   ({ chat, users, onUpdate, onDelete, onClose, onSendMessage }) => {
