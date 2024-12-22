@@ -241,7 +241,6 @@ const SocialPosts = () => {
   };
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [tagInput, setTagInput] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   // Add this function after other handler functions
