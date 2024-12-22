@@ -25,6 +25,8 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
     const contentRef = useRef<any>(null);
     const tagsRef = useRef<string[]>([]);
     const tagInputRef = useRef<HTMLInputElement>(null);
+    const [forceUpdate, setForceUpdate] = useState(false);
+    const [tags, setTags] = useState<string[]>([]);
 
     useImperativeHandle(ref, () => ({
       getContent: () => contentRef.current,
@@ -35,19 +37,24 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
         if (tagInputRef.current) {
           tagInputRef.current.value = "";
         }
+        // Force a re-render to clear the editor
+        setForceUpdate(prev => !prev);
       },
     }));
 
     const handleAddTag = () => {
       const tagInput = tagInputRef.current;
       if (tagInput && tagInput.value.trim()) {
-        tagsRef.current = [...new Set([...tagsRef.current, tagInput.value.trim()])];
+        const newTag = tagInput.value.trim();
+        tagsRef.current = [...new Set([...tagsRef.current, newTag])];
+        setTags([...new Set([...tags, newTag])]);
         tagInput.value = "";
       }
     };
 
     const handleRemoveTag = (tagToRemove: string) => {
       tagsRef.current = tagsRef.current.filter((tag) => tag !== tagToRemove);
+      setTags(tags.filter((tag) => tag !== tagToRemove));
     };
 
     const handleSubmit = async () => {
@@ -74,6 +81,7 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
                 inputRef={tagInputRef}
                 size="small"
                 placeholder="Add tag..."
+                variant="standard"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
                     handleAddTag();
@@ -89,7 +97,7 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
               </Button>
             </Box>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {tagsRef.current.map((tag) => (
+              {tags.map((tag) => (
                 <Chip
                   key={tag}
                   label={tag}
