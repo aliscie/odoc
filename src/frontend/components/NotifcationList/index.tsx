@@ -341,6 +341,7 @@ const NotificationsButton = ({
                     <ExpandedNotificationContent
                       notification={expandedNotification}
                       onPromiseAction={handlePromiseAction}
+                      onClose={() => setExpandedNotification(null)}
                     />
                   )}
                 </Box>
