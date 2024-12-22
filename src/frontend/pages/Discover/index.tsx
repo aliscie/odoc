@@ -149,17 +149,31 @@ const SocialPosts = () => {
   logger({ newPostContent });
 
   const handleNewPost = async () => {
-    // if (!newPostContent.trim() || !backendActor) return;
+    if (!newPostContent || !backendActor) return;
 
     try {
-      // const content: ContentNode = {}
+      // Transform editor content into ContentNode format
+      const contentNodes: Array<ContentNode> = newPostContent.map(node => ({
+        id: node.id || randomString(),
+        _type: node.type || "paragraph",
+        value: node.children?.[0]?.text || "",
+        data: [],
+        text: node.children?.[0]?.text || "",
+        children: [],
+        language: "",
+        indent: BigInt(0),
+        listStart: BigInt(0),
+        parent: [],
+        listStyleType: "",
+      }));
+
       const newPost: Post = {
         id: randomString(),
         creator: profile.id,
         date_created: BigInt(Date.now() * 1e6),
         votes_up: [],
         tags: [],
-        content_tree: newPostContent,
+        content_tree: contentNodes,
         votes_down: [],
       };
       // const newPost: Post = {
