@@ -124,12 +124,15 @@ const RegistrationForm: React.FC = () => {
   if (!showForm) return null;
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" sx={{ 
+      position: 'relative',
+      zIndex: 1400,
+      mt: '80px' // Add space below the top nav bar
+    }}>
       <Paper
         elevation={3}
         sx={{
           p: 4,
-          mt: 4,
           borderRadius: 2,
           backgroundColor: theme.palette.background.paper,
         }}
