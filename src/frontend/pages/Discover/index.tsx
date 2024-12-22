@@ -148,6 +148,8 @@ const SocialPosts = () => {
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
   const [isPosting, setIsPosting] = useState(false);
+  const [editingPost, setEditingPost] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleNewPost = async () => {
     if (!newPostContent || !backendActor) return;
@@ -261,8 +263,32 @@ const SocialPosts = () => {
     }
   };
 
-  const handleEditPost = (post: PostUser) => {
-    setNewPostContent(deserializeContentTree(post.content_tree));
+  const handleSavePost = async (post: PostUser) => {
+    if (!newPostContent || !backendActor) return;
+    
+    setIsSaving(true);
+    try {
+      let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
+        serializeFileContents(newPostContent);
+      let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
+      
+      const updatedPost: Post = {
+        ...post,
+        content_tree,
+      };
+      
+      const result = await backendActor.save_post(updatedPost);
+      if ("Ok" in result) {
+        const updatedPosts = await backendActor.get_posts(BigInt(0), BigInt(20));
+        setPosts(updatedPosts.reverse());
+        setEditingPost(null);
+        setNewPostContent(null);
+      }
+    } catch (err) {
+      console.error("Error saving post:", err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleShare = (postId) => {
@@ -384,9 +410,13 @@ const SocialPosts = () => {
           <CardContent>
             {post.content_tree && post.content_tree.length > 0 ? (
               <EditorComponent
-                contentEditable={false}
+                contentEditable={editingPost === post.id}
                 content={deserializeContentTree(post.content_tree)}
-                onChange={() => {}}
+                onChange={(changes) => {
+                  let new_change = {};
+                  new_change[""] = changes;
+                  setNewPostContent(new_change);
+                }}
               />
             ) : (
               <Typography variant="body2" color="text.secondary">
@@ -408,13 +438,24 @@ const SocialPosts = () => {
                     >
                       {isDeletingPost === post.id ? 'Deleting...' : 'Delete'}
                     </Button>
-                    <Button
-                      onClick={() => handleEditPost(post)}
-                      color="primary"
-                      size="small"
-                    >
-                      Edit
-                    </Button>
+                    {editingPost === post.id ? (
+                      <Button
+                        onClick={() => handleSavePost(post)}
+                        color="primary"
+                        size="small"
+                        disabled={isSaving}
+                      >
+                        {isSaving ? 'Saving...' : 'Save'}
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => setEditingPost(post.id)}
+                        color="primary"
+                        size="small"
+                      >
+                        Edit
+                      </Button>
+                    )}
                   </>
                 )}
                 <Button
