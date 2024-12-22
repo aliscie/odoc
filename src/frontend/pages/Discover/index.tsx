@@ -31,6 +31,8 @@ import { useSelector } from "react-redux";
 import { randomString } from "../../DataProcessing/dataSamples";
 import EditorComponent from "../../components/EditorComponent";
 import { logger } from "../../DevUtils/logData";
+import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
+import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 
 const Comment = ({ comment, onReply, level = 0 }) => {
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -146,34 +148,36 @@ const SocialPosts = () => {
     useState<Array<ContentNode>>(null);
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
-  logger({ newPostContent });
+  // logger({ newPostContent });
 
   const handleNewPost = async () => {
     if (!newPostContent || !backendActor) return;
 
     try {
       // Transform editor content into ContentNode format
-      const contentNodes: Array<ContentNode> = newPostContent.map(node => ({
-        id: node.id || randomString(),
-        _type: node.type || "paragraph",
-        value: node.children?.[0]?.text || "",
-        data: [],
-        text: node.children?.[0]?.text || "",
-        children: [],
-        language: "",
-        indent: BigInt(0),
-        listStart: BigInt(0),
-        parent: [],
-        listStyleType: "",
-      }));
-
+      // const contentNodes: Array<ContentNode> = newPostContent.map((node) => ({
+      //   id: node.id || randomString(),
+      //   _type: node.type || "paragraph",
+      //   value: node.children?.[0]?.text || "",
+      //   data: [],
+      //   text: node.children?.[0]?.text || "",
+      //   children: [],
+      //   language: "",
+      //   indent: BigInt(0),
+      //   listStart: BigInt(0),
+      //   parent: [],
+      //   listStyleType: "",
+      // }));
+      let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
+        serializeFileContents(newPostContent);
+      let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
       const newPost: Post = {
         id: randomString(),
         creator: profile.id,
         date_created: BigInt(Date.now() * 1e6),
         votes_up: [],
         tags: [],
-        content_tree: contentNodes,
+        content_tree,
         votes_down: [],
       };
       // const newPost: Post = {
@@ -197,7 +201,7 @@ const SocialPosts = () => {
       //     listStyleType: "",
       //   })),
       // };
-
+      console.log({ newPost });
       const result = await backendActor.save_post(newPost);
       if ("Ok" in result) {
         const updatedPosts = await backendActor.get_posts(
@@ -228,7 +232,6 @@ const SocialPosts = () => {
       false
     );
   });
-  logger({ filteredPosts });
 
   const handleVoteUp = async (postId: string) => {
     try {
@@ -349,7 +352,11 @@ const SocialPosts = () => {
             <Box>
               <EditorComponent
                 contentEditable={true}
-                onChange={setNewPostContent}
+                onChange={(changes) => {
+                  let new_change = {};
+                  new_change[""] = changes;
+                  setNewPostContent(new_change);
+                }}
                 content={[]}
               />
             </Box>
@@ -375,7 +382,7 @@ const SocialPosts = () => {
             {post.content_tree && post.content_tree.length > 0 ? (
               <EditorComponent
                 contentEditable={false}
-                content={post.content_tree}
+                content={deserializeContentTree(post.content_tree)}
                 onChange={() => {}}
               />
             ) : (
