@@ -211,7 +211,7 @@ const SocialPosts = () => {
         creator: profile.id,
         date_created: BigInt(Date.now() * 1e6),
         votes_up: [],
-        tags: selectedTags,
+        tags: newPostTags,
         content_tree,
         votes_down: [],
       };
