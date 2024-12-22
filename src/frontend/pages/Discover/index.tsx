@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Chip,
   IconButton,
   Paper,
   TextField,
@@ -96,7 +97,20 @@ const Comment = ({ comment, onReply, level = 0 }) => {
   );
 };
 
-const SearchField = ({ searchQuery, setSearchQuery }) => {
+const SearchField = ({ searchQuery, setSearchQuery, selectedTags, setSelectedTags }) => {
+  const [tagInput, setTagInput] = useState("");
+
+  const handleAddTag = () => {
+    if (tagInput.trim() && !selectedTags.includes(tagInput.trim())) {
+      setSelectedTags([...selectedTags, tagInput.trim()]);
+      setTagInput("");
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
+  };
+
   return (
     <Card sx={{ mb: 3 }}>
       <CardContent>
@@ -112,7 +126,38 @@ const SearchField = ({ searchQuery, setSearchQuery }) => {
               </Box>
             ),
           }}
+          sx={{ mb: 2 }}
         />
+        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+          <TextField
+            size="small"
+            placeholder="Add tag..."
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleAddTag();
+              }
+            }}
+          />
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={handleAddTag}
+          >
+            Add Tag
+          </Button>
+        </Box>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          {selectedTags.map((tag) => (
+            <Chip
+              key={tag}
+              label={tag}
+              onDelete={() => handleRemoveTag(tag)}
+              size="small"
+            />
+          ))}
+        </Box>
       </CardContent>
     </Card>
   );
@@ -164,7 +209,7 @@ const SocialPosts = () => {
         creator: profile.id,
         date_created: BigInt(Date.now() * 1e6),
         votes_up: [],
-        tags: [],
+        tags: selectedTags,
         content_tree,
         votes_down: [],
       };
@@ -192,6 +237,8 @@ const SocialPosts = () => {
   };
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [tagInput, setTagInput] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   // Add this function after other handler functions
   const filteredPosts = posts.filter((post) => {
@@ -199,11 +246,14 @@ const SocialPosts = () => {
       .map((node) => node.text)
       .join(" ")
       .toLowerCase();
-    return (
+    const matchesSearch = 
       contentText.includes(searchQuery.toLowerCase()) ||
-      post.creator?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      false
-    );
+      post.creator?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesTags = selectedTags.length === 0 || 
+      selectedTags.every(tag => post.tags.includes(tag));
+    
+    return matchesSearch && matchesTags;
   });
 
   const handleVoteUp = async (postId: string) => {
@@ -401,7 +451,12 @@ const SocialPosts = () => {
         </CardContent>
       </Card>
 
-      <SearchField searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <SearchField 
+        searchQuery={searchQuery} 
+        setSearchQuery={setSearchQuery}
+        selectedTags={selectedTags}
+        setSelectedTags={setSelectedTags}
+      />
 
       {filteredPosts.map((post: PostUser) => (
         <Card key={post.id} sx={{ mb: 2 }}>
@@ -431,9 +486,45 @@ const SocialPosts = () => {
               </Typography>
             )}
 
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
-            >
+            <Box sx={{ mb: 2 }}>
+              {post.tags.map((tag) => (
+                <Chip
+                  key={tag}
+                  label={tag}
+                  size="small"
+                  sx={{ mr: 1, mb: 1 }}
+                  onDelete={post.creator?.id === profile?.id ? () => {
+                    const updatedPost = {
+                      ...post,
+                      tags: post.tags.filter(t => t !== tag)
+                    };
+                    handleSavePost(updatedPost);
+                  } : undefined}
+                />
+              ))}
+              {post.creator?.id === profile?.id && (
+                <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <TextField
+                    size="small"
+                    placeholder="Add tag..."
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && tagInput.trim()) {
+                        const updatedPost = {
+                          ...post,
+                          tags: [...new Set([...post.tags, tagInput.trim()])]
+                        };
+                        handleSavePost(updatedPost);
+                        setTagInput("");
+                      }
+                    }}
+                    sx={{ width: 120 }}
+                  />
+                </Box>
+              )}
+            </Box>
+            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
               <Box sx={{ display: "flex", gap: 1 }}>
                 {post.creator?.id === profile?.id && (
                   <>
