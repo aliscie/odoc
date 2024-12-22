@@ -144,30 +144,14 @@ const SocialPosts = () => {
     fetchPosts();
   }, [backendActor]);
 
-  const [newPostContent, setNewPostContent] =
-    useState<Array<ContentNode>>(null);
+  const [newPostContent, setNewPostContent] = useState<any>(null);
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
-  // logger({ newPostContent });
 
   const handleNewPost = async () => {
     if (!newPostContent || !backendActor) return;
 
     try {
-      // Transform editor content into ContentNode format
-      // const contentNodes: Array<ContentNode> = newPostContent.map((node) => ({
-      //   id: node.id || randomString(),
-      //   _type: node.type || "paragraph",
-      //   value: node.children?.[0]?.text || "",
-      //   data: [],
-      //   text: node.children?.[0]?.text || "",
-      //   children: [],
-      //   language: "",
-      //   indent: BigInt(0),
-      //   listStart: BigInt(0),
-      //   parent: [],
-      //   listStyleType: "",
-      // }));
       let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
         serializeFileContents(newPostContent);
       let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
