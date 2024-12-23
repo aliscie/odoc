@@ -282,12 +282,6 @@ const WorkspaceManager = () => {
                 <ListItemText>{workspace.name}</ListItemText>
                 <div
                   className="workspace-actions"
-                  style={{
-                    opacity: 0,
-                    transition: "opacity 0.2s",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
                 >
                   <IconButton
                     size="small"
