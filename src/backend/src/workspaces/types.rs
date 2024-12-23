@@ -95,14 +95,16 @@ impl WorkSpace {
     pub fn delete(&self) -> Result<Self, String> {
         WORK_SPACES.with(|store| {
             let mut work_spaces = store.borrow_mut();
-            if let Some(mut ws_vec) = work_spaces.get(&self.id) {
+            if let Some(mut ws_vec) = work_spaces.get(&self.id).clone() {
                 ws_vec.workspaces.retain(|ws| ws.id != self.id);
+                work_spaces.insert(self.id.clone(), ws_vec); // Add this line to save changes
                 Ok(self.clone())
             } else {
                 Err("Workspace not found".to_string())
             }
         })
     }
+
 
     pub fn save(&self) -> Result<Self, String> {
         // Get the existing workspace by ID
@@ -173,7 +175,7 @@ impl From<&EcdsaKeyName> for EcdsaKeyId {
                 EcdsaKeyName::TestKey1 => "test_key_1",
                 EcdsaKeyName::ProductionKey1 => "key_1",
             }
-            .to_string(),
+                .to_string(),
         }
     }
 }
