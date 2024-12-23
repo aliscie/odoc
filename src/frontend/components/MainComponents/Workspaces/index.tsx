@@ -13,13 +13,15 @@ import Divider from "@mui/material/Divider";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { Check, ChevronDown, Edit2, PlusCircle, Trash2, X } from "lucide-react";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 import { useDispatch, useSelector } from "react-redux";
 import { useBackendContext } from "../../../contexts/BackendContext";
 import { Principal } from "@dfinity/principal";
-
+import DeleteIcon from '@mui/icons-material/Delete';
 const WorkspaceManager = () => {
-  const { workspaces, currentWorkspace } = useSelector((state: any) => state.filesState);
+  const { workspaces, currentWorkspace } = useSelector(
+    (state: any) => state.filesState,
+  );
   const { backendActor } = useBackendContext();
   const { profile } = useSelector((state: any) => state.filesState);
 
@@ -84,13 +86,13 @@ const WorkspaceManager = () => {
         await backendActor.delete_work_space(workspace.id);
         // Update Redux store
         dispatch({ type: "DELETE_WORKSPACE", workspace });
-        
-        if (
-          currentWorkspace.id === workspace.id &&
-          workspaces.length > 0
-        ) {
+
+        if (currentWorkspace.id === workspace.id && workspaces.length > 0) {
           const newSelectedWorkspace = workspaces[0];
-          dispatch({ type: "CHANGE_CURRENT_WORKSPACE", currentWorkspace: newSelectedWorkspace });
+          dispatch({
+            type: "CHANGE_CURRENT_WORKSPACE",
+            currentWorkspace: newSelectedWorkspace,
+          });
         }
         setShowDeleteDialog(false);
       } catch (error) {
@@ -99,7 +101,10 @@ const WorkspaceManager = () => {
     }
   };
 
-  const handleCreateWorkspace = async (e: React.SyntheticEvent, newWorkspaceName: string) => {
+  const handleCreateWorkspace = async (
+    e: React.SyntheticEvent,
+    newWorkspaceName: string,
+  ) => {
     setIsCreating(true);
     e.stopPropagation();
     if (newWorkspaceName.trim() && backendActor && profile) {
@@ -119,10 +124,13 @@ const WorkspaceManager = () => {
         if ("Ok" in result) {
           // Update Redux store
           dispatch({ type: "ADD_WORKSPACE", workspace: newWorkspace });
-          
+
           // Set the newly created workspace as selected
-          dispatch({ type: "CHANGE_CURRENT_WORKSPACE", currentWorkspace: newWorkspace });
-          
+          dispatch({
+            type: "CHANGE_CURRENT_WORKSPACE",
+            currentWorkspace: newWorkspace,
+          });
+
           // Reset input state
           setShowCreateInput(false);
           handleClose(); // Close the menu after successful creation
@@ -182,22 +190,27 @@ const WorkspaceManager = () => {
               onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) => {
                 e.stopPropagation();
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   handleCreateWorkspace(e, e.target.value);
                 }
               }}
             />
-            <IconButton 
-              size="small" 
+            <IconButton
+              size="small"
               onClick={(e) => {
-                const input = e.currentTarget.parentElement?.querySelector('input');
+                const input =
+                  e.currentTarget.parentElement?.querySelector("input");
                 if (input) {
                   handleCreateWorkspace(e, input.value);
                 }
               }}
               disabled={isCreating}
             >
-              {isCreating ? <CircularProgress size={20} /> : <Check fontSize="small" />}
+              {isCreating ? (
+                <CircularProgress size={20} />
+              ) : (
+                <Check fontSize="small" />
+              )}
             </IconButton>
             <IconButton
               size="small"
@@ -228,10 +241,7 @@ const WorkspaceManager = () => {
         {workspaces.map((workspace) => (
           <MenuItem
             key={workspace.id}
-            selected={
-              workspace &&
-              workspace.id === currentWorkspace.id
-            }
+            selected={workspace && workspace.id === currentWorkspace.id}
             onClick={() => handleWorkspaceSelect(workspace)}
             sx={{
               display: "flex",
@@ -284,14 +294,12 @@ const WorkspaceManager = () => {
                   >
                     <Edit2 size={16} />
                   </IconButton>
-                  {workspaces.length > 1 && (
-                    <IconButton
-                      size="small"
-                      onClick={(e) => handleDelete(workspace, e)}
-                    >
-                      <Trash2 size={16} />
-                    </IconButton>
-                  )}
+                  <IconButton
+                    size="small"
+                    onClick={(e) => handleDelete(workspace, e)}
+                  >
+                    <DeleteIcon size={16} />
+                  </IconButton>
                 </div>
               </>
             )}
@@ -309,23 +317,25 @@ const WorkspaceManager = () => {
         <DialogTitle>Delete Workspace</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete workspace "{workspaceToDelete?.name}"? This
-            action cannot be undone.
+            Are you sure you want to delete workspace "{workspaceToDelete?.name}
+            "? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => {
-            setShowDeleteDialog(false);
-            setWorkspaceToDelete(null);
-          }}>
+          <Button
+            onClick={() => {
+              setShowDeleteDialog(false);
+              setWorkspaceToDelete(null);
+            }}
+          >
             Cancel
           </Button>
-          <Button 
+          <Button
             onClick={() => {
               confirmDelete();
               setShowDeleteDialog(false);
               setWorkspaceToDelete(null);
-            }} 
+            }}
             color="error"
           >
             Delete
