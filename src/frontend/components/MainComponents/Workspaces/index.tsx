@@ -87,7 +87,9 @@ const WorkspaceManager = () => {
     if (!workspaceToDelete) return;
     if (backendActor) {
       try {
-        await backendActor.delete_work_space(workspaceToDelete);
+        console.log("Deleting workspace:", workspaceToDelete);
+        let res = await backendActor.delete_work_space(workspaceToDelete);
+        console.log("Deleting res:", res);
         // Update Redux store
         dispatch({ type: "DELETE_WORKSPACE", workspace: workspaceToDelete });
 
