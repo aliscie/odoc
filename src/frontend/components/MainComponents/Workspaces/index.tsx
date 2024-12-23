@@ -1,7 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Principal } from '@dfinity/principal';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
+import { useBackendContext } from '../../../../contexts/BackendContext';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -17,12 +19,9 @@ import { PlusCircle, Check, X, Edit2, Trash2, ChevronDown } from 'lucide-react';
 import {useSelector} from "react-redux";
 
 const WorkspaceManager = () => {
-  // const { workspaces } = useSelector((state: any) => state.filesState);
-  const [workspaces, setWorkspaces] = useState([
-    { id: 1, name: 'Personal' },
-    { id: 2, name: 'Work' },
-    { id: 3, name: 'Project A' },
-  ]);
+  const { workspaces } = useSelector((state: any) => state.filesState);
+  const { backendActor } = useBackendContext();
+  const { profile } = useSelector((state: any) => state.filesState);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedWorkspace, setSelectedWorkspace] = useState(workspaces[0]);
@@ -49,18 +48,25 @@ const WorkspaceManager = () => {
     setEditedName(workspace.name);
   };
 
-  const handleSaveRename = (e) => {
+  const handleSaveRename = async (e) => {
     e.stopPropagation();
-    if (editedName.trim()) {
-      setWorkspaces(workspaces.map(w =>
-        w.id === editingId ? { ...w, name: editedName } : w
-      ));
-      if (selectedWorkspace.id === editingId) {
-        setSelectedWorkspace(prev => ({ ...prev, name: editedName }));
+    if (editedName.trim() && backendActor) {
+      const workspace = workspaces.find(w => w.id === editingId);
+      if (workspace) {
+        const updatedWorkspace = {
+          ...workspace,
+          name: editedName
+        };
+        
+        try {
+          await backendActor.save_work_space(updatedWorkspace);
+          setEditingId(null);
+          setEditedName('');
+        } catch (error) {
+          console.error('Failed to rename workspace:', error);
+        }
       }
     }
-    setEditingId(null);
-    setEditedName('');
   };
 
   const handleDelete = (workspace, e) => {
@@ -70,27 +76,41 @@ const WorkspaceManager = () => {
     setAnchorEl(null);
   };
 
-  const confirmDelete = () => {
-    const newWorkspaces = workspaces.filter(w => w.id !== workspaceToDelete.id);
-    setWorkspaces(newWorkspaces);
-    if (selectedWorkspace.id === workspaceToDelete.id) {
-      setSelectedWorkspace(newWorkspaces[0]);
+  const confirmDelete = async () => {
+    if (backendActor && workspaceToDelete) {
+      try {
+        await backendActor.delete_work_space(workspaceToDelete.id);
+        if (selectedWorkspace.id === workspaceToDelete.id && workspaces.length > 0) {
+          setSelectedWorkspace(workspaces[0]);
+        }
+        setShowDeleteDialog(false);
+        setWorkspaceToDelete(null);
+      } catch (error) {
+        console.error('Failed to delete workspace:', error);
+      }
     }
-    setShowDeleteDialog(false);
-    setWorkspaceToDelete(null);
   };
 
-  const handleCreateWorkspace = (e) => {
+  const handleCreateWorkspace = async (e) => {
     e.stopPropagation();
-    if (newWorkspaceName.trim()) {
+    if (newWorkspaceName.trim() && backendActor && profile) {
       const newWorkspace = {
-        id: Math.max(...workspaces.map(w => w.id)) + 1,
-        name: newWorkspaceName
+        id: crypto.randomUUID(),
+        name: newWorkspaceName,
+        files: [],
+        creator: profile.principal,
+        members: [profile.principal],
+        chats: [],
+        admins: [profile.principal]
       };
-      setWorkspaces([...workspaces, newWorkspace]);
-      setSelectedWorkspace(newWorkspace);
-      setShowCreateInput(false);
-      setNewWorkspaceName('');
+      
+      try {
+        await backendActor.save_work_space(newWorkspace);
+        setShowCreateInput(false);
+        setNewWorkspaceName('');
+      } catch (error) {
+        console.error('Failed to create workspace:', error);
+      }
     }
   };
 
