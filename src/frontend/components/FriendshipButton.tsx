@@ -19,11 +19,14 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
   const { backendActor } = useBackendContext();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleAction = async (action: () => Promise<any>) => {
+  const [localFriends, setLocalFriends] = useState(friends);
+
+  const handleAction = async (action: () => Promise<any>, updateFunction: () => void) => {
     if (!backendActor || isLoading) return;
     setIsLoading(true);
     try {
       await action();
+      updateFunction();
     } catch (error) {
       console.error("Error performing friend action:", error);
     } finally {
@@ -31,34 +34,75 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
     }
   };
 
-  const handleSendRequest = () => handleAction(async () => {
-    await backendActor.send_friend_request(user.id);
-  });
+  const handleSendRequest = () => handleAction(
+    async () => {
+      await backendActor.send_friend_request(user.id);
+    },
+    () => {
+      const newFriend = {
+        id: `${profile.id}-${user.id}`,
+        sender: profile,
+        receiver: user,
+        confirmed: false
+      };
+      setLocalFriends([...localFriends, newFriend]);
+    }
+  );
 
-  const handleAcceptRequest = () => handleAction(async () => {
-    await backendActor.accept_friend_request(user.id);
-  });
+  const handleAcceptRequest = () => handleAction(
+    async () => {
+      await backendActor.accept_friend_request(user.id);
+    },
+    () => {
+      setLocalFriends(localFriends.map(friend => 
+        (friend.sender.id === user.id || friend.receiver.id === user.id)
+          ? { ...friend, confirmed: true }
+          : friend
+      ));
+    }
+  );
 
-  const handleRejectRequest = () => handleAction(async () => {
-    await backendActor.reject_friend_request(user.id);
-  });
+  const handleRejectRequest = () => handleAction(
+    async () => {
+      await backendActor.reject_friend_request(user.id);
+    },
+    () => {
+      setLocalFriends(localFriends.filter(friend => 
+        !(friend.sender.id === user.id || friend.receiver.id === user.id)
+      ));
+    }
+  );
 
-  const handleCancelRequest = () => handleAction(async () => {
-    await backendActor.cancel_friend_request(user.id);
-  });
+  const handleCancelRequest = () => handleAction(
+    async () => {
+      await backendActor.cancel_friend_request(user.id);
+    },
+    () => {
+      setLocalFriends(localFriends.filter(friend => 
+        !(friend.sender.id === profile.id && friend.receiver.id === user.id)
+      ));
+    }
+  );
 
-  const handleUnfriend = () => handleAction(async () => {
-    await backendActor.unfriend(user.id);
-  });
+  const handleUnfriend = () => handleAction(
+    async () => {
+      await backendActor.unfriend(user.id);
+    },
+    () => {
+      setLocalFriends(localFriends.filter(friend => 
+        !(friend.sender.id === user.id || friend.receiver.id === user.id)
+      ));
+    }
+  );
   if (!profile || !user) return null;
 
-  const isFriend = friends.some(friend => 
+  const isFriend = localFriends.some(friend => 
     (friend.sender.id === user.id || friend.receiver.id === user.id) && friend.confirmed
   );
-  const isRequestSender = friends.some(friend => 
+  const isRequestSender = localFriends.some(friend => 
     (friend.receiver.id === user.id) && !friend.confirmed && friend.sender.id === profile.id
   );
-  const isRequestReceiver = friends.some(friend => 
+  const isRequestReceiver = localFriends.some(friend => 
     (friend.sender.id === user.id) && !friend.confirmed && friend.receiver.id === profile.id
   );
 
