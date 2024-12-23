@@ -104,11 +104,24 @@ const Comment = ({ comment, onReply, level = 0 }) => {
   );
 };
 
-const SearchField = ({ searchQuery, setSearchQuery, selectedTags, setSelectedTags }) => {
+const SearchField = ({
+  searchQuery,
+  setSearchQuery,
+  selectedTags,
+  setSelectedTags,
+}) => {
   const [tagInput, setTagInput] = useState("");
   const [suggestedTags] = useState([
-    "technology", "programming", "design", "business", 
-    "marketing", "science", "art", "music", "travel", "food"
+    "technology",
+    "programming",
+    "design",
+    "business",
+    "marketing",
+    "science",
+    "art",
+    "music",
+    "travel",
+    "food",
   ]); // You can replace these with actual tags from your backend
 
   const handleAddTag = () => {
@@ -119,17 +132,19 @@ const SearchField = ({ searchQuery, setSearchQuery, selectedTags, setSelectedTag
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
+    setSelectedTags(selectedTags.filter((tag) => tag !== tagToRemove));
   };
 
   const filteredSuggestions = suggestedTags.filter(
-    tag => tag.toLowerCase().includes(tagInput.toLowerCase()) && !selectedTags.includes(tag)
+    (tag) =>
+      tag.toLowerCase().includes(tagInput.toLowerCase()) &&
+      !selectedTags.includes(tag),
   );
 
   return (
     <Card sx={{ mb: 3, boxShadow: 3 }}>
       <CardContent>
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
           <TextField
             fullWidth
             placeholder="Search posts by content or user..."
@@ -164,7 +179,7 @@ const SearchField = ({ searchQuery, setSearchQuery, selectedTags, setSelectedTag
                 size="small"
                 sx={{ width: 200 }}
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     handleAddTag();
                   }
                 }}
@@ -180,19 +195,19 @@ const SearchField = ({ searchQuery, setSearchQuery, selectedTags, setSelectedTag
             Add Tag
           </Button>
         </Box>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
           {selectedTags.map((tag) => (
             <Chip
               key={tag}
               label={tag}
               onDelete={() => handleRemoveTag(tag)}
               size="small"
-              sx={{ 
-                bgcolor: 'primary.light',
-                color: 'white',
-                '&:hover': {
-                  bgcolor: 'primary.main',
-                }
+              sx={{
+                bgcolor: "primary.light",
+                color: "white",
+                "&:hover": {
+                  bgcolor: "primary.main",
+                },
               }}
             />
           ))}
@@ -229,7 +244,7 @@ const SocialPosts = () => {
   }, [backendActor]);
 
   const createPostRef = useRef<CreatePostRef>(null);
-  const [tagInputs, setTagInputs] = useState<{[key: string]: string}>({});
+  const [tagInputs, setTagInputs] = useState<{ [key: string]: string }>({});
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
   const [isPosting, setIsPosting] = useState(false);
@@ -253,7 +268,6 @@ const SocialPosts = () => {
         content_tree,
         votes_down: [],
       };
-      console.log({ newPost });
       try {
         const result = await backendActor.save_post(newPost);
         if ("Ok" in result) {
@@ -285,13 +299,14 @@ const SocialPosts = () => {
       .map((node) => node.text)
       .join(" ")
       .toLowerCase();
-    const matchesSearch = 
+    const matchesSearch =
       contentText.includes(searchQuery.toLowerCase()) ||
       post.creator?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesTags = selectedTags.length === 0 || 
-      selectedTags.every(tag => post.tags.includes(tag));
-    
+
+    const matchesTags =
+      selectedTags.length === 0 ||
+      selectedTags.every((tag) => post.tags.includes(tag));
+
     return matchesSearch && matchesTags;
   });
 
@@ -471,12 +486,11 @@ const SocialPosts = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          {"Delete Post?"}
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Delete Post?"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete this post? This action cannot be undone.
+            Are you sure you want to delete this post? This action cannot be
+            undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -490,7 +504,9 @@ const SocialPosts = () => {
               try {
                 const result = await backendActor.delete_post(postToDelete);
                 if ("Ok" in result) {
-                  const updatedPosts = posts.filter((post) => post.id !== postToDelete);
+                  const updatedPosts = posts.filter(
+                    (post) => post.id !== postToDelete,
+                  );
                   setPosts(updatedPosts);
                 }
               } catch (err) {
@@ -508,13 +524,14 @@ const SocialPosts = () => {
         </DialogActions>
       </Dialog>
       <CreatePost
+        key={isPosting}
         ref={createPostRef}
         onSubmit={handleNewPost}
         isPosting={isPosting}
       />
 
-      <SearchField 
-        searchQuery={searchQuery} 
+      <SearchField
+        searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         selectedTags={selectedTags}
         setSelectedTags={setSelectedTags}
@@ -555,30 +572,46 @@ const SocialPosts = () => {
                   label={tag}
                   size="small"
                   sx={{ mr: 1, mb: 1 }}
-                  onDelete={post.creator?.id === profile?.id ? () => {
-                    const updatedPost = {
-                      ...post,
-                      tags: post.tags.filter(t => t !== tag)
-                    };
-                    handleSavePost(updatedPost);
-                  } : undefined}
+                  onDelete={
+                    post.creator?.id === profile?.id
+                      ? () => {
+                          const updatedPost = {
+                            ...post,
+                            tags: post.tags.filter((t) => t !== tag),
+                          };
+                          handleSavePost(updatedPost);
+                        }
+                      : undefined
+                  }
                 />
               ))}
               {post.creator?.id === profile?.id && (
-                <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+                <Box
+                  sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}
+                >
                   <TextField
                     size="small"
                     placeholder="Add tag..."
                     value={tagInputs[post.id] || ""}
-                    onChange={(e) => setTagInputs(prev => ({...prev, [post.id]: e.target.value}))}
+                    onChange={(e) =>
+                      setTagInputs((prev) => ({
+                        ...prev,
+                        [post.id]: e.target.value,
+                      }))
+                    }
                     onKeyPress={(e) => {
-                      if (e.key === 'Enter' && tagInputs[post.id]?.trim()) {
+                      if (e.key === "Enter" && tagInputs[post.id]?.trim()) {
                         const updatedPost = {
                           ...post,
-                          tags: [...new Set([...post.tags, tagInputs[post.id].trim()])]
+                          tags: [
+                            ...new Set([
+                              ...post.tags,
+                              tagInputs[post.id].trim(),
+                            ]),
+                          ],
                         };
                         handleSavePost(updatedPost);
-                        setTagInputs(prev => ({...prev, [post.id]: ""}));
+                        setTagInputs((prev) => ({ ...prev, [post.id]: "" }));
                       }
                     }}
                     sx={{ width: 120 }}
@@ -590,10 +623,15 @@ const SocialPosts = () => {
                       if (tagInputs[post.id]?.trim()) {
                         const updatedPost = {
                           ...post,
-                          tags: [...new Set([...post.tags, tagInputs[post.id].trim()])]
+                          tags: [
+                            ...new Set([
+                              ...post.tags,
+                              tagInputs[post.id].trim(),
+                            ]),
+                          ],
                         };
                         handleSavePost(updatedPost);
-                        setTagInputs(prev => ({...prev, [post.id]: ""}));
+                        setTagInputs((prev) => ({ ...prev, [post.id]: "" }));
                       }
                     }}
                   >
@@ -602,7 +640,9 @@ const SocialPosts = () => {
                 </Box>
               )}
             </Box>
-            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
+            >
               <Box sx={{ display: "flex", gap: 1 }}>
                 {post.creator?.id === profile?.id && (
                   <>
@@ -623,7 +663,6 @@ const SocialPosts = () => {
                     >
                       {isSaving ? "Saving..." : "Save"}
                     </Button>
-
                   </>
                 )}
                 <Button
