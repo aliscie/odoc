@@ -110,6 +110,12 @@ const WorkspaceManager = () => {
 
       try {
         await backendActor.save_work_space(newWorkspace);
+        // Update workspaces list with the new workspace
+        const updatedWorkspaces = [...workspaces, newWorkspace];
+        dispatch({ type: "SET_WORKSPACES", workspaces: updatedWorkspaces });
+        // Set the newly created workspace as selected
+        setSelectedWorkspace(newWorkspace);
+        dispatch({ type: "CHANGE_CURRENT_WORKSPACE", currentWorkspace: newWorkspace });
         setShowCreateInput(false);
         setNewWorkspaceName("");
       } catch (error) {
