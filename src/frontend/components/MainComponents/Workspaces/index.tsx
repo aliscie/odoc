@@ -72,15 +72,15 @@ const WorkspaceManager = () => {
     setAnchorEl(null);
   };
 
-  const confirmDelete = async (workspaceToDelete) => {
-    if (backendActor && workspaceToDelete) {
+  const confirmDelete = async (workspace) => {
+    if (backendActor && workspace) {
       try {
-        await backendActor.delete_work_space(workspaceToDelete.id);
+        await backendActor.delete_work_space(workspace.id);
         // Update Redux store
-        dispatch({ type: "DELETE_WORKSPACE", workspace: workspaceToDelete });
+        dispatch({ type: "DELETE_WORKSPACE", workspace });
         
         if (
-          currentWorkspace.id === workspaceToDelete.id &&
+          currentWorkspace.id === workspace.id &&
           workspaces.length > 0
         ) {
           const newSelectedWorkspace = workspaces[0];
@@ -290,7 +290,7 @@ const WorkspaceManager = () => {
         <DialogTitle>Delete Workspace</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete "{workspaceToDelete?.name}"? This
+            Are you sure you want to delete this workspace? This
             action cannot be undone.
           </DialogContentText>
         </DialogContent>
