@@ -68,7 +68,6 @@ const WorkspaceManager = () => {
 
   const handleDelete = (workspace, e) => {
     e.stopPropagation();
-    setWorkspaceToDelete(workspace);
     setShowDeleteDialog(true);
     setAnchorEl(null);
   };
