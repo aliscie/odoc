@@ -109,15 +109,25 @@ const WorkspaceManager = () => {
       };
 
       try {
-        await backendActor.save_work_space(newWorkspace);
-        // Update workspaces list with the new workspace
-        const updatedWorkspaces = [...workspaces, newWorkspace];
-        dispatch({ type: "SET_WORKSPACES", workspaces: updatedWorkspaces });
-        // Set the newly created workspace as selected
-        setSelectedWorkspace(newWorkspace);
-        dispatch({ type: "CHANGE_CURRENT_WORKSPACE", currentWorkspace: newWorkspace });
-        setShowCreateInput(false);
-        setNewWorkspaceName("");
+        const result = await backendActor.save_work_space(newWorkspace);
+        if ("Ok" in result) {
+          // Update local state first
+          const updatedWorkspaces = [...workspaces, newWorkspace];
+          
+          // Update Redux store
+          dispatch({ type: "SET_WORKSPACES", workspaces: updatedWorkspaces });
+          
+          // Set the newly created workspace as selected
+          setSelectedWorkspace(newWorkspace);
+          dispatch({ type: "CHANGE_CURRENT_WORKSPACE", currentWorkspace: newWorkspace });
+          
+          // Reset input state
+          setShowCreateInput(false);
+          setNewWorkspaceName("");
+          handleClose(); // Close the menu after successful creation
+        } else {
+          console.error("Failed to create workspace:", result.Err);
+        }
       } catch (error) {
         console.error("Failed to create workspace:", error);
       }
