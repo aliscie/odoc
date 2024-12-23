@@ -18,12 +18,11 @@ import { useBackendContext } from "../../../contexts/BackendContext";
 import { Principal } from "@dfinity/principal";
 
 const WorkspaceManager = () => {
-  const { workspaces } = useSelector((state: any) => state.filesState);
+  const { workspaces, currentWorkspace } = useSelector((state: any) => state.filesState);
   const { backendActor } = useBackendContext();
   const { profile } = useSelector((state: any) => state.filesState);
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedWorkspace, setSelectedWorkspace] = useState(workspaces[0]);
   const [editingId, setEditingId] = useState(null);
   const [editedName, setEditedName] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -82,11 +81,10 @@ const WorkspaceManager = () => {
         dispatch({ type: "DELETE_WORKSPACE", workspace: workspaceToDelete });
         
         if (
-          selectedWorkspace.id === workspaceToDelete.id &&
+          currentWorkspace.id === workspaceToDelete.id &&
           workspaces.length > 0
         ) {
           const newSelectedWorkspace = workspaces[0];
-          setSelectedWorkspace(newSelectedWorkspace);
           dispatch({ type: "CHANGE_CURRENT_WORKSPACE", currentWorkspace: newSelectedWorkspace });
         }
         setShowDeleteDialog(false);
@@ -117,7 +115,6 @@ const WorkspaceManager = () => {
           dispatch({ type: "ADD_WORKSPACE", workspace: newWorkspace });
           
           // Set the newly created workspace as selected
-          setSelectedWorkspace(newWorkspace);
           dispatch({ type: "CHANGE_CURRENT_WORKSPACE", currentWorkspace: newWorkspace });
           
           // Reset input state
@@ -135,7 +132,6 @@ const WorkspaceManager = () => {
   const dispatch = useDispatch();
 
   const handleWorkspaceSelect = (workspace) => {
-    setSelectedWorkspace(workspace);
     dispatch({ type: "CHANGE_CURRENT_WORKSPACE", currentWorkspace: workspace });
     handleClose();
   };
@@ -157,7 +153,7 @@ const WorkspaceManager = () => {
           },
         }}
       >
-        {selectedWorkspace && selectedWorkspace.name}
+        {currentWorkspace && currentWorkspace.name}
       </Button>
 
       <Menu
@@ -219,8 +215,7 @@ const WorkspaceManager = () => {
             key={workspace.id}
             selected={
               workspace &&
-              workspace.id === selectedWorkspace &&
-              selectedWorkspace.id
+              workspace.id === currentWorkspace.id
             }
             onClick={() => handleWorkspaceSelect(workspace)}
             sx={{
