@@ -1,6 +1,6 @@
 import React from 'react';
 import { Principal } from "@dfinity/principal";
-
+import { useSnackbar } from 'notistack';
 import { useBackendContext } from "../contexts/BackendContext";
 import { useState } from "react";
 import {logger} from "../DevUtils/logData";
@@ -21,14 +21,21 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
 
   const [localFriends, setLocalFriends] = useState(friends);
 
+  const { enqueueSnackbar } = useSnackbar();
+  
   const handleAction = async (action: () => Promise<any>, updateFunction: () => void) => {
     if (!backendActor || isLoading) return;
     setIsLoading(true);
     try {
-      await action();
+      const result = await action();
+      if (result && 'Err' in result) {
+        enqueueSnackbar(result.Err, { variant: 'error' });
+        return;
+      }
       updateFunction();
     } catch (error) {
       console.error("Error performing friend action:", error);
+      enqueueSnackbar("Failed to perform action", { variant: 'error' });
     } finally {
       setIsLoading(false);
     }
@@ -103,7 +110,9 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
     (friend.receiver.id === user.id) && !friend.confirmed && friend.sender.id === profile.id
   );
   const isRequestReceiver = localFriends.some(friend => 
-    (friend.sender.id === user.id) && !friend.confirmed && friend.receiver.id === profile.id
+    ((friend.sender.id === user.id && friend.receiver.id === profile.id) || 
+     (friend.sender.id === profile.id && friend.receiver.id === user.id)) && 
+    !friend.confirmed
   );
 
   const buttonStyle = {
