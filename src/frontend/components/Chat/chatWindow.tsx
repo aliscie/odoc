@@ -28,7 +28,7 @@ import {Link} from "react-router-dom";
 const ChatWindow = memo(
   ({ chat, onClose, position, onPositionChange, onSendMessage }) => {
     const [isDragging, setIsDragging] = useState(false);
-  
+
     useEffect(() => {
       setEditedChat(chat);
     }, [chat]);
@@ -39,9 +39,10 @@ const ChatWindow = memo(
 
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [editedChat, setEditedChat] = useState(null);
-    const { backendActor } = useBackendContext();
+    const { workspaces } = useSelector((state) => state.filesState);
 
     const messagesEndRef = useRef(null);
+    const { backendActor } = useBackendContext();
     const { all_friends, profile } = useSelector((state) => state.filesState);
 
     const scrollToBottom = useCallback(() => {

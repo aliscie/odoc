@@ -189,7 +189,7 @@ const ChatList = memo(
       console.log({ chat, all_friends, currentUserId });
       return all_friends.find(
         (f) =>
-          chat.admins.map(a=>a.id)?.includes(f.id) &&
+          chat.admins.map((a) => a.id)?.includes(f.id) &&
           f.id !== currentUserId,
       );
     };
@@ -379,35 +379,38 @@ const ChatNotifications = ({ chats: initialChats }: { chats: Chat[] }) => {
     [profile?.id, backendActor, handleOpenChat, handleClose],
   );
 
-  const handleCreateGroup = useCallback(async (formData: any) => {
-    if (!backendActor || !profile?.id) return;
-    
-    try {
-      const newChat: Chat = {
-        id: randomString(),
-        name: formData.name,
-        messages: [],
-        members: formData.members.map(m => Principal.fromText(m.id)),
-        admins: formData.admins.map(a => Principal.fromText(a.id)),
-        workspace: formData.workspace,
-        creator: Principal.fromText(profile.id)
-      };
+  const handleCreateGroup = useCallback(
+    async (formData: any) => {
+      if (!backendActor || !profile?.id) return;
 
-      const result = await backendActor.make_new_chat_room(newChat);
-      if ("Ok" in result) {
-        // Add new chat to local state
-        setChats(prevChats => [...prevChats, newChat]);
-        // Open the new chat window
-        handleOpenChat(newChat);
-      } else {
-        console.error("Failed to create chat:", result.Err);
+      try {
+        const newChat: Chat = {
+          id: randomString(),
+          name: formData.name,
+          messages: [],
+          members: formData.members.map((m) => Principal.fromText(m.id)),
+          admins: formData.admins.map((a) => Principal.fromText(a.id)),
+          workspaces: [formData.workspace],
+          creator: Principal.fromText(profile.id),
+        };
+
+        const result = await backendActor.make_new_chat_room(newChat);
+        if ("Ok" in result) {
+          // Add new chat to local state
+          setChats((prevChats) => [...prevChats, newChat]);
+          // Open the new chat window
+          handleOpenChat(newChat);
+        } else {
+          console.log("Failed to create chat:", result.Err);
+        }
+      } catch (error) {
+        console.log("Error creating chat:", error);
       }
-    } catch (error) {
-      console.error("Error creating chat:", error);
-    }
-    
-    setCreateGroupOpen(false);
-  }, [backendActor, profile?.id, handleOpenChat]);
+
+      setCreateGroupOpen(false);
+    },
+    [backendActor, profile?.id, handleOpenChat],
+  );
 
   const handleSendMessage = useCallback(
     async (chatId: string, messageText: string) => {
@@ -446,6 +449,9 @@ const ChatNotifications = ({ chats: initialChats }: { chats: Chat[] }) => {
   );
 
   const open = anchorEl && Boolean(anchorEl);
+  const { all_friends, workspaces } = useSelector(
+    (state: any) => state.filesState,
+  );
 
   return (
     <>
