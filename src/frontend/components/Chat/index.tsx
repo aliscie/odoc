@@ -186,8 +186,11 @@ const ChatList = memo(
 
     const getOtherUser = (chat) => {
       if (chat.name !== "private_chat") return null;
-      return all_friends.find(f => 
-        chat.members?.includes(f.id) && f.id !== currentUserId
+      console.log({ chat, all_friends, currentUserId });
+      return all_friends.find(
+        (f) =>
+          chat.admins.map(a=>a.id)?.includes(f.id) &&
+          f.id !== currentUserId,
       );
     };
 
@@ -195,7 +198,7 @@ const ChatList = memo(
       <List sx={{ padding: 0, width: "100%" }}>
         {chatsWithUnread.map((chat) => {
           const otherUser = getOtherUser(chat);
-          
+
           return (
             <ListItem
               key={chat.id}
@@ -220,10 +223,12 @@ const ChatList = memo(
               </ListItemAvatar>
               <ListItemText
                 primary={
-                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
                     <Typography variant="subtitle2">
-                      {chat.name === "private_chat" 
-                        ? (otherUser?.name || "Unknown User")
+                      {chat.name === "private_chat"
+                        ? otherUser?.name || "Unknown User"
                         : chat.name}
                     </Typography>
                     {chat.unread > 0 && (
@@ -425,7 +430,7 @@ const ChatNotifications = ({ chats: initialChats }: { chats: Chat[] }) => {
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
       >
-        <Badge  badgeContent={totalUnseenMessages} color="error">
+        <Badge badgeContent={totalUnseenMessages} color="error">
           <ChatIcon />
         </Badge>
       </IconButton>
