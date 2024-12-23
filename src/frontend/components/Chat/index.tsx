@@ -379,10 +379,35 @@ const ChatNotifications = ({ chats: initialChats }: { chats: Chat[] }) => {
     [profile?.id, backendActor, handleOpenChat, handleClose],
   );
 
-  const handleCreateGroup = useCallback((formData: any) => {
-    console.log("Creating new group:", formData);
+  const handleCreateGroup = useCallback(async (formData: any) => {
+    if (!backendActor || !profile?.id) return;
+    
+    try {
+      const newChat: Chat = {
+        id: randomString(),
+        name: formData.name,
+        messages: [],
+        members: formData.members.map(m => Principal.fromText(m.id)),
+        admins: formData.admins.map(a => Principal.fromText(a.id)),
+        workspace: formData.workspace,
+        creator: Principal.fromText(profile.id)
+      };
+
+      const result = await backendActor.make_new_chat_room(newChat);
+      if ("Ok" in result) {
+        // Add new chat to local state
+        setChats(prevChats => [...prevChats, newChat]);
+        // Open the new chat window
+        handleOpenChat(newChat);
+      } else {
+        console.error("Failed to create chat:", result.Err);
+      }
+    } catch (error) {
+      console.error("Error creating chat:", error);
+    }
+    
     setCreateGroupOpen(false);
-  }, []);
+  }, [backendActor, profile?.id, handleOpenChat]);
 
   const handleSendMessage = useCallback(
     async (chatId: string, messageText: string) => {
@@ -496,8 +521,8 @@ const ChatNotifications = ({ chats: initialChats }: { chats: Chat[] }) => {
           admins: [],
           workspace: "",
         }}
-        users={[]}
-        workspaces={[]}
+        users={all_friends}
+        workspaces={workspaces}
       />
     </>
   );
