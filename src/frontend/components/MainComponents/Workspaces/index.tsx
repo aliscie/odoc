@@ -27,9 +27,7 @@ const WorkspaceManager = () => {
   const [editingId, setEditingId] = useState(null);
   const [editedName, setEditedName] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [workspaceToDelete, setWorkspaceToDelete] = useState(null);
   const [showCreateInput, setShowCreateInput] = useState(false);
-  const [newWorkspaceName, setNewWorkspaceName] = useState("");
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -76,25 +74,29 @@ const WorkspaceManager = () => {
     setAnchorEl(null);
   };
 
-  const confirmDelete = async () => {
+  const confirmDelete = async (workspaceToDelete) => {
     if (backendActor && workspaceToDelete) {
       try {
         await backendActor.delete_work_space(workspaceToDelete.id);
+        // Update Redux store
+        dispatch({ type: "DELETE_WORKSPACE", workspace: workspaceToDelete });
+        
         if (
           selectedWorkspace.id === workspaceToDelete.id &&
           workspaces.length > 0
         ) {
-          setSelectedWorkspace(workspaces[0]);
+          const newSelectedWorkspace = workspaces[0];
+          setSelectedWorkspace(newSelectedWorkspace);
+          dispatch({ type: "CHANGE_CURRENT_WORKSPACE", currentWorkspace: newSelectedWorkspace });
         }
         setShowDeleteDialog(false);
-        setWorkspaceToDelete(null);
       } catch (error) {
         console.error("Failed to delete workspace:", error);
       }
     }
   };
 
-  const handleCreateWorkspace = async (e) => {
+  const handleCreateWorkspace = async (e, newWorkspaceName) => {
     e.stopPropagation();
     if (newWorkspaceName.trim() && backendActor && profile) {
       const creator = Principal.fromText(profile.id);
@@ -111,11 +113,8 @@ const WorkspaceManager = () => {
       try {
         const result = await backendActor.save_work_space(newWorkspace);
         if ("Ok" in result) {
-          // Update local state first
-          const updatedWorkspaces = [...workspaces, newWorkspace];
-          
           // Update Redux store
-          dispatch({ type: "SET_WORKSPACES", workspaces: updatedWorkspaces });
+          dispatch({ type: "ADD_WORKSPACE", workspace: newWorkspace });
           
           // Set the newly created workspace as selected
           setSelectedWorkspace(newWorkspace);
@@ -123,7 +122,6 @@ const WorkspaceManager = () => {
           
           // Reset input state
           setShowCreateInput(false);
-          setNewWorkspaceName("");
           handleClose(); // Close the menu after successful creation
         } else {
           console.error("Failed to create workspace:", result.Err);
@@ -174,14 +172,20 @@ const WorkspaceManager = () => {
           <MenuItem>
             <TextField
               size="small"
-              value={newWorkspaceName}
-              onChange={(e) => setNewWorkspaceName(e.target.value)}
               placeholder="New workspace name"
               variant="outlined"
               sx={{ mr: 1, flex: 1 }}
               onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleCreateWorkspace(e, e.target.value);
+                }
+              }}
             />
-            <IconButton size="small" onClick={handleCreateWorkspace}>
+            <IconButton 
+              size="small" 
+              onClick={(e) => handleCreateWorkspace(e, e.target.previousSibling.value)}
+            >
               <Check fontSize="small" />
             </IconButton>
             <IconButton
