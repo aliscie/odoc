@@ -182,28 +182,50 @@ const ChatList = memo(
       };
     });
 
+    const { all_friends } = useSelector((state: any) => state.filesState);
+
+    const getOtherUser = (chat) => {
+      if (chat.name !== "private_chat") return null;
+      return all_friends.find(f => 
+        chat.members?.includes(f.id) && f.id !== currentUserId
+      );
+    };
+
     return (
       <List sx={{ padding: 0, width: "100%" }}>
-        {chatsWithUnread.map((chat) => (
-          <ListItem
-            key={chat.id}
-            onClick={() => onChatClick(chat)}
-            button
-            sx={{
-              borderBottom: 1,
-              borderColor: "divider",
-              "&:hover": { backgroundColor: "action.hover" },
-            }}
-          >
-            <ListItemAvatar>
-              <Avatar>
-                <GroupIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
+        {chatsWithUnread.map((chat) => {
+          const otherUser = getOtherUser(chat);
+          
+          return (
+            <ListItem
+              key={chat.id}
+              onClick={() => onChatClick(chat)}
+              button
+              sx={{
+                borderBottom: 1,
+                borderColor: "divider",
+                "&:hover": { backgroundColor: "action.hover" },
+              }}
+            >
+              <ListItemAvatar>
+                {chat.name === "private_chat" ? (
+                  <Avatar src={otherUser?.avatar}>
+                    {otherUser?.name?.charAt(0)}
+                  </Avatar>
+                ) : (
+                  <Avatar>
+                    <GroupIcon />
+                  </Avatar>
+                )}
+              </ListItemAvatar>
+              <ListItemText
               primary={
                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <Typography variant="subtitle2">{chat.name}</Typography>
+                  <Typography variant="subtitle2">
+                    {chat.name === "private_chat" 
+                      ? (otherUser?.name || "Unknown User")
+                      : chat.name}
+                  </Typography>
                   {chat.unread > 0 && (
                     <Badge badgeContent={chat.unread} color="error" />
                   )}
