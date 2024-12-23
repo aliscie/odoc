@@ -14,6 +14,7 @@ import {
   OpenInFull as OpenInFullIcon,
   Send as SendIcon,
   Settings as SettingsIcon,
+  Group as GroupIcon,
 } from "@mui/icons-material";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 import CloseIcon from "@mui/icons-material/Close";
