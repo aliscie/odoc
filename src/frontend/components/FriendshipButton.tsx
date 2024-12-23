@@ -1,27 +1,54 @@
 import React from 'react';
 import { Principal } from "@dfinity/principal";
 
+import { useBackendContext } from "../contexts/BackendContext";
+import { useState } from "react";
+
 interface FriendshipButtonProps {
   profile: any;
   user: any;
   friends: any[];
-  onSendRequest: () => void;
-  onAcceptRequest: () => void;
-  onRejectRequest: () => void;
-  onCancelRequest: () => void;
-  onUnfriend: () => void;
 }
 
 const FriendshipButton: React.FC<FriendshipButtonProps> = ({
   profile,
   user,
   friends,
-  onSendRequest,
-  onAcceptRequest,
-  onRejectRequest,
-  onCancelRequest,
-  onUnfriend,
 }) => {
+  const { backendActor } = useBackendContext();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleAction = async (action: () => Promise<any>) => {
+    if (!backendActor || isLoading) return;
+    setIsLoading(true);
+    try {
+      await action();
+    } catch (error) {
+      console.error("Error performing friend action:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSendRequest = () => handleAction(async () => {
+    await backendActor.send_friend_request(user.id);
+  });
+
+  const handleAcceptRequest = () => handleAction(async () => {
+    await backendActor.accept_friend_request(user.id);
+  });
+
+  const handleRejectRequest = () => handleAction(async () => {
+    await backendActor.reject_friend_request(user.id);
+  });
+
+  const handleCancelRequest = () => handleAction(async () => {
+    await backendActor.cancel_friend_request(user.id);
+  });
+
+  const handleUnfriend = () => handleAction(async () => {
+    await backendActor.unfriend(user.id);
+  });
   if (!profile || !user) return null;
 
   const isFriend = friends.some(friend => friend.id === user.id);
@@ -63,10 +90,11 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
   if (isFriend) {
     return (
       <button 
-        onClick={onUnfriend}
+        onClick={handleUnfriend}
         style={secondaryButton}
+        disabled={isLoading}
       >
-        Unfriend
+        {isLoading ? "Processing..." : "Unfriend"}
       </button>
     );
   }
@@ -74,10 +102,11 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
   if (isRequestSender) {
     return (
       <button 
-        onClick={onCancelRequest}
+        onClick={handleCancelRequest}
         style={secondaryButton}
+        disabled={isLoading}
       >
-        Cancel Request
+        {isLoading ? "Processing..." : "Cancel Request"}
       </button>
     );
   }
@@ -86,16 +115,18 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
     return (
       <div>
         <button 
-          onClick={onAcceptRequest}
+          onClick={handleAcceptRequest}
           style={primaryButton}
+          disabled={isLoading}
         >
-          Accept Request
+          {isLoading ? "Processing..." : "Accept Request"}
         </button>
         <button 
-          onClick={onRejectRequest}
+          onClick={handleRejectRequest}
           style={secondaryButton}
+          disabled={isLoading}
         >
-          Reject Request
+          {isLoading ? "Processing..." : "Reject Request"}
         </button>
       </div>
     );
@@ -103,10 +134,11 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
 
   return (
     <button 
-      onClick={onSendRequest}
+      onClick={handleSendRequest}
       style={primaryButton}
+      disabled={isLoading}
     >
-      Send Friend Request
+      {isLoading ? "Processing..." : "Send Friend Request"}
     </button>
   );
 };
