@@ -219,25 +219,26 @@ const ChatList = memo(
                 )}
               </ListItemAvatar>
               <ListItemText
-              primary={
-                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <Typography variant="subtitle2">
-                    {chat.name === "private_chat" 
-                      ? (otherUser?.name || "Unknown User")
-                      : chat.name}
-                  </Typography>
-                  {chat.unread > 0 && (
-                    <Badge badgeContent={chat.unread} color="error" />
-                  )}
-                </Box>
-              }
-              secondary={
-                chat.messages[chat.messages.length - 1]?.message ||
-                "No messages"
-              }
-            />
-          </ListItem>
-        ))}
+                primary={
+                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Typography variant="subtitle2">
+                      {chat.name === "private_chat" 
+                        ? (otherUser?.name || "Unknown User")
+                        : chat.name}
+                    </Typography>
+                    {chat.unread > 0 && (
+                      <Badge badgeContent={chat.unread} color="error" />
+                    )}
+                  </Box>
+                }
+                secondary={
+                  chat.messages[chat.messages.length - 1]?.message ||
+                  "No messages"
+                }
+              />
+            </ListItem>
+          );
+        })}
       </List>
     );
   },
