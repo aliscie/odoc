@@ -20,6 +20,8 @@ import {
   PersonRemove as PersonRemoveIcon,
 } from "@mui/icons-material";
 import ChatWindow from "../../components/Chat/chatWindow";
+import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
+import Avatar from "@mui/material/Avatar";
 interface Review {
   rating: number;
   comment: string;
@@ -76,10 +78,6 @@ interface FriendsListProps {
 const FriendsList: React.FC<FriendsListProps> = ({
   friends,
   currentUser,
-  onAcceptFriend,
-  onRejectFriend,
-  onCancelRequest,
-  onUnfriend,
   onSendMessage,
   onRateUser,
 }) => {
@@ -225,7 +223,7 @@ const FriendsList: React.FC<FriendsListProps> = ({
 
           return (
             <ListItem key={friend.id} secondaryAction={actions}>
-              <UserAvatarMenu 
+              <UserAvatarMenu
                 user={otherUser}
                 onMessageClick={() => setSelectedUser(otherUser)}
               />
