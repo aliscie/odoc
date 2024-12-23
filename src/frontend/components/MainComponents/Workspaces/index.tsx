@@ -68,13 +68,17 @@ const WorkspaceManager = () => {
     }
   };
 
+  const [workspaceToDelete, setWorkspaceToDelete] = useState(null);
+
   const handleDelete = (workspace, e) => {
     e.stopPropagation();
+    setWorkspaceToDelete(workspace);
     setShowDeleteDialog(true);
     setAnchorEl(null);
   };
 
-  const confirmDelete = async (workspace) => {
+  const confirmDelete = async () => {
+    if (!workspaceToDelete) return;
     if (backendActor && workspace) {
       try {
         await backendActor.delete_work_space(workspace.id);
@@ -297,18 +301,33 @@ const WorkspaceManager = () => {
 
       <Dialog
         open={showDeleteDialog}
-        onClose={() => setShowDeleteDialog(false)}
+        onClose={() => {
+          setShowDeleteDialog(false);
+          setWorkspaceToDelete(null);
+        }}
       >
         <DialogTitle>Delete Workspace</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this workspace? This
+            Are you sure you want to delete workspace "{workspaceToDelete?.name}"? This
             action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-          <Button onClick={confirmDelete} color="error">
+          <Button onClick={() => {
+            setShowDeleteDialog(false);
+            setWorkspaceToDelete(null);
+          }}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={() => {
+              confirmDelete();
+              setShowDeleteDialog(false);
+              setWorkspaceToDelete(null);
+            }} 
+            color="error"
+          >
             Delete
           </Button>
         </DialogActions>
