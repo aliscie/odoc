@@ -110,8 +110,8 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
     (friend.receiver.id === user.id) && !friend.confirmed && friend.sender.id === profile.id
   );
   const isRequestReceiver = localFriends.some(friend => 
-    ((friend.sender.id === user.id && friend.receiver.id === profile.id) || 
-     (friend.sender.id === profile.id && friend.receiver.id === user.id)) && 
+    friend.sender.id === user.id && 
+    friend.receiver.id === profile.id && 
     !friend.confirmed
   );
 
@@ -187,7 +187,7 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
       </div>
     );
   }
-  logger({friends})
+  logger({friends, user, profile})
   return (
     <button 
       onClick={handleSendRequest}

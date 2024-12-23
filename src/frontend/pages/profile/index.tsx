@@ -14,20 +14,13 @@ import {
   TextField,
   Stack,
 } from "@mui/material";
-import { Edit } from '@mui/icons-material';
+import { Edit } from "@mui/icons-material";
 import Friends from "./friends";
 import { useDispatch, useSelector } from "react-redux";
-import { useSnackbar } from 'notistack';
-import { useBackendContext } from '../../contexts/BackendContext';
+import { useSnackbar } from "notistack";
+import { useBackendContext } from "../../contexts/BackendContext";
 
-const ProfilePage = ({
-  profile,
-  history,
-  friends,
-  onUnfriend,
-  onAcceptFriend,
-  onCancelFriend,
-}) => {
+const ProfilePage = ({ profile, history, friends, friendButton }) => {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const { backendActor } = useBackendContext();
@@ -36,15 +29,15 @@ const ProfilePage = ({
 
   const [isEditing, setIsEditing] = useState(false);
   const [formValues, setFormValues] = useState({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
   });
 
   useEffect(() => {
     if (profile) {
       setFormValues({
         name: profile.name,
-        description: profile.description || '',
+        description: profile.description || "",
       });
     }
   }, [profile]);
@@ -58,7 +51,7 @@ const ProfilePage = ({
 
   const handleUpdate = async () => {
     if (!backendActor) {
-      enqueueSnackbar('Backend not initialized', { variant: 'error' });
+      enqueueSnackbar("Backend not initialized", { variant: "error" });
       return;
     }
 
@@ -69,22 +62,22 @@ const ProfilePage = ({
       };
 
       const result = await backendActor.update_profile(updateData);
-      
+
       if (result.Ok) {
-        enqueueSnackbar('Profile updated successfully', { variant: 'success' });
+        enqueueSnackbar("Profile updated successfully", { variant: "success" });
         setIsEditing(false);
       } else if (result.Err) {
-        enqueueSnackbar(result.Err, { variant: 'error' });
+        enqueueSnackbar(result.Err, { variant: "error" });
       }
     } catch (error) {
-      console.error('Profile update error:', error);
-      enqueueSnackbar('Failed to update profile', { variant: 'error' });
+      console.error("Profile update error:", error);
+      enqueueSnackbar("Failed to update profile", { variant: "error" });
     }
   };
   // Handle completely missing props with default empty objects
   const safeProfile = profile || {};
   const safeHistory = history || {};
-  const safeFriends = friends || [];
+  // const safeFriends = friends || [];
   const {
     id = "",
     name = "Anonymous",
@@ -241,7 +234,11 @@ const ProfilePage = ({
       {/* User Header */}
       <Card sx={{ mb: 4 }}>
         <CardContent>
-          <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="flex-start"
+          >
             <Box display="flex" alignItems="flex-start" gap={3}>
               <Avatar
                 src={getPhotoSrc(photo)}
@@ -277,14 +274,19 @@ const ProfilePage = ({
                     <Typography variant="h4" gutterBottom>
                       {name || "Anonymous"}
                     </Typography>
-                    <Typography variant="body1" color="text.secondary">
+                    <Typography
+                      sx={{ fontSize: "0.75rem" }}
+                      color="text.secondary"
+                    >
                       {id || "No id available"}
                     </Typography>
+
                     <Typography variant="body1" color="text.secondary">
                       {description || "No description available"}
                     </Typography>
                   </>
                 )}
+                {friendButton && friendButton}
               </Box>
             </Box>
             {canEdit && (
@@ -297,16 +299,13 @@ const ProfilePage = ({
                         setIsEditing(false);
                         setFormValues({
                           name: profile.name,
-                          description: profile.description || '',
+                          description: profile.description || "",
                         });
                       }}
                     >
                       Cancel
                     </Button>
-                    <Button
-                      variant="contained"
-                      onClick={handleUpdate}
-                    >
+                    <Button variant="contained" onClick={handleUpdate}>
                       Save
                     </Button>
                   </Stack>

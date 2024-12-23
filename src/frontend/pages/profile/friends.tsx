@@ -12,14 +12,15 @@ import {
   Rating,
   Stack,
   Chip,
-  Paper, 
-  TextField, 
+  Paper,
+  TextField,
   Divider,
 } from "@mui/material";
-import FriendshipButton from "../../../components/FriendshipButton";
 import ChatWindow from "../../components/Chat/chatWindow";
 import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
 import Avatar from "@mui/material/Avatar";
+import FriendshipButton from "../../components/FriendshipButton";
+import { useSelector } from "react-redux";
 interface Review {
   rating: number;
   comment: string;
@@ -156,6 +157,7 @@ const FriendsList: React.FC<FriendsListProps> = ({
     [],
   );
 
+  const { Anonymous, profile } = useSelector((state: any) => state.filesState);
 
   return (
     <>
@@ -166,13 +168,19 @@ const FriendsList: React.FC<FriendsListProps> = ({
               ? friend.receiver
               : friend.sender;
           return (
-            <ListItem key={friend.id} secondaryAction={
-              <FriendshipButton 
-                profile={currentUser}
-                user={otherUser}
-                friends={friends}
-              />
-            }>
+            <ListItem
+              key={friend.id}
+              secondaryAction={
+                currentUser &&
+                currentUser.id == profile.id && (
+                  <FriendshipButton
+                    profile={currentUser}
+                    user={otherUser}
+                    friends={friends}
+                  />
+                )
+              }
+            >
               <UserAvatarMenu
                 user={otherUser}
                 onMessageClick={() => setSelectedUser(otherUser)}
@@ -182,7 +190,7 @@ const FriendsList: React.FC<FriendsListProps> = ({
                 secondary={
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Chip
-                      label={status}
+                      label={otherUser.description}
                       size="small"
                       color={friend.confirmed ? "success" : "default"}
                     />
@@ -218,7 +226,6 @@ const FriendsList: React.FC<FriendsListProps> = ({
                 </Typography>
 
                 <Stack spacing={2}>
-
                   {selectedUser.reviews?.map((review, index) => (
                     <Paper
                       key={index}

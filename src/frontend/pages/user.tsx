@@ -44,15 +44,21 @@ function UserProfile() {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
+  if (!user || !profile) {
+    return <></>;
+  }
   return (
     <div>
-      <FriendshipButton
-        profile={profile}
-        user={user}
+      <ProfilePage
+        friendButton={
+          user.id != profile.id && (
+            <FriendshipButton profile={profile} user={user} friends={friends} />
+          )
+        }
         friends={friends}
+        profile={user}
+        history={profileHistory}
       />
-      <ProfilePage friends={friends} profile={user} history={profileHistory} />
     </div>
   );
 }
