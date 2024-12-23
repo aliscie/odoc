@@ -39,7 +39,8 @@ const ChatWindow = memo(
 
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [editedChat, setEditedChat] = useState(null);
-    const { workspaces } = useSelector((state) => state.filesState);
+    const { workspaces, profile } = useSelector((state) => state.filesState);
+    const { backendActor } = useBackendContext();
 
     const messagesEndRef = useRef(null);
     const { backendActor } = useBackendContext();
