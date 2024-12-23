@@ -30,6 +30,7 @@ const WorkspaceManager = () => {
   const [editingId, setEditingId] = useState(null);
   const [editedName, setEditedName] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [showCreateInput, setShowCreateInput] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -52,6 +53,7 @@ const WorkspaceManager = () => {
   const handleSaveRename = async (e) => {
     e.stopPropagation();
     if (editedName.trim() && backendActor) {
+      setIsSaving(true);
       try {
         const workspaceToUpdate = workspaces.find((w) => w.id === editingId);
         if (workspaceToUpdate) {
@@ -70,6 +72,8 @@ const WorkspaceManager = () => {
         }
       } catch (error) {
         console.error("Failed to rename workspace:", error);
+      } finally {
+        setIsSaving(false);
       }
     }
   };
@@ -269,8 +273,16 @@ const WorkspaceManager = () => {
                   sx={{ mr: 1, flex: 1 }}
                   onClick={(e) => e.stopPropagation()}
                 />
-                <IconButton size="small" onClick={handleSaveRename}>
-                  <Check fontSize="small" />
+                <IconButton 
+                  size="small" 
+                  onClick={handleSaveRename}
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <CircularProgress size={20} />
+                  ) : (
+                    <Check fontSize="small" />
+                  )}
                 </IconButton>
                 <IconButton
                   size="small"
