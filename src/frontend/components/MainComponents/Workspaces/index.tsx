@@ -52,16 +52,18 @@ const WorkspaceManager = () => {
   const handleSaveRename = async (e) => {
     e.stopPropagation();
     if (editedName.trim() && backendActor) {
-      const workspace = workspaces.find((w) => w.id === editingId);
-      if (workspace) {
+      const workspaceToUpdate = workspaces.find((w) => w.id === editingId);
+      if (workspaceToUpdate) {
         const updatedWorkspace = {
-          ...workspace,
+          ...workspaceToUpdate,
           creator: Principal.fromText(profile.id),
           name: editedName,
         };
 
         try {
-          await backendActor.save_work_space(updatedWorkspace);
+          const result = await backendActor.save_work_space(updatedWorkspace);
+          if ("Ok" in result) {
+            dispatch({ type: "UPDATE_WORKSPACE", workspace: updatedWorkspace });
           setEditingId(null);
           setEditedName("");
         } catch (error) {
@@ -82,13 +84,13 @@ const WorkspaceManager = () => {
 
   const confirmDelete = async () => {
     if (!workspaceToDelete) return;
-    if (backendActor && workspace) {
+    if (backendActor) {
       try {
-        await backendActor.delete_work_space(workspace.id);
+        await backendActor.delete_work_space(workspaceToDelete);
         // Update Redux store
-        dispatch({ type: "DELETE_WORKSPACE", workspace });
+        dispatch({ type: "DELETE_WORKSPACE", workspace: workspaceToDelete });
 
-        if (currentWorkspace.id === workspace.id && workspaces.length > 0) {
+        if (currentWorkspace.id === workspaceToDelete.id && workspaces.length > 0) {
           const newSelectedWorkspace = workspaces[0];
           dispatch({
             type: "CHANGE_CURRENT_WORKSPACE",
