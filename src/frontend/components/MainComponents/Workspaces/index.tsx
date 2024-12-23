@@ -114,8 +114,11 @@ const WorkspaceManager = () => {
     }
   };
 
+  const dispatch = useDispatch();
+
   const handleWorkspaceSelect = (workspace) => {
     setSelectedWorkspace(workspace);
+    dispatch({ type: "CHANGE_CURRENT_WORKSPACE", currentWorkspace: workspace });
     handleClose();
   };
 
