@@ -3,6 +3,7 @@ import { Principal } from "@dfinity/principal";
 
 import { useBackendContext } from "../contexts/BackendContext";
 import { useState } from "react";
+import {logger} from "../DevUtils/logData";
 
 interface FriendshipButtonProps {
   profile: any;
@@ -131,7 +132,7 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
       </div>
     );
   }
-
+  logger({friends})
   return (
     <button 
       onClick={handleSendRequest}
