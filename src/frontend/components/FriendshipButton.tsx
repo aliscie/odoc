@@ -53,10 +53,10 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
 
   const isFriend = friends.some(friend => friend.id === user.id);
   const isRequestSender = friends.some(friend => 
-    friend.id === user.id && friend.status === 'pending' && friend.sender === profile.id
+    friend.id === user.id && !friend.confirmed && friend.sender.id === profile.id
   );
   const isRequestReceiver = friends.some(friend => 
-    friend.id === user.id && friend.status === 'pending' && friend.sender === user.id
+    friend.id === user.id && !friend.confirmed && friend.sender.id === user.id
   );
 
   const buttonStyle = {
