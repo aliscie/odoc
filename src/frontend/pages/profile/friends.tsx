@@ -12,13 +12,11 @@ import {
   Rating,
   Stack,
   Chip,
-  IconButton, Paper, TextField, Divider,
+  Paper, 
+  TextField, 
+  Divider,
 } from "@mui/material";
-import {
-  Check as CheckIcon,
-  Close as CloseIcon,
-  PersonRemove as PersonRemoveIcon,
-} from "@mui/icons-material";
+import FriendshipButton from "../../../components/FriendshipButton";
 import ChatWindow from "../../components/Chat/chatWindow";
 import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
 import Avatar from "@mui/material/Avatar";
@@ -158,58 +156,6 @@ const FriendsList: React.FC<FriendsListProps> = ({
     [],
   );
 
-  const getFriendStatus = (friend: Friend) => {
-    const isSender = friend.sender.id === currentUser?.id;
-    if (friend.confirmed) {
-      return {
-        status: "Friends",
-        actions: (
-          <IconButton
-            color="error"
-            onClick={() => onUnfriend(friend.id)}
-            title="Unfriend"
-          >
-            <PersonRemoveIcon />
-          </IconButton>
-        ),
-      };
-    }
-    if (isSender) {
-      return {
-        status: "Request Sent",
-        actions: (
-          <IconButton
-            color="warning"
-            onClick={() => onCancelRequest(friend.id)}
-            title="Cancel Request"
-          >
-            <CloseIcon />
-          </IconButton>
-        ),
-      };
-    }
-    return {
-      status: "Request Received",
-      actions: (
-        <Stack direction="row" spacing={1}>
-          <IconButton
-            color="success"
-            onClick={() => onAcceptFriend(friend.id)}
-            title="Accept"
-          >
-            <CheckIcon />
-          </IconButton>
-          <IconButton
-            color="error"
-            onClick={() => onRejectFriend(friend.id)}
-            title="Reject"
-          >
-            <CloseIcon />
-          </IconButton>
-        </Stack>
-      ),
-    };
-  };
 
   return (
     <>
@@ -219,10 +165,14 @@ const FriendsList: React.FC<FriendsListProps> = ({
             friend.sender.id === currentUser?.id
               ? friend.receiver
               : friend.sender;
-          const { status, actions } = getFriendStatus(friend);
-
           return (
-            <ListItem key={friend.id} secondaryAction={actions}>
+            <ListItem key={friend.id} secondaryAction={
+              <FriendshipButton 
+                profile={currentUser}
+                user={otherUser}
+                friends={friends}
+              />
+            }>
               <UserAvatarMenu
                 user={otherUser}
                 onMessageClick={() => setSelectedUser(otherUser)}
