@@ -4,7 +4,7 @@ import LandingPage from "./LandingPage";
 import FileContentPage from "./FileContentPage";
 import ShareFilePage from "./ShareFilePage";
 import ProfilePage from "./profile";
-import Discover from "./Discover";
+import Discover from "./discover";
 import UserProfile from "./User";
 import ContractsHistory from "./Profile/ContractsHistory";
 import Web3WalletUI from "../components/MuiComponents/walletUi";

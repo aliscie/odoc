@@ -10,7 +10,8 @@ import {
   DialogActions,
   Button,
   TextField,
-  Typography, Rating as UiRating,
+  Typography,
+  Rating as UiRating,
 } from "@mui/material";
 import ChatWindow from "../../components/Chat/chatWindow";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +20,9 @@ import { useBackendContext } from "../../contexts/BackendContext";
 import { useSnackbar } from "notistack";
 import { Principal } from "@dfinity/principal";
 import { Rating } from "../../../declarations/backend/backend.did";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/reducers";
+import { randomString } from "../../DataProcessing/dataSamples";
 
 interface UserAvatarMenuProps {
   user: {
@@ -57,10 +61,41 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
 
   const [activeChat, setActiveChat] = useState<any>(null);
   const [chatPosition, setChatPosition] = useState({ x: 0, y: 0 });
+  const { chats } = useSelector((state: RootState) => state.chatsState);
+  const { profile } = useSelector((state: RootState) => state.filesState);
 
   const handleMessage = useCallback(() => {
-    const chatId = `chat-${user.id}`;
-    if (!activeChat) {
+    // Use the already selected chats and profile
+    const existingChat = chats.find((chat) =>
+      chat.members.some(
+        (member) =>
+          member.toString() === user.id || member.__principal__ === user.id,
+      ),
+    );
+
+    if (!activeChat && existingChat) {
+      const position = {
+        x: window.innerWidth - 350,
+        y: window.innerHeight - 450,
+      };
+      setChatPosition(position);
+
+      const filteredMessages = existingChat.messages.filter((message) => {
+        const senderId =
+          message.sender instanceof Principal
+            ? message.sender.toString()
+            : message.sender.__principal__;
+
+        const isCurrentUser = senderId === profile?.id;
+        return !isCurrentUser || message.seen_by?.length > 0;
+      });
+
+      setActiveChat({
+        ...existingChat,
+        messages: filteredMessages,
+      });
+    } else if (!activeChat) {
+      const chatId = `chat-${user.id}`;
       const newChat = {
         id: chatId,
         name: user.name,
@@ -69,7 +104,6 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
         admins: [user.id],
       };
 
-      // Set initial position for chat window
       const position = {
         x: window.innerWidth - 350,
         y: window.innerHeight - 450,
@@ -77,8 +111,9 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
       setChatPosition(position);
       setActiveChat(newChat);
     }
+
     handleClose();
-  }, [user, activeChat]);
+  }, [user, activeChat, handleClose, chats, profile]);
 
   const handleCloseChat = useCallback(() => {
     setActiveChat(null);
@@ -97,11 +132,20 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
         await onMessageClick();
       }
 
-      const result = await backendActor?.send_message({
-        recipient: user.id,
-        content: message,
-        timestamp: BigInt(Date.now()),
-      });
+      const newMessage: Message = {
+        id: randomString(),
+        date: BigInt(Date.now() * 1e6),
+        sender: Principal.fromText(profile.id),
+        seen_by: [],
+        message,
+        chat_id: chatId,
+      };
+
+      const result = await backendActor?.send_message(
+        [Principal.fromText(user.id)],
+        newMessage,
+      );
+      console.log({ result });
 
       if (result?.Ok) {
         enqueueSnackbar("Message sent successfully", { variant: "success" });
@@ -127,11 +171,11 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
       const userPrincipal = Principal.fromText(user.id);
 
       const ratingData: Rating = {
-        id: '', // This will be set by the backend
+        id: "", // This will be set by the backend
         rating: rating,
         comment: comment,
         date: BigInt(Date.now()),
-        user_id: Principal.fromText(user.id)
+        user_id: Principal.fromText(user.id),
       };
 
       const result = await backendActor?.rate_user(userPrincipal, ratingData);
@@ -210,6 +254,7 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
 
       {activeChat && (
         <ChatWindow
+          user={user}
           chat={activeChat}
           onClose={handleCloseChat}
           position={chatPosition}

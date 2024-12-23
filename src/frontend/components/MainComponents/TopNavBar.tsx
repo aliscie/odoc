@@ -83,8 +83,13 @@ const TopNavBar = () => {
     (async () => {
       const res = await backendActor.get_user_notifications();
       dispatch(handleRedux("UPDATE_NOT_LIST", { new_list: res }));
+
+      const chatsList = await backendActor.get_my_chats();
+      console.log({ chatsList });
+      dispatch(handleRedux("SET_CHATS", { chats: chatsList }));
     })();
   }, []);
+
   return (
     <AppBar
       position="fixed"
@@ -138,7 +143,7 @@ const TopNavBar = () => {
           {isLoggedIn && (
             <>
               <NotificationsButton notifications={notifications} />
-              <ChatsComponent chats={chats} />
+              <ChatsComponent key={chats.length} chats={chats} />
               <BasicMenu
                 options={[
                   { content: "Profile", to: "profile", icon: <Person2Icon /> },

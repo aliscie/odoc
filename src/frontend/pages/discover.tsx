@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import CreatePost, { CreatePostRef } from "../../components/CreatePost";
+import CreatePost, { CreatePostRef } from "../components/CreatePost";
 import { Principal } from "@dfinity/principal";
 import {
   Autocomplete,
@@ -28,19 +28,19 @@ import {
   ThumbDown as ThumbsDownIcon,
 } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
-import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
-import { useBackendContext } from "../../contexts/BackendContext";
+import UserAvatarMenu from "../components/MainComponents/UserAvatarMenu";
+import { useBackendContext } from "../contexts/BackendContext";
 import {
   ContentNode,
   Post,
   PostUser,
-} from "../../../declarations/backend/backend.did";
+} from "../../declarations/backend/backend.did";
 import { useSelector } from "react-redux";
-import { randomString } from "../../DataProcessing/dataSamples";
-import EditorComponent from "../../components/EditorComponent";
-import { logger } from "../../DevUtils/logData";
-import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
-import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
+import { randomString } from "../DataProcessing/dataSamples";
+import EditorComponent from "../components/EditorComponent";
+import { logger } from "../DevUtils/logData";
+import { deserializeContentTree } from "../DataProcessing/deserlize/deserializeContents";
+import serializeFileContents from "../DataProcessing/serialize/serializeFileContents";
 
 const Comment = ({ comment, onReply, level = 0 }) => {
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -659,7 +659,7 @@ const SocialPosts = () => {
                       onClick={() => handleSavePost(post)}
                       color="primary"
                       size="small"
-                      disabled={isSaving}
+                      disabled={!newPostContent||isSaving}
                     >
                       {isSaving ? "Saving..." : "Save"}
                     </Button>

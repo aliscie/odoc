@@ -168,15 +168,15 @@
 +yes
 
 # 2024-12-22 12:35:20.436000
-+check ./src/frontend/components/NotifcationList/index.tsx and enable users to click on a notification to set is_seen to true, also when a users click on a new promise shoudl expand the notifation tap and see more options like request release, object on promise with text for objections message
++check ./src/frontend/components/NotifcationList/discover.tsx and enable users to click on a notification to set is_seen to true, also when a users click on a new promise shoudl expand the notifation tap and see more options like request release, object on promise with text for objections message
 
 # 2024-12-22 12:35:37.049843
-+check ./src/frontend/components/NotifcationList/index.tsx and enable users to click on a notification to set is_seen to true, also when a users c
++check ./src/frontend/components/NotifcationList/discover.tsx and enable users to click on a notification to set is_seen to true, also when a users c
 +lick on a new promise shoudl expand the notifation tap and see more options like request release, object on promise with text for objections messag
 +e   '
 
 # 2024-12-22 12:36:06.086010
-+check ./src/frontend/components/NotifcationList/index.tsx and enable users to click on a notification to set is_seen to true, also when a users c
++check ./src/frontend/components/NotifcationList/discover.tsx and enable users to click on a notification to set is_seen to true, also when a users c
 + 
 +lick on a new promise shoudl expand the notifation tap and see more options like request release, object on promise with text for objections messag
 + 
@@ -198,10 +198,10 @@
 +Test
 
 # 2024-12-22 13:33:23.905616
-+at ./src/frontend/components/NotifcationList/index.tsx the ExpandedNotificationContent does not show as a decent UI make it a popover compnent 
++at ./src/frontend/components/NotifcationList/discover.tsx the ExpandedNotificationContent does not show as a decent UI make it a popover compnent
 
 # 2024-12-22 13:33:58.524702
-+add ./src/frontend/components/NotifcationList/index.tsx to the chat
++add ./src/frontend/components/NotifcationList/discover.tsx to the chat
 
 # 2024-12-22 13:34:16.235542
 +how to do that?
@@ -210,16 +210,16 @@
 +yes
 
 # 2024-12-22 13:34:45.506471
-+/run cat ./src/frontend/components/NotifcationList/index.tsx
++/run cat ./src/frontend/components/NotifcationList/discover.tsx
 
 # 2024-12-22 13:34:45.506572
-+/run cat ./src/frontend/components/NotifcationList/index.tsx
++/run cat ./src/frontend/components/NotifcationList/discover.tsx
 
 # 2024-12-22 13:34:47.836942
 +y
 
 # 2024-12-22 13:35:24.733690
-+ at ./src/frontend/components/NotifcationList/index.tsx the ExpandedNotificationContent does not show as a decent UI make it a popover compnent 
++ at ./src/frontend/components/NotifcationList/discover.tsx the ExpandedNotificationContent does not show as a decent UI make it a popover compnent
 
 # 2024-12-22 13:35:42.861467
 +y
@@ -725,13 +725,13 @@
 +1. when registeration complete refresh the entire app, 2. when registeration capmplete call the backend backendActor?.register... 
 
 # 2024-12-22 13:59:44.946362
-+how to add ./src/frontend/pages/profile/index.tsx to the chat
++how to add ./src/frontend/pages/profile/discover.tsx to the chat
 
 # 2024-12-22 13:59:55.051096
 +how to do that
 
 # 2024-12-22 14:00:25.153786
-+./src/frontend/pages/profile/index.tsx can you enable users to update, name, descrption and photo
++./src/frontend/pages/profile/discover.tsx can you enable users to update, name, descrption and photo
 
 # 2024-12-22 14:00:43.283039
 +how ?
@@ -1326,7 +1326,7 @@
 +yes
 
 # 2024-12-22 14:17:01.166263
-+add ./src/frontend/pages/Discover/index.tsx to the chat
++add ./src/frontend/pages/Discover/discover.tsx to the chat
 
 # 2024-12-22 14:17:06.478233
 +yes
@@ -2550,7 +2550,7 @@
 +y
 
 # 2024-12-22 16:08:25.612944
-+load posts in ./src/frontend/pages/index.tsx then store them in redux ./src/frontend/redux/reducers/filesReducer.ts then view posts in ./src/frontend/pages/Discover/index.tsx giving that export interface PostUser {
++load posts in ./src/frontend/pages/discover.tsx then store them in redux ./src/frontend/redux/reducers/filesReducer.ts then view posts in ./src/frontend/pages/Discover/discover.tsx giving that export interface PostUser {
 +  'id' : string,
 +  'creator' : UserFE,
 +  'date_created' : bigint,
@@ -4015,22 +4015,22 @@
 +yes
 
 # 2024-12-22 16:18:02.152804
-+you don't understand, this file ./src/frontend/pages/Discover/index.tsx have dummy data, also does not create real post in the backend fix that 
++you don't understand, this file ./src/frontend/pages/Discover/discover.tsx have dummy data, also does not create real post in the backend fix that
 
 # 2024-12-22 16:18:08.804735
 +yes
 
 # 2024-12-22 16:18:15.077393
-+/run cat ./src/frontend/pages/Discover/index.tsx
++/run cat ./src/frontend/pages/Discover/discover.tsx
 
 # 2024-12-22 16:18:15.077552
-+/run cat ./src/frontend/pages/Discover/index.tsx
++/run cat ./src/frontend/pages/Discover/discover.tsx
 
 # 2024-12-22 16:18:17.172578
 +ye
 
 # 2024-12-22 16:25:31.767416
-+./src/frontend/pages/Discover/index.tsx use react data from backendActor?.search_posts(searchValue); to render the real posts 
++./src/frontend/pages/Discover/discover.tsx use react data from backendActor?.search_posts(searchValue); to render the real posts
 
 # 2024-12-22 16:26:02.120111
 +yes
@@ -4043,8 +4043,8 @@
 
 # 2024-12-22 16:27:50.586067
 +[plugin:vite:esbuild] Transform failed with 1 error:
-+/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:443:12: ERROR: Expected ")" but found "sx"
-+/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:443:12
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/discover.tsx:443:12: ERROR: Expected ")" but found "sx"
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/discover.tsx:443:12
 +Expected ")" but found "sx"
 +441|        </Button>
 +442|      </Grid>
@@ -4467,7 +4467,7 @@
 +};
 +
 +export default SocialPosts;
-+ at the file ./src/frontend/pages/Discover/index.tsx instead of using dummy posts use real posts that come from backendActor?.search_posts(
++ at the file ./src/frontend/pages/Discover/discover.tsx instead of using dummy posts use real posts that come from backendActor?.search_posts(
 
 # 2024-12-22 16:35:41.189563
 +ok
@@ -6035,7 +6035,7 @@
 +};
 +
 +export default SocialPosts;
-+ fix index.tsx discover
++ fix discover.tsx discover
 
 # 2024-12-22 17:18:59.653296
 +ok apply the changs
@@ -6607,9 +6607,9 @@
 
 # 2024-12-22 17:42:18.750629
 +[plugin:vite:esbuild] Transform failed with 2 errors:
-+/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:244:8: ERROR: The symbol "setTagInput" has already been declared
-+/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:244:8: ERROR: The symbol "tagInput" has already been declared
-+/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:244:8
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/discover.tsx:244:8: ERROR: The symbol "setTagInput" has already been declared
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/discover.tsx:244:8: ERROR: The symbol "tagInput" has already been declared
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/discover.tsx:244:8
 +The symbol "setTagInput" has already been declared
 +242|  
 +243|    const [searchQuery, setSearchQuery] = useState("");
@@ -6624,7 +6624,7 @@
 
 # 2024-12-22 17:46:27.710153
 +Uncaught ReferenceError: tagInput is not defined
-+    at SearchField (index.tsx:135:20)
++    at SearchField (discover.tsx:135:20)
 +    at renderWithHooks (chunk-WMDJOG6V.js?v=8d5024c3:11548:26)
 +    at mountIndeterminateComponent (chunk-WMDJOG6V.js?v=8d5024c3:14926:21)
 +    at beginWork (chunk-WMDJOG6V.js?v=8d5024c3:15914:22)
@@ -6634,7 +6634,7 @@
 +    at renderRootSync (chunk-WMDJOG6V.js?v=8d5024c3:19116:15)
 +    at recoverFromConcurrentError (chunk-WMDJOG6V.js?v=8d5024c3:18736:28)
 +    at performConcurrentWorkOnRoot (chunk-WMDJOG6V.js?v=8d5024c3:18684:30)
-+SearchField @ index.tsx:135
++SearchField @ discover.tsx:135
 +renderWithHooks @ chunk-WMDJOG6V.js?v=8d5024c3:11548
 +mountIndeterminateComponent @ chunk-WMDJOG6V.js?v=8d5024c3:14926
 +beginWork @ chunk-WMDJOG6V.js?v=8d5024c3:15914
@@ -6650,9 +6650,9 @@
 
 # 2024-12-22 17:47:11.361991
 +chunk-WMDJOG6V.js?v=8d5024c3:9129 Uncaught ReferenceError: tagInputs is not defined
-+    at index.tsx:549:28
++    at discover.tsx:549:28
 +    at Array.map (<anonymous>)
-+    at SocialPosts (index.tsx:500:22)
++    at SocialPosts (discover.tsx:500:22)
 +
 
 # 2024-12-22 17:50:00.328812
@@ -6660,8 +6660,8 @@
 
 # 2024-12-22 17:50:44.745483
 +[plugin:vite:esbuild] Transform failed with 1 error:
-+/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:731:6: ERROR: Expected ")" but found "open"
-+/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/index.tsx:731:6
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/discover.tsx:731:6: ERROR: Expected ")" but found "open"
++/Users/ahmed/Desktop/odoc/src/frontend/pages/Discover/discover.tsx:731:6
 +Expected ")" but found "open"
 +729|      </Box>
 +730|      <Dialog
@@ -6947,25 +6947,1750 @@
 +y
 
 # 2024-12-23 15:04:26.249885
-+use ./src/frontend/components/ChatNotifications/index.tsx to impiment it in ./src/frontend/components/Chat/index.tsx
++use ./src/frontend/components/ChatNotifications/discover.tsx to impiment it in ./src/frontend/components/Chat/discover.tsx
 
 # 2024-12-23 15:04:38.226452
 +y
 
 # 2024-12-23 15:04:38.230456
-+/run cat ./src/frontend/components/ChatNotifications/index.tsx
++/run cat ./src/frontend/components/ChatNotifications/discover.tsx
 
 # 2024-12-23 15:04:38.230653
-+/run cat ./src/frontend/components/ChatNotifications/index.tsx
++/run cat ./src/frontend/components/ChatNotifications/discover.tsx
 
 # 2024-12-23 15:04:41.809064
 +y
 
 # 2024-12-23 15:04:43.087139
-+/run cat ./src/frontend/components/Chat/index.tsx
++/run cat ./src/frontend/components/Chat/discover.tsx
 
 # 2024-12-23 15:04:43.087296
-+/run cat ./src/frontend/components/Chat/index.tsx
++/run cat ./src/frontend/components/Chat/discover.tsx
 
 # 2024-12-23 15:04:44.823494
 +y
+
+# 2024-12-23 15:29:13.209739
++I am using it <ChatsComponent chats={chats} /> so use the prop chats in the compnent note interface Chat {
++  id: string;
++  name: string;
++  messages: Array<{
++    id: string;
++    sender: string;
++    content: string;
++    timestamp: string;
++  }>;
++  members: string[];
++  admins: string[];
++}
++ 
+
+# 2024-12-23 15:29:28.513841
++y
+
+# 2024-12-23 15:31:02.364850
++do not add new compnent I already have ./src/frontend/components/Chat/discover.tsx juse adjust it
+
+# 2024-12-23 15:31:45.053950
++how to do that?
+
+# 2024-12-23 15:32:08.559502
++import React, { useState, useCallback, memo } from "react";
++import {
++  IconButton,
++  Badge,
++  Menu,
++  MenuItem,
++  Typography,
++  List,
++  ListItem,
++  ListItemText,
++  TextField,
++  Button,
++  Dialog,
++  DialogTitle,
++  DialogContent,
++  DialogActions,
++  Autocomplete,
++  Box,
++  Chip,
++  FormControl,
++  InputLabel,
++  Select,
++  Paper,
++  ListItemAvatar,
++  Avatar,
++  Drawer,
++  AppBar,
++  Toolbar,
++} from "@mui/material";
++
++import {
++  Chat as ChatIcon,
++  Add as AddIcon,
++  Send as SendIcon,
++  ArrowBack as ArrowBackIcon,
++  OpenInFull as OpenInFullIcon,
++  Group as GroupIcon,
++} from "@mui/icons-material";
++import ChatWindow from "./chatWindow";
++
++// Memoized form components
++const GroupNameField = memo(({ value, onChange }) => (
++  <TextField
++    label="Group Name"
++    value={value}
++    onChange={(e) => onChange(e.target.value)}
++    fullWidth
++  />
++));
++
++export const MembersSelect = memo(({ value, onChange, users }) => (
++  <Autocomplete
++    multiple
++    options={users}
++    getOptionLabel={(option) => option.name}
++    value={value}
++    onChange={(_, newValue) => onChange(newValue)}
++    renderInput={(params) => <TextField {...params} label="Select Members" />}
++    renderTags={(value, getTagProps) =>
++      value.map((option, index) => (
++        <Chip label={option.name} {...getTagProps({ index })} />
++      ))
++    }
++  />
++));
++
++export const AdminsSelect = memo(({ value, onChange, members }) => (
++  <Autocomplete
++    multiple
++    options={members}
++    getOptionLabel={(option) => option.name}
++    value={value}
++    onChange={(_, newValue) => onChange(newValue)}
++    renderInput={(params) => <TextField {...params} label="Select Admins" />}
++    renderTags={(value, getTagProps) =>
++      value.map((option, index) => (
++        <Chip label={option.name} {...getTagProps({ index })} />
++      ))
++    }
++  />
++));
++
++const WorkspaceSelect = memo(({ value, onChange, workspaces }) => (
++  <FormControl fullWidth>
++    <InputLabel>Workspace</InputLabel>
++    <Select
++      value={value}
++      label="Workspace"
++      onChange={(e) => onChange(e.target.value)}
++    >
++      {workspaces.map((workspace) => (
++        <MenuItem key={workspace.id} value={workspace.id}>
++          {workspace.name}
++        </MenuItem>
++      ))}
++    </Select>
++  </FormControl>
++));
++
++// Memoized Create Group Dialog
++const CreateGroupDialog = memo(
++  ({ open, onClose, onSubmit, initialData, users, workspaces }) => {
++    const [formData, setFormData] = useState(initialData);
++
++    const handleNameChange = useCallback((name) => {
++      setFormData((prev) => ({ ...prev, name }));
++    }, []);
++
++    const handleMembersChange = useCallback((members) => {
++      setFormData((prev) => ({ ...prev, members }));
++    }, []);
++
++    const handleAdminsChange = useCallback((admins) => {
++      setFormData((prev) => ({ ...prev, admins }));
++    }, []);
++
++    const handleWorkspaceChange = useCallback((workspace) => {
++      setFormData((prev) => ({ ...prev, workspace }));
++    }, []);
++
++    const handleSubmit = useCallback(() => {
++      onSubmit(formData);
++    }, [formData, onSubmit]);
++
++    return (
++      <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
++        <DialogTitle>Create New Group Chat</DialogTitle>
++        <DialogContent>
++          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
++            <GroupNameField value={formData.name} onChange={handleNameChange} />
++            <MembersSelect
++              value={formData.members}
++              onChange={handleMembersChange}
++              users={users}
++            />
++            <AdminsSelect
++              value={formData.admins}
++              onChange={handleAdminsChange}
++              members={formData.members}
++            />
++            <WorkspaceSelect
++              value={formData.workspace}
++              onChange={handleWorkspaceChange}
++              workspaces={workspaces}
++            />
++          </Box>
++        </DialogContent>
++        <DialogActions>
++          <Button onClick={onClose}>Cancel</Button>
++          <Button onClick={handleSubmit} variant="contained" color="primary">
++            Create Group
++          </Button>
++        </DialogActions>
++      </Dialog>
++    );
++  },
++);
++
++// Memoized Chat List
++const ChatList = memo(({ chats, onChatClick }) => (
++  <List sx={{ padding: 0, width: "100%" }}>
++    {chats.map((chat) => (
++      <ListItem
++        key={chat.id}
++        onClick={() => onChatClick(chat)}
++        button
++        sx={{
++          borderBottom: 1,
++          borderColor: "divider",
++          "&:hover": { backgroundColor: "action.hover" },
++        }}
++      >
++        <ListItemAvatar>
++          <Avatar>
++            <GroupIcon />
++          </Avatar>
++        </ListItemAvatar>
++        <ListItemText
++          primary={
++            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
++              <Typography variant="subtitle2">{chat.name}</Typography>
++              {chat.unread > 0 && (
++                <Badge badgeContent={chat.unread} color="error" />
++              )}
++            </Box>
++          }
++          secondary={
++            <>
++              <Typography variant="body2" color="textSecondary">
++                {chat.messages[chat.messages.length - 1]?.content}
++              </Typography>
++              <Typography variant="caption" color="textSecondary">
++                {formatDate(chat.messages[chat.messages.length - 1]?.timestamp)}
++              </Typography>
++            </>
++          }
++        />
++      </ListItem>
++    ))}
++  </List>
++));
++
++// Memoized Chat View
++const ChatView = memo(
++  ({ chat, isFullView, onBack, onFullViewToggle, onSendMessage }) => {
++    const [newMessage, setNewMessage] = useState("");
++
++    const handleSubmit = useCallback(
++      (e) => {
++        e.preventDefault();
++        if (newMessage.trim()) {
++          onSendMessage(newMessage);
++          setNewMessage("");
++        }
++      },
++      [newMessage, onSendMessage],
++    );
++
++    return (
++      <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
++        <AppBar position="static" color="default" elevation={1}>
++          <Toolbar>
++            <IconButton size="small" onClick={onBack}>
++              <ArrowBackIcon />
++            </IconButton>
++            <Typography variant="subtitle1" sx={{ ml: 1, flex: 1 }}>
++              {chat.name}
++            </Typography>
++            <IconButton onClick={onFullViewToggle}>
++              <OpenInFullIcon />
++            </IconButton>
++          </Toolbar>
++        </AppBar>
++
++        <Box sx={{ flex: 1, overflow: "auto", p: 2 }}>
++          {chat.messages.map((message) => (
++            <Paper
++              key={message.id}
++              sx={{
++                p: 2,
++                mb: 2,
++                maxWidth: "80%",
++                ml: message.sender === "You" ? "auto" : 0,
++              }}
++            >
++              <Typography variant="subtitle2">{message.sender}</Typography>
++              <Typography variant="body1">{message.content}</Typography>
++              <Typography variant="caption" color="textSecondary">
++                {formatDate(message.timestamp)}
++              </Typography>
++            </Paper>
++          ))}
++        </Box>
++
++        <Paper sx={{ p: 2 }}>
++          <form onSubmit={handleSubmit} style={{ display: "flex", gap: 8 }}>
++            <TextField
++              size="small"
++              value={newMessage}
++              onChange={(e) => setNewMessage(e.target.value)}
++              placeholder="Type your message..."
++              fullWidth
++              variant="outlined"
++            />
++            <IconButton type="submit" color="primary">
++              <SendIcon />
++            </IconButton>
++          </form>
++        </Paper>
++      </Box>
++    );
++  },
++);
++
++// Helper function for date formatting
++const formatDate = (dateString) => {
++  const date = new Date(dateString);
++  return date.toLocaleString();
++};
++
++// Main component
++const ChatNotifications = () => {
++  const [openChats, setOpenChats] = useState(new Map()); // Map of chatId to window position
++
++  const handleOpenChat = useCallback((chat) => {
++    setOpenChats((prev) => {
++      const newChats = new Map(prev);
++      if (!newChats.has(chat.id)) {
++        // Calculate position for new window with slight offset from previous
++        const offset = newChats.size * 30;
++        newChats.set(chat.id, {
++          x: 100 + offset,
++          y: 100 + offset,
++        });
++      }
++      return newChats;
++    });
++  }, []);
++
++  const handleCloseChat = useCallback((chatId) => {
++    setOpenChats((prev) => {
++      const newChats = new Map(prev);
++      newChats.delete(chatId);
++      return newChats;
++    });
++  }, []);
++
++  const handleChatPosition = useCallback((chatId, position) => {
++    setOpenChats((prev) => {
++      const newChats = new Map(prev);
++      newChats.set(chatId, position);
++      return newChats;
++    });
++  }, []);
++
++  const [anchorEl, setAnchorEl] = useState(null);
++  const [selectedChat, setSelectedChat] = useState(null);
++  const [createGroupOpen, setCreateGroupOpen] = useState(false);
++
++  // Sample data
++  const users = [
++    { id: 1, name: "John Doe" },
++    { id: 2, name: "Jane Smith" },
++    { id: 3, name: "Bob Johnson" },
++  ];
++
++  const workspaces = [
++    { id: 1, name: "Marketing" },
++    { id: 2, name: "Development" },
++    { id: 3, name: "Sales" },
++  ];
++
++  const [chats, setChats] = useState([
++    {
++      id: 1,
++      name: "Project Team",
++      messages: [
++        {
++          id: 1,
++          sender: "John",
++          content: "Can we schedule a meeting?",
++          timestamp: "2024-12-18T10:30:00",
++        },
++        {
++          id: 2,
++          sender: "Jane",
++          content: "Yes, how about tomorrow?",
++          timestamp: "2024-12-18T10:35:00",
++        },
++      ],
++      unread: 2,
++    },
++    {
++      id: 2,
++      name: "Marketing Group",
++      messages: [
++        {
++          id: 1,
++          sender: "Bob",
++          content: "The new designs look great!",
++          timestamp: "2024-12-18T09:15:00",
++        },
++      ],
++      unread: 1,
++    },
++  ]);
++
++  const initialGroupData = {
++    name: "",
++    members: [],
++    admins: [],
++    workspace: "",
++  };
++
++  const handleClick = useCallback((event) => {
++    setAnchorEl(event.currentTarget);
++  }, []);
++
++  const handleClose = useCallback(() => {
++    setAnchorEl(null);
++    setSelectedChat(null);
++  }, []);
++
++  const handleChatClick = useCallback(
++    (chat) => {
++      // Clear unread count for the clicked chat
++      const updatedChats = chats.map((c) => {
++        if (c.id === chat.id) {
++          return { ...c, unread: 0 };
++        }
++        return c;
++      });
++      // Update the chats state here - you'll need to lift this state up
++      // and pass setChats as a prop if you haven't already
++      setChats(updatedChats);
++
++      handleOpenChat(chat);
++      setSelectedChat(null);
++      setAnchorEl(null);
++    },
++    [handleOpenChat, chats, setChats],
++  );
++
++  const handleCreateGroup = useCallback((formData) => {
++    console.log("Creating new group:", formData);
++    setCreateGroupOpen(false);
++  }, []);
++
++  const handleSendMessage = useCallback((chatId, message) => {
++    const newMessage = {
++      id: Date.now(),
++      sender: "You",
++      content: message,
++      timestamp: new Date().toISOString(),
++    };
++
++    setChats((prevChats) =>
++      prevChats.map((chat) =>
++        chat.id === chatId
++          ? { ...chat, messages: [...chat.messages, newMessage] }
++          : chat,
++      ),
++    );
++  }, []);
++
++  const totalUnread = chats.reduce((sum, chat) => sum + chat.unread, 0);
++  const open = Boolean(anchorEl);
++
++  return (
++    <>
++      <IconButton
++        onClick={handleClick}
++        aria-controls={open ? "chat-menu" : undefined}
++        aria-haspopup="true"
++        aria-expanded={open ? "true" : undefined}
++      >
++        <Badge badgeContent={totalUnread} color="error">
++          <ChatIcon />
++        </Badge>
++      </IconButton>
++
++      <Menu
++        id="chat-menu"
++        anchorEl={anchorEl}
++        open={open}
++        onClose={handleClose}
++        PaperProps={{
++          sx: {
++            maxHeight: 500,
++            width: 320,
++          },
++        }}
++        transformOrigin={{ horizontal: "right", vertical: "top" }}
++        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
++      >
++        <MenuItem sx={{ justifyContent: "center" }}>
++          <Button
++            startIcon={<AddIcon />}
++            variant="outlined"
++            fullWidth
++            onClick={() => setCreateGroupOpen(true)}
++          >
++            Create New Group
++          </Button>
++        </MenuItem>
++
++        {selectedChat ? (
++          <ChatView
++            chat={selectedChat}
++            // isFullView={isFullView}
++            onBack={() => setSelectedChat(null)}
++            // onFullViewToggle={() => setIsFullView(!isFullView)}
++            onSendMessage={handleSendMessage}
++          />
++        ) : (
++          <ChatList chats={chats} onChatClick={handleChatClick} />
++        )}
++      </Menu>
++
++      {Array.from(openChats.entries()).map(([chatId, position]) => {
++        const chat = chats.find((c) => c.id === chatId);
++        if (!chat) return null;
++
++        return (
++          <ChatWindow
++            key={chatId}
++            chat={chat}
++            position={position}
++            onClose={handleCloseChat}
++            onPositionChange={handleChatPosition}
++            onSendMessage={handleSendMessage} // Add this prop
++          />
++        );
++      })}
++
++      <CreateGroupDialog
++        open={createGroupOpen}
++        onClose={() => setCreateGroupOpen(false)}
++        onSubmit={handleCreateGroup}
++        initialData={initialGroupData}
++        users={users}
++        workspaces={workspaces}
++      />
++    </>
++  );
++};
++
++export default ChatNotifications;
++
+
+# 2024-12-23 15:33:34.070153
++import React, { useState, useCallback } from "react";
++import {
++  List,
++  ListItem,
++  ListItemText,
++  Button,
++  Dialog,
++  DialogTitle,
++  DialogContent,
++  DialogActions,
++  Typography,
++  Rating,
++  Stack,
++  Chip,
++  Paper,
++  TextField,
++  Divider,
++} from "@mui/material";
++import ChatWindow from "../../components/Chat/chatWindow";
++import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
++import Avatar from "@mui/material/Avatar";
++import FriendshipButton from "../../components/FriendshipButton";
++import { useSelector } from "react-redux";
++interface Review {
++  rating: number;
++  comment: string;
++  timestamp: string;
++  reviewerId: string;
++  reviewerName: string;
++}
++
++interface User {
++  id: string;
++  name: string;
++  description: string;
++  photo: string;
++  reviews?: Review[];
++  averageRating?: number;
++}
++
++interface Friend {
++  id: string;
++  sender: User;
++  receiver: User;
++  confirmed: boolean;
++}
++
++interface Chat {
++  id: string;
++  name: string;
++  messages: Array<{
++    id: string;
++    sender: string;
++    content: string;
++    timestamp: string;
++  }>;
++  members: string[];
++  admins: string[];
++}
++
++interface ChatWindowPosition {
++  x: number;
++  y: number;
++}
++
++interface FriendsListProps {
++  friends: Friend[];
++  currentUser: User;
++  onAcceptFriend: (friendId: string) => void;
++  onRejectFriend: (friendId: string) => void;
++  onCancelRequest: (friendId: string) => void;
++  onUnfriend: (friendId: string) => void;
++  onSendMessage: (userId: string, message: string) => void;
++  onRateUser: (userId: string, rating: number) => void;
++}
++
++const FriendsList: React.FC<FriendsListProps> = ({
++  friends,
++  currentUser,
++  onSendMessage,
++  onRateUser,
++}) => {
++  const [selectedUser, setSelectedUser] = useState<User | null>(null);
++  const [rating, setRating] = useState<number>(0);
++  const [review, setReview] = useState<string>("");
++  const [activeChats, setActiveChats] = useState<Map<string, Chat>>(new Map());
++  const [chatPositions, setChatPositions] = useState<
++    Map<string, ChatWindowPosition>
++  >(new Map());
++
++  const handleProfileClose = () => {
++    setSelectedUser(null);
++    setRating(0);
++  };
++
++  const handleSubmitReview = () => {
++    if (selectedUser && rating > 0) {
++      const newReview: Review = {
++        rating,
++        comment: review,
++        timestamp: new Date().toISOString(),
++        reviewerId: currentUser?.id || "",
++        reviewerName: currentUser?.name || "",
++      };
++      onRateUser(selectedUser.id, rating);
++      // Reset form
++      setRating(0);
++      setReview("");
++    }
++  };
++
++  const handleOpenChat = useCallback(
++    (user: User) => {
++      const chatId = `chat-${user.id}`;
++      if (!activeChats.has(chatId)) {
++        const newChat: Chat = {
++          id: chatId,
++          name: user.name,
++          messages: [],
++          members: [currentUser.id, user.id],
++          admins: [currentUser.id],
++        };
++
++        setActiveChats(new Map(activeChats.set(chatId, newChat)));
++
++        // Set initial position for new chat window
++        const position = {
++          x: window.innerWidth - 350 - activeChats.size * 20,
++          y: window.innerHeight - 450 - activeChats.size * 20,
++        };
++        setChatPositions(new Map(chatPositions.set(chatId, position)));
++      }
++      setSelectedUser(null);
++    },
++    [activeChats, chatPositions, currentUser && currentUser.id],
++  );
++
++  const handleCloseChat = useCallback((chatId: string) => {
++    setActiveChats((prevChats) => {
++      const newChats = new Map(prevChats);
++      newChats.delete(chatId);
++      return newChats;
++    });
++    setChatPositions((prevPositions) => {
++      const newPositions = new Map(prevPositions);
++      newPositions.delete(chatId);
++      return newPositions;
++    });
++  }, []);
++
++  const handleChatPositionChange = useCallback(
++    (chatId: string, position: ChatWindowPosition) => {
++      setChatPositions(
++        (prevPositions) => new Map(prevPositions.set(chatId, position)),
++      );
++    },
++    [],
++  );
++
++  const { Anonymous, profile } = useSelector((state: any) => state.filesState);
++
++  return (
++    <>
++      <List>
++        {friends.map((friend) => {
++          const otherUser =
++            friend.sender.id === currentUser?.id
++              ? friend.receiver
++              : friend.sender;
++          return (
++            <ListItem
++              key={friend.id}
++              secondaryAction={
++                currentUser &&
++                currentUser.id == profile.id && (
++                  <FriendshipButton
++                    profile={currentUser}
++                    user={otherUser}
++                    friends={friends}
++                  />
++                )
++              }
++            >
++              <UserAvatarMenu
++                user={otherUser}
++                onMessageClick={() => setSelectedUser(otherUser)}
++              />
++              <ListItemText
++                primary={otherUser.name}
++                secondary={
++                  <Stack direction="row" spacing={1} alignItems="center">
++                    <Chip
++                      label={otherUser.description}
++                      size="small"
++                      color={friend.confirmed ? "success" : "default"}
++                    />
++                  </Stack>
++                }
++              />
++            </ListItem>
++          );
++        })}
++      </List>
++
++      <Dialog
++        open={!!selectedUser}
++        onClose={handleProfileClose}
++        maxWidth="md"
++        fullWidth
++      >
++        {selectedUser && (
++          <>
++            <DialogTitle>
++              <Stack direction="row" spacing={2} alignItems="center">
++                <Avatar
++                  src={`data:image/jpeg;base64,${selectedUser.photo}`}
++                  sx={{ width: 56, height: 56 }}
++                />
++                <Typography variant="h6">{selectedUser.name}</Typography>
++              </Stack>
++            </DialogTitle>
++            <DialogContent>
++              <Stack spacing={3}>
++                <Typography variant="body1">
++                  {selectedUser.description}
++                </Typography>
++
++                <Stack spacing={2}>
++                  {selectedUser.reviews?.map((review, index) => (
++                    <Paper
++                      key={index}
++                      sx={{ p: 2, bgcolor: "background.default" }}
++                    >
++                      <Stack spacing={1}>
++                        <Stack
++                          direction="row"
++                          justifyContent="space-between"
++                          alignItems="center"
++                        >
++                          <Typography variant="subtitle2">
++                            {review.reviewerName}
++                          </Typography>
++                          <Rating value={review.rating} readOnly size="small" />
++                        </Stack>
++                        <Typography variant="body2">
++                          {review.comment}
++                        </Typography>
++                        <Typography variant="caption" color="text.secondary">
++                          {new Date(review.timestamp).toLocaleDateString()}
++                        </Typography>
++                      </Stack>
++                    </Paper>
++                  ))}
++
++                  <Divider sx={{ my: 2 }} />
++
++                  <Typography variant="subtitle1">Write a Review</Typography>
++                  <Rating
++                    value={rating}
++                    onChange={(_, newValue) => handleRating(newValue)}
++                  />
++                  <TextField
++                    label="Your Review"
++                    multiline
++                    rows={3}
++                    value={review}
++                    onChange={(e) => setReview(e.target.value)}
++                    fullWidth
++                  />
++                </Stack>
++              </Stack>
++            </DialogContent>
++            <DialogActions>
++              <Button onClick={handleProfileClose}>Close</Button>
++              <Button
++                onClick={handleSubmitReview}
++                variant="outlined"
++                color="primary"
++                disabled={!rating || !review.trim()}
++              >
++                Submit Review
++              </Button>
++              <Button
++                onClick={() => handleOpenChat(selectedUser)}
++                variant="contained"
++                color="primary"
++              >
++                Open Chat
++              </Button>
++            </DialogActions>
++          </>
++        )}
++      </Dialog>
++
++      {/* Render active chat windows */}
++      {Array.from(activeChats.entries()).map(([chatId, chat]) => (
++        <ChatWindow
++          key={chatId}
++          chat={chat}
++          onClose={handleCloseChat}
++          position={chatPositions.get(chatId) || { x: 0, y: 0 }}
++          onPositionChange={handleChatPositionChange}
++        />
++      ))}
++    </>
++  );
++};
++
++export default FriendsList;
++import React, {forwardRef, useImperativeHandle, useRef, useState} from "react";
++import {
++  Box,
++  Button,
++  Card,
++  CardContent,
++  Chip,
++  TextField,
++} from "@mui/material";
++import EditorComponent from "./EditorComponent";
++
++export interface CreatePostRef {
++  getContent: () => any;
++  getTags: () => string[];
++  reset: () => void;
++}
++
++interface CreatePostProps {
++  onSubmit: (content: any, tags: string[]) => Promise<void>;
++  isPosting: boolean;
++}
++
++const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
++  ({ onSubmit, isPosting }, ref) => {
++    const contentRef = useRef<any>(null);
++    const tagsRef = useRef<string[]>([]);
++    const tagInputRef = useRef<HTMLInputElement>(null);
++    const [forceUpdate, setForceUpdate] = useState(false);
++    const [tags, setTags] = useState<string[]>([]);
++
++    useImperativeHandle(ref, () => ({
++      getContent: () => contentRef.current,
++      getTags: () => tagsRef.current,
++      reset: () => {
++        contentRef.current = null;
++        tagsRef.current = [];
++        if (tagInputRef.current) {
++          tagInputRef.current.value = "";
++        }
++        // Force a re-render to clear the editor
++        setForceUpdate(prev => !prev);
++      },
++    }));
++
++    const handleAddTag = () => {
++      const tagInput = tagInputRef.current;
++      if (tagInput && tagInput.value.trim()) {
++        const newTag = tagInput.value.trim();
++        tagsRef.current = [...new Set([...tagsRef.current, newTag])];
++        setTags([...new Set([...tags, newTag])]);
++        tagInput.value = "";
++      }
++    };
++
++    const handleRemoveTag = (tagToRemove: string) => {
++      tagsRef.current = tagsRef.current.filter((tag) => tag !== tagToRemove);
++      setTags(tags.filter((tag) => tag !== tagToRemove));
++    };
++
++    const handleSubmit = async () => {
++      await onSubmit(contentRef.current, tagsRef.current);
++    };
++
++    return (
++      <Card sx={{ mb: 3 }}>
++        <CardContent>
++          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}>
++            <Box>
++              <EditorComponent
++                contentEditable={true}
++                onChange={(changes) => {
++                  let new_change = {};
++                  new_change[""] = changes;
++                  contentRef.current = new_change;
++                }}
++                content={[]}
++              />
++            </Box>
++            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
++              <TextField
++                inputRef={tagInputRef}
++                size="small"
++                placeholder="Add tag..."
++                variant="standard"
++                onKeyPress={(e) => {
++                  if (e.key === 'Enter') {
++                    handleAddTag();
++                  }
++                }}
++              />
++              <Button
++                variant="outlined"
++                size="small"
++                onClick={handleAddTag}
++              >
++                Add Tag
++              </Button>
++            </Box>
++            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
++              {tags.map((tag) => (
++                <Chip
++                  key={tag}
++                  label={tag}
++                  onDelete={() => handleRemoveTag(tag)}
++                  size="small"
++                />
++              ))}
++            </Box>
++          </Box>
++          <Button
++            variant="contained"
++            fullWidth
++            onClick={handleSubmit}
++            disabled={isPosting}
++          >
++            {isPosting ? "Posting..." : "Post"}
++          </Button>
++        </CardContent>
++      </Card>
++    );
++  }
++);
++
++export default CreatePost;
++import React, { useState, useEffect, useRef } from "react";
++import CreatePost, { CreatePostRef } from "../../components/CreatePost";
++import { Principal } from "@dfinity/principal";
++import {
++  Autocomplete,
++  Box,
++  Button,
++  Card,
++  CardContent,
++  CardHeader,
++  Chip,
++  Dialog,
++  DialogActions,
++  DialogContent,
++  DialogContentText,
++  DialogTitle,
++  IconButton,
++  Paper,
++  TextField,
++  Typography,
++} from "@mui/material";
++import {
++  Comment as MessageCircleIcon,
++  Favorite as HeartIcon,
++  Reply as ReplyIcon,
++  Send as SendIcon,
++  Share as ShareIcon,
++  ThumbDown as ThumbsDownIcon,
++} from "@mui/icons-material";
++import SearchIcon from "@mui/icons-material/Search";
++import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
++import { useBackendContext } from "../../contexts/BackendContext";
++import {
++  ContentNode,
++  Post,
++  PostUser,
++} from "../../../declarations/backend/backend.did";
++import { useSelector } from "react-redux";
++import { randomString } from "../../DataProcessing/dataSamples";
++import EditorComponent from "../../components/EditorComponent";
++import { logger } from "../../DevUtils/logData";
++import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
++import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
++
++const Comment = ({ comment, onReply, level = 0 }) => {
++  const [showReplyInput, setShowReplyInput] = useState(false);
++  const [replyContent, setReplyContent] = useState("");
++
++  const handleReplySubmit = () => {
++    if (!replyContent.trim()) return;
++    onReply(comment.id, replyContent);
++    setReplyContent("");
++    setShowReplyInput(false);
++  };
++
++  return (
++    <Box sx={{ ml: level * 3, mb: 2 }}>
++      <Paper variant="outlined" sx={{ p: 2 }}>
++        <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
++          {comment.user && <UserAvatarMenu user={comment.user} size="small" />}
++          <Box>
++            <Typography variant="subtitle2">{comment.user.name}</Typography>
++            <Typography variant="caption" color="text.secondary">
++              {comment.timestamp}
++            </Typography>
++          </Box>
++        </Box>
++        <Typography variant="body2" sx={{ mb: 1 }}>
++          {comment.content}
++        </Typography>
++        <Button
++          size="small"
++          startIcon={<ReplyIcon />}
++          onClick={() => setShowReplyInput(!showReplyInput)}
++        >
++          Reply
++        </Button>
++      </Paper>
++
++      {showReplyInput && (
++        <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
++          <TextField
++            size="small"
++            fullWidth
++            placeholder="Write a reply..."
++            value={replyContent}
++            onChange={(e) => setReplyContent(e.target.value)}
++          />
++          <IconButton onClick={handleReplySubmit} color="primary">
++            <SendIcon />
++          </IconButton>
++        </Box>
++      )}
++
++      {comment.replies?.map((reply) => (
++        <Comment
++          key={reply.id}
++          comment={reply}
++          onReply={onReply}
++          level={level + 1}
++        />
++      ))}
++    </Box>
++  );
++};
++
++const SearchField = ({
++  searchQuery,
++  setSearchQuery,
++  selectedTags,
++  setSelectedTags,
++}) => {
++  const [tagInput, setTagInput] = useState("");
++  const [suggestedTags] = useState([
++    "technology",
++    "programming",
++    "design",
++    "business",
++    "marketing",
++    "science",
++    "art",
++    "music",
++    "travel",
++    "food",
++  ]); // You can replace these with actual tags from your backend
++
++  const handleAddTag = () => {
++    if (tagInput.trim() && !selectedTags.includes(tagInput.trim())) {
++      setSelectedTags([...selectedTags, tagInput.trim()]);
++      setTagInput("");
++    }
++  };
++
++  const handleRemoveTag = (tagToRemove: string) => {
++    setSelectedTags(selectedTags.filter((tag) => tag !== tagToRemove));
++  };
++
++  const filteredSuggestions = suggestedTags.filter(
++    (tag) =>
++      tag.toLowerCase().includes(tagInput.toLowerCase()) &&
++      !selectedTags.includes(tag),
++  );
++
++  return (
++    <Card sx={{ mb: 3, boxShadow: 3 }}>
++      <CardContent>
++        <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
++          <TextField
++            fullWidth
++            placeholder="Search posts by content or user..."
++            value={searchQuery}
++            onChange={(e) => setSearchQuery(e.target.value)}
++            InputProps={{
++              startAdornment: (
++                <Box sx={{ color: "text.secondary", mr: 1 }}>
++                  <SearchIcon />
++                </Box>
++              ),
++            }}
++            size="small"
++            sx={{ flexGrow: 1 }}
++          />
++          <Autocomplete
++            freeSolo
++            size="small"
++            options={filteredSuggestions}
++            inputValue={tagInput}
++            onInputChange={(_, newValue) => setTagInput(newValue)}
++            onChange={(_, newValue) => {
++              if (newValue) {
++                setSelectedTags([...new Set([...selectedTags, newValue])]);
++                setTagInput("");
++              }
++            }}
++            renderInput={(params) => (
++              <TextField
++                {...params}
++                placeholder="Add tag..."
++                size="small"
++                sx={{ width: 200 }}
++                onKeyPress={(e) => {
++                  if (e.key === "Enter") {
++                    handleAddTag();
++                  }
++                }}
++              />
++            )}
++          />
++          <Button
++            variant="contained"
++            size="small"
++            onClick={handleAddTag}
++            sx={{ minWidth: 100 }}
++          >
++            Add Tag
++          </Button>
++        </Box>
++        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
++          {selectedTags.map((tag) => (
++            <Chip
++              key={tag}
++              label={tag}
++              onDelete={() => handleRemoveTag(tag)}
++              size="small"
++              sx={{
++                bgcolor: "primary.light",
++                color: "white",
++                "&:hover": {
++                  bgcolor: "primary.main",
++                },
++              }}
++            />
++          ))}
++        </Box>
++      </CardContent>
++    </Card>
++  );
++};
++
++const SocialPosts = () => {
++  const { backendActor } = useBackendContext();
++  const [posts, setPosts] = useState<Array<PostUser>>([]);
++  const [loading, setLoading] = useState(true);
++  const [error, setError] = useState<string | null>(null);
++  const { profile } = useSelector((state: any) => state.filesState);
++  const currentUser = profile;
++
++  useEffect(() => {
++    const fetchPosts = async () => {
++      try {
++        if (!backendActor) return;
++        const result = await backendActor.get_posts(BigInt(0), BigInt(20));
++        setPosts(result.reverse());
++        setError(null);
++      } catch (err) {
++        console.error("Failed to fetch posts:", err);
++        setError("Failed to load posts. Please try again later.");
++      } finally {
++        setLoading(false);
++      }
++    };
++
++    fetchPosts();
++  }, [backendActor]);
++
++  const createPostRef = useRef<CreatePostRef>(null);
++  const [tagInputs, setTagInputs] = useState<{ [key: string]: string }>({});
++  const [commentInputs, setCommentInputs] = useState({});
++  const [showComments, setShowComments] = useState({});
++  const [isPosting, setIsPosting] = useState(false);
++  const [isSaving, setIsSaving] = useState(false);
++  const [newPostContent, setNewPostContent] = useState<any>(null);
++
++  const handleNewPost = async (content: any, tags: string[]) => {
++    if (!content || !backendActor) return;
++    setIsPosting(true);
++
++    try {
++      let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
++        serializeFileContents(content);
++      let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
++      const newPost: Post = {
++        id: randomString(),
++        creator: profile.id,
++        date_created: BigInt(Date.now() * 1e6),
++        votes_up: [],
++        tags,
++        content_tree,
++        votes_down: [],
++      };
++      try {
++        const result = await backendActor.save_post(newPost);
++        if ("Ok" in result) {
++          const updatedPosts = await backendActor.get_posts(
++            BigInt(0),
++            BigInt(20),
++          );
++          setPosts(updatedPosts.reverse());
++          createPostRef.current?.reset();
++        } else {
++          console.error("Failed to create post:", result.Err);
++        }
++      } catch (err) {
++        console.error("Error save_post:", err);
++      }
++    } catch (err) {
++      console.error("Error creating post:", err);
++    } finally {
++      setIsPosting(false);
++    }
++  };
++
++  const [searchQuery, setSearchQuery] = useState("");
++  const [selectedTags, setSelectedTags] = useState<string[]>([]);
++
++  // Add this function after other handler functions
++  const filteredPosts = posts.filter((post) => {
++    const contentText = post.content_tree
++      .map((node) => node.text)
++      .join(" ")
++      .toLowerCase();
++    const matchesSearch =
++      contentText.includes(searchQuery.toLowerCase()) ||
++      post.creator?.name?.toLowerCase().includes(searchQuery.toLowerCase());
++
++    const matchesTags =
++      selectedTags.length === 0 ||
++      selectedTags.every((tag) => post.tags.includes(tag));
++
++    return matchesSearch && matchesTags;
++  });
++
++  const handleVoteUp = async (postId: string) => {
++    try {
++      if (!backendActor) return;
++      const result = await backendActor.vote_up(postId);
++      if ("Ok" in result) {
++        const updatedPosts = posts.map((post) =>
++          post.id === postId ? result.Ok : post,
++        );
++        setPosts(updatedPosts);
++      } else {
++        console.error("Failed to vote up:", result.Err);
++      }
++    } catch (err) {
++      console.error("Error voting up:", err);
++    }
++  };
++
++  const handleVoteDown = async (postId: string) => {
++    try {
++      if (!backendActor) return;
++      const result = await backendActor.vote_down(postId);
++      if ("Ok" in result) {
++        const updatedPosts = posts.map((post) =>
++          post.id === postId ? result.Ok : post,
++        );
++        setPosts(updatedPosts);
++      } else {
++        console.error("Failed to vote down:", result.Err);
++      }
++    } catch (err) {
++      console.error("Error voting down:", err);
++    }
++  };
++
++  const [isDeletingPost, setIsDeletingPost] = useState<string | null>(null);
++
++  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
++  const [postToDelete, setPostToDelete] = useState<string | null>(null);
++
++  const handleDeletePost = async (postId: string) => {
++    setPostToDelete(postId);
++    setDeleteDialogOpen(true);
++  };
++
++  const confirmDelete = async () => {
++    if (!backendActor || !postToDelete) return;
++    setIsDeletingPost(postToDelete);
++    try {
++      const result = await backendActor.delete_post(postId);
++      if ("Ok" in result) {
++        const updatedPosts = posts.filter((post) => post.id !== postId);
++        setPosts(updatedPosts);
++      }
++    } catch (err) {
++      console.error("Error deleting post:", err);
++    } finally {
++      setIsDeletingPost(null);
++    }
++  };
++
++  const handleSavePost = async (post: PostUser) => {
++    if (!newPostContent || !backendActor) return;
++
++    setIsSaving(true);
++    try {
++      let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
++        serializeFileContents(newPostContent);
++      let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
++
++      const updatedPost: Post = {
++        ...post,
++        creator: profile.id,
++        content_tree,
++      };
++
++      const result = await backendActor.save_post(updatedPost);
++      if ("Ok" in result) {
++        const updatedPosts = await backendActor.get_posts(
++          BigInt(0),
++          BigInt(20),
++        );
++        setPosts(updatedPosts.reverse());
++        setNewPostContent(null);
++      }
++    } catch (err) {
++      console.error("Error saving post:", err);
++    } finally {
++      setIsSaving(false);
++    }
++  };
++
++  const handleShare = (postId) => {
++    alert("Share functionality would go here!");
++  };
++
++  const toggleComments = (postId) => {
++    setShowComments((prev) => ({
++      ...prev,
++      [postId]: !prev[postId],
++    }));
++  };
++
++  const handleComment = (postId) => {
++    if (!commentInputs[postId]?.trim()) return;
++
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          return {
++            ...post,
++            comments: [
++              ...post.comments,
++              {
++                id: Date.now(),
++                content: commentInputs[postId],
++                timestamp: new Date().toLocaleString(),
++                replies: [],
++                user: currentUser,
++              },
++            ],
++          };
++        }
++        return post;
++      }),
++    );
++
++    setCommentInputs((prev) => ({
++      ...prev,
++      [postId]: "",
++    }));
++  };
++
++  const handleReply = (postId, commentId, replyContent) => {
++    setPosts(
++      posts.map((post) => {
++        if (post.id === postId) {
++          const updatedComments = addReplyToComment(post.comments, commentId, {
++            id: Date.now(),
++            content: replyContent,
++            timestamp: new Date().toLocaleString(),
++            replies: [],
++            user: currentUser,
++          });
++          return { ...post, comments: updatedComments };
++        }
++        return post;
++      }),
++    );
++  };
++
++  const addReplyToComment = (comments, commentId, reply) => {
++    return comments.map((comment) => {
++      if (comment.id === commentId) {
++        return {
++          ...comment,
++          replies: [...(comment.replies || []), reply],
++        };
++      }
++      if (comment.replies?.length) {
++        return {
++          ...comment,
++          replies: addReplyToComment(comment.replies, commentId, reply),
++        };
++      }
++      return comment;
++    });
++  };
++
++  return (
++    <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
++      <Dialog
++        open={deleteDialogOpen}
++        onClose={() => setDeleteDialogOpen(false)}
++        aria-labelledby="alert-dialog-title"
++        aria-describedby="alert-dialog-description"
++      >
++        <DialogTitle id="alert-dialog-title">{"Delete Post?"}</DialogTitle>
++        <DialogContent>
++          <DialogContentText id="alert-dialog-description">
++            Are you sure you want to delete this post? This action cannot be
++            undone.
++          </DialogContentText>
++        </DialogContent>
++        <DialogActions>
++          <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
++            Cancel
++          </Button>
++          <Button
++            onClick={async () => {
++              setDeleteDialogOpen(false);
++              if (!backendActor || !postToDelete) return;
++              try {
++                const result = await backendActor.delete_post(postToDelete);
++                if ("Ok" in result) {
++                  const updatedPosts = posts.filter(
++                    (post) => post.id !== postToDelete,
++                  );
++                  setPosts(updatedPosts);
++                }
++              } catch (err) {
++                console.error("Error deleting post:", err);
++              } finally {
++                setIsDeletingPost(null);
++                setPostToDelete(null);
++              }
++            }}
++            color="error"
++            autoFocus
++          >
++            Delete
++          </Button>
++        </DialogActions>
++      </Dialog>
++      <CreatePost
++        key={isPosting}
++        ref={createPostRef}
++        onSubmit={handleNewPost}
++        isPosting={isPosting}
++      />
++
++      <SearchField
++        searchQuery={searchQuery}
++        setSearchQuery={setSearchQuery}
++        selectedTags={selectedTags}
++        setSelectedTags={setSelectedTags}
++      />
++
++      {filteredPosts.map((post: PostUser) => (
++        <Card key={post.id} sx={{ mb: 2 }}>
++          <CardHeader
++            avatar={post.creator && <UserAvatarMenu user={post.creator} />}
++            title={post.creator && post.creator.name}
++            subheader={new Date(
++              Number(post.date_created) / 1e6,
++            ).toLocaleString()}
++          />
++          <CardContent>
++            {post.content_tree && post.content_tree.length > 0 ? (
++              <EditorComponent
++                readOnly={
++                  post && post.creator?.id && post.creator.id !== profile?.id
++                }
++                content={deserializeContentTree(post.content_tree)}
++                onChange={(changes) => {
++                  let new_change = {};
++                  new_change[""] = changes;
++                  setNewPostContent(new_change);
++                }}
++              />
++            ) : (
++              <Typography variant="body2" color="text.secondary">
++                No content
++              </Typography>
++            )}
++
++            <Box sx={{ mb: 2 }}>
++              {post.tags.map((tag) => (
++                <Chip
++                  key={tag}
++                  label={tag}
++                  size="small"
++                  sx={{ mr: 1, mb: 1 }}
++                  onDelete={
++                    post.creator?.id === profile?.id
++                      ? () => {
++                          const updatedPost = {
++                            ...post,
++                            tags: post.tags.filter((t) => t !== tag),
++                          };
++                          handleSavePost(updatedPost);
++                        }
++                      : undefined
++                  }
++                />
++              ))}
++              {post.creator?.id === profile?.id && (
++                <Box
++                  sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}
++                >
++                  <TextField
++                    size="small"
++                    placeholder="Add tag..."
++                    value={tagInputs[post.id] || ""}
++                    onChange={(e) =>
++                      setTagInputs((prev) => ({
++                        ...prev,
++                        [post.id]: e.target.value,
++                      }))
++                    }
++                    onKeyPress={(e) => {
++                      if (e.key === "Enter" && tagInputs[post.id]?.trim()) {
++                        const updatedPost = {
++                          ...post,
++                          tags: [
++                            ...new Set([
++                              ...post.tags,
++                              tagInputs[post.id].trim(),
++                            ]),
++                          ],
++                        };
++                        handleSavePost(updatedPost);
++                        setTagInputs((prev) => ({ ...prev, [post.id]: "" }));
++                      }
++                    }}
++                    sx={{ width: 120 }}
++                  />
++                  <Button
++                    variant="outlined"
++                    size="small"
++                    onClick={() => {
++                      if (tagInputs[post.id]?.trim()) {
++                        const updatedPost = {
++                          ...post,
++                          tags: [
++                            ...new Set([
++                              ...post.tags,
++                              tagInputs[post.id].trim(),
++                            ]),
++                          ],
++                        };
++                        handleSavePost(updatedPost);
++                        setTagInputs((prev) => ({ ...prev, [post.id]: "" }));
++                      }
++                    }}
++                  >
++                    Add Tag
++                  </Button>
++                </Box>
++              )}
++            </Box>
++            <Box
++              sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
++            >
++              <Box sx={{ display: "flex", gap: 1 }}>
++                {post.creator?.id === profile?.id && (
++                  <>
++                    <Button
++                      onClick={() => handleDeletePost(post.id)}
++                      color="error"
++                      size="small"
++                      disabled={isDeletingPost === post.id}
++                    >
++                      {isDeletingPost === post.id ? "Deleting..." : "Delete"}
++                    </Button>
++
++                    <Button
++                      onClick={() => handleSavePost(post)}
++                      color="primary"
++                      size="small"
++                      disabled={isSaving}
++                    >
++                      {isSaving ? "Saving..." : "Save"}
++                    </Button>
++                  </>
++                )}
++                <Button
++                  startIcon={<HeartIcon />}
++                  onClick={() => handleVoteUp(post.id)}
++                  color={
++                    post.votes_up.some(
++                      (p) =>
++                        p.toString() ===
++                        Principal.fromText("2vxsx-fae").toString(),
++                    )
++                      ? "primary"
++                      : "inherit"
++                  }
++                >
++                  {post.votes_up.length}
++                </Button>
++                <Button
++                  startIcon={<ThumbsDownIcon />}
++                  onClick={() => handleVoteDown(post.id)}
++                  color={
++                    post.votes_down.some(
++                      (p) =>
++                        p.toString() ===
++                        Principal.fromText("2vxsx-fae").toString(),
++                    )
++                      ? "error"
++                      : "inherit"
++                  }
++                >
++                  {post.votes_down.length}
++                </Button>
++                <Button
++                  startIcon={<MessageCircleIcon />}
++                  onClick={() => toggleComments(post.id)}
++                >
++                  {post.comments && post.comments.length}
++                </Button>
++              </Box>
++              <IconButton onClick={() => handleShare(post.id)}>
++                <ShareIcon />
++              </IconButton>
++            </Box>
++
++            {showComments[post.id] && (
++              <Box sx={{ mt: 2 }}>
++                <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
++                  <TextField
++                    size="small"
++                    fullWidth
++                    placeholder="Write a comment..."
++                    value={commentInputs[post.id] || ""}
++                    onChange={(e) =>
++                      setCommentInputs((prev) => ({
++                        ...prev,
++                        [post.id]: e.target.value,
++                      }))
++                    }
++                  />
++                  <IconButton
++                    onClick={() => handleComment(post.id)}
++                    color="primary"
++                  >
++                    <SendIcon />
++                  </IconButton>
++                </Box>
++
++                <Box sx={{ mt: 2 }}>
++                  {post.comments &&
++                    post.comments.map((comment) => (
++                      <Comment
++                        key={comment.id}
++                        comment={comment}
++                        onReply={(commentId, content) =>
++                          handleReply(post.id, commentId, content)
++                        }
++                      />
++                    ))}
++                </Box>
++              </Box>
++            )}
++          </CardContent>
++        </Card>
++      ))}
++    </Box>
++  );
++};
++
++export default SocialPosts;
++

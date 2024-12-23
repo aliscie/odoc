@@ -2,11 +2,7 @@ import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import {
   AppBar,
   Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
+  CircularProgress,
   IconButton,
   Paper,
   TextField,
@@ -21,116 +17,13 @@ import {
 } from "@mui/icons-material";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 import CloseIcon from "@mui/icons-material/Close";
-import { formatDate } from "@storybook/blocks";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { AdminsSelect, MembersSelect } from "./index";
-import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
-
-const ChatSettings = memo(
-  ({ chat, users, onUpdate, onDelete, onClose, onSendMessage }) => {
-    const [name, setName] = useState(chat.name);
-    const [members, setMembers] = useState(chat.members || []);
-    const [admins, setAdmins] = useState(chat.admins || []);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
-    const handleSubmit = useCallback(() => {
-      onUpdate({
-        ...chat,
-        name,
-        members,
-        admins,
-      });
-      onClose();
-    }, [chat, name, members, admins, onUpdate, onClose]);
-
-    const handleDelete = useCallback(() => {
-      setDeleteDialogOpen(true);
-    }, []);
-
-    const handleConfirmDelete = useCallback(() => {
-      onDelete(chat.id);
-      setDeleteDialogOpen(false);
-      onClose();
-    }, [chat.id, onDelete, onClose]);
-
-    return (
-      <>
-        <Dialog open onClose={onClose} maxWidth="sm" fullWidth>
-          <DialogTitle>
-            Chat Settings
-            <IconButton
-              onClick={onClose}
-              sx={{ position: "absolute", right: 8, top: 8 }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </DialogTitle>
-          <DialogContent>
-            <Box
-              sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}
-            >
-              <TextField
-                label="Chat Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                fullWidth
-              />
-              <MembersSelect
-                value={members}
-                onChange={setMembers}
-                users={users}
-              />
-              <AdminsSelect
-                value={admins}
-                onChange={setAdmins}
-                members={members}
-              />
-              <Button
-                variant="outlined"
-                color="error"
-                startIcon={<DeleteIcon />}
-                onClick={handleDelete}
-                sx={{ mt: 2 }}
-              >
-                Delete Chat
-              </Button>
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button onClick={handleSubmit} variant="contained" color="primary">
-              Save Changes
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* Delete Confirmation Dialog */}
-        <Dialog
-          open={deleteDialogOpen}
-          onClose={() => setDeleteDialogOpen(false)}
-        >
-          <DialogTitle>Delete Chat</DialogTitle>
-          <DialogContent>
-            <Typography>
-              Are you sure you want to delete this chat? This action cannot be
-              undone.
-            </Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-            <Button
-              onClick={handleConfirmDelete}
-              color="error"
-              variant="contained"
-            >
-              Delete
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </>
-    );
-  },
-);
+import { useBackendContext } from "../../contexts/BackendContext";
+import { useSelector } from "react-redux";
+import { Principal } from "@dfinity/principal";
+import { randomString } from "../../DataProcessing/dataSamples";
+import formatTimestamp from "../../utils/time";
+import { isConstantNode } from "mathjs";
+import {Link} from "react-router-dom";
 
 const ChatWindow = memo(
   ({ chat, onClose, position, onPositionChange, onSendMessage }) => {
@@ -138,36 +31,74 @@ const ChatWindow = memo(
     const [dragPosition, setDragPosition] = useState(position);
     const [newMessage, setNewMessage] = useState("");
     const [isMinimized, setIsMinimized] = useState(false);
+    const [isSending, setIsSending] = useState(false);
+
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-    // Add ref for messages container
     const messagesEndRef = useRef(null);
+    const { backendActor } = useBackendContext();
+    const { all_friends, profile } = useSelector((state) => state.filesState);
 
-    // Add scroll to bottom function
     const scrollToBottom = useCallback(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, []);
 
-    // Scroll when messages change
     useEffect(() => {
       scrollToBottom();
     }, [chat.messages, scrollToBottom]);
 
+    const renderSenderName = (sender) => {
+      // Handle case where sender is a Principal object
+      if (sender instanceof Principal) {
+        const senderStr = sender.toString();
+        return senderStr === profile?.id
+          ? "You"
+          : `${all_friends.find((u) => u.id === sender.toString())?.name || sender.toString().slice(8, 16)}`;
+      }
+      // Handle case where sender is an object with __principal__
+      if (sender?.toString()) {
+        return sender.toString() === profile?.id
+          ? "You"
+          : `${all_friends.find((u) => u.id === sender.toString())?.name || sender.toString().slice(8, 16)}`;
+      }
+      // Fallback
+      return "Unknown User";
+    };
+
+    const isCurrentUser = (sender) => {
+      if (sender instanceof Principal) {
+        return sender.toString() === profile?.id;
+      }
+      return sender?.__principal__ === profile?.id;
+    };
     const handleSendMessage = useCallback(
-      (e) => {
+      async (e) => {
         e.preventDefault();
-        if (newMessage.trim()) {
-          onSendMessage(chat.id, newMessage);
+        if (!newMessage.trim() || !profile?.id || isSending) return;
+
+        try {
+          setIsSending(true);
+          await onSendMessage(chat.id, newMessage);
           setNewMessage("");
-          // Scroll will happen automatically due to useEffect
+          scrollToBottom();
+        } catch (error) {
+          console.error("Error sending message:", error);
+        } finally {
+          setIsSending(false);
         }
       },
-      [chat.id, newMessage, onSendMessage],
+      [
+        chat.id,
+        newMessage,
+        profile?.id,
+        isSending,
+        onSendMessage,
+        scrollToBottom,
+      ],
     );
 
     const handleDragStart = useCallback((e) => {
       setIsDragging(true);
-      // Store the initial mouse position relative to the window
       const boundingRect = e.currentTarget.getBoundingClientRect();
       const offsetX = e.clientX - boundingRect.left;
       const offsetY = e.clientY - boundingRect.top;
@@ -178,16 +109,11 @@ const ChatWindow = memo(
     const handleDrag = useCallback(
       (e) => {
         if (!isDragging || !e.clientX || !e.clientY) return;
-
         const offsetX = parseFloat(e.currentTarget.dataset.offsetX);
         const offsetY = parseFloat(e.currentTarget.dataset.offsetY);
-
-        const newX = e.clientX - offsetX;
-        const newY = e.clientY - offsetY;
-
         setDragPosition({
-          x: Math.max(0, newX),
-          y: Math.max(0, newY),
+          x: Math.max(0, e.clientX - offsetX),
+          y: Math.max(0, e.clientY - offsetY),
         });
       },
       [isDragging],
@@ -197,14 +123,6 @@ const ChatWindow = memo(
       setIsDragging(false);
       onPositionChange(chat.id, dragPosition);
     }, [chat.id, dragPosition, onPositionChange]);
-
-    const handleSettingsOpen = useCallback(() => {
-      setIsSettingsOpen(true);
-    }, []);
-
-    const handleSettingsClose = useCallback(() => {
-      setIsSettingsOpen(false);
-    }, []);
 
     return (
       <Paper
@@ -243,7 +161,7 @@ const ChatWindow = memo(
             >
               {isMinimized ? <OpenInFullIcon /> : <MinimizeIcon />}
             </IconButton>
-            <IconButton size="small" onClick={handleSettingsOpen}>
+            <IconButton size="small" onClick={() => setIsSettingsOpen(true)}>
               <SettingsIcon />
             </IconButton>
             <IconButton size="small" onClick={() => onClose(chat.id)}>
@@ -252,38 +170,43 @@ const ChatWindow = memo(
           </Toolbar>
         </AppBar>
 
-        {isSettingsOpen && (
-          <ChatSettings
-            chat={chat}
-            users={[]}
-            onClose={handleSettingsClose}
-            onUpdate={() => {}}
-            onDelete={() => {}}
-          />
-        )}
-
         {!isMinimized && (
           <>
             <Box sx={{ flex: 1, overflow: "auto", p: 2 }}>
-              {chat.messages.map((message) => (
-                <Paper
-                  key={message.id}
-                  sx={{
-                    p: 1,
-                    mb: 1,
-                    maxWidth: "80%",
-                    ml: message.sender === "You" ? "auto" : 0,
-                    color: "text.primary", // Ensure text is readable
-                  }}
-                >
-                  <Typography variant="subtitle2">{message.sender}</Typography>
-                  <Typography variant="body2">{message.content}</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {formatDate(message.timestamp)}
-                  </Typography>
-                </Paper>
-              ))}
-              {/* Add invisible element for scrolling */}
+              {chat.messages.map((message) => {
+                const isOwnMessage = isCurrentUser(message.sender);
+
+                return (
+                  <Paper
+                    key={message.id}
+                    sx={{
+                      p: 1,
+                      mb: 1,
+                      maxWidth: "80%",
+                      ml: isOwnMessage ? "auto" : 0,
+                      bgcolor: isOwnMessage
+                        ? "primary.dark"
+                        : "background.paper",
+                      color: isOwnMessage
+                        ? "primary.contrastText"
+                        : "text.primary",
+                    }}
+                  >
+                    <Typography to={`user?id=${message.sender.toString()}`} component={Link}  variant="subtitle2">
+                      {renderSenderName(message.sender)}
+                    </Typography>
+                    <Typography variant="body2">{message.message}</Typography>
+                    <Typography
+                      variant="caption"
+                      color={
+                        isOwnMessage ? "primary.contrastText" : "text.secondary"
+                      }
+                    >
+                      {formatTimestamp(message.date)}
+                    </Typography>
+                  </Paper>
+                );
+              })}
               <div ref={messagesEndRef} />
             </Box>
 
@@ -299,9 +222,24 @@ const ChatWindow = memo(
                   placeholder="Type your message..."
                   fullWidth
                   variant="outlined"
+                  disabled={isSending}
                 />
-                <IconButton type="submit" color="primary" size="small">
-                  <SendIcon />
+                <IconButton
+                  type="submit"
+                  color="primary"
+                  size="small"
+                  disabled={isSending || !newMessage.trim()}
+                  sx={{
+                    position: "relative",
+                    width: 40, // Fixed width to prevent shifting
+                    height: 40, // Fixed height to prevent shifting
+                  }}
+                >
+                  {isSending ? (
+                    <CircularProgress size={24} color="primary" />
+                  ) : (
+                    <SendIcon />
+                  )}
                 </IconButton>
               </form>
             </Paper>

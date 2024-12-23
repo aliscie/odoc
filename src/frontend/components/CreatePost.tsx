@@ -1,5 +1,13 @@
-import React, {forwardRef, useImperativeHandle, useRef, useState} from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import { X } from "lucide-react";
+import EditorComponent from "./EditorComponent";
 import {
+  Input,
   Box,
   Button,
   Card,
@@ -37,8 +45,7 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
         if (tagInputRef.current) {
           tagInputRef.current.value = "";
         }
-        // Force a re-render to clear the editor
-        setForceUpdate(prev => !prev);
+        setForceUpdate((prev) => !prev);
       },
     }));
 
@@ -62,10 +69,10 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
     };
 
     return (
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}>
-            <Box>
+      <Card className="mb-6">
+        <CardContent className="p-4">
+          <div className="flex flex-col gap-4">
+            <div className="min-h-24 border rounded-lg p-2">
               <EditorComponent
                 contentEditable={true}
                 onChange={(changes) => {
@@ -75,50 +82,60 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
                 }}
                 content={[]}
               />
-            </Box>
-            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-              <TextField
-                inputRef={tagInputRef}
-                size="small"
+            </div>
+
+            <div className="flex gap-2 items-center">
+              <Input
+                ref={tagInputRef}
+                className="max-w-xs"
                 placeholder="Add tag..."
-                variant="standard"
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     handleAddTag();
                   }
                 }}
               />
               <Button
-                variant="outlined"
-                size="small"
+                variant="outline"
+                size="sm"
                 onClick={handleAddTag}
+                className="whitespace-nowrap"
               >
                 Add Tag
               </Button>
-            </Box>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
-                <Chip
+                <span
                   key={tag}
-                  label={tag}
-                  onDelete={() => handleRemoveTag(tag)}
-                  size="small"
-                />
+                  className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                >
+                  {tag}
+                  <button
+                    onClick={() => handleRemoveTag(tag)}
+                    className="hover:bg-blue-200 rounded-full p-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
               ))}
-            </Box>
-          </Box>
-          <Button
-            variant="contained"
-            fullWidth
-            onClick={handleSubmit}
-            disabled={isPosting}
-          >
-            {isPosting ? "Posting..." : "Post"}
-          </Button>
+            </div>
+
+            <div className="border-t pt-3 mt-2">
+              <Button
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                onClick={handleSubmit}
+                disabled={isPosting}
+              >
+                {isPosting ? "Posting..." : "Post"}
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
-  }
+  },
 );
 
 export default CreatePost;

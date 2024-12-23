@@ -67,7 +67,10 @@ fn message_is_seen(message: Message) -> Result<(), String> {
             .messages
             .iter_mut()
             .map(|m| {
-                if m.id == message.id {
+                // if m.id == message.id {
+                //     m.seen_by.push(caller());
+                // }
+                if !m.seen_by.contains(&caller()) {
                     m.seen_by.push(caller());
                 }
                 m.clone()

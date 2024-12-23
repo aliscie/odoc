@@ -10,12 +10,16 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import { styled } from "@mui/material/styles";
 import formatTimestamp, { formatRelativeTime } from "../../utils/time";
-import { Box, Button, Divider } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, Tooltip } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import SendIcon from "@mui/icons-material/Send";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import CloseIcon from "@mui/icons-material/Close";
 import { logger } from "../../DevUtils/logData";
+import FriendshipButton from "../FriendshipButton";
+import { useSelector } from "react-redux";
+import { useBackendContext } from "../../contexts/BackendContext";
+import { Link } from "react-router-dom";
 // Styled component for the notification item
 const NotificationItem = styled(ListItem)(({ theme, isRead }) => ({
   padding: theme.spacing(2),
@@ -27,124 +31,6 @@ const NotificationItem = styled(ListItem)(({ theme, isRead }) => ({
   opacity: isRead ? 0.7 : 1, // Dim seen notifications
 }));
 
-const ExpandedNotificationContent = ({
-  notification,
-  onPromiseAction,
-  onClose,
-}) => {
-  const getStatus = (notification) => {
-    const payment =
-      notification.content.CustomContract?.[1] ||
-      notification.content.CPaymentContract?.[0];
-    return payment && Object.keys(payment.status)[0];
-  };
-
-  const formatDate = (timestamp) => {
-    return formatRelativeTime(timestamp);
-  };
-
-  return (
-    <Box
-      sx={{
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: "400px",
-        maxHeight: "80vh",
-        backgroundColor: "background.paper",
-        boxShadow: 3,
-        zIndex: 1300,
-        padding: 2,
-        borderRadius: 1,
-        overflowY: "auto"
-      }}
-    >
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
-        <IconButton size="small" onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
-      </Box>
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
-          ID:{" "}
-          {notification.content.CustomContract?.[1].id ||
-            notification.content.CPaymentContract?.[0].id}
-        </Typography>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
-          Amount:{" "}
-          {notification.content.CustomContract?.[1].amount ||
-            notification.content.CPaymentContract?.[0].amount}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Status: {getStatus(notification)}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Created:{" "}
-          {formatDate(
-            notification.content.CustomContract?.[1].date_created ||
-              notification.content.CPaymentContract?.[0].date_created,
-          )}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Released:{" "}
-          {formatDate(
-            notification.content.CustomContract?.[1].date_released ||
-              notification.content.CPaymentContract?.[0].date_released,
-          )}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Contract ID:{" "}
-          {notification.content.CustomContract?.[1].contract_id ||
-            notification.content.CPaymentContract?.[0].contract_id}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Sender:{" "}
-          {notification.content.CustomContract?.[1].sender.toString() ||
-            notification.content.CPaymentContract?.[0].sender.toString()}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Receiver:{" "}
-          {notification.content.CustomContract?.[1].receiver.toString() ||
-            notification.content.CPaymentContract?.[0].receiver.toString()}
-        </Typography>
-      </Box>
-
-      <Divider sx={{ my: 1 }} />
-
-      <Button
-        fullWidth
-        startIcon={<CheckCircleOutlineIcon />}
-        onClick={() => onPromiseAction("approve")}
-        sx={{ mb: 1, justifyContent: "flex-start" }}
-      >
-        Approve
-      </Button>
-
-      <Button
-        fullWidth
-        startIcon={<SendIcon />}
-        onClick={() => onPromiseAction("release")}
-        sx={{ mb: 1, justifyContent: "flex-start" }}
-      >
-        Request Release
-      </Button>
-
-      <Button
-        fullWidth
-        startIcon={<ErrorOutlineIcon />}
-        onClick={() => {
-          const reason = window.prompt("Enter objection reason:");
-          if (reason) onPromiseAction("object", reason);
-        }}
-        sx={{ justifyContent: "flex-start" }}
-      >
-        Object with Reason
-      </Button>
-    </Box>
-  );
-};
-
 const NotificationsButton = ({
   notifications,
   onNotificationClick,
@@ -153,6 +39,7 @@ const NotificationsButton = ({
   // logger({ notifications });
   const [anchorEl, setAnchorEl] = useState(null);
   const [expandedNotification, setExpandedNotification] = useState(null);
+  const [loadingNotifications, setLoadingNotifications] = useState(new Set());
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
@@ -164,17 +51,38 @@ const NotificationsButton = ({
     setExpandedNotification(null);
   };
 
-  const handleNotificationClick = async (notification) => {
-    const updatedNotification = { ...notification, is_seen: true };
-    if (
-      "CustomContract" in updatedNotification.content ||
-      "CPaymentContract" in updatedNotification.content
-    ) {
-      setExpandedNotification(updatedNotification);
-    }
+  const { backendActor } = useBackendContext();
 
+  const handleNotificationClick = async (notification) => {
+    try {
+      // Add notification to loading state
+      setLoadingNotifications((prev) => new Set(prev).add(notification.id));
+
+      // Handle seen status
+
+      // Handle friend request specific logic
+      if ("FriendRequest" in notification.content) {
+        setExpandedNotification(notification);
+      } else if (
+        "CustomContract" in notification.content ||
+        "CPaymentContract" in notification.content
+      ) {
+        setExpandedNotification(notification);
+      }
+    } catch (error) {
+      console.error("Error handling notification:", error);
+    } finally {
+      // Remove from loading state
+      setLoadingNotifications((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(notification.id);
+        return newSet;
+      });
+    }
     if (!notification.is_seen) {
-      await onNotificationClick(notification.id);
+      let res = await backendActor?.see_notifications(notification.id);
+      // Update local notification seen status
+      notification.is_seen = true;
     }
   };
 
@@ -199,7 +107,22 @@ const NotificationsButton = ({
       return `Contract updated: ${content.ContractUpdate.contract_id}`;
     }
     if ("FriendRequest" in content) {
-      return `Friend request from ${content.FriendRequest.friend.sender.name}`;
+      return (
+        <>
+          Friend request from {content.FriendRequest.friend.sender.name},
+          <Tooltip title="Accept friend request">
+            <Typography
+              sx={{ opacity: 1 }}
+              color="primary"
+              to={`user/?id=${content.FriendRequest.friend.sender.id}`}
+              component={Link}
+            >
+              {" "}
+              See their profile
+            </Typography>
+          </Tooltip>
+        </>
+      );
     }
     if ("AcceptFriendRequest" in content) {
       return "Friend request accepted";
@@ -236,19 +159,6 @@ const NotificationsButton = ({
     return formatRelativeTime(timestamp);
   };
 
-  const ExpandedNotification = styled("div")(({ theme }) => ({
-    padding: theme.spacing(2),
-    backgroundColor: theme.palette.background.paper,
-    borderRadius: theme.shape.borderRadius,
-    boxShadow: theme.shadows[2],
-    margin: theme.spacing(1),
-    animation: "slideIn 0.3s ease-out",
-    "@keyframes slideIn": {
-      from: { transform: "translateX(100%)", opacity: 0 },
-      to: { transform: "translateX(0)", opacity: 1 },
-    },
-  }));
-
   const ActionButton = styled(Button)(({ theme }) => ({
     margin: theme.spacing(1, 0),
     width: "100%",
@@ -281,18 +191,16 @@ const NotificationsButton = ({
         id="notifications-menu"
         anchorEl={anchorEl}
         open={open}
-        onClose={handleClose}
+        onClose={() => {
+          setAnchorEl(null);
+          setExpandedNotification(null);
+        }}
         PaperProps={{
           style: {
             maxHeight: "80vh",
             width: "320px",
-            overflowY: "auto"
+            overflowY: "auto",
           },
-        }}
-        sx={{
-          "& .MuiMenu-paper": {
-            maxHeight: "80vh"
-          }
         }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
@@ -304,17 +212,20 @@ const NotificationsButton = ({
             </Typography>
           </MenuItem>
         ) : (
-          <>
-            <List sx={{ padding: 0 }}>
-              {notifications.map((notification) => (
-                <Box key={notification.id} sx={{ position: "relative" }}>
-                  <NotificationItem
-                    onClick={() => handleNotificationClick(notification)}
-                    button
-                    isRead={notification.is_seen}
-                  >
-                    <ListItemText
-                      primary={
+          <List sx={{ padding: 0 }}>
+            {notifications.map((notification) => (
+              <Box key={notification.id} sx={{ position: "relative" }}>
+                <NotificationItem
+                  onClick={() => handleNotificationClick(notification)}
+                  button
+                  isRead={notification.is_seen}
+                  disabled={loadingNotifications.has(notification.id)}
+                >
+                  <ListItemText
+                    primary={
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
                         <Typography
                           variant="body2"
                           sx={{
@@ -329,25 +240,21 @@ const NotificationsButton = ({
                         >
                           {getNotificationMessage(notification.content)}
                         </Typography>
-                      }
-                      secondary={formatDate(notification.time)}
-                      secondaryTypographyProps={{
-                        variant: "caption",
-                        sx: { opacity: notification.is_seen ? 0.7 : 1 },
-                      }}
-                    />
-                  </NotificationItem>
-                  {expandedNotification?.id === notification.id && (
-                    <ExpandedNotificationContent
-                      notification={expandedNotification}
-                      onPromiseAction={handlePromiseAction}
-                      onClose={() => setExpandedNotification(null)}
-                    />
-                  )}
-                </Box>
-              ))}
-            </List>
-          </>
+                        {loadingNotifications.has(notification.id) && (
+                          <CircularProgress size={16} />
+                        )}
+                      </Box>
+                    }
+                    secondary={formatDate(notification.time)}
+                    secondaryTypographyProps={{
+                      variant: "caption",
+                      sx: { opacity: notification.is_seen ? 0.7 : 1 },
+                    }}
+                  />
+                </NotificationItem>
+              </Box>
+            ))}
+          </List>
         )}
       </Menu>
     </>

@@ -1,42 +1,41 @@
-import React, { useState, useCallback, memo } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import {
-  IconButton,
+  Autocomplete,
+  Avatar,
   Badge,
-  Menu,
-  MenuItem,
-  Typography,
+  Box,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  IconButton,
+  InputLabel,
   List,
   ListItem,
-  ListItemText,
-  TextField,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Autocomplete,
-  Box,
-  Chip,
-  FormControl,
-  InputLabel,
-  Select,
-  Paper,
   ListItemAvatar,
-  Avatar,
-  Drawer,
-  AppBar,
-  Toolbar,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
 } from "@mui/material";
 
 import {
-  Chat as ChatIcon,
   Add as AddIcon,
-  Send as SendIcon,
-  ArrowBack as ArrowBackIcon,
-  OpenInFull as OpenInFullIcon,
+  Chat as ChatIcon,
   Group as GroupIcon,
 } from "@mui/icons-material";
 import ChatWindow from "./chatWindow";
+import { useBackendContext } from "../../contexts/BackendContext";
+import { useSelector } from "react-redux";
+import formatTimestamp from "../../utils/time";
+import { Chat, Message } from "../../../declarations/backend/backend.did";
+import { Principal } from "@dfinity/principal";
+import { randomString } from "../../DataProcessing/dataSamples";
 
 // Memoized form components
 const GroupNameField = memo(({ value, onChange }) => (
@@ -156,137 +155,102 @@ const CreateGroupDialog = memo(
   },
 );
 
-// Memoized Chat List
-const ChatList = memo(({ chats, onChatClick }) => (
-  <List sx={{ padding: 0, width: "100%" }}>
-    {chats.map((chat) => (
-      <ListItem
-        key={chat.id}
-        onClick={() => onChatClick(chat)}
-        button
-        sx={{
-          borderBottom: 1,
-          borderColor: "divider",
-          "&:hover": { backgroundColor: "action.hover" },
-        }}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            <GroupIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="subtitle2">{chat.name}</Typography>
-              {chat.unread > 0 && (
-                <Badge badgeContent={chat.unread} color="error" />
-              )}
-            </Box>
-          }
-          secondary={
-            <>
-              <Typography variant="body2" color="textSecondary">
-                {chat.messages[chat.messages.length - 1]?.content}
-              </Typography>
-              <Typography variant="caption" color="textSecondary">
-                {formatDate(chat.messages[chat.messages.length - 1]?.timestamp)}
-              </Typography>
-            </>
-          }
-        />
-      </ListItem>
-    ))}
-  </List>
-));
+const ChatList = memo(
+  ({
+    chats,
+    onChatClick,
+    currentUserId,
+  }: {
+    chats: Chat[];
+    onChatClick: (chat: Chat) => void;
+    currentUserId: string;
+  }) => {
+    // Calculate unread count for each chat if not already present
+    const chatsWithUnread = chats.map((chat) => {
+      if ("unread" in chat) return chat;
 
-// Memoized Chat View
-const ChatView = memo(
-  ({ chat, isFullView, onBack, onFullViewToggle, onSendMessage }) => {
-    const [newMessage, setNewMessage] = useState("");
+      const unseenCount = chat.messages.reduce((count, message) => {
+        const isSeen = message.seen_by.some(
+          (user) => user.toString() === currentUserId,
+        );
+        return count + (isSeen ? 0 : 1);
+      }, 0);
 
-    const handleSubmit = useCallback(
-      (e) => {
-        e.preventDefault();
-        if (newMessage.trim()) {
-          onSendMessage(newMessage);
-          setNewMessage("");
-        }
-      },
-      [newMessage, onSendMessage],
-    );
+      return {
+        ...chat,
+        unread: unseenCount,
+      };
+    });
 
     return (
-      <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-        <AppBar position="static" color="default" elevation={1}>
-          <Toolbar>
-            <IconButton size="small" onClick={onBack}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="subtitle1" sx={{ ml: 1, flex: 1 }}>
-              {chat.name}
-            </Typography>
-            <IconButton onClick={onFullViewToggle}>
-              <OpenInFullIcon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-
-        <Box sx={{ flex: 1, overflow: "auto", p: 2 }}>
-          {chat.messages.map((message) => (
-            <Paper
-              key={message.id}
-              sx={{
-                p: 2,
-                mb: 2,
-                maxWidth: "80%",
-                ml: message.sender === "You" ? "auto" : 0,
-              }}
-            >
-              <Typography variant="subtitle2">{message.sender}</Typography>
-              <Typography variant="body1">{message.content}</Typography>
-              <Typography variant="caption" color="textSecondary">
-                {formatDate(message.timestamp)}
-              </Typography>
-            </Paper>
-          ))}
-        </Box>
-
-        <Paper sx={{ p: 2 }}>
-          <form onSubmit={handleSubmit} style={{ display: "flex", gap: 8 }}>
-            <TextField
-              size="small"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type your message..."
-              fullWidth
-              variant="outlined"
+      <List sx={{ padding: 0, width: "100%" }}>
+        {chatsWithUnread.map((chat) => (
+          <ListItem
+            key={chat.id}
+            onClick={() => onChatClick(chat)}
+            button
+            sx={{
+              borderBottom: 1,
+              borderColor: "divider",
+              "&:hover": { backgroundColor: "action.hover" },
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <GroupIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={
+                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <Typography variant="subtitle2">{chat.name}</Typography>
+                  {chat.unread > 0 && (
+                    <Badge badgeContent={chat.unread} color="error" />
+                  )}
+                </Box>
+              }
+              secondary={
+                chat.messages[chat.messages.length - 1]?.message ||
+                "No messages"
+              }
             />
-            <IconButton type="submit" color="primary">
-              <SendIcon />
-            </IconButton>
-          </form>
-        </Paper>
-      </Box>
+          </ListItem>
+        ))}
+      </List>
     );
   },
 );
 
-// Helper function for date formatting
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleString();
-};
+const ChatNotifications = ({ chats: initialChats }: { chats: Chat[] }) => {
+  const [openChats, setOpenChats] = useState(
+    new Map<string, { x: number; y: number }>(),
+  );
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [createGroupOpen, setCreateGroupOpen] = useState(false);
+  const [chats, setChats] = useState<Chat[]>(initialChats || []);
 
-// Main component
-const ChatNotifications = () => {
-  const [openChats, setOpenChats] = useState(new Map()); // Map of chatId to window position
+  const { backendActor } = useBackendContext();
+  const { profile } = useSelector((state: any) => state.filesState);
 
-  const handleOpenChat = useCallback((chat) => {
+  // Calculate total unseen messages across all chats
+  const totalUnseenMessages = useMemo(() => {
+    if (!profile?.id) return 0;
+
+    return chats.reduce((total, chat) => {
+      const unseenInChat = chat.messages.reduce((count, message) => {
+        const isSeen = message.seen_by.some(
+          (user) => user.toString() === profile.id,
+        );
+        return count + (isSeen ? 0 : 1);
+      }, 0);
+      return total + unseenInChat;
+    }, 0);
+  }, [chats, profile?.id]);
+
+  const handleOpenChat = useCallback((chat: Chat) => {
     setOpenChats((prev) => {
       const newChats = new Map(prev);
       if (!newChats.has(chat.id)) {
-        // Calculate position for new window with slight offset from previous
         const offset = newChats.size * 30;
         newChats.set(chat.id, {
           x: 100 + offset,
@@ -297,7 +261,7 @@ const ChatNotifications = () => {
     });
   }, []);
 
-  const handleCloseChat = useCallback((chatId) => {
+  const handleCloseChat = useCallback((chatId: string) => {
     setOpenChats((prev) => {
       const newChats = new Map(prev);
       newChats.delete(chatId);
@@ -305,126 +269,130 @@ const ChatNotifications = () => {
     });
   }, []);
 
-  const handleChatPosition = useCallback((chatId, position) => {
-    setOpenChats((prev) => {
-      const newChats = new Map(prev);
-      newChats.set(chatId, position);
-      return newChats;
-    });
-  }, []);
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedChat, setSelectedChat] = useState(null);
-  const [createGroupOpen, setCreateGroupOpen] = useState(false);
-
-  // Sample data
-  const users = [
-    { id: 1, name: "John Doe" },
-    { id: 2, name: "Jane Smith" },
-    { id: 3, name: "Bob Johnson" },
-  ];
-
-  const workspaces = [
-    { id: 1, name: "Marketing" },
-    { id: 2, name: "Development" },
-    { id: 3, name: "Sales" },
-  ];
-
-  const [chats, setChats] = useState([
-    {
-      id: 1,
-      name: "Project Team",
-      messages: [
-        {
-          id: 1,
-          sender: "John",
-          content: "Can we schedule a meeting?",
-          timestamp: "2024-12-18T10:30:00",
-        },
-        {
-          id: 2,
-          sender: "Jane",
-          content: "Yes, how about tomorrow?",
-          timestamp: "2024-12-18T10:35:00",
-        },
-      ],
-      unread: 2,
+  const handleChatPosition = useCallback(
+    (chatId: string, position: { x: number; y: number }) => {
+      setOpenChats((prev) => {
+        const newChats = new Map(prev);
+        newChats.set(chatId, position);
+        return newChats;
+      });
     },
-    {
-      id: 2,
-      name: "Marketing Group",
-      messages: [
-        {
-          id: 1,
-          sender: "Bob",
-          content: "The new designs look great!",
-          timestamp: "2024-12-18T09:15:00",
-        },
-      ],
-      unread: 1,
+    [],
+  );
+
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      setAnchorEl(event.currentTarget);
     },
-  ]);
-
-  const initialGroupData = {
-    name: "",
-    members: [],
-    admins: [],
-    workspace: "",
-  };
-
-  const handleClick = useCallback((event) => {
-    setAnchorEl(event.currentTarget);
-  }, []);
+    [],
+  );
 
   const handleClose = useCallback(() => {
     setAnchorEl(null);
-    setSelectedChat(null);
   }, []);
 
   const handleChatClick = useCallback(
-    (chat) => {
-      // Clear unread count for the clicked chat
-      const updatedChats = chats.map((c) => {
-        if (c.id === chat.id) {
-          return { ...c, unread: 0 };
-        }
-        return c;
-      });
-      // Update the chats state here - you'll need to lift this state up
-      // and pass setChats as a prop if you haven't already
-      setChats(updatedChats);
+    async (chat: Chat) => {
+      try {
+        // Get latest unseen message
+        const unseenMessages = chat.messages.filter((message) => {
+          const isSeen = message.seen_by.some(
+            (user) => user.toString() === profile?.id,
+          );
+          return !isSeen;
+        });
 
-      handleOpenChat(chat);
-      setSelectedChat(null);
-      setAnchorEl(null);
+        // Update local state immediately
+        setChats((prevChats) =>
+          prevChats.map((prevChat) => {
+            if (prevChat.id !== chat.id) return prevChat;
+
+            // Update all messages' seen status for this chat
+            const updatedMessages = prevChat.messages.map((msg) => ({
+              ...msg,
+              seen_by: msg.seen_by.some(
+                (user) => user.toString() === profile?.id,
+              )
+                ? msg.seen_by
+                : [...msg.seen_by, Principal.fromText(profile?.id)],
+            }));
+
+            return {
+              ...prevChat,
+              messages: updatedMessages,
+              unread: 0, // Add unread property and set to 0
+            };
+          }),
+        );
+
+        // Call backend if there are unseen messages
+
+        handleOpenChat(chat);
+        handleClose();
+
+        if (unseenMessages.length > 0) {
+          const latestMessage = unseenMessages[unseenMessages.length - 1];
+          const messageForBackend = {
+            ...latestMessage,
+            date: BigInt(0),
+            sender: Principal.fromText(latestMessage.sender.toString()),
+            seen_by: [],
+            chat_id: chat.id,
+          };
+
+          await backendActor?.message_is_seen(messageForBackend);
+        }
+      } catch (error) {
+        console.error("Error marking messages as seen:", error);
+        handleOpenChat(chat);
+        handleClose();
+      }
     },
-    [handleOpenChat, chats, setChats],
+    [profile?.id, backendActor, handleOpenChat, handleClose],
   );
 
-  const handleCreateGroup = useCallback((formData) => {
+  const handleCreateGroup = useCallback((formData: any) => {
     console.log("Creating new group:", formData);
     setCreateGroupOpen(false);
   }, []);
 
-  const handleSendMessage = useCallback((chatId, message) => {
-    const newMessage = {
-      id: Date.now(),
-      sender: "You",
-      content: message,
-      timestamp: new Date().toISOString(),
-    };
+  const handleSendMessage = useCallback(
+    async (chatId: string, messageText: string) => {
+      if (!profile?.id || !messageText.trim()) return;
 
-    setChats((prevChats) =>
-      prevChats.map((chat) =>
-        chat.id === chatId
-          ? { ...chat, messages: [...chat.messages, newMessage] }
-          : chat,
-      ),
-    );
-  }, []);
+      const chat = chats.find((c) => c.id === chatId);
+      if (!chat) return;
 
-  const totalUnread = chats.reduce((sum, chat) => sum + chat.unread, 0);
-  const open = Boolean(anchorEl);
+      const newMessage: Message = {
+        id: randomString(),
+        date: BigInt(Date.now() * 1e6),
+        sender: Principal.fromText(profile.id),
+        seen_by: [Principal.fromText(profile.id)],
+        message: messageText, // Use the actual message text
+        chat_id: chatId,
+      };
+
+      try {
+        // Send message to backend with recipients
+        const res = await backendActor?.send_message([], newMessage);
+        // console.log("Message sent:", { res });
+
+        // Update local state
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === chatId
+              ? { ...chat, messages: [...chat.messages, newMessage] }
+              : chat,
+          ),
+        );
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    },
+    [profile, backendActor, chats],
+  );
+
+  const open = anchorEl && Boolean(anchorEl);
 
   return (
     <>
@@ -434,7 +402,7 @@ const ChatNotifications = () => {
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
       >
-        <Badge badgeContent={totalUnread} color="error">
+        <Badge  badgeContent={totalUnseenMessages} color="error">
           <ChatIcon />
         </Badge>
       </IconButton>
@@ -464,17 +432,11 @@ const ChatNotifications = () => {
           </Button>
         </MenuItem>
 
-        {selectedChat ? (
-          <ChatView
-            chat={selectedChat}
-            // isFullView={isFullView}
-            onBack={() => setSelectedChat(null)}
-            // onFullViewToggle={() => setIsFullView(!isFullView)}
-            onSendMessage={handleSendMessage}
-          />
-        ) : (
-          <ChatList chats={chats} onChatClick={handleChatClick} />
-        )}
+        <ChatList
+          chats={chats}
+          onChatClick={handleChatClick}
+          currentUserId={profile?.id}
+        />
       </Menu>
 
       {Array.from(openChats.entries()).map(([chatId, position]) => {
@@ -488,7 +450,10 @@ const ChatNotifications = () => {
             position={position}
             onClose={handleCloseChat}
             onPositionChange={handleChatPosition}
-            onSendMessage={handleSendMessage} // Add this prop
+            onSendMessage={(currentChatId, message) =>
+              handleSendMessage(chatId, message)
+            }
+            user={profile}
           />
         );
       })}
@@ -497,9 +462,14 @@ const ChatNotifications = () => {
         open={createGroupOpen}
         onClose={() => setCreateGroupOpen(false)}
         onSubmit={handleCreateGroup}
-        initialData={initialGroupData}
-        users={users}
-        workspaces={workspaces}
+        initialData={{
+          name: "",
+          members: [],
+          admins: [],
+          workspace: "",
+        }}
+        users={[]}
+        workspaces={[]}
       />
     </>
   );
