@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useBackendContext } from "../../../contexts/BackendContext";
 import { Principal } from "@dfinity/principal";
 import DeleteIcon from '@mui/icons-material/Delete';
+import { IconButton as MuiIconButton } from "@mui/material";
 const WorkspaceManager = () => {
   const { workspaces, currentWorkspace } = useSelector(
     (state: any) => state.filesState,
@@ -294,12 +295,13 @@ const WorkspaceManager = () => {
                   >
                     <Edit2 size={16} />
                   </IconButton>
-                  <IconButton
+                  <MuiIconButton
                     size="small"
                     onClick={(e) => handleDelete(workspace, e)}
+                    sx={{ p: 0.5 }}
                   >
-                    <DeleteIcon size={16} />
-                  </IconButton>
+                    <DeleteIcon sx={{ fontSize: 16 }} />
+                  </MuiIconButton>
                 </div>
               </>
             )}
