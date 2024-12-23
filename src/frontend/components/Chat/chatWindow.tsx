@@ -28,12 +28,18 @@ import {Link} from "react-router-dom";
 const ChatWindow = memo(
   ({ chat, onClose, position, onPositionChange, onSendMessage }) => {
     const [isDragging, setIsDragging] = useState(false);
+  
+    useEffect(() => {
+      setEditedChat(chat);
+    }, [chat]);
     const [dragPosition, setDragPosition] = useState(position);
     const [newMessage, setNewMessage] = useState("");
     const [isMinimized, setIsMinimized] = useState(false);
     const [isSending, setIsSending] = useState(false);
 
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [editedChat, setEditedChat] = useState(null);
+    const { workspaces } = useSelector((state) => state.filesState);
 
     const messagesEndRef = useRef(null);
     const { backendActor } = useBackendContext();
