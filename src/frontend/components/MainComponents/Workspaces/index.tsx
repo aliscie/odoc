@@ -177,6 +177,7 @@ const WorkspaceManager = () => {
               sx={{ mr: 1, flex: 1 }}
               onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) => {
+                e.stopPropagation();
                 if (e.key === 'Enter') {
                   handleCreateWorkspace(e, e.target.value);
                 }
