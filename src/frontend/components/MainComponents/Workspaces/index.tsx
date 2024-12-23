@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Principal } from '@dfinity/principal';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
-import { useBackendContext } from '../../../../contexts/BackendContext';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -17,6 +16,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { PlusCircle, Check, X, Edit2, Trash2, ChevronDown } from 'lucide-react';
 import {useSelector} from "react-redux";
+import {useBackendContext} from "../../../contexts/BackendContext";
 
 const WorkspaceManager = () => {
   const { workspaces } = useSelector((state: any) => state.filesState);
