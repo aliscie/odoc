@@ -1,22 +1,21 @@
-
-import React, { useState, useEffect } from 'react';
-import { Principal } from '@dfinity/principal';
-import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import Divider from '@mui/material/Divider';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import { PlusCircle, Check, X, Edit2, Trash2, ChevronDown } from 'lucide-react';
-import {useSelector} from "react-redux";
-import {useBackendContext} from "../../../contexts/BackendContext";
+import React, { useState } from "react";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
+import Divider from "@mui/material/Divider";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import { Check, ChevronDown, Edit2, PlusCircle, Trash2, X } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { useBackendContext } from "../../../contexts/BackendContext";
+import { Principal } from "@dfinity/principal";
 
 const WorkspaceManager = () => {
   const { workspaces } = useSelector((state: any) => state.filesState);
@@ -26,11 +25,11 @@ const WorkspaceManager = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedWorkspace, setSelectedWorkspace] = useState(workspaces[0]);
   const [editingId, setEditingId] = useState(null);
-  const [editedName, setEditedName] = useState('');
+  const [editedName, setEditedName] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [workspaceToDelete, setWorkspaceToDelete] = useState(null);
   const [showCreateInput, setShowCreateInput] = useState(false);
-  const [newWorkspaceName, setNewWorkspaceName] = useState('');
+  const [newWorkspaceName, setNewWorkspaceName] = useState("");
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -51,19 +50,20 @@ const WorkspaceManager = () => {
   const handleSaveRename = async (e) => {
     e.stopPropagation();
     if (editedName.trim() && backendActor) {
-      const workspace = workspaces.find(w => w.id === editingId);
+      const workspace = workspaces.find((w) => w.id === editingId);
       if (workspace) {
         const updatedWorkspace = {
           ...workspace,
-          name: editedName
+          creator: Principal.fromText(profile.id),
+          name: editedName,
         };
-        
+
         try {
           await backendActor.save_work_space(updatedWorkspace);
           setEditingId(null);
-          setEditedName('');
+          setEditedName("");
         } catch (error) {
-          console.error('Failed to rename workspace:', error);
+          console.error("Failed to rename workspace:", error);
         }
       }
     }
@@ -80,13 +80,16 @@ const WorkspaceManager = () => {
     if (backendActor && workspaceToDelete) {
       try {
         await backendActor.delete_work_space(workspaceToDelete.id);
-        if (selectedWorkspace.id === workspaceToDelete.id && workspaces.length > 0) {
+        if (
+          selectedWorkspace.id === workspaceToDelete.id &&
+          workspaces.length > 0
+        ) {
           setSelectedWorkspace(workspaces[0]);
         }
         setShowDeleteDialog(false);
         setWorkspaceToDelete(null);
       } catch (error) {
-        console.error('Failed to delete workspace:', error);
+        console.error("Failed to delete workspace:", error);
       }
     }
   };
@@ -94,22 +97,23 @@ const WorkspaceManager = () => {
   const handleCreateWorkspace = async (e) => {
     e.stopPropagation();
     if (newWorkspaceName.trim() && backendActor && profile) {
+      const creator = Principal.fromText(profile.id);
       const newWorkspace = {
         id: crypto.randomUUID(),
         name: newWorkspaceName,
         files: [],
-        creator: profile.principal,
-        members: [profile.principal],
+        creator,
+        members: [creator],
         chats: [],
-        admins: [profile.principal]
+        admins: [creator],
       };
-      
+
       try {
         await backendActor.save_work_space(newWorkspace);
         setShowCreateInput(false);
-        setNewWorkspaceName('');
+        setNewWorkspaceName("");
       } catch (error) {
-        console.error('Failed to create workspace:', error);
+        console.error("Failed to create workspace:", error);
       }
     }
   };
@@ -128,18 +132,18 @@ const WorkspaceManager = () => {
         onClick={handleClick}
         endIcon={<ChevronDown />}
         sx={{
-          textTransform: 'none',
+          textTransform: "none",
           minHeight: 40,
-          backgroundColor: 'transparent',
-          border: '1px solid rgba(0, 0, 0, 0.23)',
-          color: 'inherit',
-          '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.04)',
-            border: '1px solid rgba(0, 0, 0, 0.23)',
-          }
+          backgroundColor: "transparent",
+          border: "1px solid rgba(0, 0, 0, 0.23)",
+          color: "inherit",
+          "&:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.04)",
+            border: "1px solid rgba(0, 0, 0, 0.23)",
+          },
         }}
       >
-        {selectedWorkspace.name}
+        {selectedWorkspace && selectedWorkspace.name}
       </Button>
 
       <Menu
@@ -147,7 +151,7 @@ const WorkspaceManager = () => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
         PaperProps={{
-          sx: { width: 320 }
+          sx: { width: 320 },
         }}
       >
         {showCreateInput ? (
@@ -193,18 +197,24 @@ const WorkspaceManager = () => {
         {workspaces.map((workspace) => (
           <MenuItem
             key={workspace.id}
-            selected={workspace.id === selectedWorkspace.id}
+            selected={
+              workspace &&
+              workspace.id === selectedWorkspace &&
+              selectedWorkspace.id
+            }
             onClick={() => handleWorkspaceSelect(workspace)}
             sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              '&:hover .workspace-actions': {
+              display: "flex",
+              justifyContent: "space-between",
+              "&:hover .workspace-actions": {
                 opacity: 1,
               },
             }}
           >
             {editingId === workspace.id ? (
-              <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+              <div
+                style={{ display: "flex", alignItems: "center", width: "100%" }}
+              >
                 <TextField
                   size="small"
                   value={editedName}
@@ -229,12 +239,15 @@ const WorkspaceManager = () => {
             ) : (
               <>
                 <ListItemText>{workspace.name}</ListItemText>
-                <div className="workspace-actions" style={{
-                  opacity: 0,
-                  transition: 'opacity 0.2s',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
+                <div
+                  className="workspace-actions"
+                  style={{
+                    opacity: 0,
+                    transition: "opacity 0.2s",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
                   <IconButton
                     size="small"
                     onClick={(e) => handleRename(workspace, e)}
@@ -263,12 +276,15 @@ const WorkspaceManager = () => {
         <DialogTitle>Delete Workspace</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete "{workspaceToDelete?.name}"? This action cannot be undone.
+            Are you sure you want to delete "{workspaceToDelete?.name}"? This
+            action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-          <Button onClick={confirmDelete} color="error">Delete</Button>
+          <Button onClick={confirmDelete} color="error">
+            Delete
+          </Button>
         </DialogActions>
       </Dialog>
     </>
