@@ -39,11 +39,9 @@ const ChatWindow = memo(
 
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [editedChat, setEditedChat] = useState(null);
-    const { workspaces, profile } = useSelector((state) => state.filesState);
     const { backendActor } = useBackendContext();
 
     const messagesEndRef = useRef(null);
-    const { backendActor } = useBackendContext();
     const { all_friends, profile } = useSelector((state) => state.filesState);
 
     const scrollToBottom = useCallback(() => {
