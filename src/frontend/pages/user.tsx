@@ -37,8 +37,65 @@ function UserProfile() {
   if (isLoading) {
     return <div>Loading...</div>;
   }
+  const handleSendRequest = async () => {
+    try {
+      if (!backendActor) return;
+      await backendActor.send_friend_request(searchParams.get("id") || "");
+    } catch (error) {
+      console.error("Error sending friend request:", error);
+    }
+  };
+
+  const handleAcceptRequest = async () => {
+    try {
+      if (!backendActor) return;
+      await backendActor.accept_friend_request(searchParams.get("id") || "");
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+    }
+  };
+
+  const handleRejectRequest = async () => {
+    try {
+      if (!backendActor) return;
+      await backendActor.reject_friend_request(searchParams.get("id") || "");
+    } catch (error) {
+      console.error("Error rejecting friend request:", error);
+    }
+  };
+
+  const handleCancelRequest = async () => {
+    try {
+      if (!backendActor) return;
+      await backendActor.cancel_friend_request(searchParams.get("id") || "");
+    } catch (error) {
+      console.error("Error canceling friend request:", error);
+    }
+  };
+
+  const handleUnfriend = async () => {
+    try {
+      if (!backendActor) return;
+      await backendActor.unfriend(searchParams.get("id") || "");
+    } catch (error) {
+      console.error("Error unfriending:", error);
+    }
+  };
+
   return (
-    <ProfilePage friends={[]} profile={profile} history={profileHistory} />
+    <div>
+      <ProfilePage friends={[]} profile={profile} history={profileHistory} />
+      <FriendshipButton
+        profile={profile}
+        user={profile} // The viewed user's profile
+        friends={[]} // Pass the friends list here
+        onSendRequest={handleSendRequest}
+        onAcceptRequest={handleAcceptRequest}
+        onRejectRequest={handleRejectRequest}
+        onCancelRequest={handleCancelRequest}
+        onUnfriend={handleUnfriend}
+      />
+    </div>
   );
 }
 
