@@ -13,6 +13,7 @@ import Divider from "@mui/material/Divider";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { Check, ChevronDown, Edit2, PlusCircle, Trash2, X } from "lucide-react";
+import CircularProgress from '@mui/material/CircularProgress';
 import { useDispatch, useSelector } from "react-redux";
 import { useBackendContext } from "../../../contexts/BackendContext";
 import { Principal } from "@dfinity/principal";
@@ -27,6 +28,7 @@ const WorkspaceManager = () => {
   const [editedName, setEditedName] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showCreateInput, setShowCreateInput] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -93,7 +95,8 @@ const WorkspaceManager = () => {
     }
   };
 
-  const handleCreateWorkspace = async (e, newWorkspaceName) => {
+  const handleCreateWorkspace = async (e: React.SyntheticEvent, newWorkspaceName: string) => {
+    setIsCreating(true);
     e.stopPropagation();
     if (newWorkspaceName.trim() && backendActor && profile) {
       const creator = Principal.fromText(profile.id);
@@ -124,6 +127,8 @@ const WorkspaceManager = () => {
         }
       } catch (error) {
         console.error("Failed to create workspace:", error);
+      } finally {
+        setIsCreating(false);
       }
     }
   };
@@ -179,9 +184,14 @@ const WorkspaceManager = () => {
             />
             <IconButton 
               size="small" 
-              onClick={(e) => handleCreateWorkspace(e, e.target.previousSibling.value)}
+              onClick={(e) => {
+                const input = e.currentTarget.parentElement?.querySelector('input');
+                if (input) {
+                  handleCreateWorkspace(e, input.value);
+                }
+              }}
             >
-              <Check fontSize="small" />
+              <CircularProgress size={20} />
             </IconButton>
             <IconButton
               size="small"
