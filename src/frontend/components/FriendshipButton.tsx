@@ -52,12 +52,14 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
   });
   if (!profile || !user) return null;
 
-  const isFriend = friends.some(friend => friend.id === user.id);
+  const isFriend = friends.some(friend => 
+    (friend.sender.id === user.id || friend.receiver.id === user.id) && friend.confirmed
+  );
   const isRequestSender = friends.some(friend => 
-    friend.id === user.id && !friend.confirmed && friend.sender.id === profile.id
+    (friend.receiver.id === user.id) && !friend.confirmed && friend.sender.id === profile.id
   );
   const isRequestReceiver = friends.some(friend => 
-    friend.id === user.id && !friend.confirmed && friend.sender.id === user.id
+    (friend.sender.id === user.id) && !friend.confirmed && friend.receiver.id === profile.id
   );
 
   const buttonStyle = {
