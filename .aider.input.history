@@ -6903,3 +6903,69 @@
 
 # 2024-12-22 18:11:43.458049
 +n
+
+# 2024-12-23 14:59:33.655207
++for ./src/frontend/components/Chat/chatWindow.tsx show the right messages from backendActor?.get_my_chats... make sure to call redux SET_CHATS also for send message call redux SEND_MESSAGE and call backendActor?.send_message
+
+# 2024-12-23 15:01:10.449852
++how to do that?
+
+# 2024-12-23 15:01:18.341376
++y
+
+# 2024-12-23 15:01:18.347520
++/run cat ./src/frontend/components/Chat/chatWindow.tsx
+
+# 2024-12-23 15:01:18.347632
++/run cat ./src/frontend/components/Chat/chatWindow.tsx
+
+# 2024-12-23 15:01:20.233408
++y
+
+# 2024-12-23 15:01:22.141697
++/run cat ./src/frontend/redux/actions/chatActions.ts
+
+# 2024-12-23 15:01:22.141812
++/run cat ./src/frontend/redux/actions/chatActions.ts
+
+# 2024-12-23 15:01:22.317588
++/run cat ./src/frontend/redux/reducers/chatReducer.ts
+
+# 2024-12-23 15:01:22.317698
++/run cat ./src/frontend/redux/reducers/chatReducer.ts
+
+# 2024-12-23 15:01:23.833704
++y
+
+# 2024-12-23 15:01:25.337596
++/run cat ./src/frontend/types/chat.ts
+
+# 2024-12-23 15:01:25.337729
++/run cat ./src/frontend/types/chat.ts
+
+# 2024-12-23 15:01:27.416758
++y
+
+# 2024-12-23 15:04:26.249885
++use ./src/frontend/components/ChatNotifications/index.tsx to impiment it in ./src/frontend/components/Chat/index.tsx
+
+# 2024-12-23 15:04:38.226452
++y
+
+# 2024-12-23 15:04:38.230456
++/run cat ./src/frontend/components/ChatNotifications/index.tsx
+
+# 2024-12-23 15:04:38.230653
++/run cat ./src/frontend/components/ChatNotifications/index.tsx
+
+# 2024-12-23 15:04:41.809064
++y
+
+# 2024-12-23 15:04:43.087139
++/run cat ./src/frontend/components/Chat/index.tsx
+
+# 2024-12-23 15:04:43.087296
++/run cat ./src/frontend/components/Chat/index.tsx
+
+# 2024-12-23 15:04:44.823494
++y

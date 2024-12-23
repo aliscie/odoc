@@ -7,7 +7,6 @@ import { SnackbarProvider } from "notistack";
 import NavBar from "./components/MainComponents/NavBar";
 import TopNavBar from "./components/MainComponents/TopNavBar";
 import RegistrationForm from "./components/MainComponents/RegistrationForm";
-import MessagesDialogBox from "./components/Chat/MessagesBoxDialog";
 import SearchPopper from "./components/SearchComponent";
 import useSocket from "./websocket/use_socket";
 import { useBackendContext } from "./contexts/BackendContext";
@@ -39,7 +38,6 @@ const App: React.FC = () => {
       <SearchPopper />
       <SnackbarProvider maxSnack={3}>
         <RegistrationForm />
-        <MessagesDialogBox />
         <TopNavBar />
         <NavBar>
           <Pages />
