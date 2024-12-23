@@ -190,8 +190,9 @@ const WorkspaceManager = () => {
                   handleCreateWorkspace(e, input.value);
                 }
               }}
+              disabled={isCreating}
             >
-              <CircularProgress size={20} />
+              {isCreating ? <CircularProgress size={20} /> : <Check fontSize="small" />}
             </IconButton>
             <IconButton
               size="small"
