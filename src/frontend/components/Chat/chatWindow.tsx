@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import {
   AppBar,
+  Avatar,
   Box,
   CircularProgress,
   IconButton,
@@ -153,9 +154,26 @@ const ChatWindow = memo(
         >
           <Toolbar variant="dense">
             <DragHandle sx={{ mr: 1 }} />
-            <Typography variant="subtitle2" sx={{ flex: 1 }}>
-              {chat.name}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+              {chat.name === "private_chat" ? (
+                <>
+                  <Avatar 
+                    src={all_friends.find(f => chat.members?.includes(f.id) && f.id !== profile?.id)?.avatar} 
+                    sx={{ width: 24, height: 24, mr: 1 }}
+                  />
+                  <Typography variant="subtitle2">
+                    {all_friends.find(f => chat.members?.includes(f.id) && f.id !== profile?.id)?.name || chat.name}
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <GroupIcon sx={{ mr: 1, width: 24, height: 24 }} />
+                  <Typography variant="subtitle2">
+                    {chat.name}
+                  </Typography>
+                </>
+              )}
+            </Box>
             <IconButton
               size="small"
               onClick={() => setIsMinimized(!isMinimized)}
