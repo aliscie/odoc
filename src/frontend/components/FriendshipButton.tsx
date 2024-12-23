@@ -178,6 +178,7 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({
       </div>
     );
   }
+  logger({friends})
   return (
     <button 
       onClick={handleSendRequest}
