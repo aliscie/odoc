@@ -52,23 +52,24 @@ const WorkspaceManager = () => {
   const handleSaveRename = async (e) => {
     e.stopPropagation();
     if (editedName.trim() && backendActor) {
-      const workspaceToUpdate = workspaces.find((w) => w.id === editingId);
-      if (workspaceToUpdate) {
-        const updatedWorkspace = {
-          ...workspaceToUpdate,
-          creator: Principal.fromText(profile.id),
-          name: editedName,
-        };
+      try {
+        const workspaceToUpdate = workspaces.find((w) => w.id === editingId);
+        if (workspaceToUpdate) {
+          const updatedWorkspace = {
+            ...workspaceToUpdate,
+            creator: Principal.fromText(profile.id),
+            name: editedName,
+          };
 
-        try {
           const result = await backendActor.save_work_space(updatedWorkspace);
           if ("Ok" in result) {
             dispatch({ type: "UPDATE_WORKSPACE", workspace: updatedWorkspace });
-          setEditingId(null);
-          setEditedName("");
-        } catch (error) {
-          console.error("Failed to rename workspace:", error);
+            setEditingId(null);
+            setEditedName("");
+          }
         }
+      } catch (error) {
+        console.error("Failed to rename workspace:", error);
       }
     }
   };
