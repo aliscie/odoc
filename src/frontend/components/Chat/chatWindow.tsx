@@ -156,10 +156,34 @@ const ChatWindow = memo(
     }, [chat.id, dragPosition, onPositionChange]);
     const dispatch = useDispatch();
 
-    const handleSavePost = async (updatedChat: Chat) => {
+    const handleSaveChat = async (updatedChat: Chat) => {
       setIsSaving(true);
       try {
-        const result = await backendActor.update_chat(updatedChat);
+        // Convert all Principals to the correct format before sending
+        const formattedChat = {
+          ...updatedChat,
+          admins: updatedChat.admins.map(a => 
+            typeof a === 'string' ? Principal.fromText(a) : Principal.fromText(a.toString())
+          ),
+          creator: typeof updatedChat.creator === 'string' 
+            ? Principal.fromText(updatedChat.creator) 
+            : Principal.fromText(updatedChat.creator.toString()),
+          members: updatedChat.members.map(m => 
+            typeof m === 'string' ? Principal.fromText(m) : Principal.fromText(m.toString())
+          ),
+          messages: updatedChat.messages.map(msg => ({
+            ...msg,
+            sender: typeof msg.sender === 'string' 
+              ? Principal.fromText(msg.sender) 
+              : Principal.fromText(msg.sender.toString()),
+            seen_by: msg.seen_by.map(s => 
+              typeof s === 'string' ? Principal.fromText(s) : Principal.fromText(s.toString())
+            ),
+            date: BigInt(msg.date.toString())
+          }))
+        };
+
+        const result = await backendActor.update_chat(formattedChat);
         if ("Ok" in result) {
           if (onUpdateChat) {
             onUpdateChat(result.Ok);
@@ -350,18 +374,9 @@ const ChatWindow = memo(
                   onChange={(_, newValue) => {
                     const updatedChat = {
                       ...chat,
-                      workspaces: newValue.map(w => w.id),
-                      admins: chat.admins.map(a => typeof a === 'string' ? Principal.fromText(a) : Principal.fromText(a.toString())),
-                      creator: typeof chat.creator === 'string' ? Principal.fromText(chat.creator) : Principal.fromText(chat.creator.toString()),
-                      members: chat.members.map(m => typeof m === 'string' ? Principal.fromText(m) : Principal.fromText(m.toString())),
-                      messages: chat.messages.map(msg => ({
-                        ...msg,
-                        sender: typeof msg.sender === 'string' ? Principal.fromText(msg.sender) : Principal.fromText(msg.sender.toString()),
-                        seen_by: msg.seen_by.map(s => typeof s === 'string' ? Principal.fromText(s) : Principal.fromText(s.toString())),
-                        date: BigInt(msg.date.toString())
-                      }))
+                      workspaces: newValue.map(w => w.id)
                     };
-                    handleSavePost(updatedChat);
+                    handleSaveChat(updatedChat);
                   }}
                   renderInput={(params) => (
                     <TextField {...params} label="Workspaces" fullWidth sx={{ mb: 2 }} />
@@ -375,12 +390,9 @@ const ChatWindow = memo(
                           const newValue = value.filter((_, i) => i !== index);
                           const updatedChat = {
                             ...chat,
-                            workspaces: newValue.map(w => w.id),
-                            admins: chat.admins.map(a => Principal.fromText(a.toString())),
-                            creator: Principal.fromText(chat.creator.toString()),
-                            members: chat.members.map(m => Principal.fromText(m.toString()))
+                            workspaces: newValue.map(w => w.id)
                           };
-                          handleSavePost(updatedChat);
+                          handleSaveChat(updatedChat);
                         }}
                       />
                     ))
@@ -395,11 +407,9 @@ const ChatWindow = memo(
                   onChange={(_, newValue) => {
                     const updatedChat = {
                       ...chat,
-                      admins: newValue.map(admin => Principal.fromText(admin.id)),
-                      creator: Principal.fromText(chat.creator.toString()),
-                      members: chat.members.map(m => Principal.fromText(m.toString()))
+                      admins: newValue.map(admin => admin.id)
                     };
-                    handleSavePost(updatedChat);
+                    handleSaveChat(updatedChat);
                   }}
                   renderInput={(params) => (
                     <TextField {...params} label="Admins" fullWidth sx={{ mb: 2 }} />
@@ -413,11 +423,9 @@ const ChatWindow = memo(
                           const newValue = value.filter((_, i) => i !== index);
                           const updatedChat = {
                             ...chat,
-                            admins: newValue.map(admin => Principal.fromText(admin.id)),
-                            creator: Principal.fromText(chat.creator.toString()),
-                            members: chat.members.map(m => Principal.fromText(m.toString()))
+                            admins: newValue.map(admin => admin.id)
                           };
-                          handleSavePost(updatedChat);
+                          handleSaveChat(updatedChat);
                         }}
                       />
                     ))
@@ -432,11 +440,9 @@ const ChatWindow = memo(
                   onChange={(_, newValue) => {
                     const updatedChat = {
                       ...chat,
-                      members: newValue.map(member => Principal.fromText(member.id)),
-                      admins: chat.admins.map(a => Principal.fromText(a.toString())),
-                      creator: Principal.fromText(chat.creator.toString())
+                      members: newValue.map(member => member.id)
                     };
-                    handleSavePost(updatedChat);
+                    handleSaveChat(updatedChat);
                   }}
                   renderInput={(params) => (
                     <TextField {...params} label="Members" fullWidth sx={{ mb: 2 }} />
@@ -450,11 +456,9 @@ const ChatWindow = memo(
                           const newValue = value.filter((_, i) => i !== index);
                           const updatedChat = {
                             ...chat,
-                            members: newValue.map(member => Principal.fromText(member.id)),
-                            admins: chat.admins.map(a => Principal.fromText(a.toString())),
-                            creator: Principal.fromText(chat.creator.toString())
+                            members: newValue.map(member => member.id)
                           };
-                          handleSavePost(updatedChat);
+                          handleSaveChat(updatedChat);
                         }}
                       />
                     ))
