@@ -222,6 +222,7 @@ const SocialPosts = () => {
   const [posts, setPosts] = useState<Array<PostUser>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isChanged, setIsChanged] = useState<{[key: string]: boolean}>({});
   const { profile } = useSelector((state: any) => state.filesState);
   const currentUser = profile;
 
@@ -579,6 +580,9 @@ const SocialPosts = () => {
                 let new_change = {};
                 new_change[""] = changes;
                 newPostContentRef.current = new_change;
+                if (!isChanged[post.id]) {
+                  setIsChanged(prev => ({...prev, [post.id]: true}));
+                }
               }}
             />
 
@@ -673,10 +677,13 @@ const SocialPosts = () => {
                     </Button>
 
                     <Button
-                      onClick={() => handleSavePost(post)}
+                      onClick={async () => {
+                        await handleSavePost(post);
+                        setIsChanged(prev => ({...prev, [post.id]: false}));
+                      }}
                       color="primary"
                       size="small"
-                      disabled={!newPostContentRef.current || isSaving}
+                      disabled={!isChanged[post.id] || isSaving}
                     >
                       {isSaving ? "Saving..." : "Save"}
                     </Button>
