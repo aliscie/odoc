@@ -171,10 +171,10 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
       const userPrincipal = Principal.fromText(user.id);
 
       const ratingData: Rating = {
-        id: "", // This will be set by the backend
+        id: randomString(),
         rating: rating,
         comment: comment,
-        date: BigInt(Date.now()),
+        date: Date.now() * 1e6,
         user_id: Principal.fromText(user.id),
       };
 
