@@ -83,10 +83,11 @@ const WalletPage = ({ wallet = defaultWallet }) => {
       } else if (type === "withdraw" && withdrawAddress) {
         // Call withdraw_ckusdt for withdrawals
         result = await backendActor.withdraw_ckusdt(
-          BigInt(Math.floor(parseFloat(amount))), // Convert to u64
+          Number(amount), // Convert to u64
           withdrawAddress
         );
       }
+      // console.log({result})
 
       if ("Ok" in result) {
         enqueueSnackbar("Transaction completed successfully", { variant: "success" });
@@ -95,7 +96,7 @@ const WalletPage = ({ wallet = defaultWallet }) => {
         setWithdrawAddress("");
         setRecipient("");
       } else if ("Err" in result) {
-        enqueueSnackbar(result.Err, { variant: "error" });
+        enqueueSnackbar(JSON.stringify(result.Err), { variant: "error" });
       }
     } catch (error) {
       console.error("Transaction failed:", error);
