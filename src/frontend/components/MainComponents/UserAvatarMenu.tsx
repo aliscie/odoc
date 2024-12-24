@@ -193,12 +193,12 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
     } catch (error) {
       // console.error('Error submitting review:', error);
       enqueueSnackbar("Failed to submit review " + error, { variant: "error" });
-    }
-    setReviewOpen(false);
-    setRating(0);
-    setComment("");
     } finally {
       setIsSubmitting(false);
+      setReviewOpen(false);
+      setRating(0);
+      setComment("");
+    }
   };
 
   const getPhotoSrc = (photoData?: Uint8Array) => {
