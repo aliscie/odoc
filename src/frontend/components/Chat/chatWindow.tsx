@@ -8,12 +8,22 @@ import {
   TextField,
   Toolbar,
   Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
 } from "@mui/material";
 import {
   DragIndicator as DragHandle,
   OpenInFull as OpenInFullIcon,
   Send as SendIcon,
   Settings as SettingsIcon,
+  ArrowBack as ArrowBackIcon,
+  Delete as DeleteIcon,
 } from "@mui/icons-material";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 import CloseIcon from "@mui/icons-material/Close";
@@ -26,11 +36,18 @@ import { isConstantNode } from "mathjs";
 import {Link} from "react-router-dom";
 
 const ChatWindow = memo(
-  ({ chat, onClose, position, onPositionChange, onSendMessage }) => {
+  ({ chat, onClose, position, onPositionChange, onSendMessage, onUpdateChat }) => {
     const [isDragging, setIsDragging] = useState(false);
+    const [isSettingsView, setIsSettingsView] = useState(false);
+    const [selectedWorkspace, setSelectedWorkspace] = useState(chat.workspaces[0] || "");
+    const [editedMembers, setEditedMembers] = useState(chat.members);
+    const { workspaces, all_friends } = useSelector((state: any) => state.filesState);
+    const { backendActor } = useBackendContext();
 
     useEffect(() => {
       setEditedChat(chat);
+      setSelectedWorkspace(chat.workspaces[0] || "");
+      setEditedMembers(chat.members);
     }, [chat]);
     const [dragPosition, setDragPosition] = useState(position);
     const [newMessage, setNewMessage] = useState("");
@@ -167,16 +184,22 @@ const ChatWindow = memo(
             >
               {isMinimized ? <OpenInFullIcon /> : <MinimizeIcon />}
             </IconButton>
-            <IconButton size="small" onClick={() => setIsSettingsOpen(true)}>
-              <SettingsIcon />
-            </IconButton>
+            {isSettingsView ? (
+              <IconButton size="small" onClick={() => setIsSettingsView(false)}>
+                <ArrowBackIcon />
+              </IconButton>
+            ) : (
+              <IconButton size="small" onClick={() => setIsSettingsView(true)}>
+                <SettingsIcon />
+              </IconButton>
+            )}
             <IconButton size="small" onClick={() => onClose(chat.id)}>
               <CloseIcon />
             </IconButton>
           </Toolbar>
         </AppBar>
 
-        {!isMinimized && (
+        {!isMinimized && !isSettingsView && (
           <>
             <Box sx={{ flex: 1, overflow: "auto", p: 2 }}>
               {chat.messages.map((message) => {
