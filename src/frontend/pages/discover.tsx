@@ -41,6 +41,7 @@ import EditorComponent from "../components/EditorComponent";
 import { logger } from "../DevUtils/logData";
 import { deserializeContentTree } from "../DataProcessing/deserlize/deserializeContents";
 import serializeFileContents from "../DataProcessing/serialize/serializeFileContents";
+import {useSnackbar} from "notistack";
 
 const Comment = ({ comment, onReply, level = 0 }) => {
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -243,6 +244,8 @@ const SocialPosts = () => {
     fetchPosts();
   }, [backendActor]);
 
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
   const createPostRef = useRef<CreatePostRef>(null);
   const [tagInputs, setTagInputs] = useState<{ [key: string]: string }>({});
   const [commentInputs, setCommentInputs] = useState({});
@@ -344,7 +347,8 @@ const SocialPosts = () => {
         enqueueSnackbar(result.Err, { variant: "error" });
       }
     } catch (err) {
-      console.error("Error voting down:", err);
+
+      // console.error("Error voting down:", err);
     } finally {
       setLoadingVotes(prev => ({...prev, [postId]: {...prev[postId], down: false}}));
     }
@@ -555,17 +559,7 @@ const SocialPosts = () => {
           />
           <CardContent>
             {post.content_tree && post.content_tree.length > 0 && post.content_tree[0]?.text ? (
-              <EditorComponent
-                readOnly={
-                  post && post.creator?.id && post.creator.id !== profile?.id
-                }
-                content={deserializeContentTree(post.content_tree)}
-                onChange={(changes) => {
-                  let new_change = {};
-                  new_change[""] = changes;
-                  setNewPostContent(new_change);
-                }}
-              />
+
             ) : (
               <Typography variant="body2" color="text.secondary">
                 No content
