@@ -99,6 +99,7 @@ export const WorkspaceSelect = memo(({ value, onChange, workspaces }) => (
 const CreateGroupDialog = memo(
   ({ open, onClose, onSubmit, initialData, users, workspaces }) => {
     const [formData, setFormData] = useState(initialData);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleNameChange = useCallback((name) => {
       setFormData((prev) => ({ ...prev, name }));
@@ -117,7 +118,12 @@ const CreateGroupDialog = memo(
     }, []);
 
     const handleSubmit = useCallback(async () => {
-      await onSubmit(formData);
+      setIsSubmitting(true);
+      try {
+        await onSubmit(formData);
+      } finally {
+        setIsSubmitting(false);
+      }
     }, [formData, onSubmit]);
 
     return (
@@ -145,8 +151,13 @@ const CreateGroupDialog = memo(
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained" color="primary">
-            Create Group
+          <Button 
+            onClick={handleSubmit} 
+            variant="contained" 
+            color="primary"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Creating...' : 'Create Group'}
           </Button>
         </DialogActions>
       </Dialog>
