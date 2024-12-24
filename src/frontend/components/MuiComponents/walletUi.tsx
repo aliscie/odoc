@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useBackendContext } from "../../contexts/BackendContext";
+import { useSnackbar } from "notistack";
 import {
   Box,
   Card,
@@ -52,6 +53,7 @@ const WalletPage = ({ wallet = defaultWallet }) => {
 
   const { backendActor } = useBackendContext();
   const { all_friends } = useSelector((state: any) => state.filesState);
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleClose = () => setOpenDialog("");
 
@@ -68,27 +70,33 @@ const WalletPage = ({ wallet = defaultWallet }) => {
     }
 
     try {
+      let result;
       if (type === "pay" && recipient) {
-        await backendActor.internal_transaction(
+        result = await backendActor.internal_transaction(
           parseFloat(amount),
           recipient,
           { LocalSend: null }
         );
       } else if (type === "withdraw" && withdrawAddress) {
-        await backendActor.internal_transaction(
+        result = await backendActor.internal_transaction(
           parseFloat(amount),
           withdrawAddress,
           { Withdraw: null }
         );
       }
-      
-      handleClose();
-      setAmount("");
-      setWithdrawAddress("");
-      setRecipient("");
+
+      if ("Ok" in result) {
+        enqueueSnackbar("Transaction completed successfully", { variant: "success" });
+        handleClose();
+        setAmount("");
+        setWithdrawAddress("");
+        setRecipient("");
+      } else if ("Err" in result) {
+        enqueueSnackbar(result.Err, { variant: "error" });
+      }
     } catch (error) {
       console.error("Transaction failed:", error);
-      alert("Transaction failed: " + error.message);
+      enqueueSnackbar(error.message || "Transaction failed", { variant: "error" });
     }
   };
 
