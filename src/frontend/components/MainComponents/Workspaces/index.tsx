@@ -297,23 +297,23 @@ const WorkspaceManager = () => {
             ) : (
               <>
                 <ListItemText>{workspace.name}</ListItemText>
-                <div
-                  className="workspace-actions"
-                >
-                  <IconButton
-                    size="small"
-                    onClick={(e) => handleRename(workspace, e)}
-                  >
-                    <Edit2 size={16} />
-                  </IconButton>
-                  <MuiIconButton
-                    size="small"
-                    onClick={(e) => handleDelete(workspace, e)}
-                    sx={{ p: 0.5 }}
-                  >
-                    <DeleteIcon sx={{ fontSize: 16 }} />
-                  </MuiIconButton>
-                </div>
+                {workspace.id !== 'default' && (
+                  <div className="workspace-actions">
+                    <IconButton
+                      size="small"
+                      onClick={(e) => handleRename(workspace, e)}
+                    >
+                      <Edit2 size={16} />
+                    </IconButton>
+                    <MuiIconButton
+                      size="small"
+                      onClick={(e) => handleDelete(workspace, e)}
+                      sx={{ p: 0.5 }}
+                    >
+                      <DeleteIcon sx={{ fontSize: 16 }} />
+                    </MuiIconButton>
+                  </div>
+                )}
               </>
             )}
           </MenuItem>
