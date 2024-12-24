@@ -251,7 +251,7 @@ const SocialPosts = () => {
   const [showComments, setShowComments] = useState({});
   const [isPosting, setIsPosting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [newPostContent, setNewPostContent] = useState<any>(null);
+  const newPostContentRef = useRef<any>(null);
 
   const handleNewPost = async (content: any, tags: string[]) => {
     if (!content || !backendActor) return;
@@ -394,12 +394,12 @@ const SocialPosts = () => {
   };
 
   const handleSavePost = async (post: PostUser) => {
-    if (!newPostContent || !backendActor) return;
+    if (!newPostContentRef.current || !backendActor) return;
 
     setIsSaving(true);
     try {
       let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
-        serializeFileContents(newPostContent);
+        serializeFileContents(newPostContentRef.current);
       let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
 
       const updatedPost: Post = {
@@ -415,7 +415,7 @@ const SocialPosts = () => {
           BigInt(20),
         );
         setPosts(updatedPosts.reverse());
-        setNewPostContent(null);
+        newPostContentRef.current = null;
       }
     } catch (err) {
       console.error("Error saving post:", err);
@@ -578,7 +578,7 @@ const SocialPosts = () => {
               onChange={(changes) => {
                 let new_change = {};
                 new_change[""] = changes;
-                setNewPostContent(new_change);
+                newPostContentRef.current = new_change;
               }}
             />
 
@@ -676,7 +676,7 @@ const SocialPosts = () => {
                       onClick={() => handleSavePost(post)}
                       color="primary"
                       size="small"
-                      disabled={!newPostContent || isSaving}
+                      disabled={!newPostContentRef.current || isSaving}
                     >
                       {isSaving ? "Saving..." : "Save"}
                     </Button>
