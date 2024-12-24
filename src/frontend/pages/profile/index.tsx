@@ -31,6 +31,7 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
   const [formValues, setFormValues] = useState({
     name: "",
     description: "",
+    email: "",
   });
 
   useEffect(() => {
@@ -38,6 +39,7 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
       setFormValues({
         name: profile.name,
         description: profile.description || "",
+        email: profile.email || "",
       });
     }
   }, [profile]);
@@ -82,6 +84,7 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
     id = "",
     name = "Anonymous",
     description = "",
+    email = "",
     photo = new Uint8Array(),
   } = safeProfile;
 
@@ -273,6 +276,9 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
                   <>
                     <Typography variant="h4" gutterBottom>
                       {name || "Anonymous"}
+                    </Typography>
+                    <Typography variant="h4" gutterBottom>
+                      {email || ""}
                     </Typography>
                     <Typography
                       sx={{ fontSize: "0.75rem" }}

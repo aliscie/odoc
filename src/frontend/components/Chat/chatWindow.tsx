@@ -428,7 +428,7 @@ const ChatWindow = memo(
                     fullWidth
                     disabled={isSaving}
                     startIcon={isSaving ? <CircularProgress size={20} /> : (saveSuccess ? <Check /> : null)}
-                    onClick={() => {
+                    onClick={async () => {
                       const updatedChat: Chat = {
                         ...chat,
                         name: formData.name,
@@ -437,7 +437,7 @@ const ChatWindow = memo(
                         workspaces: formData.workspaces,
                         members: formData.members,
                       };
-                      handleSaveChat(updatedChat);
+                      await handleSaveChat(updatedChat);
                       setIsSettingsView(false);
                     }}
                   >

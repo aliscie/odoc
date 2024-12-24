@@ -42,6 +42,3 @@ topup_cycles:
 	dfx ledger --network=ic top-up --amount=0.5 2nvlk-tyaaa-aaaal-ab5ya-cai
 	dfx wallet send lwdq3-vqaaa-aaaal-acwda-cai 10000000000000 --network=ic
 
-
-
-

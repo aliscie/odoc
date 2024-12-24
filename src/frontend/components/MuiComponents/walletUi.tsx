@@ -4,39 +4,38 @@ import { useBackendContext } from "../../contexts/BackendContext";
 import { useSnackbar } from "notistack";
 import {
   Box,
+  Button,
   Card,
   CardContent,
-  Typography,
-  Button,
-  Dialog,
   CircularProgress,
-  DialogTitle,
-  DialogContent,
+  Dialog,
   DialogActions,
-  TextField,
-  Select,
-  MenuItem,
+  DialogContent,
+  DialogTitle,
+  Grid,
   IconButton,
+  InputAdornment,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Paper,
-  Stack,
-  Grid,
-  InputAdornment,
+  TextField,
+  Typography,
 } from "@mui/material";
 import {
   AccountBalanceWallet,
   ArrowDownward,
   ArrowUpward,
-  Send,
   Close,
   ContentCopy,
+  Send,
 } from "@mui/icons-material";
-import formatTimestamp, { formatRelativeTime } from "../../utils/time";
-import {logger} from "../../DevUtils/logData";
+import { formatRelativeTime } from "../../utils/time";
 
 const defaultWallet = {
   owner: "0x0000000000000000000000000000000000000000",
@@ -49,7 +48,6 @@ const defaultWallet = {
 };
 
 const WalletPage = ({ wallet = defaultWallet }) => {
-  logger({ wallet });
   const [amount, setAmount] = useState("");
   const [recipient, setRecipient] = useState("");
   const [withdrawAddress, setWithdrawAddress] = useState("");
@@ -209,21 +207,22 @@ const WalletPage = ({ wallet = defaultWallet }) => {
                     {formatRelativeTime(exchange.date_created)}
                   </TableCell>
                   <TableCell>
-                    {exchange._type && (() => {
-                      const type = Object.keys(exchange._type)[0];
-                      switch(type) {
-                        case 'Withdraw':
-                          return 'Withdrawal';
-                        case 'Deposit':
-                          return 'Deposit';
-                        case 'LocalSend':
-                          return 'Sent';
-                        case 'LocalReceive':
-                          return 'Received';
-                        default:
-                          return type;
-                      }
-                    })()}
+                    {exchange._type &&
+                      (() => {
+                        const type = Object.keys(exchange._type)[0];
+                        switch (type) {
+                          case "Withdraw":
+                            return "Withdrawal";
+                          case "Deposit":
+                            return "Deposit";
+                          case "LocalSend":
+                            return "Local send";
+                          case "LocalReceive":
+                            return "Received";
+                          default:
+                            return type;
+                        }
+                      })()}
                   </TableCell>
                   <TableCell>
                     {exchange.from === profile?.id

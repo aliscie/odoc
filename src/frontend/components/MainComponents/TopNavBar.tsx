@@ -85,7 +85,7 @@ const TopNavBar = () => {
       dispatch(handleRedux("UPDATE_NOT_LIST", { new_list: res }));
 
       const chatsList = await backendActor.get_my_chats();
-      console.log({ chatsList });
+      // console.log({ chatsList });
       dispatch(handleRedux("SET_CHATS", { chats: chatsList }));
     })();
   }, []);

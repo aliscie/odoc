@@ -4,7 +4,7 @@ import "./App.css";
 import Pages from "./pages";
 import { BrowserRouter } from "react-router-dom";
 import useInitialData from "./redux/initialData/useInitialData";
-import { SnackbarProvider } from "notistack";
+import { useSnackbar } from "notistack";
 import NavBar from "./components/MainComponents/NavBar";
 import TopNavBar from "./components/MainComponents/TopNavBar";
 import RegistrationForm from "./components/MainComponents/RegistrationForm";
@@ -13,7 +13,6 @@ import useSocket from "./websocket/use_socket";
 import { useBackendContext } from "./contexts/BackendContext";
 import { Box, CircularProgress } from "@mui/material";
 import { Principal } from "@dfinity/principal";
-import { useSnackbar } from "notistack";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -35,21 +34,22 @@ const App: React.FC = () => {
 
           if (Number(balance) > 0) {
             enqueueSnackbar(`Depositing ${Number(balance)} CKUSDT...`, {
-              variant: 'info',
+              variant: "info",
               persist: true,
-              action: (key) => (
-                <CircularProgress size={24} color="inherit" />
-              )
+              action: (key) => <CircularProgress size={24} color="inherit" />,
             });
-            
+
             const result = await backendActor.deposit_ckusdt();
             console.log("Deposit CKUSDT result:", result);
             if (result?.Ok) {
               // Update wallet state in Redux
               dispatch({ type: "SET_WALLET", wallet: result.Ok });
-              enqueueSnackbar(`Successfully deposited ${Number(balance)} CKUSDT`, {
-                variant: 'success'
-              });
+              enqueueSnackbar(
+                `Successfully deposited ${Number(balance)} CKUSDT`,
+                {
+                  variant: "success",
+                },
+              );
             }
           }
         } catch (error) {
@@ -79,13 +79,12 @@ const App: React.FC = () => {
   return (
     <BrowserRouter>
       <SearchPopper />
-      <SnackbarProvider maxSnack={3}>
-        <RegistrationForm />
-        <TopNavBar />
-        <NavBar>
-          <Pages />
-        </NavBar>
-      </SnackbarProvider>
+
+      <RegistrationForm />
+      <TopNavBar />
+      <NavBar>
+        <Pages />
+      </NavBar>
     </BrowserRouter>
   );
 };
