@@ -118,7 +118,7 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
                     {...params}
                     placeholder="Add tag..."
                     size="small"
-                    className="w-full"
+                    className="w-[200px]"
                     onKeyPress={(e) => {
                       if (e.key === "Enter" && tagInput.trim()) {
                         e.preventDefault();
