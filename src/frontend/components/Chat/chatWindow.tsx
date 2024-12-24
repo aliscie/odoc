@@ -16,6 +16,7 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
+  Button,
 } from "@mui/material";
 import {
   DragIndicator as DragHandle,
@@ -33,15 +34,27 @@ import { Principal } from "@dfinity/principal";
 import { randomString } from "../../DataProcessing/dataSamples";
 import formatTimestamp from "../../utils/time";
 import { isConstantNode } from "mathjs";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Chat } from "../../../declarations/backend/backend.did";
 
 const ChatWindow = memo(
-  ({ chat, onClose, position, onPositionChange, onSendMessage, onUpdateChat }) => {
+  ({
+    chat,
+    onClose,
+    position,
+    onPositionChange,
+    onSendMessage,
+    onUpdateChat,
+  }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [isSettingsView, setIsSettingsView] = useState(false);
-    const [selectedWorkspace, setSelectedWorkspace] = useState(chat.workspaces[0] || "");
+    const [selectedWorkspace, setSelectedWorkspace] = useState(
+      chat.workspaces[0] || "",
+    );
     const [editedMembers, setEditedMembers] = useState(chat.members);
-    const { workspaces, all_friends, profile } = useSelector((state: any) => state.filesState);
+    const { workspaces, all_friends, profile } = useSelector(
+      (state: any) => state.filesState,
+    );
     const { backendActor } = useBackendContext();
     const [dragPosition, setDragPosition] = useState(position);
     const [newMessage, setNewMessage] = useState("");
@@ -213,7 +226,11 @@ const ChatWindow = memo(
                         : "text.primary",
                     }}
                   >
-                    <Typography to={`user?id=${message.sender.toString()}`} component={Link}  variant="subtitle2">
+                    <Typography
+                      to={`user?id=${message.sender.toString()}`}
+                      component={Link}
+                      variant="subtitle2"
+                    >
                       {renderSenderName(message.sender)}
                     </Typography>
                     <Typography variant="body2">{message.message}</Typography>
@@ -272,7 +289,7 @@ const ChatWindow = memo(
             <Typography variant="h6" gutterBottom>
               Chat Settings
             </Typography>
-            
+
             {chat.name !== "private_chat" && (
               <>
                 <FormControl fullWidth sx={{ mb: 2 }}>
@@ -296,20 +313,22 @@ const ChatWindow = memo(
                 <List>
                   {editedMembers.map((member) => {
                     const user = all_friends.find(
-                      (f) => f.id === member.toString()
+                      (f) => f.id === member.toString(),
                     );
                     return (
                       <ListItem key={member.toString()}>
-                        <ListItemText 
+                        <ListItemText
                           primary={user?.name || member.toString().slice(0, 8)}
                         />
                         <ListItemSecondaryAction>
-                          <IconButton 
-                            edge="end" 
+                          <IconButton
+                            edge="end"
                             onClick={() => {
-                              setEditedMembers(editedMembers.filter(
-                                m => m.toString() !== member.toString()
-                              ));
+                              setEditedMembers(
+                                editedMembers.filter(
+                                  (m) => m.toString() !== member.toString(),
+                                ),
+                              );
                             }}
                           >
                             <DeleteIcon />
@@ -326,14 +345,18 @@ const ChatWindow = memo(
                   fullWidth
                   sx={{ mt: 2 }}
                   onClick={async () => {
-                    const updatedChat = {
+                    const updatedChat: Chat = {
                       ...chat,
+                      admins: chat.admins.map((a) => Principal.fromText(a.id)),
+                      creator: Principal.fromText(chat.creator.id),
                       workspaces: [selectedWorkspace],
-                      members: editedMembers
+                      members: editedMembers,
                     };
-                    
+
                     try {
-                      const result = await backendActor.update_chat(updatedChat);
+                      console.log({ updatedChat });
+                      const result =
+                        await backendActor.update_chat(updatedChat);
                       if ("Ok" in result) {
                         if (onUpdateChat) {
                           onUpdateChat(updatedChat);
