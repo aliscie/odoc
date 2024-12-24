@@ -1,4 +1,5 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import "./App.css";
 import Pages from "./pages";
 import { BrowserRouter } from "react-router-dom";
@@ -13,6 +14,7 @@ import { useBackendContext } from "./contexts/BackendContext";
 import { Box, CircularProgress } from "@mui/material";
 
 const App: React.FC = () => {
+  const dispatch = useDispatch();
   const { backendActor } = useBackendContext();
   useInitialData();
   useSocket();
@@ -34,10 +36,18 @@ const App: React.FC = () => {
   }
 
   useEffect(() => {
-      (async ()=>{
-          // let res = backendActor?.getInitialData()
-      })()
-  },[])
+    (async () => {
+      try {
+        const result = await backendActor?.deposit_ckusdt();
+        if (result?.Ok) {
+          // Update wallet state in Redux
+          dispatch({ type: "SET_WALLET", wallet: result.Ok });
+        }
+      } catch (error) {
+        console.error("Error depositing CKUSDT:", error);
+      }
+    })();
+  }, [backendActor])
 
   return (
     <BrowserRouter>
