@@ -270,8 +270,15 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
                       value={formValues.description}
                       onChange={handleChange}
                       multiline
-                      rows={2}
+                      rows={4}
                       variant="outlined"
+                      sx={{ 
+                        width: '100%',
+                        minWidth: '300px',
+                        '& .MuiInputBase-root': {
+                          width: '100%'
+                        }
+                      }}
                     />
                   </Stack>
                 ) : (
