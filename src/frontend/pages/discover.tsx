@@ -161,30 +161,33 @@ const SearchField = ({
             sx={{ flexGrow: 1 }}
           />
           <Autocomplete
+            multiple
             freeSolo
             size="small"
             options={filteredSuggestions}
-            inputValue={tagInput}
-            onInputChange={(_, newValue) => setTagInput(newValue)}
+            value={selectedTags}
             onChange={(_, newValue) => {
-              if (newValue) {
-                setSelectedTags([...new Set([...selectedTags, newValue])]);
-                setTagInput("");
-              }
+              const uniqueTags = [...new Set(newValue.map(tag => tag.trim()))];
+              setSelectedTags(uniqueTags);
             }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                placeholder="Add tag..."
+                placeholder="Add tags..."
                 size="small"
-                sx={{ width: 200 }}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    handleAddTag();
-                  }
-                }}
+                sx={{ minWidth: 200 }}
               />
             )}
+            renderTags={(value, getTagProps) =>
+              value.map((tag, index) => (
+                <Chip
+                  {...getTagProps({ index })}
+                  key={tag}
+                  label={tag}
+                  size="small"
+                />
+              ))
+            }
           />
           <Button
             variant="contained"
