@@ -167,7 +167,9 @@ const SearchField = ({
             options={filteredSuggestions}
             value={selectedTags}
             onChange={(_, newValue) => {
-              const uniqueTags = [...new Set(newValue.map(tag => tag.trim()))];
+              const uniqueTags = [
+                ...new Set(newValue.map((tag) => tag.trim())),
+              ];
               setSelectedTags(uniqueTags);
             }}
             renderInput={(params) => (
@@ -225,8 +227,8 @@ const SocialPosts = () => {
   const [posts, setPosts] = useState<Array<PostUser>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isChanged, setIsChanged] = useState<{[key: string]: boolean}>({});
-  
+  const [isChanged, setIsChanged] = useState<{ [key: string]: boolean }>({});
+
   const suggestedTags = [
     "technology",
     "programming",
@@ -267,7 +269,7 @@ const SocialPosts = () => {
   const [commentInputs, setCommentInputs] = useState({});
   const [showComments, setShowComments] = useState({});
   const [isPosting, setIsPosting] = useState(false);
-  const [isSaving, setIsSaving] = useState<{[key: string]: boolean}>({});
+  const [isSaving, setIsSaving] = useState<{ [key: string]: boolean }>({});
   const newPostContentRef = useRef<any>(null);
 
   const handleNewPost = async (content: any, tags: string[]) => {
@@ -311,6 +313,7 @@ const SocialPosts = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  console.log({ selectedTags });
 
   // Add this function after other handler functions
   const filteredPosts = posts.filter((post) => {
@@ -413,7 +416,7 @@ const SocialPosts = () => {
   const handleSavePost = async (post: PostUser) => {
     if (!newPostContentRef.current || !backendActor) return;
 
-    setIsSaving(prev => ({...prev, [post.id]: true}));
+    setIsSaving((prev) => ({ ...prev, [post.id]: true }));
     try {
       let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
         serializeFileContents(newPostContentRef.current);
@@ -437,7 +440,7 @@ const SocialPosts = () => {
     } catch (err) {
       console.error("Error saving post:", err);
     } finally {
-      setIsSaving(prev => ({...prev, [post.id]: false}));
+      setIsSaving((prev) => ({ ...prev, [post.id]: false }));
     }
   };
 
@@ -597,7 +600,7 @@ const SocialPosts = () => {
                 new_change[""] = changes;
                 newPostContentRef.current = new_change;
                 if (!isChanged[post.id]) {
-                  setIsChanged(prev => ({...prev, [post.id]: true}));
+                  setIsChanged((prev) => ({ ...prev, [post.id]: true }));
                 }
               }}
             />
@@ -633,13 +636,14 @@ const SocialPosts = () => {
                     options={suggestedTags}
                     value={post.tags}
                     onChange={(_, newValue) => {
-                      const uniqueTags = [...new Set(newValue.map(tag => tag.trim()))];
+                      const uniqueTags = [
+                        ...new Set(newValue.map((tag) => tag.trim())),
+                      ];
                       const updatedPost = {
                         ...post,
                         tags: uniqueTags,
                       };
-                      handleSavePost(updatedPost);
-                      setIsChanged(prev => ({...prev, [post.id]: true}));
+                      setIsChanged((prev) => ({ ...prev, [post.id]: true }));
                     }}
                     renderInput={(params) => (
                       <TextField
@@ -681,7 +685,7 @@ const SocialPosts = () => {
                     <Button
                       onClick={async () => {
                         await handleSavePost(post);
-                        setIsChanged(prev => ({...prev, [post.id]: false}));
+                        setIsChanged((prev) => ({ ...prev, [post.id]: false }));
                       }}
                       color="primary"
                       size="small"
