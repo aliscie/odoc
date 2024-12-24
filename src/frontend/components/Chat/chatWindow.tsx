@@ -164,27 +164,27 @@ const ChatWindow = memo(
     const handleSaveChat = async (updatedChat: Chat) => {
       setIsSaving(true);
       try {
-        // Convert all Principals to the correct format before sending
+        // Keep existing Principals if they're already Principal objects
         const formattedChat = {
           ...updatedChat,
           admins: updatedChat.admins.map(a => 
-            typeof a === 'string' ? Principal.fromText(a) : Principal.fromText(a.toString())
+            a instanceof Principal ? a : Principal.fromText(a)
           ),
-          creator: typeof updatedChat.creator === 'string' 
-            ? Principal.fromText(updatedChat.creator) 
-            : Principal.fromText(updatedChat.creator.toString()),
+          creator: updatedChat.creator instanceof Principal 
+            ? updatedChat.creator 
+            : Principal.fromText(updatedChat.creator),
           members: updatedChat.members.map(m => 
-            typeof m === 'string' ? Principal.fromText(m) : Principal.fromText(m.toString())
+            m instanceof Principal ? m : Principal.fromText(m)
           ),
           messages: updatedChat.messages.map(msg => ({
             ...msg,
-            sender: typeof msg.sender === 'string' 
-              ? Principal.fromText(msg.sender) 
-              : Principal.fromText(msg.sender.toString()),
+            sender: msg.sender instanceof Principal 
+              ? msg.sender 
+              : Principal.fromText(msg.sender),
             seen_by: msg.seen_by.map(s => 
-              typeof s === 'string' ? Principal.fromText(s) : Principal.fromText(s.toString())
+              s instanceof Principal ? s : Principal.fromText(s)
             ),
-            date: BigInt(msg.date.toString())
+            date: typeof msg.date === 'bigint' ? msg.date : BigInt(msg.date.toString())
           }))
         };
 
@@ -414,10 +414,10 @@ const ChatWindow = memo(
                       const updatedChat: Chat = {
                         ...chat,
                         name: formData.name,
-                        admins: formData.admins,
-                        creator: Principal.fromText(chat.creator.id),
+                        admins: formData.admins.map(id => chat.admins.find(a => a.toString() === id) || Principal.fromText(id)),
+                        creator: chat.creator,
                         workspaces: formData.workspaces,
-                        members: formData.members,
+                        members: formData.members.map(id => chat.members.find(m => m.toString() === id) || Principal.fromText(id)),
                       };
                       handleSaveChat(updatedChat);
                       setIsSettingsView(false);
