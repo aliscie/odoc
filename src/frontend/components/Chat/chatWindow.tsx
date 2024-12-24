@@ -62,6 +62,7 @@ const ChatWindow = memo(
     const [isMinimized, setIsMinimized] = useState(false);
     const [isSending, setIsSending] = useState(false);
     const [editedName, setEditedName] = useState(chat.name);
+    const [isSaving, setIsSaving] = useState(false);
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
