@@ -164,11 +164,18 @@ const ChatList = memo(
     onChatClick: (chat: Chat) => void;
     currentUserId: string;
   }) => {
+    const { currentWorkspace } = useSelector((state: any) => state.filesState);
     // Calculate unread count for each chat if not already present
-    const chatsWithUnread = chats.map((chat) => {
-      if ("unread" in chat) return chat;
+    const chatsWithUnread = chats
+      .filter(chat => 
+        // Include chat if it's in current workspace or if current workspace is default
+        currentWorkspace.name === "default" || 
+        chat.workspaces.includes(currentWorkspace.id)
+      )
+      .map((chat) => {
+        if ("unread" in chat) return chat;
 
-      const unseenCount = chat.messages.reduce((count, message) => {
+        const unseenCount = chat.messages.reduce((count, message) => {
         const isSeen = message.seen_by.some(
           (user) => user.toString() === currentUserId,
         );
