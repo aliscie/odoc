@@ -21,21 +21,29 @@ const App: React.FC = () => {
   useSocket();
 
   useEffect(() => {
-    if (backendActor) {
+    if (backendActor && ckUSDCActor && profile?.id) {
       (async () => {
         try {
-          const result = await backendActor.deposit_ckusdt();
-          console.log("Deposit CKUSDT result:", result);
-          if (result?.Ok) {
-            // Update wallet state in Redux
-            dispatch({ type: "SET_WALLET", wallet: result.Ok });
+          // Check CKUSDT balance first
+          const balance = await ckUSDCActor.icrc1_balance_of({
+            owner: Principal.fromText(profile.id),
+            subaccount: []
+          });
+          
+          if (balance > 0) {
+            const result = await backendActor.deposit_ckusdt();
+            console.log("Deposit CKUSDT result:", result);
+            if (result?.Ok) {
+              // Update wallet state in Redux
+              dispatch({ type: "SET_WALLET", wallet: result.Ok });
+            }
           }
         } catch (error) {
-          console.error("Error depositing CKUSDT:", error);
+          console.error("Error checking/depositing CKUSDT:", error);
         }
       })();
     }
-  }, [backendActor, dispatch]);
+  }, [backendActor, ckUSDCActor, profile, dispatch]);
 
   let Loadder = (
     <Box
