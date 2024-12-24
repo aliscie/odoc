@@ -81,10 +81,10 @@ const WalletPage = ({ wallet = defaultWallet }) => {
           { LocalSend: null }
         );
       } else if (type === "withdraw" && withdrawAddress) {
-        result = await backendActor.internal_transaction(
-          parseFloat(amount),
-          withdrawAddress,
-          { Withdraw: null }
+        // Call withdraw_ckusdt for withdrawals
+        result = await backendActor.withdraw_ckusdt(
+          BigInt(Math.floor(parseFloat(amount))), // Convert to u64
+          withdrawAddress
         );
       }
 
