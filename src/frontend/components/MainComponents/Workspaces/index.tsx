@@ -248,7 +248,7 @@ const WorkspaceManager = () => {
 
         <Divider />
 
-        {workspaces.map((workspace) => (
+        {[{id: 'default', name: 'default'}, ...workspaces].map((workspace) => (
           <MenuItem
             key={workspace.id}
             selected={workspace && workspace.id === currentWorkspace.id}
