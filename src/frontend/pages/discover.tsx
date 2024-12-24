@@ -223,6 +223,19 @@ const SocialPosts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isChanged, setIsChanged] = useState<{[key: string]: boolean}>({});
+  
+  const suggestedTags = [
+    "technology",
+    "programming",
+    "design",
+    "business",
+    "marketing",
+    "science",
+    "art",
+    "music",
+    "travel",
+    "food",
+  ];
   const { profile } = useSelector((state: any) => state.filesState);
   const currentUser = profile;
 
@@ -610,32 +623,36 @@ const SocialPosts = () => {
                 <Box
                   sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}
                 >
-                  <TextField
+                  <Autocomplete
+                    freeSolo
                     size="small"
-                    placeholder="Add tag..."
+                    options={suggestedTags.filter(tag => !post.tags.includes(tag))}
                     value={tagInputs[post.id] || ""}
-                    onChange={(e) =>
+                    onInputChange={(_, newValue) => 
                       setTagInputs((prev) => ({
                         ...prev,
-                        [post.id]: e.target.value,
+                        [post.id]: newValue,
                       }))
                     }
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter" && tagInputs[post.id]?.trim()) {
+                    onChange={(_, newValue) => {
+                      if (newValue?.trim()) {
                         const updatedPost = {
                           ...post,
-                          tags: [
-                            ...new Set([
-                              ...post.tags,
-                              tagInputs[post.id].trim(),
-                            ]),
-                          ],
+                          tags: [...new Set([...post.tags, newValue.trim()])],
                         };
                         handleSavePost(updatedPost);
                         setTagInputs((prev) => ({ ...prev, [post.id]: "" }));
+                        setIsChanged(prev => ({...prev, [post.id]: true}));
                       }
                     }}
-                    sx={{ width: 120 }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        placeholder="Add tag..."
+                        size="small"
+                        sx={{ width: 200 }}
+                      />
+                    )}
                   />
                   <Button
                     variant="outlined"
