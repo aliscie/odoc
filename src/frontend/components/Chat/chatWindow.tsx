@@ -28,6 +28,7 @@ import {
   Settings as SettingsIcon,
   ArrowBack as ArrowBackIcon,
   Delete as DeleteIcon,
+  Check,
 } from "@mui/icons-material";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 import CloseIcon from "@mui/icons-material/Close";
@@ -68,7 +69,9 @@ const ChatWindow = memo(
     const [isSending, setIsSending] = useState(false);
     const [editedName, setEditedName] = useState(chat.name);
     const [isSaving, setIsSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
     const messagesEndRef = useRef(null);
+    const saveSuccessTimeout = useRef(null);
 
     useEffect(() => {
       // setSelectedWorkspace(chat.workspaces[0] || "");
@@ -195,10 +198,14 @@ const ChatWindow = memo(
           if (onUpdateChat) {
             onUpdateChat(result.Ok);
           }
-          // Update local state
-          // setSelectedWorkspace(result.Ok.workspaces[0] || "");
-          // setEditedMembers(result.Ok.members);
           setEditedName(result.Ok.name);
+          setSaveSuccess(true);
+          if (saveSuccessTimeout.current) {
+            clearTimeout(saveSuccessTimeout.current);
+          }
+          saveSuccessTimeout.current = setTimeout(() => {
+            setSaveSuccess(false);
+          }, 2000);
         }
       } catch (error) {
         console.error("Failed to update chat:", error);
@@ -417,9 +424,10 @@ const ChatWindow = memo(
                 <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
                   <Button
                     variant="contained"
-                    color="primary"
+                    color={saveSuccess ? "success" : "primary"}
                     fullWidth
                     disabled={isSaving}
+                    startIcon={isSaving ? <CircularProgress size={20} /> : (saveSuccess ? <Check /> : null)}
                     onClick={() => {
                       const updatedChat: Chat = {
                         ...chat,
