@@ -52,10 +52,12 @@ const ChatWindow = memo(
   }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [isSettingsView, setIsSettingsView] = useState(false);
-    const [selectedWorkspace, setSelectedWorkspace] = useState(
-      chat.workspaces[0] || "",
-    );
-    const [editedMembers, setEditedMembers] = useState(chat.members);
+    const [formData, setFormData] = useState({
+      name: chat.name,
+      workspaces: chat.workspaces,
+      admins: chat.admins,
+      members: chat.members
+    });
     const { workspaces, all_friends, profile } = useSelector(
       (state: any) => state.filesState,
     );
@@ -365,42 +367,39 @@ const ChatWindow = memo(
                 <TextField
                   fullWidth
                   label="Chat Name"
-                  value={editedName}
-                  onChange={(e) => setEditedName(e.target.value)}
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({...prev, name: e.target.value}))}
                   sx={{ mb: 2 }}
                 />
                 <WorkspaceSelect
-                  value={workspaces.filter(w => chat.workspaces.includes(w.id))}
+                  value={workspaces.filter(w => formData.workspaces.includes(w.id))}
                   onChange={(newValue) => {
-                    const updatedChat = {
-                      ...chat,
+                    setFormData(prev => ({
+                      ...prev,
                       workspaces: newValue.map(w => w.id)
-                    };
-                    handleSaveChat(updatedChat);
+                    }));
                   }}
                   workspaces={workspaces}
                 />
 
                 <AdminsSelect
-                  value={all_friends.filter(f => chat.admins.some(a => a.toString() === f.id))}
+                  value={all_friends.filter(f => formData.admins.some(a => a.toString() === f.id))}
                   onChange={(newValue) => {
-                    const updatedChat = {
-                      ...chat,
+                    setFormData(prev => ({
+                      ...prev,
                       admins: newValue.map(admin => admin.id)
-                    };
-                    handleSaveChat(updatedChat);
+                    }));
                   }}
                   members={all_friends}
                 />
 
                 <MembersSelect
-                  value={all_friends.filter(f => chat.members.some(m => m.toString() === f.id))}
+                  value={all_friends.filter(f => formData.members.some(m => m.toString() === f.id))}
                   onChange={(newValue) => {
-                    const updatedChat = {
-                      ...chat,
+                    setFormData(prev => ({
+                      ...prev,
                       members: newValue.map(member => member.id)
-                    };
-                    handleSaveChat(updatedChat);
+                    }));
                   }}
                   users={all_friends}
                 />
@@ -414,13 +413,11 @@ const ChatWindow = memo(
                     onClick={() => {
                       const updatedChat: Chat = {
                         ...chat,
-                        name: editedName,
-                        admins: chat.admins.map((a) =>
-                          Principal.fromText(a.id),
-                        ),
+                        name: formData.name,
+                        admins: formData.admins,
                         creator: Principal.fromText(chat.creator.id),
-                        workspaces: [selectedWorkspace],
-                        members: editedMembers,
+                        workspaces: formData.workspaces,
+                        members: formData.members,
                       };
                       handleSaveChat(updatedChat);
                       setIsSettingsView(false);
