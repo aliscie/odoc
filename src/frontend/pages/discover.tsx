@@ -313,6 +313,7 @@ const SocialPosts = () => {
   const handleVoteUp = async (postId: string) => {
     try {
       if (!backendActor) return;
+      setLoadingVotes(prev => ({...prev, [postId]: {...prev[postId], up: true}}));
       const result = await backendActor.vote_up(postId);
       if ("Ok" in result) {
         const updatedPosts = posts.map((post) =>
@@ -324,12 +325,15 @@ const SocialPosts = () => {
       }
     } catch (err) {
       console.error("Error voting up:", err);
+    } finally {
+      setLoadingVotes(prev => ({...prev, [postId]: {...prev[postId], up: false}}));
     }
   };
 
   const handleVoteDown = async (postId: string) => {
     try {
       if (!backendActor) return;
+      setLoadingVotes(prev => ({...prev, [postId]: {...prev[postId], down: true}}));
       const result = await backendActor.vote_down(postId);
       if ("Ok" in result) {
         const updatedPosts = posts.map((post) =>
@@ -341,10 +345,13 @@ const SocialPosts = () => {
       }
     } catch (err) {
       console.error("Error voting down:", err);
+    } finally {
+      setLoadingVotes(prev => ({...prev, [postId]: {...prev[postId], down: false}}));
     }
   };
 
   const [isDeletingPost, setIsDeletingPost] = useState<string | null>(null);
+  const [loadingVotes, setLoadingVotes] = useState<{[key: string]: {up?: boolean, down?: boolean}}>({});
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
@@ -668,6 +675,7 @@ const SocialPosts = () => {
                 <Button
                   startIcon={<HeartIcon />}
                   onClick={() => handleVoteUp(post.id)}
+                  disabled={loadingVotes[post.id]?.up}
                   color={
                     post.votes_up.some(
                       (p) =>
@@ -678,11 +686,12 @@ const SocialPosts = () => {
                       : "inherit"
                   }
                 >
-                  {post.votes_up.length}
+                  {loadingVotes[post.id]?.up ? "..." : post.votes_up.length}
                 </Button>
                 <Button
                   startIcon={<ThumbsDownIcon />}
                   onClick={() => handleVoteDown(post.id)}
+                  disabled={loadingVotes[post.id]?.down}
                   color={
                     post.votes_down.some(
                       (p) =>
@@ -693,7 +702,7 @@ const SocialPosts = () => {
                       : "inherit"
                   }
                 >
-                  {post.votes_down.length}
+                  {loadingVotes[post.id]?.down ? "..." : post.votes_down.length}
                 </Button>
                 <Button
                   startIcon={<MessageCircleIcon />}
