@@ -290,7 +290,11 @@ const ChatWindow = memo(
               Chat Settings
             </Typography>
 
-            {chat.name === "private_chat" ? (
+            {chat.creator?.id !== profile?.id ? (
+              <Typography color="error">
+                Only the chat creator can modify settings
+              </Typography>
+            ) : chat.name === "private_chat" ? (
               <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel>Workspace</InputLabel>
                 <Select
@@ -312,11 +316,16 @@ const ChatWindow = memo(
                   label="Chat Name"
                   value={chat.name}
                   onChange={(e) => {
+                    const newName = e.target.value;
                     if (onUpdateChat) {
-                      onUpdateChat({
+                      const updatedChat = {
                         ...chat,
-                        name: e.target.value
-                      });
+                        name: newName,
+                        admins: chat.admins.map(a => Principal.fromText(a.toString())),
+                        creator: Principal.fromText(chat.creator.toString()),
+                        members: chat.members.map(m => Principal.fromText(m.toString()))
+                      };
+                      onUpdateChat(updatedChat);
                     }
                   }}
                   sx={{ mb: 2 }}
@@ -331,6 +340,33 @@ const ChatWindow = memo(
                     {workspaces.map((workspace) => (
                       <MenuItem key={workspace.id} value={workspace.id}>
                         {workspace.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                  <InputLabel>Admins</InputLabel>
+                  <Select
+                    multiple
+                    value={chat.admins.map(a => a.toString())}
+                    label="Admins"
+                    onChange={(e) => {
+                      const selectedAdmins = e.target.value as string[];
+                      if (onUpdateChat) {
+                        const updatedChat = {
+                          ...chat,
+                          admins: selectedAdmins.map(id => Principal.fromText(id)),
+                          creator: Principal.fromText(chat.creator.toString()),
+                          members: chat.members.map(m => Principal.fromText(m.toString()))
+                        };
+                        onUpdateChat(updatedChat);
+                      }
+                    }}
+                  >
+                    {chat.members.map((member) => (
+                      <MenuItem key={member.toString()} value={member.toString()}>
+                        {all_friends.find(f => f.id === member.toString())?.name || member.toString()}
                       </MenuItem>
                     ))}
                   </Select>
@@ -402,14 +438,15 @@ const ChatWindow = memo(
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={async () => {
-                        try {
-                          const result = await backendActor.delete_chat(chat.id);
-                          if ("Ok" in result && onClose) {
-                            onClose(chat.id);
-                          }
-                        } catch (error) {
-                          console.error("Failed to delete chat:", error);
+                      onClick={() => {
+                        if (window.confirm("Are you sure you want to delete this chat? This action cannot be undone.")) {
+                          backendActor.delete_chat(chat.id).then(result => {
+                            if ("Ok" in result && onClose) {
+                              onClose(chat.id);
+                            }
+                          }).catch(error => {
+                            console.error("Failed to delete chat:", error);
+                          });
                         }
                       }}
                     >
