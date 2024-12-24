@@ -243,8 +243,14 @@ const ChatList = memo(
                   </Box>
                 }
                 secondary={
-                  chat.messages[chat.messages.length - 1]?.message ||
-                  "No messages"
+                  <>
+                    {chat.messages[chat.messages.length - 1]?.message || "No messages"}
+                    {currentWorkspace.name === "default" && chat.workspaces.length > 0 && (
+                      <Typography component="span" sx={{ ml: 1, color: 'text.secondary' }}>
+                        [{workspaces.filter(w => chat.workspaces.includes(w.id)).map(w => w.name).join(', ')}]
+                      </Typography>
+                    )}
+                  </>
                 }
               />
             </ListItem>
