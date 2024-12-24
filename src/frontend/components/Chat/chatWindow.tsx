@@ -29,13 +29,14 @@ import {
 import MinimizeIcon from "@mui/icons-material/Minimize";
 import CloseIcon from "@mui/icons-material/Close";
 import { useBackendContext } from "../../contexts/BackendContext";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Principal } from "@dfinity/principal";
 import { randomString } from "../../DataProcessing/dataSamples";
 import formatTimestamp from "../../utils/time";
 import { isConstantNode } from "mathjs";
 import { Link } from "react-router-dom";
 import { Chat } from "../../../declarations/backend/backend.did";
+import { handleRedux } from "../../redux/store/handleRedux";
 
 const ChatWindow = memo(
   ({
@@ -151,7 +152,7 @@ const ChatWindow = memo(
       setIsDragging(false);
       onPositionChange(chat.id, dragPosition);
     }, [chat.id, dragPosition, onPositionChange]);
-
+    const dispatch = useDispatch();
     return (
       <Paper
         elevation={3}
@@ -321,9 +322,13 @@ const ChatWindow = memo(
                       const updatedChat = {
                         ...chat,
                         name: newName,
-                        admins: chat.admins.map(a => Principal.fromText(a.toString())),
+                        admins: chat.admins.map((a) =>
+                          Principal.fromText(a.toString()),
+                        ),
                         creator: Principal.fromText(chat.creator.toString()),
-                        members: chat.members.map(m => Principal.fromText(m.toString()))
+                        members: chat.members.map((m) =>
+                          Principal.fromText(m.toString()),
+                        ),
                       };
                       onUpdateChat(updatedChat);
                     }
@@ -349,24 +354,32 @@ const ChatWindow = memo(
                   <InputLabel>Admins</InputLabel>
                   <Select
                     multiple
-                    value={chat.admins.map(a => a.toString())}
+                    value={chat.admins.map((a) => a.toString())}
                     label="Admins"
                     onChange={(e) => {
                       const selectedAdmins = e.target.value as string[];
                       if (onUpdateChat) {
                         const updatedChat = {
                           ...chat,
-                          admins: selectedAdmins.map(id => Principal.fromText(id)),
+                          admins: selectedAdmins.map((id) =>
+                            Principal.fromText(id),
+                          ),
                           creator: Principal.fromText(chat.creator.toString()),
-                          members: chat.members.map(m => Principal.fromText(m.toString()))
+                          members: chat.members.map((m) =>
+                            Principal.fromText(m.toString()),
+                          ),
                         };
                         onUpdateChat(updatedChat);
                       }
                     }}
                   >
                     {chat.members.map((member) => (
-                      <MenuItem key={member.toString()} value={member.toString()}>
-                        {all_friends.find(f => f.id === member.toString())?.name || member.toString()}
+                      <MenuItem
+                        key={member.toString()}
+                        value={member.toString()}
+                      >
+                        {all_friends.find((f) => f.id === member.toString())
+                          ?.name || member.toString()}
                       </MenuItem>
                     ))}
                   </Select>
@@ -404,7 +417,7 @@ const ChatWindow = memo(
                   })}
                 </List>
 
-                <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+                <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
                   <Button
                     variant="contained"
                     color="primary"
@@ -412,14 +425,17 @@ const ChatWindow = memo(
                     onClick={async () => {
                       const updatedChat: Chat = {
                         ...chat,
-                        admins: chat.admins.map((a) => Principal.fromText(a.id)),
+                        admins: chat.admins.map((a) =>
+                          Principal.fromText(a.id),
+                        ),
                         creator: Principal.fromText(chat.creator.id),
                         workspaces: [selectedWorkspace],
                         members: editedMembers,
                       };
 
                       try {
-                        const result = await backendActor.update_chat(updatedChat);
+                        const result =
+                          await backendActor.update_chat(updatedChat);
                         if ("Ok" in result) {
                           if (onUpdateChat) {
                             onUpdateChat(updatedChat);
@@ -433,20 +449,32 @@ const ChatWindow = memo(
                   >
                     Save Changes
                   </Button>
-                  
+
                   {chat.name !== "private_chat" && (
                     <Button
                       variant="contained"
                       color="error"
                       onClick={() => {
-                        if (window.confirm("Are you sure you want to delete this chat? This action cannot be undone.")) {
-                          backendActor.delete_chat(chat.id).then(result => {
-                            if ("Ok" in result && onClose) {
-                              onClose(chat.id);
-                            }
-                          }).catch(error => {
-                            console.error("Failed to delete chat:", error);
-                          });
+                        if (
+                          window.confirm(
+                            "Are you sure you want to delete this chat? This action cannot be undone.",
+                          )
+                        ) {
+                          backendActor
+                            .delete_chat(chat.id)
+                            .then((result) => {
+                              if ("Ok" in result && onClose) {
+                                dispatch(
+                                  handleRedux("DELETE_CHAT", {
+                                    chat_id: chat.id,
+                                  }),
+                                );
+                                onClose(chat.id);
+                              }
+                            })
+                            .catch((error) => {
+                              console.error("Failed to delete chat:", error);
+                            });
                         }
                       }}
                     >
