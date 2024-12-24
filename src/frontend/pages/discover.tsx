@@ -624,57 +624,39 @@ const SocialPosts = () => {
                   sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}
                 >
                   <Autocomplete
+                    multiple
                     freeSolo
                     size="small"
-                    options={suggestedTags.filter(tag => !post.tags.includes(tag))}
-                    value={tagInputs[post.id] || ""}
-                    onInputChange={(_, newValue) => 
-                      setTagInputs((prev) => ({
-                        ...prev,
-                        [post.id]: newValue,
-                      }))
-                    }
+                    options={suggestedTags}
+                    value={post.tags}
                     onChange={(_, newValue) => {
-                      if (newValue?.trim()) {
-                        const updatedPost = {
-                          ...post,
-                          tags: [...new Set([...post.tags, newValue.trim()])],
-                        };
-                        handleSavePost(updatedPost);
-                        setTagInputs((prev) => ({ ...prev, [post.id]: "" }));
-                        setIsChanged(prev => ({...prev, [post.id]: true}));
-                      }
+                      const uniqueTags = [...new Set(newValue.map(tag => tag.trim()))];
+                      const updatedPost = {
+                        ...post,
+                        tags: uniqueTags,
+                      };
+                      handleSavePost(updatedPost);
+                      setIsChanged(prev => ({...prev, [post.id]: true}));
                     }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        placeholder="Add tag..."
+                        placeholder="Add tags..."
                         size="small"
-                        sx={{ width: 200 }}
+                        sx={{ minWidth: 300 }}
                       />
                     )}
+                    renderTags={(value, getTagProps) =>
+                      value.map((tag, index) => (
+                        <Chip
+                          {...getTagProps({ index })}
+                          key={tag}
+                          label={tag}
+                          size="small"
+                        />
+                      ))
+                    }
                   />
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() => {
-                      if (tagInputs[post.id]?.trim()) {
-                        const updatedPost = {
-                          ...post,
-                          tags: [
-                            ...new Set([
-                              ...post.tags,
-                              tagInputs[post.id].trim(),
-                            ]),
-                          ],
-                        };
-                        handleSavePost(updatedPost);
-                        setTagInputs((prev) => ({ ...prev, [post.id]: "" }));
-                      }
-                    }}
-                  >
-                    Add Tag
-                  </Button>
                 </Box>
               )}
             </Box>

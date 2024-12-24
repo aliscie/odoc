@@ -98,40 +98,34 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
 
             <div className="flex gap-2 items-center">
               <Autocomplete
+                multiple
                 freeSolo
                 size="small"
-                options={suggestedTags.filter(tag => !tags.includes(tag))}
-                inputValue={tagInput}
-                onInputChange={(_, newValue) => setTagInput(newValue)}
+                options={suggestedTags}
+                value={tags}
                 onChange={(_, newValue) => {
-                  if (newValue) {
-                    const newTag = newValue.trim();
-                    if (newTag && !tags.includes(newTag)) {
-                      tagsRef.current = [...tagsRef.current, newTag];
-                      setTags([...tags, newTag]);
-                    }
-                    setTagInput("");
-                  }
+                  const uniqueTags = [...new Set(newValue.map(tag => tag.trim()))];
+                  tagsRef.current = uniqueTags;
+                  setTags(uniqueTags);
                 }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    placeholder="Add tag..."
+                    placeholder="Add tags..."
                     size="small"
-                    className="w-[200px]"
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter" && tagInput.trim()) {
-                        e.preventDefault();
-                        const newTag = tagInput.trim();
-                        if (!tags.includes(newTag)) {
-                          tagsRef.current = [...tagsRef.current, newTag];
-                          setTags([...tags, newTag]);
-                        }
-                        setTagInput("");
-                      }
-                    }}
+                    sx={{ minWidth: 300 }}
                   />
                 )}
+                renderTags={(value, getTagProps) =>
+                  value.map((tag, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={tag}
+                      label={tag}
+                      size="small"
+                    />
+                  ))
+                }
               />
             </div>
 
