@@ -377,11 +377,7 @@ const ChatWindow = memo(
                     <TextField {...params} label="Admins" fullWidth sx={{ mb: 2 }} />
                   )}
                 />
-                          ?.name || member.toString()}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+              </FormControl>
 
                 <Autocomplete
                   multiple
