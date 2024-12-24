@@ -327,20 +327,37 @@ const ChatWindow = memo(
                   getOptionLabel={(option) => option.name}
                   value={workspaces.filter(w => chat.workspaces.includes(w.id))}
                   onChange={(_, newValue) => {
-                    if (onUpdateChat) {
-                      const updatedChat = {
-                        ...chat,
-                        workspaces: newValue.map(w => w.id),
-                        admins: chat.admins.map(a => Principal.fromText(a.toString())),
-                        creator: Principal.fromText(chat.creator.toString()),
-                        members: chat.members.map(m => Principal.fromText(m.toString()))
-                      };
-                      onUpdateChat(updatedChat);
-                    }
+                    const updatedChat = {
+                      ...chat,
+                      workspaces: newValue.map(w => w.id),
+                      admins: chat.admins.map(a => Principal.fromText(a.toString())),
+                      creator: Principal.fromText(chat.creator.toString()),
+                      members: chat.members.map(m => Principal.fromText(m.toString()))
+                    };
+                    handleSavePost(updatedChat);
                   }}
                   renderInput={(params) => (
                     <TextField {...params} label="Workspaces" fullWidth sx={{ mb: 2 }} />
                   )}
+                  renderTags={(value, getTagProps) =>
+                    value.map((option, index) => (
+                      <Chip
+                        label={option.name}
+                        {...getTagProps({ index })}
+                        onDelete={() => {
+                          const newValue = value.filter((_, i) => i !== index);
+                          const updatedChat = {
+                            ...chat,
+                            workspaces: newValue.map(w => w.id),
+                            admins: chat.admins.map(a => Principal.fromText(a.toString())),
+                            creator: Principal.fromText(chat.creator.toString()),
+                            members: chat.members.map(m => Principal.fromText(m.toString()))
+                          };
+                          handleSavePost(updatedChat);
+                        }}
+                      />
+                    ))
+                  }
                 />
 
                 <Autocomplete
@@ -349,19 +366,35 @@ const ChatWindow = memo(
                   getOptionLabel={(option) => option.name || option.id}
                   value={all_friends.filter(f => chat.admins.some(a => a.toString() === f.id))}
                   onChange={(_, newValue) => {
-                    if (onUpdateChat) {
-                      const updatedChat = {
-                        ...chat,
-                        admins: newValue.map(admin => Principal.fromText(admin.id)),
-                        creator: Principal.fromText(chat.creator.toString()),
-                        members: chat.members.map(m => Principal.fromText(m.toString()))
-                      };
-                      onUpdateChat(updatedChat);
-                    }
+                    const updatedChat = {
+                      ...chat,
+                      admins: newValue.map(admin => Principal.fromText(admin.id)),
+                      creator: Principal.fromText(chat.creator.toString()),
+                      members: chat.members.map(m => Principal.fromText(m.toString()))
+                    };
+                    handleSavePost(updatedChat);
                   }}
                   renderInput={(params) => (
                     <TextField {...params} label="Admins" fullWidth sx={{ mb: 2 }} />
                   )}
+                  renderTags={(value, getTagProps) =>
+                    value.map((option, index) => (
+                      <Chip
+                        label={option.name || option.id}
+                        {...getTagProps({ index })}
+                        onDelete={() => {
+                          const newValue = value.filter((_, i) => i !== index);
+                          const updatedChat = {
+                            ...chat,
+                            admins: newValue.map(admin => Principal.fromText(admin.id)),
+                            creator: Principal.fromText(chat.creator.toString()),
+                            members: chat.members.map(m => Principal.fromText(m.toString()))
+                          };
+                          handleSavePost(updatedChat);
+                        }}
+                      />
+                    ))
+                  }
                 />
 
                 <Autocomplete
@@ -370,19 +403,35 @@ const ChatWindow = memo(
                   getOptionLabel={(option) => option.name || option.id}
                   value={all_friends.filter(f => chat.members.some(m => m.toString() === f.id))}
                   onChange={(_, newValue) => {
-                    if (onUpdateChat) {
-                      const updatedChat = {
-                        ...chat,
-                        members: newValue.map(member => Principal.fromText(member.id)),
-                        admins: chat.admins.map(a => Principal.fromText(a.toString())),
-                        creator: Principal.fromText(chat.creator.toString())
-                      };
-                      onUpdateChat(updatedChat);
-                    }
+                    const updatedChat = {
+                      ...chat,
+                      members: newValue.map(member => Principal.fromText(member.id)),
+                      admins: chat.admins.map(a => Principal.fromText(a.toString())),
+                      creator: Principal.fromText(chat.creator.toString())
+                    };
+                    handleSavePost(updatedChat);
                   }}
                   renderInput={(params) => (
                     <TextField {...params} label="Members" fullWidth sx={{ mb: 2 }} />
                   )}
+                  renderTags={(value, getTagProps) =>
+                    value.map((option, index) => (
+                      <Chip
+                        label={option.name || option.id}
+                        {...getTagProps({ index })}
+                        onDelete={() => {
+                          const newValue = value.filter((_, i) => i !== index);
+                          const updatedChat = {
+                            ...chat,
+                            members: newValue.map(member => Principal.fromText(member.id)),
+                            admins: chat.admins.map(a => Principal.fromText(a.toString())),
+                            creator: Principal.fromText(chat.creator.toString())
+                          };
+                          handleSavePost(updatedChat);
+                        }}
+                      />
+                    ))
+                  }
                 />
 
                 <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
