@@ -206,10 +206,14 @@ const WalletPage = ({ wallet = defaultWallet }) => {
                   <TableCell>{formatDate(exchange.date_created)}</TableCell>
                   <TableCell>{exchange.type}</TableCell>
                   <TableCell>
-                    {all_friends.find(f => f.id === exchange.from)?.name || exchange.from}
+                    {exchange.from === profile?.id 
+                      ? "You"
+                      : all_friends.find(f => f.id === exchange.from)?.name || exchange.from}
                   </TableCell>
                   <TableCell>
-                    {all_friends.find(f => f.id === exchange.to)?.name || exchange.to}
+                    {exchange.to === profile?.id
+                      ? "You" 
+                      : all_friends.find(f => f.id === exchange.to)?.name || exchange.to}
                   </TableCell>
                   <TableCell
                     align="right"
