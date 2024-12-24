@@ -388,9 +388,13 @@ const ChatNotifications = ({ chats: initialChats }: { chats: Chat[] }) => {
           id: randomString(),
           name: formData.name,
           messages: [],
-          members: formData.members.map((m) => Principal.fromText(m.id)),
-          admins: formData.admins.map((a) => Principal.fromText(a.id)),
-          workspaces: [formData.workspace],
+          members: formData.members
+            ? formData.members.map((m) => Principal.fromText(m.id))
+            : [],
+          admins: formData.admins
+            ? formData.admins.map((a) => Principal.fromText(a.id))
+            : [],
+          workspaces: formData.workspace ? [formData.workspace] : [],
           creator: Principal.fromText(profile.id),
         };
 
