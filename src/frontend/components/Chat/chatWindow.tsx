@@ -41,25 +41,18 @@ const ChatWindow = memo(
     const [isSettingsView, setIsSettingsView] = useState(false);
     const [selectedWorkspace, setSelectedWorkspace] = useState(chat.workspaces[0] || "");
     const [editedMembers, setEditedMembers] = useState(chat.members);
-    const { workspaces, all_friends } = useSelector((state: any) => state.filesState);
+    const { workspaces, all_friends, profile } = useSelector((state: any) => state.filesState);
     const { backendActor } = useBackendContext();
-
-    useEffect(() => {
-      setEditedChat(chat);
-      setSelectedWorkspace(chat.workspaces[0] || "");
-      setEditedMembers(chat.members);
-    }, [chat]);
     const [dragPosition, setDragPosition] = useState(position);
     const [newMessage, setNewMessage] = useState("");
     const [isMinimized, setIsMinimized] = useState(false);
-    const [isSending, setIsSending] = useState(false);
-
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [editedChat, setEditedChat] = useState(null);
-
+    const [isSending, setIsSaving] = useState(false);
     const messagesEndRef = useRef(null);
-    const { backendActor } = useBackendContext();
-    const { all_friends, profile } = useSelector((state) => state.filesState);
+
+    useEffect(() => {
+      setSelectedWorkspace(chat.workspaces[0] || "");
+      setEditedMembers(chat.members);
+    }, [chat]);
 
     const scrollToBottom = useCallback(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
