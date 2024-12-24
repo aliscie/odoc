@@ -116,8 +116,8 @@ const CreateGroupDialog = memo(
       setFormData((prev) => ({ ...prev, workspace }));
     }, []);
 
-    const handleSubmit = useCallback(() => {
-      onSubmit(formData);
+    const handleSubmit = useCallback(async () => {
+      await onSubmit(formData);
     }, [formData, onSubmit]);
 
     return (
