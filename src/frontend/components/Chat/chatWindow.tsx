@@ -335,20 +335,27 @@ const ChatWindow = memo(
                   }}
                   sx={{ mb: 2 }}
                 />
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                  <InputLabel>Workspace</InputLabel>
-                  <Select
-                    value={selectedWorkspace}
-                    label="Workspace"
-                    onChange={(e) => setSelectedWorkspace(e.target.value)}
-                  >
-                    {workspaces.map((workspace) => (
-                      <MenuItem key={workspace.id} value={workspace.id}>
-                        {workspace.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <Autocomplete
+                  multiple
+                  options={workspaces}
+                  getOptionLabel={(option) => option.name}
+                  value={workspaces.filter(w => chat.workspaces.includes(w.id))}
+                  onChange={(_, newValue) => {
+                    if (onUpdateChat) {
+                      const updatedChat = {
+                        ...chat,
+                        workspaces: newValue.map(w => w.id),
+                        admins: chat.admins.map(a => Principal.fromText(a.toString())),
+                        creator: Principal.fromText(chat.creator.toString()),
+                        members: chat.members.map(m => Principal.fromText(m.toString()))
+                      };
+                      onUpdateChat(updatedChat);
+                    }
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Workspaces" fullWidth sx={{ mb: 2 }} />
+                  )}
+                />
 
                 <FormControl fullWidth sx={{ mb: 2 }}>
                   <InputLabel>Admins</InputLabel>
@@ -385,37 +392,26 @@ const ChatWindow = memo(
                   </Select>
                 </FormControl>
 
-                <Typography variant="subtitle1" gutterBottom>
-                  Members
-                </Typography>
-                <List>
-                  {editedMembers.map((member) => {
-                    const user = all_friends.find(
-                      (f) => f.id === member.toString(),
-                    );
-                    return (
-                      <ListItem key={member.toString()}>
-                        <ListItemText
-                          primary={user?.name || member.toString().slice(0, 8)}
-                        />
-                        <ListItemSecondaryAction>
-                          <IconButton
-                            edge="end"
-                            onClick={() => {
-                              setEditedMembers(
-                                editedMembers.filter(
-                                  (m) => m.toString() !== member.toString(),
-                                ),
-                              );
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </ListItemSecondaryAction>
-                      </ListItem>
-                    );
-                  })}
-                </List>
+                <Autocomplete
+                  multiple
+                  options={all_friends}
+                  getOptionLabel={(option) => option.name || option.id}
+                  value={all_friends.filter(f => chat.members.some(m => m.toString() === f.id))}
+                  onChange={(_, newValue) => {
+                    if (onUpdateChat) {
+                      const updatedChat = {
+                        ...chat,
+                        members: newValue.map(member => Principal.fromText(member.id)),
+                        admins: chat.admins.map(a => Principal.fromText(a.toString())),
+                        creator: Principal.fromText(chat.creator.toString())
+                      };
+                      onUpdateChat(updatedChat);
+                    }
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Members" fullWidth sx={{ mb: 2 }} />
+                  )}
+                />
 
                 <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
                   <Button
