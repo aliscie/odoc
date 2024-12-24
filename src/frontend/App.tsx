@@ -19,6 +19,22 @@ const App: React.FC = () => {
   useInitialData();
   useSocket();
 
+  useEffect(() => {
+    if (backendActor) {
+      (async () => {
+        try {
+          const result = await backendActor.deposit_ckusdt();
+          if (result?.Ok) {
+            // Update wallet state in Redux
+            dispatch({ type: "SET_WALLET", wallet: result.Ok });
+          }
+        } catch (error) {
+          console.error("Error depositing CKUSDT:", error);
+        }
+      })();
+    }
+  }, [backendActor, dispatch]);
+
   let Loadder = (
     <Box
       style={{
@@ -31,23 +47,10 @@ const App: React.FC = () => {
       <CircularProgress size={100} />
     </Box>
   );
+  
   if (!backendActor) {
     return Loadder;
   }
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const result = await backendActor?.deposit_ckusdt();
-        if (result?.Ok) {
-          // Update wallet state in Redux
-          dispatch({ type: "SET_WALLET", wallet: result.Ok });
-        }
-      } catch (error) {
-        console.error("Error depositing CKUSDT:", error);
-      }
-    })();
-  }, [backendActor])
 
   return (
     <BrowserRouter>
