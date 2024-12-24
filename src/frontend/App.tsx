@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import "./App.css";
 import Pages from "./pages";
 import { BrowserRouter } from "react-router-dom";
@@ -32,6 +32,12 @@ const App: React.FC = () => {
   if (!backendActor) {
     return Loadder;
   }
+
+  useEffect(() => {
+      (async ()=>{
+          // let res = backendActor?.getInitialData()
+      })()
+  },[])
 
   return (
     <BrowserRouter>
