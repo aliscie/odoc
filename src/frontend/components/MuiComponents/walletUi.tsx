@@ -208,7 +208,9 @@ const WalletPage = ({ wallet = defaultWallet }) => {
                   <TableCell>
                     {formatRelativeTime(exchange.date_created)}
                   </TableCell>
-                  <TableCell>{exchange.type}</TableCell>
+                  <TableCell>
+                    {exchange._type && Object.keys(exchange._type)[0]}
+                  </TableCell>
                   <TableCell>
                     {exchange.from === profile?.id
                       ? "You"
