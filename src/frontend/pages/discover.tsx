@@ -38,10 +38,9 @@ import {
 import { useSelector } from "react-redux";
 import { randomString } from "../DataProcessing/dataSamples";
 import EditorComponent from "../components/EditorComponent";
-import { logger } from "../DevUtils/logData";
 import { deserializeContentTree } from "../DataProcessing/deserlize/deserializeContents";
 import serializeFileContents from "../DataProcessing/serialize/serializeFileContents";
-import {useSnackbar} from "notistack";
+import { useSnackbar } from "notistack";
 
 const Comment = ({ comment, onReply, level = 0 }) => {
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -316,7 +315,10 @@ const SocialPosts = () => {
   const handleVoteUp = async (postId: string) => {
     try {
       if (!backendActor) return;
-      setLoadingVotes(prev => ({...prev, [postId]: {...prev[postId], up: true}}));
+      setLoadingVotes((prev) => ({
+        ...prev,
+        [postId]: { ...prev[postId], up: true },
+      }));
       const result = await backendActor.vote_up(postId);
       if ("Ok" in result) {
         const updatedPosts = posts.map((post) =>
@@ -329,14 +331,20 @@ const SocialPosts = () => {
     } catch (err) {
       console.error("Error voting up:", err);
     } finally {
-      setLoadingVotes(prev => ({...prev, [postId]: {...prev[postId], up: false}}));
+      setLoadingVotes((prev) => ({
+        ...prev,
+        [postId]: { ...prev[postId], up: false },
+      }));
     }
   };
 
   const handleVoteDown = async (postId: string) => {
     try {
       if (!backendActor) return;
-      setLoadingVotes(prev => ({...prev, [postId]: {...prev[postId], down: true}}));
+      setLoadingVotes((prev) => ({
+        ...prev,
+        [postId]: { ...prev[postId], down: true },
+      }));
       const result = await backendActor.vote_down(postId);
       if ("Ok" in result) {
         const updatedPosts = posts.map((post) =>
@@ -347,15 +355,19 @@ const SocialPosts = () => {
         enqueueSnackbar(result.Err, { variant: "error" });
       }
     } catch (err) {
-
       // console.error("Error voting down:", err);
     } finally {
-      setLoadingVotes(prev => ({...prev, [postId]: {...prev[postId], down: false}}));
+      setLoadingVotes((prev) => ({
+        ...prev,
+        [postId]: { ...prev[postId], down: false },
+      }));
     }
   };
 
   const [isDeletingPost, setIsDeletingPost] = useState<string | null>(null);
-  const [loadingVotes, setLoadingVotes] = useState<{[key: string]: {up?: boolean, down?: boolean}}>({});
+  const [loadingVotes, setLoadingVotes] = useState<{
+    [key: string]: { up?: boolean; down?: boolean };
+  }>({});
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
@@ -558,13 +570,17 @@ const SocialPosts = () => {
             ).toLocaleString()}
           />
           <CardContent>
-            {post.content_tree && post.content_tree.length > 0 && post.content_tree[0]?.text ? (
-
-            ) : (
-              <Typography variant="body2" color="text.secondary">
-                No content
-              </Typography>
-            )}
+            <EditorComponent
+              readOnly={
+                post && post.creator?.id && post.creator.id !== profile?.id
+              }
+              content={deserializeContentTree(post.content_tree)}
+              onChange={(changes) => {
+                let new_change = {};
+                new_change[""] = changes;
+                setNewPostContent(new_change);
+              }}
+            />
 
             <Box sx={{ mb: 2 }}>
               {post.tags.map((tag) => (
@@ -660,7 +676,7 @@ const SocialPosts = () => {
                       onClick={() => handleSavePost(post)}
                       color="primary"
                       size="small"
-                      disabled={!newPostContent||isSaving}
+                      disabled={!newPostContent || isSaving}
                     >
                       {isSaving ? "Saving..." : "Save"}
                     </Button>
