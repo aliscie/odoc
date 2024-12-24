@@ -639,10 +639,12 @@ const SocialPosts = () => {
                       const uniqueTags = [
                         ...new Set(newValue.map((tag) => tag.trim())),
                       ];
-                      const updatedPost = {
-                        ...post,
-                        tags: uniqueTags,
-                      };
+                      // Update the post in the local state
+                      setPosts(posts.map(p => 
+                        p.id === post.id 
+                          ? { ...p, tags: uniqueTags }
+                          : p
+                      ));
                       setIsChanged((prev) => ({ ...prev, [post.id]: true }));
                     }}
                     renderInput={(params) => (
