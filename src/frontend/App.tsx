@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "./App.css";
 import Pages from "./pages";
 import { BrowserRouter } from "react-router-dom";
@@ -12,6 +12,7 @@ import SearchPopper from "./components/SearchComponent";
 import useSocket from "./websocket/use_socket";
 import { useBackendContext } from "./contexts/BackendContext";
 import { Box, CircularProgress } from "@mui/material";
+import { Principal } from "@dfinity/principal";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -27,10 +28,10 @@ const App: React.FC = () => {
           // Check CKUSDT balance first
           const balance = await ckUSDCActor.icrc1_balance_of({
             owner: Principal.fromText(profile.id),
-            subaccount: []
+            subaccount: [],
           });
-          
-          if (balance > 0) {
+
+          if (Number(balance) > 0) {
             const result = await backendActor.deposit_ckusdt();
             console.log("Deposit CKUSDT result:", result);
             if (result?.Ok) {
@@ -57,7 +58,7 @@ const App: React.FC = () => {
       <CircularProgress size={100} />
     </Box>
   );
-  
+
   if (!backendActor) {
     return Loadder;
   }
