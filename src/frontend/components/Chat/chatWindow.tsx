@@ -16,8 +16,11 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  Button, Autocomplete, Chip,
+  Button, 
+  Autocomplete, 
+  Chip,
 } from "@mui/material";
+import { MembersSelect, AdminsSelect } from './index';
 import {
   DragIndicator as DragHandle,
   OpenInFull as OpenInFullIcon,
@@ -366,103 +369,40 @@ const ChatWindow = memo(
                   onChange={(e) => setEditedName(e.target.value)}
                   sx={{ mb: 2 }}
                 />
-                <Autocomplete
-                  multiple
-                  options={workspaces}
-                  getOptionLabel={(option) => option.name}
+                <WorkspaceSelect
                   value={workspaces.filter(w => chat.workspaces.includes(w.id))}
-                  onChange={(_, newValue) => {
+                  onChange={(newValue) => {
                     const updatedChat = {
                       ...chat,
                       workspaces: newValue.map(w => w.id)
                     };
                     handleSaveChat(updatedChat);
                   }}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Workspaces" fullWidth sx={{ mb: 2 }} />
-                  )}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip
-                        label={option.name}
-                        {...getTagProps({ index })}
-                        onDelete={() => {
-                          const newValue = value.filter((_, i) => i !== index);
-                          const updatedChat = {
-                            ...chat,
-                            workspaces: newValue.map(w => w.id)
-                          };
-                          handleSaveChat(updatedChat);
-                        }}
-                      />
-                    ))
-                  }
+                  workspaces={workspaces}
                 />
 
-                <Autocomplete
-                  multiple
-                  options={all_friends}
-                  getOptionLabel={(option) => option.name || option.id}
+                <AdminsSelect
                   value={all_friends.filter(f => chat.admins.some(a => a.toString() === f.id))}
-                  onChange={(_, newValue) => {
+                  onChange={(newValue) => {
                     const updatedChat = {
                       ...chat,
                       admins: newValue.map(admin => admin.id)
                     };
                     handleSaveChat(updatedChat);
                   }}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Admins" fullWidth sx={{ mb: 2 }} />
-                  )}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip
-                        label={option.name || option.id}
-                        {...getTagProps({ index })}
-                        onDelete={() => {
-                          const newValue = value.filter((_, i) => i !== index);
-                          const updatedChat = {
-                            ...chat,
-                            admins: newValue.map(admin => admin.id)
-                          };
-                          handleSaveChat(updatedChat);
-                        }}
-                      />
-                    ))
-                  }
+                  members={all_friends}
                 />
 
-                <Autocomplete
-                  multiple
-                  options={all_friends}
-                  getOptionLabel={(option) => option.name || option.id}
+                <MembersSelect
                   value={all_friends.filter(f => chat.members.some(m => m.toString() === f.id))}
-                  onChange={(_, newValue) => {
+                  onChange={(newValue) => {
                     const updatedChat = {
                       ...chat,
                       members: newValue.map(member => member.id)
                     };
                     handleSaveChat(updatedChat);
                   }}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Members" fullWidth sx={{ mb: 2 }} />
-                  )}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip
-                        label={option.name || option.id}
-                        {...getTagProps({ index })}
-                        onDelete={() => {
-                          const newValue = value.filter((_, i) => i !== index);
-                          const updatedChat = {
-                            ...chat,
-                            members: newValue.map(member => member.id)
-                          };
-                          handleSaveChat(updatedChat);
-                        }}
-                      />
-                    ))
-                  }
+                  users={all_friends}
                 />
 
                 <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
