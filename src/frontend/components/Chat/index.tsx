@@ -395,7 +395,7 @@ const ChatNotifications = ({ chats: initialChats }: { chats: Chat[] }) => {
             : [Principal.fromText(profile.id)],
           workspaces: formData.workspace?.length > 0 
             ? formData.workspace.map(w => w.id)
-            : currentWorkspace ? [currentWorkspace.id] : [],
+            : (currentWorkspace && currentWorkspace.name !== "default") ? [currentWorkspace.id] : [],
           creator: Principal.fromText(profile.id),
         };
 
