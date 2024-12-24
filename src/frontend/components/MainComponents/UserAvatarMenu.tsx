@@ -16,6 +16,7 @@ import {
 import ChatWindow from "../../components/Chat/chatWindow";
 import { useNavigate } from "react-router-dom";
 import { Person, Message, Star } from "@mui/icons-material";
+import CircularProgress from '@mui/material/CircularProgress';
 import { useBackendContext } from "../../contexts/BackendContext";
 import { useSnackbar } from "notistack";
 import { Principal } from "@dfinity/principal";
@@ -45,6 +46,7 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
   const [reviewOpen, setReviewOpen] = useState(false);
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -166,6 +168,7 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
   };
 
   const handleReviewSubmit = async () => {
+    setIsSubmitting(true);
     try {
       // Convert user.id string to Principal
       const userPrincipal = Principal.fromText(user.id);
@@ -194,6 +197,8 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
     setReviewOpen(false);
     setRating(0);
     setComment("");
+    } finally {
+      setIsSubmitting(false);
   };
 
   const getPhotoSrc = (photoData?: Uint8Array) => {
@@ -247,8 +252,19 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setReviewOpen(false)}>Cancel</Button>
-          <Button onClick={handleReviewSubmit}>Submit Review</Button>
+          <Button 
+            onClick={() => setReviewOpen(false)}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleReviewSubmit}
+            disabled={isSubmitting}
+            startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Review'}
+          </Button>
         </DialogActions>
       </Dialog>
 
