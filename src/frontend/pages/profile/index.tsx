@@ -29,6 +29,7 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
   const currentUser = useSelector((state: any) => state.filesState.profile);
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [formValues, setFormValues] = useState({
     name: "",
     description: "",
@@ -58,6 +59,7 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
       return;
     }
 
+    setIsUpdating(true);
     try {
       const updateData: RegisterUser = {
         name: [formValues.name],
@@ -76,6 +78,8 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
     } catch (error) {
       console.error("Profile update error:", error);
       enqueueSnackbar("Failed to update profile", { variant: "error" });
+    } finally {
+      setIsUpdating(false);
     }
   };
   // Handle completely missing props with default empty objects
@@ -320,8 +324,12 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
                     >
                       Cancel
                     </Button>
-                    <Button variant="contained" onClick={handleUpdate}>
-                      Save
+                    <Button 
+                      variant="contained" 
+                      onClick={handleUpdate}
+                      disabled={isUpdating}
+                    >
+                      {isUpdating ? "Saving..." : "Save"}
                     </Button>
                   </Stack>
                 ) : (
