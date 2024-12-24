@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { useBackendContext } from "../../contexts/BackendContext";
 import {
   Box,
   Card,
@@ -48,12 +50,8 @@ const WalletPage = ({ wallet = defaultWallet }) => {
   const [withdrawAddress, setWithdrawAddress] = useState("");
   const [openDialog, setOpenDialog] = useState("");
 
-  // Mock users list
-  const users = [
-    { username: "alice", name: "Alice Johnson" },
-    { username: "bob", name: "Bob Smith" },
-    { username: "carol", name: "Carol White" },
-  ];
+  const { backendActor } = useBackendContext();
+  const { all_friends } = useSelector((state: any) => state.filesState);
 
   const handleClose = () => setOpenDialog("");
 
@@ -63,16 +61,35 @@ const WalletPage = ({ wallet = defaultWallet }) => {
     alert("Address copied to clipboard!");
   };
 
-  const handleTransaction = (type) => {
+  const handleTransaction = async (type) => {
     if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
       alert("Please enter a valid amount");
       return;
     }
-    console.log("Transaction:", { type, amount, recipient, withdrawAddress });
-    handleClose();
-    setAmount("");
-    setWithdrawAddress("");
-    setRecipient("");
+
+    try {
+      if (type === "pay" && recipient) {
+        await backendActor.internal_transaction(
+          parseFloat(amount),
+          recipient,
+          { LocalSend: null }
+        );
+      } else if (type === "withdraw" && withdrawAddress) {
+        await backendActor.internal_transaction(
+          parseFloat(amount),
+          withdrawAddress,
+          { Withdraw: null }
+        );
+      }
+      
+      handleClose();
+      setAmount("");
+      setWithdrawAddress("");
+      setRecipient("");
+    } catch (error) {
+      console.error("Transaction failed:", error);
+      alert("Transaction failed: " + error.message);
+    }
   };
 
   const formatDate = (timestamp) => {
@@ -319,9 +336,9 @@ const WalletPage = ({ wallet = defaultWallet }) => {
               <MenuItem value="" disabled>
                 Select recipient
               </MenuItem>
-              {users.map((user) => (
-                <MenuItem key={user.username} value={user.username}>
-                  {user.name} (@{user.username})
+              {all_friends.map((friend) => (
+                <MenuItem key={friend.id} value={friend.id}>
+                  {friend.name} ({friend.id.slice(0, 8)}...)
                 </MenuItem>
               ))}
             </Select>
