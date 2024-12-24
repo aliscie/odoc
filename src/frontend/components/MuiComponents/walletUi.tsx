@@ -9,6 +9,7 @@ import {
   Typography,
   Button,
   Dialog,
+  CircularProgress,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -69,6 +70,7 @@ const WalletPage = ({ wallet = defaultWallet }) => {
       return;
     }
 
+    setIsProcessing(true);
     try {
       let result;
       if (type === "pay" && recipient) {
@@ -97,6 +99,8 @@ const WalletPage = ({ wallet = defaultWallet }) => {
     } catch (error) {
       console.error("Transaction failed:", error);
       enqueueSnackbar(error.message || "Transaction failed", { variant: "error" });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -307,12 +311,14 @@ const WalletPage = ({ wallet = defaultWallet }) => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose} disabled={isProcessing}>Cancel</Button>
           <Button
             onClick={() => handleTransaction("withdraw")}
             variant="contained"
+            disabled={isProcessing}
+            startIcon={isProcessing ? <CircularProgress size={20} /> : null}
           >
-            Confirm Withdrawal
+            {isProcessing ? 'Processing...' : 'Confirm Withdrawal'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -360,9 +366,14 @@ const WalletPage = ({ wallet = defaultWallet }) => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={() => handleTransaction("pay")} variant="contained">
-            Send Payment
+          <Button onClick={handleClose} disabled={isProcessing}>Cancel</Button>
+          <Button 
+            onClick={() => handleTransaction("pay")} 
+            variant="contained"
+            disabled={isProcessing}
+            startIcon={isProcessing ? <CircularProgress size={20} /> : null}
+          >
+            {isProcessing ? 'Processing...' : 'Send Payment'}
           </Button>
         </DialogActions>
       </Dialog>
