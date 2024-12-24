@@ -20,7 +20,7 @@ import {
   Autocomplete, 
   Chip,
 } from "@mui/material";
-import { MembersSelect, AdminsSelect } from './index';
+import {MembersSelect, AdminsSelect, WorkspaceSelect} from './index';
 import {
   DragIndicator as DragHandle,
   OpenInFull as OpenInFullIcon,
@@ -422,7 +422,7 @@ const ChatWindow = memo(
                         workspaces: [selectedWorkspace],
                         members: editedMembers,
                       };
-                      handleSavePost(updatedChat);
+                      handleSaveChat(updatedChat);
                       setIsSettingsView(false);
                     }}
                   >
