@@ -126,7 +126,7 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
                 onClick={handleSubmit}
                 disabled={isPosting}
               >
-                {isPosting ? "Posting..." : "Post"}
+                {isPosting ? "Posting..." : "Create new post"}
               </Button>
             </div>
           </div>
