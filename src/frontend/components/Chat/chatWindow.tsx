@@ -274,6 +274,91 @@ const ChatWindow = memo(
             </Paper>
           </>
         )}
+
+        {!isMinimized && isSettingsView && (
+          <Box sx={{ flex: 1, overflow: "auto", p: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Chat Settings
+            </Typography>
+            
+            {chat.name !== "private_chat" && (
+              <>
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                  <InputLabel>Workspace</InputLabel>
+                  <Select
+                    value={selectedWorkspace}
+                    label="Workspace"
+                    onChange={(e) => setSelectedWorkspace(e.target.value)}
+                  >
+                    {workspaces.map((workspace) => (
+                      <MenuItem key={workspace.id} value={workspace.id}>
+                        {workspace.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <Typography variant="subtitle1" gutterBottom>
+                  Members
+                </Typography>
+                <List>
+                  {editedMembers.map((member) => {
+                    const user = all_friends.find(
+                      (f) => f.id === member.toString()
+                    );
+                    return (
+                      <ListItem key={member.toString()}>
+                        <ListItemText 
+                          primary={user?.name || member.toString().slice(0, 8)}
+                        />
+                        <ListItemSecondaryAction>
+                          <IconButton 
+                            edge="end" 
+                            onClick={() => {
+                              setEditedMembers(editedMembers.filter(
+                                m => m.toString() !== member.toString()
+                              ));
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    );
+                  })}
+                </List>
+
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  sx={{ mt: 2 }}
+                  onClick={async () => {
+                    const updatedChat = {
+                      ...chat,
+                      workspaces: [selectedWorkspace],
+                      members: editedMembers
+                    };
+                    
+                    try {
+                      const result = await backendActor.update_chat(updatedChat);
+                      if ("Ok" in result) {
+                        if (onUpdateChat) {
+                          onUpdateChat(updatedChat);
+                        }
+                        setIsSettingsView(false);
+                      }
+                    } catch (error) {
+                      console.error("Failed to update chat:", error);
+                    }
+                  }}
+                >
+                  Save Changes
+                </Button>
+              </>
+            )}
+          </Box>
+        )}
       </Paper>
     );
   },
