@@ -4,6 +4,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { Autocomplete } from "@mui/material";
 import { X } from "lucide-react";
 import EditorComponent from "./EditorComponent";
 import {
@@ -35,6 +36,19 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
     const tagInputRef = useRef<HTMLInputElement>(null);
     const [forceUpdate, setForceUpdate] = useState(false);
     const [tags, setTags] = useState<string[]>([]);
+    const [tagInput, setTagInput] = useState("");
+    const suggestedTags = [
+      "technology",
+      "programming",
+      "design",
+      "business",
+      "marketing",
+      "science",
+      "art",
+      "music",
+      "travel",
+      "food",
+    ];
 
     useImperativeHandle(ref, () => ({
       getContent: () => contentRef.current,
@@ -83,24 +97,42 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
             </div>
 
             <div className="flex gap-2 items-center">
-              <Input
-                ref={tagInputRef}
-                className="max-w-xs"
-                placeholder="Add tag..."
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    handleAddTag();
+              <Autocomplete
+                freeSolo
+                size="small"
+                options={suggestedTags.filter(tag => !tags.includes(tag))}
+                inputValue={tagInput}
+                onInputChange={(_, newValue) => setTagInput(newValue)}
+                onChange={(_, newValue) => {
+                  if (newValue) {
+                    const newTag = newValue.trim();
+                    if (newTag && !tags.includes(newTag)) {
+                      tagsRef.current = [...tagsRef.current, newTag];
+                      setTags([...tags, newTag]);
+                    }
+                    setTagInput("");
                   }
                 }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="Add tag..."
+                    size="small"
+                    className="max-w-xs"
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter" && tagInput.trim()) {
+                        e.preventDefault();
+                        const newTag = tagInput.trim();
+                        if (!tags.includes(newTag)) {
+                          tagsRef.current = [...tagsRef.current, newTag];
+                          setTags([...tags, newTag]);
+                        }
+                        setTagInput("");
+                      }
+                    }}
+                  />
+                )}
               />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleAddTag}
-                className="whitespace-nowrap"
-              >
-                Add Tag
-              </Button>
             </div>
 
             <div className="flex flex-wrap gap-2">
