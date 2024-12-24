@@ -155,6 +155,23 @@ const ChatWindow = memo(
       onPositionChange(chat.id, dragPosition);
     }, [chat.id, dragPosition, onPositionChange]);
     const dispatch = useDispatch();
+
+    const handleSavePost = async (updatedChat: Chat) => {
+      setIsSaving(true);
+      try {
+        const result = await backendActor.update_chat(updatedChat);
+        if ("Ok" in result) {
+          if (onUpdateChat) {
+            onUpdateChat(updatedChat);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to update chat:", error);
+      } finally {
+        setIsSaving(false);
+      }
+    };
+
     return (
       <Paper
         elevation={3}
@@ -440,8 +457,7 @@ const ChatWindow = memo(
                     color="primary"
                     fullWidth
                     disabled={isSaving}
-                    onClick={async () => {
-                      setIsSaving(true);
+                    onClick={() => {
                       const updatedChat: Chat = {
                         ...chat,
                         name: editedName,
@@ -452,21 +468,8 @@ const ChatWindow = memo(
                         workspaces: [selectedWorkspace],
                         members: editedMembers,
                       };
-
-                      try {
-                        const result =
-                          await backendActor.update_chat(updatedChat);
-                        if ("Ok" in result) {
-                          if (onUpdateChat) {
-                            onUpdateChat(updatedChat);
-                          }
-                          setIsSettingsView(false);
-                        }
-                      } catch (error) {
-                        console.error("Failed to update chat:", error);
-                      } finally {
-                        setIsSaving(false);
-                      }
+                      handleSavePost(updatedChat);
+                      setIsSettingsView(false);
                     }}
                   >
                     Save Changes
