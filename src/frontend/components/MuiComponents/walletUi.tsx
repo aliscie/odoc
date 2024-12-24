@@ -35,6 +35,8 @@ import {
   Close,
   ContentCopy,
 } from "@mui/icons-material";
+import formatTimestamp, { formatRelativeTime } from "../../utils/time";
+import {logger} from "../../DevUtils/logData";
 
 const defaultWallet = {
   owner: "0x0000000000000000000000000000000000000000",
@@ -47,6 +49,7 @@ const defaultWallet = {
 };
 
 const WalletPage = ({ wallet = defaultWallet }) => {
+  logger({ wallet });
   const [amount, setAmount] = useState("");
   const [recipient, setRecipient] = useState("");
   const [withdrawAddress, setWithdrawAddress] = useState("");
@@ -78,19 +81,21 @@ const WalletPage = ({ wallet = defaultWallet }) => {
         result = await backendActor.internal_transaction(
           parseFloat(amount),
           recipient,
-          { LocalSend: null }
+          { LocalSend: null },
         );
       } else if (type === "withdraw" && withdrawAddress) {
         // Call withdraw_ckusdt for withdrawals
         result = await backendActor.withdraw_ckusdt(
           Number(amount), // Convert to u64
-          withdrawAddress
+          withdrawAddress,
         );
       }
       // console.log({result})
 
       if ("Ok" in result) {
-        enqueueSnackbar("Transaction completed successfully", { variant: "success" });
+        enqueueSnackbar("Transaction completed successfully", {
+          variant: "success",
+        });
         handleClose();
         setAmount("");
         setWithdrawAddress("");
@@ -100,17 +105,14 @@ const WalletPage = ({ wallet = defaultWallet }) => {
       }
     } catch (error) {
       console.error("Transaction failed:", error);
-      enqueueSnackbar(error.message || "Transaction failed", { variant: "error" });
+      enqueueSnackbar(error.message || "Transaction failed", {
+        variant: "error",
+      });
     } finally {
       setIsProcessing(false);
     }
   };
-
-  const formatDate = (timestamp) => {
-    if (!timestamp) return "N/A";
-    return new Date(timestamp).toLocaleDateString();
-  };
-
+  const { profile } = useSelector((state: any) => state.filesState);
   return (
     <Box sx={{ maxWidth: 1200, margin: "0 auto", p: 3 }}>
       {/* Balance Card */}
@@ -203,17 +205,21 @@ const WalletPage = ({ wallet = defaultWallet }) => {
             {wallet.exchanges.length > 0 ? (
               wallet.exchanges.map((exchange, index) => (
                 <TableRow key={index}>
-                  <TableCell>{formatDate(exchange.date_created)}</TableCell>
+                  <TableCell>
+                    {formatRelativeTime(exchange.date_created)}
+                  </TableCell>
                   <TableCell>{exchange.type}</TableCell>
                   <TableCell>
-                    {exchange.from === profile?.id 
+                    {exchange.from === profile?.id
                       ? "You"
-                      : all_friends.find(f => f.id === exchange.from)?.name || exchange.from}
+                      : all_friends.find((f) => f.id === exchange.from)?.name ||
+                        exchange.from}
                   </TableCell>
                   <TableCell>
                     {exchange.to === profile?.id
-                      ? "You" 
-                      : all_friends.find(f => f.id === exchange.to)?.name || exchange.to}
+                      ? "You"
+                      : all_friends.find((f) => f.id === exchange.to)?.name ||
+                        exchange.to}
                   </TableCell>
                   <TableCell
                     align="right"
@@ -321,14 +327,16 @@ const WalletPage = ({ wallet = defaultWallet }) => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} disabled={isProcessing}>Cancel</Button>
+          <Button onClick={handleClose} disabled={isProcessing}>
+            Cancel
+          </Button>
           <Button
             onClick={() => handleTransaction("withdraw")}
             variant="contained"
             disabled={isProcessing}
             startIcon={isProcessing ? <CircularProgress size={20} /> : null}
           >
-            {isProcessing ? 'Processing...' : 'Confirm Withdrawal'}
+            {isProcessing ? "Processing..." : "Confirm Withdrawal"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -376,14 +384,16 @@ const WalletPage = ({ wallet = defaultWallet }) => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} disabled={isProcessing}>Cancel</Button>
-          <Button 
-            onClick={() => handleTransaction("pay")} 
+          <Button onClick={handleClose} disabled={isProcessing}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => handleTransaction("pay")}
             variant="contained"
             disabled={isProcessing}
             startIcon={isProcessing ? <CircularProgress size={20} /> : null}
           >
-            {isProcessing ? 'Processing...' : 'Send Payment'}
+            {isProcessing ? "Processing..." : "Send Payment"}
           </Button>
         </DialogActions>
       </Dialog>
