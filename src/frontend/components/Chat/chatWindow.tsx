@@ -16,7 +16,7 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  Button, Autocomplete,
+  Button, Autocomplete, Chip,
 } from "@mui/material";
 import {
   DragIndicator as DragHandle,
