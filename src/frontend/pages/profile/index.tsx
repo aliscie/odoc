@@ -19,6 +19,7 @@ import Friends from "./friends";
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
+import { RegisterUser } from "../../../declarations/backend/backend.did";
 
 const ProfilePage = ({ profile, history, friends, friendButton }) => {
   const dispatch = useDispatch();
@@ -58,12 +59,13 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
     }
 
     try {
-      const updateData = {
+      const updateData: RegisterUser = {
         name: [formValues.name],
         description: [formValues.description],
+        photo: [],
       };
 
-      const result = await backendActor.update_profile(updateData);
+      const result = await backendActor.update_user_profile(updateData);
 
       if (result.Ok) {
         enqueueSnackbar("Profile updated successfully", { variant: "success" });
