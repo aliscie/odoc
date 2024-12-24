@@ -16,11 +16,11 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  Button, 
-  Autocomplete, 
+  Button,
+  Autocomplete,
   Chip,
 } from "@mui/material";
-import {MembersSelect, AdminsSelect, WorkspaceSelect} from './index';
+import { MembersSelect, AdminsSelect, WorkspaceSelect } from "./index";
 import {
   DragIndicator as DragHandle,
   OpenInFull as OpenInFullIcon,
@@ -56,7 +56,7 @@ const ChatWindow = memo(
       name: chat.name,
       workspaces: chat.workspaces,
       admins: chat.admins,
-      members: chat.members
+      members: chat.members,
     });
     const { workspaces, all_friends, profile } = useSelector(
       (state: any) => state.filesState,
@@ -167,35 +167,37 @@ const ChatWindow = memo(
         // Keep existing Principals if they're already Principal objects
         const formattedChat = {
           ...updatedChat,
-          admins: updatedChat.admins.map(a => 
-            a instanceof Principal ? a : Principal.fromText(a)
+          admins: updatedChat.admins.map((a) => Principal.fromText(a.id || a)),
+          creator:
+            updatedChat.creator instanceof Principal
+              ? updatedChat.creator
+              : Principal.fromText(updatedChat.creator.id),
+          members: updatedChat.members.map((m) =>
+            Principal.fromText(m.id || m),
           ),
-          creator: updatedChat.creator instanceof Principal 
-            ? updatedChat.creator 
-            : Principal.fromText(updatedChat.creator),
-          members: updatedChat.members.map(m => 
-            m instanceof Principal ? m : Principal.fromText(m)
-          ),
-          messages: updatedChat.messages.map(msg => ({
+          messages: updatedChat.messages.map((msg) => ({
             ...msg,
-            sender: msg.sender instanceof Principal 
-              ? msg.sender 
-              : Principal.fromText(msg.sender),
-            seen_by: msg.seen_by.map(s => 
-              s instanceof Principal ? s : Principal.fromText(s)
+            sender:
+              msg.sender instanceof Principal
+                ? msg.sender
+                : Principal.fromText(msg.sender),
+            seen_by: msg.seen_by.map((s) =>
+              s instanceof Principal ? s : Principal.fromText(s),
             ),
-            date: typeof msg.date === 'bigint' ? msg.date : BigInt(msg.date.toString())
-          }))
+            date:
+              typeof msg.date === "bigint"
+                ? msg.date
+                : BigInt(msg.date.toString()),
+          })),
         };
-
         const result = await backendActor.update_chat(formattedChat);
         if ("Ok" in result) {
           if (onUpdateChat) {
             onUpdateChat(result.Ok);
           }
           // Update local state
-          setSelectedWorkspace(result.Ok.workspaces[0] || "");
-          setEditedMembers(result.Ok.members);
+          // setSelectedWorkspace(result.Ok.workspaces[0] || "");
+          // setEditedMembers(result.Ok.members);
           setEditedName(result.Ok.name);
         }
       } catch (error) {
@@ -368,37 +370,45 @@ const ChatWindow = memo(
                   fullWidth
                   label="Chat Name"
                   value={formData.name}
-                  onChange={(e) => setFormData(prev => ({...prev, name: e.target.value}))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, name: e.target.value }))
+                  }
                   sx={{ mb: 2 }}
                 />
                 <WorkspaceSelect
-                  value={workspaces.filter(w => formData.workspaces.includes(w.id))}
+                  value={workspaces.filter((w) =>
+                    formData.workspaces.includes(w.id),
+                  )}
                   onChange={(newValue) => {
-                    setFormData(prev => ({
+                    setFormData((prev) => ({
                       ...prev,
-                      workspaces: newValue.map(w => w.id)
+                      workspaces: newValue.map((w) => w.id),
                     }));
                   }}
                   workspaces={workspaces}
                 />
 
                 <AdminsSelect
-                  value={all_friends.filter(f => formData.admins.some(a => a.toString() === f.id))}
+                  value={all_friends.filter((f) =>
+                    formData.admins.some((a) => a.toString() === f.id),
+                  )}
                   onChange={(newValue) => {
-                    setFormData(prev => ({
+                    setFormData((prev) => ({
                       ...prev,
-                      admins: newValue.map(admin => admin.id)
+                      admins: newValue.map((admin) => admin.id),
                     }));
                   }}
                   members={all_friends}
                 />
 
                 <MembersSelect
-                  value={all_friends.filter(f => formData.members.some(m => m.toString() === f.id))}
+                  value={all_friends.filter((f) =>
+                    formData.members.some((m) => m.toString() === f.id),
+                  )}
                   onChange={(newValue) => {
-                    setFormData(prev => ({
+                    setFormData((prev) => ({
                       ...prev,
-                      members: newValue.map(member => member.id)
+                      members: newValue.map((member) => member.id),
                     }));
                   }}
                   users={all_friends}
@@ -414,10 +424,10 @@ const ChatWindow = memo(
                       const updatedChat: Chat = {
                         ...chat,
                         name: formData.name,
-                        admins: formData.admins.map(id => chat.admins.find(a => a.toString() === id) || Principal.fromText(id)),
+                        admins: formData.admins,
                         creator: chat.creator,
                         workspaces: formData.workspaces,
-                        members: formData.members.map(id => chat.members.find(m => m.toString() === id) || Principal.fromText(id)),
+                        members: formData.members,
                       };
                       handleSaveChat(updatedChat);
                       setIsSettingsView(false);
