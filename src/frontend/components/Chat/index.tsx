@@ -80,20 +80,19 @@ export const AdminsSelect = memo(({ value, onChange, members }) => (
 ));
 
 const WorkspaceSelect = memo(({ value, onChange, workspaces }) => (
-  <FormControl fullWidth>
-    <InputLabel>Workspace</InputLabel>
-    <Select
-      value={value}
-      label="Workspace"
-      onChange={(e) => onChange(e.target.value)}
-    >
-      {workspaces.map((workspace) => (
-        <MenuItem key={workspace.id} value={workspace.id}>
-          {workspace.name}
-        </MenuItem>
-      ))}
-    </Select>
-  </FormControl>
+  <Autocomplete
+    multiple
+    options={workspaces}
+    getOptionLabel={(option) => option.name}
+    value={value}
+    onChange={(_, newValue) => onChange(newValue)}
+    renderInput={(params) => <TextField {...params} label="Workspaces" />}
+    renderTags={(value, getTagProps) =>
+      value.map((option, index) => (
+        <Chip label={option.name} {...getTagProps({ index })} />
+      ))
+    }
+  />
 ));
 
 // Memoized Create Group Dialog
@@ -258,7 +257,7 @@ const ChatNotifications = ({ chats: initialChats }: { chats: Chat[] }) => {
   const [chats, setChats] = useState<Chat[]>(initialChats || []);
 
   const { backendActor } = useBackendContext();
-  const { profile } = useSelector((state: any) => state.filesState);
+  const { profile, currentWorkspace } = useSelector((state: any) => state.filesState);
 
   // Calculate total unseen messages across all chats
   const totalUnseenMessages = useMemo(() => {
@@ -386,15 +385,17 @@ const ChatNotifications = ({ chats: initialChats }: { chats: Chat[] }) => {
       try {
         const newChat: Chat = {
           id: randomString(),
-          name: formData.name,
+          name: formData.name || "Untitled",
           messages: [],
-          members: formData.members
+          members: formData.members?.length > 0
             ? formData.members.map((m) => Principal.fromText(m.id))
-            : [],
-          admins: formData.admins
+            : [Principal.fromText(profile.id)],
+          admins: formData.admins?.length > 0
             ? formData.admins.map((a) => Principal.fromText(a.id))
-            : [],
-          workspaces: formData.workspace ? [formData.workspace] : [],
+            : [Principal.fromText(profile.id)],
+          workspaces: formData.workspace?.length > 0 
+            ? formData.workspace.map(w => w.id)
+            : currentWorkspace ? [currentWorkspace.id] : [],
           creator: Principal.fromText(profile.id),
         };
 
@@ -529,7 +530,7 @@ const ChatNotifications = ({ chats: initialChats }: { chats: Chat[] }) => {
           name: "",
           members: [],
           admins: [],
-          workspace: "",
+          workspace: currentWorkspace ? [currentWorkspace] : [],
         }}
         users={all_friends}
         workspaces={workspaces}
