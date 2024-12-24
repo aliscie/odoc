@@ -71,8 +71,8 @@ const ChatWindow = memo(
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
-      setSelectedWorkspace(chat.workspaces[0] || "");
-      setEditedMembers(chat.members);
+      // setSelectedWorkspace(chat.workspaces[0] || "");
+      // setEditedMembers(chat.members);
     }, [chat]);
 
     const scrollToBottom = useCallback(() => {
