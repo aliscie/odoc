@@ -51,6 +51,7 @@ const WalletPage = ({ wallet = defaultWallet }) => {
   const [recipient, setRecipient] = useState("");
   const [withdrawAddress, setWithdrawAddress] = useState("");
   const [openDialog, setOpenDialog] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const { backendActor } = useBackendContext();
   const { all_friends } = useSelector((state: any) => state.filesState);
