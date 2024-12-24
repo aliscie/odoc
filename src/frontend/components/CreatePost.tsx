@@ -69,9 +69,7 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
     };
 
     return (
-      <Card className="mb-6">
-        <CardContent className="p-4">
-          <div className="flex flex-col gap-4">
+      <div className="mx-0 mb-4 flex flex-col gap-4">
             <div className="min-h-24 border rounded-lg p-2">
               <EditorComponent
                 contentEditable={true}
@@ -132,8 +130,6 @@ const CreatePost = forwardRef<CreatePostRef, CreatePostProps>(
               </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
     );
   },
 );
