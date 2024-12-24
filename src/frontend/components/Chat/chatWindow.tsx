@@ -315,24 +315,8 @@ const ChatWindow = memo(
                 <TextField
                   fullWidth
                   label="Chat Name"
-                  value={chat.name}
-                  onChange={(e) => {
-                    const newName = e.target.value;
-                    if (onUpdateChat) {
-                      const updatedChat = {
-                        ...chat,
-                        name: newName,
-                        admins: chat.admins.map((a) =>
-                          Principal.fromText(a.toString()),
-                        ),
-                        creator: Principal.fromText(chat.creator.toString()),
-                        members: chat.members.map((m) =>
-                          Principal.fromText(m.toString()),
-                        ),
-                      };
-                      onUpdateChat(updatedChat);
-                    }
-                  }}
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
                   sx={{ mb: 2 }}
                 />
                 <Autocomplete
@@ -404,9 +388,12 @@ const ChatWindow = memo(
                     variant="contained"
                     color="primary"
                     fullWidth
+                    disabled={isSaving}
                     onClick={async () => {
+                      setIsSaving(true);
                       const updatedChat: Chat = {
                         ...chat,
+                        name: editedName,
                         admins: chat.admins.map((a) =>
                           Principal.fromText(a.id),
                         ),
@@ -426,6 +413,8 @@ const ChatWindow = memo(
                         }
                       } catch (error) {
                         console.error("Failed to update chat:", error);
+                      } finally {
+                        setIsSaving(false);
                       }
                     }}
                   >
