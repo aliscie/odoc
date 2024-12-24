@@ -162,8 +162,12 @@ const ChatWindow = memo(
         const result = await backendActor.update_chat(updatedChat);
         if ("Ok" in result) {
           if (onUpdateChat) {
-            onUpdateChat(updatedChat);
+            onUpdateChat(result.Ok);
           }
+          // Update local state
+          setSelectedWorkspace(result.Ok.workspaces[0] || "");
+          setEditedMembers(result.Ok.members);
+          setEditedName(result.Ok.name);
         }
       } catch (error) {
         console.error("Failed to update chat:", error);
@@ -347,9 +351,15 @@ const ChatWindow = memo(
                     const updatedChat = {
                       ...chat,
                       workspaces: newValue.map(w => w.id),
-                      admins: chat.admins.map(a => Principal.fromText(a.toString())),
-                      creator: Principal.fromText(chat.creator.toString()),
-                      members: chat.members.map(m => Principal.fromText(m.toString()))
+                      admins: chat.admins.map(a => typeof a === 'string' ? Principal.fromText(a) : Principal.fromText(a.toString())),
+                      creator: typeof chat.creator === 'string' ? Principal.fromText(chat.creator) : Principal.fromText(chat.creator.toString()),
+                      members: chat.members.map(m => typeof m === 'string' ? Principal.fromText(m) : Principal.fromText(m.toString())),
+                      messages: chat.messages.map(msg => ({
+                        ...msg,
+                        sender: typeof msg.sender === 'string' ? Principal.fromText(msg.sender) : Principal.fromText(msg.sender.toString()),
+                        seen_by: msg.seen_by.map(s => typeof s === 'string' ? Principal.fromText(s) : Principal.fromText(s.toString())),
+                        date: BigInt(msg.date.toString())
+                      }))
                     };
                     handleSavePost(updatedChat);
                   }}
