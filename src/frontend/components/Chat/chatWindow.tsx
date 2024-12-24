@@ -357,35 +357,26 @@ const ChatWindow = memo(
                   )}
                 />
 
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                  <InputLabel>Admins</InputLabel>
-                  <Select
-                    multiple
-                    value={chat.admins.map((a) => a.toString())}
-                    label="Admins"
-                    onChange={(e) => {
-                      const selectedAdmins = e.target.value as string[];
-                      if (onUpdateChat) {
-                        const updatedChat = {
-                          ...chat,
-                          admins: selectedAdmins.map((id) =>
-                            Principal.fromText(id),
-                          ),
-                          creator: Principal.fromText(chat.creator.toString()),
-                          members: chat.members.map((m) =>
-                            Principal.fromText(m.toString()),
-                          ),
-                        };
-                        onUpdateChat(updatedChat);
-                      }
-                    }}
-                  >
-                    {chat.members.map((member) => (
-                      <MenuItem
-                        key={member.toString()}
-                        value={member.toString()}
-                      >
-                        {all_friends.find((f) => f.id === member.toString())
+                <Autocomplete
+                  multiple
+                  options={all_friends}
+                  getOptionLabel={(option) => option.name || option.id}
+                  value={all_friends.filter(f => chat.admins.some(a => a.toString() === f.id))}
+                  onChange={(_, newValue) => {
+                    if (onUpdateChat) {
+                      const updatedChat = {
+                        ...chat,
+                        admins: newValue.map(admin => Principal.fromText(admin.id)),
+                        creator: Principal.fromText(chat.creator.toString()),
+                        members: chat.members.map(m => Principal.fromText(m.toString()))
+                      };
+                      onUpdateChat(updatedChat);
+                    }
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Admins" fullWidth sx={{ mb: 2 }} />
+                  )}
+                />
                           ?.name || member.toString()}
                       </MenuItem>
                     ))}
