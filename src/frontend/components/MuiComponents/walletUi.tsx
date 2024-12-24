@@ -209,7 +209,21 @@ const WalletPage = ({ wallet = defaultWallet }) => {
                     {formatRelativeTime(exchange.date_created)}
                   </TableCell>
                   <TableCell>
-                    {exchange._type && Object.keys(exchange._type)[0]}
+                    {exchange._type && (() => {
+                      const type = Object.keys(exchange._type)[0];
+                      switch(type) {
+                        case 'Withdraw':
+                          return 'Withdrawal';
+                        case 'Deposit':
+                          return 'Deposit';
+                        case 'LocalSend':
+                          return 'Sent';
+                        case 'LocalReceive':
+                          return 'Received';
+                        default:
+                          return type;
+                      }
+                    })()}
                   </TableCell>
                   <TableCell>
                     {exchange.from === profile?.id
