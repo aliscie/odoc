@@ -547,7 +547,7 @@ const SocialPosts = () => {
             ).toLocaleString()}
           />
           <CardContent>
-            {post.content_tree && post.content_tree.length > 0 ? (
+            {post.content_tree && post.content_tree.length > 0 && post.content_tree[0]?.text ? (
               <EditorComponent
                 readOnly={
                   post && post.creator?.id && post.creator.id !== profile?.id
