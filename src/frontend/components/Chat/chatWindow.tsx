@@ -290,8 +290,37 @@ const ChatWindow = memo(
               Chat Settings
             </Typography>
 
-            {chat.name !== "private_chat" && (
+            {chat.name === "private_chat" ? (
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel>Workspace</InputLabel>
+                <Select
+                  value={selectedWorkspace}
+                  label="Workspace"
+                  onChange={(e) => setSelectedWorkspace(e.target.value)}
+                >
+                  {workspaces.map((workspace) => (
+                    <MenuItem key={workspace.id} value={workspace.id}>
+                      {workspace.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : (
               <>
+                <TextField
+                  fullWidth
+                  label="Chat Name"
+                  value={chat.name}
+                  onChange={(e) => {
+                    if (onUpdateChat) {
+                      onUpdateChat({
+                        ...chat,
+                        name: e.target.value
+                      });
+                    }
+                  }}
+                  sx={{ mb: 2 }}
+                />
                 <FormControl fullWidth sx={{ mb: 2 }}>
                   <InputLabel>Workspace</InputLabel>
                   <Select
@@ -339,37 +368,55 @@ const ChatWindow = memo(
                   })}
                 </List>
 
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  sx={{ mt: 2 }}
-                  onClick={async () => {
-                    const updatedChat: Chat = {
-                      ...chat,
-                      admins: chat.admins.map((a) => Principal.fromText(a.id)),
-                      creator: Principal.fromText(chat.creator.id),
-                      workspaces: [selectedWorkspace],
-                      members: editedMembers,
-                    };
+                <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    onClick={async () => {
+                      const updatedChat: Chat = {
+                        ...chat,
+                        admins: chat.admins.map((a) => Principal.fromText(a.id)),
+                        creator: Principal.fromText(chat.creator.id),
+                        workspaces: [selectedWorkspace],
+                        members: editedMembers,
+                      };
 
-                    try {
-                      console.log({ updatedChat });
-                      const result =
-                        await backendActor.update_chat(updatedChat);
-                      if ("Ok" in result) {
-                        if (onUpdateChat) {
-                          onUpdateChat(updatedChat);
+                      try {
+                        const result = await backendActor.update_chat(updatedChat);
+                        if ("Ok" in result) {
+                          if (onUpdateChat) {
+                            onUpdateChat(updatedChat);
+                          }
+                          setIsSettingsView(false);
                         }
-                        setIsSettingsView(false);
+                      } catch (error) {
+                        console.error("Failed to update chat:", error);
                       }
-                    } catch (error) {
-                      console.error("Failed to update chat:", error);
-                    }
-                  }}
-                >
-                  Save Changes
-                </Button>
+                    }}
+                  >
+                    Save Changes
+                  </Button>
+                  
+                  {chat.name !== "private_chat" && (
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={async () => {
+                        try {
+                          const result = await backendActor.delete_chat(chat.id);
+                          if ("Ok" in result && onClose) {
+                            onClose(chat.id);
+                          }
+                        } catch (error) {
+                          console.error("Failed to delete chat:", error);
+                        }
+                      }}
+                    >
+                      Delete Chat
+                    </Button>
+                  )}
+                </Box>
               </>
             )}
           </Box>
