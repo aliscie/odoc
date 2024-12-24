@@ -321,7 +321,7 @@ const SocialPosts = () => {
         );
         setPosts(updatedPosts);
       } else {
-        console.error("Failed to vote up:", result.Err);
+        enqueueSnackbar(result.Err, { variant: "error" });
       }
     } catch (err) {
       console.error("Error voting up:", err);
@@ -341,7 +341,7 @@ const SocialPosts = () => {
         );
         setPosts(updatedPosts);
       } else {
-        console.error("Failed to vote down:", result.Err);
+        enqueueSnackbar(result.Err, { variant: "error" });
       }
     } catch (err) {
       console.error("Error voting down:", err);
