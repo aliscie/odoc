@@ -188,7 +188,7 @@ const ChatList = memo(
       };
     });
 
-    const { all_friends } = useSelector((state: any) => state.filesState);
+    const { all_friends, workspaces } = useSelector((state: any) => state.filesState);
 
     const getOtherUser = (chat) => {
       if (chat.name !== "private_chat") return null;
