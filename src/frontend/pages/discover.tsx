@@ -104,11 +104,12 @@ const Comment = ({ comment, onReply, level = 0 }) => {
   );
 };
 
-const SearchField = ({
+const TagSearchField = ({
   searchQuery,
   setSearchQuery,
   selectedTags,
   setSelectedTags,
+  suggestedTags,
 }) => {
   const [tagInput, setTagInput] = useState("");
   const [suggestedTags] = useState([
@@ -219,6 +220,63 @@ const SearchField = ({
         </Box>
       </CardContent>
     </Card>
+  );
+};
+
+const PostTagsField = ({ 
+  post, 
+  suggestedTags, 
+  onTagsChange, 
+  canEdit 
+}) => {
+  return (
+    <Box sx={{ mb: 2 }}>
+      {post.tags.map((tag) => (
+        <Chip
+          key={tag}
+          label={tag}
+          size="small"
+          sx={{ mr: 1, mb: 1 }}
+          onDelete={canEdit ? () => {
+            const updatedTags = post.tags.filter((t) => t !== tag);
+            onTagsChange(updatedTags);
+          } : undefined}
+        />
+      ))}
+      {canEdit && (
+        <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+          <Autocomplete
+            multiple
+            freeSolo
+            size="small"
+            options={suggestedTags}
+            value={post.tags}
+            onChange={(_, newValue) => {
+              const uniqueTags = [...new Set(newValue.map(tag => tag.trim()))];
+              onTagsChange(uniqueTags);
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Add tags..."
+                size="small"
+                sx={{ minWidth: 300 }}
+              />
+            )}
+            renderTags={(value, getTagProps) =>
+              value.map((tag, index) => (
+                <Chip
+                  {...getTagProps({ index })}
+                  key={tag}
+                  label={tag}
+                  size="small"
+                />
+              ))
+            }
+          />
+        </Box>
+      )}
+    </Box>
   );
 };
 
@@ -425,7 +483,7 @@ const SocialPosts = () => {
         ...post,
         creator: profile.id,
         content_tree,
-        tags: selectedTags,
+        tags: post.tags,
       };
 
       const result = await backendActor.save_post(updatedPost);
@@ -573,7 +631,7 @@ const SocialPosts = () => {
         isPosting={isPosting}
       />
 
-      <SearchField
+      <TagSearchField
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         selectedTags={selectedTags}
@@ -605,70 +663,19 @@ const SocialPosts = () => {
               }}
             />
 
-            <Box sx={{ mb: 2 }}>
-              {post.tags.map((tag) => (
-                <Chip
-                  key={tag}
-                  label={tag}
-                  size="small"
-                  sx={{ mr: 1, mb: 1 }}
-                  onDelete={
-                    post.creator?.id === profile?.id
-                      ? () => {
-                          const updatedPost = {
-                            ...post,
-                            tags: post.tags.filter((t) => t !== tag),
-                          };
-                          handleSavePost(updatedPost);
-                        }
-                      : undefined
-                  }
-                />
-              ))}
-              {post.creator?.id === profile?.id && (
-                <Box
-                  sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}
-                >
-                  <Autocomplete
-                    multiple
-                    freeSolo
-                    size="small"
-                    options={suggestedTags}
-                    value={post.tags}
-                    onChange={(_, newValue) => {
-                      const uniqueTags = [
-                        ...new Set(newValue.map((tag) => tag.trim())),
-                      ];
-                      // Update the post in the local state
-                      setPosts(posts.map(p =>
-                        p.id === post.id
-                          ? { ...p, tags: uniqueTags }
-                          : p
-                      ));
-                      setIsChanged((prev) => ({ ...prev, [post.id]: true }));
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        placeholder="Add tags..."
-                        size="small"
-                        sx={{ minWidth: 300 }}
-                      />
-                    )}
-                    renderTags={(value, getTagProps) =>
-                      value.map((tag, index) => (
-                        <Chip
-                          {...getTagProps({ index })}
-                          key={tag}
-                          label={tag}
-                          size="small"
-                        />
-                      ))
-                    }
-                  />
-                </Box>
-              )}
-            </Box>
+            <PostTagsField
+              post={post}
+              suggestedTags={suggestedTags}
+              canEdit={post.creator?.id === profile?.id}
+              onTagsChange={(newTags) => {
+                setPosts(posts.map(p =>
+                  p.id === post.id
+                    ? { ...p, tags: newTags }
+                    : p
+                ));
+                setIsChanged((prev) => ({ ...prev, [post.id]: true }));
+              }}
+            />
             <Box
               sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
             >
