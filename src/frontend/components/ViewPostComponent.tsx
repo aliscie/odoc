@@ -180,6 +180,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
   const [commentInput, setCommentInput] = useState("");
   const [loadingVotes, setLoadingVotes] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [postState, setPostState] = useState(post);
   const [votes, setVotes] = useState({
     up: post.votes_up,
     down: post.votes_down,
@@ -199,10 +200,10 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
         });
         return;
       }
-      const result = await backendActor.vote_up(post.id);
+      const result = await backendActor.vote_up(postState.id);
       if ("Ok" in result) {
         setVotes({ up: result.Ok.votes_up, down: result.Ok.votes_down });
-        // onPostUpdate(result.Ok);
+        setPostState(result.Ok);
       }
     } catch (err) {
       console.error("Error voting up:", err);
@@ -223,10 +224,10 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
         });
         return;
       }
-      const result = await backendActor.vote_down(post.id);
+      const result = await backendActor.vote_down(postState.id);
       if ("Ok" in result) {
         setVotes({ up: result.Ok.votes_up, down: result.Ok.votes_down });
-        // onPostUpdate(result.Ok);
+        setPostState(result.Ok);
       }
     } catch (err) {
       console.error("Error voting down:", err);

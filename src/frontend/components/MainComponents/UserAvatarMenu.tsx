@@ -147,9 +147,14 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
         [Principal.fromText(user.id)],
         newMessage,
       );
-      // console.log({ result });
-
       if (result?.Ok) {
+        setActiveChat(prev => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            messages: [...prev.messages, newMessage]
+          };
+        });
         enqueueSnackbar("Message sent successfully", { variant: "success" });
       } else if (result?.Err) {
         throw new Error(result.Err);
