@@ -109,7 +109,6 @@ const TagSearchField = ({
   setSearchQuery,
   selectedTags,
   setSelectedTags,
-  suggestedTags,
 }) => {
   const [tagInput, setTagInput] = useState("");
   const [suggestedTags] = useState([
@@ -223,12 +222,7 @@ const TagSearchField = ({
   );
 };
 
-const PostTagsField = ({ 
-  post, 
-  suggestedTags, 
-  onTagsChange, 
-  canEdit 
-}) => {
+const PostTagsField = ({ post, suggestedTags, onTagsChange, canEdit }) => {
   return (
     <Box sx={{ mb: 2 }}>
       {post.tags.map((tag) => (
@@ -237,10 +231,14 @@ const PostTagsField = ({
           label={tag}
           size="small"
           sx={{ mr: 1, mb: 1 }}
-          onDelete={canEdit ? () => {
-            const updatedTags = post.tags.filter((t) => t !== tag);
-            onTagsChange(updatedTags);
-          } : undefined}
+          onDelete={
+            canEdit
+              ? () => {
+                  const updatedTags = post.tags.filter((t) => t !== tag);
+                  onTagsChange(updatedTags);
+                }
+              : undefined
+          }
         />
       ))}
       {canEdit && (
@@ -252,7 +250,9 @@ const PostTagsField = ({
             options={suggestedTags}
             value={post.tags}
             onChange={(_, newValue) => {
-              const uniqueTags = [...new Set(newValue.map(tag => tag.trim()))];
+              const uniqueTags = [
+                ...new Set(newValue.map((tag) => tag.trim())),
+              ];
               onTagsChange(uniqueTags);
             }}
             renderInput={(params) => (
@@ -471,7 +471,7 @@ const SocialPosts = () => {
   };
 
   const handleSavePost = async (post: PostUser) => {
-    if (!newPostContentRef.current || !backendActor) return;
+    // if (!newPostContentRef.current || !backendActor) return;
 
     setIsSaving((prev) => ({ ...prev, [post.id]: true }));
     try {
@@ -481,9 +481,8 @@ const SocialPosts = () => {
 
       const updatedPost: Post = {
         ...post,
-        creator: profile.id,
+        creator: String(profile.id),
         content_tree,
-        tags: post.tags,
       };
 
       const result = await backendActor.save_post(updatedPost);
@@ -496,8 +495,9 @@ const SocialPosts = () => {
         newPostContentRef.current = null;
       }
     } catch (err) {
-      console.error("Error saving post:", err);
+      console.log("Error saving post:", err);
     } finally {
+      // console.log("finally");
       setIsSaving((prev) => ({ ...prev, [post.id]: false }));
     }
   };
@@ -668,11 +668,11 @@ const SocialPosts = () => {
               suggestedTags={suggestedTags}
               canEdit={post.creator?.id === profile?.id}
               onTagsChange={(newTags) => {
-                setPosts(posts.map(p =>
-                  p.id === post.id
-                    ? { ...p, tags: newTags }
-                    : p
-                ));
+                setPosts(
+                  posts.map((p) =>
+                    p.id === post.id ? { ...p, tags: newTags } : p,
+                  ),
+                );
                 setIsChanged((prev) => ({ ...prev, [post.id]: true }));
               }}
             />
