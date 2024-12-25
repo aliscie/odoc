@@ -441,15 +441,9 @@ const SocialPosts = () => {
     }
   };
 
-  const [isDeletingPost, setIsDeletingPost] = useState<string | null>(null);
-  const [loadingVotes, setLoadingVotes] = useState<{
-    [key: string]: { up?: boolean; down?: boolean };
-  }>({});
+  const [isPosting, setIsPosting] = useState(false);
 
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [postToDelete, setPostToDelete] = useState<string | null>(null);
-
-  const handleDeletePost = async (postId: string) => {
+  const handleNewPost = async (content: any, tags: string[]) => {
     setPostToDelete(postId);
     setDeleteDialogOpen(true);
   };
