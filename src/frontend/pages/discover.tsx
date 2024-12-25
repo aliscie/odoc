@@ -415,38 +415,6 @@ const SocialPosts = () => {
     }
   };
 
-  const handleVoteDown = async (postId: string) => {
-    try {
-      if (!backendActor) return;
-      setLoadingVotes((prev) => ({
-        ...prev,
-        [postId]: { ...prev[postId], down: true },
-      }));
-      const result = await backendActor.vote_down(postId);
-      if ("Ok" in result) {
-        const updatedPosts = posts.map((post) =>
-          post.id === postId ? result.Ok : post,
-        );
-        setPosts(updatedPosts);
-      } else {
-        enqueueSnackbar(result.Err, { variant: "error" });
-      }
-    } catch (err) {
-      // console.error("Error voting down:", err);
-    } finally {
-      setLoadingVotes((prev) => ({
-        ...prev,
-        [postId]: { ...prev[postId], down: false },
-      }));
-    }
-  };
-
-  const [isPosting, setIsPosting] = useState(false);
-
-  const handleNewPost = async (content: any, tags: string[]) => {
-    setPostToDelete(postId);
-    setDeleteDialogOpen(true);
-  };
 
   const confirmDelete = async () => {
     if (!backendActor || !postToDelete) return;
