@@ -313,7 +313,6 @@ const SocialPosts = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  console.log({ selectedTags });
 
   // Add this function after other handler functions
   const filteredPosts = posts.filter((post) => {
@@ -426,6 +425,7 @@ const SocialPosts = () => {
         ...post,
         creator: profile.id,
         content_tree,
+        tags: selectedTags,
       };
 
       const result = await backendActor.save_post(updatedPost);
@@ -640,8 +640,8 @@ const SocialPosts = () => {
                         ...new Set(newValue.map((tag) => tag.trim())),
                       ];
                       // Update the post in the local state
-                      setPosts(posts.map(p => 
-                        p.id === post.id 
+                      setPosts(posts.map(p =>
+                        p.id === post.id
                           ? { ...p, tags: uniqueTags }
                           : p
                       ));
