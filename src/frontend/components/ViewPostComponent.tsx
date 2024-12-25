@@ -12,6 +12,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Chip,
+  Autocomplete,
 } from "@mui/material";
 import {
   Comment as MessageCircleIcon,
@@ -25,8 +27,72 @@ import { Principal } from "@dfinity/principal";
 import UserAvatarMenu from "./MainComponents/UserAvatarMenu";
 import EditorComponent from "./EditorComponent";
 import { deserializeContentTree } from "../DataProcessing/deserlize/deserializeContents";
-import { PostUser } from "../../declarations/backend/backend.did";
-import PostTagsField from "./PostTagsField";
+import {
+  ContentNode,
+  Post,
+  PostUser,
+} from "../../declarations/backend/backend.did";
+import serializeFileContents from "../DataProcessing/serialize/serializeFileContents";
+import { useBackendContext } from "../contexts/BackendContext";
+import { useSelector } from "react-redux";
+
+const PostTagsField = ({ post, suggestedTags, onTagsChange, canEdit }) => {
+  return (
+    <Box sx={{ mb: 2 }}>
+      {post.tags.map((tag) => (
+        <Chip
+          key={tag}
+          label={tag}
+          size="small"
+          sx={{ mr: 1, mb: 1 }}
+          onDelete={
+            canEdit
+              ? () => {
+                  const updatedTags = post.tags.filter((t) => t !== tag);
+                  onTagsChange(updatedTags);
+                }
+              : undefined
+          }
+        />
+      ))}
+      {canEdit && (
+        <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+          <Autocomplete
+            multiple
+            freeSolo
+            size="small"
+            options={suggestedTags}
+            value={post.tags}
+            onChange={(_, newValue) => {
+              const uniqueTags = [
+                ...new Set(newValue.map((tag) => tag.trim())),
+              ];
+              onTagsChange(uniqueTags);
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Add tags..."
+                size="small"
+                sx={{ minWidth: 300 }}
+              />
+            )}
+            renderTags={(value, getTagProps) =>
+              value.map((tag, index) => (
+                <Chip
+                  {...getTagProps({ index })}
+                  key={tag}
+                  label={tag}
+                  size="small"
+                />
+              ))
+            }
+          />
+        </Box>
+      )}
+    </Box>
+  );
+};
 
 const Comment = ({ comment, onReply, level = 0 }) => {
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -102,67 +168,96 @@ interface ViewPostComponentProps {
 const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
   post,
   currentUser,
-  backendActor,
-  onPostUpdate,
   onPostDelete,
   suggestedTags,
 }) => {
+  // const [tagInputs, setTagInputs] = useState<{ [key: string]: string }>({});
+  const [tags, setTags] = useState(post.tags);
   const [isChanged, setIsChanged] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [commentInput, setCommentInput] = useState("");
-  const [loadingVotes, setLoadingVotes] = useState({ up: false, down: false });
+  const [loadingVotes, setLoadingVotes] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [votes, setVotes] = useState({
+    up: post.votes_up,
+    down: post.votes_down,
+  });
   const newPostContentRef = useRef<any>(null);
-
+  const { backendActor } = useBackendContext();
+  const { profile } = useSelector((state: any) => state.filesState);
   const handleVoteUp = async () => {
     if (!backendActor) return;
-    setLoadingVotes((prev) => ({ ...prev, up: true }));
+    setLoadingVotes(true);
     try {
+      if (votes.up.map((p) => p.toString()).some((p) => p == profile.id)) {
+        let unvote_res = await backendActor.unvote_for_post(post.id);
+        setVotes({
+          up: unvote_res.Ok.votes_up,
+          down: unvote_res.Ok.votes_down,
+        });
+        return;
+      }
       const result = await backendActor.vote_up(post.id);
       if ("Ok" in result) {
-        onPostUpdate(result.Ok);
+        setVotes({ up: result.Ok.votes_up, down: result.Ok.votes_down });
+        // onPostUpdate(result.Ok);
       }
     } catch (err) {
       console.error("Error voting up:", err);
     } finally {
-      setLoadingVotes((prev) => ({ ...prev, up: false }));
+      setLoadingVotes(false);
     }
   };
 
   const handleVoteDown = async () => {
     if (!backendActor) return;
-    setLoadingVotes((prev) => ({ ...prev, down: true }));
+    setLoadingVotes(true);
     try {
+      if (votes.down.map((p) => p.toString()).some((p) => p == profile.id)) {
+        const unvote_res = await backendActor.unvote_for_post(post.id);
+        setVotes({
+          up: unvote_res.Ok.votes_up,
+          down: unvote_res.Ok.votes_down,
+        });
+        return;
+      }
       const result = await backendActor.vote_down(post.id);
       if ("Ok" in result) {
-        onPostUpdate(result.Ok);
+        setVotes({ up: result.Ok.votes_up, down: result.Ok.votes_down });
+        // onPostUpdate(result.Ok);
       }
     } catch (err) {
       console.error("Error voting down:", err);
     } finally {
-      setLoadingVotes((prev) => ({ ...prev, down: false }));
+      setLoadingVotes(false);
     }
   };
 
   const handleSavePost = async () => {
-    if (!newPostContentRef.current || !backendActor) return;
+    // if (!newPostContentRef.current || !backendActor) return;
     setIsSaving(true);
     try {
-      let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
-        serializeFileContents(newPostContentRef.current);
-      let content_tree: Array<[string, ContentNode]> = de_changes[0][0][1];
+      let content_tree: Array<[string, ContentNode]> = [];
+      if (newPostContentRef.current) {
+        let de_changes: Array<Array<[string, Array<[string, ContentNode]>]>> =
+          serializeFileContents(newPostContentRef.current);
+        content_tree = de_changes[0][0][1];
+      } else {
+        content_tree = post.content_tree;
+      }
 
       const updatedPost: Post = {
         ...post,
         creator: String(currentUser.id),
         content_tree,
+        tags,
       };
-
+      console.log({ tags });
       const result = await backendActor.save_post(updatedPost);
       if ("Ok" in result) {
-        onPostUpdate(result.Ok);
+        // onPostUpdate(result.Ok);
         setIsChanged(false);
       }
     } catch (err) {
@@ -197,12 +292,12 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
       replies: [],
       user: currentUser,
     };
-    
+
     const updatedPost = {
       ...post,
       comments: [...(post.comments || []), newComment],
     };
-    onPostUpdate(updatedPost);
+    // onPostUpdate(updatedPost);
     setCommentInput("");
   };
 
@@ -237,7 +332,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
       ...post,
       comments: addReplyToComment(post.comments || [], commentId, newReply),
     };
-    onPostUpdate(updatedPost);
+    // onPostUpdate(updatedPost);
   };
 
   return (
@@ -262,12 +357,12 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
         />
 
         <PostTagsField
-          post={post}
+          post={{ ...post, tags }}
           suggestedTags={suggestedTags}
           canEdit={post.creator?.id === currentUser?.id}
           onTagsChange={(newTags) => {
             const updatedPost = { ...post, tags: newTags };
-            onPostUpdate(updatedPost);
+            setTags(newTags);
             setIsChanged(true);
           }}
         />
@@ -298,32 +393,26 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
             <Button
               startIcon={<HeartIcon />}
               onClick={handleVoteUp}
-              disabled={loadingVotes.up}
+              disabled={loadingVotes}
               color={
-                post.votes_up.some(
-                  (p) =>
-                    p.toString() === Principal.fromText("2vxsx-fae").toString(),
-                )
-                  ? "primary"
+                profile && votes.up.some((p) => p.toString() === profile.id)
+                  ? "success"
                   : "inherit"
               }
             >
-              {loadingVotes.up ? "..." : post.votes_up.length}
+              {loadingVotes ? "..." : votes.up.length}
             </Button>
             <Button
               startIcon={<ThumbsDownIcon />}
               onClick={handleVoteDown}
-              disabled={loadingVotes.down}
+              disabled={loadingVotes}
               color={
-                post.votes_down.some(
-                  (p) =>
-                    p.toString() === Principal.fromText("2vxsx-fae").toString(),
-                )
+                profile && votes.down.some((p) => p.toString() === profile.id)
                   ? "error"
                   : "inherit"
               }
             >
-              {loadingVotes.down ? "..." : post.votes_down.length}
+              {loadingVotes ? "..." : votes.down.length}
             </Button>
             <Button
               startIcon={<MessageCircleIcon />}
@@ -366,7 +455,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
       </CardContent>
 
       <Dialog
-        open={deleteDialogOpen}
+        open={!isDeleting && deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
       >
         <DialogTitle>Delete Post?</DialogTitle>

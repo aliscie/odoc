@@ -147,7 +147,7 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
         [Principal.fromText(user.id)],
         newMessage,
       );
-      console.log({ result });
+      // console.log({ result });
 
       if (result?.Ok) {
         enqueueSnackbar("Message sent successfully", { variant: "success" });
