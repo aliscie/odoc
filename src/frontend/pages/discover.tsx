@@ -639,154 +639,19 @@ const SocialPosts = () => {
       />
 
       {filteredPosts.map((post: PostUser) => (
-        <Card key={post.id} sx={{ mb: 2 }}>
-          <CardHeader
-            avatar={post.creator && <UserAvatarMenu user={post.creator} />}
-            title={post.creator && post.creator.name}
-            subheader={new Date(
-              Number(post.date_created) / 1e6,
-            ).toLocaleString()}
-          />
-          <CardContent>
-            <EditorComponent
-              readOnly={
-                post && post.creator?.id && post.creator.id !== profile?.id
-              }
-              content={deserializeContentTree(post.content_tree)}
-              onChange={(changes) => {
-                let new_change = {};
-                new_change[""] = changes;
-                newPostContentRef.current = new_change;
-                if (!isChanged[post.id]) {
-                  setIsChanged((prev) => ({ ...prev, [post.id]: true }));
-                }
-              }}
-            />
-
-            <PostTagsField
-              post={post}
-              suggestedTags={suggestedTags}
-              canEdit={post.creator?.id === profile?.id}
-              onTagsChange={(newTags) => {
-                setPosts(
-                  posts.map((p) =>
-                    p.id === post.id ? { ...p, tags: newTags } : p,
-                  ),
-                );
-                setIsChanged((prev) => ({ ...prev, [post.id]: true }));
-              }}
-            />
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
-            >
-              <Box sx={{ display: "flex", gap: 1 }}>
-                {post.creator?.id === profile?.id && (
-                  <>
-                    <Button
-                      onClick={() => handleDeletePost(post.id)}
-                      color="error"
-                      size="small"
-                      disabled={isDeletingPost === post.id}
-                    >
-                      {isDeletingPost === post.id ? "Deleting..." : "Delete"}
-                    </Button>
-
-                    <Button
-                      onClick={async () => {
-                        await handleSavePost(post);
-                        setIsChanged((prev) => ({ ...prev, [post.id]: false }));
-                      }}
-                      color="primary"
-                      size="small"
-                      disabled={!isChanged[post.id] || isSaving[post.id]}
-                    >
-                      {isSaving[post.id] ? "Saving..." : "Save"}
-                    </Button>
-                  </>
-                )}
-                <Button
-                  startIcon={<HeartIcon />}
-                  onClick={() => handleVoteUp(post.id)}
-                  disabled={loadingVotes[post.id]?.up}
-                  color={
-                    post.votes_up.some(
-                      (p) =>
-                        p.toString() ===
-                        Principal.fromText("2vxsx-fae").toString(),
-                    )
-                      ? "primary"
-                      : "inherit"
-                  }
-                >
-                  {loadingVotes[post.id]?.up ? "..." : post.votes_up.length}
-                </Button>
-                <Button
-                  startIcon={<ThumbsDownIcon />}
-                  onClick={() => handleVoteDown(post.id)}
-                  disabled={loadingVotes[post.id]?.down}
-                  color={
-                    post.votes_down.some(
-                      (p) =>
-                        p.toString() ===
-                        Principal.fromText("2vxsx-fae").toString(),
-                    )
-                      ? "error"
-                      : "inherit"
-                  }
-                >
-                  {loadingVotes[post.id]?.down ? "..." : post.votes_down.length}
-                </Button>
-                <Button
-                  startIcon={<MessageCircleIcon />}
-                  onClick={() => toggleComments(post.id)}
-                >
-                  {post.comments && post.comments.length}
-                </Button>
-              </Box>
-              <IconButton onClick={() => handleShare(post.id)}>
-                <ShareIcon />
-              </IconButton>
-            </Box>
-
-            {showComments[post.id] && (
-              <Box sx={{ mt: 2 }}>
-                <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
-                  <TextField
-                    size="small"
-                    fullWidth
-                    placeholder="Write a comment..."
-                    value={commentInputs[post.id] || ""}
-                    onChange={(e) =>
-                      setCommentInputs((prev) => ({
-                        ...prev,
-                        [post.id]: e.target.value,
-                      }))
-                    }
-                  />
-                  <IconButton
-                    onClick={() => handleComment(post.id)}
-                    color="primary"
-                  >
-                    <SendIcon />
-                  </IconButton>
-                </Box>
-
-                <Box sx={{ mt: 2 }}>
-                  {post.comments &&
-                    post.comments.map((comment) => (
-                      <Comment
-                        key={comment.id}
-                        comment={comment}
-                        onReply={(commentId, content) =>
-                          handleReply(post.id, commentId, content)
-                        }
-                      />
-                    ))}
-                </Box>
-              </Box>
-            )}
-          </CardContent>
-        </Card>
+        <ViewPostComponent
+          key={post.id}
+          post={post}
+          currentUser={profile}
+          backendActor={backendActor}
+          suggestedTags={suggestedTags}
+          onPostUpdate={(updatedPost) => {
+            setPosts(posts.map((p) => (p.id === updatedPost.id ? updatedPost : p)));
+          }}
+          onPostDelete={(postId) => {
+            setPosts(posts.filter((p) => p.id !== postId));
+          }}
+        />
       ))}
     </Box>
   );
