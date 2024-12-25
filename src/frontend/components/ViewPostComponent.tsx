@@ -257,7 +257,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
       console.log({ tags });
       const result = await backendActor.save_post(updatedPost);
       if ("Ok" in result) {
-        // onPostUpdate(result.Ok);
+        setPostState(result.Ok);
         setIsChanged(false);
       }
     } catch (err) {
@@ -271,7 +271,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
     if (!backendActor) return;
     setIsDeleting(true);
     try {
-      const result = await backendActor.delete_post(post.id);
+      const result = await backendActor.delete_post(postState.id);
       if ("Ok" in result) {
         onPostDelete(post.id);
       }
@@ -294,7 +294,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
     };
 
     const updatedPost = {
-      ...post,
+      ...postState,
       comments: [...(post.comments || []), newComment],
     };
     // onPostUpdate(updatedPost);
