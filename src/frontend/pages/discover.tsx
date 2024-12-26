@@ -180,18 +180,23 @@ const samplePosts = [
   // Add more sample posts...
 ];
 
-const SocialFeed = () => {
-  const [posts, setPosts] = useState(samplePosts);
-  const [newPost, setNewPost] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [anchorEl, setAnchorEl] = useState(null);
+interface CreatePostProps {
+  onPostSubmit: (post: any) => void;
+}
 
-  const handlePostSubmit = () => {
+const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
+  const [newPost, setNewPost] = useState("");
+
+  const extractTags = (content: string) => {
+    const tags = content.match(/#\w+/g);
+    return tags || [];
+  };
+
+  const handleSubmit = () => {
     if (!newPost.trim()) return;
 
     const newPostObj = {
-      id: posts.length + 1,
+      id: Date.now(),
       author: {
         name: "Current User",
         avatar: "/api/placeholder/32/32",
@@ -205,13 +210,68 @@ const SocialFeed = () => {
       timestamp: "Just now",
     };
 
-    setPosts([newPostObj, ...posts]);
+    onPostSubmit(newPostObj);
     setNewPost("");
   };
 
-  const extractTags = (content) => {
-    const tags = content.match(/#\w+/g);
-    return tags || [];
+  return (
+    <CreatePostCard>
+      <CardContent>
+        <StyledTextField
+          fullWidth
+          multiline
+          rows={3}
+          placeholder="What's on your mind?"
+          value={newPost}
+          onChange={(e) => setNewPost(e.target.value)}
+          sx={{ mb: 2 }}
+        />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Box>
+            <IconButton>
+              <ImageIcon color="#E9D5FF" />
+            </IconButton>
+            <IconButton>
+              <Smile color="#E9D5FF" />
+            </IconButton>
+            <IconButton>
+              <Hash color="#E9D5FF" />
+            </IconButton>
+          </Box>
+          <Button
+            variant="contained"
+            endIcon={<Send />}
+            onClick={handleSubmit}
+            sx={{
+              borderRadius: "9999px",
+              background: "linear-gradient(90deg, #6366F1, #8B5CF6)",
+              "&:hover": {
+                background: "linear-gradient(90deg, #4F46E5, #7C3AED)",
+              },
+            }}
+          >
+            Post
+          </Button>
+        </Box>
+      </CardContent>
+    </CreatePostCard>
+  );
+};
+
+const SocialFeed = () => {
+  const [posts, setPosts] = useState(samplePosts);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handlePostSubmit = (newPostObj: any) => {
+    setPosts([newPostObj, ...posts]);
   };
 
   const handleLike = (postId) => {
@@ -260,52 +320,7 @@ const SocialFeed = () => {
       <FeedWrapper>
         <Container>
           {/* Create Post Section */}
-          <CreatePostCard>
-            <CardContent>
-              <StyledTextField
-                fullWidth
-                multiline
-                rows={3}
-                placeholder="What's on your mind?"
-                value={newPost}
-                onChange={(e) => setNewPost(e.target.value)}
-                sx={{ mb: 2 }}
-              />
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Box>
-                  <IconButton>
-                    <ImageIcon color="#E9D5FF" />
-                  </IconButton>
-                  <IconButton>
-                    <Smile color="#E9D5FF" />
-                  </IconButton>
-                  <IconButton>
-                    <Hash color="#E9D5FF" />
-                  </IconButton>
-                </Box>
-                <Button
-                  variant="contained"
-                  endIcon={<Send />}
-                  onClick={handlePostSubmit}
-                  sx={{
-                    borderRadius: "9999px",
-                    background: "linear-gradient(90deg, #6366F1, #8B5CF6)",
-                    "&:hover": {
-                      background: "linear-gradient(90deg, #4F46E5, #7C3AED)",
-                    },
-                  }}
-                >
-                  Post
-                </Button>
-              </Box>
-            </CardContent>
-          </CreatePostCard>
+          <CreatePost onPostSubmit={handlePostSubmit} />
 
           {/* Search and Filter Section */}
           <Box sx={{ mb: 4 }}>
