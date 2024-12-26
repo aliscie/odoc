@@ -10,6 +10,7 @@ import ContractsHistory from "./Profile/ContractsHistory";
 import Web3WalletUI from "../components/MuiComponents/walletUi";
 import { useSelector } from "react-redux";
 import { useBackendContext } from "../contexts/BackendContext";
+import OfferPage from "./OfferPage";
 
 function Pages() {
   const { profile, profile_history, wallet, friends } = useSelector(
@@ -40,6 +41,7 @@ function Pages() {
       <Route path="/user/*" element={<UserProfile />} />
       {/*<Route path="/chats/*" element={<ChatsPage />} />*/}
       <Route path="/contracts/*" element={<ContractsHistory />} />
+        <Route path="/offer" element={<OfferPage />} />
       <Route path="/*" element={<FileContentPage />} />
     </Routes>
   );

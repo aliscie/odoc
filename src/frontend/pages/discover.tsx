@@ -63,7 +63,7 @@ const FeedWrapper = styled("div")({
   minHeight: "100vh",
   width: "100%",
   maxWidth: "100vw",
-  background: "linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #000000 100%)",
+  // background: "linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #000000 100%)",
   padding: "2rem",
   overflowX: "hidden",
   "& *": {
