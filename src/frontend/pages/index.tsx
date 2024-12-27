@@ -4,7 +4,7 @@ import LandingPage from "./LandingPage";
 import FileContentPage from "./FileContentPage";
 import ShareFilePage from "./ShareFilePage";
 import ProfilePage from "./profile";
-import Discover from "./discover";
+import Discover from "./discover/index";
 import UserProfile from "./User";
 import ContractsHistory from "./Profile/ContractsHistory";
 import Web3WalletUI from "../components/MuiComponents/walletUi";
@@ -41,7 +41,10 @@ function Pages() {
       <Route path="/user/*" element={<UserProfile />} />
       {/*<Route path="/chats/*" element={<ChatsPage />} />*/}
       <Route path="/contracts/*" element={<ContractsHistory />} />
-        <Route path="/offer" element={<OfferPage />} />
+      <Route
+        path="/offer"
+        element={<OfferPage isLoggedIn={isLoggedIn} login={login} />}
+      />
       <Route path="/*" element={<FileContentPage />} />
     </Routes>
   );
