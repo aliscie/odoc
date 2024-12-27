@@ -30,17 +30,21 @@ interface ViewPostComponentProps {
   onLike: (postId: string) => void;
 }
 
-const PostCard = styled(Card)({
-  background: "rgba(17, 24, 39, 0.75)",
+const PostCard = styled(Card)(({ theme }) => ({
+  background: theme.palette.background.paper,
   backdropFilter: "blur(10px)",
-  border: "1px solid rgba(139, 92, 246, 0.2)",
+  border: `1px solid ${
+    theme.palette.mode === "dark" 
+      ? "rgba(139, 92, 246, 0.2)" 
+      : "rgba(79, 70, 229, 0.2)"
+  }`,
   borderRadius: "1rem",
   marginBottom: "1rem",
   transition: "transform 0.3s ease",
   "&:hover": {
     transform: "translateY(-2px)",
   },
-});
+}));
 
 const PostActionButton = styled(IconButton)({
   // color: "#E9D5FF",

@@ -13,28 +13,39 @@ import ViewPostComponent from "./viewPost";
 // Animation keyframes
 
 // Theme
-const theme = createTheme({
-  palette: {
-    mode: "dark",
-    primary: {
-      main: "#4F46E5",
+const SocialFeed = (props) => {
+  const { isDarkMode } = useSelector((state: any) => state.uiState);
+  
+  const theme = createTheme({
+    palette: {
+      mode: isDarkMode ? "dark" : "light",
+      primary: {
+        main: "#4F46E5",
+      },
+      background: {
+        default: isDarkMode ? "#1E1B4B" : "#F3F4F6",
+        paper: isDarkMode ? "rgba(17, 24, 39, 0.75)" : "rgba(255, 255, 255, 0.75)",
+      },
+      text: {
+        primary: isDarkMode ? "#E9D5FF" : "#1F2937",
+        secondary: isDarkMode ? "#A78BFA" : "#6B7280",
+      },
     },
-  },
-});
+  });
 
 // Styled Components
-const FeedWrapper = styled("div")({
+const FeedWrapper = styled("div")(({ theme }) => ({
   minHeight: "100vh",
   width: "100%",
   maxWidth: "100vw",
-  // background: "linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #000000 100%)",
+  background: theme.palette.background.default,
   padding: "2rem",
   overflowX: "hidden",
   "& *": {
     boxSizing: "border-box",
     maxWidth: "100%",
   },
-});
+}));
 
 const Container = styled("div")({
   maxWidth: "1200px",
@@ -42,21 +53,29 @@ const Container = styled("div")({
   width: "100%",
 });
 
-export const StyledTextField = styled(TextField)({
+export const StyledTextField = styled(TextField)(({ theme }) => ({
   "& .MuiOutlinedInput-root": {
     borderRadius: "1rem",
-    background: "rgba(255, 255, 255, 0.05)",
+    background: theme.palette.mode === "dark" 
+      ? "rgba(255, 255, 255, 0.05)" 
+      : "rgba(0, 0, 0, 0.05)",
     "& fieldset": {
-      borderColor: "rgba(139, 92, 246, 0.2)",
+      borderColor: theme.palette.mode === "dark"
+        ? "rgba(139, 92, 246, 0.2)"
+        : "rgba(79, 70, 229, 0.2)",
     },
     "&:hover fieldset": {
-      borderColor: "rgba(139, 92, 246, 0.3)",
+      borderColor: theme.palette.mode === "dark"
+        ? "rgba(139, 92, 246, 0.3)"
+        : "rgba(79, 70, 229, 0.3)",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "rgba(139, 92, 246, 0.5)",
+      borderColor: theme.palette.mode === "dark"
+        ? "rgba(139, 92, 246, 0.5)"
+        : "rgba(79, 70, 229, 0.5)",
     },
   },
-});
+}));
 
 // Sample data structure
 

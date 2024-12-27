@@ -56,10 +56,14 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
   100% { transform: translateX(50%); }
 `;
 
-  const CreatePostCard = styled(Card)({
-    background: "rgba(17, 24, 39, 0.85)",
+  const CreatePostCard = styled(Card)(({ theme }) => ({
+    background: theme.palette.background.paper,
     backdropFilter: "blur(20px)",
-    border: "1px solid rgba(139, 92, 246, 0.2)",
+    border: `1px solid ${
+      theme.palette.mode === "dark" 
+        ? "rgba(139, 92, 246, 0.2)" 
+        : "rgba(79, 70, 229, 0.2)"
+    }`,
     borderRadius: "1rem",
     marginBottom: "2rem",
     overflow: "visible",
@@ -68,11 +72,11 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
       content: '""',
       position: "absolute",
       inset: 0,
-      background:
-        "linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent)",
-      // animation: `${shimmer} 2s linear infinite`,
+      background: theme.palette.mode === "dark"
+        ? "linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent)"
+        : "linear-gradient(45deg, transparent, rgba(0,0,0,0.05), transparent)",
     },
-  });
+  }));
   const postContent = useRef([]);
   return (
     <CreatePostCard>
