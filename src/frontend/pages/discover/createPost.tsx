@@ -56,8 +56,15 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
   100% { transform: translateX(50%); }
 `;
 
+  const shimmer = keyframes`
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  `;
+
   const CreatePostCard = styled(Card)(({ theme }) => ({
-    background: theme.palette.background.paper,
+    background: theme.palette.mode === "dark" 
+      ? "rgba(17, 24, 39, 0.8)"
+      : "rgba(255, 255, 255, 0.8)",
     backdropFilter: "blur(20px)",
     border: `1px solid ${
       theme.palette.mode === "dark" 
@@ -68,13 +75,23 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
     marginBottom: "2rem",
     overflow: "visible",
     position: "relative",
+    transition: "all 0.3s ease-in-out",
+    "&:hover": {
+      transform: "translateY(-2px)",
+      boxShadow: theme.palette.mode === "dark"
+        ? "0 8px 30px rgba(0, 0, 0, 0.12)"
+        : "0 8px 30px rgba(0, 0, 0, 0.08)",
+    },
     "&::before": {
       content: '""',
       position: "absolute",
-      inset: 0,
-      background: theme.palette.mode === "dark"
-        ? "linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent)"
-        : "linear-gradient(45deg, transparent, rgba(0,0,0,0.05), transparent)",
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      background: "linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent)",
+      animation: `${shimmer} 2s infinite`,
+      zIndex: 1,
     },
   }));
   const postContent = useRef([]);

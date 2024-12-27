@@ -30,30 +30,52 @@ interface ViewPostComponentProps {
   onLike: (postId: string) => void;
 }
 
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
 const PostCard = styled(Card)(({ theme }) => ({
-  background: theme.palette.background.paper,
+  background: theme.palette.mode === "dark"
+    ? "rgba(17, 24, 39, 0.8)"
+    : "rgba(255, 255, 255, 0.8)",
   backdropFilter: "blur(10px)",
   border: `1px solid ${
-    theme.palette.mode === "dark" 
-      ? "rgba(139, 92, 246, 0.2)" 
+    theme.palette.mode === "dark"
+      ? "rgba(139, 92, 246, 0.2)"
       : "rgba(79, 70, 229, 0.2)"
   }`,
   borderRadius: "1rem",
   marginBottom: "1rem",
-  transition: "transform 0.3s ease",
+  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+  animation: `${fadeIn} 0.5s ease-out`,
   "&:hover": {
     transform: "translateY(-2px)",
+    boxShadow: theme.palette.mode === "dark"
+      ? "0 8px 30px rgba(139, 92, 246, 0.1)"
+      : "0 8px 30px rgba(79, 70, 229, 0.1)",
   },
 }));
 
-const PostActionButton = styled(IconButton)({
-  // color: "#E9D5FF",
-  transition: "all 0.3s ease",
+const PostActionButton = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.mode === "dark" ? "#E9D5FF" : "#6366F1",
+  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+  padding: "8px",
+  borderRadius: "12px",
   "&:hover": {
     transform: "scale(1.1)",
-    color: "#A855F7",
+    backgroundColor: theme.palette.mode === "dark"
+      ? "rgba(139, 92, 246, 0.1)"
+      : "rgba(79, 70, 229, 0.1)",
   },
-});
+  "&:active": {
+    transform: "scale(0.95)",
+  },
+  "&.Mui-disabled": {
+    opacity: 0.5,
+    color: theme.palette.mode === "dark" ? "#4B5563" : "#9CA3AF",
+  },
+}));
 
 const ViewPostComponent: React.FC<ViewPostComponentProps> = ({ post,handleDeletePost }) => {
   const { backendActor } = useBackendContext();
