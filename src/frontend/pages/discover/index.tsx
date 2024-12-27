@@ -15,10 +15,10 @@ const SocialFeed = (props) => {
       primary: {
         main: "#4F46E5",
       },
-      background: {
-        default: isDarkMode ? "#1E1B4B" : "#F3F4F6",
-        paper: isDarkMode ? "rgba(17, 24, 39, 0.75)" : "rgba(255, 255, 255, 0.75)",
-      },
+      // background: {
+      //   default: isDarkMode ? "#1E1B4B" : "#F3F4F6",
+      //   paper: isDarkMode ? "rgba(17, 24, 39, 0.75)" : "rgba(255, 255, 255, 0.75)",
+      // },
       text: {
         primary: isDarkMode ? "#E9D5FF" : "#1F2937",
         secondary: isDarkMode ? "#A78BFA" : "#6B7280",
@@ -69,7 +69,6 @@ const SocialFeed = (props) => {
   },
 }));
 
-  const [posts, setPosts] = useState(props.posts);
   const [posts, setPosts] = useState(props.posts);
   // const [posts, setPosts] = useState(samplePosts);
   const [searchTerm, setSearchTerm] = useState("");
