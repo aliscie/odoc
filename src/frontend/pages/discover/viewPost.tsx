@@ -13,12 +13,11 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { Heart, MoreVertical, ThumbsDown } from "lucide-react";
 import { keyframes, styled } from "@mui/material/styles";
 
-import { PostUser } from "../../../declarations/backend/backend.did";
+import { Post, PostUser } from "../../../declarations/backend/backend.did";
 import { formatRelativeTime } from "../../utils/time";
 import EditorComponent from "../../components/EditorComponent";
 import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
@@ -26,6 +25,8 @@ import { useSelector } from "react-redux";
 import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
 import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
+import { randomString } from "../../DataProcessing/dataSamples";
+import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 
 interface ViewPostComponentProps {
   post: PostUser;
@@ -38,7 +39,7 @@ const fadeIn = keyframes`
 `;
 
 const PostCard = styled(Card)(({ theme }) => ({
-  background: "rgba(17, 25, 40, 0.75)",
+  background: "rgba(143,143,143,0.42)",
   backdropFilter: "blur(16px) saturate(180%)",
   border: "1px solid rgba(255, 255, 255, 0.125)",
   borderRadius: "16px",
@@ -71,7 +72,7 @@ const PostCard = styled(Card)(({ theme }) => ({
   //     : "rgba(79, 70, 229, 0.2)"
   // }`,
   // borderRadius: "1rem",
-  // marginBottom: "1rem",
+  marginBottom: "1rem",
   // transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
   // animation: `${fadeIn} 0.5s ease-out`,
   // "&:hover": {
@@ -110,6 +111,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
 }) => {
   const { backendActor } = useBackendContext();
   const [voteLoading, setVoteLoad] = React.useState(false);
+  const contentTree = React.useRef([]);
   const [isChanged, setchanged] = React.useState(false);
   const [votes, setVotes] = React.useState({
     up: post.votes_up,
@@ -151,7 +153,17 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const onClickSave = async () => {
     setchanged(false);
-    // await backend
+    const newPostObj: Post = {
+      ...post,
+      tags: [],
+      content_tree: serializeFileContents(contentTree.current)[0][0][1],
+      creator: profile.id,
+      votes_up: votes.up,
+      votes_down: votes.down,
+    };
+    // setLoading(true);
+    const result = await backendActor.save_post(newPostObj);
+    console.log({ result });
   };
 
   const onLike = async () => {
@@ -295,6 +307,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
             onChange={(content) => {
               let c = {};
               c[""] = content;
+              contentTree.current = c;
               if (isChanged == false && post.creator.id == profile?.id) {
                 setchanged(true);
               }
@@ -354,9 +367,11 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
               {votes.down.length}
             </Box>
           </PostActionButton>
-          {profile?.id==post.creator.id&&<PostActionButton
-              disabled={!isChanged}
-              onClick={onClickSave}>Save</PostActionButton>}
+          {profile?.id == post.creator.id && (
+            <PostActionButton disabled={!isChanged} onClick={onClickSave}>
+              Save
+            </PostActionButton>
+          )}
           {/*{isChanged && (*/}
           {/*  */}
           {/*)}*/}
