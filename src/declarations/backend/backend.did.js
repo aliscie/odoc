@@ -590,6 +590,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'share_file' : IDL.Func([ShareFileInput], [Result_10], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
+    'unvote' : IDL.Func([IDL.Text], [Result_9], []),
     'update_chat' : IDL.Func([Chat], [Result_4], []),
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
     'vote_down' : IDL.Func([IDL.Text], [Result_9], []),

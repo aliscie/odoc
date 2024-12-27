@@ -25,8 +25,9 @@ function Pages() {
       if (backendActor) {
         try {
           // Fetch first 20 posts
-          const posts = await backendActor.get_posts(BigInt(0), BigInt(20));
-          setPosts(posts);
+          const fetchedPosts = await backendActor.get_posts(BigInt(0), BigInt(20));
+
+          setPosts(fetchedPosts);
         } catch (error) {
           console.error("Error fetching posts:", error);
         }
@@ -42,7 +43,7 @@ function Pages() {
         path="/"
         element={<LandingPage isLoggedIn={isLoggedIn} login={login} />}
       />
-      <Route path="/discover" element={<Discover posts={posts} />} />
+      <Route path="/discover" element={<Discover key={posts.length} posts={posts} />} />
       <Route path="/wallet" element={<Web3WalletUI wallet={wallet} />} />
       <Route
         path="/profile"

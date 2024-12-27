@@ -2,40 +2,53 @@ import React, { useRef, useState } from "react";
 import { Box, Button, Card, CardContent, IconButton } from "@mui/material";
 import { Hash, Image as ImageIcon, Send, Smile } from "lucide-react";
 import { keyframes, styled } from "@mui/material/styles";
-import { StyledTextField } from "./index";
 import EditorComponent from "../../components/EditorComponent";
+import { Post } from "../../../declarations/backend/backend.did";
+import { useSelector } from "react-redux";
+import { randomString } from "../../DataProcessing/dataSamples";
+import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
+import { useBackendContext } from "../../contexts/BackendContext";
+import {useSnackbar} from "notistack";
 
 interface CreatePostProps {
   onPostSubmit: (post: any) => void;
 }
 const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
-  const [newPost, setNewPost] = useState("");
+  const { profile } = useSelector((state: any) => state.filesState);
+  const { backendActor } = useBackendContext();
+  // const [newPost, setNewPost] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  const extractTags = (content: string) => {
-    const tags = content.match(/#\w+/g);
-    return tags || [];
-  };
+  // const extractTags = (content: string) => {
+  //   const tags = content.match(/#\w+/g);
+  //   return tags || [];
+  // };
 
-  const handleSubmit = () => {
-    if (!newPost.trim()) return;
-
-    const newPostObj = {
-      id: Date.now(),
-      author: {
-        name: "Current User",
-        avatar: "/api/placeholder/32/32",
-      },
-      content: newPost,
-      tags: extractTags(newPost),
-      likes: 0,
-      dislikes: 0,
-      comments: [],
-      shares: 0,
-      timestamp: "Just now",
+  const handleSubmit = async () => {
+    // if (!newPost.trim()) return;
+    let content_tree = serializeFileContents(postContent.current)[0][0][1];
+    // console.log(content_tree);
+    // content_tree =
+    const newPostObj: Post = {
+      id: randomString(),
+      creator: profile.id,
+      date_created: BigInt(Date.now() * 1e6),
+      votes_up: [],
+      tags: [],
+      content_tree,
+      votes_down: [],
     };
+    setLoading(true);
+    const result = await backendActor.save_post(newPostObj);
+    console.log(result);
+    if (result.Err) {
+      enqueueSnackbar(result.Err, { variant: "error" });
+    }
+    setLoading(false);
 
     onPostSubmit(newPostObj);
-    setNewPost("");
+    // setNewPost("");
   };
 
   const shimmer = keyframes`
@@ -76,15 +89,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
           editorKey={"editorKey"}
           content={[]}
         />
-        {/*<StyledTextField*/}
-        {/*  fullWidth*/}
-        {/*  multiline*/}
-        {/*  rows={3}*/}
-        {/*  placeholder="What's on your mind?"*/}
-        {/*  value={newPost}*/}
-        {/*  onChange={(e) => setNewPost(e.target.value)}*/}
-        {/*  sx={{ mb: 2 }}*/}
-        {/*/>*/}
         <Box
           sx={{
             display: "flex",
@@ -107,6 +111,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
             variant="contained"
             endIcon={<Send />}
             onClick={handleSubmit}
+            disabled={loading}
             sx={{
               borderRadius: "9999px",
               background: "linear-gradient(90deg, #6366F1, #8B5CF6)",
@@ -115,7 +120,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
               },
             }}
           >
-            Post
+            Create post
           </Button>
         </Box>
       </CardContent>

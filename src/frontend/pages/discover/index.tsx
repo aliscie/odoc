@@ -152,13 +152,13 @@ const SocialFeed = (props) => {
     setPosts([newPostObj, ...posts]);
   };
 
-  const handleLike = (postId) => {
-    setPosts(
-      posts.map((post) =>
-        post.id === postId ? { ...post, likes: post.likes + 1 } : post,
-      ),
-    );
-  };
+  // const handleLike = (postId) => {
+  //   setPosts(
+  //     posts.map((post) =>
+  //       post.id === postId ? { ...post, likes: post.likes + 1 } : post,
+  //     ),
+  //   );
+  // };
 
   // const handleComment = (postId, comment) => {
   //   setPosts(
@@ -217,27 +217,27 @@ const SocialFeed = (props) => {
               sx={{ mb: 2 }}
             />
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-              {Array.from(new Set(posts.flatMap((post) => post.tags))).map(
-                (tag) => (
-                  <TagChip
-                    key={tag}
-                    onClick={() =>
-                      setSelectedTags((prev) =>
-                        prev.includes(tag)
-                          ? prev.filter((t) => t !== tag)
-                          : [...prev, tag],
-                      )
-                    }
-                    style={{
-                      background: selectedTags.includes(tag)
-                        ? "rgba(139, 92, 246, 0.4)"
-                        : undefined,
-                    }}
-                  >
-                    {tag}
-                  </TagChip>
-                ),
-              )}
+              {/*{Array.from(new Set(posts.flatMap((post) => post.tags))).map(*/}
+              {/*  (tag) => (*/}
+              {/*    <TagChip*/}
+              {/*      key={tag}*/}
+              {/*      onClick={() =>*/}
+              {/*        setSelectedTags((prev) =>*/}
+              {/*          prev.includes(tag)*/}
+              {/*            ? prev.filter((t) => t !== tag)*/}
+              {/*            : [...prev, tag],*/}
+              {/*        )*/}
+              {/*      }*/}
+              {/*      style={{*/}
+              {/*        background: selectedTags.includes(tag)*/}
+              {/*          ? "rgba(139, 92, 246, 0.4)"*/}
+              {/*          : undefined,*/}
+              {/*      }}*/}
+              {/*    >*/}
+              {/*      {tag}*/}
+              {/*    </TagChip>*/}
+              {/*  ),*/}
+              {/*)}*/}
             </Box>
           </Box>
 
@@ -246,7 +246,7 @@ const SocialFeed = (props) => {
             <ViewPostComponent
               key={post.id}
               post={post}
-              onLike={handleLike}
+              // onLike={handleLike}
             />
           ))}
         </Container>

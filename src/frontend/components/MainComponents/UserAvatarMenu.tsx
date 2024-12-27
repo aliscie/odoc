@@ -16,7 +16,7 @@ import {
 import ChatWindow from "../../components/Chat/chatWindow";
 import { useNavigate } from "react-router-dom";
 import { Person, Message, Star } from "@mui/icons-material";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { useSnackbar } from "notistack";
 import { Principal } from "@dfinity/principal";
@@ -37,6 +37,7 @@ interface UserAvatarMenuProps {
 const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
   user,
   onMessageClick,
+  sx,
 }) => {
   const navigate = useNavigate();
   const { backendActor } = useBackendContext();
@@ -148,11 +149,11 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
         newMessage,
       );
       if (result?.Ok) {
-        setActiveChat(prev => {
+        setActiveChat((prev) => {
           if (!prev) return null;
           return {
             ...prev,
-            messages: [...prev.messages, newMessage]
+            messages: [...prev.messages, newMessage],
           };
         });
         enqueueSnackbar("Message sent successfully", { variant: "success" });
@@ -220,7 +221,7 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
   return (
     <>
       <IconButton onClick={handleClick}>
-        <Avatar src={getPhotoSrc(user.photo)} alt={user.name}>
+        <Avatar src={getPhotoSrc(user.photo)} alt={user.name} sx={sx}>
           {user.name?.charAt(0) || "A"}
         </Avatar>
       </IconButton>
@@ -257,18 +258,15 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
           />
         </DialogContent>
         <DialogActions>
-          <Button 
-            onClick={() => setReviewOpen(false)}
-            disabled={isSubmitting}
-          >
+          <Button onClick={() => setReviewOpen(false)} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button 
+          <Button
             onClick={handleReviewSubmit}
             disabled={isSubmitting}
             startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
           >
-            {isSubmitting ? 'Submitting...' : 'Submit Review'}
+            {isSubmitting ? "Submitting..." : "Submit Review"}
           </Button>
         </DialogActions>
       </Dialog>

@@ -540,6 +540,7 @@ export interface _SERVICE {
   'send_message' : ActorMethod<[[] | [Principal], Message], Result_4>,
   'share_file' : ActorMethod<[ShareFileInput], Result_10>,
   'unfriend' : ActorMethod<[string], Result>,
+  'unvote' : ActorMethod<[string], Result_9>,
   'update_chat' : ActorMethod<[Chat], Result_4>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
   'vote_down' : ActorMethod<[string], Result_9>,

@@ -117,3 +117,37 @@ fn vote_down(id: String) -> Result<Post, String> {
     //  2. with the `2vxsx-fae` principal
     Ok(post)
 }
+
+
+
+#[update]
+fn unvote(id: String) -> Result<Post, String> {
+    let mut post = Post::get(id.clone())?;
+    if caller().to_string() == post.creator {
+        return Err("You can't vote on your own post".to_string());
+    }
+    post.votes_up.retain(|x| x != &caller());
+    post.votes_down.retain(|x| x != &caller());
+    // if post.votes_down.contains(&caller()) {
+    //     return Err("You have already voted on this post.".to_string());
+    // }
+    // post.votes_down.push(caller());
+    // if post.votes_up.contains(&caller()) {
+    //     post.votes_up.retain(|x| x != &caller());
+    // }
+    post.save();
+    // let content: NoteContent = NoteContent::PostVote(id.clone());
+    // let new_note = Notification {
+    //     id: COUNTER.fetch_add(1, Ordering::SeqCst).to_string(),
+    //     sender: caller(),
+    //     receiver: Principal::from_text("2vxsx-fae").unwrap(),
+    //     content,
+    //     is_seen: false,
+    // };
+    // new_note.send();
+    // Send to everyone
+    // TODO in the frontend connect two websockts
+    //  1. with the user principal
+    //  2. with the `2vxsx-fae` principal
+    Ok(post)
+}

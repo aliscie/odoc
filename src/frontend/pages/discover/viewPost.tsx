@@ -1,5 +1,12 @@
 import React from "react";
-import { Avatar, Box, Card, CardContent, IconButton } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Card,
+  CardContent,
+  CircularProgress,
+  IconButton,
+} from "@mui/material";
 import {
   Heart,
   MessageCircle,
@@ -15,6 +22,13 @@ import {
   ContentNode,
 } from "../../../declarations/backend/backend.did";
 import { Principal } from "@dfinity/principal";
+import { formatRelativeTime } from "../../utils/time";
+import EditorComponent from "../../components/EditorComponent";
+import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
+import { useSelector } from "react-redux";
+import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
+import { useSnackbar } from "notistack";
+import { useBackendContext } from "../../contexts/BackendContext";
 
 interface ViewPostComponentProps {
   post: PostUser;
@@ -42,23 +56,61 @@ const PostActionButton = styled(IconButton)({
   },
 });
 
-const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
-  post,
-  onLike,
-}) => {
+const ViewPostComponent: React.FC<ViewPostComponentProps> = ({ post }) => {
+  const { backendActor } = useBackendContext();
+  const [voteLoading, setVoteLoad] = React.useState(false);
+  const [votes, setVotes] = React.useState({
+    up: post.votes_up,
+    down: post.votes_down,
+  });
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+  const onLike = async () => {
+    if (profile.id == post.creator.id) {
+      enqueueSnackbar("You can't like your own post", { variant: "error" });
+      return;
+    }
+    setVoteLoad(true);
+    let votesUp = votes.up.map((v) => v.toString());
+    if (votesUp.some((v) => v === profile.id)) {
+      let res = await backendActor.unvote(post.id);
+      setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
+    } else {
+      let res = await backendActor.vote_up(post.id);
+      setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
+    }
+    setVoteLoad(false);
+  };
+  const onDisLike = async () => {
+    if (profile.id == post.creator.id) {
+      enqueueSnackbar("You can't dislike your own post", { variant: "error" });
+      return;
+    }
+    setVoteLoad(true);
+    let votesDown = votes.down.map((v) => v.toString());
+    if (votesDown.some((v) => v === profile.id)) {
+      let res = await backendActor.unvote(post.id);
+      setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
+    } else {
+      let res = await backendActor.vote_down(post.id);
+
+      setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
+    }
+    setVoteLoad(false);
+  };
+  const { profile } = useSelector((state: any) => state.filesState);
   return (
     <PostCard>
       <CardContent>
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Avatar sx={{ mr: 2 }}>{post.creator.name.charAt(0)}</Avatar>
+          <UserAvatarMenu sx={{ mr: 2 }} user={post.creator} />
           <Box>
             <Box sx={{ fontWeight: "bold", color: "#E9D5FF" }}>
               {post.creator.name}
             </Box>
             <Box sx={{ fontSize: "0.875rem", color: "#A78BFA" }}>
-              {new Date(
-                Number(post.date_created / BigInt(1000000)),
-              ).toLocaleString()}
+              {formatRelativeTime(post.date_created)}
             </Box>
           </Box>
           <IconButton sx={{ ml: "auto" }}>
@@ -67,16 +119,25 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
         </Box>
 
         <Box sx={{ mb: 2, color: "#E9D5FF" }}>
-          {post.content_tree.map((node: ContentNode) => (
-            <div key={node.id}>{node.text}</div>
-          ))}
+          <EditorComponent
+            readOnly={true}
+            // id={current_file.id}
+            // contentEditable={true}
+            onChange={(content) => {
+              let c = {};
+              c[""] = content;
+              // postContent.current = c;
+            }}
+            editorKey={"editorKey"}
+            content={deserializeContentTree(post.content_tree)}
+          />
         </Box>
 
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-          {post.tags.map((tag) => (
-            <TagChip key={tag}>{tag}</TagChip>
-          ))}
-        </Box>
+        {/*<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>*/}
+        {/*  {post.tags.map((tag) => (*/}
+        {/*    <TagChip key={tag}>{tag}</TagChip>*/}
+        {/*  ))}*/}
+        {/*</Box>*/}
 
         <Box
           sx={{
@@ -86,20 +147,41 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
             color: "#A78BFA",
           }}
         >
-          <PostActionButton onClick={() => onLike(post.id)}>
+          <PostActionButton
+            disabled={profile?.id == post.creator.id || voteLoading}
+            onClick={onLike}
+          >
             <Heart
               size={20}
-              fill={post.votes_up.length > 0 ? "#A855F7" : "none"}
+              fill={
+                votes.up
+                  .map((v) => v.toString())
+                  .includes(profile && profile.id)
+                  ? "#A855F7"
+                  : "rgba(233,213,255,0)"
+              }
             />
             <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
-              {post.votes_up.length}
+              {votes.up.length}
             </Box>
           </PostActionButton>
 
-          <PostActionButton>
-            <ThumbsDown size={20} />
+          <PostActionButton
+            disabled={profile?.id == post.creator.id || voteLoading}
+            onClick={onDisLike}
+          >
+            <ThumbsDown
+              fill={
+                votes.down
+                  .map((v) => v.toString())
+                  .includes(profile && profile.id)
+                  ? "#A855F7"
+                  : "rgba(233,213,255,0)"
+              }
+              size={20}
+            />
             <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
-              {post.votes_down.length}
+              {votes.down.length}
             </Box>
           </PostActionButton>
         </Box>

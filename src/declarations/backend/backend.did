@@ -480,6 +480,7 @@ service : () -> {
   send_message : (opt principal, Message) -> (Result_4);
   share_file : (ShareFileInput) -> (Result_10);
   unfriend : (text) -> (Result);
+  unvote : (text) -> (Result_9);
   update_chat : (Chat) -> (Result_4);
   update_user_profile : (RegisterUser) -> (Result);
   vote_down : (text) -> (Result_9);
