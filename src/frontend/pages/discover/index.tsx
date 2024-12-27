@@ -1,18 +1,11 @@
 import React, { useState } from "react";
-import {
-  createTheme,
-  keyframes,
-  styled,
-  ThemeProvider,
-} from "@mui/material/styles";
+import { createTheme, styled, ThemeProvider } from "@mui/material/styles";
 import { Box, InputAdornment, TextField } from "@mui/material";
 import { Search } from "lucide-react";
 import CreatePost from "./createPost";
 import ViewPostComponent from "./viewPost";
+import { useSelector } from "react-redux";
 
-// Animation keyframes
-
-// Theme
 const SocialFeed = (props) => {
   const { isDarkMode } = useSelector((state: any) => state.uiState);
   
@@ -33,27 +26,26 @@ const SocialFeed = (props) => {
     },
   });
 
-// Styled Components
-const FeedWrapper = styled("div")(({ theme }) => ({
-  minHeight: "100vh",
-  width: "100%",
-  maxWidth: "100vw",
-  background: theme.palette.background.default,
-  padding: "2rem",
-  overflowX: "hidden",
-  "& *": {
-    boxSizing: "border-box",
-    maxWidth: "100%",
-  },
-}));
+  const FeedWrapper = styled("div")(({ theme }) => ({
+    minHeight: "100vh",
+    width: "100%",
+    maxWidth: "100vw",
+    background: theme.palette.background.default,
+    padding: "2rem",
+    overflowX: "hidden",
+    "& *": {
+      boxSizing: "border-box",
+      maxWidth: "100%",
+    },
+  }));
 
-const Container = styled("div")({
-  maxWidth: "1200px",
-  margin: "0 auto",
-  width: "100%",
-});
+  const Container = styled("div")({
+    maxWidth: "1200px",
+    margin: "0 auto",
+    width: "100%",
+  });
 
-export const StyledTextField = styled(TextField)(({ theme }) => ({
+  const StyledTextField = styled(TextField)(({ theme }) => ({
   "& .MuiOutlinedInput-root": {
     borderRadius: "1rem",
     background: theme.palette.mode === "dark" 
@@ -77,9 +69,7 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
-// Sample data structure
-
-const SocialFeed = (props) => {
+  const [posts, setPosts] = useState(props.posts);
   const [posts, setPosts] = useState(props.posts);
   // const [posts, setPosts] = useState(samplePosts);
   const [searchTerm, setSearchTerm] = useState("");
