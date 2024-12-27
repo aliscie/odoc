@@ -52,10 +52,15 @@ export function createComponents(config) {
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 20,
+          borderRadius: 16,
+          backdropFilter: "blur(20px)",
+          transition: "all 0.3s ease-in-out",
           [`&.${paperClasses.elevation1}`]: {
-            boxShadow:
-              "0px 5px 22px rgba(0, 0, 0, 0.04), 0px 0px 0px 0.5px rgba(0, 0, 0, 0.03)",
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.08)",
+            "&:hover": {
+              transform: "translateY(-2px)",
+              boxShadow: "0px 8px 25px rgba(0, 0, 0, 0.12)",
+            },
           },
         },
       },
