@@ -217,6 +217,7 @@ const ChatWindow = memo(
     };
 
     const content = (
+      <>
         <AppBar
           position="static"
           color="default"
@@ -467,6 +468,7 @@ const ChatWindow = memo(
             )}
           </Box>
         )}
+      </>
     );
 
     return dialog ? (
