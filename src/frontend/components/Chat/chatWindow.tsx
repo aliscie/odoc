@@ -19,6 +19,7 @@ import {
   Button,
   Autocomplete,
   Chip,
+  Dialog,
 } from "@mui/material";
 import { MembersSelect, AdminsSelect, WorkspaceSelect } from "./index";
 import {
@@ -50,6 +51,7 @@ const ChatWindow = memo(
     onPositionChange,
     onSendMessage,
     onUpdateChat,
+    dialog = false,
   }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [isSettingsView, setIsSettingsView] = useState(false);
@@ -214,22 +216,7 @@ const ChatWindow = memo(
       }
     };
 
-    return (
-      <Paper
-        elevation={3}
-        sx={{
-          position: "fixed",
-          top: dragPosition.y,
-          left: dragPosition.x,
-          width: 320,
-          height: isMinimized ? "auto" : 400,
-          display: "flex",
-          flexDirection: "column",
-          zIndex: 1200,
-          resize: "both",
-          overflow: "hidden",
-        }}
-      >
+    const content = (
         <AppBar
           position="static"
           color="default"
@@ -480,6 +467,41 @@ const ChatWindow = memo(
             )}
           </Box>
         )}
+    );
+
+    return dialog ? (
+      <Dialog
+        open={true}
+        onClose={() => onClose(chat.id)}
+        maxWidth="sm"
+        fullWidth
+        sx={{
+          '& .MuiDialog-paper': {
+            height: 600,
+            display: 'flex',
+            flexDirection: 'column',
+          }
+        }}
+      >
+        {content}
+      </Dialog>
+    ) : (
+      <Paper
+        elevation={3}
+        sx={{
+          position: "fixed",
+          top: dragPosition.y,
+          left: dragPosition.x,
+          width: 320,
+          height: isMinimized ? "auto" : 400,
+          display: "flex",
+          flexDirection: "column",
+          zIndex: 1200,
+          resize: "both",
+          overflow: "hidden",
+        }}
+      >
+        {content}
       </Paper>
     );
   },
