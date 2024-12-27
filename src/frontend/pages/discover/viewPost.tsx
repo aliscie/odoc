@@ -287,22 +287,20 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
         </Box>
 
         <Box sx={{ mb: 2 }}>
-          <DndProvider backend={HTML5Backend}>
-            <EditorComponent
-              editorKey={post.id}
-              readOnly={profile?.id !== post.creator.id}
-              id={post.id}
-              contentEditable={profile?.id === post.creator.id}
-              onChange={(content) => {
-                let c = {};
-                c[""] = content;
-                if (isChanged == false && post.creator.id == profile?.id) {
-                  setchanged(true);
-                }
-              }}
-              content={deserializeContentTree(post.content_tree)}
-            />
-          </DndProvider>
+          <EditorComponent
+            editorKey={post.id}
+            readOnly={profile?.id !== post.creator.id}
+            id={post.id}
+            contentEditable={profile?.id === post.creator.id}
+            onChange={(content) => {
+              let c = {};
+              c[""] = content;
+              if (isChanged == false && post.creator.id == profile?.id) {
+                setchanged(true);
+              }
+            }}
+            content={deserializeContentTree(post.content_tree)}
+          />
         </Box>
 
         {/*<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>*/}

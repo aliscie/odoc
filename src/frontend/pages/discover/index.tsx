@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { createTheme, styled, ThemeProvider } from "@mui/material/styles";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { keyframes } from "@mui/material/styles";
 import { Box, InputAdornment, TextField } from "@mui/material";
 import { Search } from "lucide-react";
@@ -173,10 +175,11 @@ const SocialFeed = (props) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <FeedWrapper>
-        <BackgroundEffect className="top" />
-        <BackgroundEffect className="bottom" />
-        <Container>
+      <DndProvider backend={HTML5Backend}>
+        <FeedWrapper>
+          <BackgroundEffect className="top" />
+          <BackgroundEffect className="bottom" />
+          <Container>
           {/* Create Post Section */}
           <CreatePost onPostSubmit={handlePostSubmit} />
 
@@ -230,8 +233,9 @@ const SocialFeed = (props) => {
               // onLike={handleLike}
             />
           ))}
-        </Container>
-      </FeedWrapper>
+          </Container>
+        </FeedWrapper>
+      </DndProvider>
     </ThemeProvider>
   );
 };
