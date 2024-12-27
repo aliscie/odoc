@@ -86,23 +86,32 @@ const SocialFeed = (props) => {
   const StyledTextField = styled(TextField)(({ theme }) => ({
   "& .MuiOutlinedInput-root": {
     borderRadius: "1rem",
-    background: theme.palette.mode === "dark" 
-      ? "rgba(255, 255, 255, 0.05)" 
-      : "rgba(0, 0, 0, 0.05)",
+    background: theme.palette.mode === "dark"
+      ? "rgba(17, 24, 39, 0.75)"
+      : "rgba(255, 255, 255, 0.75)",
+    backdropFilter: "blur(10px)",
+    border: `1px solid ${theme.palette.mode === "dark"
+      ? "rgba(139, 92, 246, 0.2)"
+      : "rgba(79, 70, 229, 0.2)"}`,
+    transition: "all 0.3s ease",
     "& fieldset": {
-      borderColor: theme.palette.mode === "dark"
-        ? "rgba(139, 92, 246, 0.2)"
-        : "rgba(79, 70, 229, 0.2)",
+      border: "none",
     },
-    "&:hover fieldset": {
-      borderColor: theme.palette.mode === "dark"
+    "&:hover": {
+      background: theme.palette.mode === "dark"
+        ? "rgba(17, 24, 39, 0.85)"
+        : "rgba(255, 255, 255, 0.85)",
+      border: `1px solid ${theme.palette.mode === "dark"
         ? "rgba(139, 92, 246, 0.3)"
-        : "rgba(79, 70, 229, 0.3)",
+        : "rgba(79, 70, 229, 0.3)"}`,
     },
-    "&.Mui-focused fieldset": {
-      borderColor: theme.palette.mode === "dark"
+    "&.Mui-focused": {
+      background: theme.palette.mode === "dark"
+        ? "rgba(17, 24, 39, 0.9)"
+        : "rgba(255, 255, 255, 0.9)",
+      border: `1px solid ${theme.palette.mode === "dark"
         ? "rgba(139, 92, 246, 0.5)"
-        : "rgba(79, 70, 229, 0.5)",
+        : "rgba(79, 70, 229, 0.5)"}`,
     },
   },
 }));
