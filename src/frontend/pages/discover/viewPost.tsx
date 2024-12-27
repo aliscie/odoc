@@ -1,41 +1,29 @@
 import React from "react";
 import {
-  Avatar,
   Box,
+  Button,
   Card,
   CardContent,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   IconButton,
   Menu,
   MenuItem,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
 } from "@mui/material";
-import {
-  Heart,
-  MessageCircle,
-  MoreVertical,
-  Share2,
-  ThumbsDown,
-} from "lucide-react";
-import { styled } from "@mui/material/styles";
-import { TagChip } from "./index";
+import {Heart, MoreVertical, ThumbsDown,} from "lucide-react";
+import {styled} from "@mui/material/styles";
 
-import {
-  PostUser,
-  ContentNode,
-} from "../../../declarations/backend/backend.did";
-import { Principal } from "@dfinity/principal";
-import { formatRelativeTime } from "../../utils/time";
+import {PostUser,} from "../../../declarations/backend/backend.did";
+import {formatRelativeTime} from "../../utils/time";
 import EditorComponent from "../../components/EditorComponent";
-import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
-import { useSelector } from "react-redux";
+import {deserializeContentTree} from "../../DataProcessing/deserlize/deserializeContents";
+import {useSelector} from "react-redux";
 import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
-import { useSnackbar } from "notistack";
-import { useBackendContext } from "../../contexts/BackendContext";
+import {useSnackbar} from "notistack";
+import {useBackendContext} from "../../contexts/BackendContext";
 
 interface ViewPostComponentProps {
   post: PostUser;
@@ -55,7 +43,7 @@ const PostCard = styled(Card)({
 });
 
 const PostActionButton = styled(IconButton)({
-  color: "#E9D5FF",
+  // color: "#E9D5FF",
   transition: "all 0.3s ease",
   "&:hover": {
     transform: "scale(1.1)",
@@ -63,7 +51,7 @@ const PostActionButton = styled(IconButton)({
   },
 });
 
-const ViewPostComponent: React.FC<ViewPostComponentProps> = ({ post }) => {
+const ViewPostComponent: React.FC<ViewPostComponentProps> = ({ post,handleDeletePost }) => {
   const { backendActor } = useBackendContext();
   const [voteLoading, setVoteLoad] = React.useState(false);
   const [votes, setVotes] = React.useState({
@@ -72,6 +60,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({ post }) => {
   });
   
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [isDeleteing, setIsDeleteing] = React.useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -88,14 +77,18 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({ post }) => {
   };
 
   const handleDeleteConfirm = async () => {
+    setDeleteDialogOpen(false);
+    setIsDeleteing(true)
     try {
       await backendActor?.delete_post(post.id);
       enqueueSnackbar('Post deleted successfully', { variant: 'success' });
+      handleDeletePost(post.id);
       // You may want to trigger a refresh of the posts list here
     } catch (error) {
       enqueueSnackbar('Failed to delete post', { variant: 'error' });
     }
-    setDeleteDialogOpen(false);
+
+
   };
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -134,16 +127,27 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({ post }) => {
     setVoteLoad(false);
   };
   const { profile } = useSelector((state: any) => state.filesState);
+  if (isDeleteing){
+    return (
+      <PostCard>
+        <CardContent>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '10rem' }}>
+            <CircularProgress color="primary" />
+          </Box>
+        </CardContent>
+      </PostCard>
+    )
+  }
   return (
     <PostCard>
       <CardContent>
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <UserAvatarMenu sx={{ mr: 2 }} user={post.creator} />
           <Box>
-            <Box sx={{ fontWeight: "bold", color: "#E9D5FF" }}>
+            <Box sx={{ fontWeight: "bold",}}>
               {post.creator.name}
             </Box>
-            <Box sx={{ fontSize: "0.875rem", color: "#A78BFA" }}>
+            <Box sx={{ fontSize: "0.875rem"}}>
               {formatRelativeTime(post.date_created)}
             </Box>
           </Box>
@@ -164,7 +168,6 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({ post }) => {
             <MenuItem 
               onClick={handleDeleteClick} 
               sx={{ 
-                color: '#E9D5FF',
                 '&:hover': {
                   backgroundColor: 'rgba(139, 92, 246, 0.1)',
                 }
@@ -181,7 +184,6 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({ post }) => {
               style: {
                 backgroundColor: 'rgba(17, 24, 39, 0.95)',
                 border: '1px solid rgba(139, 92, 246, 0.2)',
-                color: '#E9D5FF'
               }
             }}
           >
@@ -217,7 +219,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({ post }) => {
           </Dialog>
         </Box>
 
-        <Box sx={{ mb: 2, color: "#E9D5FF" }}>
+        <Box sx={{ mb: 2 }}>
           <EditorComponent
             readOnly={true}
             // id={current_file.id}

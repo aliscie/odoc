@@ -1,50 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
-  styled,
-  ThemeProvider,
   createTheme,
   keyframes,
+  styled,
+  ThemeProvider,
 } from "@mui/material/styles";
-import {
-  Box,
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  IconButton,
-  Avatar,
-  InputAdornment,
-  Tooltip,
-  Menu,
-  MenuItem,
-} from "@mui/material";
-import {
-  Heart,
-  ThumbsDown,
-  MessageCircle,
-  Share2,
-  Send,
-  Hash,
-  Search,
-  MoreVertical,
-  Image as ImageIcon,
-  Smile,
-  Filter,
-} from "lucide-react";
+import { Box, InputAdornment, TextField } from "@mui/material";
+import { Search } from "lucide-react";
 import CreatePost from "./createPost";
 import ViewPostComponent from "./viewPost";
-import {PostUser} from "../../../declarations/backend/backend.did";
 
 // Animation keyframes
-const float = keyframes`
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-`;
-
-const shine = keyframes`
-  0% { background-position: 200% center; }
-  100% { background-position: -200% center; }
-`;
 
 // Theme
 const theme = createTheme({
@@ -92,61 +58,18 @@ export const StyledTextField = styled(TextField)({
   },
 });
 
-
-
-export const TagChip = styled("span")({
-  background: "rgba(139, 92, 246, 0.2)",
-  color: "#E9D5FF",
-  padding: "0.25rem 0.75rem",
-  borderRadius: "9999px",
-  fontSize: "0.875rem",
-  margin: "0.25rem",
-  cursor: "pointer",
-  transition: "all 0.3s ease",
-  "&:hover": {
-    background: "rgba(139, 92, 246, 0.3)",
-    transform: "translateY(-1px)",
-  },
-});
-
 // Sample data structure
-const samplePosts: Array<PostUser> = [
-  {
-    id: "1",
-    creator: {
-      id: "user1",
-      name: "John Doe"
-    },
-    date_created: BigInt(Date.now() * 1000000),
-    votes_up: [],
-    votes_down: [],
-    tags: ["#crypto", "#defi"],
-    content_tree: [
-      {
-        id: "node1",
-        _type: "text",
-        value: "",
-        data: [],
-        text: "Just made my first transaction on ODoc! 🚀",
-        children: [],
-        language: "",
-        indent: BigInt(0),
-        listStart: BigInt(0),
-        parent: [],
-        listStyleType: ""
-      }
-    ]
-  }
-];
-
 
 const SocialFeed = (props) => {
-
   const [posts, setPosts] = useState(props.posts);
   // const [posts, setPosts] = useState(samplePosts);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleDeletePost = (postId) => {
+    setPosts((prev) => prev.filter((p) => p.id !== postId));
+  };
 
   const handlePostSubmit = (newPostObj: any) => {
     setPosts([newPostObj, ...posts]);
@@ -244,6 +167,7 @@ const SocialFeed = (props) => {
           {/* Posts Feed */}
           {filterPosts().map((post) => (
             <ViewPostComponent
+              handleDeletePost={handleDeletePost}
               key={post.id}
               post={post}
               // onLike={handleLike}

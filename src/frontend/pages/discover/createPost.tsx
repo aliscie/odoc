@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { randomString } from "../../DataProcessing/dataSamples";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 import { useBackendContext } from "../../contexts/BackendContext";
-import {useSnackbar} from "notistack";
+import { useSnackbar } from "notistack";
 
 interface CreatePostProps {
   onPostSubmit: (post: any) => void;
@@ -47,7 +47,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
     }
     setLoading(false);
 
-    onPostSubmit(newPostObj);
+    onPostSubmit({ ...newPostObj, creator: profile });
     // setNewPost("");
   };
 
