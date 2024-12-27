@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Box,
   Button,
@@ -13,6 +13,8 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Heart, MoreVertical, ThumbsDown } from "lucide-react";
 import { keyframes, styled } from "@mui/material/styles";
 
@@ -285,23 +287,22 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
         </Box>
 
         <Box sx={{ mb: 2 }}>
-          <EditorComponent
-            editorKey={post.id}
-            readOnly={profile?.id !== post.creator.id}
-            id={post.id}
-            contentEditable={profile?.id === post.creator.id}
-            onChange={(content) => {
-              let c = {};
-              c[""] = content;
-              // postContent.current = c;
-
-              if (isChanged == false && post.creator.id == profile?.id) {
-                setchanged(true);
-              }
-            }}
-            editorKey={"editorKey"}
-            content={deserializeContentTree(post.content_tree)}
-          />
+          <DndProvider backend={HTML5Backend}>
+            <EditorComponent
+              editorKey={post.id}
+              readOnly={profile?.id !== post.creator.id}
+              id={post.id}
+              contentEditable={profile?.id === post.creator.id}
+              onChange={(content) => {
+                let c = {};
+                c[""] = content;
+                if (isChanged == false && post.creator.id == profile?.id) {
+                  setchanged(true);
+                }
+              }}
+              content={deserializeContentTree(post.content_tree)}
+            />
+          </DndProvider>
         </Box>
 
         {/*<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>*/}
