@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import LandingPage from "./LandingPage";
 import FileContentPage from "./FileContentPage";
 import ShareFilePage from "./ShareFilePage";
@@ -13,11 +14,28 @@ import { useBackendContext } from "../contexts/BackendContext";
 import OfferPage from "./OfferPage";
 
 function Pages() {
+  const dispatch = useDispatch();
   const { profile, profile_history, wallet, friends } = useSelector(
     (state: any) => state.filesState,
   );
-  const { login, logout } = useBackendContext();
+  const { login, logout, backendActor } = useBackendContext();
   const { isLoggedIn } = useSelector((state: any) => state.uiState);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      if (backendActor) {
+        try {
+          // Fetch first 20 posts
+          const posts = await backendActor.get_posts(BigInt(0), BigInt(20));
+          dispatch({ type: "SET_POSTS", posts });
+        } catch (error) {
+          console.error("Error fetching posts:", error);
+        }
+      }
+    };
+
+    fetchPosts();
+  }, [backendActor, dispatch]);
 
   return (
     <Routes>
