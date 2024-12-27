@@ -140,8 +140,10 @@ const samplePosts: Array<PostUser> = [
 ];
 
 
-const SocialFeed = () => {
-  const [posts, setPosts] = useState(samplePosts);
+const SocialFeed = (props) => {
+
+  const [posts, setPosts] = useState(props.posts);
+  // const [posts, setPosts] = useState(samplePosts);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -181,13 +183,13 @@ const SocialFeed = () => {
 
   const filterPosts = () => {
     return posts.filter((post) => {
-      const matchesSearch =
-        post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.author.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesTags =
-        selectedTags.length === 0 ||
-        selectedTags.some((tag) => post.tags.includes(tag));
-      return matchesSearch && matchesTags;
+      // const matchesSearch =
+      //   JSON.stringify(post.content_tree).toLowerCase().includes(searchTerm.toLowerCase()) ||
+      //   post.creator.name.toLowerCase().includes(searchTerm.toLowerCase());
+      // const matchesTags =
+      //   selectedTags.length === 0 ||
+      //   selectedTags.some((tag) => post.tags.includes(tag));
+      return posts;
     });
   };
 

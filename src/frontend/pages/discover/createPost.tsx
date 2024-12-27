@@ -1,8 +1,9 @@
-import React, {useState} from "react";
-import {Box, Button, Card, CardContent, IconButton} from "@mui/material";
-import {Hash, Image as ImageIcon, Send, Smile} from "lucide-react";
-import {keyframes, styled} from "@mui/material/styles";
-import {StyledTextField} from "./index";
+import React, { useRef, useState } from "react";
+import { Box, Button, Card, CardContent, IconButton } from "@mui/material";
+import { Hash, Image as ImageIcon, Send, Smile } from "lucide-react";
+import { keyframes, styled } from "@mui/material/styles";
+import { StyledTextField } from "./index";
+import EditorComponent from "../../components/EditorComponent";
 
 interface CreatePostProps {
   onPostSubmit: (post: any) => void;
@@ -37,41 +38,53 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
     setNewPost("");
   };
 
-const shimmer = keyframes`
+  const shimmer = keyframes`
   0% { transform: translateX(-50%); }
   100% { transform: translateX(50%); }
 `;
 
-
-const CreatePostCard = styled(Card)({
-  background: "rgba(17, 24, 39, 0.85)",
-  backdropFilter: "blur(20px)",
-  border: "1px solid rgba(139, 92, 246, 0.2)",
-  borderRadius: "1rem",
-  marginBottom: "2rem",
-  overflow: "visible",
-  position: "relative",
-  "&::before": {
-    content: '""',
-    position: "absolute",
-    inset: 0,
-    background:
-      "linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent)",
-    // animation: `${shimmer} 2s linear infinite`,
-  },
-});
+  const CreatePostCard = styled(Card)({
+    background: "rgba(17, 24, 39, 0.85)",
+    backdropFilter: "blur(20px)",
+    border: "1px solid rgba(139, 92, 246, 0.2)",
+    borderRadius: "1rem",
+    marginBottom: "2rem",
+    overflow: "visible",
+    position: "relative",
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      inset: 0,
+      background:
+        "linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent)",
+      // animation: `${shimmer} 2s linear infinite`,
+    },
+  });
+  const postContent = useRef([]);
   return (
     <CreatePostCard>
       <CardContent>
-        <StyledTextField
-          fullWidth
-          multiline
-          rows={3}
-          placeholder="What's on your mind?"
-          value={newPost}
-          onChange={(e) => setNewPost(e.target.value)}
-          sx={{ mb: 2 }}
+        <EditorComponent
+          // readOnly={!isAuthoer}
+          // id={current_file.id}
+          contentEditable={true}
+          onChange={(content) => {
+            let c = {};
+            c[""] = content;
+            postContent.current = c;
+          }}
+          editorKey={"editorKey"}
+          content={[]}
         />
+        {/*<StyledTextField*/}
+        {/*  fullWidth*/}
+        {/*  multiline*/}
+        {/*  rows={3}*/}
+        {/*  placeholder="What's on your mind?"*/}
+        {/*  value={newPost}*/}
+        {/*  onChange={(e) => setNewPost(e.target.value)}*/}
+        {/*  sx={{ mb: 2 }}*/}
+        {/*/>*/}
         <Box
           sx={{
             display: "flex",
