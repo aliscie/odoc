@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
 import LandingPage from "./LandingPage";
 import FileContentPage from "./FileContentPage";
 import ShareFilePage from "./ShareFilePage";
@@ -14,7 +13,7 @@ import { useBackendContext } from "../contexts/BackendContext";
 import OfferPage from "./OfferPage";
 
 function Pages() {
-  const dispatch = useDispatch();
+  const [posts, setPosts] = useState([]);
   const { profile, profile_history, wallet, friends } = useSelector(
     (state: any) => state.filesState,
   );
@@ -27,7 +26,7 @@ function Pages() {
         try {
           // Fetch first 20 posts
           const posts = await backendActor.get_posts(BigInt(0), BigInt(20));
-          dispatch({ type: "SET_POSTS", posts });
+          setPosts(posts);
         } catch (error) {
           console.error("Error fetching posts:", error);
         }
@@ -35,7 +34,7 @@ function Pages() {
     };
 
     fetchPosts();
-  }, [backendActor, dispatch]);
+  }, [backendActor]);
 
   return (
     <Routes>
@@ -43,7 +42,7 @@ function Pages() {
         path="/"
         element={<LandingPage isLoggedIn={isLoggedIn} login={login} />}
       />
-      <Route path="/discover" element={<Discover />} />
+      <Route path="/discover" element={<Discover posts={posts} />} />
       <Route path="/wallet" element={<Web3WalletUI wallet={wallet} />} />
       <Route
         path="/profile"
