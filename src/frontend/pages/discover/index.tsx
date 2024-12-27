@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createTheme, styled, ThemeProvider } from "@mui/material/styles";
+import { keyframes } from "@mui/material/styles";
 import { Box, InputAdornment, TextField } from "@mui/material";
 import { Search } from "lucide-react";
 import CreatePost from "./createPost";
@@ -26,18 +27,55 @@ const SocialFeed = (props) => {
     },
   });
 
+  const glowPulse = keyframes`
+    0%, 100% { opacity: 1; filter: brightness(1); }
+    50% { opacity: 0.8; filter: brightness(1.2); }
+  `;
+
   const FeedWrapper = styled("div")(({ theme }) => ({
     minHeight: "100vh",
     width: "100%",
     maxWidth: "100vw",
-    // background: theme.palette.background.default,
     padding: "2rem",
     overflowX: "hidden",
+    position: "relative",
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      inset: 0,
+      background: "radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 70%)",
+      animation: `${glowPulse} 4s ease-in-out infinite`,
+      pointerEvents: "none",
+    },
     "& *": {
       boxSizing: "border-box",
       maxWidth: "100%",
     },
   }));
+
+  const BackgroundEffect = styled("div")({
+    position: "fixed",
+    borderRadius: "50%",
+    filter: "blur(100px)",
+    opacity: 0.5,
+    zIndex: -1,
+    "&.top": {
+      top: "5%",
+      left: "5%",
+      width: "30%",
+      height: "30%",
+      background: "rgba(79, 70, 229, 0.1)",
+      animation: `${glowPulse} 4s infinite`,
+    },
+    "&.bottom": {
+      bottom: "5%",
+      right: "5%",
+      width: "30%",
+      height: "30%",
+      background: "rgba(124, 58, 237, 0.1)",
+      animation: `${glowPulse} 4s infinite 1s`,
+    },
+  });
 
   const Container = styled("div")({
     maxWidth: "1200px",
@@ -127,6 +165,8 @@ const SocialFeed = (props) => {
   return (
     <ThemeProvider theme={theme}>
       <FeedWrapper>
+        <BackgroundEffect className="top" />
+        <BackgroundEffect className="bottom" />
         <Container>
           {/* Create Post Section */}
           <CreatePost onPostSubmit={handlePostSubmit} />
