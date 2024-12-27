@@ -276,8 +276,9 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
           user={user}
           chat={activeChat}
           onClose={handleCloseChat}
-          position={chatPosition}
-          onPositionChange={handleChatPositionChange}
+          // position={chatPosition}
+          // onPositionChange={handleChatPositionChange}
+          dialog={true}
           onSendMessage={handleSendMessage}
         />
       )}

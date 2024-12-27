@@ -56,10 +56,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
   100% { transform: translateX(50%); }
 `;
 
-  const shimmer = keyframes`
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  `;
 
   const CreatePostCard = styled(Card)(({ theme }) => ({
     background: theme.palette.mode === "dark" 
