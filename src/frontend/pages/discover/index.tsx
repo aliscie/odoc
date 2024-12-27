@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { createTheme, styled, ThemeProvider } from "@mui/material/styles";
+import debounce from 'lodash/debounce';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { keyframes } from "@mui/material/styles";
@@ -9,10 +10,100 @@ import CreatePost from "./createPost";
 import ViewPostComponent from "./viewPost";
 import { useSelector } from "react-redux";
 
+// Moved styled components outside component
+const glowPulse = keyframes`
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.8; filter: brightness(1.2); }
+`;
+
+const FeedWrapper = styled("div")(({ theme }) => ({
+  minHeight: "100vh",
+  width: "100%",
+  maxWidth: "100vw",
+  padding: "2rem",
+  overflowX: "hidden",
+  position: "relative",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    inset: 0,
+    background: "radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 70%)",
+    animation: `${glowPulse} 4s ease-in-out infinite`,
+    pointerEvents: "none",
+  },
+  "& *": {
+    boxSizing: "border-box",
+    maxWidth: "100%",
+  },
+}));
+
+const BackgroundEffect = styled("div")({
+  position: "fixed",
+  borderRadius: "50%",
+  filter: "blur(100px)",
+  opacity: 0.5,
+  zIndex: -1,
+  "&.top": {
+    top: "5%",
+    left: "5%",
+    width: "30%",
+    height: "30%",
+    background: "rgba(79, 70, 229, 0.1)",
+    animation: `${glowPulse} 4s infinite`,
+  },
+  "&.bottom": {
+    bottom: "5%",
+    right: "5%",
+    width: "30%",
+    height: "30%",
+    background: "rgba(124, 58, 237, 0.1)",
+    animation: `${glowPulse} 4s infinite 1s`,
+  },
+});
+
+const Container = styled("div")({
+  maxWidth: "1200px",
+  margin: "0 auto",
+  width: "100%",
+});
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "1rem",
+    background: theme.palette.mode === "dark"
+      ? "rgba(17, 24, 39, 0.75)"
+      : "rgba(255, 255, 255, 0.75)",
+    backdropFilter: "blur(10px)",
+    border: `1px solid ${theme.palette.mode === "dark"
+      ? "rgba(139, 92, 246, 0.2)"
+      : "rgba(79, 70, 229, 0.2)"}`,
+    transition: "all 0.3s ease",
+    "& fieldset": {
+      border: "none",
+    },
+    "&:hover": {
+      background: theme.palette.mode === "dark"
+        ? "rgba(17, 24, 39, 0.85)"
+        : "rgba(255, 255, 255, 0.85)",
+      border: `1px solid ${theme.palette.mode === "dark"
+        ? "rgba(139, 92, 246, 0.3)"
+        : "rgba(79, 70, 229, 0.3)"}`,
+    },
+    "&.Mui-focused": {
+      background: theme.palette.mode === "dark"
+        ? "rgba(17, 24, 39, 0.9)"
+        : "rgba(255, 255, 255, 0.9)",
+      border: `1px solid ${theme.palette.mode === "dark"
+        ? "rgba(139, 92, 246, 0.5)"
+        : "rgba(79, 70, 229, 0.5)"}`,
+    },
+  },
+}));
+
 const SocialFeed = (props) => {
   const { isDarkMode } = useSelector((state: any) => state.uiState);
   
-  const theme = createTheme({
+  const theme = useMemo(() => createTheme({
     palette: {
       mode: isDarkMode ? "dark" : "light",
       primary: {
@@ -161,17 +252,33 @@ const SocialFeed = (props) => {
   //   );
   // };
 
-  const filterPosts = () => {
-    return posts.filter((post) => {
-      // const matchesSearch =
-      //   JSON.stringify(post.content_tree).toLowerCase().includes(searchTerm.toLowerCase()) ||
-      //   post.creator.name.toLowerCase().includes(searchTerm.toLowerCase());
-      // const matchesTags =
-      //   selectedTags.length === 0 ||
-      //   selectedTags.some((tag) => post.tags.includes(tag));
-      return posts;
-    });
+  const debouncedSetSearchTerm = useCallback(
+    debounce((value: string) => {
+      setSearchTerm(value);
+    }, 300),
+    []
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    debouncedSetSearchTerm(e.target.value);
   };
+
+  const filteredPosts = useMemo(() => {
+    if (!searchTerm) return posts;
+    
+    const searchLower = searchTerm.toLowerCase();
+    return posts.filter((post) => {
+      const contentMatch = JSON.stringify(post.content_tree)
+        .toLowerCase()
+        .includes(searchLower);
+      const creatorMatch = post.creator.name.toLowerCase().includes(searchLower);
+      const tagsMatch = post.tags.some(tag => 
+        tag.toLowerCase().includes(searchLower)
+      );
+      
+      return contentMatch || creatorMatch || tagsMatch;
+    });
+  }, [posts, searchTerm]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -195,8 +302,8 @@ const SocialFeed = (props) => {
                   </InputAdornment>
                 ),
               }}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              defaultValue=""
+              onChange={handleSearchChange}
               sx={{ mb: 2 }}
             />
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
@@ -225,7 +332,7 @@ const SocialFeed = (props) => {
           </Box>
 
           {/* Posts Feed */}
-          {filterPosts().map((post) => (
+          {filteredPosts.map((post) => (
             <ViewPostComponent
               handleDeletePost={handleDeletePost}
               key={post.id}
