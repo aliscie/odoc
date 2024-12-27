@@ -14,9 +14,9 @@ export function createPalette(isDarkMode) {
         selected: alpha(neutral[100], 0.12),
       },
       background: {
-        default: "#121218",
-        paper: "#1E1E28",
-        alternate: "#17171F"
+        default: "#0F0F13",
+        paper: "#18181F",
+        alternate: "#13131A"
       },
       divider: "rgba(139, 92, 246, 0.15)",
       error,
@@ -50,9 +50,9 @@ export function createPalette(isDarkMode) {
         selected: alpha(neutral[900], 0.12),
       },
       background: {
-        default: "#F8F9FA",
-        paper: "#F3F4F6",
-        alternate: "#EBEDF0"
+        default: "#FAFBFC",
+        paper: "#F5F6F8",
+        alternate: "#F0F1F4"
       },
       divider: "rgba(79, 70, 229, 0.25)",
       error,
