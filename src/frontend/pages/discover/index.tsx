@@ -112,33 +112,31 @@ export const TagChip = styled("span")({
 // Sample data structure
 const samplePosts: Array<PostUser> = [
   {
-    id: 1,
-    author: {
-      name: "John Doe",
-      avatar: "/api/placeholder/32/32",
+    id: "1",
+    creator: {
+      id: "user1",
+      name: "John Doe"
     },
-    content: "Just made my first transaction on ODoc! 🚀",
+    date_created: BigInt(Date.now() * 1000000),
+    votes_up: [],
+    votes_down: [],
     tags: ["#crypto", "#defi"],
-    likes: 24,
-    dislikes: 2,
-    comments: [
+    content_tree: [
       {
-        id: 1,
-        author: "Jane Smith",
-        content: "Congrats! How was the experience?",
-        replies: [
-          {
-            id: 1,
-            author: "John Doe",
-            content: "Super smooth and fast!",
-          },
-        ],
-      },
-    ],
-    shares: 5,
-    timestamp: "2h ago",
-  },
-  // Add more sample posts...
+        id: "node1",
+        _type: "text",
+        value: "",
+        data: [],
+        text: "Just made my first transaction on ODoc! 🚀",
+        children: [],
+        language: "",
+        indent: BigInt(0),
+        listStart: BigInt(0),
+        parent: [],
+        listStyleType: ""
+      }
+    ]
+  }
 ];
 
 

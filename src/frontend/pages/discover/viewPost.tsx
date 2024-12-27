@@ -10,8 +10,11 @@ import {
 import {styled} from "@mui/material/styles";
 import {TagChip} from "./index";
 
+import { PostUser, ContentNode } from "../../../declarations/backend/backend.did";
+import { Principal } from "@dfinity/principal";
+
 interface ViewPostComponentProps {
-  post: any;
+  post: PostUser;
   onLike: (postId: string) => void;
 }
 
@@ -47,13 +50,15 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
     <PostCard>
       <CardContent>
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Avatar src={post.author.avatar} sx={{ mr: 2 }} />
+          <Avatar sx={{ mr: 2 }}>
+            {post.creator.name.charAt(0)}
+          </Avatar>
           <Box>
             <Box sx={{ fontWeight: "bold", color: "#E9D5FF" }}>
-              {post.author.name}
+              {post.creator.name}
             </Box>
             <Box sx={{ fontSize: "0.875rem", color: "#A78BFA" }}>
-              {post.timestamp}
+              {new Date(Number(post.date_created / BigInt(1000000))).toLocaleString()}
             </Box>
           </Box>
           <IconButton sx={{ ml: "auto" }}>
@@ -61,7 +66,13 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
           </IconButton>
         </Box>
 
-        <Box sx={{ mb: 2, color: "#E9D5FF" }}>{post.content}</Box>
+        <Box sx={{ mb: 2, color: "#E9D5FF" }}>
+          {post.content_tree.map((node: ContentNode) => (
+            <div key={node.id}>
+              {node.text}
+            </div>
+          ))}
+        </Box>
 
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
           {post.tags.map((tag) => (
@@ -78,30 +89,16 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
           }}
         >
           <PostActionButton onClick={() => onLike(post.id)}>
-            <Heart size={20} fill={post.liked ? "#A855F7" : "none"} />
+            <Heart size={20} fill={post.votes_up.length > 0 ? "#A855F7" : "none"} />
             <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
-              {post.likes}
+              {post.votes_up.length}
             </Box>
           </PostActionButton>
 
           <PostActionButton>
             <ThumbsDown size={20} />
             <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
-              {post.dislikes}
-            </Box>
-          </PostActionButton>
-
-          <PostActionButton>
-            <MessageCircle size={20} />
-            <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
-              {post.comments.length}
-            </Box>
-          </PostActionButton>
-
-          <PostActionButton>
-            <Share2 size={20} />
-            <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
-              {post.shares}
+              {post.votes_down.length}
             </Box>
           </PostActionButton>
         </Box>
