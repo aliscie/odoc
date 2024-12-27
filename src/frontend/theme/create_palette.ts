@@ -50,11 +50,11 @@ export function createPalette(isDarkMode) {
         selected: alpha(neutral[900], 0.12),
       },
       background: {
-        default: "#F9FAFB",
+        default: "#F3F4F6",
         paper: "#FFFFFF",
-        alternate: "#F3F4F6"
+        alternate: "#E5E7EB"
       },
-      divider: "rgba(79, 70, 229, 0.12)",
+      divider: "rgba(79, 70, 229, 0.25)",
       error,
       info,
       mode: "light",
