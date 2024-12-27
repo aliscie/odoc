@@ -44,9 +44,11 @@ const PostCard = styled(Card)(({ theme }) => ({
   border: "1px solid rgba(255, 255, 255, 0.125)",
   borderRadius: "16px",
   padding: "12px",
-  // width: '320px',
+  position: "relative",
+  zIndex: 1,
   boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
   transition: "all 0.3s ease",
+  overflow: "visible",
   "&:hover": {
     transform: "translateY(-5px)",
     boxShadow: "0 8px 40px rgba(0, 0, 0, 0.2)",
@@ -220,7 +222,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
   }
   return (
     <PostCard>
-      <CardContent>
+      <CardContent sx={{ overflow: "visible" }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <UserAvatarMenu sx={{ mr: 2 }} user={post.creator} />
           <Box>
