@@ -6,6 +6,13 @@ import {
   CardContent,
   CircularProgress,
   IconButton,
+  Menu,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import {
   Heart,
@@ -63,6 +70,33 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({ post }) => {
     up: post.votes_up,
     down: post.votes_down,
   });
+  
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+  };
+
+  const handleDeleteClick = () => {
+    handleMenuClose();
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await backendActor?.delete_post(post.id);
+      enqueueSnackbar('Post deleted successfully', { variant: 'success' });
+      // You may want to trigger a refresh of the posts list here
+    } catch (error) {
+      enqueueSnackbar('Failed to delete post', { variant: 'error' });
+    }
+    setDeleteDialogOpen(false);
+  };
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
@@ -113,9 +147,74 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({ post }) => {
               {formatRelativeTime(post.date_created)}
             </Box>
           </Box>
-          <IconButton sx={{ ml: "auto" }}>
+          <IconButton sx={{ ml: "auto" }} onClick={handleMenuClick}>
             <MoreVertical color="#E9D5FF" size={20} />
           </IconButton>
+          <Menu
+            anchorEl={menuAnchorEl}
+            open={Boolean(menuAnchorEl)}
+            onClose={handleMenuClose}
+            PaperProps={{
+              style: {
+                backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                border: '1px solid rgba(139, 92, 246, 0.2)',
+              }
+            }}
+          >
+            <MenuItem 
+              onClick={handleDeleteClick} 
+              sx={{ 
+                color: '#E9D5FF',
+                '&:hover': {
+                  backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                }
+              }}
+            >
+              Delete Post
+            </MenuItem>
+          </Menu>
+          
+          <Dialog
+            open={deleteDialogOpen}
+            onClose={() => setDeleteDialogOpen(false)}
+            PaperProps={{
+              style: {
+                backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                border: '1px solid rgba(139, 92, 246, 0.2)',
+                color: '#E9D5FF'
+              }
+            }}
+          >
+            <DialogTitle>Delete Post</DialogTitle>
+            <DialogContent>
+              Are you sure you want to delete this post? This action cannot be undone.
+            </DialogContent>
+            <DialogActions>
+              <Button 
+                onClick={() => setDeleteDialogOpen(false)} 
+                sx={{ 
+                  color: '#A78BFA',
+                  '&:hover': {
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                  }
+                }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleDeleteConfirm} 
+                sx={{ 
+                  color: '#ff4444',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 68, 68, 0.1)',
+                  }
+                }} 
+                autoFocus
+              >
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Box>
 
         <Box sx={{ mb: 2, color: "#E9D5FF" }}>
