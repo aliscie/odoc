@@ -15,13 +15,10 @@ const SocialFeed = (props) => {
       primary: {
         main: "#4F46E5",
       },
-      // background: {
-      //   default: isDarkMode ? "#0F0F13" : "#FAFBFC",
-      //   paper: isDarkMode ? "#18181F" : "#F5F6F8",
-      // },und: {
-      //   default: isDarkMode ? "#0F0F13" : "#FAFBFC",
-      //   paper: isDarkMode ? "#18181F" : "#F5F6F8",
-      // },
+      background: {
+        default: isDarkMode ? "#0F0F13" : "#FAFBFC",
+        paper: isDarkMode ? "#18181F" : "#F5F6F8",
+      },
       text: {
         primary: isDarkMode ? "#E9D5FF" : "#1F2937",
         secondary: isDarkMode ? "#A78BFA" : "#6B7280",
@@ -59,20 +56,18 @@ const SocialFeed = (props) => {
   };
 
   const { searchValue } = useSelector((state: any) => state.uiState);
-  const filterPosts = () => {
+  const filterPosts = React.useMemo(() => {
+    const searchLower = searchValue.toLowerCase();
     return posts.filter((post) => {
       // Convert content_tree to a single string to search within it
       const contentTreeText = post.content_tree
-        .map((node) => node.text.toLowerCase())
+        .map((node) => node.text?.toLowerCase() || '')
         .join(" ");
 
-      const matchesSearch =
-        contentTreeText.includes(searchValue.toLowerCase()) ||
-        post.creator?.name.toLowerCase().includes(searchValue.toLowerCase());
-
-      return matchesSearch;
+      return contentTreeText.includes(searchLower) ||
+             post.creator?.name?.toLowerCase().includes(searchLower);
     });
-  };
+  }, [posts, searchValue]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -88,7 +83,7 @@ const SocialFeed = (props) => {
             </Box>
 
             {/* Posts Feed */}
-            {filterPosts().map((post) => (
+            {filterPosts.map((post) => (
               <ViewPostComponent
                 handleDeletePost={handleDeletePost}
                 key={post.id}
