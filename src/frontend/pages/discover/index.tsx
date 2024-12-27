@@ -15,10 +15,10 @@ const SocialFeed = (props) => {
       primary: {
         main: "#4F46E5",
       },
-      background: {
-        default: isDarkMode ? "#0F0F13" : "#FAFBFC",
-        paper: isDarkMode ? "#18181F" : "#F5F6F8",
-      },
+      // background: {
+      //   default: isDarkMode ? "#0F0F13" : "#FAFBFC",
+      //   paper: isDarkMode ? "#18181F" : "#F5F6F8",
+      // },
       text: {
         primary: isDarkMode ? "#E9D5FF" : "#1F2937",
         secondary: isDarkMode ? "#A78BFA" : "#6B7280",
@@ -30,7 +30,7 @@ const SocialFeed = (props) => {
     minHeight: "100vh",
     width: "100%",
     maxWidth: "100vw",
-    background: theme.palette.background.default,
+    // background: theme.palette.background.default,
     padding: "2rem",
     overflowX: "hidden",
     "& *": {
