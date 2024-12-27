@@ -33,6 +33,8 @@ const SocialFeed = (props) => {
     // background: theme.palette.background.default,
     padding: "2rem",
     overflowX: "hidden",
+    position: "relative",
+    zIndex: 1, // Lower z-index than chat window
     "& *": {
       boxSizing: "border-box",
       maxWidth: "100%",
