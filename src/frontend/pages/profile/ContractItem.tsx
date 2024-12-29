@@ -34,8 +34,6 @@ const ContractItem: React.FC<ContractItemProps> = ({
     receiver: "Null",
   });
 
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const dispatch = useDispatch();
   const { getUser } = useGetUser();
 
   useEffect(() => {
@@ -52,26 +50,26 @@ const ContractItem: React.FC<ContractItemProps> = ({
     })();
   }, [backendActor]);
 
-  const handleDelete = async () => {
-    if (!backendActor) {
-      enqueueSnackbar("Backend actor is not available", { variant: "error" });
-      return;
-    }
-    const loader = enqueueSnackbar(
-      <>
-        <span>Deleting...</span>
-        <span className="loader" />
-      </>,
-    );
-    const res: { Ok?: any; Err?: any } = await backendActor.delete_payment(id);
-    closeSnackbar(loader);
-    if ("Ok" in res) {
-      enqueueSnackbar("Deleted successfully", { variant: "success" });
-      dispatch(handleRedux("REMOVE_CONTRACT", { id }));
-    } else {
-      enqueueSnackbar(String(res.Err), { variant: "error" });
-    }
-  };
+  // const handleDelete = async () => {
+  //   if (!backendActor) {
+  //     enqueueSnackbar("Backend actor is not available", { variant: "error" });
+  //     return;
+  //   }
+  //   const loader = enqueueSnackbar(
+  //     <>
+  //       <span>Deleting...</span>
+  //       <span className="loader" />
+  //     </>,
+  //   );
+  //   const res: { Ok?: any; Err?: any } = await backendActor.delete_payment(id);
+  //   closeSnackbar(loader);
+  //   if ("Ok" in res) {
+  //     enqueueSnackbar("Deleted successfully", { variant: "success" });
+  //     dispatch(handleRedux("REMOVE_CONTRACT", { id }));
+  //   } else {
+  //     enqueueSnackbar(String(res.Err), { variant: "error" });
+  //   }
+  // };
 
   // const DeleteDialog: React.FC<{
   //   handleCancel: () => void;
