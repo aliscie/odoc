@@ -40,7 +40,7 @@ function EditorComponent(props: Props) {
       case "custom_contract":
         console.log("handleOnInsertComponent");
         custom_contract.id = component_id;
-        custom_contract.creator = Principal.fromText(profile.id);
+        custom_contract.creator = profile.id;
         custom_contract.date_created = Date.now() * 1e6;
         dispatch(handleRedux("ADD_CONTRACT", { contract: custom_contract }));
         return null;

@@ -240,9 +240,9 @@ const WalletPage = ({ wallet = defaultWallet }) => {
                     align="right"
                     sx={{
                       color:
-                        exchange.type &&
-                        (exchange.type === "Deposit" ||
-                          exchange.type === "LocalReceive")
+                        exchange._type &&
+                        (Object.keys(exchange._type)[0] === "Deposit" ||
+                          Object.keys(exchange._type)[0] === "LocalReceive")
                           ? "success.main"
                           : "error.main",
                     }}

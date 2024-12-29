@@ -33,6 +33,11 @@ import { Principal } from "@dfinity/principal";
 import { debounce } from "lodash";
 import { formatRelativeTime } from "../../utils/time";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DialogComponent from "../MuiComponents/dialogComponent";
+import { useBackendContext } from "../../contexts/BackendContext";
+import { useSnackbar } from "notistack";
+import { handleRedux } from "../../redux/store/handleRedux";
+import { useDispatch } from "react-redux";
 // export function createFlagImg(flag: string) {
 //   return (
 //     '<img border="0" width="15" height="10" src="https://flags.fmcdn.net/data/flags/mini/' +
@@ -162,10 +167,15 @@ const CustomContractViewer = ({
   contracts,
   onContractChange,
 }) => {
+  // if (!contracts[0]) {
+  //   return <Box>This contract deleted... </Box>;
+  // }
+
   const [selectedDataType, setSelectedDataType] = useState(
     DataTypeSelection.PROMISE,
   );
   const [selectedContract, setSelectedContract] = useState(null);
+
   const [contractsState, setContractsState] = useState(contracts);
 
   const getPaymentColumnDefs = (isPromise = false) => [
@@ -348,9 +358,9 @@ const CustomContractViewer = ({
     setSelectedDataType(DataTypeSelection.CONTRACT);
     onContractChange(updatedContract);
   };
-
+  console.log({ contractsState });
   const promisesData = transformPromisesDataAndColumns(
-    contractsState[0].promises,
+    contractsState[0]?.promises,
     getPaymentColumnDefs(true),
     true,
   );
@@ -453,6 +463,9 @@ const CustomContractViewer = ({
     return baseMenuItems;
   };
 
+  const { login, logout, backendActor } = useBackendContext();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
   return (
     <Box sx={{ width: "100%", height: "100%" }}>
       <AppBar position="static" color="default" elevation={1} sx={{ p: 2 }}>
@@ -528,6 +541,25 @@ const CustomContractViewer = ({
               </MenuItem>
             </Select>
           </FormControl>
+          <Box sx={{ flexGrow: 1 }} />
+
+          <DialogComponent
+            onConfirm={async () => {
+              let res = await backendActor.delete_custom_contract(
+                contractsState[0].id,
+              );
+              if (res.Ok == null || res.Err === "Not found") {
+                dispatch(
+                  handleRedux("REMOVE_CONTRACT", { id: contractsState[0].id }),
+                );
+              } else if (res.Err) {
+                enqueueSnackbar(res.Err, { variant: "error" });
+              }
+            }}
+            button={<Button color={"error"}>Delete</Button>}
+            title={"Delete post"}
+            content={"Are you sure you want to delete this contract?"}
+          />
         </Stack>
       </AppBar>
 

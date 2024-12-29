@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import {
   Box,
   Button,
@@ -13,19 +13,17 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { Heart, MoreVertical, ThumbsDown } from "lucide-react";
-import { keyframes, styled } from "@mui/material/styles";
+import {Heart, MoreVertical, ThumbsDown} from "lucide-react";
+import {keyframes, styled} from "@mui/material/styles";
 
-import { Post, PostUser } from "../../../declarations/backend/backend.did";
-import { formatRelativeTime } from "../../utils/time";
+import {Post, PostUser} from "../../../declarations/backend/backend.did";
+import {formatRelativeTime} from "../../utils/time";
 import EditorComponent from "../../components/EditorComponent";
-import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
-import { useSelector } from "react-redux";
+import {deserializeContentTree} from "../../DataProcessing/deserlize/deserializeContents";
+import {useSelector} from "react-redux";
 import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
-import { useSnackbar } from "notistack";
-import { useBackendContext } from "../../contexts/BackendContext";
-import { randomString } from "../../DataProcessing/dataSamples";
+import {useSnackbar} from "notistack";
+import {useBackendContext} from "../../contexts/BackendContext";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 
 interface ViewPostComponentProps {
@@ -332,7 +330,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
           }}
         >
           <PostActionButton
-            disabled={profile?.id == post.creator.id || voteLoading}
+            disabled={!profile || profile?.id == post.creator.id || voteLoading}
             onClick={onLike}
           >
             <Heart
@@ -351,7 +349,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
           </PostActionButton>
 
           <PostActionButton
-            disabled={profile?.id == post.creator.id || voteLoading}
+            disabled={!profile || profile?.id == post.creator.id || voteLoading}
             onClick={onDisLike}
           >
             <ThumbsDown

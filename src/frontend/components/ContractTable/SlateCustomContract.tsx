@@ -7,6 +7,7 @@ import {
 import { useBackendContext } from "../../contexts/BackendContext";
 import { handleRedux } from "../../redux/store/handleRedux";
 import CustomContractComponent from "./index";
+import { Typography } from "@mui/material";
 
 export default function SlateCustomContract(props: any) {
   const { backendActor } = useBackendContext();
@@ -39,11 +40,18 @@ export default function SlateCustomContract(props: any) {
   }, [contracts]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Typography contentEditable={false}>Loading...</Typography>;
+  }
+  if (!contracts[id]) {
+    return (
+      <Typography {...props.attributes} contentEditable={true} color={"error"}>
+        <span contentEditable={true}>Contract wa deleted....</span>
+        <span >{props.children}</span>
+      </Typography>
+    );
   }
   return (
-    <div
-        contentEditable={false}>
+    <div contentEditable={false}>
       <CustomContractComponent contracts={[contracts[id]]} />
     </div>
   );

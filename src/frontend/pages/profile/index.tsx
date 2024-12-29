@@ -369,7 +369,7 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
               <Typography variant="h6" color="text.secondary" gutterBottom>
                 Total Spent
               </Typography>
-              <Typography variant="h4">${totalSpent.toFixed(2)}</Typography>
+              <Typography variant="h4">${Number(totalSpent)}</Typography>
             </CardContent>
           </Card>
         </Grid>
