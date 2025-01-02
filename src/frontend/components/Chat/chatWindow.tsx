@@ -239,15 +239,23 @@ const ChatWindow = memo(
             >
               {isMinimized ? <OpenInFullIcon /> : <MinimizeIcon />}
             </IconButton>
-            {isSettingsView ? (
-              <IconButton size="small" onClick={() => setIsSettingsView(false)}>
-                <ArrowBackIcon />
-              </IconButton>
-            ) : (
-              <IconButton size="small" onClick={() => setIsSettingsView(true)}>
-                <SettingsIcon />
-              </IconButton>
-            )}
+            {chat.name !== "private_chat" &&
+              chat.creator?.id === profile?.id &&
+              (isSettingsView ? (
+                <IconButton
+                  size="small"
+                  onClick={() => setIsSettingsView(false)}
+                >
+                  <ArrowBackIcon />
+                </IconButton>
+              ) : (
+                <IconButton
+                  size="small"
+                  onClick={() => setIsSettingsView(true)}
+                >
+                  <SettingsIcon />
+                </IconButton>
+              ))}
             <IconButton size="small" onClick={() => onClose(chat.id)}>
               <CloseIcon />
             </IconButton>
@@ -365,9 +373,12 @@ const ChatWindow = memo(
                   fullWidth
                   label="Chat Name"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, name: e.target.value }))
-                  }
+                  onChange={(e) => {
+                    if (e.target.value === "private_chat") {
+                      e.target.value = "private chat";
+                    }
+                    setFormData((prev) => ({ ...prev, name: e.target.value }));
+                  }}
                   sx={{ mb: 2 }}
                 />
                 <WorkspaceSelect
@@ -415,7 +426,13 @@ const ChatWindow = memo(
                     color={saveSuccess ? "success" : "primary"}
                     fullWidth
                     disabled={isSaving}
-                    startIcon={isSaving ? <CircularProgress size={20} /> : (saveSuccess ? <Check /> : null)}
+                    startIcon={
+                      isSaving ? (
+                        <CircularProgress size={20} />
+                      ) : saveSuccess ? (
+                        <Check />
+                      ) : null
+                    }
                     onClick={async () => {
                       const updatedChat: Chat = {
                         ...chat,
@@ -478,11 +495,11 @@ const ChatWindow = memo(
         maxWidth="sm"
         fullWidth
         sx={{
-          '& .MuiDialog-paper': {
+          "& .MuiDialog-paper": {
             height: 600,
-            display: 'flex',
-            flexDirection: 'column',
-          }
+            display: "flex",
+            flexDirection: "column",
+          },
         }}
       >
         {content}

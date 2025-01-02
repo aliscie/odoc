@@ -13,17 +13,17 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import {Heart, MoreVertical, ThumbsDown} from "lucide-react";
-import {keyframes, styled} from "@mui/material/styles";
+import { Heart, MoreVertical, ThumbsDown } from "lucide-react";
+import { keyframes, styled } from "@mui/material/styles";
 
-import {Post, PostUser} from "../../../declarations/backend/backend.did";
-import {formatRelativeTime} from "../../utils/time";
+import { Post, PostUser } from "../../../declarations/backend/backend.did";
+import { formatRelativeTime } from "../../utils/time";
 import EditorComponent from "../../components/EditorComponent";
-import {deserializeContentTree} from "../../DataProcessing/deserlize/deserializeContents";
-import {useSelector} from "react-redux";
+import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
+import { useSelector } from "react-redux";
 import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
-import {useSnackbar} from "notistack";
-import {useBackendContext} from "../../contexts/BackendContext";
+import { useSnackbar } from "notistack";
+import { useBackendContext } from "../../contexts/BackendContext";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 
 interface ViewPostComponentProps {
@@ -140,12 +140,18 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
     setDeleteDialogOpen(false);
     setIsDeleteing(true);
     try {
-      await backendActor?.delete_post(post.id);
-      enqueueSnackbar("Post deleted successfully", { variant: "success" });
+      let res = await backendActor?.delete_post(post.id);
+      if (res?.Ok === null) {
+        enqueueSnackbar("Post deleted successfully", { variant: "success" });
+      } else {
+        enqueueSnackbar(JSON.stringify(res?.Err), { variant: "error" });
+      }
+
       handleDeletePost(post.id);
       // You may want to trigger a refresh of the posts list here
     } catch (error) {
-      enqueueSnackbar("Failed to delete post", { variant: "error" });
+      console.log({ error });
+      enqueueSnackbar("Failed to delete post" + error, { variant: "error" });
     }
   };
 
@@ -228,9 +234,11 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
               {formatRelativeTime(post.date_created)}
             </Box>
           </Box>
-          <IconButton sx={{ ml: "auto" }} onClick={handleMenuClick}>
-            <MoreVertical color="#E9D5FF" size={20} />
-          </IconButton>
+          {profile?.id == post.creator.id && (
+            <IconButton sx={{ ml: "auto" }} onClick={handleMenuClick}>
+              <MoreVertical color="#E9D5FF" size={20} />
+            </IconButton>
+          )}
           <Menu
             anchorEl={menuAnchorEl}
             open={Boolean(menuAnchorEl)}

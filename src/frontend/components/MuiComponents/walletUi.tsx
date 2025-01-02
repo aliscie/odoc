@@ -36,6 +36,7 @@ import {
   Send,
 } from "@mui/icons-material";
 import { formatRelativeTime } from "../../utils/time";
+import Link from "@mui/material/Link";
 
 const defaultWallet = {
   owner: "0x0000000000000000000000000000000000000000",
@@ -283,7 +284,18 @@ const WalletPage = ({ wallet = defaultWallet }) => {
         <DialogContent>
           <Box py={2}>
             <Typography variant="subtitle2" gutterBottom>
-              Your Wallet Address
+              Copy your address and go to{" "}
+              <Link
+                href="https://oisy.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  "&:hover": { color: "primary.dark" },
+                }}
+              >
+                oisy.com
+              </Link>{" "}
+              to transfer CKUSDC to your wallet.
             </Typography>
             <TextField
               fullWidth
@@ -383,7 +395,7 @@ const WalletPage = ({ wallet = defaultWallet }) => {
               <MenuItem value="" disabled>
                 Select recipient
               </MenuItem>
-              {all_friends.map((friend) => (
+              {all_friends.filter(f=> f.id!==profile.id).map((friend) => (
                 <MenuItem key={friend.id} value={friend.id}>
                   {friend.name} ({friend.id.slice(0, 8)}...)
                 </MenuItem>

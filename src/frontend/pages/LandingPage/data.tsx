@@ -6,7 +6,7 @@ import ViewIcon from "@mui/icons-material/Visibility";
 import SocialIcon from "@mui/icons-material/Share";
 import DesktopIcon from "@mui/icons-material/DesktopWindows";
 import ProtectionIcon from "@mui/icons-material/Security";
-
+import HowToVoteIcon from '@mui/icons-material/HowToVote';
 const features = [
   {
     title: "Secure Smart Contracts",
@@ -20,6 +20,7 @@ const features = [
       "Build your professional reputation through our comprehensive trust score system. Your profile showcases verified work history, client ratings, and detailed contract performance metrics.",
     icon: <ProfileIcon />,
   },
+
   {
     title: "Enterprise-Grade Task Management",
     content:
@@ -56,82 +57,98 @@ const features = [
       "Benefit from our advanced SNS-migration system that ensures data integrity and user protection. Smart resource management automatically optimizes inactive storage while preserving your important information.",
     icon: <ProtectionIcon />,
   },
+  {
+    title: "Community-Driven Voting System",
+    content:
+      "Shape the future of the platform by voting on new features and updates. Your voice matters in building a platform that serves you better.",
+    icon: <HowToVoteIcon />,
+  },
 ];
 
 const roadMap = [
   {
     is_done: true,
     title: "USDT Payment System",
-    content: "Secure off-chain USDT transactions between users on ICP canister with confirmation workflows"
+    content:
+      "Secure off-chain USDT transactions between users on ICP canister with confirmation workflows",
   },
   {
     is_done: true,
     title: "Smart Revenue Sharing",
-    content: "Automated payment distribution with immutable approved contracts and change management system"
+    content:
+      "Automated payment distribution with immutable approved contracts and change management system",
   },
   {
     is_done: true,
     title: "Programmable Payments",
-    content: "Custom smart contracts with time-based execution and conditional payment formulas"
+    content:
+      "Custom smart contracts with time-based execution and conditional payment formulas",
   },
   {
     is_done: true,
     title: "ckUSDC Integration",
-    content: "Complete ckUSDC wallet functionality for deposits, payments, and withdrawals"
+    content:
+      "Complete ckUSDC wallet functionality for deposits, payments, and withdrawals",
   },
   {
     is_done: true,
     title: "Enhanced Communication",
-    content: "Real-time notifications, rich text editing, and organized workspace management"
+    content:
+      "Real-time notifications, rich text editing, and organized workspace management",
   },
   {
     is_done: true,
     title: "Group Collaboration",
-    content: "Structured group chats with admin channels and workspace categorization"
+    content:
+      "Structured group chats with admin channels and workspace categorization",
   },
   {
     is_done: false,
     title: "Advanced File Sharing",
-    content: "Secure file uploads with shareable short links for cross-platform compatibility"
+    content:
+      "Secure file uploads with shareable short links for cross-platform compatibility",
   },
   {
     is_done: false,
     title: "Real-time Collaboration",
-    content: "Live document editing with instant updates for all participants"
+    content: "Live document editing with instant updates for all participants",
   },
   {
     is_done: false,
     title: "Multi-Currency Support",
-    content: "Integration of USDC, USDT, and ICP wallets with external transfer capabilities"
+    content:
+      "Integration of USDC, USDT, and ICP wallets with external transfer capabilities",
   },
   {
     is_done: false,
     title: "Advanced Permissions",
-    content: "Group-based access control for documents and data with customizable roles"
+    content:
+      "Group-based access control for documents and data with customizable roles",
   },
   {
     is_done: false,
     title: "Data Visualization",
-    content: "Customizable views including charts, calendars, and timelines with CSS editor"
+    content:
+      "Customizable views including charts, calendars, and timelines with CSS editor",
   },
   {
     is_done: false,
     title: "External Integration",
-    content: "Notion synchronization for seamless data transfer and updates"
+    content: "Notion synchronization for seamless data transfer and updates",
   },
   {
     is_done: false,
     title: "Identity & Trust",
-    content: "Multi-factor verification combining KYC, biometrics, and community-based trust scoring"
+    content:
+      "Multi-factor verification combining KYC, biometrics, and community-based trust scoring",
   },
   {
     is_done: false,
     title: "Developer Ecosystem",
-    content: "JavaScript plugin system for custom components, formulas, and visualizations"
-  }
+    content:
+      "JavaScript plugin system for custom components, formulas, and visualizations",
+  },
 ];
-
-
 
 const steps = [
   {

@@ -56,15 +56,15 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
   100% { transform: translateX(50%); }
 `;
 
-
   const CreatePostCard = styled(Card)(({ theme }) => ({
-    background: theme.palette.mode === "dark" 
-      ? "rgba(17, 24, 39, 0.8)"
-      : "rgba(255, 255, 255, 0.8)",
+    background:
+      theme.palette.mode === "dark"
+        ? "rgba(17, 24, 39, 0.8)"
+        : "rgba(255, 255, 255, 0.8)",
     backdropFilter: "blur(20px)",
     border: `1px solid ${
-      theme.palette.mode === "dark" 
-        ? "rgba(139, 92, 246, 0.2)" 
+      theme.palette.mode === "dark"
+        ? "rgba(139, 92, 246, 0.2)"
         : "rgba(79, 70, 229, 0.2)"
     }`,
     borderRadius: "1rem",
@@ -74,10 +74,12 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
     transition: "all 0.3s ease-in-out",
     "&:hover": {
       transform: "translateY(-2px)",
-      boxShadow: theme.palette.mode === "dark"
-        ? "0 8px 30px rgba(0, 0, 0, 0.12)"
-        : "0 8px 30px rgba(0, 0, 0, 0.08)",
+      boxShadow:
+        theme.palette.mode === "dark"
+          ? "0 8px 30px rgba(0, 0, 0, 0.12)"
+          : "0 8px 30px rgba(0, 0, 0, 0.08)",
     },
+    // Move shimmer to a pseudo-element that's behind the content
     "&::before": {
       content: '""',
       position: "absolute",
@@ -85,11 +87,14 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
       right: 0,
       bottom: 0,
       left: 0,
-      background: "linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent)",
+      background:
+        "linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent)",
       animation: `${shimmer} 2s infinite`,
-      zIndex: 1,
+      zIndex: -1, // Place behind the content
+      pointerEvents: "none", // Ensure it doesn't interfere with clicks
     },
   }));
+
   const postContent = useRef([]);
   return (
     <CreatePostCard>
@@ -135,9 +140,11 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
               "&:hover": {
                 background: "linear-gradient(90deg, #4F46E5, #7C3AED)",
               },
+              position: "relative", // Ensure button stays above shimmer
+              zIndex: 2, // Higher than the shimmer
             }}
           >
-            Create post
+            {loading ? "Loading..." : "Create post"}
           </Button>
         </Box>
       </CardContent>

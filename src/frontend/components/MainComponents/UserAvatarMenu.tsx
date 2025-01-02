@@ -38,7 +38,11 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
   user,
   onMessageClick,
   sx,
+  hide = [],
 }) => {
+  if (!user) {
+    return <CircularProgress />;
+  }
   const navigate = useNavigate();
   const { backendActor } = useBackendContext();
   const { enqueueSnackbar } = useSnackbar();
@@ -220,22 +224,28 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
 
   return (
     <>
-      <IconButton onClick={handleClick}>
-        <Avatar src={getPhotoSrc(user.photo)} alt={user.name} sx={sx}>
+      <IconButton disabled={user.id === profile?.id} onClick={handleClick}>
+        <Avatar src={getPhotoSrc(user?.photo)} alt={user.name} sx={sx}>
           {user.name?.charAt(0) || "A"}
         </Avatar>
       </IconButton>
 
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        <MenuItem onClick={handleProfile}>
-          <Person sx={{ mr: 1 }} /> Profile
-        </MenuItem>
-        <MenuItem onClick={handleMessage}>
-          <Message sx={{ mr: 1 }} /> Message
-        </MenuItem>
-        <MenuItem onClick={handleReviewClick}>
-          <Star sx={{ mr: 1 }} /> Review
-        </MenuItem>
+        {!hide.includes("Profile") && (
+          <MenuItem onClick={handleProfile}>
+            <Person sx={{ mr: 1 }} /> Profile
+          </MenuItem>
+        )}
+        {!hide.includes("Message") && (
+          <MenuItem onClick={handleMessage}>
+            <Message sx={{ mr: 1 }} /> Message
+          </MenuItem>
+        )}
+        {!hide.includes("Review") && (
+          <MenuItem onClick={handleReviewClick}>
+            <Star sx={{ mr: 1 }} /> Review
+          </MenuItem>
+        )}
       </Menu>
 
       <Dialog open={reviewOpen} onClose={() => setReviewOpen(false)}>

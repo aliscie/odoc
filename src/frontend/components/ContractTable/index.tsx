@@ -250,7 +250,7 @@ const CustomContractViewer = ({
       valueFormatter: (params) => {
         console.log({ valueFormatterSender: params });
         return (
-          params.context.users.find((u) => u.id == params.value.toString())
+          params.context.users?.find((u) => u.id == params.value.toString())
             ?.name || "None"
         );
         // return "xxx";
@@ -265,7 +265,7 @@ const CustomContractViewer = ({
       headerName: "Receiver",
       valueGetter: (params) => {
         return (
-          params.context.users.find(
+          params.context.users?.find(
             (u) => u.id === params.data.receiver.toString(),
           )?.name || "Anonymous"
         );
@@ -377,10 +377,10 @@ const CustomContractViewer = ({
         name: "add row",
         action: (params) => {
           let promises = [...contractsState[0].promises];
-          let sender = Principal.fromText(profile.id);
+          let sender = profile && Principal.fromText(profile?.id);
           promises.push(createNewPromis(sender));
           const updatedContract = { ...contractsState[0], promises };
-          onContractChange(updatedContract);
+          onContractChange && onContractChange(updatedContract);
         },
       },
       {

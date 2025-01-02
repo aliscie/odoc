@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   Container,
+  Divider,
   Grid,
   Step,
   StepContent,
@@ -18,9 +19,16 @@ import ArrowForward from "@mui/icons-material/ArrowForward";
 import CheckCircle from "@mui/icons-material/CheckCircle";
 import Schedule from "@mui/icons-material/Schedule";
 import { features, roadMap, steps } from "./data";
-import { Link } from "react-router-dom";
+import { Link as DomLink } from "react-router-dom";
+
+import Link from "@mui/material/Link";
+import GetStartedButton from "./getStartedButton";
+import { useSelector } from "react-redux";
 
 export default function LandingPage(props) {
+  const { profile, profile_history, wallet, friends } = useSelector(
+    (state: any) => state.filesState,
+  );
   return (
     <Box sx={{ minHeight: "100vh" }}>
       {/* Hero Section */}
@@ -56,56 +64,86 @@ export default function LandingPage(props) {
               ODOC
             </Typography>
           </Box>
-          <Typography
-            variant="h2"
-            sx={{ fontSize: "2.5rem", fontWeight: "bold", mb: 2 }}
-          >
-            Build Your Contracts on Web3
-          </Typography>
-          <Typography variant="h5" color="text.secondary" sx={{ mb: 4 }}>
-            Manage your tasks, teams, payments, contracts, agreements, and
-            documents in one secure platform. Built on the Internet Computer for
-            maximum security and efficiency.
-          </Typography>
-          {props.isLoggedIn ? (
-            <Button
-              variant="contained"
-              size="large"
-              endIcon={<ArrowForward />}
-              component={Link}
-              sx={{
-                px: 4,
-                py: 2,
-                fontSize: "1.1rem",
-                bgcolor: "#ffac17",
-                "&:hover": {
-                  bgcolor: "#ff4747",
-                },
-              }}
-              to={"/discover"}
-              // onClick={async () => await props.login()}
+
+          <Box sx={{ color: "text.primary", mb: 4 }}>
+            <Typography
+              variant="h2"
+              sx={{ fontSize: "2.5rem", fontWeight: "bold", mb: 1.5 }}
             >
-              Make sure to make your first post
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              size="large"
-              endIcon={<ArrowForward />}
+              Build Your Contracts on Web3
+            </Typography>
+
+            <Typography
+              variant="h5"
               sx={{
-                px: 4,
-                py: 2,
-                fontSize: "1.1rem",
-                bgcolor: "#2563eb",
-                "&:hover": {
-                  bgcolor: "#1d4ed8",
-                },
+                color: "text.secondary",
+                mb: 2,
+                fontWeight: 500,
+                letterSpacing: "0.1em",
               }}
-              onClick={async () => await props.login()}
             >
-              Get Started
-            </Button>
-          )}
+              TIME • MONEY • FREEDOM
+            </Typography>
+
+            <Box sx={{ color: "text.secondary", mb: 4 }}>
+              <Typography sx={{ mb: 1 }}>
+                <Typography
+                  component="span"
+                  sx={{
+                    color: "info.main",
+                    fontWeight: "600",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Save time:
+                </Typography>{" "}
+                Simplify how you manage tasks, teams, payments, contracts,
+                agreements, and documents. All-in-one secure platform. Built on
+                the{" "}
+                <Link
+                  href="https://internetcomputer.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    "&:hover": { color: "primary.dark" },
+                  }}
+                >
+                  Internet Computer
+                </Link>{" "}
+                for maximum efficiency and control.
+              </Typography>
+
+              <Typography sx={{ mb: 1 }}>
+                <Typography
+                  component="span"
+                  sx={{
+                    color: "info.main",
+                    fontWeight: "600",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Save money:
+                </Typography>{" "}
+                Eliminates middlemen, delays, and extra fees. Take back your
+                time, keep more of your money.
+              </Typography>
+
+              <Typography>
+                <Typography
+                  component="span"
+                  sx={{
+                    color: "info.main",
+                    fontWeight: "600",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Freedom:
+                </Typography>{" "}
+                Participate in voting for new features.
+              </Typography>
+            </Box>
+          </Box>
+          <GetStartedButton key={profile?.id} />
         </Box>
       </Container>
 

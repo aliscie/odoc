@@ -1,4 +1,5 @@
 import ProfilePage from "./profile";
+// MessageMenuItem.tsx
 import React, { useEffect, useState } from "react";
 import { useBackendContext } from "../contexts/BackendContext";
 import { useSearchParams } from "react-router-dom";
@@ -21,7 +22,7 @@ function UserProfile() {
     const fetchUserData = async () => {
       try {
         const userId = searchParams.get("id");
-        console.log({ userId2: userId });
+        // console.log({ userId2: userId });
         if (!userId || !backendActor) return;
 
         const userData = await backendActor.get_user(userId);

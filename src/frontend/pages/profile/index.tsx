@@ -20,8 +20,73 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { RegisterUser } from "../../../declarations/backend/backend.did";
+import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
 
-const ProfilePage = ({ profile, history, friends, friendButton }) => {
+import React, { useState } from "react";
+import { Button, IconButton } from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+
+const CopyButton = ({ title, value }) => {
+  const [showCheck, setShowCheck] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setShowCheck(true);
+      setTimeout(() => setShowCheck(false), 2000); // Reset after 2 seconds
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  return (
+    <Button
+      variant="contained"
+      onClick={handleCopy}
+      startIcon={
+        showCheck ? (
+          <CheckCircleIcon
+            sx={{
+              color: "#4CAF50",
+              animation: "popIn 0.3s ease-in-out",
+              "@keyframes popIn": {
+                "0%": {
+                  transform: "scale(0)",
+                },
+                "50%": {
+                  transform: "scale(1.2)",
+                },
+                "100%": {
+                  transform: "scale(1)",
+                },
+              },
+            }}
+          />
+        ) : (
+          <ContentCopyIcon />
+        )
+      }
+      sx={{
+        bgcolor: showCheck ? "#E8F5E9" : "primary.main",
+        color: showCheck ? "#2E7D32" : "white",
+        "&:hover": {
+          bgcolor: showCheck ? "#E8F5E9" : "primary.dark",
+        },
+        transition: "all 0.3s ease",
+      }}
+    >
+      {showCheck ? "Copied!" : title}
+    </Button>
+  );
+};
+
+const ProfilePage = ({
+  profile,
+  history,
+  friends,
+  friendButton,
+}) => {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const { backendActor } = useBackendContext();
@@ -119,14 +184,9 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
   }));
 
   // Calculate statistics with safe calculations
-  const totalSpent = safeRatesByActions.reduce(
-    (sum, rating) => sum + (rating?.spent || 0),
-    0,
-  );
-  const totalReceived = safeRatesByActions.reduce(
-    (sum, rating) => sum + (rating?.received || 0),
-    0,
-  );
+  const totalSpent = rates_by_actions[rates_by_actions.length - 1]?.spent;
+  const totalReceived = rates_by_actions[rates_by_actions.length - 1]?.received;
+
   const averageRating = safeRatesByOthers.length
     ? safeRatesByOthers.reduce(
         (sum, rating) => sum + (rating?.rating || 0),
@@ -249,13 +309,12 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
             alignItems="flex-start"
           >
             <Box display="flex" alignItems="flex-start" gap={3}>
-              <Avatar
-                src={getPhotoSrc(photo)}
-                alt={name}
+              <UserAvatarMenu
+                hide={["Profile"]}
                 sx={{ width: 96, height: 96 }}
-              >
-                {name?.charAt(0) || "A"}
-              </Avatar>
+                user={profile}
+              />
+
               <Box>
                 {isEditing ? (
                   <Stack spacing={2}>
@@ -276,12 +335,12 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
                       multiline
                       rows={4}
                       variant="outlined"
-                      sx={{ 
-                        width: '100%',
-                        minWidth: '300px',
-                        '& .MuiInputBase-root': {
-                          width: '100%'
-                        }
+                      sx={{
+                        width: "100%",
+                        minWidth: "300px",
+                        "& .MuiInputBase-root": {
+                          width: "100%",
+                        },
                       }}
                     />
                   </Stack>
@@ -306,6 +365,10 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
                   </>
                 )}
                 {friendButton && friendButton}
+                <CopyButton
+                  title={"Copy Profile Link"}
+                  value={window.location.href + "/user?id=" + profile?.id}
+                />
               </Box>
             </Box>
             {canEdit && (
@@ -324,8 +387,8 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
                     >
                       Cancel
                     </Button>
-                    <Button 
-                      variant="contained" 
+                    <Button
+                      variant="contained"
                       onClick={handleUpdate}
                       disabled={isUpdating}
                     >
@@ -380,7 +443,7 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
               <Typography variant="h6" color="text.secondary" gutterBottom>
                 Total Received
               </Typography>
-              <Typography variant="h4">${totalReceived.toFixed(2)}</Typography>
+              <Typography variant="h4">${totalReceived?.toFixed(2)}</Typography>
             </CardContent>
           </Card>
         </Grid>

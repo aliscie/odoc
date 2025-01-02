@@ -215,7 +215,6 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({ user }) => {
       </div>
     );
   }
-  logger({ friends, user, profile });
   return (
     <button
       onClick={handleSendRequest}
