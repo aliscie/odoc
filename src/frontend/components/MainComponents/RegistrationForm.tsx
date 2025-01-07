@@ -116,7 +116,6 @@ const RegistrationForm: React.FC = () => {
         window.location.href = window.location.origin;
       } else if (register?.Err) {
         enqueueSnackbar(register.Err, { variant: "error" });
-        setOpen(true);
       }
     } catch (error) {
       console.error("There was an issue with registration: ", error);

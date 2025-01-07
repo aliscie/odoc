@@ -13,6 +13,7 @@ import {
   StepContent,
   StepLabel,
   Stepper,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import ArrowForward from "@mui/icons-material/ArrowForward";
@@ -24,6 +25,8 @@ import { Link as DomLink } from "react-router-dom";
 import Link from "@mui/material/Link";
 import GetStartedButton from "./getStartedButton";
 import { useSelector } from "react-redux";
+import SocialButton from "./socialButton";
+import WhyOdoc from "./whyOdoc";
 
 export default function LandingPage(props) {
   const { profile, profile_history, wallet, friends } = useSelector(
@@ -82,73 +85,40 @@ export default function LandingPage(props) {
                 letterSpacing: "0.1em",
               }}
             >
-              TIME • MONEY • FREEDOM
+              TIME • RESOURCES • FREEDOM
             </Typography>
 
             <Box sx={{ color: "text.secondary", mb: 4 }}>
-              <Typography sx={{ mb: 1 }}>
-                <Typography
-                  component="span"
-                  sx={{
-                    color: "info.main",
-                    fontWeight: "600",
-                    fontSize: "1.1rem",
-                  }}
-                >
-                  Save time:
-                </Typography>{" "}
-                Simplify how you manage tasks, teams, payments, contracts,
-                agreements, and documents. All-in-one secure platform. Built on
-                the{" "}
-                <Link
-                  href="https://internetcomputer.org/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{
-                    "&:hover": { color: "primary.dark" },
-                  }}
-                >
-                  Internet Computer
-                </Link>{" "}
-                for maximum efficiency and control.
-              </Typography>
-
-              <Typography sx={{ mb: 1 }}>
-                <Typography
-                  component="span"
-                  sx={{
-                    color: "info.main",
-                    fontWeight: "600",
-                    fontSize: "1.1rem",
-                  }}
-                >
-                  Save money:
-                </Typography>{" "}
-                Eliminates middlemen, delays, and extra fees. Take back your
-                time, keep more of your money.
-              </Typography>
-
-              <Typography>
-                <Typography
-                  component="span"
-                  sx={{
-                    color: "info.main",
-                    fontWeight: "600",
-                    fontSize: "1.1rem",
-                  }}
-                >
-                  Freedom:
-                </Typography>{" "}
-                Participate in voting for new features.
-              </Typography>
+              Odoc is the ultimate all-in-one platform designed for project
+              management, freelancers, remote teams, and small businesses. Built
+              on the{" "}
+              <Link
+                href="https://internetcomputer.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  "&:hover": { color: "primary.dark" },
+                }}
+              >
+                Internet Computer
+              </Link>{" "}
+              It streamlines tasks, payments, and contracts into one seamless
+              solution, saving you valuable time and resources. With transparent,
+              affordable pricing and no hidden fees, Odoc eliminates the need
+              for middlemen and banks. It empowers you to work from anywhere,
+              collaborate effortlessly with your team, and scale your business
+              as you grow—all while ensuring enterprise-level security.
+              Experience true freedom, control, and efficiency with Odoc, where
+              your success is just a click away.
             </Box>
           </Box>
           <GetStartedButton key={profile?.id} />
         </Box>
       </Container>
-
+      <SocialButton />
       {/* Features Grid */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
+        <WhyOdoc />
         <Typography
           variant="h3"
           sx={{ textAlign: "center", fontWeight: "bold", mb: 6 }}
@@ -191,7 +161,6 @@ export default function LandingPage(props) {
           ))}
         </Grid>
       </Container>
-
       {/* Getting Started Steps */}
       <Box sx={{ py: 8 }}>
         <Container maxWidth="lg">
@@ -223,7 +192,6 @@ export default function LandingPage(props) {
           </Box>
         </Container>
       </Box>
-
       {/* Current Progress */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Typography
@@ -289,7 +257,9 @@ export default function LandingPage(props) {
 
       {/* Call to Action */}
       {!props.isLoggedIn && (
-        <Box sx={{ bgcolor: "#2563eb", color: "white", py: 8, mt: 8 }}>
+        <Box
+          sx={{ bgcolor: "#2563eb", color: "white", py: 8, mt: 8, margin: 0 }}
+        >
           <Container maxWidth="lg" sx={{ textAlign: "center" }}>
             <Typography variant="h3" sx={{ fontWeight: "bold", mb: 2 }}>
               Ready to Get Started?

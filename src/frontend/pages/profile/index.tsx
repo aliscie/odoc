@@ -81,12 +81,7 @@ const CopyButton = ({ title, value }) => {
   );
 };
 
-const ProfilePage = ({
-  profile,
-  history,
-  friends,
-  friendButton,
-}) => {
+const ProfilePage = ({ profile, history, friends, friendButton }) => {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const { backendActor } = useBackendContext();
@@ -186,13 +181,7 @@ const ProfilePage = ({
   // Calculate statistics with safe calculations
   const totalSpent = rates_by_actions[rates_by_actions.length - 1]?.spent;
   const totalReceived = rates_by_actions[rates_by_actions.length - 1]?.received;
-
-  const averageRating = safeRatesByOthers.length
-    ? safeRatesByOthers.reduce(
-        (sum, rating) => sum + (rating?.rating || 0),
-        0,
-      ) / safeRatesByOthers.length
-    : 0;
+  // const averageRating = rates_by_actions[rates_by_actions.length - 1]?.rating;
 
   // AG Charts configuration
   const chartOptions = {
@@ -412,21 +401,35 @@ const ProfilePage = ({
 
       {/* Stats Overview */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography variant="h6" color="text.secondary" gutterBottom>
-                Rating
+                Trust score
               </Typography>
               <Box display="flex" flexDirection="column" gap={1}>
-                <Rating value={averageRating} precision={0.1} readOnly />
-                <Typography variant="h4">{averageRating.toFixed(2)}</Typography>
+                <Rating value={actions_rate} precision={0.1} readOnly />
+                <Typography variant="h4">{actions_rate}</Typography>
               </Box>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                Total rate score
+              </Typography>
+              <Box display="flex" flexDirection="column" gap={1}>
+                <Rating value={users_rate} precision={0.1} readOnly />
+                <Typography variant="h4">{users_rate}</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -437,7 +440,7 @@ const ProfilePage = ({
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography variant="h6" color="text.secondary" gutterBottom>

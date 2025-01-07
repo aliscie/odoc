@@ -31,6 +31,7 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({ user }) => {
     setIsLoading(true);
     try {
       const result = await action();
+      console.log({ result });
       if (result && "Err" in result) {
         enqueueSnackbar(result.Err, { variant: "error" });
         return;
@@ -47,7 +48,10 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({ user }) => {
   const handleSendRequest = () =>
     handleAction(
       async () => {
-        await backendActor.send_friend_request(user.id);
+        console.log({ user, profile });
+        const res = await backendActor.send_friend_request(user.id);
+        console.log({ res });
+        return res;
       },
       () => {
         const newFriend = {
@@ -63,7 +67,7 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({ user }) => {
   const handleAcceptRequest = () =>
     handleAction(
       async () => {
-        await backendActor.accept_friend_request(user.id);
+        return await backendActor.accept_friend_request(user.id);
       },
       () => {
         setLocalFriends(
@@ -79,7 +83,7 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({ user }) => {
   const handleRejectRequest = () =>
     handleAction(
       async () => {
-        await backendActor.reject_friend_request(user.id);
+        return await backendActor.reject_friend_request(user.id);
       },
       () => {
         setLocalFriends(
@@ -94,7 +98,7 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({ user }) => {
   const handleCancelRequest = () =>
     handleAction(
       async () => {
-        await backendActor.cancel_friend_request(user.id);
+        return await backendActor.cancel_friend_request(user.id);
       },
       () => {
         setLocalFriends(
@@ -112,7 +116,7 @@ const FriendshipButton: React.FC<FriendshipButtonProps> = ({ user }) => {
   const handleUnfriend = () =>
     handleAction(
       async () => {
-        await backendActor.unfriend(user.id);
+        return await backendActor.unfriend(user.id);
       },
       () => {
         setLocalFriends(

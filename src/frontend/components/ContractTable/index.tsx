@@ -467,8 +467,22 @@ const CustomContractViewer = ({
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   return (
-    <Box sx={{ width: "100%", height: "100%" }}>
-      <AppBar position="static" color="default" elevation={1} sx={{ p: 2 }}>
+    <Box
+      sx={{
+        width: "100%",
+        // height: "100%",
+        // position: "relative",
+        // left: "50%",
+        // right: "50%",
+        // marginLeft: "-50vw",
+        // marginRight: "-50vw",
+      }}
+    >
+      <AppBar
+          style={{
+            borderRadius: '50px',
+          }}
+          position="static" color="default" elevation={1} sx={{ p: 2 }}>
         <Stack direction="row" spacing={2} alignItems="center">
           <EditableTitle
             value={contractsState[0].name}
@@ -578,7 +592,7 @@ const CustomContractViewer = ({
             />
           )}
 
-        <Box sx={{ mt: 2 }}>
+        <Box >
           {selectedDataType === DataTypeSelection.PAYMENT && (
             <AgGridDataGrid
               getContextMenuItems={() => {

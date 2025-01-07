@@ -19,7 +19,9 @@ import { FileIndexing } from "../../../declarations/backend/backend.did";
 import flattenTree from "../../DataProcessing/deserlize/flatenFiles";
 import GetMoreFiles from "../Actions/GetMoreFiles";
 import { buildTree } from "./SortableTree/utilities";
-
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import HowToVoteIcon from '@mui/icons-material/HowToVote';
 const NavBar = (props: any) => {
   const { files } = useSelector((state: any) => state.filesState);
 
@@ -29,6 +31,9 @@ const NavBar = (props: any) => {
   const navLinks = [
     { label: "About Us", to: "/", icon: <InfoIcon /> },
     { label: "Discover", to: "/discover", icon: <ExploreIcon /> },
+    { label: "Subscriptions", to: "/subscriptions", icon: <WorkspacePremiumIcon /> },
+    { label: "White Paper", to: "/white_paper", icon: <ReceiptIcon /> },
+      { label: "Vote", to: "/vote", icon: <HowToVoteIcon /> },
   ];
   const dragEnd = ({ active, over, newItems }) => {
     const flattenedFiles = flattenTree(newItems);

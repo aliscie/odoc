@@ -1,12 +1,24 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "lodash";
-import { CircularProgress, Input } from "@mui/material";
+import { CircularProgress, Input, styled } from "@mui/material";
 import { handleRedux } from "../redux/store/handleRedux";
 import EditorComponent from "../components/EditorComponent";
-// import { logger } from "../DevUtils/logData";
-// import deepCompare from "../DataProcessing/deepCompare";
 
+const ExpandingInput = styled(Input)`
+  & input {
+    width: 100%;
+    font-size: 1.5rem;
+    min-width: 0;
+    padding: 4px 8px;
+    transition: all 0.2s ease;
+
+    &:hover,
+    &:focus {
+      background: rgba(0, 0, 0, 0.02);
+    }
+  }
+`;
 const FileContentPage = () => {
   const { isLoggedIn } = useSelector((state: any) => state.uiState);
   let fileId = window.location.pathname.split("/")[1];
@@ -23,7 +35,6 @@ const FileContentPage = () => {
     const prevContent = JSON.stringify(files_content[current_file.id]);
     const newContent = JSON.stringify(changes);
     if (current_file && prevContent !== newContent) {
-
       dispatch(
         handleRedux("UPDATE_CONTENT", {
           id: current_file.id,
@@ -74,14 +85,21 @@ const FileContentPage = () => {
   const isAuthoer = current_file.author === profile.id;
   return (
     <div style={{ marginTop: "3px", marginLeft: "10%", marginRight: "10%" }}>
-      <Input
+      <ExpandingInput
         key={current_file.id}
+        fullWidth
+        multiline
+        rows={1}
+        sx={{
+          minWidth: "200px",
+          maxWidth: "100%",
+        }}
         inputProps={{
           style: {
-            width: "100%",
             fontSize: "1.5rem",
-            overflow: "visible",
-            whiteSpace: "nowrap",
+            lineHeight: "1.5",
+            whiteSpace: "pre-wrap",
+            wordWrap: "break-word",
           },
         }}
         disabled={!isAuthoer}

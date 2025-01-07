@@ -11,6 +11,9 @@ import Web3WalletUI from "../components/MuiComponents/walletUi";
 import { useSelector } from "react-redux";
 import { useBackendContext } from "../contexts/BackendContext";
 import OfferPage from "./OfferPage";
+import SubscriptionPlans from "./subscrptions";
+import SNSWhitepaper from "./snsWhitePaper";
+import SNSVoting from "./votePage";
 
 function Pages() {
   const [posts, setPosts] = useState([]);
@@ -25,7 +28,10 @@ function Pages() {
       if (backendActor) {
         try {
           // Fetch first 20 posts
-          const fetchedPosts = await backendActor.get_posts(BigInt(0), BigInt(20));
+          const fetchedPosts = await backendActor.get_posts(
+            BigInt(0),
+            BigInt(20),
+          );
 
           setPosts(fetchedPosts);
         } catch (error) {
@@ -43,7 +49,10 @@ function Pages() {
         path="/"
         element={<LandingPage isLoggedIn={isLoggedIn} login={login} />}
       />
-      <Route path="/discover" element={<Discover key={posts.length} posts={posts} />} />
+      <Route
+        path="/discover"
+        element={<Discover key={posts.length} posts={posts} />}
+      />
       <Route path="/wallet" element={<Web3WalletUI wallet={wallet} />} />
       <Route
         path="/profile"
@@ -63,6 +72,10 @@ function Pages() {
         path="/offer"
         element={<OfferPage isLoggedIn={isLoggedIn} login={login} />}
       />
+
+      <Route path="/subscriptions" element={<SubscriptionPlans />} />
+      <Route path="/white_paper" element={<SNSWhitepaper />} />
+      <Route path="/vote" element={<SNSVoting />} />
       <Route path="/*" element={<FileContentPage />} />
     </Routes>
   );

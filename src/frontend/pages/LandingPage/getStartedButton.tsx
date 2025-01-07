@@ -19,42 +19,42 @@ const shineAnimation = keyframes`
 `;
 
 const AttractiveButton = {
-                px: 4,
-                py: 2,
-                fontSize: "1.1rem",
-                position: "relative",
-                overflow: "hidden",
-                background: "rgba(255, 172, 23, 0.9)",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(255, 255, 255, 0.3)",
-                boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: "-100%",
-                  width: "200%",
-                  height: "100%",
-                  background: `linear-gradient(
+  px: 4,
+  py: 2,
+  fontSize: "1.1rem",
+  position: "relative",
+  overflow: "hidden",
+  background: "rgba(255, 172, 23, 0.9)",
+  backdropFilter: "blur(10px)",
+  border: "1px solid rgba(255, 255, 255, 0.3)",
+  boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: "-100%",
+    width: "200%",
+    height: "100%",
+    background: `linear-gradient(
                   to right,
                   transparent 0%,
                   rgba(255, 255, 255, 0.4) 50%,
                   transparent 100%
                 )`,
-                  animation: `${shineAnimation} 3s infinite linear`,
-                },
-                "&:hover": {
-                  background: "rgba(255, 71, 71, 0.9)",
-                  transform: "translateY(-2px)",
-                  transition: "all 0.3s ease",
-                },
-                animation: "float 3s ease-in-out infinite",
-                "@keyframes float": {
-                  "0%": { transform: "translateY(0px)" },
-                  "50%": { transform: "translateY(-10px)" },
-                  "100%": { transform: "translateY(0px)" },
-                },
-              }
+    animation: `${shineAnimation} 3s infinite linear`,
+  },
+  "&:hover": {
+    background: "rgba(255, 71, 71, 0.9)",
+    transform: "translateY(-2px)",
+    transition: "all 0.3s ease",
+  },
+  animation: "float 3s ease-in-out infinite",
+  "@keyframes float": {
+    "0%": { transform: "translateY(0px)" },
+    "50%": { transform: "translateY(-10px)" },
+    "100%": { transform: "translateY(0px)" },
+  },
+};
 function GetStartedButton() {
   const { all_friends, profile, wallet, inited } = useSelector(
     (state: any) => state.filesState,
@@ -215,15 +215,55 @@ function GetStartedButton() {
   // Default state - Not logged in
   if (!isLoggedIn) {
     return (
-      <Button
-        variant="contained"
-        size="large"
-        endIcon={<ArrowForward />}
-        sx={AttractiveButton}
-        onClick={async () => await login()}
-      >
-        Get Started
-      </Button>
+      <ClickAwayListener onClickAway={() => setShowTooltip(false)}>
+        <Box
+          onMouseEnter={() => setShowTooltip(true)}
+          // onMouseLeave={() => setShowTooltip(false)}
+          // onClick={() => setShowTooltip(false)}
+        >
+          <Tooltip
+            open={showTooltip}
+            arrow
+            placement="top"
+            PopperProps={{
+              sx: {
+                "& .MuiTooltip-tooltip": {
+                  maxWidth: "none",
+                  // background: "rgba(255,255,255,0.2)",
+                  backdropFilter: "blur(10px)",
+                  border: "1px solid rgba(255, 255, 255, 0.3)",
+                  borderRadius: "10px",
+                  p: 1,
+                },
+              },
+            }}
+            title={
+              <Box sx={{ width: "500px", height: "250px" }}>
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={"https://www.youtube.com/embed/Lg-0q5oEenk"}
+                  title="Tutorial"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  style={{ borderRadius: "8px" }}
+                  allowFullScreen
+                />
+              </Box>
+            }
+          >
+            <Button
+              variant="contained"
+              size="large"
+              endIcon={<ArrowForward />}
+              sx={AttractiveButton}
+              onClick={async () => await login()}
+            >
+              Get Started
+            </Button>
+          </Tooltip>
+        </Box>
+      </ClickAwayListener>
     );
   }
 
