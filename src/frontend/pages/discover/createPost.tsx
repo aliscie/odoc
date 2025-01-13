@@ -9,27 +9,20 @@ import { randomString } from "../../DataProcessing/dataSamples";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { useSnackbar } from "notistack";
-
 interface CreatePostProps {
   onPostSubmit: (post: any) => void;
 }
+
 const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
   const { profile } = useSelector((state: any) => state.filesState);
   const { backendActor } = useBackendContext();
-  // const [newPost, setNewPost] = useState("");
   const [loading, setLoading] = useState(false);
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
-  // const extractTags = (content: string) => {
-  //   const tags = content.match(/#\w+/g);
-  //   return tags || [];
-  // };
+  const { enqueueSnackbar } = useSnackbar();
+  const postContent = useRef([]);
 
   const handleSubmit = async () => {
-    // if (!newPost.trim()) return;
     let content_tree = serializeFileContents(postContent.current)[0][0][1];
-    // console.log(content_tree);
-    // content_tree =
+
     const newPostObj: Post = {
       id: randomString(),
       creator: profile.id,
@@ -39,102 +32,65 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
       content_tree,
       votes_down: [],
     };
+
     setLoading(true);
     const result = await backendActor.save_post(newPostObj);
-    console.log(result);
+
     if (result.Err) {
       enqueueSnackbar(result.Err, { variant: "error" });
     }
     setLoading(false);
 
     onPostSubmit({ ...newPostObj, creator: profile });
-    // setNewPost("");
   };
 
-  const shimmer = keyframes`
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(50%); }
-`;
-
-  const CreatePostCard = styled(Card)(({ theme }) => ({
-    background:
-      theme.palette.mode === "dark"
-        ? "rgba(17, 24, 39, 0.8)"
-        : "rgba(255, 255, 255, 0.8)",
-    backdropFilter: "blur(20px)",
-    border: `1px solid ${
-      theme.palette.mode === "dark"
-        ? "rgba(139, 92, 246, 0.2)"
-        : "rgba(79, 70, 229, 0.2)"
-    }`,
-    borderRadius: "1rem",
-    marginBottom: "2rem",
-    overflow: "visible",
-    position: "relative",
-    transition: "all 0.3s ease-in-out",
-    "&:hover": {
-      transform: "translateY(-2px)",
-      boxShadow:
-        theme.palette.mode === "dark"
-          ? "0 8px 30px rgba(0, 0, 0, 0.12)"
-          : "0 8px 30px rgba(0, 0, 0, 0.08)",
-    },
-    // Move shimmer to a pseudo-element that's behind the content
-    "&::before": {
-      content: '""',
-      position: "absolute",
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      background:
-        "linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent)",
-      animation: `${shimmer} 2s infinite`,
-      zIndex: -1, // Place behind the content
-      pointerEvents: "none", // Ensure it doesn't interfere with clicks
-    },
-  }));
-
-  const postContent = useRef([]);
   return (
-    <CreatePostCard>
-      <CardContent>
-        <EditorComponent
-          // readOnly={!isAuthoer}
-          // id={current_file.id}
-          contentEditable={true}
-          onChange={(content) => {
-            let c = {};
-            c[""] = content;
-            postContent.current = c;
-          }}
-          editorKey={"editorKey"}
-          content={[]}
-        />
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Box>
-            <IconButton>
-              <ImageIcon color="#E9D5FF" />
-            </IconButton>
-            <IconButton>
-              <Smile color="#E9D5FF" />
-            </IconButton>
-            <IconButton>
-              <Hash color="#E9D5FF" />
-            </IconButton>
-          </Box>
+    <Card className="mb-6 transition-all duration-200 hover:-translate-y-1 backdrop-blur-lg bg-background/95">
+      <CardContent className="p-4">
+        <div className="min-h-24 mb-4">
+          <EditorComponent
+            contentEditable={true}
+            onChange={(content) => {
+              let c = {};
+              c[""] = content;
+              postContent.current = c;
+            }}
+            editorKey="editorKey"
+            content={[]}
+          />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              <ImageIcon className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Smile className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Hash className="h-5 w-5" />
+            </Button>
+          </div>
+
           <Button
-            variant="contained"
-            endIcon={<Send />}
             onClick={handleSubmit}
             disabled={loading}
             sx={{
+              width:'100px',
+              color: "white",
               borderRadius: "9999px",
               background: "linear-gradient(90deg, #6366F1, #8B5CF6)",
               "&:hover": {
@@ -144,11 +100,13 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
               zIndex: 2, // Higher than the shimmer
             }}
           >
-            {loading ? "Loading..." : "Create post"}
+            <span className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+            {loading ? "Posting..." : "Post"}
+            <Send className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Button>
-        </Box>
+        </div>
       </CardContent>
-    </CreatePostCard>
+    </Card>
   );
 };
 

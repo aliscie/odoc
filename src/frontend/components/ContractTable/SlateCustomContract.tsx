@@ -12,7 +12,7 @@ import { Typography } from "@mui/material";
 export default function SlateCustomContract(props: any) {
   const { backendActor } = useBackendContext();
   const { id } = props.element;
-  const { contracts, profile, all_friends,current_file } = useSelector(
+  const { contracts, profile, all_friends, current_file } = useSelector(
     (state: any) => state.filesState,
   );
   const dispatch = useDispatch();
@@ -46,24 +46,25 @@ export default function SlateCustomContract(props: any) {
     return (
       <Typography {...props.attributes} contentEditable={true} color={"error"}>
         <span contentEditable={true}>Contract wa deleted....</span>
-        <span >{props.children}</span>
+        <span>{props.children}</span>
       </Typography>
     );
   }
 
-   const onContractChange = (contract: CustomContract) => {
+  const onContractChange = (contract: CustomContract) => {
     dispatch(handleRedux("UPDATE_CONTRACT", { contract }));
   };
 
   return (
-    <div contentEditable={false}>
-      <CustomContractComponent
-          all_friends={all_friends}
-          profile={profile}
-          key={JSON.stringify(contracts[id])}
-          onContractChange={onContractChange}
-
-          contracts={[contracts[id]]} />
+    <div {...props.attributes} contentEditable={true}>
+      <span >{props.children}</span>
+      <span contentEditable={false}><CustomContractComponent
+        all_friends={all_friends}
+        profile={profile}
+        key={JSON.stringify(contracts[id])}
+        onContractChange={onContractChange}
+        contracts={[contracts[id]]}
+      /></span>
     </div>
   );
 }

@@ -89,7 +89,7 @@ export default function LandingPage(props) {
             </Typography>
 
             <Box sx={{ color: "text.secondary", mb: 4 }}>
-              Odoc is the ultimate all-in-one platform designed for project
+              Odoc is the ultimate  platform designed for project
               management, freelancers, remote teams, and small businesses. Built
               on the{" "}
               <Link

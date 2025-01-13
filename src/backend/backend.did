@@ -451,6 +451,7 @@ service : () -> {
   get_user : (text) -> (Result) query;
   get_user_notifications : () -> (vec Notification) query;
   get_user_profile : (principal) -> (Result_12) query;
+  get_users : () -> (float64) query;
   get_work_spaces : () -> (vec WorkSpace) query;
   internal_transaction : (float64, text, ExchangeType) -> (Result_2);
   make_new_chat_room : (Chat) -> (Result_4);

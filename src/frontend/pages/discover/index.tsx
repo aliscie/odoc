@@ -1,15 +1,141 @@
 import React, { useState } from "react";
 import { createTheme, styled, ThemeProvider } from "@mui/material/styles";
-import { Box, TextField } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Card,
+  CardContent,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Chip,
+  Divider,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import CreatePost from "./createPost";
 import ViewPostComponent from "./viewPost";
 import { useSelector } from "react-redux";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-const SocialFeed = (props) => {
-  const { isDarkMode } = useSelector((state: any) => state.uiState);
 
-  const theme = createTheme({
+// Reusable sidebar card component
+import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
+
+const VideoTutorial = ({
+  title,
+  videoUrl,
+  description,
+  expanded,
+  onChange,
+}) => (
+  <Accordion
+    expanded={expanded}
+    onChange={onChange}
+    sx={{
+      backgroundColor: "background.paper",
+      "&:before": { display: "none" },
+      boxShadow: "none",
+      "&:not(:last-child)": { borderBottom: 1, borderColor: "divider" },
+    }}
+  >
+    <AccordionSummary
+      expandIcon={<ExpandMoreIcon />}
+      sx={{
+        flexDirection: "row-reverse",
+        "& .MuiAccordionSummary-expandIconWrapper": {
+          color: "primary.main",
+        },
+      }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
+        <PlayCircleOutlineIcon sx={{ mr: 1, color: "primary.main" }} />
+        <Typography>{title}</Typography>
+      </Box>
+    </AccordionSummary>
+    <AccordionDetails>
+      <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          paddingTop: "56.25%", // 16:9 aspect ratio
+          mb: 2,
+        }}
+      >
+        <Box
+          component="iframe"
+          src={videoUrl}
+          title={title}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            borderRadius: 1,
+          }}
+        />
+      </Box>
+      <Typography variant="body2" color="text.secondary">
+        {description}
+      </Typography>
+    </AccordionDetails>
+  </Accordion>
+);
+
+const SidebarCard = ({ title, children }) => (
+  <Card sx={{ mb: 2, borderRadius: 1 }}>
+    <CardContent>
+      <Typography variant="h6" gutterBottom>
+        {title}
+      </Typography>
+      {children}
+    </CardContent>
+  </Card>
+);
+
+const FeedWrapper = styled("div")(({ theme, isNavOpen }) => ({
+  minHeight: "100vh",
+  width: "100%",
+  padding: theme.spacing(4),
+  overflowX: "hidden",
+  position: "relative",
+  zIndex: 1,
+  display: "grid",
+  gridTemplateColumns: "1fr", // Default for mobile
+  gap: theme.spacing(4),
+  backgroundColor: theme.palette.background.default,
+  [theme.breakpoints.up("md")]: {
+    gridTemplateColumns: isNavOpen
+      ? "minmax(0, 1fr) 280px" // Original two-column layout when nav is open
+      : "280px minmax(0, 1fr) 280px", // Three-column layout when nav is closed
+  },
+}));
+
+const MainContainer = styled("div")(({ theme }) => ({
+  width: "100%",
+  maxWidth: "800px",
+  margin: "0 auto",
+  "& > *": {
+    marginBottom: theme.spacing(3),
+  },
+}));
+
+const SocialFeed = (props) => {
+  const { isLoggedIn, isDarkMode, searchValue, isNavOpen } = useSelector(
+    (state) => state.uiState,
+  );
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const customTheme = createTheme({
     palette: {
       mode: isDarkMode ? "dark" : "light",
       primary: {
@@ -26,74 +152,191 @@ const SocialFeed = (props) => {
     },
   });
 
-  const FeedWrapper = styled("div")(({ theme }) => ({
-    minHeight: "100vh",
-    width: "100%",
-    maxWidth: "100vw",
-    // background: theme.palette.background.default,
-    padding: "2rem",
-    overflowX: "hidden",
-    position: "relative",
-    zIndex: 1, // Lower z-index than chat window
-    "& *": {
-      boxSizing: "border-box",
-      maxWidth: "100%",
-    },
-  }));
-
-  const Container = styled("div")({
-    maxWidth: "1200px",
-    margin: "0 auto",
-    width: "100%",
-  });
-
   const [posts, setPosts] = useState(props.posts);
 
   const handleDeletePost = (postId) => {
     setPosts((prev) => prev.filter((p) => p.id !== postId));
   };
 
-  const handlePostSubmit = (newPostObj: any) => {
+  const handlePostSubmit = (newPostObj) => {
     setPosts([newPostObj, ...posts]);
   };
 
-  const { searchValue } = useSelector((state: any) => state.uiState);
   const filterPosts = React.useMemo(() => {
     const searchLower = searchValue.toLowerCase();
     return posts.filter((post) => {
-      // Convert content_tree to a single string to search within it
       const contentTreeText = post.content_tree
-        .map((node) => node.text?.toLowerCase() || '')
+        .map((node) => node.text?.toLowerCase() || "")
         .join(" ");
-
-      return contentTreeText.includes(searchLower) ||
-             post.creator?.name?.toLowerCase().includes(searchLower);
+      return (
+        contentTreeText.includes(searchLower) ||
+        post.creator?.name?.toLowerCase().includes(searchLower)
+      );
     });
   }, [posts, searchValue]);
 
+  // Sidebar content configuration
+  const sidebarContent = {
+    left: [
+      {
+        title: "Categories",
+        content: ["Technology", "Design", "Development", "Career"],
+        type: "list",
+      },
+      {
+        title: "Popular Topics",
+        content: ["Web Development", "UI/UX", "Mobile Apps"],
+        type: "list",
+      },
+    ],
+    right: [
+      {
+        title: "Top Tags",
+        content: [
+          "Hiring",
+          "JobSpeaking",
+          "Rust",
+          "SNS",
+          "React",
+          "JavaScript",
+          "TypeScript",
+          "Node.js",
+          "CSS",
+        ],
+        type: "tags",
+      },
+      // {
+      //   title: "Top Users",
+      //   content: ["John Doe", "Jane Smith", "Alex Johnson"],
+      //   type: "list",
+      // },
+      {
+        title: "Video Tutorials",
+        content: [
+          {
+            title: "What is odoc",
+            videoUrl: "https://www.youtube.com/embed/Sf1YE-2rYvo",
+            description:
+              "Unlock the Power of Freedom: Save Time, Resources, and Gain Control with Odoc\n",
+          },
+          {
+            title: "Get started",
+            videoUrl: "https://www.youtube.com/embed/Lg-0q5oEenk",
+            description:
+              "A guide to using Internet Identity for authentication",
+          },
+
+          {
+            title: "Make friends",
+            videoUrl: "https://www.youtube.com/embed/f0RVw6RJxos",
+            description: "Social networking guide for Odoc",
+          },
+          {
+            title: "Make payments",
+
+            videoUrl: "https://www.youtube.com/embed/XnOF1i1Een8",
+            description: "Step-by-step guide for ODOC payments and documents",
+          },
+        ],
+        type: "tutorials",
+      },
+    ],
+  };
+
+  const [expandedTutorial, setExpandedTutorial] = useState(false);
+
+  const handleTutorialChange = (panel) => (event, isExpanded) => {
+    setExpandedTutorial(isExpanded ? panel : false);
+  };
+
+  const renderCardContent = (content, type) => {
+    if (type === "tutorials") {
+      return (
+        <Box sx={{ mt: -2 }}>
+          {content.map((tutorial, index) => (
+            <VideoTutorial
+              key={index}
+              {...tutorial}
+              expanded={expandedTutorial === index}
+              onChange={handleTutorialChange(index)}
+            />
+          ))}
+        </Box>
+      );
+    }
+    if (type === "tags") {
+      return (
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+          {content.map((tag) => (
+            <Chip
+              key={tag}
+              label={tag}
+              size="small"
+              sx={{
+                backgroundColor:
+                  theme.palette.mode === "dark"
+                    ? "rgba(255, 255, 255, 0.08)"
+                    : "rgba(0, 0, 0, 0.08)",
+              }}
+            />
+          ))}
+        </Box>
+      );
+    }
+    return (
+      <List dense>
+        {content.map((item) => (
+          <ListItem key={item}>
+            <ListItemText primary={item} />
+          </ListItem>
+        ))}
+      </List>
+    );
+  };
+
+  const Sidebar = ({ items, position }) => (
+    <Box
+      component="aside"
+      sx={{
+        display: { xs: "none", md: "block" },
+        visibility: position === "left" && isNavOpen ? "hidden" : "visible",
+        width: position === "left" && isNavOpen ? 0 : "280px",
+        overflow: "hidden",
+        transition: theme.transitions.create(["width", "visibility"], {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.enteringScreen,
+        }),
+      }}
+    >
+      {items.map((item, index) => (
+        <SidebarCard key={index} title={item.title}>
+          {renderCardContent(item.content, item.type)}
+        </SidebarCard>
+      ))}
+    </Box>
+  );
+
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={customTheme}>
       <DndProvider backend={HTML5Backend}>
-        <FeedWrapper>
-          <Container>
-            {/* Create Post Section */}
-            <CreatePost onPostSubmit={handlePostSubmit} />
-
-            {/* Search and Filter Section */}
+        <FeedWrapper isNavOpen={isNavOpen}>
+          {!isNavOpen && (
+            <Sidebar items={sidebarContent.left} position="left" />
+          )}
+          <MainContainer>
+            {isLoggedIn && <CreatePost onPostSubmit={handlePostSubmit} />}
             <Box sx={{ mb: 4 }}>
-              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}></Box>
+              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }} />
             </Box>
-
-            {/* Posts Feed */}
             {filterPosts.map((post) => (
               <ViewPostComponent
                 handleDeletePost={handleDeletePost}
                 key={post.id}
                 post={post}
-                // onLike={handleLike}
               />
             ))}
-          </Container>
+          </MainContainer>
+          <Sidebar items={sidebarContent.right} position="right" />
         </FeedWrapper>
       </DndProvider>
     </ThemeProvider>

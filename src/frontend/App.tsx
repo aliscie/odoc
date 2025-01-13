@@ -11,14 +11,47 @@ import RegistrationForm from "./components/MainComponents/RegistrationForm";
 import SearchPopper from "./components/SearchComponent";
 import useSocket from "./websocket/use_socket";
 import { useBackendContext } from "./contexts/BackendContext";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, useTheme, styled } from "@mui/material";
 import { Principal } from "@dfinity/principal";
+import PromoNotification from "./components/limitedOffer";
+
+// Create a styled component for the main content
+const MainContent = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  minHeight: "100vh",
+  backgroundColor: theme.palette.background.default,
+  color: theme.palette.text.primary,
+  transition: theme.transitions.create(["background-color", "color"], {
+    duration: theme.transitions.duration.standard,
+  }),
+}));
+
+// Create a styled component for the page content
+const PageContainer = styled(Box)(({ theme }) => ({
+  flexGrow: 1,
+  paddingTop: theme.spacing(8), // Height of TopNavBar
+  [theme.breakpoints.down("sm")]: {
+    paddingTop: 0, // No top padding on mobile since TopNavBar is at bottom
+    paddingBottom: theme.spacing(7), // Space for bottom mobile navigation
+  },
+}));
+
+const LoadingContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "100vh",
+  backgroundColor: theme.palette.background.default,
+}));
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const { profile } = useSelector((state: any) => state.filesState);
   const { backendActor, ckUSDCActor } = useBackendContext();
   const { enqueueSnackbar } = useSnackbar();
+  const theme = useTheme();
+
   useInitialData();
   useSocket();
 
@@ -26,7 +59,6 @@ const App: React.FC = () => {
     if (backendActor && ckUSDCActor && profile?.id) {
       (async () => {
         try {
-          // Check CKUSDT balance first
           const balance = await ckUSDCActor.icrc1_balance_of({
             owner: Principal.fromText(profile.id),
             subaccount: [],
@@ -36,19 +68,20 @@ const App: React.FC = () => {
             enqueueSnackbar(`Depositing ${Number(balance)} CKUSDT...`, {
               variant: "info",
               persist: true,
-              action: (key) => <CircularProgress size={24} color="inherit" />,
+              action: (key) => (
+                <CircularProgress
+                  size={24}
+                  sx={{ color: theme.palette.primary.contrastText }}
+                />
+              ),
             });
 
             const result = await backendActor.deposit_ckusdt();
-            console.log("Deposit CKUSDT result:", result);
             if (result?.Ok) {
-              // Update wallet state in Redux
               dispatch({ type: "SET_WALLET", wallet: result.Ok });
               enqueueSnackbar(
                 `Successfully deposited ${Number(balance)} CKUSDT`,
-                {
-                  variant: "success",
-                },
+                { variant: "success" },
               );
             }
           }
@@ -57,34 +90,43 @@ const App: React.FC = () => {
         }
       })();
     }
-  }, [backendActor, ckUSDCActor, profile, dispatch]);
-
-  let Loadder = (
-    <Box
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh", // This will make it center vertically for the whole viewport
-      }}
-    >
-      <CircularProgress size={100} />
-    </Box>
-  );
+  }, [
+    backendActor,
+    ckUSDCActor,
+    profile,
+    dispatch,
+    theme.palette.primary.contrastText,
+  ]);
 
   if (!backendActor) {
-    return Loadder;
+    return (
+      <LoadingContainer>
+        <CircularProgress
+          size={100}
+          sx={{ color: theme.palette.primary.main }}
+        />
+      </LoadingContainer>
+    );
   }
+
+  const isDarkMode = localStorage.getItem("isDarkMode") === "true";
+  isDarkMode && document.querySelector("body")?.classList.add("dark");
+
+  // document.querySelector("body")?.classList.toggle("dark");
 
   return (
     <BrowserRouter>
-      <SearchPopper />
-
-      <RegistrationForm />
-      <TopNavBar />
-      <NavBar>
-        <Pages />
-      </NavBar>
+      <MainContent>
+        <SearchPopper />
+        <RegistrationForm />
+        <PromoNotification />
+        <TopNavBar />
+        <NavBar>
+          <PageContainer>
+            <Pages />
+          </PageContainer>
+        </NavBar>
+      </MainContent>
     </BrowserRouter>
   );
 };

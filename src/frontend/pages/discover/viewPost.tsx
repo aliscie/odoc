@@ -15,20 +15,19 @@ import {
 } from "@mui/material";
 import { Heart, MoreVertical, ThumbsDown } from "lucide-react";
 import { keyframes, styled } from "@mui/material/styles";
-
-import { Post, PostUser } from "../../../declarations/backend/backend.did";
+import { useSelector } from "react-redux";
+import { useSnackbar } from "notistack";
 import { formatRelativeTime } from "../../utils/time";
 import EditorComponent from "../../components/EditorComponent";
 import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
-import { useSelector } from "react-redux";
 import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
-import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
+import { Post, PostUser } from "../../../declarations/backend/backend.did";
 
 interface ViewPostComponentProps {
   post: PostUser;
-  onLike: (postId: string) => void;
+  handleDeletePost: (postId: string) => void;
 }
 
 const fadeIn = keyframes`
@@ -40,60 +39,43 @@ const PostCard = styled(Card)(({ theme }) => ({
   background: "rgba(143,143,143,0.42)",
   backdropFilter: "blur(16px) saturate(180%)",
   border: "1px solid rgba(255, 255, 255, 0.125)",
-  borderRadius: "16px",
-  padding: "12px",
+  borderRadius: theme.spacing(2),
+  padding: 0,
   position: "static",
-  boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
-  transition: "transform 0.3s ease",
+  boxShadow: theme.shadows[1],
+  transition: theme.transitions.create(["transform", "box-shadow"], {
+    duration: theme.transitions.duration.shorter,
+  }),
   overflow: "visible",
+  marginBottom: theme.spacing(2),
   "&:hover": {
     transform: "translateY(-5px)",
-    boxShadow: "0 8px 40px rgba(0, 0, 0, 0.2)",
+    boxShadow: theme.shadows[8],
   },
+  animation: `${fadeIn} 0.5s ease-out`,
+}));
 
-  // background: "linear-gradient(90deg, #6366F1, #8B5CF6)",
-  // background:
-  //   theme.palette.mode === "dark"
-  //     ? "rgba(46,67,112,0.85)"
-  //     : "rgba(203,203,203,0.85)",
-  // "&::before": {
-  //   content: '""',
-  //   position: "absolute",
-  //   inset: 0,
-  //   background:
-  //     "linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent)",
-  //   // animation: `${shine} 2s linear infinite`,
-  // },
-  // backdropFilter: "blur(50px)",
-  // border: `1px solid ${
-  //   theme.palette.mode === "dark"
-  //     ? "rgba(139, 92, 246, 0.2)"
-  //     : "rgba(79, 70, 229, 0.2)"
-  // }`,
-  // borderRadius: "1rem",
-  marginBottom: "1rem",
-  // transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-  // animation: `${fadeIn} 0.5s ease-out`,
-  // "&:hover": {
-  //   transform: "translateY(-2px)",
-  //   boxShadow:
-  //     theme.palette.mode === "dark"
-  //       ? "0 8px 30px rgba(139, 92, 246, 0.1)"
-  //       : "0 8px 30px rgba(79, 70, 229, 0.1)",
-  // },
+const StyledCardContent = styled(CardContent)(({ theme }) => ({
+  padding: theme.spacing(2),
+  "&:last-child": {
+    paddingBottom: theme.spacing(2),
+  },
+  overflow: "visible",
+  position: "static",
 }));
 
 const PostActionButton = styled(IconButton)(({ theme }) => ({
   color: theme.palette.mode === "dark" ? "#E9D5FF" : "#6366F1",
-  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-  padding: "8px",
-  borderRadius: "12px",
+  transition: theme.transitions.create(["transform", "background-color"], {
+    duration: theme.transitions.duration.shorter,
+  }),
+  padding: theme.spacing(1),
+  borderRadius: theme.shape.borderRadius * 1.5,
   "&:hover": {
     transform: "scale(1.1)",
-    backgroundColor:
-      theme.palette.mode === "dark"
-        ? "rgba(139, 92, 246, 0.1)"
-        : "rgba(79, 70, 229, 0.1)",
+    backgroundColor: theme.palette.mode === "dark"
+      ? "rgba(139, 92, 246, 0.1)"
+      : "rgba(79, 70, 229, 0.1)",
   },
   "&:active": {
     transform: "scale(0.95)",
@@ -104,24 +86,51 @@ const PostActionButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
+const StyledMenu = styled(Menu)(({ theme }) => ({
+  "& .MuiPaper-root": {
+    backgroundColor: theme.palette.mode === "dark"
+      ? "rgba(17, 24, 39, 0.95)"
+      : "rgba(255, 255, 255, 0.95)",
+    border: `1px solid ${
+      theme.palette.mode === "dark"
+        ? "rgba(139, 92, 246, 0.2)"
+        : "rgba(79, 70, 229, 0.2)"
+    }`,
+  },
+}));
+
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiPaper-root": {
+    backgroundColor: theme.palette.mode === "dark"
+      ? "rgba(17, 24, 39, 0.95)"
+      : "rgba(255, 255, 255, 0.95)",
+    border: `1px solid ${
+      theme.palette.mode === "dark"
+        ? "rgba(139, 92, 246, 0.2)"
+        : "rgba(79, 70, 229, 0.2)"
+    }`,
+  },
+}));
+
 const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
   post,
   handleDeletePost,
 }) => {
   const { backendActor } = useBackendContext();
+  const { enqueueSnackbar } = useSnackbar();
+  const { profile } = useSelector((state: any) => state.filesState);
+
   const [voteLoading, setVoteLoad] = React.useState(false);
-  const contentTree = React.useRef([]);
-  const [isChanged, setchanged] = React.useState(false);
+  const [isChanged, setChanged] = React.useState(false);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [votes, setVotes] = React.useState({
     up: post.votes_up,
     down: post.votes_down,
   });
 
-  const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
-    null,
-  );
-  const [isDeleteing, setIsDeleteing] = React.useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const contentTree = React.useRef([]);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setMenuAnchorEl(event.currentTarget);
@@ -138,26 +147,23 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
 
   const handleDeleteConfirm = async () => {
     setDeleteDialogOpen(false);
-    setIsDeleteing(true);
+    setIsDeleting(true);
     try {
-      let res = await backendActor?.delete_post(post.id);
+      const res = await backendActor?.delete_post(post.id);
       if (res?.Ok === null) {
         enqueueSnackbar("Post deleted successfully", { variant: "success" });
+        handleDeletePost(post.id);
       } else {
         enqueueSnackbar(JSON.stringify(res?.Err), { variant: "error" });
       }
-
-      handleDeletePost(post.id);
-      // You may want to trigger a refresh of the posts list here
     } catch (error) {
-      console.log({ error });
-      enqueueSnackbar("Failed to delete post" + error, { variant: "error" });
+      console.error({ error });
+      enqueueSnackbar("Failed to delete post: " + error, { variant: "error" });
     }
   };
 
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const onClickSave = async () => {
-    setchanged(false);
+    setChanged(false);
     const newPostObj: Post = {
       ...post,
       tags: [],
@@ -166,66 +172,71 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
       votes_up: votes.up,
       votes_down: votes.down,
     };
-    // setLoading(true);
+
     const result = await backendActor.save_post(newPostObj);
     console.log({ result });
   };
 
   const onLike = async () => {
-    if (profile?.id == post.creator.id) {
+    if (profile?.id === post.creator.id) {
       enqueueSnackbar("You can't like your own post", { variant: "error" });
       return;
     }
     setVoteLoad(true);
-    let votesUp = votes.up.map((v) => v.toString());
-    if (votesUp.some((v) => v === profile?.id)) {
-      let res = await backendActor.unvote(post.id);
-      setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
-    } else {
-      let res = await backendActor.vote_up(post.id);
-      setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
+    try {
+      const votesUp = votes.up.map((v) => v.toString());
+      if (votesUp.includes(profile?.id)) {
+        const res = await backendActor.unvote(post.id);
+        setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
+      } else {
+        const res = await backendActor.vote_up(post.id);
+        setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
+      }
+    } finally {
+      setVoteLoad(false);
     }
-    setVoteLoad(false);
   };
+
   const onDisLike = async () => {
-    if (profile?.id == post.creator.id) {
+    if (profile?.id === post.creator.id) {
       enqueueSnackbar("You can't dislike your own post", { variant: "error" });
       return;
     }
     setVoteLoad(true);
-    let votesDown = votes.down.map((v) => v.toString());
-    if (votesDown.some((v) => v === profile.id)) {
-      let res = await backendActor.unvote(post.id);
-      setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
-    } else {
-      let res = await backendActor.vote_down(post.id);
-
-      setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
+    try {
+      const votesDown = votes.down.map((v) => v.toString());
+      if (votesDown.includes(profile.id)) {
+        const res = await backendActor.unvote(post.id);
+        setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
+      } else {
+        const res = await backendActor.vote_down(post.id);
+        setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
+      }
+    } finally {
+      setVoteLoad(false);
     }
-    setVoteLoad(false);
   };
-  const { profile } = useSelector((state: any) => state.filesState);
-  if (isDeleteing) {
+
+  if (isDeleting) {
     return (
       <PostCard>
-        <CardContent>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "10rem",
-            }}
-          >
+        <StyledCardContent>
+          <Box sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "10rem"
+          }}>
             <CircularProgress color="primary" />
           </Box>
-        </CardContent>
+        </StyledCardContent>
       </PostCard>
     );
   }
+
   return (
     <PostCard>
-      <CardContent sx={{ overflow: "visible", position: "static" }}>
+      <StyledCardContent>
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <UserAvatarMenu sx={{ mr: 2 }} user={post.creator} />
           <Box>
@@ -234,21 +245,15 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
               {formatRelativeTime(post.date_created)}
             </Box>
           </Box>
-          {profile?.id == post.creator.id && (
+          {profile?.id === post.creator.id && (
             <IconButton sx={{ ml: "auto" }} onClick={handleMenuClick}>
               <MoreVertical color="#E9D5FF" size={20} />
             </IconButton>
           )}
-          <Menu
+          <StyledMenu
             anchorEl={menuAnchorEl}
             open={Boolean(menuAnchorEl)}
             onClose={handleMenuClose}
-            PaperProps={{
-              style: {
-                backgroundColor: "rgba(17, 24, 39, 0.95)",
-                border: "1px solid rgba(139, 92, 246, 0.2)",
-              },
-            }}
           >
             <MenuItem
               onClick={handleDeleteClick}
@@ -260,17 +265,11 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
             >
               Delete Post
             </MenuItem>
-          </Menu>
+          </StyledMenu>
 
-          <Dialog
+          <StyledDialog
             open={deleteDialogOpen}
             onClose={() => setDeleteDialogOpen(false)}
-            PaperProps={{
-              style: {
-                backgroundColor: "rgba(17, 24, 39, 0.95)",
-                border: "1px solid rgba(139, 92, 246, 0.2)",
-              },
-            }}
           >
             <DialogTitle>Delete Post</DialogTitle>
             <DialogContent>
@@ -302,7 +301,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
                 Delete
               </Button>
             </DialogActions>
-          </Dialog>
+          </StyledDialog>
         </Box>
 
         <Box sx={{ mb: 2 }}>
@@ -312,44 +311,30 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
             id={post.id}
             contentEditable={profile?.id === post.creator.id}
             onChange={(content) => {
-              let c = {};
-              c[""] = content;
-              contentTree.current = c;
-              if (isChanged == false && post.creator.id == profile?.id) {
-                setchanged(true);
+              contentTree.current = { "": content };
+              if (!isChanged && post.creator.id === profile?.id) {
+                setChanged(true);
               }
             }}
             content={deserializeContentTree(post.content_tree)}
           />
         </Box>
 
-        {/*<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>*/}
-        {/*  {post.tags.map((tag) => (*/}
-        {/*    <TagChip key={tag}>{tag}</TagChip>*/}
-        {/*  ))}*/}
-        {/*</Box>*/}
-
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            color: "#A78BFA",
-          }}
-        >
+        <Box sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          color: "#A78BFA",
+        }}>
           <PostActionButton
-            disabled={!profile || profile?.id == post.creator.id || voteLoading}
+            disabled={!profile || profile?.id === post.creator.id || voteLoading}
             onClick={onLike}
           >
             <Heart
               size={20}
-              fill={
-                votes.up
-                  .map((v) => v.toString())
-                  .includes(profile && profile.id)
-                  ? "#A855F7"
-                  : "rgba(233,213,255,0)"
-              }
+              fill={votes.up.map((v) => v.toString()).includes(profile?.id)
+                ? "#A855F7"
+                : "rgba(233,213,255,0)"}
             />
             <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
               {votes.up.length}
@@ -357,77 +342,62 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
           </PostActionButton>
 
           <PostActionButton
-            disabled={!profile || profile?.id == post.creator.id || voteLoading}
+            disabled={!profile || profile?.id === post.creator.id || voteLoading}
             onClick={onDisLike}
           >
             <ThumbsDown
-              fill={
-                votes.down
-                  .map((v) => v.toString())
-                  .includes(profile && profile.id)
-                  ? "#A855F7"
-                  : "rgba(233,213,255,0)"
-              }
+              fill={votes.down.map((v) => v.toString()).includes(profile?.id)
+                ? "#A855F7"
+                : "rgba(233,213,255,0)"}
               size={20}
             />
             <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
               {votes.down.length}
             </Box>
           </PostActionButton>
-          {profile?.id == post.creator.id && (
+
+          {profile?.id === post.creator.id && (
             <PostActionButton disabled={!isChanged} onClick={onClickSave}>
               Save
             </PostActionButton>
           )}
-          {/*{isChanged && (*/}
-          {/*  */}
-          {/*)}*/}
         </Box>
 
-        {/* Comments Section */}
-        {post.comments && post.comments.length > 0 && (
-          <Box
-            sx={{
-              mt: 2,
-              pl: 2,
-              borderLeft: "2px solid rgba(139, 92, 246, 0.2)",
-            }}
-          >
-            {post.comments &&
-              post.comments.map((comment) => (
-                <Box key={comment.id} sx={{ mb: 2 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                    <Box
-                      sx={{
-                        fontWeight: "bold",
-                        color: "#E9D5FF",
-                        fontSize: "0.875rem",
-                      }}
-                    >
-                      {comment.author}
-                    </Box>
+        {post.comments?.length > 0 && (
+          <Box sx={{
+            mt: 2,
+            pl: 2,
+            borderLeft: "2px solid rgba(139, 92, 246, 0.2)",
+          }}>
+            {post.comments.map((comment) => (
+              <Box key={comment.id} sx={{ mb: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                  <Box sx={{
+                    fontWeight: "bold",
+                    color: "#E9D5FF",
+                    fontSize: "0.875rem",
+                  }}>
+                    {comment.author}
                   </Box>
-                  <Box sx={{ color: "#E9D5FF", fontSize: "0.875rem" }}>
-                    {comment.content}
-                  </Box>
-                  {/* Replies */}
-                  {comment.replies.map((reply) => (
-                    <Box
-                      key={reply.id}
-                      sx={{ ml: 4, mt: 1, fontSize: "0.875rem" }}
-                    >
-                      <Box sx={{ fontWeight: "bold", color: "#E9D5FF" }}>
-                        {reply.author}
-                      </Box>
-                      <Box sx={{ color: "#E9D5FF" }}>{reply.content}</Box>
-                    </Box>
-                  ))}
                 </Box>
-              ))}
+                <Box sx={{ color: "#E9D5FF", fontSize: "0.875rem" }}>
+                  {comment.content}
+                </Box>
+                {comment.replies.map((reply) => (
+                  <Box key={reply.id} sx={{ ml: 4, mt: 1, fontSize: "0.875rem" }}>
+                    <Box sx={{ fontWeight: "bold", color: "#E9D5FF" }}>
+                      {reply.author}
+                    </Box>
+                    <Box sx={{ color: "#E9D5FF" }}>{reply.content}</Box>
+                  </Box>
+                ))}
+              </Box>
+            ))}
           </Box>
         )}
-      </CardContent>
+      </StyledCardContent>
     </PostCard>
   );
 };
+
 export default ViewPostComponent;

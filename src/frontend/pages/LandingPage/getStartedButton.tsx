@@ -6,11 +6,14 @@ import {
   Box,
   keyframes,
   CircularProgress,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { ClickAwayListener } from "@mui/base";
+import { Z_INDEX_SIDE_NAVBAR } from "../../constants/zIndex";
 
 const shineAnimation = keyframes`
   0% { background-position: 0% 50%; }
@@ -25,6 +28,7 @@ const AttractiveButton = {
   position: "relative",
   overflow: "hidden",
   background: "rgba(255, 172, 23, 0.9)",
+  color: "black",
   backdropFilter: "blur(10px)",
   border: "1px solid rgba(255, 255, 255, 0.3)",
   boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
@@ -55,6 +59,7 @@ const AttractiveButton = {
     "100%": { transform: "translateY(0px)" },
   },
 };
+
 function GetStartedButton() {
   const { all_friends, profile, wallet, inited } = useSelector(
     (state: any) => state.filesState,
@@ -62,11 +67,47 @@ function GetStartedButton() {
   const { login } = useBackendContext();
   const { isLoggedIn } = useSelector((state: any) => state.uiState);
   const [showTooltip, setShowTooltip] = useState(true);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // Loading state
-  // if (!inited) {
-  //   return <CircularProgress />;
-  // }
+  const PopperProps = {
+    sx: {
+      zIndex: Z_INDEX_SIDE_NAVBAR - 1,
+      "& .MuiTooltip-tooltip": {
+        maxWidth: "none",
+        width: isMobile ? "calc(100vw - 32px)" : "500px",
+        background: theme.palette.mode === 'dark'
+          ? 'rgba(255, 172, 23, 0.8)'
+          : 'rgba(255, 172, 23, 0.9)',
+        backdropFilter: "blur(10px)",
+        border: 0,
+        p: 1,
+      },
+      "& .MuiTooltip-arrow": {
+        color: theme.palette.mode === 'dark'
+          ? 'rgba(255, 172, 23, 0.8)'
+          : 'rgba(255, 172, 23, 0.9)',
+      },
+    },
+  };
+
+  const TooltipContent = ({ videoId }: { videoId: string }) => (
+    <Box sx={{
+      width: "100%",
+      height: isMobile ? "180px" : "250px",
+    }}>
+      <iframe
+        width="100%"
+        height="100%"
+        src={`https://www.youtube.com/embed/${videoId}`}
+        title="Tutorial"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        style={{ borderRadius: "8px" }}
+        allowFullScreen
+      />
+    </Box>
+  );
 
   // Not registered state
   if (!profile && isLoggedIn) {
@@ -104,41 +145,13 @@ function GetStartedButton() {
   ) {
     return (
       <ClickAwayListener onClickAway={() => setShowTooltip(false)}>
-        <Box
-          onMouseEnter={() => setShowTooltip(true)}
-          // onMouseLeave={() => setShowTooltip(false)}
-          // onClick={() => setShowTooltip(false)}
-        >
+        <Box onMouseEnter={() => setShowTooltip(true)}>
           <Tooltip
             open={showTooltip}
             arrow
             placement="top"
-            PopperProps={{
-              sx: {
-                "& .MuiTooltip-tooltip": {
-                  maxWidth: "none",
-                  // background: "rgba(255,255,255,0.2)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(255, 255, 255, 0.3)",
-                  borderRadius: "10px",
-                  p: 1,
-                },
-              },
-            }}
-            title={
-              <Box sx={{ width: "500px", height: "250px" }}>
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src={"https://www.youtube.com/embed/f0RVw6RJxos"}
-                  title="Tutorial"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  style={{ borderRadius: "8px" }}
-                  allowFullScreen
-                />
-              </Box>
-            }
+            PopperProps={PopperProps}
+            title={<TooltipContent videoId="f0RVw6RJxos" />}
           >
             <Button
               variant="contained"
@@ -156,45 +169,17 @@ function GetStartedButton() {
     );
   }
 
-  // No friends state
+  // No payments state
   if (isLoggedIn && profile?.id && wallet.exchanges.length === 0) {
     return (
       <ClickAwayListener onClickAway={() => setShowTooltip(false)}>
-        <Box
-          onMouseEnter={() => setShowTooltip(true)}
-          // onMouseLeave={() => setShowTooltip(false)}
-          // onClick={() => setShowTooltip(false)}
-        >
+        <Box onMouseEnter={() => setShowTooltip(true)}>
           <Tooltip
             open={showTooltip}
             arrow
             placement="top"
-            PopperProps={{
-              sx: {
-                "& .MuiTooltip-tooltip": {
-                  maxWidth: "none",
-                  // background: "rgba(255,255,255,0.2)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(255, 255, 255, 0.3)",
-                  borderRadius: "10px",
-                  p: 1,
-                },
-              },
-            }}
-            title={
-              <Box sx={{ width: "500px", height: "250px" }}>
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src={"https://www.youtube.com/embed/XnOF1i1Een8"}
-                  title="Tutorial"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  style={{ borderRadius: "8px" }}
-                  allowFullScreen
-                />
-              </Box>
-            }
+            PopperProps={PopperProps}
+            title={<TooltipContent videoId="XnOF1i1Een8" />}
           >
             <Button
               variant="contained"
@@ -216,41 +201,13 @@ function GetStartedButton() {
   if (!isLoggedIn) {
     return (
       <ClickAwayListener onClickAway={() => setShowTooltip(false)}>
-        <Box
-          onMouseEnter={() => setShowTooltip(true)}
-          // onMouseLeave={() => setShowTooltip(false)}
-          // onClick={() => setShowTooltip(false)}
-        >
+        <Box onMouseEnter={() => setShowTooltip(true)}>
           <Tooltip
             open={showTooltip}
             arrow
             placement="top"
-            PopperProps={{
-              sx: {
-                "& .MuiTooltip-tooltip": {
-                  maxWidth: "none",
-                  // background: "rgba(255,255,255,0.2)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(255, 255, 255, 0.3)",
-                  borderRadius: "10px",
-                  p: 1,
-                },
-              },
-            }}
-            title={
-              <Box sx={{ width: "500px", height: "250px" }}>
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src={"https://www.youtube.com/embed/Lg-0q5oEenk"}
-                  title="Tutorial"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  style={{ borderRadius: "8px" }}
-                  allowFullScreen
-                />
-              </Box>
-            }
+            PopperProps={PopperProps}
+            title={<TooltipContent videoId="Lg-0q5oEenk" />}
           >
             <Button
               variant="contained"

@@ -1,31 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { AgCharts } from "ag-charts-react";
+import React, {useEffect, useState} from "react";
+import {AgCharts} from "ag-charts-react";
 import {
-  Container,
   Box,
+  Button,
   Card,
   CardContent,
-  Typography,
-  Grid,
-  Avatar,
-  Rating,
+  Container,
   Divider,
-  Button,
-  TextField,
+  Grid,
+  Rating,
   Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
-import { Edit } from "@mui/icons-material";
+import {Edit} from "@mui/icons-material";
 import Friends from "./friends";
-import { useDispatch, useSelector } from "react-redux";
-import { useSnackbar } from "notistack";
-import { useBackendContext } from "../../contexts/BackendContext";
-import { RegisterUser } from "../../../declarations/backend/backend.did";
+import {useDispatch, useSelector} from "react-redux";
+import {useSnackbar} from "notistack";
+import {useBackendContext} from "../../contexts/BackendContext";
+import {RegisterUser} from "../../../declarations/backend/backend.did";
 import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
-
-import React, { useState } from "react";
-import { Button, IconButton } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import {formatRelativeTime} from "../../utils/time";
 
 const CopyButton = ({ title, value }) => {
   const [showCheck, setShowCheck] = useState(false);
@@ -516,7 +513,7 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
                         </Typography>
                       </Box>
                       <Typography variant="caption" color="text.secondary">
-                        {new Date(rating?.date || 0).toLocaleDateString()}
+                        {formatRelativeTime(rating?.date)}
                       </Typography>
                     </Box>
                   </Box>

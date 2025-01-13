@@ -1,4 +1,4 @@
-import type {MutableRefObject} from 'react';
+import type { MutableRefObject } from "react";
 
 export interface TreeItem {
   id: string;
@@ -9,7 +9,8 @@ export interface TreeItem {
 export type TreeItems = TreeItem[];
 
 export interface FlattenedItem extends TreeItem {
-  parentId: null | string;
+  parentId?: null | string;
+  parent?: string[];
   depth: number;
   index: number;
 }

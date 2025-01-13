@@ -34,6 +34,7 @@ const FileContentPage = () => {
   const onChange = debounce((changes: any) => {
     const prevContent = JSON.stringify(files_content[current_file.id]);
     const newContent = JSON.stringify(changes);
+    //TODO As user make changes there is too much and canyoning re-rending
     if (current_file && prevContent !== newContent) {
       dispatch(
         handleRedux("UPDATE_CONTENT", {

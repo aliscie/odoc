@@ -1,5 +1,12 @@
-import React from 'react';
-import { Clock, LeafyGreen, Globe2, Shield, Users, TrendingUp } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  Clock,
+  LeafyGreen,
+  Globe2,
+  Shield,
+  Users,
+  TrendingUp,
+} from "lucide-react";
 import {
   Box,
   Card,
@@ -17,64 +24,97 @@ interface FeatureCardProps {
   description: string;
 }
 
-const FeatureCard: React.FC<FeatureCardProps> = ({ Icon, title, description }) => {
+const FeatureCard = ({ Icon, title, description }) => {
   const theme = useTheme();
+  const [hover, setHover] = useState(false);
 
   return (
     <Card
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       sx={{
-        height: '24rem',
-        width: '18rem',
-        background: theme.palette.mode === 'dark'
-          ? `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)}, ${alpha(theme.palette.secondary.main, 0.1)})`
-          : `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.05)}, ${alpha(theme.palette.secondary.main, 0.05)})`,
-        backdropFilter: 'blur(8px)',
-        transition: 'all 0.3s ease',
-        '&:hover': {
-          background: theme.palette.mode === 'dark'
-            ? `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.2)}, ${alpha(theme.palette.secondary.main, 0.2)})`
-            : `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)}, ${alpha(theme.palette.secondary.main, 0.1)})`,
-          transform: 'translateY(-4px)',
-          boxShadow: theme.shadows[4],
-        },
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
+        position: "relative",
+        width: "18rem",
+        height: "24rem",
+        background:
+          theme.palette.mode === "dark"
+            ? `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)}, ${alpha(theme.palette.secondary.main, 0.1)})`
+            : `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.05)}, ${alpha(theme.palette.secondary.main, 0.05)})`,
+        backdropFilter: "blur(8px)",
+        transition: "all 500ms cubic-bezier(0.4, 0, 0.2, 1)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
         padding: theme.spacing(4),
         border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+        overflow: "hidden",
+        "&:hover": {
+          background:
+            theme.palette.mode === "dark"
+              ? `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.2)}, ${alpha(theme.palette.secondary.main, 0.2)})`
+              : `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)}, ${alpha(theme.palette.secondary.main, 0.1)})`,
+          boxShadow: theme.shadows[4],
+        },
+        "&::after": {
+          content: '""',
+          position: "absolute",
+          bottom: 0,
+          left: "50%",
+          width: "3rem",
+          height: "2px",
+          background: `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+          transform: `translateX(-50%) scaleX(${hover ? 1 : 0})`,
+          transition: "transform 500ms cubic-bezier(0.4, 0, 0.2, 1)",
+        },
       }}
     >
       <Paper
         elevation={0}
         sx={{
           background: `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-          borderRadius: '50%',
+          borderRadius: "50%",
           padding: theme.spacing(2),
           marginBottom: theme.spacing(3),
+          transform: hover ? "scale(0.9)" : "scale(1)",
+          transition: "transform 500ms cubic-bezier(0.4, 0, 0.2, 1)",
           boxShadow: theme.shadows[2],
         }}
       >
-        <Icon
-          size={40}
-          color="white"
-          strokeWidth={1.5}
-        />
+        <Icon size={40} color="white" strokeWidth={1.5} />
       </Paper>
-      <CardContent sx={{ textAlign: 'center', flexGrow: 1 }}>
+
+      <CardContent
+        sx={{
+          textAlign: "center",
+          flexGrow: 1,
+          position: "relative",
+          padding: theme.spacing(2),
+          "&:last-child": {
+            paddingBottom: theme.spacing(2),
+          },
+        }}
+      >
         <Typography
           variant="h5"
-          component="h3"
           gutterBottom
-          color="text.primary"
+          sx={{
+            transform: hover ? "translateY(-8px)" : "translateY(0)",
+            opacity: hover ? 0.4 : 1,
+            transition: "all 500ms cubic-bezier(0.4, 0, 0.2, 1)",
+            fontSize: hover ? "0.7rem" : "1.4rem", // Also slightly increase font size on hover
+          }}
         >
           {title}
         </Typography>
+
         <Typography
           variant="body1"
-          color="text.secondary"
           sx={{
-            opacity: 0.8,
-            lineHeight: 1.6,
+            opacity: hover ? 1 : 0.8,
+            transform: hover ? "translateY(-8px)" : "translateY(0)",
+            transition: "all 500ms cubic-bezier(0.4, 0, 0.2, 1)",
+            lineHeight: hover ? 2 : 1.6, // Only changing line height on hover
+            color: hover ? "text.primary" : "text.secondary",
           }}
         >
           {description}
@@ -91,17 +131,20 @@ const WhyOdoc: React.FC = () => {
     {
       icon: Clock,
       title: "SAVE TIME",
-      description: "All-in-One Solution, Integrate tasks, payments, and contracts in one seamless platform.",
+      description:
+        "All in One Solution, Integrate tasks, payments, and contracts in one seamless platform.",
     },
     {
       icon: LeafyGreen,
       title: "SAVE RESOURCES",
-      description: "Enjoy simple, transparent pricing with no hidden fees or middlemen.",
+      description:
+        "One platform, no extra tools, no extra fees, no middle men, and no banks. Here one person can do job of 3 people.",
     },
     {
       icon: Globe2,
       title: "FREEDOM",
-      description: "Work remotely, collaborate globally, and manage your business from anywhere. And the best part you can vote.",
+      description:
+        "Work remotely, collaborate globally, and manage your business from anywhere. And the best part you can vote.",
     },
     {
       icon: Shield,
@@ -111,34 +154,37 @@ const WhyOdoc: React.FC = () => {
     {
       icon: Users,
       title: "EMPOWER YOU",
-      description: "Enhance productivity and foster better teamwork with seamless collaboration.",
+      description:
+        "Enhance productivity and foster better teamwork with seamless collaboration.",
     },
     {
       icon: TrendingUp,
       title: "SCALE",
-      description: "Tools that grow with your business, from freelancer to enterprise.",
+      description:
+        "Tools that grow with your business, from freelancer to enterprise.",
     },
   ];
 
   return (
     <Box
       sx={{
-        width: '100%',
+        width: "100%",
         py: 10,
-        background: theme.palette.mode === 'dark'
-          ? 'linear-gradient(to bottom, #212121, #000000)'
-          : `linear-gradient(to bottom, ${alpha(theme.palette.primary.main, 0.03)}, ${alpha(theme.palette.background.default, 1)})`,
+        background:
+          theme.palette.mode === "dark"
+            ? "linear-gradient(to bottom, #212121, #000000)"
+            : `linear-gradient(to bottom, ${alpha(theme.palette.primary.main, 0.03)}, ${alpha(theme.palette.background.default, 1)})`,
       }}
     >
       <Container maxWidth="lg">
-        <Box sx={{ textAlign: 'center', mb: 8 }}>
+        <Box sx={{ textAlign: "center", mb: 8 }}>
           <Typography
             variant="h2"
             component="h2"
             gutterBottom
             sx={{
-              color: 'text.primary',
-              fontWeight: 'bold',
+              color: "text.primary",
+              fontWeight: "bold",
               mb: 2,
             }}
           >
@@ -148,32 +194,33 @@ const WhyOdoc: React.FC = () => {
             variant="h5"
             color="text.secondary"
             sx={{
-              maxWidth: '800px',
-              mx: 'auto',
+              maxWidth: "800px",
+              mx: "auto",
               opacity: 0.8,
             }}
           >
-            Experience the future of work with our comprehensive platform designed for modern businesses
+            Experience the future of work with our comprehensive platform
+            designed for modern businesses
           </Typography>
         </Box>
 
-        <Box sx={{ position: 'relative' }}>
+        <Box sx={{ position: "relative" }}>
           <Box
             sx={{
-              display: 'flex',
-              overflowX: 'auto',
+              display: "flex",
+              overflowX: "auto",
               gap: 3,
               pb: 3,
-              scrollSnapType: 'x mandatory',
-              '&::-webkit-scrollbar': {
-                display: 'none'
+              scrollSnapType: "x mandatory",
+              "&::-webkit-scrollbar": {
+                display: "none",
               },
-              '-ms-overflow-style': 'none',
-              'scrollbarWidth': 'none',
+              "-ms-overflow-style": "none",
+              scrollbarWidth: "none",
             }}
           >
             {features.map((feature, index) => (
-              <Box key={index} sx={{ scrollSnapAlign: 'start' }}>
+              <Box key={index} sx={{ scrollSnapAlign: "start" }}>
                 <FeatureCard
                   Icon={feature.icon}
                   title={feature.title}
@@ -186,28 +233,30 @@ const WhyOdoc: React.FC = () => {
           {/* Gradient fade effects */}
           <Box
             sx={{
-              position: 'absolute',
+              position: "absolute",
               left: 0,
               top: 0,
-              bottom: theme => theme.spacing(3),
-              width: '80px',
-              background: theme.palette.mode === 'dark'
-                ? 'linear-gradient(to right, #000000, transparent)'
-                : `linear-gradient(to right, ${theme.palette.background.default}, transparent)`,
-              pointerEvents: 'none',
+              bottom: (theme) => theme.spacing(3),
+              width: "80px",
+              background:
+                theme.palette.mode === "dark"
+                  ? "linear-gradient(to right, #000000, transparent)"
+                  : `linear-gradient(to right, ${theme.palette.background.default}, transparent)`,
+              pointerEvents: "none",
             }}
           />
           <Box
             sx={{
-              position: 'absolute',
+              position: "absolute",
               right: 0,
               top: 0,
-              bottom: theme => theme.spacing(3),
-              width: '80px',
-              background: theme.palette.mode === 'dark'
-                ? 'linear-gradient(to left, #000000, transparent)'
-                : `linear-gradient(to left, ${theme.palette.background.default}, transparent)`,
-              pointerEvents: 'none',
+              bottom: (theme) => theme.spacing(3),
+              width: "80px",
+              background:
+                theme.palette.mode === "dark"
+                  ? "linear-gradient(to left, #000000, transparent)"
+                  : `linear-gradient(to left, ${theme.palette.background.default}, transparent)`,
+              pointerEvents: "none",
             }}
           />
         </Box>

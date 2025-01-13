@@ -34,6 +34,12 @@ pub struct RegisterUser {
 }
 
 impl User {
+    pub fn get_number_of_users() -> f64 {
+        PROFILE_STORE.with(|profile_store| {
+            profile_store.borrow().len() as f64
+        })
+    }
+
     pub fn new(profile: RegisterUser) -> Self {
         let user = User {
             id: caller().to_text(),

@@ -85,3 +85,9 @@ fn get_user(usd_id: String) -> Result<User, String> {
     }
     Err("User not found.".to_string())
 }
+
+
+#[query]
+fn get_users() -> f64 {
+    User::get_number_of_users()
+}

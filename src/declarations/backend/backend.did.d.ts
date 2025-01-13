@@ -504,6 +504,7 @@ export interface _SERVICE {
   'get_user' : ActorMethod<[string], Result>,
   'get_user_notifications' : ActorMethod<[], Array<Notification>>,
   'get_user_profile' : ActorMethod<[Principal], Result_12>,
+  'get_users' : ActorMethod<[], number>,
   'get_work_spaces' : ActorMethod<[], Array<WorkSpace>>,
   'internal_transaction' : ActorMethod<
     [number, string, ExchangeType],

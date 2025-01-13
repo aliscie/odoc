@@ -358,7 +358,6 @@ const CustomContractViewer = ({
     setSelectedDataType(DataTypeSelection.CONTRACT);
     onContractChange(updatedContract);
   };
-  console.log({ contractsState });
   const promisesData = transformPromisesDataAndColumns(
     contractsState[0]?.promises,
     getPaymentColumnDefs(true),

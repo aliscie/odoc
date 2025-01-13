@@ -107,13 +107,15 @@ export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
     const parent = nodes[parentId] ?? findItem(flattenedItems, parentId);
 
     nodes[id] = { id, children };
-    parent.children.push(item);
+    parent?.children.push(item);
 
     let childrenOrder = flattenedItems.find((f) => f.id == parentId);
     childrenOrder = childrenOrder ? childrenOrder.children : [];
-    parent.children = parent.children.sort((a, b) => {
-      return childrenOrder.indexOf(a.id) - childrenOrder.indexOf(b.id);
-    });
+    if (parent) {
+      parent.children = parent.children.sort((a, b) => {
+        return childrenOrder.indexOf(a.id) - childrenOrder.indexOf(b.id);
+      });
+    }
   }
 
   return root.children;

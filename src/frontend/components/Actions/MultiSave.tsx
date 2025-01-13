@@ -51,7 +51,7 @@ const MultiSaveButton: React.FC<MultiSaveButtonProps> = () => {
         Process saving... <span className="loader" />
       </span>,
     );
-
+    // console.log({ x: changes.files_indexing });
     try {
       const res: any = await backendActor?.multi_updates(
         changes.files,

@@ -133,7 +133,7 @@ const SubscriptionPlans = () => {
   ];
 
   const whyChooseUs = [
-    "All-in-One Platform: Contracts, tasks, and payments in one place",
+    " Platform: Contracts, tasks, and payments in one place",
     "Global Reach: Available in all countries, ensuring accessibility",
     "Cost Efficiency: Saves time and money by simplifying workflows",
     "Transparent Pricing: Premium tools for $14/month",

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// SNSVoting.tsx
+import React, { useState, useEffect } from "react";
 import {
   alpha,
   Box,
@@ -11,7 +12,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
   FormControl,
   Grid,
   IconButton,
@@ -24,16 +24,19 @@ import {
   Tabs,
   TextField,
   Typography,
-  useTheme
-} from '@mui/material';
+  useTheme,
+  Alert,
+  AlertTitle,
+} from "@mui/material";
 import {
   Add as AddIcon,
   ThumbUp as ThumbUpIcon,
   ThumbDown as ThumbDownIcon,
   Timer as TimerIcon,
-  Check as CheckIcon,
-  Close as CloseIcon
-} from '@mui/icons-material';
+  Warning as WarningIcon,
+  Close as CloseIcon,
+} from "@mui/icons-material";
+import {Z_INDEX_BANNER} from "../constants/zIndex";
 
 // Interfaces
 interface Proposal {
@@ -41,12 +44,12 @@ interface Proposal {
   title: string;
   description: string;
   proposer: string;
-  status: 'active' | 'passed' | 'rejected' | 'expired';
+  status: "active" | "passed" | "rejected" | "expired";
   votesFor: number;
   votesAgainst: number;
   totalVotes: number;
   timeRemaining: string;
-  type: 'feature' | 'governance' | 'treasury' | 'parameter';
+  type: "feature" | "governance" | "treasury" | "parameter";
   dateCreated: string;
 }
 
@@ -59,44 +62,44 @@ interface TabPanelProps {
 // Mock data
 const mockProposals: Proposal[] = [
   {
-    id: 'PROP-001',
-    title: 'Implement Real-time Collaboration Features',
-    description: 'Add real-time document editing and collaboration tools to enhance platform functionality.',
-    proposer: '0x1234...5678',
-    status: 'active',
+    id: "PROP-001",
+    title: "Implement Real-time Collaboration Features",
+    description: "Add real-time document editing and collaboration tools to enhance platform functionality.",
+    proposer: "0x1234...5678",
+    status: "active",
     votesFor: 750000,
     votesAgainst: 250000,
     totalVotes: 1000000,
-    timeRemaining: '2d 14h',
-    type: 'feature',
-    dateCreated: '2025-01-03'
+    timeRemaining: "2d 14h",
+    type: "feature",
+    dateCreated: "2025-01-03",
   },
   {
-    id: 'PROP-002',
-    title: 'Adjust Minimum Proposal Threshold',
-    description: 'Reduce minimum token requirement for creating proposals from 10,000 to 5,000 ODOC.',
-    proposer: '0x8765...4321',
-    status: 'passed',
+    id: "PROP-002",
+    title: "Adjust Minimum Proposal Threshold",
+    description: "Reduce minimum token requirement for creating proposals from 10,000 to 5,000 ODOC.",
+    proposer: "0x8765...4321",
+    status: "passed",
     votesFor: 800000,
     votesAgainst: 100000,
     totalVotes: 900000,
-    timeRemaining: '0d 0h',
-    type: 'governance',
-    dateCreated: '2025-01-01'
+    timeRemaining: "0d 0h",
+    type: "governance",
+    dateCreated: "2025-01-01",
   },
   {
-    id: 'PROP-003',
-    title: 'Allocate Treasury Funds for Marketing',
-    description: 'Allocate 100,000 ODOC for Q1 2025 marketing initiatives.',
-    proposer: '0x2468...1357',
-    status: 'active',
+    id: "PROP-003",
+    title: "Allocate Treasury Funds for Marketing",
+    description: "Allocate 100,000 ODOC for Q1 2025 marketing initiatives.",
+    proposer: "0x2468...1357",
+    status: "active",
     votesFor: 400000,
     votesAgainst: 300000,
     totalVotes: 700000,
-    timeRemaining: '3d 8h',
-    type: 'treasury',
-    dateCreated: '2025-01-04'
-  }
+    timeRemaining: "3d 8h",
+    type: "treasury",
+    dateCreated: "2025-01-04",
+  },
 ];
 
 const TabPanel = (props: TabPanelProps) => {
@@ -113,34 +116,68 @@ const TabPanel = (props: TabPanelProps) => {
   );
 };
 
-const SNSVoting: React.FC = () => {
-  // Ensure the component is rendered relative to its container
-  React.useEffect(() => {
-    document.body.style.position = 'relative';
-    return () => {
-      document.body.style.position = '';
-    };
-  }, []);
+const FeatureNotAvailableBanner = () => {
   const theme = useTheme();
-  const [tabValue, setTabValue] = useState(0);
-  const [openNewProposal, setOpenNewProposal] = useState(false);
-  const [proposalType, setProposalType] = useState('feature');
-  const [proposals] = useState<Proposal[]>(mockProposals);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
+  return (
+    <Box
+      sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: Z_INDEX_BANNER,
+        width: "90%",
+        maxWidth: "500px",
+      }}
+    >
+      <Alert
+        severity="warning"
+        icon={<WarningIcon sx={{ fontSize: '2rem' }} />}
+        sx={{
+          boxShadow: theme.shadows[4],
+          backgroundColor: '#FFF4E5',
+          color: '#663C00',
+          border: '1px solid #FF9800',
+          backdropFilter: 'blur(8px)',
+          '& .MuiAlert-icon': {
+            color: '#FF9800',
+            alignItems: 'center'
+          },
+          padding: theme.spacing(3),
+        }}
+      >
+        <AlertTitle sx={{ 
+          fontSize: '1.5rem',
+          fontWeight: 'bold',
+          mb: 2,
+          color: '#663C00'
+        }}>
+          Feature Not Available
+        </AlertTitle>
+        <Typography variant="body1" sx={{ mb: 2 }}>
+          SNS voting functionality will be available in a few months.
+        </Typography>
+        <Typography variant="body2" sx={{ color: 'balck' }}>
+          We're working hard to bring you decentralized governance features.
+          Stay tuned for updates!
+        </Typography>
+      </Alert>
+    </Box>
+  );
+};
 
+const ProposalCard: React.FC<{ proposal: Proposal }> = ({ proposal }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'primary';
-      case 'passed':
-        return 'success';
-      case 'rejected':
-        return 'error';
+      case "active":
+        return "primary";
+      case "passed":
+        return "success";
+      case "rejected":
+        return "error";
       default:
-        return 'default';
+        return "default";
     }
   };
 
@@ -148,7 +185,7 @@ const SNSVoting: React.FC = () => {
     return (votesFor / totalVotes) * 100;
   };
 
-  const ProposalCard: React.FC<{ proposal: Proposal }> = ({ proposal }) => (
+  return (
     <Card sx={{ mb: 2 }}>
       <CardContent>
         <Grid container spacing={2}>
@@ -180,23 +217,19 @@ const SNSVoting: React.FC = () => {
               <LinearProgress
                 variant="determinate"
                 value={calculateProgress(proposal.votesFor, proposal.totalVotes)}
-                sx={{ height: 8, }}
+                sx={{ height: 8, borderRadius: 4 }}
               />
             </Box>
           </Grid>
           <Grid item xs={12}>
             <Box display="flex" justifyContent="space-between" alignItems="center">
               <Box display="flex" alignItems="center" gap={1}>
-                <Chip
-                  label={proposal.type}
-                  size="small"
-                  variant="outlined"
-                />
+                <Chip label={proposal.type} size="small" variant="outlined" />
                 <Typography variant="body2" color="text.secondary">
                   ID: {proposal.id}
                 </Typography>
               </Box>
-              {proposal.status === 'active' && (
+              {proposal.status === "active" && (
                 <Box display="flex" gap={1}>
                   <Button
                     variant="outlined"
@@ -223,7 +256,7 @@ const SNSVoting: React.FC = () => {
               <Typography variant="body2" color="text.secondary">
                 Proposer: {proposal.proposer}
               </Typography>
-              {proposal.status === 'active' && (
+              {proposal.status === "active" && (
                 <Box display="flex" alignItems="center" gap={1}>
                   <TimerIcon fontSize="small" color="action" />
                   <Typography variant="body2" color="text.secondary">
@@ -237,73 +270,37 @@ const SNSVoting: React.FC = () => {
       </CardContent>
     </Card>
   );
+};
+
+const SNSVoting: React.FC = () => {
+  useEffect(() => {
+    document.body.style.position = "relative";
+    return () => {
+      document.body.style.position = "";
+    };
+  }, []);
+
+  const theme = useTheme();
+  const [tabValue, setTabValue] = useState(0);
+  const [openNewProposal, setOpenNewProposal] = useState(false);
+  const [proposalType, setProposalType] = useState("feature");
+  const [proposals] = useState<Proposal[]>(mockProposals);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
-      {/* Blurred Overlay */}
-      <Paper
-        elevation={3}
-        sx={(theme) => ({
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: theme.zIndex.modal,
-          backdropFilter: 'blur(8px)',
-          backgroundColor: alpha(theme.palette.background.paper, 0.9),
-          padding: theme.spacing(4),
-          textAlign: 'center',
-          // borderRadius: theme.shape.borderRadius,
-          maxWidth: '90%',
-          width: '400px',
-          border: `1px solid ${theme.palette.divider}`
-        })}
-      >
-        <Typography
-          variant="h5"
-          component="h2"
-          gutterBottom
-          sx={(theme) => ({
-            color: theme.palette.text.primary,
-            fontWeight: theme.typography.fontWeightMedium
-          })}
-        >
-          Feature Not Available
-        </Typography>
-        <Typography
-          variant="body1"
-          color="text.secondary"
-          sx={(theme) => ({
-            color: theme.palette.text.secondary,
-            maxWidth: '80%',
-            margin: '0 auto'
-          })}
-        >
-          SNS voting functionality will be available few months later.
-        </Typography>
-        {/*<Button*/}
-        {/*  variant="outlined"*/}
-        {/*  sx={(theme) => ({*/}
-        {/*    marginTop: theme.spacing(2),*/}
-        {/*    color: theme.palette.primary.main,*/}
-        {/*    borderColor: theme.palette.primary.main,*/}
-        {/*    '&:hover': {*/}
-        {/*      backgroundColor: alpha(theme.palette.primary.main, 0.04)*/}
-        {/*    }*/}
-        {/*  })}*/}
-        {/*>*/}
-        {/*  Learn More*/}
-        {/*</Button>*/}
-      </Paper>
+      {/* Feature Not Available Banner */}
+      <FeatureNotAvailableBanner />
 
-      <Paper sx={(theme) => ({
-        p: theme.spacing(3),
-        position: 'relative',
-        filter: 'blur(4px)',
-        pointerEvents: 'none',  // Disable interactions with the blurred content
-        backgroundColor: theme.palette.background.paper,
-        // borderRadius: theme.shape.borderRadius
-      })}>
+      {/* Main Content (blurred) */}
+      <Paper
+        sx={{
+          p: theme.spacing(3),
+          position: "relative",
+          filter: "blur(4px)",
+          pointerEvents: "none",
+          backgroundColor: theme.palette.background.paper,
+        }}
+      >
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4">SNS Voting</Typography>
           <Button
@@ -315,35 +312,37 @@ const SNSVoting: React.FC = () => {
           </Button>
         </Box>
 
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={tabValue} onChange={handleTabChange}>
-            <Tab label="Active Proposals" />
-            <Tab label="Passed" />
-            <Tab label="Rejected" />
-            <Tab label="My Votes" />
-          </Tabs>
-        </Box>
+        <Tabs
+          value={tabValue}
+          onChange={(_, newValue) => setTabValue(newValue)}
+          sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}
+        >
+          <Tab label="Active Proposals" />
+          <Tab label="Passed" />
+          <Tab label="Rejected" />
+          <Tab label="My Votes" />
+        </Tabs>
 
         <TabPanel value={tabValue} index={0}>
           {proposals
-            .filter(p => p.status === 'active')
-            .map(proposal => (
+            .filter((p) => p.status === "active")
+            .map((proposal) => (
               <ProposalCard key={proposal.id} proposal={proposal} />
             ))}
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
           {proposals
-            .filter(p => p.status === 'passed')
-            .map(proposal => (
+            .filter((p) => p.status === "passed")
+            .map((proposal) => (
               <ProposalCard key={proposal.id} proposal={proposal} />
             ))}
         </TabPanel>
 
         <TabPanel value={tabValue} index={2}>
           {proposals
-            .filter(p => p.status === 'rejected')
-            .map(proposal => (
+            .filter((p) => p.status === "rejected")
+            .map((proposal) => (
               <ProposalCard key={proposal.id} proposal={proposal} />
             ))}
         </TabPanel>
@@ -382,11 +381,7 @@ const SNSVoting: React.FC = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Title"
-                  variant="outlined"
-                />
+                <TextField fullWidth label="Title" variant="outlined" />
               </Grid>
               <Grid item xs={12}>
                 <TextField

@@ -51,7 +51,7 @@
 Odoc
 
 This app is Notion.so clone, roam research clone and obsidian clone. The main purpose of this app is not to just clone
-these note-taking apps but to make an all-in-one **Open source note-taking app** with automation features.
+these note-taking apps but to make an  **Open source note-taking app** with automation features.
 
 # learn about Odoc here.
 

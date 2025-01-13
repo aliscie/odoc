@@ -547,6 +547,7 @@ export const idlFactory = ({ IDL }) => {
     'get_user' : IDL.Func([IDL.Text], [Result], ['query']),
     'get_user_notifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
     'get_user_profile' : IDL.Func([IDL.Principal], [Result_12], ['query']),
+    'get_users' : IDL.Func([], [IDL.Float64], ['query']),
     'get_work_spaces' : IDL.Func([], [IDL.Vec(WorkSpace)], ['query']),
     'internal_transaction' : IDL.Func(
         [IDL.Float64, IDL.Text, ExchangeType],

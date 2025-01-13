@@ -65,7 +65,7 @@ export const initialState: InitialState = {
   count: 0,
   isNavOpen: false,
   searchTool: false,
-  isDarkMode: true,
+  isDarkMode: Boolean(localStorage.getItem("isDarkMode") === "true"),
   searchValue: "",
   isLoggedIn: false,
 };

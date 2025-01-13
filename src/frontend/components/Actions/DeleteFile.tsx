@@ -35,14 +35,18 @@ const DeleteFile: React.FC<DeleteFileProps> = ({ item }) => {
 
     try {
       const res = await backendActor.delete_file(item.id);
+      console.log({ res });
       dispatch(handleRedux("REMOVE", { id: item.id }));
       enqueueSnackbar(`${item.name} is deleted`, { variant: "success" });
       return res;
     } catch (error) {
+      console.log({ error });
       enqueueSnackbar(`Failed to delete ${item.name}`, { variant: "error" });
     } finally {
+      console.log("done");
       closeSnackbar(loading);
     }
+    return { Ok: "" };
   };
 
   return (
@@ -52,7 +56,7 @@ const DeleteFile: React.FC<DeleteFileProps> = ({ item }) => {
       conformationMessage={`Are you sure you want to delete this File`}
       onClick={handleDeleteFile}
     >
-      <DeleteIcon fontSize="small" /> Delete
+      <DeleteIcon  fontSize="small" /> Delete
     </ConformationMessage>
   );
 };

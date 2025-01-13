@@ -24,6 +24,7 @@ export function uiReducer(state = initialState, action: Action): State {
         post_vote: action.postVote,
       };
     case "TOGGLE_DARK":
+      localStorage.setItem("isDarkMode", !state.isDarkMode);
       document.querySelector("body")?.classList.toggle("dark");
       return {
         ...state,

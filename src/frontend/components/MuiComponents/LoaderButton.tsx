@@ -34,8 +34,10 @@ function LoaderButton(props: LoaderButtonProps) {
     if (res?.Ok !== undefined) {
       props.successMessage &&
         enqueueSnackbar(props.successMessage, { variant: "success" });
-    } else {
-      enqueueSnackbar(`${JSON.stringify(res?.Err)}`, { variant: "error" });
+    } else if (res?.Err) {
+      enqueueSnackbar(`${JSON.stringify(res?.Err || [])}`, {
+        variant: "error",
+      });
     }
     setLoading(false);
   }

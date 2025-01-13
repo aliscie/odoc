@@ -20,7 +20,13 @@ root.render(
     <Provider store={store}>
       <ThemeProvider>
         <BackendProvider>
-          <SnackbarProvider maxSnack={3}>
+          <SnackbarProvider
+            anchorOrigin={{
+              vertical: "top", // Change this to 'top' or 'bottom'
+              horizontal: "right", // Change this to 'left', 'center', or 'right'
+            }}
+            maxSnack={3}
+          >
             <App />
           </SnackbarProvider>
         </BackendProvider>

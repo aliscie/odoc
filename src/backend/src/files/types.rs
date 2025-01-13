@@ -113,74 +113,105 @@ impl FileNode {
             let mut store = files_store.borrow_mut();
 
             // Retrieve the user's file vector
-            let user_files: FileNodeVector = store
+            let mut user_files = store
                 .get(&principal_id)
                 .unwrap_or_else(|| FileNodeVector { files: Vec::new() });
 
-            // Modify the file vector with re-ordered children
-            let files = user_files
-                .files
-                .into_iter()
-                .map(|mut f| {
-                    if f.id == parent_id {
-                        // Clone to create a new parent node with reordered children
-                        let mut parent = f.clone();
+            // Verify child exists
+            if !user_files.files.iter().any(|f| f.id == child_id) {
+                return Err("Child file not found".to_string());
+            }
 
-                        // Remove existing child_id
-                        parent.children.retain(|id| id != &child_id);
+            // Check if parent exists
+            let parent_exists = user_files.files.iter().any(|f| f.id == parent_id);
 
-                        // Insert child_id at the new index
-                        if new_index >= parent.children.len() {
-                            parent.children.push(child_id.clone());
-                        } else {
-                            parent.children.insert(new_index, child_id.clone());
-                        }
+            if !parent_exists {
+                // If parent doesn't exist, convert to root-level rearrangement
+                return FileNode::rearrange_file(child_id, new_index);
+            }
 
-                        Ok(parent)
-                    } else {
-                        Ok(f)
+            // Verify child is not being moved into its own descendant
+            let mut current_id = Some(parent_id.clone());
+            while let Some(id) = current_id {
+                if id == child_id {
+                    return Err("Cannot move a file into its own descendant".to_string());
+                }
+                current_id = user_files.files.iter()
+                    .find(|f| f.id == id)
+                    .and_then(|f| f.parent.clone());
+            }
+
+            // First pass: Find and update the old parent
+            let mut old_parent_id = None;
+            for file in user_files.files.iter_mut() {
+                if file.children.contains(&child_id) {
+                    file.children.retain(|id| id != &child_id);
+                    old_parent_id = Some(file.id.clone());
+                }
+            }
+
+            // Second pass: Update the new parent and child
+            let mut new_parent_found = false;
+            for file in user_files.files.iter_mut() {
+                if file.id == parent_id {
+                    // Ensure new_index is within bounds
+                    let safe_index = new_index.min(file.children.len());
+                    if !file.children.contains(&child_id) {
+                        file.children.insert(safe_index, child_id.clone());
                     }
-                })
-                .collect::<Result<Vec<FileNode>, String>>()?;
+                    new_parent_found = true;
+                } else if file.id == child_id {
+                    file.parent = Some(parent_id.clone());
+                }
+            }
 
-            // Update the user's file vector in the store
-            store.insert(principal_id, FileNodeVector { files });
+            if !new_parent_found {
+                return Err("Parent file not found after validation".to_string());
+            }
+
+            store.insert(principal_id, user_files);
             Ok(())
         })
     }
+
     pub fn rearrange_file(file_id: FileId, new_index: usize) -> Result<(), String> {
         USER_FILES.with(|files_store| {
-            let principal_id = ic_cdk::api::caller();
-            let mut user_files_vec = files_store.borrow_mut();
+            let principal_id = ic_cdk::api::caller().to_text();
+            let mut store = files_store.borrow_mut();
 
             // Retrieve the user's file vector
-            let user_files = user_files_vec
-                .get(&principal_id.to_text())
+            let mut user_files = store
+                .get(&principal_id)
                 .unwrap_or_else(|| FileNodeVector { files: Vec::new() });
 
-            // Modify the file vector
-            let mut user_files = user_files.clone();
+            // Verify file exists and get its current position
+            let old_index = user_files.files.iter()
+                .position(|f| f.id == file_id)
+                .ok_or("File not found".to_string())?;
 
-            // Find the position of the file node to be moved
-            if let Some(old_index) = user_files.files.iter().position(|f| f.id == file_id) {
-                // Remove the file node from its current position
-                let file_node = user_files.files.remove(old_index);
-
-                // Insert the file node at the new position
-                if new_index >= user_files.files.len() {
-                    user_files.files.push(file_node);
-                } else {
-                    user_files.files.insert(new_index, file_node);
+            // First, update any parent's children list
+            let old_parent_id = user_files.files[old_index].parent.clone();
+            if let Some(parent_id) = old_parent_id {
+                for file in user_files.files.iter_mut() {
+                    if file.id == parent_id {
+                        file.children.retain(|id| id != &file_id);
+                    }
                 }
-
-                // Insert the modified file vector back into the map
-                user_files_vec.insert(principal_id.to_text(), user_files);
-                Ok(())
-            } else {
-                Err("File ID not found".to_string())
             }
+
+            // Remove the file and reinsert it at the new position
+            let mut file_node = user_files.files.remove(old_index);
+            file_node.parent = None;  // Set to root level
+
+            // Ensure new_index is within bounds
+            let safe_index = new_index.min(user_files.files.len());
+            user_files.files.insert(safe_index, file_node);
+
+            store.insert(principal_id, user_files);
+            Ok(())
         })
     }
+
 
     pub fn save(&self) -> Result<Self, String> {
         if caller().to_string() != self.author {
@@ -316,34 +347,35 @@ impl FileNode {
             // Modify the file vector
             let mut user_files = user_files.clone();
 
-            // Directly find and remove the file
-            if let Some(file_index) = user_files.files.iter().position(|f| f.id == file_id) {
-                let file = user_files.files.remove(file_index);
-                for c in file.children.clone() {
-                    if let Some(c_index) = user_files.files.iter().position(|f| f.id == c) {
-                        user_files.files.remove(file_index);
-                    }
+            // First, find the file to be deleted and get its children
+            let file_index = user_files.files.iter().position(|f| f.id == file_id)?;
+            let file = user_files.files[file_index].clone();
+            let children_ids = file.children.clone();
+
+            // Remove parent reference from all children
+            for child_id in children_ids {
+                if let Some(child) = user_files.files.iter_mut().find(|f| f.id == child_id) {
+                    child.parent = None; // Remove the parent reference
                 }
-
-                // Remove the file from its parent's children list
-                // if let Some(parent_id) = file.parent.clone() {
-                //     user_files.files.iter_mut().filter(|f| f.id == parent_id).for_each(|parent_file| {
-                //         parent_file.children.retain(|id| id != &file_id);
-                //     });
-                // }
-
-                // Remove the file and its children recursively
-                // FileNode::delete_children_recursive(&file_id, &mut user_files.files);
-
-                // Insert the modified file vector back into the map
-                files_store_borrow.insert(principal_id.to_text(), user_files);
-
-                Some(file)
-            } else {
-                None
             }
+
+            // Remove file from its own parent's children list if it has a parent
+            if let Some(parent_id) = &file.parent {
+                if let Some(parent) = user_files.files.iter_mut().find(|f| &f.id == parent_id) {
+                    parent.children.retain(|id| id != &file_id);
+                }
+            }
+
+            // Remove the file itself
+            let deleted_file = user_files.files.remove(file_index);
+
+            // Update the store with modified file vector
+            files_store_borrow.insert(principal_id.to_text(), user_files);
+
+            Some(deleted_file)
         })
     }
+
 
     fn delete_children_recursive(file_id: &FileId, files: &mut Vec<FileNode>) {
         if let Some(pos) = files.iter().position(|f| &f.id == file_id) {

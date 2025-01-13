@@ -1,25 +1,52 @@
-import * as React from "react";
+import { MouseEvent, ReactNode, useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { Box, ListItemIcon, ListItemText, Divider } from "@mui/material";
 
-export default function ContextMenu(props: any) {
-  const [contextMenu, setContextMenu] = React.useState<{
-    mouseX: number;
-    mouseY: number;
-  } | null>(null);
+interface MenuOption {
+  content: ReactNode;
+  icon?: ReactNode;
+  onClick?: () => void;
+  preventClose?: boolean;
+  pure?: boolean;
+  divider?: boolean;
+}
 
-  const handleContextMenu = (event: React.MouseEvent) => {
+interface ContextMenuProps {
+  children: ReactNode;
+  options: MenuOption[];
+  onClick?: (event: MouseEvent) => void;
+  className?: string;
+  disabled?: boolean;
+}
+
+interface MenuPosition {
+  mouseX: number;
+  mouseY: number;
+}
+
+export default function ContextMenu({
+  children,
+  options,
+  onClick,
+  className,
+  disabled = false,
+}: ContextMenuProps) {
+  const [contextMenu, setContextMenu] = useState<MenuPosition | null>(null);
+
+  const handleContextMenu = (event: MouseEvent) => {
+    if (disabled) return;
+
     event.preventDefault();
+    event.stopPropagation();
+
     setContextMenu(
       contextMenu === null
         ? {
             mouseX: event.clientX + 2,
             mouseY: event.clientY - 6,
           }
-        : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
-          // Other native context menus might behave different.
-          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
-          null,
+        : null
     );
   };
 
@@ -27,18 +54,52 @@ export default function ContextMenu(props: any) {
     setContextMenu(null);
   };
 
+  const renderMenuItem = (item: MenuOption, index: number) => {
+    if (item.pure) {
+      return (
+        <Box key={index} onClick={() => !item.preventClose && handleClose()}>
+          {item.content}
+          {item.divider && <Divider />}
+        </Box>
+      );
+    }
+
+    return (
+      <Box key={index}>
+        <MenuItem
+          onClick={() => {
+            !item.preventClose && handleClose();
+            item.onClick?.();
+          }}
+          sx={{
+            minWidth: '240px',
+            px: 3, // Add more horizontal padding
+            '&:hover': {
+              backgroundColor: 'action.hover',
+            },
+          }}
+        >
+          {item.icon && (
+            <ListItemIcon sx={{ minWidth: 36 }}>
+              {item.icon}
+            </ListItemIcon>
+          )}
+          <ListItemText primary={item.content} />
+        </MenuItem>
+        {item.divider && <Divider />}
+      </Box>
+    );
+  };
+
   return (
     <div
-      onClick={props.onClick}
+      onClick={onClick}
       onContextMenu={handleContextMenu}
-      style={{ cursor: "context-menu" }}
+      style={{ cursor: disabled ? "default" : "context-menu" }}
+      className={className}
     >
-      {props.children}
+      {children}
       <Menu
-        id="basic-menu"
-        MenuListProps={{
-          "aria-labelledby": "basic-button",
-        }}
         open={contextMenu !== null}
         onClose={handleClose}
         anchorReference="anchorPosition"
@@ -47,24 +108,26 @@ export default function ContextMenu(props: any) {
             ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
             : undefined
         }
+        elevation={3}
+        sx={{
+          '& .MuiPaper-root': {
+            boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.2)',
+            borderRadius: '8px',
+            minWidth: '280px', // Add minimum width for the entire menu
+          },
+          '& .MuiList-root': {
+            padding: '4px 0',
+          },
+          '& .MuiMenuItem-root': {
+            padding: '8px 24px',
+            typography: 'body2',
+            '&:hover': {
+              backgroundColor: 'action.hover',
+            },
+          },
+        }}
       >
-        {props.options.map((item: any, index: number) => {
-          if (item.pure) {
-            return item.content;
-          }
-          return (
-            <MenuItem
-              key={index}
-              onClick={() => {
-                !item.preventClose && handleClose();
-                item.onClick && item.onClick();
-              }}
-            >
-              {item.icon && item.icon}
-              {item.content}
-            </MenuItem>
-          );
-        })}
+        {options.map((item, index) => renderMenuItem(item, index))}
       </Menu>
     </div>
   );

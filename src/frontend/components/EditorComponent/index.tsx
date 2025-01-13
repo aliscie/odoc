@@ -1,7 +1,6 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import OdocEditor, { MyMentionItem } from "odoc_editor_v2";
-import { Principal } from "@dfinity/principal";
 import createContractPlugin, {
   CONTRACT_KEY,
 } from "../ContractTable/ContractPlugin";
@@ -28,8 +27,79 @@ function EditorComponent(props: Props) {
   );
   let content = props.content;
 
+  let tableChildren = [
+    {
+      type: "th",
+      children: [
+        {
+          type: "td",
+          children: [{ text: "" }],
+        },
+        {
+          type: "td",
+          children: [{ text: "Human", bold: true }],
+        },
+        {
+          type: "td",
+          children: [{ text: "Dog", bold: true }],
+        },
+        {
+          type: "td",
+          children: [{ text: "Cat", bold: true }],
+        },
+      ],
+    },
+    {
+      type: "tr",
+      children: [
+        {
+          type: "td",
+          children: [{ text: "# of Feet", bold: true }],
+        },
+        {
+          type: "td",
+          children: [{ text: "2" }],
+        },
+        {
+          type: "td",
+          children: [{ text: "4" }],
+        },
+        {
+          type: "td",
+          children: [{ text: "4" }],
+        },
+      ],
+    },
+    {
+      type: "tr",
+      children: [
+        {
+          type: "td",
+          children: [{ text: "# of Lives", bold: true }],
+        },
+        {
+          type: "td",
+          children: [{ text: "1" }],
+        },
+        {
+          type: "td",
+          children: [{ text: "1" }],
+        },
+        {
+          type: "td",
+          children: [{ text: "9" }],
+        },
+      ],
+    },
+  ];
+
   let extraPlugins = [
     { plugin: createContractPlugin, key: CONTRACT_KEY, icon: TableChartIcon },
+    // {
+    //   plugin: createCustomTablePlugin,
+    //   key: TABLE_KEY,
+    //   icon: TableRowsIcon,
+    // },
   ];
   const mentions: MyMentionItem[] = all_friends.map((i: any) => {
     return { key: i.id, text: i.name };
@@ -38,7 +108,9 @@ function EditorComponent(props: Props) {
   function handleOnInsertComponent(component: any, component_id: string) {
     switch (component.key) {
       case "custom_contract":
-        console.log("handleOnInsertComponent");
+        // TODO Also, when user remove contract from content page
+        //  Delete the contract if it has no data.
+        // console.log("handleOnInsertComponent");
         custom_contract.id = component_id;
         custom_contract.creator = profile.id;
         custom_contract.date_created = Date.now() * 1e6;
@@ -76,6 +148,7 @@ function EditorComponent(props: Props) {
       onChange={handleInputChange}
       extraPlugins={extraPlugins}
       onInsertComponent={handleOnInsertComponent}
+      // onOnRemoveCompnt={handleOnInsertComponent}
       userMentions={mentions}
     />
   );

@@ -14,6 +14,7 @@ import OfferPage from "./OfferPage";
 import SubscriptionPlans from "./subscrptions";
 import SNSWhitepaper from "./snsWhitePaper";
 import SNSVoting from "./votePage";
+import ProductManagerDashboard from "./dashBoardPage";
 
 function Pages() {
   const [posts, setPosts] = useState([]);
@@ -43,10 +44,18 @@ function Pages() {
     fetchPosts();
   }, [backendActor]);
 
+  const MainPage = () => {
+    if (profile_history?.actions_rate >= 1) {
+      return <ProductManagerDashboard />;
+    }
+    return <LandingPage isLoggedIn={isLoggedIn} login={login} />;
+  };
   return (
     <Routes>
+      <Route path="/" element={<MainPage />} />
+      <Route path="/dashboard" element={<ProductManagerDashboard />} />
       <Route
-        path="/"
+        path="/about"
         element={<LandingPage isLoggedIn={isLoggedIn} login={login} />}
       />
       <Route
