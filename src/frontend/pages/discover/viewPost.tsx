@@ -24,6 +24,8 @@ import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
 import { useBackendContext } from "../../contexts/BackendContext";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 import { Post, PostUser } from "../../../declarations/backend/backend.did";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 interface ViewPostComponentProps {
   post: PostUser;
@@ -73,9 +75,10 @@ const PostActionButton = styled(IconButton)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius * 1.5,
   "&:hover": {
     transform: "scale(1.1)",
-    backgroundColor: theme.palette.mode === "dark"
-      ? "rgba(139, 92, 246, 0.1)"
-      : "rgba(79, 70, 229, 0.1)",
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? "rgba(139, 92, 246, 0.1)"
+        : "rgba(79, 70, 229, 0.1)",
   },
   "&:active": {
     transform: "scale(0.95)",
@@ -88,9 +91,10 @@ const PostActionButton = styled(IconButton)(({ theme }) => ({
 
 const StyledMenu = styled(Menu)(({ theme }) => ({
   "& .MuiPaper-root": {
-    backgroundColor: theme.palette.mode === "dark"
-      ? "rgba(17, 24, 39, 0.95)"
-      : "rgba(255, 255, 255, 0.95)",
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? "rgba(17, 24, 39, 0.95)"
+        : "rgba(255, 255, 255, 0.95)",
     border: `1px solid ${
       theme.palette.mode === "dark"
         ? "rgba(139, 92, 246, 0.2)"
@@ -101,9 +105,10 @@ const StyledMenu = styled(Menu)(({ theme }) => ({
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiPaper-root": {
-    backgroundColor: theme.palette.mode === "dark"
-      ? "rgba(17, 24, 39, 0.95)"
-      : "rgba(255, 255, 255, 0.95)",
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? "rgba(17, 24, 39, 0.95)"
+        : "rgba(255, 255, 255, 0.95)",
     border: `1px solid ${
       theme.palette.mode === "dark"
         ? "rgba(139, 92, 246, 0.2)"
@@ -123,7 +128,9 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
   const [voteLoading, setVoteLoad] = React.useState(false);
   const [isChanged, setChanged] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
-  const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
+    null,
+  );
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [votes, setVotes] = React.useState({
     up: post.votes_up,
@@ -221,12 +228,14 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
     return (
       <PostCard>
         <StyledCardContent>
-          <Box sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "10rem"
-          }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "10rem",
+            }}
+          >
             <CircularProgress color="primary" />
           </Box>
         </StyledCardContent>
@@ -305,36 +314,43 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
         </Box>
 
         <Box sx={{ mb: 2 }}>
-          <EditorComponent
-            editorKey={post.id}
-            readOnly={profile?.id !== post.creator.id}
-            id={post.id}
-            contentEditable={profile?.id === post.creator.id}
-            onChange={(content) => {
-              contentTree.current = { "": content };
-              if (!isChanged && post.creator.id === profile?.id) {
-                setChanged(true);
-              }
-            }}
-            content={deserializeContentTree(post.content_tree)}
-          />
+          <DndProvider backend={HTML5Backend}>
+            <EditorComponent
+              editorKey={post.id}
+              readOnly={profile?.id !== post.creator.id}
+              id={post.id}
+              contentEditable={profile?.id === post.creator.id}
+              onChange={(content) => {
+                contentTree.current = { "": content };
+                if (!isChanged && post.creator.id === profile?.id) {
+                  setChanged(true);
+                }
+              }}
+              content={deserializeContentTree(post.content_tree)}
+            />
+          </DndProvider>
         </Box>
-
-        <Box sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          color: "#A78BFA",
-        }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            color: "#A78BFA",
+          }}
+        >
           <PostActionButton
-            disabled={!profile || profile?.id === post.creator.id || voteLoading}
+            disabled={
+              !profile || profile?.id === post.creator.id || voteLoading
+            }
             onClick={onLike}
           >
             <Heart
               size={20}
-              fill={votes.up.map((v) => v.toString()).includes(profile?.id)
-                ? "#A855F7"
-                : "rgba(233,213,255,0)"}
+              fill={
+                votes.up.map((v) => v.toString()).includes(profile?.id)
+                  ? "#A855F7"
+                  : "rgba(233,213,255,0)"
+              }
             />
             <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
               {votes.up.length}
@@ -342,13 +358,17 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
           </PostActionButton>
 
           <PostActionButton
-            disabled={!profile || profile?.id === post.creator.id || voteLoading}
+            disabled={
+              !profile || profile?.id === post.creator.id || voteLoading
+            }
             onClick={onDisLike}
           >
             <ThumbsDown
-              fill={votes.down.map((v) => v.toString()).includes(profile?.id)
-                ? "#A855F7"
-                : "rgba(233,213,255,0)"}
+              fill={
+                votes.down.map((v) => v.toString()).includes(profile?.id)
+                  ? "#A855F7"
+                  : "rgba(233,213,255,0)"
+              }
               size={20}
             />
             <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
@@ -364,19 +384,23 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
         </Box>
 
         {post.comments?.length > 0 && (
-          <Box sx={{
-            mt: 2,
-            pl: 2,
-            borderLeft: "2px solid rgba(139, 92, 246, 0.2)",
-          }}>
+          <Box
+            sx={{
+              mt: 2,
+              pl: 2,
+              borderLeft: "2px solid rgba(139, 92, 246, 0.2)",
+            }}
+          >
             {post.comments.map((comment) => (
               <Box key={comment.id} sx={{ mb: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  <Box sx={{
-                    fontWeight: "bold",
-                    color: "#E9D5FF",
-                    fontSize: "0.875rem",
-                  }}>
+                  <Box
+                    sx={{
+                      fontWeight: "bold",
+                      color: "#E9D5FF",
+                      fontSize: "0.875rem",
+                    }}
+                  >
                     {comment.author}
                   </Box>
                 </Box>
@@ -384,7 +408,10 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
                   {comment.content}
                 </Box>
                 {comment.replies.map((reply) => (
-                  <Box key={reply.id} sx={{ ml: 4, mt: 1, fontSize: "0.875rem" }}>
+                  <Box
+                    key={reply.id}
+                    sx={{ ml: 4, mt: 1, fontSize: "0.875rem" }}
+                  >
                     <Box sx={{ fontWeight: "bold", color: "#E9D5FF" }}>
                       {reply.author}
                     </Box>

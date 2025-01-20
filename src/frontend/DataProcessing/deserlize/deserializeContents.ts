@@ -1,4 +1,5 @@
 import { ContentNode } from "../../../declarations/backend/backend.did";
+import { convertStyleArrayToObject } from "../serialize/serializeFileContents";
 
 export interface SlateNode {
   id: String;
@@ -24,12 +25,14 @@ function nesting(
     return nesting(child, alL_contents, visited);
   });
   const indent = content_node.indent ? Number(content_node.indent) : null;
+  const formats = convertStyleArrayToObject(content_node.formats);
   let item = {
     id: content_node.id,
     type: content_node._type,
     data: content_node.data,
     value: content_node.value,
     listStyleType: content_node.listStyleType,
+    ...formats,
   };
 
   if (indent) {

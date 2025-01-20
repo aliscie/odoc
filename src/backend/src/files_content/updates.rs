@@ -8,7 +8,7 @@ use crate::files::FileNode;
 use crate::files_content::ContentNode;
 use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId};
 use crate::StoredContract;
-
+use crate::{ShareFile, FILE_CONTENTS, USER_FILES};
 // #[update]
 // fn content_updates(file_id: FileId, content_parent_id: Option<ContentId>, new_text: String) -> Result<String, String> {
 //     if FileNode::get(&file_id).is_none() {

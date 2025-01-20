@@ -14,12 +14,16 @@ function formatTimestamp(timestampNanoseconds: bigint) {
 export function formatRelativeTime(timestampNanoseconds: number): string {
   const timestampMilliseconds = Number(timestampNanoseconds) / 1e6;
   const currentTimestamp = Date.now();
-  const timeDifference = currentTimestamp - timestampMilliseconds;
+  const diff = currentTimestamp - timestampMilliseconds;
 
-  const seconds = Math.floor(timeDifference / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+
+  const seconds = Math.floor(diff / 1000);
+  // const minutes = Math.floor(seconds / 60);
+  // const hours = Math.floor(minutes / 60);
+  // const days = Math.floor(hours / 24);
   const weeks = Math.floor(days / 7);
   const months = Math.floor(weeks / 4);
   const years = Math.floor(months / 12);

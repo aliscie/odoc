@@ -12,10 +12,11 @@ pub use queries::*;
 pub use types::*;
 pub use updates::*;
 
-use crate::storage_schema::ContentTree;
+use crate::storage_schema::{ContentTree};
 use crate::user::User;
 use crate::POSTS;
 use crate::{Memory, COUNTER};
+use crate::files_content::{ContentNode, OldContentNode};
 
 mod queries;
 mod types;
@@ -41,19 +42,57 @@ impl Storable for Post {
     }
 
     fn from_bytes(bytes: Cow<[u8]>) -> Self {
-        if let Ok(obj) = Decode!(bytes.as_ref(), Self) {
-            obj
-        } else {
-            Post {
-                id: String::new(),
-                content_tree: Default::default(),
-                tags: Default::default(),
-                creator: String::new(),
-                date_created: 0,
-                votes_up: Default::default(),
-                votes_down: Default::default(),
+        Decode!(bytes.as_ref(), Self).unwrap_or_else(|_| {
+            pub type OldContentTree = Vec<OldContentNode>;
+
+            #[derive(Clone, Debug, Deserialize, CandidType)]
+            struct OldPost {
+                id: String,
+                content_tree: OldContentTree,
+                tags: Vec<String>,
+                creator: String,
+                date_created: u64,
             }
-        }
+
+            match Decode!(bytes.as_ref(), OldPost) {
+                Ok(old) => Post {
+                    id: old.id,
+                    content_tree: old.content_tree.into_iter()
+                        .map(|old_node| ContentNode {
+                            formats: Vec::new(),
+                            id: old_node.id,
+                            parent: old_node.parent,
+                            _type: old_node._type,
+                            value: old_node.value,
+                            text: old_node.text,
+                            language: old_node.language,
+                            indent: old_node.indent,
+                            data: old_node.data,
+                            listStyleType: old_node.listStyleType,
+                            listStart: old_node.listStart,
+                            children: old_node.children,
+                        })
+                        .collect(),
+                    tags: old.tags,
+                    creator: old.creator,
+                    date_created: old.date_created,
+                    votes_up: Vec::new(),
+                    votes_down: Vec::new(),
+                },
+                Err(e) => {
+                    ic_cdk::print(format!("Failed to decode old Post format: {}", e));
+                    Post {
+                        id: String::new(),
+                        content_tree: Default::default(),
+                        tags: Default::default(),
+                        creator: String::new(),
+                        date_created: 0,
+                        votes_up: Default::default(),
+                        votes_down: Default::default(),
+                    }
+                }
+            }
+        })
     }
 
     const BOUND: Bound = Bound::Unbounded;

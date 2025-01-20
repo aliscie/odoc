@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {AgCharts} from "ag-charts-react";
+import React, { useEffect, useState } from "react";
+import { AgCharts } from "ag-charts-react";
 import {
   Box,
   Button,
@@ -13,16 +13,17 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import {Edit} from "@mui/icons-material";
+import { Edit } from "@mui/icons-material";
 import Friends from "./friends";
-import {useDispatch, useSelector} from "react-redux";
-import {useSnackbar} from "notistack";
-import {useBackendContext} from "../../contexts/BackendContext";
-import {RegisterUser} from "../../../declarations/backend/backend.did";
+import { useDispatch, useSelector } from "react-redux";
+import { useSnackbar } from "notistack";
+import { useBackendContext } from "../../contexts/BackendContext";
+import { RegisterUser } from "../../../declarations/backend/backend.did";
 import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import {formatRelativeTime} from "../../utils/time";
+import { formatRelativeTime } from "../../utils/time";
+import EditProfile from "./editeProfile";
 
 const CopyButton = ({ title, value }) => {
   const [showCheck, setShowCheck] = useState(false);
@@ -79,66 +80,35 @@ const CopyButton = ({ title, value }) => {
 };
 
 const ProfilePage = ({ profile, history, friends, friendButton }) => {
-  const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
-  const { backendActor } = useBackendContext();
   const { isDarkMode } = useSelector((state: any) => state.uiState);
   const currentUser = useSelector((state: any) => state.filesState.profile);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
+
   const [formValues, setFormValues] = useState({
     name: "",
     description: "",
     email: "",
   });
 
-  useEffect(() => {
-    if (profile) {
-      setFormValues({
-        name: profile.name,
-        description: profile.description || "",
-        email: profile.email || "",
-      });
-    }
-  }, [profile]);
+  // useEffect(() => {
+  //   if (profile) {
+  //     setFormValues({
+  //       name: profile.name,
+  //       description: profile.description || "",
+  //       email: profile.email || "",
+  //     });
+  //   }
+  // }, [profile]);
 
   const canEdit = currentUser?.id === profile?.id;
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormValues((prev) => ({ ...prev, [name]: value }));
-  };
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = event.target;
+  //   setFormValues((prev) => ({ ...prev, [name]: value }));
+  // };
 
-  const handleUpdate = async () => {
-    if (!backendActor) {
-      enqueueSnackbar("Backend not initialized", { variant: "error" });
-      return;
-    }
 
-    setIsUpdating(true);
-    try {
-      const updateData: RegisterUser = {
-        name: [formValues.name],
-        description: [formValues.description],
-        photo: [],
-      };
-
-      const result = await backendActor.update_user_profile(updateData);
-
-      if (result.Ok) {
-        enqueueSnackbar("Profile updated successfully", { variant: "success" });
-        setIsEditing(false);
-      } else if (result.Err) {
-        enqueueSnackbar(result.Err, { variant: "error" });
-      }
-    } catch (error) {
-      console.error("Profile update error:", error);
-      enqueueSnackbar("Failed to update profile", { variant: "error" });
-    } finally {
-      setIsUpdating(false);
-    }
-  };
   // Handle completely missing props with default empty objects
   const safeProfile = profile || {};
   const safeHistory = history || {};
@@ -303,94 +273,48 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
 
               <Box>
                 {isEditing ? (
-                  <Stack spacing={2}>
-                    <TextField
-                      fullWidth
-                      label="Name"
-                      name="name"
-                      value={formValues.name}
-                      onChange={handleChange}
-                      variant="outlined"
-                    />
-                    <TextField
-                      fullWidth
-                      label="Bio"
-                      name="description"
-                      value={formValues.description}
-                      onChange={handleChange}
-                      multiline
-                      rows={4}
-                      variant="outlined"
-                      sx={{
-                        width: "100%",
-                        minWidth: "300px",
-                        "& .MuiInputBase-root": {
-                          width: "100%",
-                        },
-                      }}
-                    />
-                  </Stack>
+                  <EditProfile
+                      setIsEditing={setIsEditing}
+                    profile={safeProfile}
+                    onCancel={() => setIsEditing(false)}
+                  />
                 ) : (
                   <>
                     <Typography variant="h4" gutterBottom>
-                      {name || "Anonymous"}
+                      {name}
                     </Typography>
                     <Typography variant="h4" gutterBottom>
-                      {email || ""}
+                      {email}
                     </Typography>
-                    <Typography
-                      sx={{ fontSize: "0.75rem" }}
-                      color="text.secondary"
-                    >
-                      {id || "No id available"}
+                    <Typography variant="body2" color="text.secondary">
+                      {id}
                     </Typography>
-
                     <Typography variant="body1" color="text.secondary">
-                      {description || "No description available"}
+                      {description}
                     </Typography>
+                    {friendButton}
+                    <CopyButton
+                      title="Copy Profile Link"
+                      value={`${window.location.href}/user?id=${profile?.id}`}
+                    />
                   </>
                 )}
-                {friendButton && friendButton}
-                <CopyButton
-                  title={"Copy Profile Link"}
-                  value={window.location.href + "/user?id=" + profile?.id}
-                />
               </Box>
             </Box>
-            {canEdit && (
-              <Box>
-                {isEditing ? (
-                  <Stack direction="row" spacing={1}>
-                    <Button
-                      variant="outlined"
-                      onClick={() => {
-                        setIsEditing(false);
-                        setFormValues({
-                          name: profile.name,
-                          description: profile.description || "",
-                        });
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="contained"
-                      onClick={handleUpdate}
-                      disabled={isUpdating}
-                    >
-                      {isUpdating ? "Saving..." : "Save"}
-                    </Button>
-                  </Stack>
-                ) : (
-                  <Button
-                    startIcon={<Edit />}
-                    onClick={() => setIsEditing(true)}
-                    variant="outlined"
-                  >
-                    Edit Profile
-                  </Button>
-                )}
-              </Box>
+            {canEdit && !isEditing && (
+              <Button
+                startIcon={<Edit />}
+                onClick={() => setIsEditing(true)}
+                variant="outlined"
+                // sx={{
+                //   borderColor: theme.palette.divider,
+                //   "&:hover": {
+                //     borderColor: theme.palette.primary.main,
+                //   },
+                // }}
+              >
+                Edit Profile
+              </Button>
             )}
           </Box>
         </CardContent>

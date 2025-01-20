@@ -97,14 +97,16 @@ const RegistrationForm: React.FC = () => {
       name: [formValues.username],
       description: [formValues.bio],
       photo: photoByte ? [photoByte] : [[]],
+      email: [String(formValues.email)],
     };
 
     try {
       if (!backendActor) {
         throw new Error("Backend actor not initialized");
       }
-
-      const register = await backendActor.register(input);
+      // console.log({ input });
+      let affiliateId = localStorage.getItem("affiliateId");
+      const register = await backendActor.register(String(affiliateId), input);
       closeSnackbar(loadingSnackbar);
 
       if (register?.Ok) {
@@ -126,12 +128,16 @@ const RegistrationForm: React.FC = () => {
   if (!showForm) return null;
 
   return (
-    <Container maxWidth="sm" sx={{ 
-      position: 'relative',
-      zIndex: 1400,
-      mt: '80px' // Add space below the top nav bar
-    }}>
+    <Container
+      maxWidth="sm"
+      sx={{
+        position: "relative",
+        zIndex: 1400,
+        mt: "80px", // Add space below the top nav bar
+      }}
+    >
       <Paper
+        key={isLoggedIn}
         elevation={3}
         sx={{
           p: 4,
@@ -142,7 +148,12 @@ const RegistrationForm: React.FC = () => {
         <Typography variant="h4" align="center" gutterBottom>
           Welcome to Odoc
         </Typography>
-        <Typography variant="subtitle1" align="center" color="textSecondary" sx={{ mb: 4 }}>
+        <Typography
+          variant="subtitle1"
+          align="center"
+          color="textSecondary"
+          sx={{ mb: 4 }}
+        >
           Complete your profile to get started
         </Typography>
 
@@ -162,15 +173,15 @@ const RegistrationForm: React.FC = () => {
             onChange={handleUploadPhoto}
           />
           <label htmlFor="photo">
-            <IconButton 
+            <IconButton
               component="span"
               sx={{
-                position: 'relative',
-                '&:hover': {
-                  '& .MuiAvatar-root': {
+                position: "relative",
+                "&:hover": {
+                  "& .MuiAvatar-root": {
                     opacity: 0.8,
                   },
-                  '& .upload-icon': {
+                  "& .upload-icon": {
                     opacity: 1,
                   },
                 },
@@ -182,21 +193,21 @@ const RegistrationForm: React.FC = () => {
                 sx={{
                   width: 120,
                   height: 120,
-                  transition: 'opacity 0.3s',
+                  transition: "opacity 0.3s",
                   border: `4px solid ${theme.palette.primary.main}`,
                 }}
               >
                 {!photo && <Add />}
               </Avatar>
-              <PhotoCamera 
+              <PhotoCamera
                 className="upload-icon"
                 sx={{
-                  position: 'absolute',
+                  position: "absolute",
                   opacity: 0,
-                  transition: 'opacity 0.3s',
-                  color: 'white',
-                  backgroundColor: 'rgba(0,0,0,0.5)',
-                  borderRadius: '50%',
+                  transition: "opacity 0.3s",
+                  color: "white",
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  borderRadius: "50%",
                   padding: 1,
                 }}
               />

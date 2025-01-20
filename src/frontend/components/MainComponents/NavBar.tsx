@@ -15,11 +15,11 @@ import {
 import { Link } from "react-router-dom";
 import InfoIcon from "@mui/icons-material/Info";
 import ExploreIcon from "@mui/icons-material/Explore";
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
-import ReceiptIcon from '@mui/icons-material/Receipt';
-import HowToVoteIcon from '@mui/icons-material/HowToVote';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import CloseIcon from '@mui/icons-material/Close';
+import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
+import ReceiptIcon from "@mui/icons-material/Receipt";
+import HowToVoteIcon from "@mui/icons-material/HowToVote";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import CloseIcon from "@mui/icons-material/Close";
 import CreateFile from "../Actions/CreateFile";
 import { handleRedux } from "../../redux/store/handleRedux";
 import { Z_INDEX_SIDE_NAVBAR } from "../../constants/zIndex";
@@ -39,7 +39,7 @@ const StyledDrawerPaper = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   position: "relative",
-  [theme.breakpoints.up('sm')]: {
+  [theme.breakpoints.up("sm")]: {
     width: "250px",
     padding: "8px 16px",
     marginTop: "25px", // Reduced fixed height for desktop top spacing
@@ -56,7 +56,7 @@ const MobileHeader = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   zIndex: 1,
   borderBottom: `1px solid ${theme.palette.divider}`,
-  [theme.breakpoints.up('sm')]: {
+  [theme.breakpoints.up("sm")]: {
     display: "none",
   },
 }));
@@ -68,7 +68,7 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   "&:hover": {
     backgroundColor: theme.palette.action.hover,
   },
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.down("sm")]: {
     margin: "4px 16px",
     padding: "16px",
   },
@@ -78,15 +78,17 @@ const ContentWrapper = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   flex: 1,
   overflowY: "auto",
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.down("sm")]: {
     padding: theme.spacing(1),
   },
 }));
 
 const NavBar = (props: any) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const { files, profile_history, currentWorkspace } = useSelector((state: any) => state.filesState);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { files, profile_history, currentWorkspace } = useSelector(
+    (state: any) => state.filesState,
+  );
   const dispatch = useDispatch();
   const { isNavOpen, isLoggedIn } = useSelector((state: any) => state.uiState);
   const [defaultItems, setDefaultItems] = useState([]);
@@ -139,7 +141,7 @@ const NavBar = (props: any) => {
 
     if (updatedFile1.parent.length > 0 && new_index > 0) {
       const parentIndex = flattenedFiles.findIndex(
-        (f) => f.id == updatedFile1.parent[0]
+        (f) => f.id == updatedFile1.parent[0],
       );
       new_index = Math.abs(new_index - parentIndex - 1);
     }
@@ -156,7 +158,7 @@ const NavBar = (props: any) => {
         updatedFile2,
         reIndexing,
         flattenedFiles,
-      })
+      }),
     );
   };
 
@@ -176,19 +178,19 @@ const NavBar = (props: any) => {
         anchor="left"
         onClose={handleNavClose}
         PaperProps={{
+
           className: "sidenav card bg-blur",
           sx: {
-            width: isMobile ? "100%" : "250px",
-            border: "none",
+            width: isMobile ? "100%" : "200px",
+            // outline:"red 10px",
             zIndex: Z_INDEX_SIDE_NAVBAR,
           },
         }}
         ModalProps={{
-          keepMounted: true // Better mobile performance
+          keepMounted: true, // Better mobile performance
         }}
       >
         <StyledDrawerPaper>
-
           <ContentWrapper>
             <List>
               {navLinks.map((link) => (
@@ -197,14 +199,27 @@ const NavBar = (props: any) => {
                   onClick={handleNavClose}
                   component={Link}
                   to={link.to}
+                  sx={{
+                    padding: "4px 8px", // Reduced padding
+                    minHeight: "36px", // Reduced height
+                  }}
                 >
-                  {link.icon}
+                  {link.icon && (
+                    <Box
+                      sx={{
+                        fontSize: "0.9rem", // Smaller icon
+                        minWidth: "24px", // Reduced icon width
+                      }}
+                    >
+                      {link.icon}
+                    </Box>
+                  )}
                   <ListItemText
                     primary={link.label}
                     sx={{
-                      marginLeft: "16px",
+                      marginLeft: "8px", // Reduced margin
                       "& .MuiTypography-root": {
-                        fontSize: isMobile ? "1rem" : "inherit",
+                        fontSize: isMobile ? "0.875rem" : "0.9rem", // Smaller font
                         color: theme.palette.text.primary,
                       },
                     }}
@@ -222,10 +237,8 @@ const NavBar = (props: any) => {
                   defaultItems={defaultItems}
                 />
                 <Divider sx={{ my: 2 }} />
-                <Box sx={{ px: isMobile ? 2 : 0 }}>
-                  <CreateFile />
-                  <GetMoreFiles />
-                </Box>
+                <CreateFile />
+                <GetMoreFiles />
               </>
             )}
           </ContentWrapper>
@@ -236,7 +249,7 @@ const NavBar = (props: any) => {
         id="main"
         sx={{
           marginLeft: !isMobile && isNavOpen ? "250px" : 0,
-          transition: theme.transitions.create(['margin', 'width'], {
+          transition: theme.transitions.create(["margin", "width"], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
           }),

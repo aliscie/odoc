@@ -109,7 +109,7 @@ export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
     nodes[id] = { id, children };
     parent?.children.push(item);
 
-    let childrenOrder = flattenedItems.find((f) => f.id == parentId);
+    let childrenOrder = flattenedItems.find((f) => f?.id == parentId);
     childrenOrder = childrenOrder ? childrenOrder.children : [];
     if (parent) {
       parent.children = parent.children.sort((a, b) => {

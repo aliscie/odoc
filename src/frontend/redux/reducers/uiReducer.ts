@@ -7,6 +7,11 @@ export function uiReducer(state = initialState, action: Action): State {
         ...state,
         posts: action.posts,
       };
+    case "IS_FETCHING":
+      return {
+        ...state,
+        isFetching: action.isFetching,
+      };
     case "IS_REGISTERED":
       return {
         ...state,

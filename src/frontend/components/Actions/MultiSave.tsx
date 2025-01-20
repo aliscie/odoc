@@ -36,7 +36,6 @@ const MultiSaveButton: React.FC<MultiSaveButtonProps> = () => {
     changes.files.length === 0 &&
     Object.keys(changes.contracts).length === 0 &&
     changes.files_indexing.length === 0;
-
   const serializedContent = serializeFileContents(changes.contents);
   const serializedContracts = Object.values(
     changes.contracts,

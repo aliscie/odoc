@@ -28,16 +28,53 @@ impl Storable for Friend {
     }
 
     fn from_bytes(bytes: Cow<[u8]>) -> Self {
-        if let Ok(friend) = Decode!(bytes.as_ref(), Self) {
-            return friend;
-        }
-        Friend {
-            id: "".to_string(),
-            sender: User::default(),
-            receiver: User::default(),
-            confirmed: false,
-        }
+        Decode!(bytes.as_ref(), Self).unwrap_or_else(|_| {
+            // Try to decode with old format
+            #[derive(CandidType, Deserialize)]
+            struct OldUser {
+                id: String,
+                name: String,
+                description: String,
+                photo: Vec<u8>,
+            }
+
+            #[derive(CandidType, Deserialize)]
+            struct OldFriend {
+                id: String,
+                sender: OldUser,
+                receiver: OldUser,
+                confirmed: bool,
+            }
+
+            match Decode!(bytes.as_ref(), OldFriend) {
+                Ok(old_friend) => Friend {
+                    id: old_friend.id,
+                    sender: User {
+                        id: old_friend.sender.id,
+                        name: old_friend.sender.name,
+                        email: String::new(),
+                        description: old_friend.sender.description,
+                        photo: old_friend.sender.photo,
+                    },
+                    receiver: User {
+                        id: old_friend.receiver.id,
+                        name: old_friend.receiver.name,
+                        email: String::new(),
+                        description: old_friend.receiver.description,
+                        photo: old_friend.receiver.photo,
+                    },
+                    confirmed: old_friend.confirmed,
+                },
+                Err(_) => Friend {
+                    id: String::new(),
+                    sender: User::default(),
+                    receiver: User::default(),
+                    confirmed: false,
+                }
+            }
+        })
     }
+
 
     const BOUND: Bound = Bound::Bounded {
         max_size: 999999,

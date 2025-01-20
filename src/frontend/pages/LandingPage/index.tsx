@@ -89,7 +89,7 @@ export default function LandingPage(props) {
             </Typography>
 
             <Box sx={{ color: "text.secondary", mb: 4 }}>
-              Odoc is the ultimate  platform designed for project
+              Odoc is the custom smart contract platform with no code. Made for project
               management, freelancers, remote teams, and small businesses. Built
               on the{" "}
               <Link

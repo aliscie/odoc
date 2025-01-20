@@ -29,14 +29,35 @@ impl Storable for User {
         Cow::Owned(Encode!(self).unwrap())
     }
 
-    fn from_bytes(bytes: std::borrow::Cow<[u8]>) -> Self {
-        if let Ok(user) = Decode!(bytes.as_ref(), Self) {
-            user
-        } else {
-            return User::default();
-        }
-    }
 
+    fn from_bytes(bytes: Cow<[u8]>) -> Self {
+        Decode!(bytes.as_ref(), Self).unwrap_or_else(|_| {
+            // Try to decode with old format
+            #[derive(CandidType, Deserialize)]
+            struct OldUser {
+                id: String,
+                name: String,
+                description: String,
+                photo: Vec<u8>,
+            }
+
+            match Decode!(bytes.as_ref(), OldUser) {
+                Ok(old_user) => User {
+                    id: old_user.id,
+                    name: old_user.name,
+                    email: String::new(), // Default value for new field
+                    description: old_user.description,
+                    photo: old_user.photo,
+                },
+                Err(_) => {
+                    let mut new_user = User::default();
+                    new_user.name = "NoneName".to_string();
+                    new_user.id = "NoneID".to_string();
+                    return new_user
+                } // Use default if both formats fail
+            }
+        })
+    }
     const BOUND: Bound = Bound::Bounded {
         max_size: 999999,
         is_fixed_size: false,

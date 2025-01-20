@@ -88,8 +88,17 @@ impl Storable for NotificationVec {
     }
 
     fn from_bytes(bytes: Cow<[u8]>) -> Self {
-        Decode!(bytes.as_ref(), Self).unwrap()
+        if let Ok(x) = Decode!(bytes.as_ref(), Self) {
+            return x;
+        }
+        return NotificationVec {
+            notifications: vec![],
+        };
     }
+
+    // fn from_bytes(bytes: Cow<[u8]>) -> Self {
+    //     Decode!(bytes.as_ref(), Self).unwrap()
+    // }
 
     const BOUND: Bound = Bound::Unbounded;
 }

@@ -61,6 +61,8 @@ mod timer;
 mod user_history;
 mod websocket;
 mod workspaces;
+mod affiliate;
+use affiliate::*;
 use crate::ckusdc_index_types::*;
 use ic_cdk::api::management_canister::bitcoin::{
     BitcoinNetwork, GetUtxosResponse, MillisatoshiPerByte,
@@ -192,6 +194,12 @@ thread_local! {
     );
 
     static WORK_SPACES: RefCell<StableBTreeMap<String, WorkSpaceVec, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(13))),
+        )
+    );
+
+    static AFFILIATE: RefCell<StableBTreeMap<String, Affiliate, Memory>> = RefCell::new(
         StableBTreeMap::init(
             MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(13))),
         )

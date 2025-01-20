@@ -703,7 +703,7 @@
 +enhance the look of the registeration forum and do not use RegistrationFormDialog
 
 # 2024-12-22 13:50:23.474738
-+share the files ./src/frontend/App.tsx and ./src/frontend/components/MainComponents/TopNavBar.tsx
++share the files ./src/frontend/App.tsx and ./src/frontend/components/MainComponents/Index.tsx
 
 # 2024-12-22 13:50:41.226640
 +how to do that
@@ -17444,7 +17444,7 @@
 +import useInitialData from "./redux/initialData/useInitialData";
 +import { SnackbarProvider } from "notistack";
 +import NavBar from "./components/MainComponents/NavBar";
-+import TopNavBar from "./components/MainComponents/TopNavBar";
++import Index from "./components/MainComponents/Index";
 +import RegistrationForm from "./components/MainComponents/RegistrationForm";
 +import SearchPopper from "./components/SearchComponent";
 +import useSocket from "./websocket/use_socket";
@@ -17483,7 +17483,7 @@
 +      <SearchPopper />
 +      <SnackbarProvider maxSnack={3}>
 +        <RegistrationForm />
-+        <TopNavBar />
++        <Index />
 +        <NavBar>
 +          <Pages />
 +        </NavBar>
@@ -18043,7 +18043,7 @@
 +import useInitialData from "./redux/initialData/useInitialData";
 +import { SnackbarProvider } from "notistack";
 +import NavBar from "./components/MainComponents/NavBar";
-+import TopNavBar from "./components/MainComponents/TopNavBar";
++import Index from "./components/MainComponents/Index";
 +import RegistrationForm from "./components/MainComponents/RegistrationForm";
 +import SearchPopper from "./components/SearchComponent";
 +import useSocket from "./websocket/use_socket";
@@ -18105,7 +18105,7 @@
 +      <SearchPopper />
 +      <SnackbarProvider maxSnack={3}>
 +        <RegistrationForm />
-+        <TopNavBar />
++        <Index />
 +        <NavBar>
 +          <Pages />
 +        </NavBar>

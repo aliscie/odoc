@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, screen } from "@testing-library/react";
 import { vi } from "vitest";
-import FileContentPage from "../../pages/FileContentPage";
+import Index from "../../pages/fileContentPage";
 import renderWithProviders from "./testsWrapper";
 
 // Mock store and initial state
@@ -14,9 +14,9 @@ const initialState = {
   },
 };
 
-describe("FileContentPage", () => {
+describe("Index", () => {
   test("renders 404 when no current_file", () => {
-    renderWithProviders(<FileContentPage />);
+    renderWithProviders(<Index />);
     expect(screen.getByText("404 Not Found")).toBeInTheDocument();
   });
 
@@ -35,7 +35,7 @@ describe("FileContentPage", () => {
         files_content: { file1: "Test content" },
       },
     };
-    renderWithProviders(<FileContentPage />);
+    renderWithProviders(<Index />);
 
     expect(screen.getByPlaceholderText("Untitled")).toHaveValue("Test File");
     expect(screen.getByText("Test content")).toBeInTheDocument();
@@ -58,7 +58,7 @@ describe("FileContentPage", () => {
       },
     };
 
-    renderWithProviders(<FileContentPage />);
+    renderWithProviders(<Index />);
 
     // Mock debounce
     fireEvent.change(screen.getByPlaceholderText("Untitled"), {
@@ -87,7 +87,7 @@ describe("FileContentPage", () => {
         files_content: { file1: "Test content" },
       },
     };
-    renderWithProviders(<FileContentPage />);
+    renderWithProviders(<Index />);
 
     const input = screen.getByPlaceholderText("Untitled");
     const keydownEvent = new KeyboardEvent("keydown", {

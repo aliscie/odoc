@@ -21,8 +21,26 @@ pub enum ContentData {
     // You can have like videos and other data.
 }
 
+
+#[derive(Clone, Debug, Deserialize, CandidType)]
+pub struct OldContentNode {
+    pub id: ContentId,
+    pub parent: Option<ContentId>,
+    pub _type: String,
+    pub value: String,
+    pub text: String,
+    pub language: String,
+    pub indent: u64,
+    pub data: Option<ContentData>,
+    pub listStyleType: String,
+    pub listStart: u64,
+    #[serde(default)]
+    pub children: Vec<ContentId>,
+}
+
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct ContentNode {
+    pub formats: Vec<String>,
     pub id: ContentId,
     pub parent: Option<ContentId>,
     pub _type: String,
@@ -44,12 +62,63 @@ pub struct ContentNodeVec {
 
 impl Storable for ContentNodeVec {
     fn to_bytes(&self) -> Cow<[u8]> {
-        Cow::Owned(Encode!(self).unwrap())
+        match Encode!(self) {
+            Ok(bytes) => Cow::Owned(bytes),
+            Err(e) => {
+                // Log the error
+                panic!("{}",format!("Error encoding ContentNodeVec: {}", e));
+                // Return empty content as fallback
+                Cow::Owned(Encode!(&ContentNodeVec {
+                    contents: HashMap::new(),
+                }).unwrap_or_else(|_| Vec::new()))
+            }
+        }
     }
 
     fn from_bytes(bytes: Cow<[u8]>) -> Self {
-        Decode!(bytes.as_ref(), Self).unwrap_or_else(|_| ContentNodeVec {
-            contents: HashMap::new(),
+        Decode!(bytes.as_ref(), Self).unwrap_or_else(|_| {
+            // Try to decode with old format
+            #[derive(CandidType, Deserialize)]
+            struct OldContentNodeVec {
+                pub contents: HashMap<FileId, Vec<OldContentNode>>,
+            }
+
+            match Decode!(bytes.as_ref(), OldContentNodeVec) {
+                Ok(old_vec) => {
+                    ContentNodeVec {
+                        contents: old_vec.contents.into_iter()
+                            .map(|(file_id, old_nodes)| {
+                                let new_nodes = old_nodes.into_iter()
+                                    .map(|old| {
+                                        let mut new = ContentNode {
+                                            formats: Vec::new(),
+                                            id: old.id,
+                                            parent: old.parent,
+                                            _type: old._type,
+                                            value: old.value,
+                                            text: old.text,
+                                            language: old.language,
+                                            indent: old.indent,
+                                            data: old.data,
+                                            listStyleType: old.listStyleType,
+                                            listStart: old.listStart,
+                                            children: old.children,
+                                        };
+                                        new
+                                    })
+                                    .collect();
+                                (file_id, new_nodes)
+                            })
+                            .collect()
+                    }
+                }
+                Err(e) => {
+                    ic_cdk::print(format!("Failed to decode both formats: {}", e));
+                    ContentNodeVec {
+                        contents: HashMap::new(),
+                    }
+                }
+            }
         })
     }
 

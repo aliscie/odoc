@@ -1,14 +1,35 @@
 import { randomString } from "../dataSamples";
 import { ContentNode } from "../../../declarations/backend/backend.did";
 
+const stylesToCheck = ["bold", "italic", "underline", "strikethrough", "code"];
+
+function getFormats(item) {
+  const itemKeys = Object.keys(item);
+
+  // Filter stylesToCheck to only include those that exist in itemKeys
+  return stylesToCheck.filter((style) => itemKeys.includes(style));
+}
+
+export function convertStyleArrayToObject(styleArray) {
+  return styleArray.reduce((acc, style) => {
+    if (stylesToCheck.includes(style)) {
+      acc[style] = true;
+    }
+    return acc;
+  }, {});
+}
+
 function de_nesting(nested: any[]) {
   let queue = [];
   let data = [];
   let parent = [];
   nested.forEach((rootItem) => {
     queue.push(rootItem);
+
     while (queue.length > 0) {
       let item = queue.pop();
+      let formats = getFormats(item);
+
       let id = item.id || randomString();
       let children: ContentNode[] = item.children
         ? item.children.map((child) => {
@@ -16,8 +37,10 @@ function de_nesting(nested: any[]) {
             return { id, parent: [String(id)], ...child };
           })
         : [];
+
       let obj: ContentNode = {
         id: String(id),
+        formats,
         value: item.value || "",
         _type: item.type || "",
         data: item.data || [],

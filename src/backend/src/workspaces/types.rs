@@ -49,8 +49,14 @@ impl Storable for WorkSpaceVec {
         Cow::Owned(Encode!(self).unwrap())
     }
 
+
     fn from_bytes(bytes: Cow<[u8]>) -> Self {
-        Decode!(bytes.as_ref(), Self).unwrap()
+        if let Ok(x) = Decode!(bytes.as_ref(), Self) {
+            return x;
+        }
+        return WorkSpaceVec {
+            workspaces: vec![],
+        };
     }
 
     const BOUND: Bound = Bound::Unbounded;

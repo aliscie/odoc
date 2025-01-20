@@ -46,10 +46,12 @@ export type Action =
   | LogoutAction
   | LoginAction
   | ToggleSearchToolAction
-  | { type: "IS_REGISTERED"; isRegistered: boolean };
+  | { type: "IS_REGISTERED"; isRegistered: boolean }
+  | { type: "IS_FETCHING"; isFetching: boolean };
 
 // State Interface
 export interface InitialState {
+  isFetching: boolean;
   isRegistered: boolean;
   count: number;
   isNavOpen: boolean;
@@ -68,4 +70,5 @@ export const initialState: InitialState = {
   isDarkMode: Boolean(localStorage.getItem("isDarkMode") === "true"),
   searchValue: "",
   isLoggedIn: false,
+  isFetching: false,
 };

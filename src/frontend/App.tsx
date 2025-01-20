@@ -6,7 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import useInitialData from "./redux/initialData/useInitialData";
 import { useSnackbar } from "notistack";
 import NavBar from "./components/MainComponents/NavBar";
-import TopNavBar from "./components/MainComponents/TopNavBar";
+import TopNavBar from "./components/MainComponents/topNavBar";
 import RegistrationForm from "./components/MainComponents/RegistrationForm";
 import SearchPopper from "./components/SearchComponent";
 import useSocket from "./websocket/use_socket";
@@ -14,6 +14,7 @@ import { useBackendContext } from "./contexts/BackendContext";
 import { Box, CircularProgress, useTheme, styled } from "@mui/material";
 import { Principal } from "@dfinity/principal";
 import PromoNotification from "./components/limitedOffer";
+import BetaWarning from "./betWarning";
 
 // Create a styled component for the main content
 const MainContent = styled(Box)(({ theme }) => ({
@@ -30,9 +31,9 @@ const MainContent = styled(Box)(({ theme }) => ({
 // Create a styled component for the page content
 const PageContainer = styled(Box)(({ theme }) => ({
   flexGrow: 1,
-  paddingTop: theme.spacing(8), // Height of TopNavBar
+  paddingTop: theme.spacing(8), // Height of Index
   [theme.breakpoints.down("sm")]: {
-    paddingTop: 0, // No top padding on mobile since TopNavBar is at bottom
+    paddingTop: 0, // No top padding on mobile since Index is at bottom
     paddingBottom: theme.spacing(7), // Space for bottom mobile navigation
   },
 }));
@@ -90,13 +91,7 @@ const App: React.FC = () => {
         }
       })();
     }
-  }, [
-    backendActor,
-    ckUSDCActor,
-    profile,
-    dispatch,
-    theme.palette.primary.contrastText,
-  ]);
+  }, [backendActor, ckUSDCActor, profile, theme.palette.primary.contrastText]);
 
   if (!backendActor) {
     return (
@@ -109,14 +104,15 @@ const App: React.FC = () => {
     );
   }
 
+  document.querySelector("body")?.classList.add("dark");
   const isDarkMode = localStorage.getItem("isDarkMode") === "true";
-  isDarkMode && document.querySelector("body")?.classList.add("dark");
-
-  // document.querySelector("body")?.classList.toggle("dark");
+  !isDarkMode && document.querySelector("body")?.classList.remove("dark");
 
   return (
     <BrowserRouter>
       <MainContent>
+        <BetaWarning />
+
         <SearchPopper />
         <RegistrationForm />
         <PromoNotification />

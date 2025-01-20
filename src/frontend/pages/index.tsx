@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import LandingPage from "./LandingPage";
-import FileContentPage from "./FileContentPage";
+import Index from "./fileContentPage";
 import ShareFilePage from "./ShareFilePage";
 import ProfilePage from "./profile";
 import Discover from "./discover/index";
@@ -15,6 +15,9 @@ import SubscriptionPlans from "./subscrptions";
 import SNSWhitepaper from "./snsWhitePaper";
 import SNSVoting from "./votePage";
 import ProductManagerDashboard from "./dashBoardPage";
+import DummyShares from "./sharesContract";
+import AffiliateDashboard from "./affiliate";
+import AffiliateRedirect from "./affiliateRedirect";
 
 function Pages() {
   const [posts, setPosts] = useState([]);
@@ -85,7 +88,10 @@ function Pages() {
       <Route path="/subscriptions" element={<SubscriptionPlans />} />
       <Route path="/white_paper" element={<SNSWhitepaper />} />
       <Route path="/vote" element={<SNSVoting />} />
-      <Route path="/*" element={<FileContentPage />} />
+      <Route path="/shares_contract" element={<DummyShares />} />
+      <Route path="/affiliate" element={<AffiliateDashboard />} />
+      <Route path="/f" element={<AffiliateRedirect />} />
+      <Route path="/*" element={<Index />} />
     </Routes>
   );
 }

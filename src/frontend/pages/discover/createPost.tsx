@@ -44,20 +44,28 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
     onPostSubmit({ ...newPostObj, creator: profile });
   };
 
+  if (!profile) {
+    return <></>;
+  }
   return (
     <Card className="mb-6 transition-all duration-200 hover:-translate-y-1 backdrop-blur-lg bg-background/95">
       <CardContent className="p-4">
         <div className="min-h-24 mb-4">
-          <EditorComponent
-            contentEditable={true}
-            onChange={(content) => {
-              let c = {};
-              c[""] = content;
-              postContent.current = c;
-            }}
-            editorKey="editorKey"
-            content={[]}
-          />
+          {loading ? (
+            "Posting..."
+          ) : (
+            <EditorComponent
+              key={loading}
+              contentEditable={true}
+              onChange={(content) => {
+                let c = {};
+                c[""] = content;
+                postContent.current = c;
+              }}
+              editorKey="editorKey"
+              content={[]}
+            />
+          )}
         </div>
 
         <div className="flex items-center justify-between">
@@ -87,9 +95,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
 
           <Button
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || !profile}
             sx={{
-              width:'100px',
+              width: "100px",
               color: "white",
               borderRadius: "9999px",
               background: "linear-gradient(90deg, #6366F1, #8B5CF6)",

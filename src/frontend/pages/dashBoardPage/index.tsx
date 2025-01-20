@@ -34,6 +34,8 @@ import TeamsView from "./teamsView";
 import MetricsView from "./metrices";
 import DemoBanner from "./banner";
 
+const STORAGE_KEY = 'dashboardActiveTab';
+
 const USER_DATA = {
   name: "John Doe",
   avatar: "JD",
@@ -175,9 +177,27 @@ const UserInfoHeader = ({ userData }) => {
 };
 
 const ProjectDashboard = () => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(() => {
+    try {
+      const savedTab = localStorage.getItem(STORAGE_KEY);
+      return savedTab !== null ? parseInt(savedTab, 10) : 0;
+    } catch (error) {
+      console.error('Error accessing localStorage:', error);
+      return 0;
+    }
+  });
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const handleTabChange = (_, newValue) => {
+    setActiveTab(newValue);
+    try {
+      localStorage.setItem(STORAGE_KEY, newValue.toString());
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+    }
+  };
 
   const TabContent = () => {
     switch (activeTab) {
@@ -219,7 +239,7 @@ const ProjectDashboard = () => {
       }}>
         <Tabs
           value={activeTab}
-          onChange={(_, newValue) => setActiveTab(newValue)}
+          onChange={handleTabChange}
           textColor="primary"
           indicatorColor="primary"
           variant={isMobile ? "scrollable" : "standard"}

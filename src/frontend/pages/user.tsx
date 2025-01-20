@@ -52,7 +52,8 @@ function UserProfile() {
     <div>
       <ProfilePage
         friendButton={
-          user.id != profile.id && (
+          profile &&
+          user.id != profile?.id && (
             <FriendshipButton profile={profile} user={user} friends={friends} />
           )
         }

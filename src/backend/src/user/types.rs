@@ -18,6 +18,7 @@ use serde::Serialize;
 pub struct User {
     pub id: String,
     pub name: String,
+    pub email: String,
     pub description: String,
     pub photo: Vec<u8>,
     // pub total_promise: f64,
@@ -30,6 +31,7 @@ pub struct RegisterUser {
     pub name: Option<String>,
     pub description: Option<String>,
     pub photo: Option<Vec<u8>>,
+    pub email: Option<String>,
     // pub keywords: Vec<String>,
 }
 
@@ -44,6 +46,7 @@ impl User {
         let user = User {
             id: caller().to_text(),
             name: profile.clone().name.unwrap().clone(),
+            email: profile.clone().email.unwrap().clone(),
             description: profile.description.unwrap().clone(),
             photo: profile.photo.unwrap(),
         };
@@ -107,12 +110,16 @@ impl User {
 
     pub fn update_profile(profile: RegisterUser) -> Self {
         let mut user = User::user_profile().unwrap();
+
         if let Some(name) = profile.name {
             user.name = name;
         }
 
         if let Some(description) = profile.description {
             user.description = description;
+        }
+        if let Some(email) = profile.email {
+            user.email = email;
         }
 
         if let Some(photo) = profile.photo {
@@ -137,7 +144,7 @@ impl User {
     pub fn user_name_is_duplicate(name: String) -> bool {
         PROFILE_STORE.with(|profile_store| {
             let store = profile_store.borrow();
-            store.iter().any(|(_, user)| user.name == name)
+            store.iter().any(|(_, user)| user.name == name && user.id != caller().to_string())
         })
     }
 

@@ -215,7 +215,6 @@ const ChatWindow = memo(
         setIsSaving(false);
       }
     };
-
     const content = (
       <>
         <AppBar
@@ -231,7 +230,11 @@ const ChatWindow = memo(
           <Toolbar variant="dense">
             <DragHandle sx={{ mr: 1 }} />
             <Typography variant="subtitle2" sx={{ flex: 1 }}>
-              {chat.name}
+              {chat.name == "private_chat"
+                ? renderSenderName(
+                    chat.members.find((m) => m.toText() != profile?.id),
+                  )
+                : chat.name}
             </Typography>
             <IconButton
               size="small"
@@ -288,6 +291,15 @@ const ChatWindow = memo(
                       to={`user?id=${message.sender.toString()}`}
                       component={Link}
                       variant="subtitle2"
+                      sx={{
+                        cursor: "pointer",
+                        color: "primary.main",
+                        textDecoration: "none",
+                        "&:hover": {
+                          textDecoration: "underline",
+                          opacity: 0.85,
+                        },
+                      }}
                     >
                       {renderSenderName(message.sender)}
                     </Typography>

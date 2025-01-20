@@ -49,7 +49,7 @@ const BreadcrumbNavigation: React.FC = () => {
     let currentFileId = id;
 
     while (currentFileId) {
-      const file = files?.find(f => f.id === currentFileId);
+      const file = files?.find(f => f?.id === currentFileId);
       if (!file) break;
 
       path.unshift(file);

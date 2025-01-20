@@ -16,7 +16,7 @@ import {
 } from "@dfinity/agent";
 import { canisterId, idlFactory } from "../../declarations/backend";
 import { _SERVICE } from "../../declarations/backend/backend.did";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { handleRedux } from "../redux/store/handleRedux";
 import getLedgerActor from "./ckudc_ledger_actor";
 
@@ -120,22 +120,24 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({
       }
 
       await authClient.login({
+        // returnTo: "/",
         identityProvider: identityProvider,
         onSuccess: async () => {
           setState((prevState: State) => {
             return { ...prevState, isAuthenticating: false };
           });
-          window.location.reload();
+          dispatch(handleRedux("LOGIN"));
+          // window.location.reload();
         },
       });
     }
   }, [authClient, port]);
 
   const logout = () => {
-    dispatch(handleRedux("LOGIN"));
+    dispatch(handleRedux("LOGOUT"));
     authClient?.logout({ returnTo: "/" });
   };
-
+  const { isLoggedIn } = useSelector((state: any) => state.uiState);
   useEffect(() => {
     const initializeAuthClient = async () => {
       const client = await AuthClient.create();
@@ -161,7 +163,7 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({
     initializeAuthClient().catch((error) => {
       console.log("Failed to initialize auth client:", error);
     });
-  }, []);
+  }, [isLoggedIn]);
 
   return (
     <BackendContext.Provider
