@@ -1,107 +1,75 @@
 import React, { useState } from "react";
 import {
-  Clock,
-  LeafyGreen,
-  Globe2,
-  Shield,
-  Users,
-  TrendingUp,
-} from "lucide-react";
-import {
   Box,
-  Card,
-  CardContent,
   Container,
-  Paper,
   Typography,
   useTheme,
   alpha,
+  Paper,
+  Link,
 } from "@mui/material";
+import { Clock, Users, Github } from "lucide-react";
 
 interface FeatureCardProps {
   Icon: React.ElementType;
   title: string;
   description: string;
+  extraComponent?: React.ReactNode;
 }
 
-const FeatureCard = ({ Icon, title, description }) => {
+const FeatureCard = ({
+  Icon,
+  title,
+  description,
+  extraComponent,
+}: FeatureCardProps) => {
   const theme = useTheme();
   const [hover, setHover] = useState(false);
 
   return (
-    <Card
+    <Paper
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       sx={{
-        position: "relative",
-        width: "18rem",
-        height: "24rem",
+        height: "100%",
         background:
           theme.palette.mode === "dark"
-            ? `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)}, ${alpha(theme.palette.secondary.main, 0.1)})`
-            : `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.05)}, ${alpha(theme.palette.secondary.main, 0.05)})`,
-        backdropFilter: "blur(8px)",
-        transition: "all 500ms cubic-bezier(0.4, 0, 0.2, 1)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: theme.spacing(4),
-        border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-        overflow: "hidden",
+            ? alpha(theme.palette.background.paper, 0.9)
+            : alpha(theme.palette.background.paper, 0.9),
+        p: 4,
+        borderRadius: 2,
+        transition: "transform 500ms cubic-bezier(0.4, 0, 0.2, 1)",
         "&:hover": {
-          background:
-            theme.palette.mode === "dark"
-              ? `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.2)}, ${alpha(theme.palette.secondary.main, 0.2)})`
-              : `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)}, ${alpha(theme.palette.secondary.main, 0.1)})`,
+          transform: "translateY(-8px)",
           boxShadow: theme.shadows[4],
-        },
-        "&::after": {
-          content: '""',
-          position: "absolute",
-          bottom: 0,
-          left: "50%",
-          width: "3rem",
-          height: "2px",
-          background: `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-          transform: `translateX(-50%) scaleX(${hover ? 1 : 0})`,
-          transition: "transform 500ms cubic-bezier(0.4, 0, 0.2, 1)",
         },
       }}
     >
-      <Paper
-        elevation={0}
+      <Box
         sx={{
-          background: `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-          borderRadius: "50%",
-          padding: theme.spacing(2),
-          marginBottom: theme.spacing(3),
-          transform: hover ? "scale(0.9)" : "scale(1)",
-          transition: "transform 500ms cubic-bezier(0.4, 0, 0.2, 1)",
-          boxShadow: theme.shadows[2],
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 3,
         }}
       >
-        <Icon size={40} color="white" strokeWidth={1.5} />
-      </Paper>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2,
+            borderRadius: "50%",
+            background: `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+          }}
+        >
+          <Icon size={32} color="white" />
+        </Paper>
 
-      <CardContent
-        sx={{
-          textAlign: "center",
-          flexGrow: 1,
-          position: "relative",
-          padding: theme.spacing(2),
-          "&:last-child": {
-            paddingBottom: theme.spacing(2),
-          },
-        }}
-      >
         <Typography
           variant="h5"
-          gutterBottom
           sx={{
-            transform: hover ? "translateY(-8px)" : "translateY(0)",
-            opacity: hover ? 0.4 : 1,
-            transition: "all 500ms cubic-bezier(0.4, 0, 0.2, 1)",
-            fontSize: hover ? "0.7rem" : "1.4rem", // Also slightly increase font size on hover
+            textAlign: "center",
+            fontWeight: "bold",
+            mb: 1,
           }}
         >
           {title}
@@ -110,17 +78,43 @@ const FeatureCard = ({ Icon, title, description }) => {
         <Typography
           variant="body1"
           sx={{
-            opacity: hover ? 1 : 0.8,
-            transform: hover ? "translateY(-8px)" : "translateY(0)",
-            transition: "all 500ms cubic-bezier(0.4, 0, 0.2, 1)",
-            lineHeight: hover ? 2 : 1.6, // Only changing line height on hover
-            color: hover ? "text.primary" : "text.secondary",
+            textAlign: "center",
+            color: theme.palette.text.secondary,
+            lineHeight: 1.6,
           }}
         >
           {description}
         </Typography>
-      </CardContent>
-    </Card>
+
+        {extraComponent}
+      </Box>
+    </Paper>
+  );
+};
+
+const RepoLink = () => {
+  const theme = useTheme();
+  return (
+    <Link
+      href="https://github.com/aliscie/odoc"
+      target="_blank"
+      rel="noopener noreferrer"
+      sx={{
+        mt: 2,
+        fontSize: "0.9rem",
+        color: theme.palette.primary.main,
+        textDecoration: "none",
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 1,
+        "&:hover": {
+          color: theme.palette.primary.dark,
+          textDecoration: "underline",
+        },
+      }}
+    >
+      Here is our repo →
+    </Link>
   );
 };
 
@@ -130,60 +124,40 @@ const WhyOdoc: React.FC = () => {
   const features = [
     {
       icon: Clock,
-      title: "SAVE TIME",
+      title: "Save Time & Resources",
       description:
-        "All in One Solution, Integrate tasks, payments, and contracts in one seamless platform.",
-    },
-    {
-      icon: LeafyGreen,
-      title: "SAVE RESOURCES",
-      description:
-        "One platform, no extra tools, no extra fees, no middle men, and no banks. Here one person can do job of 3 people.",
-    },
-    {
-      icon: Globe2,
-      title: "FREEDOM",
-      description:
-        "Work remotely, collaborate globally, and manage your business from anywhere. And the best part you can vote.",
-    },
-    {
-      icon: Shield,
-      title: "SECURITY",
-      description: "Enterprise-grade security for your data and payments.",
+        "Replace three jobs with one platform - handle tasks, payments, and contracts without commissions or middlemen. Streamline your workflow and cut costs instantly.",
     },
     {
       icon: Users,
-      title: "EMPOWER YOU",
+      title: "Community First",
       description:
-        "Enhance productivity and foster better teamwork with seamless collaboration.",
+        "Join a thriving community of innovators. Vote on platform decisions and collaborate globally to shape the future of decentralized work.",
     },
     {
-      icon: TrendingUp,
-      title: "SCALE",
+      icon: Github,
+      title: "Open Source & SNS",
       description:
-        "Tools that grow with your business, from freelancer to enterprise.",
+        "Built transparently on Internet Computer Protocol with Service Nervous System governance. Your platform, your voice - true community ownership.",
+      extraComponent: <RepoLink />,
     },
   ];
 
   return (
     <Box
       sx={{
-        width: "100%",
-        py: 10,
+        py: 8,
         background:
           theme.palette.mode === "dark"
-            ? "linear-gradient(to bottom, #212121, #000000)"
-            : `linear-gradient(to bottom, ${alpha(theme.palette.primary.main, 0.03)}, ${alpha(theme.palette.background.default, 1)})`,
+            ? alpha(theme.palette.background.paper, 0.5)
+            : alpha(theme.palette.background.paper, 0.5),
       }}
     >
       <Container maxWidth="lg">
-        <Box sx={{ textAlign: "center", mb: 8 }}>
+        <Box sx={{ textAlign: "center", mb: 6 }}>
           <Typography
-            variant="h2"
-            component="h2"
-            gutterBottom
+            variant="h3"
             sx={{
-              color: "text.primary",
               fontWeight: "bold",
               mb: 2,
             }}
@@ -191,74 +165,37 @@ const WhyOdoc: React.FC = () => {
             Why Choose oDoc?
           </Typography>
           <Typography
-            variant="h5"
-            color="text.secondary"
+            variant="h6"
             sx={{
+              color: theme.palette.text.secondary,
               maxWidth: "800px",
               mx: "auto",
-              opacity: 0.8,
             }}
           >
-            Experience the future of work with our comprehensive platform
-            designed for modern businesses
+            Experience the future of decentralized platform with our open-source
+            platform
           </Typography>
         </Box>
 
-        <Box sx={{ position: "relative" }}>
-          <Box
-            sx={{
-              display: "flex",
-              overflowX: "auto",
-              gap: 3,
-              pb: 3,
-              scrollSnapType: "x mandatory",
-              "&::-webkit-scrollbar": {
-                display: "none",
-              },
-              "-ms-overflow-style": "none",
-              scrollbarWidth: "none",
-            }}
-          >
-            {features.map((feature, index) => (
-              <Box key={index} sx={{ scrollSnapAlign: "start" }}>
-                <FeatureCard
-                  Icon={feature.icon}
-                  title={feature.title}
-                  description={feature.description}
-                />
-              </Box>
-            ))}
-          </Box>
-
-          {/* Gradient fade effects */}
-          <Box
-            sx={{
-              position: "absolute",
-              left: 0,
-              top: 0,
-              bottom: (theme) => theme.spacing(3),
-              width: "80px",
-              background:
-                theme.palette.mode === "dark"
-                  ? "linear-gradient(to right, #000000, transparent)"
-                  : `linear-gradient(to right, ${theme.palette.background.default}, transparent)`,
-              pointerEvents: "none",
-            }}
-          />
-          <Box
-            sx={{
-              position: "absolute",
-              right: 0,
-              top: 0,
-              bottom: (theme) => theme.spacing(3),
-              width: "80px",
-              background:
-                theme.palette.mode === "dark"
-                  ? "linear-gradient(to left, #000000, transparent)"
-                  : `linear-gradient(to left, ${theme.palette.background.default}, transparent)`,
-              pointerEvents: "none",
-            }}
-          />
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              md: "repeat(3, 1fr)",
+            },
+            gap: 4,
+          }}
+        >
+          {features.map((feature, index) => (
+            <FeatureCard
+              key={index}
+              Icon={feature.icon}
+              title={feature.title}
+              description={feature.description}
+              extraComponent={feature.extraComponent}
+            />
+          ))}
         </Box>
       </Container>
     </Box>

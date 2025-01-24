@@ -85,12 +85,12 @@ export default function LandingPage(props) {
                 letterSpacing: "0.1em",
               }}
             >
-              TIME • RESOURCES • FREEDOM
+              TIME • RESOURCES • FREEDOM • DECENTRALIZED • OPENSOURCE
             </Typography>
 
             <Box sx={{ color: "text.secondary", mb: 4 }}>
-              Odoc is the custom smart contract platform with no code. Made for project
-              management, freelancers, remote teams, and small businesses. Built
+              Odoc is the custom smart contract platform. Made for teams weather it is project
+              management, freelancers, remote teams, or small businesses. Built
               on the{" "}
               <Link
                 href="https://internetcomputer.org/"
@@ -104,7 +104,7 @@ export default function LandingPage(props) {
               </Link>{" "}
               It streamlines tasks, payments, and contracts into one seamless
               solution, saving you valuable time and resources. With transparent,
-              affordable pricing and no hidden fees, Odoc eliminates the need
+              affordable pricing and no hidden fees, and zero competitions. Odoc eliminates the need
               for middlemen and banks. It empowers you to work from anywhere,
               collaborate effortlessly with your team, and scale your business
               as you grow—all while ensuring enterprise-level security.

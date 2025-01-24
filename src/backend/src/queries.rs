@@ -12,6 +12,7 @@ use crate::friends::Friend;
 use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId};
 use crate::user::User;
 use crate::{StoredContract, Wallet, PROFILE_STORE};
+use crate::user_history::UserHistory;
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
 pub struct InitialData {
@@ -22,6 +23,24 @@ pub struct InitialData {
     DiscoverUsers: HashMap<String, User>,
     Contracts: HashMap<ContractId, StoredContract>,
     Wallet: Wallet,
+}
+
+
+#[derive(Clone, Debug, Default, CandidType, Deserialize)]
+pub struct SNSStatus {
+    number_users: f64,
+    active_users: f64,
+}
+
+
+#[query]
+fn get_sns_status() -> Result<SNSStatus, String> {
+    let number_users = User::get_number_of_users();
+    let active_users = UserHistory::get_number_of_active_users();
+    Ok(SNSStatus {
+        number_users,
+        active_users,
+    })
 }
 
 #[query]

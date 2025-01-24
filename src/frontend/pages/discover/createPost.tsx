@@ -31,6 +31,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
       tags: [],
       content_tree,
       votes_down: [],
+      is_comment: false,
+      children: [],
+      parent: "",
     };
 
     setLoading(true);

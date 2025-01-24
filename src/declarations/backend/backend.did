@@ -304,7 +304,10 @@ type Post = record {
   votes_up : vec principal;
   tags : vec text;
   content_tree : vec ContentNode;
+  is_comment : bool;
   votes_down : vec principal;
+  children : vec text;
+  parent : text;
 };
 type PostUser = record {
   id : text;
@@ -313,7 +316,10 @@ type PostUser = record {
   votes_up : vec principal;
   tags : vec text;
   content_tree : vec ContentNode;
+  is_comment : bool;
   votes_down : vec principal;
+  children : vec text;
+  parent : text;
 };
 type Rating = record {
   id : text;
@@ -344,9 +350,10 @@ type Result_12 = variant {
   Ok : record { FileNode; vec ContentNode };
   Err : text;
 };
-type Result_13 = variant { Ok : UserProfile; Err : text };
-type Result_14 = variant { Ok; Err };
-type Result_15 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
+type Result_13 = variant { Ok : SNSStatus; Err : text };
+type Result_14 = variant { Ok : UserProfile; Err : text };
+type Result_15 = variant { Ok; Err };
+type Result_16 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
 type Result_2 = variant { Ok; Err : text };
 type Result_3 = variant { Ok : GetTransactions; Err : Error };
 type Result_4 = variant { Ok : text; Err : text };
@@ -360,6 +367,7 @@ type Row = record {
   contract : opt Contract;
   cells : opt vec record { text; text };
 };
+type SNSStatus = record { number_users : float64; active_users : float64 };
 type ShareFile = record { id : text; owner : principal };
 type ShareFileInput = record {
   id : text;
@@ -475,16 +483,17 @@ service : () -> {
   get_posts : (nat64, nat64) -> (vec PostUser) query;
   get_share_file : (text) -> (Result_11) query;
   get_shared_file : (text) -> (Result_12);
+  get_sns_status : () -> (Result_13) query;
   get_swaps : () -> (vec record { principal; principal }) query;
   get_user : (text) -> (Result) query;
   get_user_notifications : () -> (vec Notification) query;
-  get_user_profile : (principal) -> (Result_13) query;
+  get_user_profile : (principal) -> (Result_14) query;
   get_users : () -> (float64) query;
   get_work_spaces : () -> (vec WorkSpace) query;
   internal_transaction : (float64, text, ExchangeType) -> (Result_2);
   make_new_chat_room : (Chat) -> (Result_4);
   message_is_seen : (Message) -> (Result_2);
-  move_file : (text, opt text) -> (Result_14);
+  move_file : (text, opt text) -> (Result_15);
   multi_updates : (
       vec FileNode,
       vec vec record { text; vec ContentNode },
@@ -500,9 +509,6 @@ service : () -> {
   remove_swap : (RemoveSwapArgs) -> (Result_1);
   save_post : (Post) -> (Result_2);
   save_work_space : (WorkSpace) -> (Result_5);
-  search_files_content : (text, bool) -> (
-      vec record { text; vec ContentNode },
-    ) query;
   search_posts : (text) -> (vec PostUser) query;
   see_notifications : (text) -> (Result_4);
   send_friend_request : (text) -> (Result);
@@ -516,7 +522,7 @@ service : () -> {
   vote_up : (text) -> (Result_10);
   withdraw_ckusdt : (nat64, text) -> (Result_6);
   ws_close : (CanisterWsCloseArguments) -> (Result_2);
-  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_15) query;
+  ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_16) query;
   ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_2);
   ws_open : (CanisterWsOpenArguments) -> (Result_2);
 }

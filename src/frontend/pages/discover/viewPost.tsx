@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CircularProgress,
+  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
@@ -13,7 +14,7 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import { Heart, MoreVertical, ThumbsDown } from "lucide-react";
+import { Heart, MessageCircle, MoreVertical, ThumbsDown } from "lucide-react";
 import { keyframes, styled } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
@@ -24,8 +25,9 @@ import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
 import { useBackendContext } from "../../contexts/BackendContext";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 import { Post, PostUser } from "../../../declarations/backend/backend.did";
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import CommentList from "./CommentList";
 
 interface ViewPostComponentProps {
   post: PostUser;
@@ -33,8 +35,14 @@ interface ViewPostComponentProps {
 }
 
 const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 `;
 
 const PostCard = styled(Card)(({ theme }) => ({
@@ -84,8 +92,12 @@ const PostActionButton = styled(IconButton)(({ theme }) => ({
     transform: "scale(0.95)",
   },
   "&.Mui-disabled": {
-    opacity: 0.5,
-    color: theme.palette.mode === "dark" ? "#4B5563" : "#9CA3AF",
+    opacity: 0.8,
+    color: theme.palette.mode === "dark" ? "#9CA3AF" : "#4B5563",
+    "& span": {
+      color: theme.palette.mode === "dark" ? "#E5E7EB" : "#1F2937",
+      fontWeight: 500,
+    },
   },
 }));
 
@@ -118,12 +130,15 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
+  posts,
   post,
   handleDeletePost,
+  setPosts,
 }) => {
   const { backendActor } = useBackendContext();
   const { enqueueSnackbar } = useSnackbar();
   const { profile } = useSelector((state: any) => state.filesState);
+  const [showComments, setShowComments] = React.useState(false);
 
   const [voteLoading, setVoteLoad] = React.useState(false);
   const [isChanged, setChanged] = React.useState(false);
@@ -353,7 +368,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
               }
             />
             <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
-              {votes.up.length}
+              {post.children.length}
             </Box>
           </PostActionButton>
 
@@ -376,6 +391,24 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
             </Box>
           </PostActionButton>
 
+          <PostActionButton
+            onClick={() => setShowComments(!showComments)}
+            sx={{
+              "& svg": {
+                transition: "transform 0.2s",
+                transform: showComments ? "rotate(180deg)" : "none",
+              },
+            }}
+          >
+            <MessageCircle
+              size={20}
+              fill={showComments ? "#A855F7" : "rgba(233,213,255,0)"}
+            />
+            <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
+              {post.children.length}
+            </Box>
+          </PostActionButton>
+
           {profile?.id === post.creator.id && (
             <PostActionButton disabled={!isChanged} onClick={onClickSave}>
               Save
@@ -383,45 +416,30 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
           )}
         </Box>
 
-        {post.comments?.length > 0 && (
+        <Collapse in={showComments}>
           <Box
             sx={{
-              mt: 2,
-              pl: 2,
-              borderLeft: "2px solid rgba(139, 92, 246, 0.2)",
+              mt: 3,
+              borderTop: "1px solid rgba(139, 92, 246, 0.2)",
+              pt: 2,
             }}
           >
-            {post.comments.map((comment) => (
-              <Box key={comment.id} sx={{ mb: 2 }}>
-                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  <Box
-                    sx={{
-                      fontWeight: "bold",
-                      color: "#E9D5FF",
-                      fontSize: "0.875rem",
-                    }}
-                  >
-                    {comment.author}
-                  </Box>
-                </Box>
-                <Box sx={{ color: "#E9D5FF", fontSize: "0.875rem" }}>
-                  {comment.content}
-                </Box>
-                {comment.replies.map((reply) => (
-                  <Box
-                    key={reply.id}
-                    sx={{ ml: 4, mt: 1, fontSize: "0.875rem" }}
-                  >
-                    <Box sx={{ fontWeight: "bold", color: "#E9D5FF" }}>
-                      {reply.author}
-                    </Box>
-                    <Box sx={{ color: "#E9D5FF" }}>{reply.content}</Box>
-                  </Box>
-                ))}
-              </Box>
-            ))}
+            <CommentList
+              key={post.length}
+              post={post}
+              allPosts={posts}
+              onUpdate={async () => {
+                const updatedPosts = await backendActor.get_posts();
+                setPosts(updatedPosts);
+                const updatedPost = await backendActor.get_post(post.id);
+                setVotes({
+                  up: updatedPost.votes_up,
+                  down: updatedPost.votes_down,
+                });
+              }}
+            />
           </Box>
-        )}
+        </Collapse>
       </StyledCardContent>
     </PostCard>
   );

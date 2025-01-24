@@ -31,6 +31,9 @@ pub struct Post {
     date_created: u64,
     votes_up: Vec<Principal>,
     votes_down: Vec<Principal>,
+    is_comment: bool,
+    parent: String,
+    children: Vec<String>,
 }
 
 impl Storable for Post {
@@ -78,6 +81,9 @@ impl Storable for Post {
                     date_created: old.date_created,
                     votes_up: Vec::new(),
                     votes_down: Vec::new(),
+                    is_comment: false,
+                    parent: "".to_string(),
+                    children: vec![],
                 },
                 Err(e) => {
                     ic_cdk::print(format!("Failed to decode old Post format: {}", e));
@@ -89,6 +95,9 @@ impl Storable for Post {
                         date_created: 0,
                         votes_up: Default::default(),
                         votes_down: Default::default(),
+                        is_comment: false,
+                        parent: "".to_string(),
+                        children: vec![],
                     }
                 }
             }
@@ -124,6 +133,9 @@ pub struct PostUser {
     date_created: u64,
     votes_up: Vec<Principal>,
     votes_down: Vec<Principal>,
+    is_comment: bool,
+    children: Vec<String>,
+    parent: String,
 }
 
 impl Post {
@@ -143,6 +155,9 @@ impl Post {
             date_created,
             votes_up: vec![],
             votes_down: vec![],
+            is_comment: false,
+            parent: "".to_string(),
+            children: vec![],
         }
     }
 
@@ -205,6 +220,10 @@ impl Post {
                         date_created: post.date_created,
                         votes_up: post.votes_up.clone(),
                         votes_down: post.votes_down.clone(),
+                        is_comment: post.is_comment.clone(),
+                        children: post.children.clone(),
+                        parent: post.parent.clone(),
+
                     }
                 })
                 .collect()
@@ -242,9 +261,12 @@ impl Post {
                         content_tree: post.content_tree.clone(),
                         tags: post.tags.clone(),
                         creator,
-                        date_created: post.date_created,
+                        date_created: post.date_created.clone(),
                         votes_up: post.votes_up.clone(),
                         votes_down: post.votes_down.clone(),
+                        is_comment: false,
+                        children: post.children.clone(),
+                        parent: post.parent.clone(),
                     }
                 })
                 .collect::<Vec<PostUser>>()

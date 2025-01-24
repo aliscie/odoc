@@ -316,6 +316,8 @@ const SocialFeed = (props) => {
     </Box>
   );
 
+  console.log({ filterPosts });
+
   return (
     <ThemeProvider theme={customTheme}>
       <DndProvider backend={HTML5Backend}>
@@ -328,13 +330,17 @@ const SocialFeed = (props) => {
             <Box sx={{ mb: 4 }}>
               <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }} />
             </Box>
-            {filterPosts.map((post) => (
-              <ViewPostComponent
-                handleDeletePost={handleDeletePost}
-                key={post.id}
-                post={post}
-              />
-            ))}
+            {filterPosts
+              .filter((post) => !post.is_comment)
+              .map((post) => (
+                <ViewPostComponent
+                  setPosts={setPosts}
+                  posts={posts}
+                  handleDeletePost={handleDeletePost}
+                  key={post.id}
+                  post={post}
+                />
+              ))}
           </MainContainer>
           <Sidebar items={sidebarContent.right} position="right" />
         </FeedWrapper>

@@ -117,7 +117,7 @@ impl UserHistory {
                 if let ActionType::Payment(payment) = &r.action_type {
                     payment.status != PaymentStatus::Released
                         || payment.status != PaymentStatus::None
-                            && payment.status != PaymentStatus::ConfirmedCancellation
+                        && payment.status != PaymentStatus::ConfirmedCancellation
                 } else {
                     false
                 }
@@ -325,6 +325,16 @@ impl UserHistory {
         self.rates_by_actions
             .retain(|action| action.id != payment.id);
         self.calc_actions_rate();
+    }
+    pub fn get_number_of_active_users() -> f64 {
+        //      number of users with action_rate>=2
+        let users = PROFILE_HISTORY.with(|h| {
+            h.borrow()
+                .iter()
+                .filter(|(_, profile)| profile.actions_rate >= 2.0)
+                .count()
+        });
+        users as f64
     }
 
     // pub fn shares_actions_rate(&mut self) -> f64 {

@@ -9,7 +9,7 @@ use crate::storage_schema::{ContentTree, FileId};
 
 #[query]
 fn get_file_content(file_id: FileId) -> Option<ContentTree> {
-    let content = ContentNode::get_file_content(file_id);
+    let content = ContentNode::get_file_content(caller().to_string(),file_id);
     // if content.unwrap().is_private && caller() != FileNode::get(file_id).auther {
     //     return None;
     // }
@@ -21,46 +21,46 @@ fn get_all_files_content() -> HashMap<FileId, ContentTree> {
     ContentNode::get_all_files_content()
 }
 
-#[query]
-fn search_files_content(
-    search_text: String,
-    case_insensitive: bool,
-) -> HashMap<FileId, ContentTree> {
-    // also search in the SHARED_USER_FILES
-    FILE_CONTENTS.with(|file_contents| {
-        let file_contents = file_contents.borrow();
-        let filtered_files = file_contents
-            .iter()
-            .filter_map(|(file_id, content_node_vec)| {
-                let filtered_content_tree = content_node_vec
-                    .contents
-                    .iter()
-                    .flat_map(|(_, content_tree)| {
-                        content_tree
-                            .iter()
-                            .filter(|content| {
-                                if case_insensitive {
-                                    content
-                                        .text
-                                        .to_lowercase()
-                                        .contains(&search_text.to_lowercase())
-                                } else {
-                                    content.text.contains(&search_text)
-                                }
-                            })
-                            .cloned()
-                            .collect::<ContentTree>()
-                    })
-                    .collect::<ContentTree>();
-
-                if !filtered_content_tree.is_empty() {
-                    Some((file_id.clone(), filtered_content_tree))
-                } else {
-                    None
-                }
-            })
-            .collect::<HashMap<FileId, ContentTree>>();
-
-        filtered_files
-    })
-}
+// #[query]
+// fn search_files_content(
+//     search_text: String,
+//     case_insensitive: bool,
+// ) -> HashMap<FileId, ContentTree> {
+//     // also search in the SHARED_USER_FILES
+//     FILE_CONTENTS.with(|file_contents| {
+//         let file_contents = file_contents.borrow();
+//         let filtered_files = file_contents
+//             .iter()
+//             .filter_map(|(file_id, content_node_vec)| {
+//                 let filtered_content_tree = content_node_vec
+//                     .contents
+//                     .iter()
+//                     .flat_map(|(_, content_tree)| {
+//                         content_tree
+//                             .iter()
+//                             .filter(|content| {
+//                                 if case_insensitive {
+//                                     content
+//                                         .text
+//                                         .to_lowercase()
+//                                         .contains(&search_text.to_lowercase())
+//                                 } else {
+//                                     content.text.contains(&search_text)
+//                                 }
+//                             })
+//                             .cloned()
+//                             .collect::<ContentTree>()
+//                     })
+//                     .collect::<ContentTree>();
+//
+//                 if !filtered_content_tree.is_empty() {
+//                     Some((file_id.clone(), filtered_content_tree))
+//                 } else {
+//                     None
+//                 }
+//             })
+//             .collect::<HashMap<FileId, ContentTree>>();
+//
+//         filtered_files
+//     })
+// }

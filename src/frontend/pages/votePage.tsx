@@ -1,7 +1,5 @@
-// SNSVoting.tsx
 import React, { useState, useEffect } from "react";
 import {
-  alpha,
   Box,
   Button,
   Card,
@@ -36,9 +34,9 @@ import {
   Warning as WarningIcon,
   Close as CloseIcon,
 } from "@mui/icons-material";
-import {Z_INDEX_BANNER} from "../constants/zIndex";
+import { Z_INDEX_BANNER } from "../constants/zIndex";
+import {useBackendContext} from "../contexts/BackendContext";
 
-// Interfaces
 interface Proposal {
   id: string;
   title: string;
@@ -59,7 +57,6 @@ interface TabPanelProps {
   value: number;
 }
 
-// Mock data
 const mockProposals: Proposal[] = [
   {
     id: "PROP-001",
@@ -116,7 +113,7 @@ const TabPanel = (props: TabPanelProps) => {
   );
 };
 
-const FeatureNotAvailableBanner = () => {
+const FeatureNotAvailableBanner = ({ onClose }: { onClose: () => void }) => {
   const theme = useTheme();
 
   return (
@@ -133,32 +130,44 @@ const FeatureNotAvailableBanner = () => {
     >
       <Alert
         severity="warning"
-        icon={<WarningIcon sx={{ fontSize: '2rem' }} />}
+        icon={<WarningIcon sx={{ fontSize: "2rem" }} />}
+        action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={onClose}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }
         sx={{
           boxShadow: theme.shadows[4],
-          backgroundColor: '#FFF4E5',
-          color: '#663C00',
-          border: '1px solid #FF9800',
-          backdropFilter: 'blur(8px)',
-          '& .MuiAlert-icon': {
-            color: '#FF9800',
-            alignItems: 'center'
+          backgroundColor: theme.palette.warning.light,
+          color: theme.palette.warning.dark,
+          border: `1px solid ${theme.palette.warning.main}`,
+          backdropFilter: "blur(8px)",
+          "& .MuiAlert-icon": {
+            color: theme.palette.warning.main,
+            alignItems: "center",
           },
           padding: theme.spacing(3),
         }}
       >
-        <AlertTitle sx={{ 
-          fontSize: '1.5rem',
-          fontWeight: 'bold',
-          mb: 2,
-          color: '#663C00'
-        }}>
+        <AlertTitle
+          sx={{
+            fontSize: "1.5rem",
+            fontWeight: "bold",
+            mb: 2,
+            color: theme.palette.warning.dark,
+          }}
+        >
           Feature Not Available
         </AlertTitle>
         <Typography variant="body1" sx={{ mb: 2 }}>
           SNS voting functionality will be available in a few months.
         </Typography>
-        <Typography variant="body2" sx={{ color: 'balck' }}>
+        <Typography variant="body2" color="text.secondary">
           We're working hard to bring you decentralized governance features.
           Stay tuned for updates!
         </Typography>
@@ -167,7 +176,9 @@ const FeatureNotAvailableBanner = () => {
   );
 };
 
-const ProposalCard: React.FC<{ proposal: Proposal }> = ({ proposal }) => {
+const ProposalCard = ({ proposal }: { proposal: Proposal }) => {
+  const theme = useTheme();
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -273,36 +284,52 @@ const ProposalCard: React.FC<{ proposal: Proposal }> = ({ proposal }) => {
 };
 
 const SNSVoting: React.FC = () => {
-  useEffect(() => {
-    document.body.style.position = "relative";
-    return () => {
-      document.body.style.position = "";
-    };
-  }, []);
-
   const theme = useTheme();
+  const { backendActor } = useBackendContext();
   const [tabValue, setTabValue] = useState(0);
   const [openNewProposal, setOpenNewProposal] = useState(false);
   const [proposalType, setProposalType] = useState("feature");
   const [proposals] = useState<Proposal[]>(mockProposals);
+  const [showBanner, setShowBanner] = useState(true);
+  const [snsStatus, setSnsStatus] = useState<{ number_users: number; active_users: number } | null>(null);
+
+  useEffect(() => {
+    const fetchSNSStatus = async () => {
+      try {
+        const res = await backendActor.get_sns_status();
+        if ('Ok' in res) {
+          setSnsStatus(res.Ok);
+        }
+      } catch (error) {
+        console.error("Error fetching SNS status:", error);
+      }
+    };
+
+    fetchSNSStatus();
+  }, [backendActor]);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
-      {/* Feature Not Available Banner */}
-      <FeatureNotAvailableBanner />
+      {showBanner && <FeatureNotAvailableBanner onClose={() => setShowBanner(false)} />}
 
-      {/* Main Content (blurred) */}
       <Paper
         sx={{
           p: theme.spacing(3),
           position: "relative",
-          filter: "blur(4px)",
-          pointerEvents: "none",
+          filter: showBanner ? "blur(4px)" : "none",
+          pointerEvents: showBanner ? "none" : "auto",
           backgroundColor: theme.palette.background.paper,
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h4">SNS Voting</Typography>
+          <Box>
+            <Typography variant="h4">SNS Voting</Typography>
+            {snsStatus && (
+              <Typography variant="body2" color="text.secondary">
+                Total Users: {snsStatus.number_users} | Active Users: {snsStatus.active_users}
+              </Typography>
+            )}
+          </Box>
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -354,7 +381,6 @@ const SNSVoting: React.FC = () => {
         </TabPanel>
       </Paper>
 
-      {/* New Proposal Dialog */}
       <Dialog
         open={openNewProposal}
         onClose={() => setOpenNewProposal(false)}

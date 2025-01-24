@@ -54,6 +54,9 @@ fn search_posts(text_to_find: String) -> Vec<PostUser> {
                             date_created: post.date_created,
                             votes_up: post.votes_up.clone(),
                             votes_down: post.votes_down.clone(),
+                            is_comment: false,
+                            children: post.children.clone(),
+                            parent: post.parent.clone(),
                         }
                     })
                     .collect::<Vec<PostUser>>()

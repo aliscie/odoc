@@ -328,7 +328,10 @@ export interface Post {
   'votes_up' : Array<Principal>,
   'tags' : Array<string>,
   'content_tree' : Array<ContentNode>,
+  'is_comment' : boolean,
   'votes_down' : Array<Principal>,
+  'children' : Array<string>,
+  'parent' : string,
 }
 export interface PostUser {
   'id' : string,
@@ -337,7 +340,10 @@ export interface PostUser {
   'votes_up' : Array<Principal>,
   'tags' : Array<string>,
   'content_tree' : Array<ContentNode>,
+  'is_comment' : boolean,
   'votes_down' : Array<Principal>,
+  'children' : Array<string>,
+  'parent' : string,
 }
 export interface Rating {
   'id' : string,
@@ -370,11 +376,13 @@ export type Result_11 = { 'Ok' : ShareFile } |
   { 'Err' : string };
 export type Result_12 = { 'Ok' : [FileNode, Array<ContentNode>] } |
   { 'Err' : string };
-export type Result_13 = { 'Ok' : UserProfile } |
+export type Result_13 = { 'Ok' : SNSStatus } |
   { 'Err' : string };
-export type Result_14 = { 'Ok' : null } |
+export type Result_14 = { 'Ok' : UserProfile } |
+  { 'Err' : string };
+export type Result_15 = { 'Ok' : null } |
   { 'Err' : null };
-export type Result_15 = { 'Ok' : CanisterOutputCertifiedMessages } |
+export type Result_16 = { 'Ok' : CanisterOutputCertifiedMessages } |
   { 'Err' : string };
 export type Result_2 = { 'Ok' : null } |
   { 'Err' : string };
@@ -397,6 +405,7 @@ export interface Row {
   'contract' : [] | [Contract],
   'cells' : [] | [Array<[string, string]>],
 }
+export interface SNSStatus { 'number_users' : number, 'active_users' : number }
 export interface ShareFile { 'id' : string, 'owner' : Principal }
 export interface ShareFileInput {
   'id' : string,
@@ -524,10 +533,11 @@ export interface _SERVICE {
   'get_posts' : ActorMethod<[bigint, bigint], Array<PostUser>>,
   'get_share_file' : ActorMethod<[string], Result_11>,
   'get_shared_file' : ActorMethod<[string], Result_12>,
+  'get_sns_status' : ActorMethod<[], Result_13>,
   'get_swaps' : ActorMethod<[], Array<[Principal, Principal]>>,
   'get_user' : ActorMethod<[string], Result>,
   'get_user_notifications' : ActorMethod<[], Array<Notification>>,
-  'get_user_profile' : ActorMethod<[Principal], Result_13>,
+  'get_user_profile' : ActorMethod<[Principal], Result_14>,
   'get_users' : ActorMethod<[], number>,
   'get_work_spaces' : ActorMethod<[], Array<WorkSpace>>,
   'internal_transaction' : ActorMethod<
@@ -536,7 +546,7 @@ export interface _SERVICE {
   >,
   'make_new_chat_room' : ActorMethod<[Chat], Result_4>,
   'message_is_seen' : ActorMethod<[Message], Result_2>,
-  'move_file' : ActorMethod<[string, [] | [string]], Result_14>,
+  'move_file' : ActorMethod<[string, [] | [string]], Result_15>,
   'multi_updates' : ActorMethod<
     [
       Array<FileNode>,
@@ -555,10 +565,6 @@ export interface _SERVICE {
   'remove_swap' : ActorMethod<[RemoveSwapArgs], Result_1>,
   'save_post' : ActorMethod<[Post], Result_2>,
   'save_work_space' : ActorMethod<[WorkSpace], Result_5>,
-  'search_files_content' : ActorMethod<
-    [string, boolean],
-    Array<[string, Array<ContentNode>]>
-  >,
   'search_posts' : ActorMethod<[string], Array<PostUser>>,
   'see_notifications' : ActorMethod<[string], Result_4>,
   'send_friend_request' : ActorMethod<[string], Result>,
@@ -572,7 +578,7 @@ export interface _SERVICE {
   'vote_up' : ActorMethod<[string], Result_10>,
   'withdraw_ckusdt' : ActorMethod<[bigint, string], Result_6>,
   'ws_close' : ActorMethod<[CanisterWsCloseArguments], Result_2>,
-  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_15>,
+  'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_16>,
   'ws_message' : ActorMethod<
     [CanisterWsMessageArguments, [] | [AppMessage]],
     Result_2
