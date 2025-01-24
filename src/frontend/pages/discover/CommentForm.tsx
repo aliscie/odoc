@@ -30,11 +30,14 @@ const CommentForm: React.FC<CommentFormProps> = ({
   const contentTree = useRef([]);
   const [isChanged, setChanged] = useState(false);
 
+  const [editorKey, setEditorKey] = useState(`new-comment-${postId}-${Date.now()}`);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contentTree.current || !isChanged) return;
 
     setIsSubmitting(true);
+    contentTree.current = [];
     try {
       const comment: Post = {
         content_tree: serializeFileContents(contentTree.current)[0][0][1],
@@ -53,6 +56,8 @@ const CommentForm: React.FC<CommentFormProps> = ({
       if (result.Ok) {
         await backendActor.add_child(postId, result.Ok.id);
         setChanged(false);
+        contentTree.current = [];
+        setEditorKey(`new-comment-${postId}-${Date.now()}`);
         onCommentSubmit();
         enqueueSnackbar("Comment posted successfully", { variant: "success" });
       }
@@ -68,7 +73,7 @@ const CommentForm: React.FC<CommentFormProps> = ({
       <Box sx={{ mb: 2 }}>
         <DndProvider backend={HTML5Backend}>
           <EditorComponent
-            editorKey={`new-comment-${postId}`}
+            editorKey={editorKey}
             readOnly={isSubmitting}
             id={`new-comment-${postId}`}
             contentEditable={!isSubmitting}
