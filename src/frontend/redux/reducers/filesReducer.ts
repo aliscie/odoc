@@ -93,6 +93,32 @@ export function filesReducer(
         ...state,
         files: [...state.files, ...action.files],
       };
+
+    case "SET_POSTS":
+      return {
+        ...state,
+        posts: action.posts,
+      };
+
+    case "ADD_POST":
+      return {
+        ...state,
+        posts: [...state.posts, action.post],
+      };
+
+    case "UPDATE_POST":
+      return {
+        ...state,
+        posts: state.posts.map((post) =>
+          post.id === action.id ? { ...post, ...action.post } : post
+        ),
+      };
+
+    case "DELETE_POST":
+      return {
+        ...state,
+        posts: state.posts.filter((post) => post.id !== action.id),
+      };
     case "ADD_CONTENTS_LIST":
       return {
         ...state,

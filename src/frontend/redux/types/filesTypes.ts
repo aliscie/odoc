@@ -17,6 +17,7 @@ export interface InitialState {
   files: FileNode[];
   files_content: Record<string, any>;
   friends: Friend[];
+  posts: any[];
   changes: {
     files: FileNode[];
     contents: Record<string, any>;
@@ -77,7 +78,11 @@ export type FilesActions =
   | { type: "ADD_FRIEND" }
   | { type: "REMOVE_FRIEND" }
   | { type: "ADD_FILES_LIST"; friends: FileNode[] }
-  | { type: "ADD_CONTENTS_LIST"; friends: FileNode[] };
+  | { type: "ADD_CONTENTS_LIST"; friends: FileNode[] }
+  | { type: "SET_POSTS"; posts: any[] }
+  | { type: "ADD_POST"; post: any }
+  | { type: "UPDATE_POST"; id: string; post: any }
+  | { type: "DELETE_POST"; id: string };
 
 export const initialState: InitialState = {
   inited: false,
@@ -104,4 +109,5 @@ export const initialState: InitialState = {
   all_users: [],
   anonymous: false,
   currentWorkspace: { name: "default" },
+  posts: [],
 };
