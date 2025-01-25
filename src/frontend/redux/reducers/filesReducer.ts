@@ -110,7 +110,7 @@ export function filesReducer(
       return {
         ...state,
         posts: state.posts.map((post) =>
-          post.id === action.id ? { ...post, ...action.post } : post
+          post.id === action.id ? { ...post, ...action.post } : post,
         ),
       };
 

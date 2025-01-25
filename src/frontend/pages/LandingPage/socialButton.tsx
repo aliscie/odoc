@@ -1,8 +1,8 @@
-import React from 'react';
-import YouTubeIcon from '@mui/icons-material/YouTube';
-import InstagramIcon from '@mui/icons-material/Instagram';
-import { IconButton, SvgIcon } from '@mui/material';
-import { useSelector } from 'react-redux';
+import React from "react";
+import YouTubeIcon from "@mui/icons-material/YouTube";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import { IconButton, SvgIcon, Typography, Box } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const XIcon = (props) => (
   <SvgIcon {...props}>
@@ -17,74 +17,105 @@ const DiscordIcon = (props) => (
 );
 
 const SocialButton = () => {
-  const { isDarkMode } = useSelector((state: any) => state.uiState);
+  const { isDarkMode } = useSelector((state) => state.uiState);
 
   const socialLinks = [
     {
-      name: 'X',
-      url: 'https://x.com/odoc_ic',
+      name: "X",
+      url: "https://x.com/odoc_ic",
       icon: XIcon,
-      color: isDarkMode ? '#000000' : '#000000',
+      color: "#000000",
     },
     {
-      name: 'YouTube',
-      url: 'https://www.youtube.com/@alihusham1560',
+      name: "YouTube",
+      url: "https://www.youtube.com/@alihusham1560",
       icon: YouTubeIcon,
-      color: isDarkMode ? '#FF0000' : '#dc2626',
+      color: isDarkMode ? "#FF0000" : "#dc2626",
     },
     {
-      name: 'Instagram',
-      url: 'https://www.instagram.com/odoc_ic',
+      name: "Instagram",
+      url: "https://www.instagram.com/odoc_ic",
       icon: InstagramIcon,
-      color: isDarkMode ? '#E4405F' : '#db2777',
+      color: isDarkMode ? "#E4405F" : "#db2777",
     },
     {
-      name: 'Discord',
-      url: 'https://discord.gg/uxMJHBk8',
+      name: "Discord",
+      url: "https://discord.gg/uxMJHBk8",
       icon: DiscordIcon,
-      color: isDarkMode ? '#5865F2' : '#4f46e5',
-    }
+      color: isDarkMode ? "#5865F2" : "#4f46e5",
+    },
   ];
 
   const handleClick = (url) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
-    <div className="flex items-center justify-center p-4">
-      {socialLinks.map((social, index) => {
-        const Icon = social.icon;
-        return (
-          <IconButton
-            key={social.name}
-            onClick={() => handleClick(social.url)}
-            aria-label={`Visit our ${social.name}`}
-            sx={{
-              width: 48,
-              height: 48,
-              margin: '0 24px',
-              background: social.color,
-              transition: 'all 0.3s ease-in-out',
-              '&:hover': {
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 3,
+        py: 4
+      }}
+    >
+      <Typography
+        variant="h4"
+        component="h2"
+        sx={{
+          fontWeight: 600,
+          color: isDarkMode ? 'common.white' : 'common.black',
+          textAlign: 'center',
+          mb: 2
+        }}
+      >
+        Keep in Touch
+      </Typography>
+
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+          gap: 3
+        }}
+      >
+        {socialLinks.map((social) => {
+          const Icon = social.icon;
+          return (
+            <IconButton
+              key={social.name}
+              onClick={() => handleClick(social.url)}
+              aria-label={`Visit our ${social.name}`}
+              sx={{
+                width: 48,
+                height: 48,
                 background: social.color,
-                transform: 'scale(1.1)',
-                boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.15)',
-                '& .MuiSvgIcon-root': {
-                  transform: 'rotate(12deg)',
+                transition: "all 0.3s ease-in-out",
+                "&:hover": {
+                  background: social.color,
+                  transform: "scale(1.1)",
+                  boxShadow: isDarkMode
+                    ? "0 4px 12px rgba(0,0,0,0.3)"
+                    : "0 4px 12px rgba(0,0,0,0.15)",
+                  "& .MuiSvgIcon-root": {
+                    transform: "rotate(12deg)",
+                  },
                 },
-              },
-              '& .MuiSvgIcon-root': {
-                color: '#fff',
-                transition: 'transform 0.3s ease-in-out',
-                fontSize: social.name === 'X' ? 20 : 24, // Slightly smaller X icon for better proportions
-              },
-            }}
-          >
-            <Icon />
-          </IconButton>
-        );
-      })}
-    </div>
+                "& .MuiSvgIcon-root": {
+                  color: "#fff",
+                  transition: "transform 0.3s ease-in-out",
+                  fontSize: social.name === "X" ? 20 : 24,
+                },
+              }}
+            >
+              <Icon />
+            </IconButton>
+          );
+        })}
+      </Box>
+    </Box>
   );
 };
 

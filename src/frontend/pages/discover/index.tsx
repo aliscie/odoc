@@ -24,6 +24,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
+import {RootState} from "../../redux/reducers";
 
 const VideoTutorial = ({
   title,
@@ -128,7 +129,9 @@ const MainContainer = styled("div")(({ theme }) => ({
   },
 }));
 
-const SocialFeed = (props) => {
+const SocialFeed = () => {
+  const { posts } = useSelector((state: RootState) => state.filesState);
+
   const { isLoggedIn, isDarkMode, searchValue, isNavOpen } = useSelector(
     (state) => state.uiState,
   );
@@ -152,20 +155,20 @@ const SocialFeed = (props) => {
     },
   });
 
-  const [posts, setPosts] = useState(props.posts);
+  // const [posts, setPosts] = useState(props.posts);
 
-  const handleDeletePost = (postId) => {
-    setPosts((prev) => prev.filter((p) => p.id !== postId));
-  };
-
-  const handlePostSubmit = (newPostObj) => {
-    setPosts([newPostObj, ...posts]);
-  };
+  // const handleDeletePost = (postId) => {
+  //   setPosts((prev) => prev.filter((p) => p.id !== postId));
+  // };
+  //
+  // const handlePostSubmit = (newPostObj) => {
+  //   setPosts([newPostObj, ...posts]);
+  // };
 
   const filterPosts = React.useMemo(() => {
     const searchLower = searchValue.toLowerCase();
     return posts.filter((post) => {
-      const contentTreeText = post.content_tree
+      const contentTreeText = post?.content_tree
         .map((node) => node.text?.toLowerCase() || "")
         .join(" ");
       return (
@@ -316,8 +319,6 @@ const SocialFeed = (props) => {
     </Box>
   );
 
-  console.log({ filterPosts });
-
   return (
     <ThemeProvider theme={customTheme}>
       <DndProvider backend={HTML5Backend}>
@@ -326,7 +327,7 @@ const SocialFeed = (props) => {
             <Sidebar items={sidebarContent.left} position="left" />
           )}
           <MainContainer>
-            {isLoggedIn && <CreatePost onPostSubmit={handlePostSubmit} />}
+            {isLoggedIn && <CreatePost />}
             <Box sx={{ mb: 4 }}>
               <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }} />
             </Box>
@@ -334,9 +335,9 @@ const SocialFeed = (props) => {
               .filter((post) => !post.is_comment)
               .map((post) => (
                 <ViewPostComponent
-                  setPosts={setPosts}
+                  // setPosts={setPosts}
                   posts={posts}
-                  handleDeletePost={handleDeletePost}
+                  // handleDeletePost={handleDeletePost}
                   key={post.id}
                   post={post}
                 />

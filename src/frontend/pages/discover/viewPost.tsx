@@ -28,6 +28,7 @@ import { Post, PostUser } from "../../../declarations/backend/backend.did";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import CommentList from "./CommentList";
+import { RootState } from "../../redux/reducers";
 
 interface ViewPostComponentProps {
   post: PostUser;
@@ -130,11 +131,10 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
-  posts,
   post,
   handleDeletePost,
-  setPosts,
 }) => {
+  const { posts } = useSelector((state: RootState) => state.filesState);
   const { backendActor } = useBackendContext();
   const { enqueueSnackbar } = useSnackbar();
   const { profile } = useSelector((state: any) => state.filesState);
@@ -331,7 +331,6 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
         <Box sx={{ mb: 2 }}>
           <DndProvider backend={HTML5Backend}>
             <EditorComponent
-              editorKey={post.id}
               readOnly={profile?.id !== post.creator.id}
               id={post.id}
               contentEditable={profile?.id === post.creator.id}
@@ -424,20 +423,7 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
               pt: 2,
             }}
           >
-            <CommentList
-              key={post.length}
-              post={post}
-              allPosts={posts}
-              onUpdate={async () => {
-                const updatedPosts = await backendActor.get_posts();
-                setPosts(updatedPosts);
-                const updatedPost = await backendActor.get_post(post.id);
-                setVotes({
-                  up: updatedPost.votes_up,
-                  down: updatedPost.votes_down,
-                });
-              }}
-            />
+            <CommentList post={post} />
           </Box>
         </Collapse>
       </StyledCardContent>

@@ -8,7 +8,7 @@ import Discover from "./discover/index";
 import UserProfile from "./User";
 import ContractsHistory from "./Profile/ContractsHistory";
 import Web3WalletUI from "../components/MuiComponents/walletUi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useBackendContext } from "../contexts/BackendContext";
 import OfferPage from "./OfferPage";
 import SubscriptionPlans from "./subscrptions";
@@ -18,15 +18,15 @@ import ProductManagerDashboard from "./dashBoardPage";
 import DummyShares from "./sharesContract";
 import AffiliateDashboard from "./affiliate";
 import AffiliateRedirect from "./affiliateRedirect";
+import { handleRedux } from "../redux/store/handleRedux";
 
 function Pages() {
-  const [posts, setPosts] = useState([]);
   const { profile, profile_history, wallet, friends } = useSelector(
     (state: any) => state.filesState,
   );
   const { login, logout, backendActor } = useBackendContext();
   const { isLoggedIn } = useSelector((state: any) => state.uiState);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     const fetchPosts = async () => {
       if (backendActor) {
@@ -36,8 +36,7 @@ function Pages() {
             BigInt(0),
             BigInt(20),
           );
-
-          setPosts(fetchedPosts);
+          dispatch(handleRedux("SET_POSTS", { posts: fetchedPosts }));
         } catch (error) {
           console.error("Error fetching posts:", error);
         }
@@ -61,10 +60,7 @@ function Pages() {
         path="/about"
         element={<LandingPage isLoggedIn={isLoggedIn} login={login} />}
       />
-      <Route
-        path="/discover"
-        element={<Discover key={posts.length} posts={posts} />}
-      />
+      <Route path="/discover" element={<Discover />} />
       <Route path="/wallet" element={<Web3WalletUI wallet={wallet} />} />
       <Route
         path="/profile"

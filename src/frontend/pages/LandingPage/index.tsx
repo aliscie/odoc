@@ -89,9 +89,9 @@ export default function LandingPage(props) {
             </Typography>
 
             <Box sx={{ color: "text.secondary", mb: 4 }}>
-              Odoc is the custom smart contract platform. Made for teams weather it is project
-              management, freelancers, remote teams, or small businesses. Built
-              on the{" "}
+              Odoc is an open source decentralized trustees custom smart contract platform. Made for teams weather
+              it is project management, freelancers, remote teams, or small
+              businesses. Built on the{" "}
               <Link
                 href="https://internetcomputer.org/"
                 target="_blank"
@@ -103,13 +103,13 @@ export default function LandingPage(props) {
                 Internet Computer
               </Link>{" "}
               It streamlines tasks, payments, and contracts into one seamless
-              solution, saving you valuable time and resources. With transparent,
-              affordable pricing and no hidden fees, and zero competitions. Odoc eliminates the need
-              for middlemen and banks. It empowers you to work from anywhere,
-              collaborate effortlessly with your team, and scale your business
-              as you grow—all while ensuring enterprise-level security.
-              Experience true freedom, control, and efficiency with Odoc, where
-              your success is just a click away.
+              solution, saving you valuable time and resources. With
+              transparent, affordable pricing and no hidden fees, and zero
+              competitions. Odoc eliminates the need for middlemen and banks. It
+              empowers you to work from anywhere, collaborate effortlessly with
+              your team, and scale your business as you grow—all while ensuring
+              enterprise-level security. Experience true freedom, control, and
+              efficiency.
             </Box>
           </Box>
           <GetStartedButton key={profile?.id} />

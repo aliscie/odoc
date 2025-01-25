@@ -4,22 +4,23 @@ import { Hash, Image as ImageIcon, Send, Smile } from "lucide-react";
 import { keyframes, styled } from "@mui/material/styles";
 import EditorComponent from "../../components/EditorComponent";
 import { Post } from "../../../declarations/backend/backend.did";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { randomString } from "../../DataProcessing/dataSamples";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { useSnackbar } from "notistack";
+import { handleRedux } from "../../redux/store/handleRedux";
 interface CreatePostProps {
   onPostSubmit: (post: any) => void;
 }
 
-const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
+const CreatePost: React.FC<CreatePostProps> = () => {
   const { profile } = useSelector((state: any) => state.filesState);
   const { backendActor } = useBackendContext();
   const [loading, setLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const postContent = useRef([]);
-
+  const dispatch = useDispatch();
   const handleSubmit = async () => {
     let content_tree = serializeFileContents(postContent.current)[0][0][1];
 
@@ -43,8 +44,10 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostSubmit }) => {
       enqueueSnackbar(result.Err, { variant: "error" });
     }
     setLoading(false);
-
-    onPostSubmit({ ...newPostObj, creator: profile });
+    dispatch(
+      handleRedux("ADD_POST", { post: { ...newPostObj, creator: profile } }),
+    );
+    // onPostSubmit({ ...newPostObj, creator: profile });
   };
 
   if (!profile) {

@@ -2,7 +2,7 @@
 import React, { useState, useRef } from "react";
 import { Box, Button } from "@mui/material";
 import { useBackendContext } from "../../contexts/BackendContext";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import { Post } from "../../../declarations/backend/backend.did";
 import { DndProvider } from "react-dnd";
@@ -11,6 +11,8 @@ import { deserializeContentTree } from "../../DataProcessing/deserlize/deseriali
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 import EditorComponent from "../../components/EditorComponent";
 import { randomString } from "../../DataProcessing/dataSamples";
+import { handleRedux } from "../../redux/store/handleRedux";
+import { RootState } from "../../redux/reducers";
 
 interface CommentFormProps {
   postId: string;
@@ -18,26 +20,26 @@ interface CommentFormProps {
   onCancel?: () => void;
 }
 
-const CommentForm: React.FC<CommentFormProps> = ({
-  postId,
-  onCommentSubmit,
-  onCancel,
-}) => {
+const CommentForm: React.FC<CommentFormProps> = ({ postId, onCancel }) => {
+  const { posts } = useSelector((state: RootState) => state.filesState);
+  const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { backendActor } = useBackendContext();
   const { profile } = useSelector((state: any) => state.filesState);
+  if (!profile) return null;
   const { enqueueSnackbar } = useSnackbar();
   const contentTree = useRef([]);
   const [isChanged, setChanged] = useState(false);
 
-  const [editorKey, setEditorKey] = useState(`new-comment-${postId}-${Date.now()}`);
+  const [editorKey, setEditorKey] = useState(
+    `new-comment-${postId}-${Date.now()}`,
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contentTree.current || !isChanged) return;
 
     setIsSubmitting(true);
-    contentTree.current = [];
     try {
       const comment: Post = {
         content_tree: serializeFileContents(contentTree.current)[0][0][1],
@@ -53,16 +55,26 @@ const CommentForm: React.FC<CommentFormProps> = ({
       };
 
       const result = await backendActor.save_post(comment);
-      if (result.Ok) {
-        await backendActor.add_child(postId, result.Ok.id);
+      if (result.Ok == null) {
+        dispatch(
+          handleRedux("ADD_POST", { post: { ...comment, creator: profile } }),
+        );
+        let ParentPost = posts.find((p) => p.id === postId);
+        ParentPost.children.push(comment.id);
+        dispatch(
+          handleRedux("UPDATE_POST", {
+            post: ParentPost,
+          }),
+        );
         setChanged(false);
         contentTree.current = [];
         setEditorKey(`new-comment-${postId}-${Date.now()}`);
-        onCommentSubmit();
-        enqueueSnackbar("Comment posted successfully", { variant: "success" });
+
+        // enqueueSnackbar("Comment posted successfully", { variant: "success" });
       }
     } catch (error) {
-      enqueueSnackbar("Failed to post comment: " + error, { variant: "error" });
+      console.log({ error });
+      // enqueueSnackbar("Failed to post comment: " + error, { variant: "error" });
     } finally {
       setIsSubmitting(false);
     }
@@ -118,7 +130,7 @@ const CommentForm: React.FC<CommentFormProps> = ({
             },
           }}
         >
-          Comment
+          new comment
         </Button>
       </Box>
     </Box>

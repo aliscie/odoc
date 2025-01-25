@@ -1,270 +1,322 @@
 // components/Comment.tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 import {
- Box,
- IconButton,
- Typography,
- Menu,
- MenuItem,
-} from '@mui/material';
-import { Heart, MoreVertical, Reply, ThumbsDown } from 'lucide-react';
-import { styled } from '@mui/material/styles';
-import { useSelector } from 'react-redux';
-import { useSnackbar } from 'notistack';
-import { formatRelativeTime } from '../../utils/time';
-import EditorComponent from '../../components/EditorComponent';
-import { deserializeContentTree } from '../../DataProcessing/deserlize/deserializeContents';
-import UserAvatarMenu from '../../components/MainComponents/UserAvatarMenu';
-import { useBackendContext } from '../../contexts/BackendContext';
-import serializeFileContents from '../../DataProcessing/serialize/serializeFileContents';
-import { Post, PostUser } from '../../../declarations/backend/backend.did';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import CommentForm from './CommentForm';
+  Box,
+  IconButton,
+  Typography,
+  Menu,
+  MenuItem,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Dialog,
+} from "@mui/material";
+import { Heart, MoreVertical, Reply, ThumbsDown } from "lucide-react";
+import { styled } from "@mui/material/styles";
+import { useDispatch, useSelector } from "react-redux";
+import { useSnackbar } from "notistack";
+import { formatRelativeTime } from "../../utils/time";
+import EditorComponent from "../../components/EditorComponent";
+import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
+import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
+import { useBackendContext } from "../../contexts/BackendContext";
+import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
+import { Post, PostUser } from "../../../declarations/backend/backend.did";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import CommentForm from "./CommentForm";
+import { handleRedux } from "../../redux/store/handleRedux";
+import { RootState } from "../../redux/reducers";
 
 const CommentContainer = styled(Box)(({ theme }) => ({
- padding: theme.spacing(2),
- borderRadius: theme.spacing(1),
- backgroundColor: theme.palette.mode === 'dark' ? 'rgba(17, 24, 39, 0.6)' : 'rgba(255, 255, 255, 0.6)',
- border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(139, 92, 246, 0.2)' : 'rgba(79, 70, 229, 0.2)'}`,
- marginBottom: theme.spacing(2),
+  padding: theme.spacing(2),
+  borderRadius: theme.spacing(1),
+  backgroundColor:
+    theme.palette.mode === "dark"
+      ? "rgba(17, 24, 39, 0.6)"
+      : "rgba(255, 255, 255, 0.6)",
+  border: `1px solid ${theme.palette.mode === "dark" ? "rgba(139, 92, 246, 0.2)" : "rgba(79, 70, 229, 0.2)"}`,
+  marginBottom: theme.spacing(2),
 }));
 
 const CommentActionButton = styled(IconButton)(({ theme }) => ({
- color: theme.palette.mode === 'dark' ? '#E9D5FF' : '#6366F1',
- padding: theme.spacing(0.5),
- '&:hover': {
-   backgroundColor: theme.palette.mode === 'dark' ? 'rgba(139, 92, 246, 0.1)' : 'rgba(79, 70, 229, 0.1)',
- },
- '&.Mui-disabled': {
-   opacity: 0.8,
-   color: theme.palette.mode === 'dark' ? '#9CA3AF' : '#4B5563',
-   '& span': {
-     color: theme.palette.mode === 'dark' ? '#E5E7EB' : '#1F2937',
-     fontWeight: 500,
-   },
- },
+  color: theme.palette.mode === "dark" ? "#E9D5FF" : "#6366F1",
+  padding: theme.spacing(0.5),
+  "&:hover": {
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? "rgba(139, 92, 246, 0.1)"
+        : "rgba(79, 70, 229, 0.1)",
+  },
+  "&.Mui-disabled": {
+    opacity: 0.8,
+    color: theme.palette.mode === "dark" ? "#9CA3AF" : "#4B5563",
+    "& span": {
+      color: theme.palette.mode === "dark" ? "#E5E7EB" : "#1F2937",
+      fontWeight: 500,
+    },
+  },
 }));
 
 interface ICommentProps {
- post: PostUser;
- allPosts: PostUser[];
- onUpdate: () => void;
+  post: PostUser;
+  posts: PostUser[];
+  onUpdate: () => void;
 }
 
-const Comment: React.FC<ICommentProps> = ({ post, allPosts, onUpdate }) => {
- const [isReplying, setIsReplying] = useState(false);
- const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
- const [voteLoading, setVoteLoading] = useState(false);
- const [isChanged, setChanged] = useState(false);
- const { profile } = useSelector((state: any) => state.filesState);
- const { backendActor } = useBackendContext();
- const { enqueueSnackbar } = useSnackbar();
- const contentTree = useRef([]);
+const Comment: React.FC<ICommentProps> = ({ post, onUpdate }) => {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
- const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-   setMenuAnchorEl(event.currentTarget);
- };
+  const { posts } = useSelector((state: RootState) => state.filesState);
+  const [isReplying, setIsReplying] = useState(false);
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [voteLoading, setVoteLoading] = useState(false);
+  const [isChanged, setChanged] = useState(false);
+  const { profile } = useSelector((state: any) => state.filesState);
+  const { backendActor } = useBackendContext();
+  const { enqueueSnackbar } = useSnackbar();
+  const contentTree = useRef([]);
+  const dispatch = useDispatch();
 
- const handleMenuClose = () => {
-   setMenuAnchorEl(null);
- };
+  const handleDeleteClick = () => {
+    handleMenuClose();
+    setDeleteDialogOpen(true);
+  };
 
- const handleDelete = async () => {
-   handleMenuClose();
-   try {
-     const result = await backendActor.delete_post(post.id);
-     if (result.Ok === null) {
-       onUpdate();
-       enqueueSnackbar('Comment deleted successfully', { variant: 'success' });
-     } else {
-       enqueueSnackbar(JSON.stringify(result.Err), { variant: 'error' });
-     }
-   } catch (error) {
-     enqueueSnackbar('Failed to delete comment: ' + error, { variant: 'error' });
-   }
- };
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+  };
 
- const handleVote = async (type: 'up' | 'down') => {
-   if (profile?.id === post.creator.id) {
-     enqueueSnackbar(`You can't ${type === 'up' ? 'like' : 'dislike'} your own comment`, { variant: 'error' });
-     return;
-   }
+  const handleDeleteConfirm = async () => {
+    setDeleteDialogOpen(false);
+    try {
+      const result = await backendActor.delete_post(post.id);
+      if (result.Ok === null) {
+        dispatch(handleRedux("DELETE_POST", { id: post.id }));
+      } else {
+        enqueueSnackbar(JSON.stringify(result.Err), { variant: "error" });
+      }
+    } catch (error) {
+      enqueueSnackbar("Failed to delete comment: " + error, {
+        variant: "error",
+      });
+    }
+  };
 
-   setVoteLoading(true);
-   try {
-     const voteArray = type === 'up' ? post.votes_up : post.votes_down;
-     if (voteArray.includes(profile.id)) {
-       const res = await backendActor.unvote(post.id);
-       if (res.Ok) {
-         onUpdate();
-       }
-     } else {
-       const res = await backendActor[`vote_${type}`](post.id);
-       if (res.Ok) {
-         onUpdate();
-       }
-     }
-   } catch (error) {
-     enqueueSnackbar('Failed to vote: ' + error, { variant: 'error' });
-   } finally {
-     setVoteLoading(false);
-   }
- };
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
 
- const onSave = async () => {
-   setChanged(false);
-   const newPostObj: Post = {
-     ...post,
-     tags: [],
-     content_tree: serializeFileContents(contentTree.current)[0][0][1],
-     creator: profile.id,
-     votes_up: post.votes_up,
-     votes_down: post.votes_down,
-   };
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+  };
 
-   try {
-     const result = await backendActor.save_post(newPostObj);
-     if (result.Ok) {
-       onUpdate();
-       enqueueSnackbar('Comment saved successfully', { variant: 'success' });
-     } else {
-       enqueueSnackbar(JSON.stringify(result.Err), { variant: 'error' });
-     }
-   } catch (error) {
-     enqueueSnackbar('Failed to save: ' + error, { variant: 'error' });
-   }
- };
+  const handleVote = async (type: "up" | "down") => {
+    if (profile?.id === post.creator.id) {
+      enqueueSnackbar(
+        `You can't ${type === "up" ? "like" : "dislike"} your own comment`,
+        { variant: "error" },
+      );
+      return;
+    }
 
- return (
-   <CommentContainer>
-     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-       <UserAvatarMenu sx={{ mr: 2 }} user={post.creator} />
-       <Box>
-         <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-           {post.creator.name}
-         </Typography>
-         <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
-           {formatRelativeTime(Number(post.date_created))}
-         </Typography>
-       </Box>
-       {profile?.id === post.creator.id && (
-         <IconButton sx={{ ml: 'auto' }} onClick={handleMenuClick}>
-           <MoreVertical size={20} />
-         </IconButton>
-       )}
-     </Box>
+    setVoteLoading(true);
+    try {
+      const voteArray = type === "up" ? post.votes_up : post.votes_down;
+      if (voteArray.includes(profile.id)) {
+        const res = await backendActor.unvote(post.id);
+        if (res.Ok) {
+          onUpdate();
+        }
+      } else {
+        const res = await backendActor[`vote_${type}`](post.id);
+        if (res.Ok) {
+          onUpdate();
+        }
+      }
+    } catch (error) {
+      enqueueSnackbar("Failed to vote: " + error, { variant: "error" });
+    } finally {
+      setVoteLoading(false);
+    }
+  };
 
-     <Box sx={{ mb: 2 }}>
-       <DndProvider backend={HTML5Backend}>
-         <EditorComponent
-           editorKey={post.id}
-           readOnly={profile?.id !== post.creator.id}
-           id={post.id}
-           contentEditable={profile?.id === post.creator.id}
-           onChange={(content) => {
-             contentTree.current = { "": content };
-             if (!isChanged && post.creator.id === profile?.id) {
-               setChanged(true);
-             }
-           }}
-           content={deserializeContentTree(post.content_tree)}
-         />
-       </DndProvider>
-     </Box>
+  const onSave = async () => {
+    setChanged(false);
+    const newPostObj: Post = {
+      ...post,
+      tags: [],
+      content_tree: serializeFileContents(contentTree.current)[0][0][1],
+      creator: profile.id,
+      votes_up: post.votes_up,
+      votes_down: post.votes_down,
+    };
 
-     <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-       <CommentActionButton
-         onClick={() => handleVote('up')}
-         disabled={!profile || profile.id === post.creator.id || voteLoading}
-       >
-         <Heart
-           size={16}
-           fill={post.votes_up.includes(profile?.id) ? '#A855F7' : 'none'}
-         />
-         <Box component="span" sx={{ ml: 0.5, fontSize: '0.75rem' }}>
-           {post.votes_up.length}
-         </Box>
-       </CommentActionButton>
+    try {
+      const result = await backendActor.save_post(newPostObj);
+      if (result.Ok) {
+        onUpdate();
+        enqueueSnackbar("Comment saved successfully", { variant: "success" });
+      } else {
+        enqueueSnackbar(JSON.stringify(result.Err), { variant: "error" });
+      }
+    } catch (error) {
+      enqueueSnackbar("Failed to save: " + error, { variant: "error" });
+    }
+  };
 
-       <CommentActionButton
-         onClick={() => handleVote('down')}
-         disabled={!profile || profile.id === post.creator.id || voteLoading}
-       >
-         <ThumbsDown
-           size={16}
-           fill={post.votes_down.includes(profile?.id) ? '#A855F7' : 'none'}
-         />
-         <Box component="span" sx={{ ml: 0.5, fontSize: '0.75rem' }}>
-           {post.votes_down.length}
-         </Box>
-       </CommentActionButton>
+  return (
+    <CommentContainer>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+        <UserAvatarMenu sx={{ mr: 2 }} user={post.creator} />
+        <Box>
+          <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+            {post.creator.name}
+          </Typography>
+          <Typography variant="caption" sx={{ color: "#9CA3AF" }}>
+            {formatRelativeTime(Number(post.date_created))}
+          </Typography>
+        </Box>
+        {profile?.id === post.creator.id && (
+          <IconButton sx={{ ml: "auto" }} onClick={handleMenuClick}>
+            <MoreVertical size={20} />
+          </IconButton>
+        )}
+      </Box>
 
-       <CommentActionButton
-         onClick={() => setIsReplying(!isReplying)}
-         disabled={!profile}
-       >
-         <Reply size={16} />
-       </CommentActionButton>
+      <Box sx={{ mb: 2 }}>
+        <DndProvider backend={HTML5Backend}>
+          <EditorComponent
+            editorKey={post.id}
+            readOnly={profile?.id !== post.creator.id}
+            id={post.id}
+            contentEditable={profile?.id === post.creator.id}
+            onChange={(content) => {
+              contentTree.current = { "": content };
+              if (!isChanged && post.creator.id === profile?.id) {
+                setChanged(true);
+              }
+            }}
+            content={deserializeContentTree(post.content_tree)}
+          />
+        </DndProvider>
+      </Box>
 
-       {profile?.id === post.creator.id && (
-         <CommentActionButton disabled={!isChanged} onClick={onSave}>
-           Save
-         </CommentActionButton>
-       )}
-     </Box>
+      <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+        <CommentActionButton
+          onClick={() => handleVote("up")}
+          disabled={!profile || profile.id === post.creator.id || voteLoading}
+        >
+          <Heart
+            size={16}
+            fill={post.votes_up.includes(profile?.id) ? "#A855F7" : "none"}
+          />
+          <Box component="span" sx={{ ml: 0.5, fontSize: "0.75rem" }}>
+            {post.votes_up.length}
+          </Box>
+        </CommentActionButton>
 
-     <Menu
-       anchorEl={menuAnchorEl}
-       open={Boolean(menuAnchorEl)}
-       onClose={handleMenuClose}
-     >
-       <MenuItem
-         onClick={handleDelete}
-         sx={{
-           color: '#EF4444',
-           '&:hover': {
-             backgroundColor: 'rgba(239, 68, 68, 0.1)',
-           },
-         }}
-       >
-         Delete
-       </MenuItem>
-     </Menu>
+        <CommentActionButton
+          onClick={() => handleVote("down")}
+          disabled={!profile || profile.id === post.creator.id || voteLoading}
+        >
+          <ThumbsDown
+            size={16}
+            fill={post.votes_down.includes(profile?.id) ? "#A855F7" : "none"}
+          />
+          <Box component="span" sx={{ ml: 0.5, fontSize: "0.75rem" }}>
+            {post.votes_down.length}
+          </Box>
+        </CommentActionButton>
 
-     {isReplying && (
-       <Box sx={{ mt: 2, ml: 4 }}>
-         <CommentForm
-           postId={post.id}
-           onCommentSubmit={() => {
-             setIsReplying(false);
-             onUpdate();
-           }}
-           onCancel={() => setIsReplying(false)}
-         />
-       </Box>
-     )}
+        <CommentActionButton
+          onClick={() => setIsReplying(!isReplying)}
+          disabled={!profile}
+        >
+          <Reply size={16} />
+        </CommentActionButton>
 
-     {post.children.length > 0 && (
-       <Box sx={{ ml: 4, mt: 2 }}>
-         {post.children.map(childId => {
-           const childComment = allPosts.find(p => p.id === childId);
-           if (childComment && childComment.is_comment) {
-             return (
-               <Comment
-                 key={childId}
-                 post={childComment}
-                 allPosts={allPosts}
-                 onUpdate={onUpdate}
-               />
-             );
-           }
-           return null;
-         })}
-       </Box>
-     )}
-   </CommentContainer>
- );
+        {profile?.id === post.creator.id && (
+          <CommentActionButton disabled={!isChanged} onClick={onSave}>
+            Save
+          </CommentActionButton>
+        )}
+      </Box>
+
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem
+          onClick={handleDeleteClick}
+          sx={{
+            color: "#EF4444",
+            "&:hover": {
+              backgroundColor: "rgba(239, 68, 68, 0.1)",
+            },
+          }}
+        >
+          Delete
+        </MenuItem>
+      </Menu>
+
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="delete-dialog-title"
+      >
+        <DialogTitle id="delete-dialog-title">Delete Comment</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this comment? This action cannot be
+            undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {isReplying && (
+        <Box sx={{ mt: 2, ml: 4 }}>
+          <CommentForm
+            postId={post.id}
+            onCommentSubmit={(data) => {
+              setIsReplying(false);
+              onUpdate(data);
+            }}
+            onCancel={() => setIsReplying(false)}
+          />
+        </Box>
+      )}
+
+      {post.children.length > 0 && (
+        <Box sx={{ ml: 4, mt: 2 }}>
+          {post.children.map((childId) => {
+            const childComment = posts.find((p) => p.id === childId);
+            if (childComment && childComment.is_comment) {
+              return (
+                <Comment
+                  key={childId}
+                  post={childComment}
+                  posts={posts}
+                  onUpdate={onUpdate}
+                />
+              );
+            }
+            return null;
+          })}
+        </Box>
+      )}
+    </CommentContainer>
+  );
 };
 
 export default Comment;
