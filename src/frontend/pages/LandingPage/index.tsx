@@ -27,6 +27,7 @@ import GetStartedButton from "./getStartedButton";
 import { useSelector } from "react-redux";
 import SocialButton from "./socialButton";
 import WhyOdoc from "./whyOdoc";
+import Section from "./section";
 
 export default function LandingPage(props) {
   const { profile, profile_history, wallet, friends } = useSelector(
@@ -35,7 +36,7 @@ export default function LandingPage(props) {
   return (
     <Box sx={{ minHeight: "100vh" }}>
       {/* Hero Section */}
-      <Container maxWidth="lg" sx={{ pt: 10, pb: 8 }}>
+      <Section id="intro">
         <Box sx={{ maxWidth: "800px", mx: "auto" }}>
           <Box
             sx={{
@@ -89,9 +90,10 @@ export default function LandingPage(props) {
             </Typography>
 
             <Box sx={{ color: "text.secondary", mb: 4 }}>
-              Odoc is an open source decentralized trustees custom smart contract platform. Made for teams weather
-              it is project management, freelancers, remote teams, or small
-              businesses. Built on the{" "}
+              Odoc is an open source decentralized trustees custom smart
+              contract platform. Made for teams weather it is project
+              management, freelancers, remote teams, or small businesses. Built
+              on the{" "}
               <Link
                 href="https://internetcomputer.org/"
                 target="_blank"
@@ -114,11 +116,15 @@ export default function LandingPage(props) {
           </Box>
           <GetStartedButton key={profile?.id} />
         </Box>
-      </Container>
-      <SocialButton />
+      </Section>
+      <Section id="social">
+        <SocialButton />
+      </Section>
+      <Section id="why">
+        <WhyOdoc />
+      </Section>
       {/* Features Grid */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
-        <WhyOdoc />
         <Typography
           variant="h3"
           sx={{ textAlign: "center", fontWeight: "bold", mb: 6 }}

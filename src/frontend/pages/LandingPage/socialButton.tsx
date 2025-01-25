@@ -53,32 +53,26 @@ const SocialButton = () => {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
         gap: 3,
-        py: 4
+        py: 4,
       }}
     >
       <Typography
-        variant="h4"
-        component="h2"
-        sx={{
-          fontWeight: 600,
-          color: isDarkMode ? 'common.white' : 'common.black',
-          textAlign: 'center',
-          mb: 2
-        }}
+        variant="h2"
+        sx={{ fontSize: "2.5rem", fontWeight: "bold", mb: 1.5 }}
       >
-        Keep in Touch
+        Stay in Touch
       </Typography>
 
       <Box
         sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-          gap: 3
+          display: "flex",
+          justifyContent: "center",
+          flexWrap: "wrap",
+          gap: 3,
         }}
       >
         {socialLinks.map((social) => {
