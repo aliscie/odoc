@@ -7,10 +7,15 @@ use ic_cdk_macros::update;
 use crate::discover::Post;
 
 // Move it to util
-pub fn time_diff(i: u64, f: u64) -> Duration {
-    let date_created_duration = Duration::from_nanos(f);
-    let current_time_duration = Duration::from_nanos(i);
-    current_time_duration - date_created_duration
+pub fn time_diff(current: u64, created: u64) -> Duration {
+    let date_created_duration = Duration::from_nanos(created);
+    let current_time_duration = Duration::from_nanos(current);
+
+    if current_time_duration >= date_created_duration {
+        current_time_duration - date_created_duration
+    } else {
+        Duration::from_secs(0)
+    }
 }
 
 #[update]
@@ -42,9 +47,10 @@ fn save_post(mut post: Post) -> Result<(), String> {
         if posts.len() >= 2 {
             let one_day = 86400;
             let diff = time_diff(
-                posts.last().unwrap().date_created.clone(),
                 ic_cdk::api::time(),
+                posts.last().unwrap().date_created.clone(),
             );
+
             if diff < Duration::from_secs(one_day.clone()) {
                 let hours = &one_day - diff.as_secs();
                 let remainder = (one_day - diff.as_secs()) % 3600;

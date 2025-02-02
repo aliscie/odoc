@@ -35,7 +35,7 @@ import {
   Close as CloseIcon,
 } from "@mui/icons-material";
 import { Z_INDEX_BANNER } from "../constants/zIndex";
-import {useBackendContext} from "../contexts/BackendContext";
+import { useBackendContext } from "../contexts/BackendContext";
 
 interface Proposal {
   id: string;
@@ -61,7 +61,8 @@ const mockProposals: Proposal[] = [
   {
     id: "PROP-001",
     title: "Implement Real-time Collaboration Features",
-    description: "Add real-time document editing and collaboration tools to enhance platform functionality.",
+    description:
+      "Add real-time document editing and collaboration tools to enhance platform functionality.",
     proposer: "0x1234...5678",
     status: "active",
     votesFor: 750000,
@@ -74,7 +75,8 @@ const mockProposals: Proposal[] = [
   {
     id: "PROP-002",
     title: "Adjust Minimum Proposal Threshold",
-    description: "Reduce minimum token requirement for creating proposals from 10,000 to 5,000 ODOC.",
+    description:
+      "Reduce minimum token requirement for creating proposals from 10,000 to 5,000 ODOC.",
     proposer: "0x8765...4321",
     status: "passed",
     votesFor: 800000,
@@ -201,7 +203,11 @@ const ProposalCard = ({ proposal }: { proposal: Proposal }) => {
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <Typography variant="h6">{proposal.title}</Typography>
               <Chip
                 label={proposal.status.toUpperCase()}
@@ -227,13 +233,20 @@ const ProposalCard = ({ proposal }: { proposal: Proposal }) => {
               </Box>
               <LinearProgress
                 variant="determinate"
-                value={calculateProgress(proposal.votesFor, proposal.totalVotes)}
+                value={calculateProgress(
+                  proposal.votesFor,
+                  proposal.totalVotes,
+                )}
                 sx={{ height: 8, borderRadius: 4 }}
               />
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <Box display="flex" alignItems="center" gap={1}>
                 <Chip label={proposal.type} size="small" variant="outlined" />
                 <Typography variant="body2" color="text.secondary">
@@ -291,13 +304,16 @@ const SNSVoting: React.FC = () => {
   const [proposalType, setProposalType] = useState("feature");
   const [proposals] = useState<Proposal[]>(mockProposals);
   const [showBanner, setShowBanner] = useState(true);
-  const [snsStatus, setSnsStatus] = useState<{ number_users: number; active_users: number } | null>(null);
+  const [snsStatus, setSnsStatus] = useState<{
+    number_users: number;
+    active_users: number;
+  } | null>(null);
 
   useEffect(() => {
     const fetchSNSStatus = async () => {
       try {
         const res = await backendActor.get_sns_status();
-        if ('Ok' in res) {
+        if ("Ok" in res) {
           setSnsStatus(res.Ok);
         }
       } catch (error) {
@@ -310,7 +326,9 @@ const SNSVoting: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
-      {showBanner && <FeatureNotAvailableBanner onClose={() => setShowBanner(false)} />}
+      {showBanner && (
+        <FeatureNotAvailableBanner onClose={() => setShowBanner(false)} />
+      )}
 
       <Paper
         sx={{
@@ -321,12 +339,18 @@ const SNSVoting: React.FC = () => {
           backgroundColor: theme.palette.background.paper,
         }}
       >
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={3}
+        >
           <Box>
             <Typography variant="h4">SNS Voting</Typography>
             {snsStatus && (
               <Typography variant="body2" color="text.secondary">
-                Total Users: {snsStatus.number_users} | Active Users: {snsStatus.active_users}
+                Total Users: {snsStatus.number_users} | Active Users:{" "}
+                {snsStatus.active_users}
               </Typography>
             )}
           </Box>

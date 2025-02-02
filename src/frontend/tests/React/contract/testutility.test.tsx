@@ -57,7 +57,7 @@ describe('CustomContractViewer', () => {
         <CustomContractViewer
           profile={mockProfile}
           all_friends={mockFriends}
-          contracts={[mockContract]}
+          contractId={mockContract.id}
           onContractChange={mockOnContractChange}
           {...props}
         />

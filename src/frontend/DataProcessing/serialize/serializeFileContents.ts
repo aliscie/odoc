@@ -1,5 +1,8 @@
 import { randomString } from "../dataSamples";
-import { ContentNode } from "../../../declarations/backend/backend.did";
+import {
+  ContentData,
+  ContentNode,
+} from "../../../declarations/backend/backend.did";
 
 const stylesToCheck = ["bold", "italic", "underline", "strikethrough", "code"];
 
@@ -45,12 +48,12 @@ function de_nesting(nested: any[]) {
         _type: item.type || "",
         data: item.data || [],
         text: item.text || "",
-        indent: item.indent || 0,
+        indent: BigInt(item.indent || 0),
         listStyleType: item.listStyleType || "",
         language: item.language || "",
         parent: parent,
         children: children.map((child) => String(child.id)),
-        listStart: item.listStart || 0,
+        listStart: BigInt(item.listStart || 0),
       };
 
       data.push(obj);

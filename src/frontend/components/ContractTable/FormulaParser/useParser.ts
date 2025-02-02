@@ -35,7 +35,7 @@ interface ParserProps {
 
 function useParser(props: ParserProps) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const { profile, all_friends, wallet, contracts } = useSelector(
+  const { profile, all_friends, wallet } = useSelector(
     (state: any) => state.chatsState,
   );
   const { contract, main_contract } = props;

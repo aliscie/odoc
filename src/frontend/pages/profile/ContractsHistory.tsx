@@ -69,11 +69,10 @@ function ContractsHistory(props: any) {
                   }}
                 >
                   <CustomContractComponent
-                    key={JSON.stringify(contract)}
                     onContractChange={onContractChange}
                     profile={profile}
                     all_friends={all_friends}
-                    contracts={[contract]}
+                    contractId={contract.id}
                   />
                 </Paper>
               </ListItem>

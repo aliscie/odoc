@@ -55,7 +55,7 @@ const Section: React.FC<SectionProps> = ({
       id={id}
       component="section"
       sx={{
-        minHeight: '100vh',
+        minHeight: { xs: 'calc(100vh - 56px)', sm: 'calc(100vh - 64px)', md: '100vh' },
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -63,6 +63,8 @@ const Section: React.FC<SectionProps> = ({
         transition: 'opacity 0.5s ease, transform 0.5s ease',
         bgcolor: theme.palette.background.default,
         color: theme.palette.text.primary,
+        px: { xs: 2, sm: 3, md: 4 },
+        py: { xs: 4, sm: 6, md: 8 },
         ...sx
       }}
     >

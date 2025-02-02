@@ -9,7 +9,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useSelector } from "react-redux";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { ClickAwayListener } from "@mui/base";
@@ -66,9 +66,13 @@ function GetStartedButton() {
   );
   const { login } = useBackendContext();
   const { isLoggedIn } = useSelector((state: any) => state.uiState);
-  const [showTooltip, setShowTooltip] = useState(true);
+  const [showTooltip, setShowTooltip] = useState(false);
+  useEffect(()=>{
+    setTimeout(() => setShowTooltip(true), 1500);
+  },[profile])
+
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const PopperProps = {
     sx: {
@@ -76,26 +80,30 @@ function GetStartedButton() {
       "& .MuiTooltip-tooltip": {
         maxWidth: "none",
         width: isMobile ? "calc(100vw - 32px)" : "500px",
-        background: theme.palette.mode === 'dark'
-          ? 'rgba(255, 172, 23, 0.8)'
-          : 'rgba(255, 172, 23, 0.9)',
+        background:
+          theme.palette.mode === "dark"
+            ? "rgba(255, 172, 23, 0.8)"
+            : "rgba(255, 172, 23, 0.9)",
         backdropFilter: "blur(10px)",
         border: 0,
         p: 1,
       },
       "& .MuiTooltip-arrow": {
-        color: theme.palette.mode === 'dark'
-          ? 'rgba(255, 172, 23, 0.8)'
-          : 'rgba(255, 172, 23, 0.9)',
+        color:
+          theme.palette.mode === "dark"
+            ? "rgba(255, 172, 23, 0.8)"
+            : "rgba(255, 172, 23, 0.9)",
       },
     },
   };
 
   const TooltipContent = ({ videoId }: { videoId: string }) => (
-    <Box sx={{
-      width: "100%",
-      height: isMobile ? "180px" : "250px",
-    }}>
+    <Box
+      sx={{
+        width: "100%",
+        height: isMobile ? "180px" : "250px",
+      }}
+    >
       <iframe
         width="100%"
         height="100%"

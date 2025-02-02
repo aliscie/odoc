@@ -56,29 +56,25 @@ pub struct ContentNode {
 
 #[derive(Clone, Debug, Deserialize, CandidType)]
 pub struct ContentNodeVec {
-    pub files: HashMap<FileId, ContentTree>,
+    pub contents: HashMap<FileId, ContentTree>,
 }
 
 impl Storable for ContentNodeVec {
     fn to_bytes(&self) -> Cow<[u8]> {
-        match Encode!(self) {
-            Ok(bytes) => Cow::Owned(bytes),
-            Err(e) => {
-                print(format!("Error encoding ContentNodeVec: {}", e));
-                panic!("Failed to encode ContentNodeVec");
-            }
-        }
+        Cow::Owned(Encode!(self).unwrap())
     }
 
     fn from_bytes(bytes: Cow<[u8]>) -> Self {
         match Decode!(bytes.as_ref(), Self) {
-            Ok(data) => data,
-            Err(_) => Self {
-                files: HashMap::new(),
+            Ok(content) => content,
+            Err(e) => {
+                ic_cdk::println!("Failed to decode ContentNodeVec: {:?}", e);
+                ContentNodeVec {
+                    contents: HashMap::new(),
+                }
             }
         }
     }
-
     const BOUND: Bound = Bound::Unbounded;
 }
 
@@ -88,7 +84,7 @@ impl ContentNode {
             let file_contents = file_contents.borrow();
             file_contents.get(&user_id)
                 .and_then(|content_node_vec| {
-                    content_node_vec.files.get(&file_id).cloned()
+                    content_node_vec.contents.get(&file_id).cloned()
                 })
         })
     }
@@ -98,7 +94,7 @@ impl ContentNode {
         let mut res: HashMap<FileId, ContentTree> = FILE_CONTENTS.with(|file_contents| {
             let file_contents = file_contents.borrow();
             file_contents.get(&current_user)
-                .map(|content_node_vec| content_node_vec.files.clone())
+                .map(|content_node_vec| content_node_vec.contents.clone())
                 .unwrap_or_default()
         });
 
@@ -126,7 +122,7 @@ impl ContentNode {
             let file_contents = file_contents.borrow();
             if let Some(content_node_vec) = file_contents.get(&current_user) {
                 all_files.extend(
-                    content_node_vec.files.iter()
+                    content_node_vec.contents.iter()
                         .map(|(file_id, content)| (file_id.clone(), content.clone()))
                 );
             }
@@ -159,33 +155,23 @@ impl ContentNode {
         let current_user = caller().to_string();
         FILE_CONTENTS.with(|file_contents| {
             let mut contents = file_contents.borrow_mut();
-            // Get existing content or create new one without cloning
-            let mut new_content = ContentNodeVec {
-                files: HashMap::new()
-            };
-
-            // If user exists, copy their existing files
-            if let Some(existing_content) = contents.get(&current_user) {
-                for (existing_file_id, existing_nodes) in &existing_content.files {
-                    if existing_file_id != &file_id {
-                        new_content.files.insert(existing_file_id.clone(), existing_nodes.clone());
-                    }
+            let mut user_contents = contents.get(&current_user).unwrap_or_else(|| {
+                ContentNodeVec {
+                    contents: HashMap::new(),
                 }
-            }
-
-            // Add/update the new content
-            new_content.files.insert(file_id, content_nodes);
-
-            // Insert the new content into stable storage
-            let _ = contents.insert(current_user, new_content);
+            });
+            user_contents.contents.insert(file_id, content_nodes);
+            contents.insert(current_user, user_contents);
         });
     }
+
+
     pub fn delete_file_contents(file_id: FileId) {
         let current_user = caller().to_string();
         FILE_CONTENTS.with(|file_contents| {
             let mut contents = file_contents.borrow_mut();
             if let Some(mut content_node_vec) = contents.get(&current_user) {
-                content_node_vec.files.remove(&file_id);
+                content_node_vec.contents.remove(&file_id);
             }
         });
     }
@@ -195,7 +181,7 @@ impl ContentNode {
         FILE_CONTENTS.with(|file_contents| {
             let mut contents = file_contents.borrow_mut();
             if let Some(mut content_node_vec) = contents.get(&current_user) {
-                content_node_vec.files.remove(&file_id);
+                content_node_vec.contents.remove(&file_id);
             }
         });
     }

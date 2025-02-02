@@ -25,8 +25,6 @@ import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
 import { useBackendContext } from "../../contexts/BackendContext";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 import { Post, PostUser } from "../../../declarations/backend/backend.did";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import CommentList from "./CommentList";
 import { RootState } from "../../redux/reducers";
 
@@ -328,21 +326,26 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
           </StyledDialog>
         </Box>
 
-        <Box sx={{ mb: 2 }}>
-          <DndProvider backend={HTML5Backend}>
-            <EditorComponent
-              readOnly={profile?.id !== post.creator.id}
-              id={post.id}
-              contentEditable={profile?.id === post.creator.id}
-              onChange={(content) => {
-                contentTree.current = { "": content };
-                if (!isChanged && post.creator.id === profile?.id) {
-                  setChanged(true);
-                }
-              }}
-              content={deserializeContentTree(post.content_tree)}
-            />
-          </DndProvider>
+        <Box
+          sx={{
+            mb: 2,
+            maxHeight: "400px",
+            overflowY: "auto",
+          }}
+        >
+          <EditorComponent
+            editorKey={post.id}
+            readOnly={profile?.id !== post.creator.id}
+            id={post.id}
+            contentEditable={profile?.id === post.creator.id}
+            onChange={(content) => {
+              contentTree.current = { "": content };
+              if (!isChanged && post.creator.id === profile?.id) {
+                setChanged(true);
+              }
+            }}
+            content={deserializeContentTree(post.content_tree)}
+          />
         </Box>
         <Box
           sx={{

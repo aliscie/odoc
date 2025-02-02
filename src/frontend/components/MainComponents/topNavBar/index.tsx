@@ -52,6 +52,7 @@ import { convertToBlobLink } from "../../../DataProcessing/imageToVec";
 import { Z_INDEX_TOP_NAVBAR } from "../../../constants/zIndex";
 import { RootState } from "../../../redux/reducers";
 import HandshakeIcon from "@mui/icons-material/Handshake";
+import WorkspaceManager from "../Workspaces";
 
 interface File {
   id: string;
@@ -297,6 +298,7 @@ export default function TopNavBar() {
       <>
         <NotificationsButton notifications={notifications} />
         <ChatsComponent key={chats.length} chats={chats} />
+        <WorkspaceManager />
         <BasicMenu options={mobileMenuOptions}>
           <UserAvatar
             actions_rate={profile_history?.actions_rate ?? 0}

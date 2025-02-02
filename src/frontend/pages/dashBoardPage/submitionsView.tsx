@@ -1,21 +1,27 @@
 import React, { useState } from "react";
 import {
-    Box, Card, CardContent, Chip,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Grid,
-    IconButton,
-    List,
-    ListItem, ListItemIcon, ListItemText,
-    Paper, styled,
-    Typography
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  styled,
+  Typography,
 } from "@mui/material";
 import {
-    AttachFile as AttachFileIcon,
-    Close as CloseIcon,
-    Person as PersonIcon,
-    Schedule as ScheduleIcon
+  AttachFile as AttachFileIcon,
+  Close as CloseIcon,
+  Person as PersonIcon,
+  Schedule as ScheduleIcon,
 } from "@mui/icons-material";
 const SAMPLE_SUBMISSIONS = [
   {
@@ -30,16 +36,24 @@ const SAMPLE_SUBMISSIONS = [
     description: "Q4 project performance analysis",
     attachments: [
       { name: "Q4_Report.pdf", size: "2.4 MB" },
-      { name: "Financial_Summary.xlsx", size: "1.1 MB" }
+      { name: "Financial_Summary.xlsx", size: "1.1 MB" },
     ],
     comments: [
-      { author: "Sarah Wilson", date: "2025-01-09", text: "Please add marketing campaign results." },
-      { author: "John Davis", date: "2025-01-08", text: "Financial projections approved." }
+      {
+        author: "Sarah Wilson",
+        date: "2025-01-09",
+        text: "Please add marketing campaign results.",
+      },
+      {
+        author: "John Davis",
+        date: "2025-01-08",
+        text: "Financial projections approved.",
+      },
     ],
     history: [
       { date: "2025-01-08 09:00", event: "Submission created" },
-      { date: "2025-01-08 14:30", event: "Assigned to review" }
-    ]
+      { date: "2025-01-08 14:30", event: "Assigned to review" },
+    ],
   },
   {
     id: 2,
@@ -48,27 +62,29 @@ const SAMPLE_SUBMISSIONS = [
     status: "New",
     submitDate: "2025-01-10",
     category: "Marketing",
-    priority: "Medium"
-  }
+    priority: "Medium",
+  },
 ];
-
-
-
 
 const StyledStatusChip = styled(Chip)(({ theme, status }) => ({
   backgroundColor:
-    status === 'New' ? theme.palette.info.light :
-    status === 'Under Review' ? theme.palette.warning.light :
-    theme.palette.success.light,
+    status === "New"
+      ? theme.palette.primary
+      : status === "Under Review"
+        ? theme.palette.warning.dark
+        : theme.palette.success.dark,
   color:
-    status === 'New' ? theme.palette.info.contrastText :
-    status === 'Under Review' ? theme.palette.warning.contrastText :
-    theme.palette.success.contrastText,
+    status === "New"
+      ? theme.palette.primary.contrastText
+      : status === "Under Review"
+        ? theme.palette.warning.contrastText
+        : theme.palette.success.contrastText,
+  fontWeight: 500,
+  padding: "0 8px",
 }));
-
 const SubmissionRow = ({ submission, onClick }) => {
   return (
-    <Card sx={{ mb: 1, cursor: 'pointer' }} onClick={onClick}>
+    <Card sx={{ mb: 1, cursor: "pointer" }} onClick={onClick}>
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box flex={1}>
@@ -112,19 +128,25 @@ const SubmissionDetails = ({ submission, onClose }) => {
         <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
             <Paper sx={{ p: 2, mb: 2 }}>
-              <Typography variant="h6" gutterBottom>Description</Typography>
+              <Typography variant="h6" gutterBottom>
+                Description
+              </Typography>
               <Typography>{submission.description}</Typography>
             </Paper>
 
             <Paper sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom>Comments</Typography>
+              <Typography variant="h6" gutterBottom>
+                Comments
+              </Typography>
               <List>
                 {submission.comments?.map((comment, index) => (
                   <ListItem key={index} alignItems="flex-start">
                     <ListItemText
                       primary={
                         <Box display="flex" justifyContent="space-between">
-                          <Typography variant="subtitle2">{comment.author}</Typography>
+                          <Typography variant="subtitle2">
+                            {comment.author}
+                          </Typography>
                           <Typography variant="caption" color="text.secondary">
                             {comment.date}
                           </Typography>
@@ -140,7 +162,9 @@ const SubmissionDetails = ({ submission, onClose }) => {
 
           <Grid item xs={12} md={4}>
             <Paper sx={{ p: 2, mb: 2 }}>
-              <Typography variant="h6" gutterBottom>Details</Typography>
+              <Typography variant="h6" gutterBottom>
+                Details
+              </Typography>
               <List dense>
                 <ListItem>
                   <ListItemIcon>
@@ -172,17 +196,16 @@ const SubmissionDetails = ({ submission, onClose }) => {
 
             {submission.attachments && (
               <Paper sx={{ p: 2 }}>
-                <Typography variant="h6" gutterBottom>Attachments</Typography>
+                <Typography variant="h6" gutterBottom>
+                  Attachments
+                </Typography>
                 <List dense>
                   {submission.attachments.map((file, index) => (
                     <ListItem key={index}>
                       <ListItemIcon>
                         <AttachFileIcon />
                       </ListItemIcon>
-                      <ListItemText
-                        primary={file.name}
-                        secondary={file.size}
-                      />
+                      <ListItemText primary={file.name} secondary={file.size} />
                     </ListItem>
                   ))}
                 </List>

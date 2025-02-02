@@ -8,7 +8,8 @@ import createContractPlugin, {
 import TableChartIcon from "@mui/icons-material/TableChart";
 import { handleRedux } from "../../redux/store/handleRedux";
 import { custom_contract } from "../../DataProcessing/dataSamples";
-
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd";
 interface Props {
   handleOnInsertComponent?: any;
   onChange?: any;
@@ -26,7 +27,6 @@ function EditorComponent(props: Props) {
     (state: any) => state.filesState,
   );
   let content = props.content;
-
 
   let extraPlugins = [
     { plugin: createContractPlugin, key: CONTRACT_KEY, icon: TableChartIcon },
@@ -73,11 +73,10 @@ function EditorComponent(props: Props) {
   const handleInputChange = (changes: any) => {
     props.onChange(changes);
   };
-
   return (
     <OdocEditor
-      key={props.id}
-      id={props.id || ""}
+      // key={String(props.editorKey || "")}
+      id={String(props.editorKey || "")}
       readOnly={props.readOnly}
       initialValue={content}
       onChange={handleInputChange}
@@ -89,4 +88,4 @@ function EditorComponent(props: Props) {
   );
 }
 
-export default EditorComponent;
+export default React.memo(EditorComponent);

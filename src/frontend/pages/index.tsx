@@ -19,13 +19,14 @@ import DummyShares from "./sharesContract";
 import AffiliateDashboard from "./affiliate";
 import AffiliateRedirect from "./affiliateRedirect";
 import { handleRedux } from "../redux/store/handleRedux";
+import FileContentPage from "./fileContentPage";
 
 function Pages() {
   const { profile, profile_history, wallet, friends } = useSelector(
     (state: any) => state.filesState,
   );
   const { login, logout, backendActor } = useBackendContext();
-  const { isLoggedIn } = useSelector((state: any) => state.uiState);
+  const { isLoggedIn } = useSelector((state : any) => state.uiState);
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchPosts = async () => {
@@ -47,7 +48,7 @@ function Pages() {
   }, [backendActor]);
 
   const MainPage = () => {
-    if (profile_history?.actions_rate >= 1) {
+    if (isLoggedIn) {
       return <ProductManagerDashboard />;
     }
     return <LandingPage isLoggedIn={isLoggedIn} login={login} />;
@@ -87,7 +88,7 @@ function Pages() {
       <Route path="/shares_contract" element={<DummyShares />} />
       <Route path="/affiliate" element={<AffiliateDashboard />} />
       <Route path="/f" element={<AffiliateRedirect />} />
-      <Route path="/*" element={<Index />} />
+      <Route path="/*" element={<FileContentPage />} />
     </Routes>
   );
 }

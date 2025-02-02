@@ -22,7 +22,7 @@ root.render(
         <BackendProvider>
           <SnackbarProvider
             anchorOrigin={{
-              vertical: "top", // Change this to 'top' or 'bottom'
+              vertical: "bottom", // Change this to 'top' or 'bottom'
               horizontal: "right", // Change this to 'left', 'center', or 'right'
             }}
             maxSnack={3}

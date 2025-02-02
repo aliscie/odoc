@@ -28,7 +28,7 @@ const SocialButton = () => {
     },
     {
       name: "YouTube",
-      url: "https://www.youtube.com/@alihusham1560",
+      url: "https://www.youtube.com/@odocic",
       icon: YouTubeIcon,
       color: isDarkMode ? "#FF0000" : "#dc2626",
     },

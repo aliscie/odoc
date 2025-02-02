@@ -5,106 +5,128 @@ import {
   CircularProgress,
   Input,
   styled,
-  IconButton,
-  Menu,
-  MenuItem,
   Box,
   Switch,
-  Typography,
+  Tooltip,
+  IconButton,
+  Collapse,
+  alpha,
 } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ViewListIcon from '@mui/icons-material/ViewList';
 import { handleRedux } from "../../redux/store/handleRedux";
 import EditorComponent from "../../components/EditorComponent";
 import NestedTabMenu from "./contentTab";
 
-const ExpandingInput = styled(Input)`
-  & input {
-    width: 100%;
-    font-size: 1.5rem;
-    min-width: 0;
-    padding: 4px 8px;
-    transition: all 0.2s ease;
+const ExpandingInput = styled(Input)(({ theme }) => ({
+  '& input': {
+    width: '100%',
+    fontSize: '1.5rem',
+    minWidth: 0,
+    padding: '4px 8px',
+    transition: 'all 0.2s ease',
 
-    &:hover,
-    &:focus {
-      background: rgba(0, 0, 0, 0.02);
-    }
-  }
-`;
-
-const TopBar = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
-  marginBottom: theme.spacing(2),
+    '&:hover, &:focus': {
+      background: alpha(theme.palette.common.black, 0.02),
+    },
+  },
 }));
 
-const MenuItemContent = styled(Box)({
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
-  gap: "16px",
-});
+const TopBar = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  width: '100%',
+  marginBottom: theme.spacing(2),
+  gap: theme.spacing(1),
+}));
 
-export default function FileContentPage() {
+const AnimatedIconButton = styled(IconButton)(({ theme }) => ({
+  transition: 'all 0.2s ease',
+  '&:hover': {
+    transform: 'scale(1.1)',
+  },
+  '&.active': {
+    color: theme.palette.primary.main,
+    background: alpha(theme.palette.primary.main, 0.1),
+  },
+}));
+
+const ToggleWrapper = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  transition: 'opacity 0.3s ease, transform 0.3s ease',
+  '&.hidden': {
+    opacity: 0,
+    transform: 'translateX(-20px)',
+  },
+}));
+
+const StyledSwitch = styled(Switch)(({ theme }) => ({
+  padding: 8,
+  '& .MuiSwitch-track': {
+    borderRadius: 22 / 2,
+    backgroundColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.08) : alpha(theme.palette.common.black, 0.05),
+    opacity: 1,
+  },
+  '& .MuiSwitch-thumb': {
+    boxShadow: 'none',
+    width: 16,
+    height: 16,
+    margin: 2,
+  },
+}));
+
+function FileContentPage() {
   const { isLoggedIn } = useSelector((state: any) => state.uiState);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [showContentTabs, setShowContentTabs] = useState(false);
   let fileId = window.location.pathname.split("/")[1];
   const dispatch = useDispatch();
+
   const { inited, files_content, profile, files } = useSelector(
-    (state: any) => state.filesState,
+    (state: any) => state.filesState
   );
 
-  let current_file = files.find((file: any) => file.id === fileId);
+  const current_file = files.find((file: any) => file.id === fileId);
   const editorKey = (current_file && current_file.id) || "";
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleContentTabsToggle = () => {
     setShowContentTabs(!showContentTabs);
   };
 
+  const handleDispatchChange = useCallback(
+    debounce((title: string) => {
+      if (title !== current_file?.name) {
+        dispatch(
+          handleRedux("UPDATE_FILE_TITLE", { id: current_file.id, title })
+        );
+      }
+    }, 250),
+    [dispatch, current_file]
+  );
+
+  const handleInputChange = (title: string) => {
+    handleDispatchChange(title);
+  };
+
   const onChange = debounce((changes: any) => {
+    if (!current_file) return;
+
     const prevContent = JSON.stringify(files_content[current_file.id]);
     const newContent = JSON.stringify(changes);
-    if (current_file && prevContent !== newContent) {
+
+    if (prevContent !== newContent) {
       dispatch(
         handleRedux("UPDATE_CONTENT", {
           id: current_file.id,
           content: changes,
-        }),
+        })
       );
     }
   }, 250);
 
-  const handleDispatchChange = useCallback(
-    debounce((title: string) => {
-      if (title !== current_file.name) {
-        dispatch(
-          handleRedux("UPDATE_FILE_TITLE", { id: current_file.id, title }),
-        );
-      }
-    }, 250),
-    [dispatch, current_file],
-  );
-
-  const handleInputChange = (title) => {
-    handleDispatchChange(title);
-  };
-
-  if (inited && files.length == 0) {
+  if (inited && files.length === 0) {
     return <span>404 Not Found</span>;
   }
-  if (files.length == 0 && isLoggedIn) {
+  if (files.length === 0 && isLoggedIn) {
     return <CircularProgress />;
   }
   if (!current_file) {
@@ -115,14 +137,27 @@ export default function FileContentPage() {
     current_file.author === profile.id ||
     Object.keys(current_file.permission)[0] === "CanUpdate" ||
     current_file.users_permissions.some(
-      ([userId, permissions]) => userId === profile.id && permissions.CanUpdate,
+      ([userId, permissions]) => userId === profile.id && permissions.CanUpdate
     );
 
-  const isAuthoer = current_file.author === profile.id;
+  const isAuthor = current_file.author === profile.id;
 
   return (
     <div style={{ marginTop: "3px", marginLeft: "10%", marginRight: "10%" }}>
       <TopBar>
+        <Collapse in={!showContentTabs} timeout={300}>
+          <ToggleWrapper className={showContentTabs ? 'hidden' : ''}>
+            <Tooltip title="Toggle Content Tabs" arrow>
+              <AnimatedIconButton
+                onClick={handleContentTabsToggle}
+                className={showContentTabs ? 'active' : ''}
+                size="small"
+              >
+                <ViewListIcon />
+              </AnimatedIconButton>
+            </Tooltip>
+          </ToggleWrapper>
+        </Collapse>
         <ExpandingInput
           key={current_file.id}
           fullWidth
@@ -140,37 +175,11 @@ export default function FileContentPage() {
               wordWrap: "break-word",
             },
           }}
-          disabled={!isAuthoer}
+          disabled={!isAuthor}
           defaultValue={current_file.name}
           placeholder="Untitled"
           onChange={(e) => handleInputChange(e.target.value)}
         />
-        <IconButton
-          aria-label="more"
-          aria-controls="long-menu"
-          aria-haspopup="true"
-          onClick={handleMenuOpen}
-        >
-          <MoreVertIcon />
-        </IconButton>
-        <Menu
-          id="long-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem>
-            <MenuItemContent>
-              <Typography>Content Tabs</Typography>
-              <Switch
-                checked={showContentTabs}
-                onChange={handleContentTabsToggle}
-                inputProps={{ "aria-label": "toggle content tabs" }}
-              />
-            </MenuItemContent>
-          </MenuItem>
-        </Menu>
       </TopBar>
 
       <NestedTabMenu
@@ -182,7 +191,7 @@ export default function FileContentPage() {
       />
 
       <EditorComponent
-        readOnly={!isAuthoer}
+        readOnly={!isAuthor}
         id={current_file.id}
         contentEditable={editable}
         onChange={onChange}
@@ -192,3 +201,5 @@ export default function FileContentPage() {
     </div>
   );
 }
+
+export default FileContentPage

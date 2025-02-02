@@ -6,7 +6,7 @@ import ViewIcon from "@mui/icons-material/Visibility";
 import SocialIcon from "@mui/icons-material/Share";
 import DesktopIcon from "@mui/icons-material/DesktopWindows";
 import ProtectionIcon from "@mui/icons-material/Security";
-import HowToVoteIcon from '@mui/icons-material/HowToVote';
+import HowToVoteIcon from "@mui/icons-material/HowToVote";
 const features = [
   {
     title: "Secure Smart Contracts",
@@ -134,7 +134,7 @@ const roadMap = [
   {
     is_done: false,
     title: "External Integration",
-    content: "Notion synchronization for seamless data transfer and updates",
+    content: "google calendar and Notion synchronization for seamless data transfer and updates",
   },
   {
     is_done: false,
@@ -147,6 +147,18 @@ const roadMap = [
     title: "Developer Ecosystem",
     content:
       "JavaScript plugin system for custom components, formulas, and visualizations",
+  },
+  {
+    is_done: false,
+    title: "SNS decentralization",
+    content:
+      "On platform will be controlled by SNS using voting to decide which updates to accept or reject.",
+  },
+  {
+    is_done: false,
+    title: "AI assessment",
+    content:
+      "Automatically track tasks and overdo. An Automatically recognize new events from chats to schedule them on your calendar and sync it with google calendar.",
   },
 ];
 

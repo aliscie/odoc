@@ -1,18 +1,14 @@
-// components/CommentForm.tsx
-import React, { useState, useRef } from "react";
-import { Box, Button } from "@mui/material";
-import { useBackendContext } from "../../contexts/BackendContext";
-import { useDispatch, useSelector } from "react-redux";
-import { useSnackbar } from "notistack";
-import { Post } from "../../../declarations/backend/backend.did";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
+import React, {useRef, useState} from "react";
+import {Box, Button} from "@mui/material";
+import {useBackendContext} from "../../contexts/BackendContext";
+import {useDispatch, useSelector} from "react-redux";
+import {Post} from "../../../declarations/backend/backend.did";
+import {deserializeContentTree} from "../../DataProcessing/deserlize/deserializeContents";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
 import EditorComponent from "../../components/EditorComponent";
-import { randomString } from "../../DataProcessing/dataSamples";
-import { handleRedux } from "../../redux/store/handleRedux";
-import { RootState } from "../../redux/reducers";
+import {randomString} from "../../DataProcessing/dataSamples";
+import {handleRedux} from "../../redux/store/handleRedux";
+import {RootState} from "../../redux/reducers";
 
 interface CommentFormProps {
   postId: string;
@@ -20,20 +16,23 @@ interface CommentFormProps {
   onCancel?: () => void;
 }
 
-const CommentForm: React.FC<CommentFormProps> = ({ postId, onCancel }) => {
+const CommentForm: React.FC<CommentFormProps> = ({
+  postId,
+  onCommentSubmit,
+  onCancel,
+}) => {
   const { posts } = useSelector((state: RootState) => state.filesState);
+  const { profile } = useSelector((state: any) => state.filesState);
   const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { backendActor } = useBackendContext();
-  const { profile } = useSelector((state: any) => state.filesState);
-  if (!profile) return null;
-  const { enqueueSnackbar } = useSnackbar();
   const contentTree = useRef([]);
   const [isChanged, setChanged] = useState(false);
-
   const [editorKey, setEditorKey] = useState(
     `new-comment-${postId}-${Date.now()}`,
   );
+
+  if (!profile) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,22 +58,18 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId, onCancel }) => {
         dispatch(
           handleRedux("ADD_POST", { post: { ...comment, creator: profile } }),
         );
-        let ParentPost = posts.find((p) => p.id === postId);
-        ParentPost.children.push(comment.id);
-        dispatch(
-          handleRedux("UPDATE_POST", {
-            post: ParentPost,
-          }),
-        );
+        const parentPost = posts.find((p) => p.id === postId);
+        if (parentPost) {
+          parentPost.children.push(comment.id);
+          dispatch(handleRedux("UPDATE_POST", { post: parentPost }));
+        }
         setChanged(false);
         contentTree.current = [];
         setEditorKey(`new-comment-${postId}-${Date.now()}`);
-
-        // enqueueSnackbar("Comment posted successfully", { variant: "success" });
+        onCommentSubmit();
       }
     } catch (error) {
-      console.log({ error });
-      // enqueueSnackbar("Failed to post comment: " + error, { variant: "error" });
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -83,21 +78,19 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId, onCancel }) => {
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
       <Box sx={{ mb: 2 }}>
-        <DndProvider backend={HTML5Backend}>
-          <EditorComponent
-            editorKey={editorKey}
-            readOnly={isSubmitting}
-            id={`new-comment-${postId}`}
-            contentEditable={!isSubmitting}
-            onChange={(content) => {
-              contentTree.current = { "": content };
-              if (!isChanged) {
-                setChanged(true);
-              }
-            }}
-            content={deserializeContentTree([])}
-          />
-        </DndProvider>
+        <EditorComponent
+          editorKey={editorKey}
+          readOnly={isSubmitting}
+          id={`new-comment-${postId}`}
+          contentEditable={!isSubmitting}
+          onChange={(content) => {
+            contentTree.current = { "": content };
+            if (!isChanged) {
+              setChanged(true);
+            }
+          }}
+          content={deserializeContentTree([])}
+        />
       </Box>
 
       <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
@@ -130,7 +123,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId, onCancel }) => {
             },
           }}
         >
-          new comment
+          New Comment
         </Button>
       </Box>
     </Box>

@@ -1,33 +1,31 @@
 // components/Comment.tsx
-import React, { useState, useRef } from "react";
+import React, {useRef, useState} from "react";
 import {
   Box,
-  IconButton,
-  Typography,
-  Menu,
-  MenuItem,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Button,
   Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Menu,
+  MenuItem,
+  Typography,
 } from "@mui/material";
-import { Heart, MoreVertical, Reply, ThumbsDown } from "lucide-react";
-import { styled } from "@mui/material/styles";
-import { useDispatch, useSelector } from "react-redux";
-import { useSnackbar } from "notistack";
-import { formatRelativeTime } from "../../utils/time";
+import {Heart, MoreVertical, Reply, ThumbsDown} from "lucide-react";
+import {styled} from "@mui/material/styles";
+import {useDispatch, useSelector} from "react-redux";
+import {useSnackbar} from "notistack";
+import {formatRelativeTime} from "../../utils/time";
 import EditorComponent from "../../components/EditorComponent";
-import { deserializeContentTree } from "../../DataProcessing/deserlize/deserializeContents";
+import {deserializeContentTree} from "../../DataProcessing/deserlize/deserializeContents";
 import UserAvatarMenu from "../../components/MainComponents/UserAvatarMenu";
-import { useBackendContext } from "../../contexts/BackendContext";
+import {useBackendContext} from "../../contexts/BackendContext";
 import serializeFileContents from "../../DataProcessing/serialize/serializeFileContents";
-import { Post, PostUser } from "../../../declarations/backend/backend.did";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import {Post, PostUser} from "../../../declarations/backend/backend.did";
 import CommentForm from "./CommentForm";
-import { handleRedux } from "../../redux/store/handleRedux";
-import { RootState } from "../../redux/reducers";
+import {handleRedux} from "../../redux/store/handleRedux";
+import {RootState} from "../../redux/reducers";
 
 const CommentContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -186,21 +184,19 @@ const Comment: React.FC<ICommentProps> = ({ post, onUpdate }) => {
       </Box>
 
       <Box sx={{ mb: 2 }}>
-        <DndProvider backend={HTML5Backend}>
-          <EditorComponent
-            editorKey={post.id}
-            readOnly={profile?.id !== post.creator.id}
-            id={post.id}
-            contentEditable={profile?.id === post.creator.id}
-            onChange={(content) => {
-              contentTree.current = { "": content };
-              if (!isChanged && post.creator.id === profile?.id) {
-                setChanged(true);
-              }
-            }}
-            content={deserializeContentTree(post.content_tree)}
-          />
-        </DndProvider>
+        <EditorComponent
+          editorKey={post.id}
+          readOnly={profile?.id !== post.creator.id}
+          id={post.id}
+          contentEditable={profile?.id === post.creator.id}
+          onChange={(content) => {
+            contentTree.current = { "": content };
+            if (!isChanged && post.creator.id === profile?.id) {
+              setChanged(true);
+            }
+          }}
+          content={deserializeContentTree(post.content_tree)}
+        />
       </Box>
 
       <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>

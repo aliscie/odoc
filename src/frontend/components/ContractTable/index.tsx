@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import {
   AppBar,
   Box,
@@ -37,27 +37,7 @@ import DialogComponent from "../MuiComponents/dialogComponent";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { useSnackbar } from "notistack";
 import { handleRedux } from "../../redux/store/handleRedux";
-import { useDispatch } from "react-redux";
-// export function createFlagImg(flag: string) {
-//   return (
-//     '<img border="0" width="15" height="10" src="https://flags.fmcdn.net/data/flags/mini/' +
-//     flag +
-//     '.png"/>'
-//   );
-// }
-// const generateDummyPayments = (count, profile, contract_id) =>
-//   Array.from({ length: count }, (_, i) => ({
-//     contract_id,
-//     id: randomString(),
-//     amount: Math.floor(Math.random() * 10000),
-//     status: { Confirmed: null },
-//     date_created: Date.now(),
-//     date_released: Date.now(),
-//     sender: profile.id,
-//     receiver: "3vxsx-fae",
-//     cells: [],
-//   }));
-// // Payment Status type definition
+import { useDispatch, useSelector } from "react-redux";
 const PAYMENT_STATUSES = {
   None: null,
   RequestCancellation: null,
@@ -161,34 +141,42 @@ const EditableTitle = ({ value, onChange, metadata }) => {
   );
 };
 
-const CustomContractViewer = ({
-  profile,
-  all_friends,
-  contracts,
-  onContractChange,
-}) => {
-  // if (!contracts[0]) {
-  //   return <Box>This contract deleted... </Box>;
-  // }
-
-  const [selectedDataType, setSelectedDataType] = useState(
-    DataTypeSelection.PROMISE,
+const CustomContractViewer = ({ contractId, onContractChange }) => {
+  const { contracts, profile, all_friends, current_file } = useSelector(
+    (state: any) => state.filesState,
   );
-  const [selectedContract, setSelectedContract] = useState(null);
+  const currentContract = contracts[contractId];
 
-  const [contractsState, setContractsState] = useState(contracts);
+  const [selectedDataType, setSelectedDataType] = useState(() => {
+    const saved = localStorage.getItem(`contract-${contractId}-dataType`);
+    return saved || DataTypeSelection.PROMISE;
+  });
+
+  const [selectedContract, setSelectedContract] = useState(() => {
+    const id = localStorage.getItem(`contract-${contractId}-contract`);
+    return contracts[contractId].contracts.find((c) => c.id == id);
+  });
+
+  useEffect(() => {
+    localStorage.setItem(`contract-${contractId}-dataType`, selectedDataType);
+    localStorage.setItem(
+      `contract-${contractId}-contract`,
+      selectedContract?.id,
+    );
+  }, [selectedDataType, contractId, selectedContract]);
 
   const getPaymentColumnDefs = (isPromise = false) => [
+    // {
+    //   lockPosition: true,
+    //   rowDrag: true,
+    //   field: "id",
+    //   headerName: "ID",
+    //   sortable: true,
+    //   filter: true,
+    //   editable: false,
+    // },
     {
-      lockPosition: true,
       rowDrag: true,
-      field: "id",
-      headerName: "ID",
-      sortable: true,
-      filter: true,
-      editable: false,
-    },
-    {
       field: "amount",
       headerName: "Amount",
       sortable: true,
@@ -196,7 +184,7 @@ const CustomContractViewer = ({
       editable: isPromise,
       valueFormatter: (params) => `${params.value.toLocaleString()}`,
       onCellValueChanged: (params) =>
-        handleAmountChange(params, contractsState[0], onContractChange),
+        handleAmountChange(params, currentContract, onContractChange),
     },
     {
       field: "status",
@@ -232,7 +220,7 @@ const CustomContractViewer = ({
         }
       },
       onCellValueChanged: (params) => {
-        let updated = handleStatusChange(params, contractsState[0]);
+        let updated = handleStatusChange(params, currentContract);
         onContractChange(updated);
       },
     },
@@ -262,6 +250,13 @@ const CustomContractViewer = ({
 
     {
       field: "receiver",
+      tooltipValueGetter: (params) => {
+        if (params.context.users.length > 1) {
+          return "Double click here to select a receiver.";
+        } else {
+          return "Go to discover page to make new friends then select a receiver here.";
+        }
+      },
       headerName: "Receiver",
       valueGetter: (params) => {
         return (
@@ -290,29 +285,25 @@ const CustomContractViewer = ({
         return false;
       },
       onCellValueChanged: (params) =>
-        handleReceiverChange(params, contractsState[0], onContractChange),
+        handleReceiverChange(params, currentContract, onContractChange),
     },
   ];
 
   const handleMainContractNameChange = (newName) => {
     const updatedContract = {
-      ...contractsState[0],
+      ...currentContract,
       name: newName,
     };
-    setContractsState([updatedContract]);
-    // let updatedContract = { ...contractsState[0] };
-    // updatedContract.name = newName
     onContractChange(updatedContract);
   };
 
   const handleCContractNameChange = (contractId, newName) => {
     const updatedContract = {
-      ...contractsState[0],
-      contracts: contractsState[0].contracts.map((c) =>
+      ...currentContract,
+      contracts: currentContract.contracts.map((c) =>
         c.id === contractId ? { ...c, name: newName } : c,
       ),
     };
-    setContractsState([updatedContract]);
     if (selectedContract?.id === contractId) {
       setSelectedContract({ ...selectedContract, name: newName });
     }
@@ -330,7 +321,7 @@ const CustomContractViewer = ({
       setSelectedContract(null);
     } else if (value !== "create_new") {
       // It's a contract ID
-      const contract = contractsState[0].contracts.find((c) => c.id === value);
+      const contract = currentContract.contracts.find((c) => c.id === value);
       if (contract) {
         setSelectedContract(contract);
         setSelectedDataType(DataTypeSelection.CONTRACT);
@@ -341,7 +332,7 @@ const CustomContractViewer = ({
   const handleCreateNewContract = () => {
     const newContract = {
       id: randomString(),
-      name: `New Table ${contractsState[0].contracts.length + 1}`,
+      name: `New Table ${currentContract.contracts.length + 1}`,
       date_created: Date.now() * 1e6,
       creator: Principal.fromText(profile.id),
       rows: [],
@@ -349,22 +340,22 @@ const CustomContractViewer = ({
     };
 
     const updatedContract = {
-      ...contractsState[0],
-      contracts: [...contractsState[0].contracts, newContract],
+      ...currentContract,
+      contracts: [...currentContract.contracts, newContract],
     };
 
-    setContractsState([updatedContract]);
+    // setContractsState([updatedContract]);
     setSelectedContract(newContract);
     setSelectedDataType(DataTypeSelection.CONTRACT);
     onContractChange(updatedContract);
   };
   const promisesData = transformPromisesDataAndColumns(
-    contractsState[0]?.promises,
+    currentContract?.promises,
     getPaymentColumnDefs(true),
     true,
   );
   const paymentsData = transformPromisesDataAndColumns(
-    contractsState[0].payments,
+    currentContract.payments,
     getPaymentColumnDefs(false),
     false,
   );
@@ -375,10 +366,10 @@ const CustomContractViewer = ({
         // custom item
         name: "add row",
         action: (params) => {
-          let promises = [...contractsState[0].promises];
+          let promises = [...currentContract.promises];
           let sender = profile && Principal.fromText(profile?.id);
           promises.push(createNewPromis(sender));
-          const updatedContract = { ...contractsState[0], promises };
+          const updatedContract = { ...currentContract, promises };
           onContractChange && onContractChange(updatedContract);
         },
       },
@@ -387,9 +378,9 @@ const CustomContractViewer = ({
         name: "delete row",
 
         action: (params) => {
-          let promises = [...contractsState[0].promises];
+          let promises = [...currentContract.promises];
           promises = promises.filter((p) => p.id != params.node?.data.id);
-          const updatedContract = { ...contractsState[0], promises };
+          const updatedContract = { ...currentContract, promises };
           onContractChange(updatedContract);
         },
       },
@@ -398,7 +389,7 @@ const CustomContractViewer = ({
         name: "add column",
         action: (params) => {
           const updatedContract = addColumnToContract(
-            contractsState[0],
+            currentContract,
             randomString(),
             "",
           );
@@ -438,7 +429,7 @@ const CustomContractViewer = ({
           }
 
           const updatedContract = renameColumnInContract(
-            contractsState[0],
+            currentContract,
             oldFieldName,
             newFieldName,
           );
@@ -451,7 +442,7 @@ const CustomContractViewer = ({
         action: (params) => {
           const fieldName = params.column.getColId();
           const updatedContract = deleteColumnFromContract(
-            contractsState[0],
+            currentContract,
             fieldName,
           );
           onContractChange(updatedContract);
@@ -478,18 +469,22 @@ const CustomContractViewer = ({
       }}
     >
       <AppBar
-          style={{
-            borderRadius: '50px',
-          }}
-          position="static" color="default" elevation={1} sx={{ p: 2 }}>
+        style={{
+          borderRadius: "50px",
+        }}
+        position="static"
+        color="default"
+        elevation={1}
+        sx={{ p: 2 }}
+      >
         <Stack direction="row" spacing={2} alignItems="center">
           <EditableTitle
-            value={contractsState[0].name}
+            value={currentContract.name}
             onChange={handleMainContractNameChange}
             metadata={{
-              Created: new Date(contractsState[0].date_created),
-              Updated: new Date(contractsState[0].date_updated),
-              Creator: contractsState[0].creator,
+              Created: new Date(currentContract.date_created),
+              Updated: new Date(currentContract.date_updated),
+              Creator: currentContract.creator,
             }}
           />
 
@@ -501,10 +496,12 @@ const CustomContractViewer = ({
               onChange={handleDataTypeChange}
             >
               <MenuItem value={DataTypeSelection.PROMISE}>Promises</MenuItem>
-              <MenuItem value={DataTypeSelection.PAYMENT}>Payments</MenuItem>
+              {currentContract.payments.length > 0 && (
+                <MenuItem value={DataTypeSelection.PAYMENT}>Payments</MenuItem>
+              )}
 
               {/*<MenuItem sx={{ borderTop: 1, borderColor: 'divider', mt: 1, pt: 1 }}>Contracts</MenuItem>*/}
-              {contractsState[0].contracts.map((contract) => (
+              {currentContract.contracts.map((contract) => (
                 <MenuItem
                   key={contract.id}
                   value={contract.id}
@@ -525,12 +522,12 @@ const CustomContractViewer = ({
                         )
                       ) {
                         const updatedContract = {
-                          ...contractsState[0],
-                          contracts: contractsState[0].contracts.filter(
+                          ...currentContract,
+                          contracts: currentContract.contracts.filter(
                             (c) => c.id !== contract.id,
                           ),
                         };
-                        setContractsState([updatedContract]);
+                        // setContractsState([updatedContract]);
                         if (selectedContract?.id === contract.id) {
                           setSelectedContract(null);
                           setSelectedDataType(DataTypeSelection.PROMISE);
@@ -559,11 +556,11 @@ const CustomContractViewer = ({
           <DialogComponent
             onConfirm={async () => {
               let res = await backendActor.delete_custom_contract(
-                contractsState[0].id,
+                currentContract.id,
               );
               if (res.Ok == null || res.Err === "Not found") {
                 dispatch(
-                  handleRedux("REMOVE_CONTRACT", { id: contractsState[0].id }),
+                  handleRedux("REMOVE_CONTRACT", { id: currentContract.id }),
                 );
               } else if (res.Err) {
                 enqueueSnackbar(res.Err, { variant: "error" });
@@ -591,9 +588,19 @@ const CustomContractViewer = ({
             />
           )}
 
-        <Box >
+        <Box>
           {selectedDataType === DataTypeSelection.PAYMENT && (
             <AgGridDataGrid
+              key={JSON.stringify(currentContract.payments)}
+              noRowsOverlayComponent={() => (
+                <Typography
+                  sx={{
+                    fontSize: { xs: "1.5rem", sm: "2rem", md: "2rem" },
+                  }}
+                >
+                  Only when you release promises it will appear here.
+                </Typography>
+              )}
               getContextMenuItems={() => {
                 return [];
               }}
@@ -604,8 +611,22 @@ const CustomContractViewer = ({
           )}
           {selectedDataType === DataTypeSelection.PROMISE && (
             <AgGridDataGrid
+              key={JSON.stringify(currentContract.promises)}
+              noRowsOverlayComponent={() => (
+                <Typography
+                  sx={{
+                    fontSize: { xs: "1.5rem", sm: "2rem", md: "2rem" },
+                  }}
+                >
+                  Right click here to add rows or columns.
+                </Typography>
+              )}
               getContextMenuItems={getContextMenuItems}
-              context={{ users: all_friends, onContractChange, contractsState }}
+              context={{
+                users: all_friends,
+                onContractChange,
+                contractsState: currentContract,
+              }}
               rows={promisesData.rows}
               columns={promisesData.columns}
             />
@@ -613,14 +634,35 @@ const CustomContractViewer = ({
           {selectedDataType === DataTypeSelection.CONTRACT &&
             selectedContract && (
               <AgGridDataGrid
+                noRowsOverlayComponent={() => (
+                  <Typography
+                    sx={{
+                      fontSize: { xs: "1.5rem", sm: "2rem", md: "2rem" },
+                    }}
+                  >
+                    Right click here to add rows or columns.
+                  </Typography>
+                )}
                 getContextMenuItems={contractContextMenu}
                 context={{
-                  contractsState,
+                  contractsState: currentContract,
                   onContractChange,
                   selectedContract,
                 }}
-                rows={selectedContract.rows}
-                columns={getContractColumnDefs(selectedContract.columns)}
+                rows={contracts[contractId].contracts
+                  .find((c) => c.id == selectedContract.id)
+                  .rows.map((r) => {
+                    let row = { id: r.id };
+                    r.cells.forEach((c) => {
+                      row[c.field] = c.value;
+                    });
+                    return row;
+                  })}
+                columns={getContractColumnDefs(
+                  contracts[contractId].contracts.find(
+                    (c) => c.id == selectedContract.id,
+                  ).columns,
+                )}
               />
             )}
         </Box>

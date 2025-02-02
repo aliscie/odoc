@@ -68,7 +68,7 @@ const CreatePost: React.FC<CreatePostProps> = () => {
                 c[""] = content;
                 postContent.current = c;
               }}
-              editorKey="editorKey"
+              editorKey="CreatePostEditorKey"
               content={[]}
             />
           )}

@@ -15,6 +15,9 @@ import { Box, CircularProgress, useTheme, styled } from "@mui/material";
 import { Principal } from "@dfinity/principal";
 import PromoNotification from "./components/limitedOffer";
 import BetaWarning from "./betWarning";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd";
+import GetStartedBanner from "./pages/LandingPage/getStartedBanner";
 
 // Create a styled component for the main content
 const MainContent = styled(Box)(({ theme }) => ({
@@ -104,9 +107,9 @@ const App: React.FC = () => {
     );
   }
 
-  document.querySelector("body")?.classList.add("dark");
-  const isDarkMode = localStorage.getItem("isDarkMode") === "true";
-  !isDarkMode && document.querySelector("body")?.classList.remove("dark");
+  // document.querySelector("body")?.classList.add("dark");
+  // const isDarkMode = localStorage.getItem("isDarkMode") === "true";
+  // !isDarkMode && document.querySelector("body")?.classList.remove("dark");
 
   return (
     <BrowserRouter>
@@ -117,11 +120,13 @@ const App: React.FC = () => {
         <RegistrationForm />
         <PromoNotification />
         <TopNavBar />
-        <NavBar>
-          <PageContainer>
-            <Pages />
-          </PageContainer>
-        </NavBar>
+        <DndProvider backend={HTML5Backend}>
+          <NavBar>
+            <PageContainer>
+              <Pages />
+            </PageContainer>
+          </NavBar>
+        </DndProvider>
       </MainContent>
     </BrowserRouter>
   );

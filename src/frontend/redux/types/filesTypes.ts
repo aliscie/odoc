@@ -108,6 +108,6 @@ export const initialState: InitialState = {
   all_friends: [],
   all_users: [],
   anonymous: false,
-  currentWorkspace: { name: "default" },
+  currentWorkspace: { id: "default" , name: "default" },
   posts: [],
 };

@@ -27,6 +27,7 @@ import {
   createGrid,
   RowDragModule,
   SelectEditorModule,
+  TooltipModule,
 } from "ag-grid-community";
 import {
   CellSelectionModule,
@@ -44,6 +45,7 @@ import { themeQuartz } from "ag-grid-community";
 import { useSelector } from "react-redux";
 
 ModuleRegistry.registerModules([
+  TooltipModule,
   NumberEditorModule,
   TextEditorModule,
   ClientSideRowModelModule,
@@ -59,12 +61,9 @@ ModuleRegistry.registerModules([
 ]);
 
 const AgGridDataGrid = (props) => {
-  let { contextMenu } = props;
-  contextMenu = contextMenu || [];
+  let contextMenu = props.contextMenu || [];
   const containerStyle = useMemo(() => ({ width: "100%", height: "100%" }), []);
   const gridStyle = useMemo(() => ({ height: "300px", width: "100%" }), []);
-  const [rowData, setRowData] = useState<IOlympicData[]>(props.rows);
-  const [columnDefs, setColumnDefs] = useState<ColDef[]>(props.columns);
   const defaultColDef = useMemo<ColDef>(() => {
     return {
       flex: 1,
@@ -113,14 +112,17 @@ const AgGridDataGrid = (props) => {
   });
 
   return (
-    <div key={props.key} style={gridStyle}>
+    <div style={gridStyle}>
       <AgGridReact<IOlympicData>
+        tooltipShowDelay={0}
+        // tooltipHideDelay={500}
+        noRowsOverlayComponent={props.noRowsOverlayComponent}
         context={props.context}
         rowDragManaged={true}
         theme={isDarkMode ? darkThem : lightThem}
         style={containerStyle}
-        rowData={rowData}
-        columnDefs={columnDefs}
+        rowData={props.rows}
+        columnDefs={props.columns}
         defaultColDef={defaultColDef}
         cellSelection={true}
         allowContextMenuWithControlKey={false}

@@ -35,7 +35,7 @@ const StyledDrawerPaper = styled(Box)(({ theme }) => ({
   backdropFilter: "blur(10px)",
   width: "100%",
   height: "100%",
-  overflowY: "auto",
+  // overflowY: "auto",
   display: "flex",
   flexDirection: "column",
   position: "relative",
@@ -94,7 +94,7 @@ const NavBar = (props: any) => {
   const [defaultItems, setDefaultItems] = useState([]);
 
   const navLinks = [
-    { label: "About Us", to: "/", icon: <InfoIcon /> },
+    { label: "About Us", to: "/about", icon: <InfoIcon /> },
     { label: "Discover", to: "/discover", icon: <ExploreIcon /> },
     {
       label: "Subscriptions",
@@ -164,7 +164,7 @@ const NavBar = (props: any) => {
 
   useEffect(() => {
     let x = buildTree(files);
-    if (currentWorkspace.id) {
+    if (currentWorkspace.id !='default') {
       x = x.filter((f) => f.workspaces.includes(currentWorkspace.id));
     }
     setDefaultItems(x);
@@ -178,7 +178,6 @@ const NavBar = (props: any) => {
         anchor="left"
         onClose={handleNavClose}
         PaperProps={{
-
           className: "sidenav card bg-blur",
           sx: {
             width: isMobile ? "100%" : "200px",

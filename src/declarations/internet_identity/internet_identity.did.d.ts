@@ -200,6 +200,7 @@ export type IdentityMetadataReplaceError = {
   };
 export type IdentityNumber = bigint;
 export interface InternetIdentityInit {
+  'openid_google' : [] | [[] | [OpenIdConfig]],
   'assigned_user_number_range' : [] | [[bigint, bigint]],
   'archive_config' : [] | [ArchiveConfig],
   'canister_creation_cycles_cost' : [] | [bigint],
@@ -236,6 +237,7 @@ export type MetadataMapV2 = Array<
       { 'Bytes' : Uint8Array | number[] },
   ]
 >;
+export interface OpenIdConfig { 'client_id' : string }
 export type PrepareIdAliasError = { 'InternalCanisterError' : string } |
   { 'Unauthorized' : Principal };
 export interface PrepareIdAliasRequest {

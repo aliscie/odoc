@@ -162,7 +162,7 @@ const WhyOdoc: React.FC = () => {
               mb: 2,
             }}
           >
-            Why Choose oDoc?
+            Why Odoc?
           </Typography>
           <Typography
             variant="h6"

@@ -12,6 +12,7 @@ import { Typography } from "@mui/material";
 export default function SlateCustomContract(props: any) {
   const { backendActor } = useBackendContext();
   const { id } = props.element;
+
   const { contracts, profile, all_friends, current_file } = useSelector(
     (state: any) => state.filesState,
   );
@@ -45,7 +46,7 @@ export default function SlateCustomContract(props: any) {
   if (!contracts[id]) {
     return (
       <Typography {...props.attributes} contentEditable={true} color={"error"}>
-        <span contentEditable={true}>Contract wa deleted....</span>
+        <span contentEditable={true}>Contract was deleted....</span>
         <span>{props.children}</span>
       </Typography>
     );
@@ -57,14 +58,13 @@ export default function SlateCustomContract(props: any) {
 
   return (
     <div {...props.attributes} contentEditable={true}>
-      <span >{props.children}</span>
-      <span contentEditable={false}><CustomContractComponent
-        all_friends={all_friends}
-        profile={profile}
-        key={JSON.stringify(contracts[id])}
-        onContractChange={onContractChange}
-        contracts={[contracts[id]]}
-      /></span>
+      <span>{props.children}</span>
+      <span contentEditable={false}>
+        <CustomContractComponent
+          onContractChange={onContractChange}
+          contractId={id}
+        />
+      </span>
     </div>
   );
 }

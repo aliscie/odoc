@@ -1,27 +1,24 @@
-import React, { useState } from "react";
-import { createTheme, styled, ThemeProvider } from "@mui/material/styles";
+import React, {useState} from "react";
+import {createTheme, styled, ThemeProvider} from "@mui/material/styles";
+// Reusable sidebar card component
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
-  TextField,
   Card,
   CardContent,
-  Typography,
+  Chip,
   List,
   ListItem,
   ListItemText,
-  Chip,
-  Divider,
-  useTheme,
+  Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import CreatePost from "./createPost";
 import ViewPostComponent from "./viewPost";
-import { useSelector } from "react-redux";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-
-// Reusable sidebar card component
-import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import {useSelector} from "react-redux";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import {RootState} from "../../redux/reducers";
@@ -321,31 +318,27 @@ const SocialFeed = () => {
 
   return (
     <ThemeProvider theme={customTheme}>
-      <DndProvider backend={HTML5Backend}>
-        <FeedWrapper isNavOpen={isNavOpen}>
-          {!isNavOpen && (
-            <Sidebar items={sidebarContent.left} position="left" />
-          )}
-          <MainContainer>
-            {isLoggedIn && <CreatePost />}
-            <Box sx={{ mb: 4 }}>
-              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }} />
-            </Box>
-            {filterPosts
-              .filter((post) => !post.is_comment)
-              .map((post) => (
-                <ViewPostComponent
-                  // setPosts={setPosts}
-                  posts={posts}
-                  // handleDeletePost={handleDeletePost}
-                  key={post.id}
-                  post={post}
-                />
-              ))}
-          </MainContainer>
-          <Sidebar items={sidebarContent.right} position="right" />
-        </FeedWrapper>
-      </DndProvider>
+      <FeedWrapper isNavOpen={isNavOpen}>
+        {!isNavOpen && <Sidebar items={sidebarContent.left} position="left" />}
+        <MainContainer>
+          {isLoggedIn && <CreatePost />}
+          <Box sx={{ mb: 4 }}>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }} />
+          </Box>
+          {filterPosts
+            .filter((post) => !post.is_comment)
+            .map((post) => (
+              <ViewPostComponent
+                // setPosts={setPosts}
+                posts={posts}
+                // handleDeletePost={handleDeletePost}
+                key={post.id}
+                post={post}
+              />
+            ))}
+        </MainContainer>
+        <Sidebar items={sidebarContent.right} position="right" />
+      </FeedWrapper>
     </ThemeProvider>
   );
 };

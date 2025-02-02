@@ -1,5 +1,3 @@
-import logo from "../../public/logo.png";
-
 import React from "react";
 import {
   Box,
@@ -7,116 +5,35 @@ import {
   Card,
   CardContent,
   Container,
-  Divider,
   Grid,
   Step,
   StepContent,
   StepLabel,
   Stepper,
-  Tooltip,
   Typography,
 } from "@mui/material";
-import ArrowForward from "@mui/icons-material/ArrowForward";
 import CheckCircle from "@mui/icons-material/CheckCircle";
 import Schedule from "@mui/icons-material/Schedule";
 import { features, roadMap, steps } from "./data";
-import { Link as DomLink } from "react-router-dom";
-
-import Link from "@mui/material/Link";
-import GetStartedButton from "./getStartedButton";
 import { useSelector } from "react-redux";
 import SocialButton from "./socialButton";
 import WhyOdoc from "./whyOdoc";
 import Section from "./section";
+import Intro from "./intro";
+import GettingStarted from "../videoTutorial";
 
 export default function LandingPage(props) {
-  const { profile, profile_history, wallet, friends } = useSelector(
-    (state: any) => state.filesState,
-  );
   return (
     <Box sx={{ minHeight: "100vh" }}>
       {/* Hero Section */}
       <Section id="intro">
-        <Box sx={{ maxWidth: "800px", mx: "auto" }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "left",
-              justifyContent: "left",
-              mb: 4,
-            }}
-          >
-            <img
-              src={logo}
-              alt="ODOC Logo"
-              style={{
-                width: "70px",
-                borderRadius: "12px",
-                marginRight: "1.5rem",
-              }}
-            />
-            <Typography
-              variant="h1"
-              sx={{
-                fontSize: "4rem",
-                fontWeight: "bold",
-                background: "linear-gradient(90deg, #2563eb 0%, #0891b2 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              ODOC
-            </Typography>
-          </Box>
-
-          <Box sx={{ color: "text.primary", mb: 4 }}>
-            <Typography
-              variant="h2"
-              sx={{ fontSize: "2.5rem", fontWeight: "bold", mb: 1.5 }}
-            >
-              Build Your Contracts on Web3
-            </Typography>
-
-            <Typography
-              variant="h5"
-              sx={{
-                color: "text.secondary",
-                mb: 2,
-                fontWeight: 500,
-                letterSpacing: "0.1em",
-              }}
-            >
-              TIME • RESOURCES • FREEDOM • DECENTRALIZED • OPENSOURCE
-            </Typography>
-
-            <Box sx={{ color: "text.secondary", mb: 4 }}>
-              Odoc is an open source decentralized trustees custom smart
-              contract platform. Made for teams weather it is project
-              management, freelancers, remote teams, or small businesses. Built
-              on the{" "}
-              <Link
-                href="https://internetcomputer.org/"
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{
-                  "&:hover": { color: "primary.dark" },
-                }}
-              >
-                Internet Computer
-              </Link>{" "}
-              It streamlines tasks, payments, and contracts into one seamless
-              solution, saving you valuable time and resources. With
-              transparent, affordable pricing and no hidden fees, and zero
-              competitions. Odoc eliminates the need for middlemen and banks. It
-              empowers you to work from anywhere, collaborate effortlessly with
-              your team, and scale your business as you grow—all while ensuring
-              enterprise-level security. Experience true freedom, control, and
-              efficiency.
-            </Box>
-          </Box>
-          <GetStartedButton key={profile?.id} />
-        </Box>
+        <Intro />
       </Section>
+      <Section id="start">
+        {/* Getting Started Steps */}
+        <GettingStarted />
+      </Section>
+
       <Section id="social">
         <SocialButton />
       </Section>
@@ -131,7 +48,7 @@ export default function LandingPage(props) {
         >
           Platform Features
         </Typography>
-        <Grid container spacing={4}>
+        <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
           {features.map((feature, index) => (
             <Grid item xs={12} md={6} lg={4} key={index}>
               <Card
@@ -167,37 +84,7 @@ export default function LandingPage(props) {
           ))}
         </Grid>
       </Container>
-      {/* Getting Started Steps */}
-      <Box sx={{ py: 8 }}>
-        <Container maxWidth="lg">
-          <Typography
-            variant="h3"
-            sx={{ textAlign: "center", fontWeight: "bold", mb: 6 }}
-          >
-            Getting Started
-          </Typography>
-          <Box sx={{ maxWidth: "600px", mx: "auto" }}>
-            <Stepper orientation="vertical">
-              {steps.map((step, index) => (
-                <Step key={index} active={true}>
-                  <StepLabel>
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                      {step.label}
-                    </Typography>
-                  </StepLabel>
-                  <StepContent>
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="body1" color="text.secondary">
-                        {step.description}
-                      </Typography>
-                    </Box>
-                  </StepContent>
-                </Step>
-              ))}
-            </Stepper>
-          </Box>
-        </Container>
-      </Box>
+
       {/* Current Progress */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Typography
@@ -263,8 +150,16 @@ export default function LandingPage(props) {
 
       {/* Call to Action */}
       {!props.isLoggedIn && (
-        <Box
-          sx={{ bgcolor: "#2563eb", color: "white", py: 8, mt: 8, margin: 0 }}
+        <Section
+          id={"bottom"}
+          sx={{
+            bgcolor: "#2563eb",
+            color: "white",
+            py: { xs: 6, sm: 8 },
+            px: { xs: 2, sm: 3, md: 4 },
+            mt: { xs: 4, sm: 6, md: 8 },
+            margin: 0,
+          }}
         >
           <Container maxWidth="lg" sx={{ textAlign: "center" }}>
             <Typography variant="h3" sx={{ fontWeight: "bold", mb: 2 }}>
@@ -291,7 +186,7 @@ export default function LandingPage(props) {
               Join ODOC Today
             </Button>
           </Container>
-        </Box>
+        </Section>
       )}
     </Box>
   );

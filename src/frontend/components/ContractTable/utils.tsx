@@ -5,12 +5,10 @@ import {
   CPayment,
   CRow,
   CustomContract,
-  User,
 } from "../../../declarations/backend/backend.did";
 import { randomString } from "../../DataProcessing/dataSamples";
 import { Principal } from "@dfinity/principal";
-import { Input } from "@mui/material";
-import { logger } from "../../DevUtils/logData";
+import { produce } from "immer";
 
 export function updateCContractColumn(contract, new_column): CContract {
   contract.columns = contract.columns.map((column: CColumn) => {
@@ -232,7 +230,7 @@ export function createNewPromis(sender): CPayment {
 
 export const handleCustomCellChange = (params) => {
   const { data, colDef, newValue, context } = params;
-  const contract = context.contractsState[0];
+  const contract = context.contractsState;
   const paymentId = data.id;
   const fieldName = colDef.field;
 
@@ -520,16 +518,14 @@ export const contractContextMenu = (params) => {
             value: "",
           })),
         };
-
         const updatedContract = {
-          ...contractsState[0],
-          contracts: contractsState[0].contracts.map((c) =>
+          ...contractsState,
+          contracts: contractsState.contracts.map((c) =>
             c.id === selectedContract.id
               ? { ...c, rows: [...c.rows, newRow] }
               : c,
           ),
         };
-
         onContractChange(updatedContract);
       },
     },
@@ -551,8 +547,8 @@ export const contractContextMenu = (params) => {
         }));
 
         const updatedContract = {
-          ...contractsState[0],
-          contracts: contractsState[0].contracts.map((c) =>
+          ...contractsState,
+          contracts: contractsState.contracts.map((c) =>
             c.id === selectedContract.id
               ? {
                   ...c,
@@ -573,8 +569,8 @@ export const contractContextMenu = (params) => {
       name: "Delete Row",
       action: () => {
         const updatedContract = {
-          ...contractsState[0],
-          contracts: contractsState[0].contracts.map((c) =>
+          ...contractsState,
+          contracts: contractsState.contracts.map((c) =>
             c.id === selectedContract.id
               ? {
                   ...c,
@@ -602,8 +598,8 @@ export const contractContextMenu = (params) => {
         if (!newFieldName || newFieldName === oldFieldName) return;
 
         const updatedContract = {
-          ...contractsState[0],
-          contracts: contractsState[0].contracts.map((c) =>
+          ...contractsState,
+          contracts: contractsState.contracts.map((c) =>
             c.id === selectedContract.id
               ? {
                   ...c,
@@ -635,8 +631,8 @@ export const contractContextMenu = (params) => {
         const fieldName = params.column.getColId();
 
         const updatedContract = {
-          ...contractsState[0],
-          contracts: contractsState[0].contracts.map((c) =>
+          ...contractsState,
+          contracts: contractsState.contracts.map((c) =>
             c.id === selectedContract.id
               ? {
                   ...c,
@@ -657,6 +653,41 @@ export const contractContextMenu = (params) => {
 
   return baseMenuItems;
 };
+
+function serializeRowCellsData(data) {
+  // Create the base structure with `id` and `cells`
+  const transformedData = {
+    id: data.id,
+    cells: [],
+  };
+
+  // Process other keys in the data object
+  for (const [key, value] of Object.entries(data)) {
+    if (key === "id" || key === "cells") continue; // Skip 'id' and 'cells'
+
+    // Check if a cell with the same field exists
+    const existingCell = transformedData.cells.find(
+      (cell) => cell.field === key,
+    );
+
+    if (existingCell) {
+      // Update the value of the existing cell
+      existingCell.value = value;
+    } else {
+      // Add a new cell with a random ID, the key as the field, and the value
+      transformedData.cells.push({
+        id: randomString(), // Generate a random ID
+        field: key,
+        value: value,
+      });
+    }
+
+    // Remove the key from the top-level object
+    delete data[key];
+  }
+
+  return transformedData;
+}
 export const getContractColumnDefs = (columns) => {
   return columns.map((col) => {
     return {
@@ -668,25 +699,20 @@ export const getContractColumnDefs = (columns) => {
       onCellValueChanged: (params) => {
         const { data, context } = params;
         const { contractsState, selectedContract } = context;
-
-        // Create a new contract state with updated row
-
-        const updatedContract = {
-          ...contractsState[0],
-          contracts: contractsState[0].contracts.map((c) =>
-            c.id === selectedContract.id
-              ? {
-                  ...c,
-                  rows: c.rows.map((row) =>
-                    row.id === data.id
-                      ? { ...data } // Use the already updated data from valueSetter
-                      : row,
-                  ),
-                }
-              : c,
-          ),
-        };
-        params.context.onContractChange(contractsState[0]);
+        console.log({ data });
+        const updatedContract = produce(contractsState, (draft) => {
+          const contract = draft.contracts.find(
+            (c) => c.id === selectedContract.id,
+          );
+          if (contract) {
+            const row = contract.rows.find((row) => row.id === data.id);
+            if (row) {
+              Object.assign(row, serializeRowCellsData(data)); // Mutate the draft safely
+            }
+          }
+        });
+        console.log({ updatedContract });
+        params.context.onContractChange(updatedContract);
       },
     };
   });

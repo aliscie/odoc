@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Button,
   Dialog,
@@ -22,6 +22,7 @@ import { useBackendContext } from "../../contexts/BackendContext";
 interface MultiSaveButtonProps {}
 
 const MultiSaveButton: React.FC<MultiSaveButtonProps> = () => {
+  const isFilesSavedRef = useRef(false);
   const dispatch = useDispatch();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { backendActor } = useBackendContext();
@@ -52,6 +53,7 @@ const MultiSaveButton: React.FC<MultiSaveButtonProps> = () => {
     );
     // console.log({ x: changes.files_indexing });
     try {
+      console.log({ serializedContent });
       const res: any = await backendActor?.multi_updates(
         changes.files,
         serializedContent,
@@ -97,6 +99,21 @@ const MultiSaveButton: React.FC<MultiSaveButtonProps> = () => {
       await confirm();
     }
   };
+
+  useEffect(() => {
+    isFilesSavedRef.current = isFilesSaved;
+  }, [isFilesSaved]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!isFilesSavedRef.current) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
 
   const tipForSaved = "Your changes saved to the blockchain.";
   const tipForChanged = <span>You need to save</span>;

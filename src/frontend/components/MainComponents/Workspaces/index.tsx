@@ -1,62 +1,78 @@
-import React, { useState } from "react";
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import IconButton from "@mui/material/IconButton";
-import Divider from "@mui/material/Divider";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import { Check, ChevronDown, Edit2, PlusCircle, Trash2, X } from "lucide-react";
-import CircularProgress from "@mui/material/CircularProgress";
-import { useDispatch, useSelector } from "react-redux";
-import { useBackendContext } from "../../../contexts/BackendContext";
-import { Principal } from "@dfinity/principal";
+import React, { useState, useCallback } from 'react';
+import {
+  Button,
+  Menu,
+  MenuItem,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Divider,
+  ListItemIcon,
+  ListItemText,
+  CircularProgress,
+  useTheme
+} from '@mui/material';
+import {
+  KeyboardArrowDown as ChevronDown,
+  Edit as Edit2,
+  AddCircle as PlusCircle,
+  Check,
+  Close as X
+} from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { IconButton as MuiIconButton } from "@mui/material";
-const WorkspaceManager = () => {
-  const { workspaces, currentWorkspace } = useSelector(
-    (state: any) => state.filesState,
-  );
-  const { backendActor } = useBackendContext();
-  const { profile } = useSelector((state: any) => state.filesState);
+import { useDispatch, useSelector } from 'react-redux';
+import { useBackendContext } from '../../../contexts/BackendContext';
+import { Principal } from '@dfinity/principal';
+import { getWorkspaceStyles } from './WorkspaceStyles';
+import type { Workspace, FilesState } from './WorkspaceTypes';
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [editingId, setEditingId] = useState(null);
-  const [editedName, setEditedName] = useState("");
+const WorkspaceManager: React.FC = () => {
+  const theme = useTheme();
+  const styles = getWorkspaceStyles(theme);
+  const dispatch = useDispatch();
+
+  const { workspaces, currentWorkspace, profile } = useSelector(
+    (state: { filesState: FilesState }) => state.filesState
+  );
+
+  const { backendActor } = useBackendContext();
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editedName, setEditedName] = useState('');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [workspaceToDelete, setWorkspaceToDelete] = useState<Workspace | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showCreateInput, setShowCreateInput] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
-  const handleClick = (event) => {
+  const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
-  };
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setAnchorEl(null);
     setShowCreateInput(false);
     setEditingId(null);
-  };
+  }, []);
 
-  const handleRename = (workspace, e) => {
+  const handleRename = useCallback((workspace: Workspace, e: React.MouseEvent) => {
     e.stopPropagation();
     setEditingId(workspace.id);
     setEditedName(workspace.name);
-  };
+  }, []);
 
-  const handleSaveRename = async (e) => {
+  const handleSaveRename = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (editedName.trim() && backendActor) {
+    if (editedName.trim() && backendActor && editingId) {
       setIsSaving(true);
       try {
         const workspaceToUpdate = workspaces.find((w) => w.id === editingId);
-        if (workspaceToUpdate) {
+        if (workspaceToUpdate && profile) {
           const updatedWorkspace = {
             ...workspaceToUpdate,
             creator: Principal.fromText(profile.id),
@@ -64,60 +80,59 @@ const WorkspaceManager = () => {
           };
 
           const result = await backendActor.save_work_space(updatedWorkspace);
-          if ("Ok" in result) {
-            dispatch({ type: "UPDATE_WORKSPACE", workspace: updatedWorkspace });
+          if ('Ok' in result) {
+            dispatch({ type: 'UPDATE_WORKSPACE', workspace: updatedWorkspace });
             setEditingId(null);
-            setEditedName("");
+            setEditedName('');
           }
         }
       } catch (error) {
-        console.error("Failed to rename workspace:", error);
+        console.error('Failed to rename workspace:', error);
       } finally {
         setIsSaving(false);
       }
     }
-  };
+  }, [editedName, backendActor, editingId, workspaces, profile, dispatch]);
 
-  const [workspaceToDelete, setWorkspaceToDelete] = useState(null);
-
-  const handleDelete = (workspace, e) => {
+  const handleDelete = useCallback((workspace: Workspace, e: React.MouseEvent) => {
     e.stopPropagation();
     setWorkspaceToDelete(workspace);
     setShowDeleteDialog(true);
     setAnchorEl(null);
-  };
+  }, []);
 
-  const confirmDelete = async () => {
-    if (!workspaceToDelete) return;
-    if (backendActor) {
-      try {
-        console.log("Deleting workspace:", workspaceToDelete);
-        let res = await backendActor.delete_work_space(workspaceToDelete);
-        console.log("Deleting res:", res);
-        // Update Redux store
-        dispatch({ type: "DELETE_WORKSPACE", workspace: workspaceToDelete });
+  const confirmDelete = useCallback(async () => {
+    if (!workspaceToDelete || !backendActor) return;
+
+    try {
+      const res = await backendActor.delete_work_space(workspaceToDelete);
+      if ('Ok' in res) {
+        dispatch({ type: 'DELETE_WORKSPACE', workspace: workspaceToDelete });
 
         if (currentWorkspace.id === workspaceToDelete.id && workspaces.length > 0) {
-          const newSelectedWorkspace = workspaces[0];
           dispatch({
-            type: "CHANGE_CURRENT_WORKSPACE",
-            currentWorkspace: newSelectedWorkspace,
+            type: 'CHANGE_CURRENT_WORKSPACE',
+            currentWorkspace: null
           });
         }
-        setShowDeleteDialog(false);
-      } catch (error) {
-        console.error("Failed to delete workspace:", error);
       }
+    } catch (error) {
+      console.error('Failed to delete workspace:', error);
+    } finally {
+      setShowDeleteDialog(false);
+      setWorkspaceToDelete(null);
     }
-  };
+  }, [workspaceToDelete, backendActor, dispatch, currentWorkspace, workspaces]);
 
-  const handleCreateWorkspace = async (
+  const handleCreateWorkspace = useCallback(async (
     e: React.SyntheticEvent,
     newWorkspaceName: string,
   ) => {
-    setIsCreating(true);
     e.stopPropagation();
-    if (newWorkspaceName.trim() && backendActor && profile) {
+    if (!newWorkspaceName.trim() || !backendActor || !profile) return;
+
+    setIsCreating(true);
+    try {
       const creator = Principal.fromText(profile.id);
       const newWorkspace = {
         id: crypto.randomUUID(),
@@ -129,66 +144,43 @@ const WorkspaceManager = () => {
         admins: [creator],
       };
 
-      try {
-        const result = await backendActor.save_work_space(newWorkspace);
-        if ("Ok" in result) {
-          // Update Redux store
-          dispatch({ type: "ADD_WORKSPACE", workspace: newWorkspace });
-
-          // Set the newly created workspace as selected
-          dispatch({
-            type: "CHANGE_CURRENT_WORKSPACE",
-            currentWorkspace: newWorkspace,
-          });
-
-          // Reset input state
-          setShowCreateInput(false);
-          handleClose(); // Close the menu after successful creation
-        } else {
-          console.error("Failed to create workspace:", result.Err);
-        }
-      } catch (error) {
-        console.error("Failed to create workspace:", error);
-      } finally {
-        setIsCreating(false);
+      const result = await backendActor.save_work_space(newWorkspace);
+      if ('Ok' in result) {
+        dispatch({ type: 'ADD_WORKSPACE', workspace: newWorkspace });
+        dispatch({
+          type: 'CHANGE_CURRENT_WORKSPACE',
+          currentWorkspace: newWorkspace,
+        });
+        setShowCreateInput(false);
+        handleClose();
       }
+    } catch (error) {
+      console.error('Failed to create workspace:', error);
+    } finally {
+      setIsCreating(false);
     }
-  };
+  }, [backendActor, profile, dispatch, handleClose]);
 
-  const dispatch = useDispatch();
-
-  const handleWorkspaceSelect = (workspace) => {
-    dispatch({ type: "CHANGE_CURRENT_WORKSPACE", currentWorkspace: workspace });
+  const handleWorkspaceSelect = useCallback((workspace: Workspace) => {
+    dispatch({ type: 'CHANGE_CURRENT_WORKSPACE', currentWorkspace: workspace });
     handleClose();
-  };
+  }, [dispatch, handleClose]);
 
   return (
     <>
       <Button
         onClick={handleClick}
         endIcon={<ChevronDown />}
-        sx={{
-          textTransform: "none",
-          minHeight: 40,
-          backgroundColor: "transparent",
-          border: "1px solid rgba(0, 0, 0, 0.23)",
-          color: "inherit",
-          "&:hover": {
-            backgroundColor: "rgba(0, 0, 0, 0.04)",
-            border: "1px solid rgba(0, 0, 0, 0.23)",
-          },
-        }}
+        sx={styles.workspaceButton}
       >
-        {currentWorkspace && currentWorkspace.name}
+        {currentWorkspace?.name}
       </Button>
 
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}
-        PaperProps={{
-          sx: { width: 320 },
-        }}
+        PaperProps={{ sx: styles.menuPaper }}
       >
         {showCreateInput ? (
           <MenuItem>
@@ -196,41 +188,37 @@ const WorkspaceManager = () => {
               size="small"
               placeholder="New workspace name"
               variant="outlined"
-              sx={{ mr: 1, flex: 1 }}
+              sx={styles.textField}
               onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) => {
-                e.stopPropagation();
-                if (e.key === "Enter") {
-                  handleCreateWorkspace(e, e.target.value);
+                if (e.key === 'Enter' && e.currentTarget instanceof HTMLInputElement) {
+                  handleCreateWorkspace(e, e.currentTarget.value);
                 }
               }}
             />
-            <IconButton
-              size="small"
-              onClick={(e) => {
-                const input =
-                  e.currentTarget.parentElement?.querySelector("input");
-                if (input) {
-                  handleCreateWorkspace(e, input.value);
-                }
-              }}
-              disabled={isCreating}
-            >
-              {isCreating ? (
-                <CircularProgress size={20} />
-              ) : (
-                <Check fontSize="small" />
-              )}
-            </IconButton>
-            <IconButton
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowCreateInput(false);
-              }}
-            >
-              <X fontSize="small" />
-            </IconButton>
+            <div className={styles.actionButtons}>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  const input = e.currentTarget.parentElement?.parentElement?.querySelector('input');
+                  if (input instanceof HTMLInputElement) {
+                    handleCreateWorkspace(e, input.value);
+                  }
+                }}
+                disabled={isCreating}
+              >
+                {isCreating ? <CircularProgress size={20} /> : <Check />}
+              </IconButton>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowCreateInput(false);
+                }}
+              >
+                <X />
+              </IconButton>
+            </div>
           </MenuItem>
         ) : (
           <MenuItem
@@ -240,7 +228,7 @@ const WorkspaceManager = () => {
             }}
           >
             <ListItemIcon>
-              <PlusCircle size={20} />
+              <PlusCircle />
             </ListItemIcon>
             <ListItemText>New Workspace</ListItemText>
           </MenuItem>
@@ -248,70 +236,59 @@ const WorkspaceManager = () => {
 
         <Divider />
 
-        {[{id: 'default', name: 'default'}, ...workspaces].map((workspace) => (
+        {[{ id: 'default', name: 'default' }, ...workspaces].map((workspace) => (
           <MenuItem
             key={workspace.id}
-            selected={workspace && workspace.id === currentWorkspace.id}
+            selected={workspace.id === currentWorkspace?.id}
             onClick={() => handleWorkspaceSelect(workspace)}
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              "&:hover .workspace-actions": {
-                opacity: 1,
-              },
-            }}
+            sx={styles.menuItem}
           >
             {editingId === workspace.id ? (
-              <div
-                style={{ display: "flex", alignItems: "center", width: "100%" }}
-              >
+              <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                 <TextField
                   size="small"
                   value={editedName}
                   onChange={(e) => setEditedName(e.target.value)}
                   variant="outlined"
-                  sx={{ mr: 1, flex: 1 }}
+                  sx={styles.textField}
                   onClick={(e) => e.stopPropagation()}
                 />
-                <IconButton 
-                  size="small" 
-                  onClick={handleSaveRename}
-                  disabled={isSaving}
-                >
-                  {isSaving ? (
-                    <CircularProgress size={20} />
-                  ) : (
-                    <Check fontSize="small" />
-                  )}
-                </IconButton>
-                <IconButton
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEditingId(null);
-                  }}
-                >
-                  <X fontSize="small" />
-                </IconButton>
+                <div className={styles.actionButtons}>
+                  <IconButton
+                    size="small"
+                    onClick={handleSaveRename}
+                    disabled={isSaving}
+                  >
+                    {isSaving ? <CircularProgress size={20} /> : <Check />}
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingId(null);
+                    }}
+                  >
+                    <X />
+                  </IconButton>
+                </div>
               </div>
             ) : (
               <>
                 <ListItemText>{workspace.name}</ListItemText>
                 {workspace.id !== 'default' && (
-                  <div className="workspace-actions">
+                  <div className="workspace-actions" style={styles.workspaceActions}>
                     <IconButton
                       size="small"
                       onClick={(e) => handleRename(workspace, e)}
                     >
-                      <Edit2 size={16} />
+                      <Edit2 />
                     </IconButton>
-                    <MuiIconButton
+                    <IconButton
                       size="small"
                       onClick={(e) => handleDelete(workspace, e)}
-                      sx={{ p: 0.5 }}
                     >
                       <DeleteIcon sx={{ fontSize: 16 }} />
-                    </MuiIconButton>
+                    </IconButton>
                   </div>
                 )}
               </>
@@ -330,8 +307,8 @@ const WorkspaceManager = () => {
         <DialogTitle>Delete Workspace</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete workspace "{workspaceToDelete?.name}
-            "? This action cannot be undone.
+            Are you sure you want to delete workspace "{workspaceToDelete?.name}"?
+            This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -343,14 +320,7 @@ const WorkspaceManager = () => {
           >
             Cancel
           </Button>
-          <Button
-            onClick={() => {
-              confirmDelete();
-              setShowDeleteDialog(false);
-              setWorkspaceToDelete(null);
-            }}
-            color="error"
-          >
+          <Button onClick={confirmDelete} color="error">
             Delete
           </Button>
         </DialogActions>
