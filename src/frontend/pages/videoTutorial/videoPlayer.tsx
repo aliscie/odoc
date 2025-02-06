@@ -1,5 +1,5 @@
-import {Box, Typography, useMediaQuery, useTheme} from "@mui/material";
-import React, {useEffect, useRef} from "react";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
+import React, { useEffect, useRef } from "react";
 import useIsInViewport from "./useViewPort";
 
 const VideoPlayer = ({ video }: { video: Tutorial }) => {
@@ -8,7 +8,8 @@ const VideoPlayer = ({ video }: { video: Tutorial }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLIFrameElement>(null);
   const isInViewport = useIsInViewport(containerRef, 0.5);
-
+  // const videoSrc = `${video.videoUrl}${autoplay ? "?autoplay=1&mute=1" : ""}`;
+  const videoSrc = `${video.videoUrl}?autoplay=1&mute=1`;
   useEffect(() => {
     const iframe = videoRef.current;
     if (!iframe) return;
@@ -16,20 +17,20 @@ const VideoPlayer = ({ video }: { video: Tutorial }) => {
     const postMessageToPlayer = (action: string) => {
       iframe.contentWindow?.postMessage(
         JSON.stringify({
-          event: 'command',
+          event: "command",
           func: action,
         }),
-        '*'
+        "*",
       );
     };
 
-    if (!video.videoUrl.includes('enablejsapi=1')) {
-      const separator = video.videoUrl.includes('?') ? '&' : '?';
+    if (!video.videoUrl.includes("enablejsapi=1")) {
+      const separator = video.videoUrl.includes("?") ? "&" : "?";
       iframe.src = `${video.videoUrl}${separator}enablejsapi=1`;
     }
 
     if (!isInViewport) {
-      postMessageToPlayer('pauseVideo');
+      postMessageToPlayer("pauseVideo");
     }
   }, [isInViewport, video.videoUrl]);
 
@@ -49,7 +50,7 @@ const VideoPlayer = ({ video }: { video: Tutorial }) => {
         <Box
           component="iframe"
           ref={videoRef}
-          src={video.videoUrl}
+          src={videoSrc}
           title={video.title}
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

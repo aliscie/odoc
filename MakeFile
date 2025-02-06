@@ -44,3 +44,6 @@ topup_cycles:
 	dfx wallet send lwdq3-vqaaa-aaaal-acwda-cai 1000000000000 --network=ic
 	dfx wallet send lrcwp-yiaaa-aaaal-acwdq-cai 1000000000000 --network=ic
 	dfx canister status lrcwp-yiaaa-aaaal-acwdq-cai --network=ic
+
+get_logs:
+	dfx canister logs backend  --network ic

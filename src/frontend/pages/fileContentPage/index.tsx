@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, {memo, useCallback, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "lodash";
 import {
@@ -202,4 +202,4 @@ function FileContentPage() {
   );
 }
 
-export default FileContentPage
+export default memo(FileContentPage);

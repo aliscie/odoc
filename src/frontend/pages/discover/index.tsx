@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import {createTheme, styled, ThemeProvider} from "@mui/material/styles";
+import React, { useState } from "react";
+import { createTheme, styled, ThemeProvider } from "@mui/material/styles";
 // Reusable sidebar card component
 import {
   Accordion,
@@ -18,75 +18,11 @@ import {
 } from "@mui/material";
 import CreatePost from "./createPost";
 import ViewPostComponent from "./viewPost";
-import {useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
-import {RootState} from "../../redux/reducers";
-
-const VideoTutorial = ({
-  title,
-  videoUrl,
-  description,
-  expanded,
-  onChange,
-}) => (
-  <Accordion
-    expanded={expanded}
-    onChange={onChange}
-    sx={{
-      backgroundColor: "background.paper",
-      "&:before": { display: "none" },
-      boxShadow: "none",
-      "&:not(:last-child)": { borderBottom: 1, borderColor: "divider" },
-    }}
-  >
-    <AccordionSummary
-      expandIcon={<ExpandMoreIcon />}
-      sx={{
-        flexDirection: "row-reverse",
-        "& .MuiAccordionSummary-expandIconWrapper": {
-          color: "primary.main",
-        },
-      }}
-    >
-      <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
-        <PlayCircleOutlineIcon sx={{ mr: 1, color: "primary.main" }} />
-        <Typography>{title}</Typography>
-      </Box>
-    </AccordionSummary>
-    <AccordionDetails>
-      <Box
-        sx={{
-          position: "relative",
-          width: "100%",
-          paddingTop: "56.25%", // 16:9 aspect ratio
-          mb: 2,
-        }}
-      >
-        <Box
-          component="iframe"
-          src={videoUrl}
-          title={title}
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          referrerPolicy="strict-origin-when-cross-origin"
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            borderRadius: 1,
-          }}
-        />
-      </Box>
-      <Typography variant="body2" color="text.secondary">
-        {description}
-      </Typography>
-    </AccordionDetails>
-  </Accordion>
-);
+import { RootState } from "../../redux/reducers";
+import LoadMorePosts from "./LoadMorePosts";
 
 const SidebarCard = ({ title, children }) => (
   <Card sx={{ mb: 2, borderRadius: 1 }}>
@@ -210,36 +146,36 @@ const SocialFeed = () => {
       //   content: ["John Doe", "Jane Smith", "Alex Johnson"],
       //   type: "list",
       // },
-      {
-        title: "Video Tutorials",
-        content: [
-          {
-            title: "What is odoc",
-            videoUrl: "https://www.youtube.com/embed/Sf1YE-2rYvo",
-            description:
-              "Unlock the Power of Freedom: Save Time, Resources, and Gain Control with Odoc\n",
-          },
-          {
-            title: "Get started",
-            videoUrl: "https://www.youtube.com/embed/Lg-0q5oEenk",
-            description:
-              "A guide to using Internet Identity for authentication",
-          },
-
-          {
-            title: "Make friends",
-            videoUrl: "https://www.youtube.com/embed/f0RVw6RJxos",
-            description: "Social networking guide for Odoc",
-          },
-          {
-            title: "Make payments",
-
-            videoUrl: "https://www.youtube.com/embed/XnOF1i1Een8",
-            description: "Step-by-step guide for ODOC payments and documents",
-          },
-        ],
-        type: "tutorials",
-      },
+      // {
+      //   title: "Video Tutorials",
+      //   content: [
+      //     {
+      //       title: "What is odoc",
+      //       videoUrl: "https://www.youtube.com/embed/Sf1YE-2rYvo",
+      //       description:
+      //         "Unlock the Power of Freedom: Save Time, Resources, and Gain Control with Odoc\n",
+      //     },
+      //     {
+      //       title: "Get started",
+      //       videoUrl: "https://www.youtube.com/embed/Lg-0q5oEenk",
+      //       description:
+      //         "A guide to using Internet Identity for authentication",
+      //     },
+      //
+      //     {
+      //       title: "Make friends",
+      //       videoUrl: "https://www.youtube.com/embed/f0RVw6RJxos",
+      //       description: "Social networking guide for Odoc",
+      //     },
+      //     {
+      //       title: "Make payments",
+      //
+      //       videoUrl: "https://www.youtube.com/embed/XnOF1i1Een8",
+      //       description: "Step-by-step guide for ODOC payments and documents",
+      //     },
+      //   ],
+      //   type: "tutorials",
+      // },
     ],
   };
 
@@ -250,20 +186,6 @@ const SocialFeed = () => {
   };
 
   const renderCardContent = (content, type) => {
-    if (type === "tutorials") {
-      return (
-        <Box sx={{ mt: -2 }}>
-          {content.map((tutorial, index) => (
-            <VideoTutorial
-              key={index}
-              {...tutorial}
-              expanded={expandedTutorial === index}
-              onChange={handleTutorialChange(index)}
-            />
-          ))}
-        </Box>
-      );
-    }
     if (type === "tags") {
       return (
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
@@ -336,6 +258,7 @@ const SocialFeed = () => {
                 post={post}
               />
             ))}
+          <LoadMorePosts />
         </MainContainer>
         <Sidebar items={sidebarContent.right} position="right" />
       </FeedWrapper>

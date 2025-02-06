@@ -220,7 +220,7 @@ export default function TopNavBar() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      dispatch(handleRedux("LOGIN"));
+      dispatch({ type: "LOGIN" });
     }
   }, [isLoggedIn, dispatch]);
 

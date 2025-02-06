@@ -225,7 +225,6 @@ type InitialData = record {
   Files : vec FileNode;
   Friends : vec Friend;
   Profile : User;
-  DiscoverUsers : vec record { text; User };
   Wallet : Wallet;
 };
 type Log = record { level : LogLevel; message : text; timestamp : nat64 };

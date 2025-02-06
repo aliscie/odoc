@@ -62,6 +62,17 @@ const tutorials: Tutorial[] = [
       return wallet?.exchanges?.length > 0;
     },
   },
+  {
+    title: "How trust and tokens work",
+    videoUrl: "https://www.youtube.com/embed/aKCaXRvxYWo",
+    description: "Revolutionizes trust in transactions using sender tokens, receiver tokens, and social tokens. Learn how these tokens create accountability, reward reliability, and foster community-driven fairness",
+    checkCondition: (state: any) => {
+      const { wallet } = state.filesState;
+      return wallet?.exchanges?.length > 0;
+    },
+  },
+
+
 ];
 
 const GettingStarted = () => {

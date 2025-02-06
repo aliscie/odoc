@@ -20,37 +20,25 @@ import AffiliateDashboard from "./affiliate";
 import AffiliateRedirect from "./affiliateRedirect";
 import { handleRedux } from "../redux/store/handleRedux";
 import FileContentPage from "./fileContentPage";
+import RegistrationForm from "../components/MainComponents/RegistrationForm";
 
 function Pages() {
   const { profile, profile_history, wallet, friends } = useSelector(
     (state: any) => state.filesState,
   );
   const { login, logout, backendActor } = useBackendContext();
-  const { isLoggedIn } = useSelector((state : any) => state.uiState);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    const fetchPosts = async () => {
-      if (backendActor) {
-        try {
-          // Fetch first 20 posts
-          const fetchedPosts = await backendActor.get_posts(
-            BigInt(0),
-            BigInt(20),
-          );
-          dispatch(handleRedux("SET_POSTS", { posts: fetchedPosts }));
-        } catch (error) {
-          console.error("Error fetching posts:", error);
-        }
-      }
-    };
-
-    fetchPosts();
-  }, [backendActor]);
+  const { isLoggedIn, isRegistered } = useSelector(
+    (state: any) => state.uiState,
+  );
 
   const MainPage = () => {
+    if (isLoggedIn && !isRegistered) {
+      return <RegistrationForm />;
+    }
     if (isLoggedIn) {
       return <ProductManagerDashboard />;
     }
+
     return <LandingPage isLoggedIn={isLoggedIn} login={login} />;
   };
   return (

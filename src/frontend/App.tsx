@@ -92,6 +92,7 @@ const App: React.FC = () => {
         } catch (error) {
           console.error("Error checking/depositing CKUSDT:", error);
         }
+
       })();
     }
   }, [backendActor, ckUSDCActor, profile, theme.palette.primary.contrastText]);
@@ -117,7 +118,6 @@ const App: React.FC = () => {
         <BetaWarning />
 
         <SearchPopper />
-        <RegistrationForm />
         <PromoNotification />
         <TopNavBar />
         <DndProvider backend={HTML5Backend}>

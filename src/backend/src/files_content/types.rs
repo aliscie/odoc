@@ -1,14 +1,16 @@
-use crate::files::FileNode;
-use crate::storage_schema::{ContentId, ContentTree, FileId};
-use crate::tables::Table;
-use crate::{ShareFile, FILE_CONTENTS, USER_FILES};
+use std::borrow::Cow;
+use std::collections::HashMap;
+use std::sync::atomic::{AtomicU64, Ordering};
+
 use candid::{CandidType, Decode, Deserialize, Encode, Principal};
 use ic_cdk::{caller, print};
 use ic_stable_structures::Storable;
-use std::collections::HashMap;
-use std::sync::atomic::{AtomicU64, Ordering};
 use ic_stable_structures::storable::Bound;
-use std::borrow::Cow;
+
+use crate::{FILE_CONTENTS, ShareFile, USER_FILES};
+use crate::files::FileNode;
+use crate::storage_schema::{ContentId, ContentTree, FileId};
+use crate::tables::Table;
 
 static COUNTER: AtomicU64 = AtomicU64::new(0);
 

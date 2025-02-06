@@ -4,12 +4,12 @@ import OdocEditor, { MyMentionItem } from "odoc_editor_v2";
 import createContractPlugin, {
   CONTRACT_KEY,
 } from "../ContractTable/ContractPlugin";
-
 import TableChartIcon from "@mui/icons-material/TableChart";
 import { handleRedux } from "../../redux/store/handleRedux";
 import { custom_contract } from "../../DataProcessing/dataSamples";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
+
 interface Props {
   handleOnInsertComponent?: any;
   onChange?: any;
@@ -26,66 +26,62 @@ function EditorComponent(props: Props) {
   const { all_friends, profile } = useSelector(
     (state: any) => state.filesState,
   );
-  let content = props.content;
 
-  let extraPlugins = [
+  const extraPlugins = React.useMemo(() => [
     { plugin: createContractPlugin, key: CONTRACT_KEY, icon: TableChartIcon },
-    // {
-    //   plugin: createCustomTablePlugin,
-    //   key: TABLE_KEY,
-    //   icon: TableRowsIcon,
-    // },
-  ];
-  const mentions: MyMentionItem[] = all_friends.map((i: any) => {
-    return { key: i.id, text: i.name };
-  });
+  ], []);
 
-  function handleOnInsertComponent(component: any, component_id: string) {
+  const mentions: MyMentionItem[] = React.useMemo(() =>
+    all_friends.map((i: any) => ({
+      key: i.id,
+      text: i.name
+    })),
+    [all_friends]
+  );
+
+  const handleOnInsertComponent = React.useCallback((component: any, component_id: string) => {
     switch (component.key) {
       case "custom_contract":
-        // TODO Also, when user remove contract from content page
-        //  Delete the contract if it has no data.
-        // console.log("handleOnInsertComponent");
-        custom_contract.id = component_id;
-        custom_contract.creator = profile.id;
-        custom_contract.date_created = Date.now() * 1e6;
-        dispatch(handleRedux("ADD_CONTRACT", { contract: custom_contract }));
+        const newContract = {
+          ...custom_contract,
+          id: component_id,
+          creator: profile.id,
+          date_created: Date.now() * 1e6
+        };
+        dispatch(handleRedux("ADD_CONTRACT", { contract: newContract }));
         return null;
-
       case "data_grid":
-        return null;
       default:
         return null;
-      // case "data_grid":
-      //     dispatch(handleRedux("CONTRACT_CHANGES", {changes: contract_sample}));
     }
-  }
+  }, [dispatch, profile.id]);
 
-  // const handleInputChange = useCallback(
-  //     debounce((changes: string) => {
-  //         if (changes !== content) {
-  //             props.onChange(changes);
-  //         }
-  //     }, 600),
-  //     [dispatch],
-  // );
+  const handleInputChange = React.useCallback((changes: any) => {
+    props.onChange?.(changes);
+  }, [props.onChange]);
 
-  const handleInputChange = (changes: any) => {
-    props.onChange(changes);
-  };
   return (
     <OdocEditor
-      // key={String(props.editorKey || "")}
       id={String(props.editorKey || "")}
       readOnly={props.readOnly}
-      initialValue={content}
+      initialValue={props.content}
       onChange={handleInputChange}
       extraPlugins={extraPlugins}
       onInsertComponent={handleOnInsertComponent}
-      // onOnRemoveCompnt={handleOnInsertComponent}
       userMentions={mentions}
     />
   );
 }
 
-export default React.memo(EditorComponent);
+// Memoize the component with a custom comparison function
+export default React.memo(EditorComponent, (prevProps, nextProps) => {
+  // Return true if we DON'T need to re-render
+  return (
+    prevProps.readOnly === nextProps.readOnly &&
+    prevProps.editorKey === nextProps.editorKey &&
+    prevProps.onChange === nextProps.onChange &&
+    prevProps.content === nextProps.content && // Assuming content is immutable
+    prevProps.id === nextProps.id &&
+    prevProps.searchValue === nextProps.searchValue
+  );
+});

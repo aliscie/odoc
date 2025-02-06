@@ -93,7 +93,12 @@ export function filesReducer(
         ...state,
         files: [...state.files, ...action.files],
       };
-
+    case "ADD_POSTS":
+      console.log({ action });
+      return {
+        ...state,
+        posts: [...state.posts, ...action.posts],
+      };
     case "SET_POSTS":
       return {
         ...state,

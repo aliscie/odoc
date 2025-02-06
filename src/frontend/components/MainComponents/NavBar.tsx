@@ -41,7 +41,7 @@ const StyledDrawerPaper = styled(Box)(({ theme }) => ({
   position: "relative",
   [theme.breakpoints.up("sm")]: {
     width: "250px",
-    padding: "8px 16px",
+    // padding: "8px 16px",
     marginTop: "25px", // Reduced fixed height for desktop top spacing
   },
 }));
@@ -61,7 +61,7 @@ const MobileHeader = styled(Box)(({ theme }) => ({
   },
 }));
 
-const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
+export const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   margin: "8px 0",
   padding: "12px 16px",
   borderRadius: "8px",
@@ -164,7 +164,7 @@ const NavBar = (props: any) => {
 
   useEffect(() => {
     let x = buildTree(files);
-    if (currentWorkspace.id !='default') {
+    if (currentWorkspace.id != "default") {
       x = x.filter((f) => f.workspaces.includes(currentWorkspace.id));
     }
     setDefaultItems(x);
@@ -235,9 +235,11 @@ const NavBar = (props: any) => {
                   dragEnd={dragEnd}
                   defaultItems={defaultItems}
                 />
-                <Divider sx={{ my: 2 }} />
-                <CreateFile />
-                <GetMoreFiles />
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <CreateFile />
+                  <GetMoreFiles />
+                </Box>
+
               </>
             )}
           </ContentWrapper>

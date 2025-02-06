@@ -1,6 +1,7 @@
 use ic_cdk::caller;
 use ic_cdk_macros::update;
 use crate::affiliate::add_new_referral;
+use crate::chat::send_welcome_message;
 
 use crate::user::{RegisterUser, User};
 
@@ -20,6 +21,7 @@ fn register(affiliate_id: String, profile: RegisterUser) -> Result<User, String>
 
     let user = User::new(profile.clone());
     let _ = add_new_referral(affiliate_id, caller().to_text());
+    send_welcome_message();
     Ok(user)
 }
 

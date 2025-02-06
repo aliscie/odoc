@@ -51,16 +51,16 @@ fn save_post(mut post: Post) -> Result<(), String> {
                 posts.last().unwrap().date_created.clone(),
             );
 
-            if diff < Duration::from_secs(one_day.clone()) {
-                let hours = &one_day - diff.as_secs();
-                let remainder = (one_day - diff.as_secs()) % 3600;
-                let msg = format!(
-                    "please wait {} hours and {} minutes",
-                    hours / 3600,
-                    remainder / 60
-                );
-                return Err(msg);
-            }
+            // if diff < Duration::from_secs(one_day.clone()) {
+            //     let hours = &one_day - diff.as_secs();
+            //     let remainder = (one_day - diff.as_secs()) % 3600;
+            //     let msg = format!(
+            //         "please wait {} hours and {} minutes",
+            //         hours / 3600,
+            //         remainder / 60
+            //     );
+            //     return Err(msg);
+            // }
         }
         post.votes_up = vec![];
         post.votes_down = vec![];

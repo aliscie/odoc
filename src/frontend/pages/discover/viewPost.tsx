@@ -13,8 +13,15 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  useTheme,
 } from "@mui/material";
-import { Heart, MessageCircle, MoreVertical, ThumbsDown } from "lucide-react";
+import {
+  Favorite,
+  Share,
+  MoreVert as MoreVertical,
+  ChatBubbleOutline,
+  ThumbDown,
+} from "@mui/icons-material";
 import { keyframes, styled } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
@@ -33,35 +40,28 @@ interface ViewPostComponentProps {
   handleDeletePost: (postId: string) => void;
 }
 
-const fadeIn = keyframes`
+const scaleUpAnimation = keyframes`
   from {
-    opacity: 0;
-    transform: translateY(10px);
+    transform: scale(1);
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: scale(1.02);
   }
 `;
 
 const PostCard = styled(Card)(({ theme }) => ({
-  background: "rgba(143,143,143,0.42)",
-  backdropFilter: "blur(16px) saturate(180%)",
-  border: "1px solid rgba(255, 255, 255, 0.125)",
-  borderRadius: theme.spacing(2),
+  background: 'transparent',
+  borderBottom: `1px solid ${theme.palette.divider}`,
   padding: 0,
-  position: "static",
-  boxShadow: theme.shadows[1],
-  transition: theme.transitions.create(["transform", "box-shadow"], {
-    duration: theme.transitions.duration.shorter,
-  }),
+  position: "relative",
+  boxShadow: "none",
+  transition: "transform 0.2s ease-out",
   overflow: "visible",
-  marginBottom: theme.spacing(2),
-  "&:hover": {
-    transform: "translateY(-5px)",
-    boxShadow: theme.shadows[8],
-  },
-  animation: `${fadeIn} 0.5s ease-out`,
+  borderRadius: 0,
+  marginBottom: 0,
+  '&:hover': {
+    animation: `${scaleUpAnimation} 0.2s ease-out forwards`
+  }
 }));
 
 const StyledCardContent = styled(CardContent)(({ theme }) => ({
@@ -70,61 +70,35 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
     paddingBottom: theme.spacing(2),
   },
   overflow: "visible",
-  position: "static",
+  position: "relative",
 }));
 
-const PostActionButton = styled(IconButton)(({ theme }) => ({
-  color: theme.palette.mode === "dark" ? "#E9D5FF" : "#6366F1",
-  transition: theme.transitions.create(["transform", "background-color"], {
-    duration: theme.transitions.duration.shorter,
-  }),
+const ActionButton = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  transition: "all 0.2s",
   padding: theme.spacing(1),
-  borderRadius: theme.shape.borderRadius * 1.5,
   "&:hover": {
-    transform: "scale(1.1)",
-    backgroundColor:
-      theme.palette.mode === "dark"
-        ? "rgba(139, 92, 246, 0.1)"
-        : "rgba(79, 70, 229, 0.1)",
+    color: theme.palette.primary.main,
+    backgroundColor: `${theme.palette.primary.main}15`,
   },
-  "&:active": {
-    transform: "scale(0.95)",
+  "&.liked": {
+    color: theme.palette.error.main,
+  },
+  "&.disliked": {
+    color: theme.palette.warning.main,
+  },
+  "&.shared": {
+    color: theme.palette.success.main,
   },
   "&.Mui-disabled": {
-    opacity: 0.8,
-    color: theme.palette.mode === "dark" ? "#9CA3AF" : "#4B5563",
-    "& span": {
-      color: theme.palette.mode === "dark" ? "#E5E7EB" : "#1F2937",
-      fontWeight: 500,
-    },
-  },
+    opacity: 0.5,
+  }
 }));
 
 const StyledMenu = styled(Menu)(({ theme }) => ({
   "& .MuiPaper-root": {
-    backgroundColor:
-      theme.palette.mode === "dark"
-        ? "rgba(17, 24, 39, 0.95)"
-        : "rgba(255, 255, 255, 0.95)",
-    border: `1px solid ${
-      theme.palette.mode === "dark"
-        ? "rgba(139, 92, 246, 0.2)"
-        : "rgba(79, 70, 229, 0.2)"
-    }`,
-  },
-}));
-
-const StyledDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiPaper-root": {
-    backgroundColor:
-      theme.palette.mode === "dark"
-        ? "rgba(17, 24, 39, 0.95)"
-        : "rgba(255, 255, 255, 0.95)",
-    border: `1px solid ${
-      theme.palette.mode === "dark"
-        ? "rgba(139, 92, 246, 0.2)"
-        : "rgba(79, 70, 229, 0.2)"
-    }`,
+    backgroundColor: theme.palette.background.paper,
+    border: `1px solid ${theme.palette.divider}`,
   },
 }));
 
@@ -132,18 +106,14 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
   post,
   handleDeletePost,
 }) => {
-  const { posts } = useSelector((state: RootState) => state.filesState);
+  const theme = useTheme();
   const { backendActor } = useBackendContext();
   const { enqueueSnackbar } = useSnackbar();
-  const { profile } = useSelector((state: any) => state.filesState);
+  const { profile } = useSelector((state: RootState) => state.filesState);
   const [showComments, setShowComments] = React.useState(false);
-
   const [voteLoading, setVoteLoad] = React.useState(false);
   const [isChanged, setChanged] = React.useState(false);
-  const [isDeleting, setIsDeleting] = React.useState(false);
-  const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
-    null,
-  );
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [votes, setVotes] = React.useState({
     up: post.votes_up,
@@ -156,8 +126,11 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
     setMenuAnchorEl(event.currentTarget);
   };
 
-  const handleMenuClose = () => {
-    setMenuAnchorEl(null);
+  const handleMenuClose = () => setMenuAnchorEl(null);
+
+  const handleShare = () => {
+    // navigator.clipboard.writeText(window.location.href);
+    // enqueueSnackbar("Post link copied to clipboard", { variant: "success" });
   };
 
   const handleDeleteClick = () => {
@@ -167,44 +140,46 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
 
   const handleDeleteConfirm = async () => {
     setDeleteDialogOpen(false);
-    setIsDeleting(true);
     try {
       const res = await backendActor?.delete_post(post.id);
       if (res?.Ok === null) {
-        enqueueSnackbar("Post deleted successfully", { variant: "success" });
+        enqueueSnackbar("Post deleted", { variant: "success" });
         handleDeletePost(post.id);
       } else {
         enqueueSnackbar(JSON.stringify(res?.Err), { variant: "error" });
       }
     } catch (error) {
-      console.error({ error });
-      enqueueSnackbar("Failed to delete post: " + error, { variant: "error" });
+      console.error(error);
+      enqueueSnackbar("Failed to delete post", { variant: "error" });
     }
   };
 
   const onClickSave = async () => {
     setChanged(false);
-    const newPostObj: Post = {
-      ...post,
-      tags: [],
-      content_tree: serializeFileContents(contentTree.current)[0][0][1],
-      creator: profile.id,
-      votes_up: votes.up,
-      votes_down: votes.down,
-    };
-
-    const result = await backendActor.save_post(newPostObj);
-    console.log({ result });
+    try {
+      const newPostObj: Post = {
+        ...post,
+        tags: [],
+        content_tree: serializeFileContents(contentTree.current)[0][0][1],
+        creator: profile.id,
+        votes_up: votes.up,
+        votes_down: votes.down,
+      };
+      await backendActor.save_post(newPostObj);
+      enqueueSnackbar("Post saved", { variant: "success" });
+    } catch (error) {
+      enqueueSnackbar("Failed to save post", { variant: "error" });
+    }
   };
 
   const onLike = async () => {
     if (profile?.id === post.creator.id) {
-      enqueueSnackbar("You can't like your own post", { variant: "error" });
+      enqueueSnackbar("Can't like your own post", { variant: "error" });
       return;
     }
     setVoteLoad(true);
     try {
-      const votesUp = votes.up.map((v) => v.toString());
+      const votesUp = votes.up.map(v => v.toString());
       if (votesUp.includes(profile?.id)) {
         const res = await backendActor.unvote(post.id);
         setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
@@ -219,12 +194,12 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
 
   const onDisLike = async () => {
     if (profile?.id === post.creator.id) {
-      enqueueSnackbar("You can't dislike your own post", { variant: "error" });
+      enqueueSnackbar("Can't dislike your own post", { variant: "error" });
       return;
     }
     setVoteLoad(true);
     try {
-      const votesDown = votes.down.map((v) => v.toString());
+      const votesDown = votes.down.map(v => v.toString());
       if (votesDown.includes(profile.id)) {
         const res = await backendActor.unvote(post.id);
         setVotes({ up: res.Ok.votes_up, down: res.Ok.votes_down });
@@ -237,102 +212,41 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
     }
   };
 
-  if (isDeleting) {
-    return (
-      <PostCard>
-        <StyledCardContent>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "10rem",
-            }}
-          >
-            <CircularProgress color="primary" />
-          </Box>
-        </StyledCardContent>
-      </PostCard>
-    );
-  }
-
   return (
     <PostCard>
       <StyledCardContent>
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <UserAvatarMenu sx={{ mr: 2 }} user={post.creator} />
           <Box>
-            <Box sx={{ fontWeight: "bold" }}>{post.creator.name}</Box>
-            <Box sx={{ fontSize: "0.875rem" }}>
-              {formatRelativeTime(post.date_created)}
+            <Box sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              fontWeight: "bold"
+            }}>
+              <Box component="span" sx={{
+                color: theme.palette.text.secondary,
+                fontWeight: 'normal'
+              }}>
+                @{post.creator.name}
+              </Box>
+              <Box component="span" sx={{
+                color: theme.palette.text.secondary,
+                fontWeight: 'normal'
+              }}>
+                · {formatRelativeTime(post.date_created)}
+              </Box>
             </Box>
           </Box>
+
           {profile?.id === post.creator.id && (
             <IconButton sx={{ ml: "auto" }} onClick={handleMenuClick}>
-              <MoreVertical color="#E9D5FF" size={20} />
+              <MoreVertical />
             </IconButton>
           )}
-          <StyledMenu
-            anchorEl={menuAnchorEl}
-            open={Boolean(menuAnchorEl)}
-            onClose={handleMenuClose}
-          >
-            <MenuItem
-              onClick={handleDeleteClick}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(139, 92, 246, 0.1)",
-                },
-              }}
-            >
-              Delete Post
-            </MenuItem>
-          </StyledMenu>
-
-          <StyledDialog
-            open={deleteDialogOpen}
-            onClose={() => setDeleteDialogOpen(false)}
-          >
-            <DialogTitle>Delete Post</DialogTitle>
-            <DialogContent>
-              Are you sure you want to delete this post? This action cannot be
-              undone.
-            </DialogContent>
-            <DialogActions>
-              <Button
-                onClick={() => setDeleteDialogOpen(false)}
-                sx={{
-                  color: "#A78BFA",
-                  "&:hover": {
-                    backgroundColor: "rgba(139, 92, 246, 0.1)",
-                  },
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleDeleteConfirm}
-                sx={{
-                  color: "#ff4444",
-                  "&:hover": {
-                    backgroundColor: "rgba(255, 68, 68, 0.1)",
-                  },
-                }}
-                autoFocus
-              >
-                Delete
-              </Button>
-            </DialogActions>
-          </StyledDialog>
         </Box>
 
-        <Box
-          sx={{
-            mb: 2,
-            maxHeight: "400px",
-            overflowY: "auto",
-          }}
-        >
+        <Box sx={{ mb: 2, maxHeight: "400px", overflowY: "auto" }}>
           <EditorComponent
             editorKey={post.id}
             readOnly={profile?.id !== post.creator.id}
@@ -347,88 +261,90 @@ const ViewPostComponent: React.FC<ViewPostComponentProps> = ({
             content={deserializeContentTree(post.content_tree)}
           />
         </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            color: "#A78BFA",
-          }}
-        >
-          <PostActionButton
-            disabled={
-              !profile || profile?.id === post.creator.id || voteLoading
-            }
-            onClick={onLike}
+
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+          <ActionButton
+            onClick={() => setShowComments(!showComments)}
+            className={showComments ? "active" : ""}
           >
-            <Heart
-              size={20}
-              fill={
-                votes.up.map((v) => v.toString()).includes(profile?.id)
-                  ? "#A855F7"
-                  : "rgba(233,213,255,0)"
-              }
-            />
+            <ChatBubbleOutline />
             <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
               {post.children.length}
             </Box>
-          </PostActionButton>
+          </ActionButton>
 
-          <PostActionButton
-            disabled={
-              !profile || profile?.id === post.creator.id || voteLoading
-            }
-            onClick={onDisLike}
+          <ActionButton
+            onClick={onLike}
+            disabled={!profile || profile?.id === post.creator.id || voteLoading}
+            className={votes.up.map(v => v.toString()).includes(profile?.id) ? "liked" : ""}
           >
-            <ThumbsDown
-              fill={
-                votes.down.map((v) => v.toString()).includes(profile?.id)
-                  ? "#A855F7"
-                  : "rgba(233,213,255,0)"
-              }
-              size={20}
-            />
+            <Favorite />
+            <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
+              {votes.up.length}
+            </Box>
+          </ActionButton>
+
+          <ActionButton
+            onClick={onDisLike}
+            disabled={!profile || profile?.id === post.creator.id || voteLoading}
+            className={votes.down.map(v => v.toString()).includes(profile?.id) ? "disliked" : ""}
+          >
+            <ThumbDown />
             <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
               {votes.down.length}
             </Box>
-          </PostActionButton>
+          </ActionButton>
 
-          <PostActionButton
-            onClick={() => setShowComments(!showComments)}
-            sx={{
-              "& svg": {
-                transition: "transform 0.2s",
-                transform: showComments ? "rotate(180deg)" : "none",
-              },
-            }}
-          >
-            <MessageCircle
-              size={20}
-              fill={showComments ? "#A855F7" : "rgba(233,213,255,0)"}
-            />
-            <Box component="span" sx={{ ml: 1, fontSize: "0.875rem" }}>
-              {post.children.length}
-            </Box>
-          </PostActionButton>
+          <ActionButton onClick={handleShare}>
+            <Share />
+          </ActionButton>
 
           {profile?.id === post.creator.id && (
-            <PostActionButton disabled={!isChanged} onClick={onClickSave}>
+            <Button
+              disabled={!isChanged}
+              onClick={onClickSave}
+              variant="contained"
+              size="small"
+              sx={{
+                ml: 2,
+                textTransform: "none",
+                borderRadius: "20px"
+              }}
+            >
               Save
-            </PostActionButton>
+            </Button>
           )}
         </Box>
 
         <Collapse in={showComments}>
-          <Box
-            sx={{
-              mt: 3,
-              borderTop: "1px solid rgba(139, 92, 246, 0.2)",
-              pt: 2,
-            }}
-          >
+          <Box sx={{ mt: 3, borderTop: `1px solid ${theme.palette.divider}`, pt: 2 }}>
             <CommentList post={post} />
           </Box>
         </Collapse>
+
+        <StyledMenu
+          anchorEl={menuAnchorEl}
+          open={Boolean(menuAnchorEl)}
+          onClose={handleMenuClose}
+        >
+          <MenuItem onClick={handleDeleteClick}>Delete Post</MenuItem>
+        </StyledMenu>
+
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={() => setDeleteDialogOpen(false)}
+        >
+          <DialogTitle>Delete Post</DialogTitle>
+          <DialogContent>
+            Are you sure you want to delete this post? This action cannot be undone.
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </StyledCardContent>
     </PostCard>
   );

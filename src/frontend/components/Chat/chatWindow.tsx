@@ -229,7 +229,12 @@ const ChatWindow = memo(
         >
           <Toolbar variant="dense">
             <DragHandle sx={{ mr: 1 }} />
-            <Typography variant="subtitle2" sx={{ flex: 1 }}>
+            <Typography
+              to={`user?id=${chat.members.find((m) => m.toText() != profile?.id)}`}
+              component={Link}
+              variant="subtitle2"
+              sx={{ flex: 1 }}
+            >
               {chat.name == "private_chat"
                 ? renderSenderName(
                     chat.members.find((m) => m.toText() != profile?.id),

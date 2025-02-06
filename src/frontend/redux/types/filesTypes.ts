@@ -1,13 +1,14 @@
 // types.ts
 import {
-    FileIndexing,
-    FileNode,
-    Friend,
-    InitialData,
-    StoredContract,
-    User,
-    UserProfile, Wallet,
-    WorkSpace,
+  FileIndexing,
+  FileNode,
+  Friend,
+  InitialData,
+  StoredContract,
+  User,
+  UserProfile,
+  Wallet,
+  WorkSpace,
 } from "../../../declarations/backend/backend.did";
 
 export interface InitialState {
@@ -81,6 +82,7 @@ export type FilesActions =
   | { type: "ADD_CONTENTS_LIST"; friends: FileNode[] }
   | { type: "SET_POSTS"; posts: any[] }
   | { type: "ADD_POST"; post: any }
+  | { type: "ADD_POSTS"; post: any[] }
   | { type: "UPDATE_POST"; id: string; post: any }
   | { type: "DELETE_POST"; id: string };
 
@@ -108,6 +110,6 @@ export const initialState: InitialState = {
   all_friends: [],
   all_users: [],
   anonymous: false,
-  currentWorkspace: { id: "default" , name: "default" },
+  currentWorkspace: { id: "default", name: "default" },
   posts: [],
 };

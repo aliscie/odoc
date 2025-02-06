@@ -20,7 +20,7 @@ pub struct InitialData {
     FilesContents: Option<HashMap<FileId, ContentTree>>,
     Files: Vec<FileNode>,
     Friends: Vec<Friend>,
-    DiscoverUsers: HashMap<String, User>,
+    // DiscoverUsers: HashMap<String, User>,
     Contracts: HashMap<ContractId, StoredContract>,
     Wallet: Wallet,
 }
@@ -73,29 +73,16 @@ fn get_initial_data() -> Result<InitialData, String> {
 
     let files_contents = ContentNode::get_page_files_content(1_f32);
     let files = FileNode::get_page_files(1_f32);
-    let users: HashMap<String, User> = PROFILE_STORE.with(|profile_store| {
-        profile_store
-            .borrow()
-            .iter()
-            .map(|(principal, user)| (principal.clone(), user.clone()))
-            .map(|(principal, user)| (principal.to_string(), user))
-            .collect()
-    });
+
 
     let contracts: HashMap<ContractId, StoredContract> =
         Contract::get_all_contracts().unwrap_or(HashMap::new());
-
-    // TODO Pagination
-    //   DiscoverPosts should be shorter then 100 posts
-    //   We should have another function called load_more_posts
-    //   Note don't return all users this is just for testing.
 
     let initial_data = InitialData {
         Profile: profile.unwrap(),
         FilesContents: Some(files_contents),
         Files: files,
         Friends: Friend::get_list(caller()),
-        DiscoverUsers: users,
         Contracts: contracts,
         Wallet: Wallet::get(caller()),
     };

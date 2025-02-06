@@ -104,13 +104,13 @@ const RegistrationForm: React.FC = () => {
       if (!backendActor) {
         throw new Error("Backend actor not initialized");
       }
-      // console.log({ input });
+
       let affiliateId = localStorage.getItem("affiliateId");
       const register = await backendActor.register(String(affiliateId), input);
       closeSnackbar(loadingSnackbar);
 
       if (register?.Ok) {
-        dispatch(handleRedux("UPDATE_PROFILE", { profile: register.Ok }));
+        dispatch({ type: "UPDATE_PROFILE", profile: register.Ok });
         enqueueSnackbar(`Welcome ${register.Ok.name}, to Odoc`, {
           variant: "success",
         });

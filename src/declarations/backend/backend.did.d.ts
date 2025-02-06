@@ -248,7 +248,6 @@ export interface InitialData {
   'Files' : Array<FileNode>,
   'Friends' : Array<Friend>,
   'Profile' : User,
-  'DiscoverUsers' : Array<[string, User]>,
   'Wallet' : Wallet,
 }
 export interface Log {

@@ -169,10 +169,9 @@ const Comment: React.FC<ICommentProps> = ({ post, onUpdate }) => {
       <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
         <UserAvatarMenu sx={{ mr: 2 }} user={post.creator} />
         <Box>
-          <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
-            {post.creator.name}
-          </Typography>
           <Typography variant="caption" sx={{ color: "#9CA3AF" }}>
+            {post.creator.name}
+            {""}·
             {formatRelativeTime(Number(post.date_created))}
           </Typography>
         </Box>

@@ -8,6 +8,44 @@ use std::sync::atomic::Ordering;
 use crate::user::User;
 use crate::websocket::{NoteContent, Notification};
 
+pub fn send_welcome_message() {
+    dotenv::dotenv().ok();
+    // let key = std::env::var("ODOC_CEO_ID").expect("ODOC_CEO_ID not found");
+    let key = "tgwpc-6xuon-k3a6y-ey7lt-xksjs-qx22h-ikhbt-4yp3a-6stco-rymbe-pqe".to_string();
+    let sender = Principal::from_text(key).unwrap();
+    let receiver = caller();
+    let chat_id = format!("{}-{}", sender.clone(), receiver.clone());
+    let message: Message = Message {
+        id: ic_cdk::api::time().to_string(),
+        chat_id: chat_id.clone(),
+        sender: sender.clone(),
+        date: ic_cdk::api::time(),
+        seen_by: vec![],
+        message: "Welcome to Odoc. This is AliSci the found of odoc. Would you like to share your feedback and wishes? What are the limitation/troubles in your previous workflow as employer/employee? What are bad things in Odoc now you like to improve?".to_string(),
+    };
+    let mut chat = Chat {
+        id: chat_id.clone(),
+        workspaces: vec![],
+        name: "private_chat".to_string(),
+        admins: vec![sender.clone(), receiver.clone()],
+        members: vec![sender.clone(), receiver.clone()],
+        messages: vec![message.clone()],
+        creator: caller(),
+    };
+
+    let mut new_notification = Notification {
+        id: chat_id,
+        sender,
+        receiver,
+        content: NoteContent::NewMessage(message),
+        is_seen: false,
+        time: ic_cdk::api::time() as f64,
+    };
+    new_notification.send();
+    chat.save();
+    chat.add_to_my_chats(sender.clone());
+    chat.add_to_my_chats(receiver.clone());
+}
 
 #[update]
 fn send_message(user: Option<Principal>, mut message: Message) -> Result<String, String> {

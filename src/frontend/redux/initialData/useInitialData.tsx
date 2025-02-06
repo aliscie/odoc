@@ -9,7 +9,11 @@ const useInitialData = () => {
   const { backendActor } = useBackendContext();
   const { profile } = useSelector((state: any) => state.filesState);
   const { isLoggedIn } = useSelector((state: any) => state.uiState);
+
   useEffect(() => {
+    if (!isLoggedIn) {
+      return;
+    }
     const fetchInitialData = async () => {
       try {
         dispatch(handleRedux("IS_FETCHING", { isFetching: true }));

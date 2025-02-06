@@ -323,7 +323,6 @@ export const idlFactory = ({ IDL }) => {
     'Files' : IDL.Vec(FileNode),
     'Friends' : IDL.Vec(Friend),
     'Profile' : User,
-    'DiscoverUsers' : IDL.Vec(IDL.Tuple(IDL.Text, User)),
     'Wallet' : Wallet,
   });
   const Result_9 = IDL.Variant({ 'Ok' : InitialData, 'Err' : IDL.Text });
