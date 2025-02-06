@@ -52,7 +52,7 @@ pub fn accept_friend_request(user_principal: String) -> Result<User, String> {
         note_content,
     );
     new_note.save();
-    let note = Notification::get(id);
+    let note = Notification::get(user_principal.clone(), id);
     if let Some(mut notification) = note {
         notification.is_seen = true;
         notification.pure_save();
@@ -89,7 +89,7 @@ pub fn cancel_friend_request(user_principal: String) -> Result<User, String> {
     let friend = Friend::get(&id).unwrap();
     friend.delete();
     let receiver = Principal::from_text(user_principal.clone()).unwrap();
-    let note = Notification::get(id2.clone());
+    let note = Notification::get(user_principal.clone(), id2.clone());
     if let Some(mut notification) = note {
         notification.is_seen = true;
         notification.save();

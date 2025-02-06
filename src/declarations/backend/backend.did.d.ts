@@ -565,7 +565,7 @@ export interface _SERVICE {
   'save_post' : ActorMethod<[Post], Result_2>,
   'save_work_space' : ActorMethod<[WorkSpace], Result_5>,
   'search_posts' : ActorMethod<[string], Array<PostUser>>,
-  'see_notifications' : ActorMethod<[string], Result_4>,
+  'see_notifications' : ActorMethod<[Array<string>], Result_4>,
   'send_friend_request' : ActorMethod<[string], Result>,
   'send_message' : ActorMethod<[[] | [Principal], Message], Result_4>,
   'share_file' : ActorMethod<[ShareFileInput], Result_11>,

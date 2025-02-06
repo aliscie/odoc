@@ -614,7 +614,7 @@ export const idlFactory = ({ IDL }) => {
     'save_post' : IDL.Func([Post], [Result_2], []),
     'save_work_space' : IDL.Func([WorkSpace], [Result_5], []),
     'search_posts' : IDL.Func([IDL.Text], [IDL.Vec(PostUser)], ['query']),
-    'see_notifications' : IDL.Func([IDL.Text], [Result_4], []),
+    'see_notifications' : IDL.Func([IDL.Vec(IDL.Text)], [Result_4], []),
     'send_friend_request' : IDL.Func([IDL.Text], [Result], []),
     'send_message' : IDL.Func(
         [IDL.Opt(IDL.Principal), Message],

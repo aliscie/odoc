@@ -503,6 +503,14 @@ export const renameColumnInContract = (
   };
 };
 
+export const NotificationPromiesContextMenu = (params) => {
+  return [
+    { name: "claim all promises" },
+    { name: "claim selected promises" },
+    { name: "release all promises" },
+    { name: "release selected promises" },
+  ];
+};
 export const contractContextMenu = (params) => {
   const { contractsState, onContractChange, selectedContract } = params.context;
 

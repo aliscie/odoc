@@ -706,7 +706,7 @@ impl CustomContract {
         }
         // if status's request cancellation notify the receiver
         if promise.status == PaymentStatus::RequestCancellation {
-            let not = Notification::get(promise.id.clone());
+            let not = Notification::get(promise.receiver.to_string(),promise.id.clone());
             if not.is_none()
                 || not.unwrap().content
                     != NoteContent::CPaymentContract(

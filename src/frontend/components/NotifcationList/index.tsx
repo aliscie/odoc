@@ -1,40 +1,33 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useBackendContext } from "../../contexts/BackendContext";
 import { Link } from "react-router-dom";
-import { styled } from "@mui/material/styles";
 import {
-  IconButton,
   Badge,
-  Menu,
-  MenuItem,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
   Box,
   CircularProgress,
+  IconButton,
+  List,
+  ListItemText,
+  Menu,
+  MenuItem,
   Tooltip,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogActions,
-  TextField,
-  Grid,
-  Paper,
-  Button,
+  Typography,
 } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { formatRelativeTime } from "../../utils/time";
 import StyledNotificationItem from "./notiicationitem";
 import PaymentDialog from "./paymentDialog";
-
+import { RootState } from "../../redux/reducers";
+import ChecklistIcon from "@mui/icons-material/Checklist";
 // Styled components
-
 
 // Payment Dialog Component
 
-const NotificationsButton = ({ notifications }) => {
+const NotificationsButton = () => {
+  const { notifications } = useSelector(
+    (state: RootState) => state.notificationState,
+  );
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [loadingNotifications, setLoadingNotifications] = useState(new Set());
@@ -59,7 +52,7 @@ const NotificationsButton = ({ notifications }) => {
       }
 
       if (!notification.is_seen) {
-        await backendActor?.see_notifications(notification.id);
+        await backendActor?.see_notifications([notification.id]);
         notification.is_seen = true;
       }
     } catch (error) {
@@ -124,11 +117,43 @@ const NotificationsButton = ({ notifications }) => {
   };
 
   const unreadCount = notifications.filter(
-    (notification) => !notification.is_seen
+    (notification) => !notification.is_seen,
   ).length;
 
   const isPaymentNotification = (notification) => {
     return "CPaymentContract" in notification.content;
+  };
+  const dispatch = useDispatch();
+
+  const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
+
+  // Update the handleMarkAllAsRead function
+  const handleMarkAllAsRead = async () => {
+    const unreadNotifications = notifications.filter((n) => !n.is_seen);
+    const unreadNotificationIds = unreadNotifications.map((n) => n.id);
+    if (unreadNotificationIds.length === 0) {
+      return;
+    }
+    try {
+      setIsMarkingAllRead(true);
+      let res = await backendActor?.see_notifications(unreadNotificationIds);
+
+      const updatedNotifications = notifications.map((notification) => {
+        if (unreadNotificationIds.includes(notification.id)) {
+          return { ...notification, is_seen: true };
+        }
+        return notification;
+      });
+
+      dispatch({
+        type: "UPDATE_NOT_LIST",
+        new_list: updatedNotifications,
+      });
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+    } finally {
+      setIsMarkingAllRead(false);
+    }
   };
 
   return (
@@ -161,6 +186,20 @@ const NotificationsButton = ({ notifications }) => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
+        {notifications.some((n) => !n.is_seen) && (
+          <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
+            <Tooltip title="Mark all as read">
+              <IconButton size="small" onClick={handleMarkAllAsRead}>
+                {isMarkingAllRead ? (
+                  <CircularProgress size={16} />
+                ) : (
+                  <ChecklistIcon fontSize="small" />
+                )}
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
+
         {notifications.length === 0 ? (
           <MenuItem>
             <Typography variant="body2" color="textSecondary">
@@ -186,14 +225,16 @@ const NotificationsButton = ({ notifications }) => {
                           alignItems: "center",
                           gap: 1,
                           color: isPaymentNotification(notification)
-                            ? 'primary.main'
-                            : 'inherit'
+                            ? "primary.main"
+                            : "inherit",
                         }}
                       >
                         <Typography
                           variant="body2"
                           sx={{
-                            fontWeight: notification.is_seen ? "normal" : "bold",
+                            fontWeight: notification.is_seen
+                              ? "normal"
+                              : "bold",
                             opacity: notification.is_seen ? 0.7 : 1,
                             color: notification.is_seen
                               ? "text.secondary"

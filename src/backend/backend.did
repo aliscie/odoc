@@ -509,7 +509,7 @@ service : () -> {
   save_post : (Post) -> (Result_2);
   save_work_space : (WorkSpace) -> (Result_5);
   search_posts : (text) -> (vec PostUser) query;
-  see_notifications : (text) -> (Result_4);
+  see_notifications : (vec text) -> (Result_4);
   send_friend_request : (text) -> (Result);
   send_message : (opt principal, Message) -> (Result_4);
   share_file : (ShareFileInput) -> (Result_11);

@@ -38,7 +38,8 @@ import { useBackendContext } from "../../contexts/BackendContext";
 import { useSnackbar } from "notistack";
 import { handleRedux } from "../../redux/store/handleRedux";
 import { useDispatch, useSelector } from "react-redux";
-const PAYMENT_STATUSES = {
+import ClearAllIcon from "@mui/icons-material/ClearAll";
+export const PAYMENT_STATUSES = {
   None: null,
   RequestCancellation: null,
   Released: null,
@@ -393,6 +394,19 @@ const CustomContractViewer = ({ contractId, onContractChange }) => {
             randomString(),
             "",
           );
+          onContractChange(updatedContract);
+        },
+      },
+      {
+        // custom item
+        icon: ClearAllIcon,
+        name: "Release all",
+        action: (params) => {
+          let updatedContract = { ...currentContract };
+          updatedContract.promises = updatedContract.promises.map((p) => {
+            p.status = { Released: null };
+            return p;
+          });
           onContractChange(updatedContract);
         },
       },

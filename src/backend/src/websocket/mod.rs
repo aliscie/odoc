@@ -72,13 +72,18 @@ fn get_user_notifications() -> Vec<Notification> {
 }
 
 #[update]
-fn see_notifications(id: String) -> Result<String, String> {
-    let mut notification = Notification::get(id);
-    if notification.is_none() {
-        return Err("Notification not found".to_string());
+fn see_notifications(ids: Vec<String>) -> Result<String, String> {
+    for id in ids {
+        let mut notification = Notification::get(caller().to_string(), id);
+        if notification.is_none() {
+            return Err("Notification not found".to_string());
+        }
+        let mut notification = notification.unwrap();
+        if caller() == notification.receiver {
+            notification.is_seen = true;
+            notification.pure_save();
+        }
     }
-    let mut notification = notification.unwrap();
-    notification.is_seen = true;
-    notification.pure_save();
+
     Ok("Notification seen".to_string())
 }

@@ -249,10 +249,10 @@ impl Notification {
         });
     }
 
-    pub fn get(id: String) -> Option<Self> {
+    pub fn get(receiver: String, id: String) -> Option<Self> {
         NOTIFICATIONS.with(|notifications| {
             let user_notifications = notifications.borrow();
-            if let Some(user_notifications) = user_notifications.get(&caller().to_string()) {
+            if let Some(user_notifications) = user_notifications.get(&receiver) {
                 for notification in &user_notifications.notifications {
                     if notification.id == id {
                         return Some(notification.clone());

@@ -214,9 +214,6 @@ export default function TopNavBar() {
   );
 
   const { chats } = useSelector((state: RootState) => state.chatsState);
-  const { notifications } = useSelector(
-    (state: RootState) => state.notificationState,
-  );
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -296,7 +293,7 @@ export default function TopNavBar() {
 
     return (
       <>
-        <NotificationsButton notifications={notifications} />
+        <NotificationsButton />
         <ChatsComponent key={chats.length} chats={chats} />
         <WorkspaceManager />
         <BasicMenu options={mobileMenuOptions}>
@@ -427,9 +424,8 @@ export default function TopNavBar() {
           transformOrigin={{ vertical: "bottom", horizontal: "center" }}
         >
           <NotificationsButton
-            notifications={notifications}
-            onClose={() => handleMobileNotificationToggle(null)}
-            isMobile={true}
+            // onClose={() => handleMobileNotificationToggle(null)}
+            // isMobile={true}
           />
         </Menu>
       </Paper>

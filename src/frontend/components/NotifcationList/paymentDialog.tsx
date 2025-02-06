@@ -1,6 +1,6 @@
-import React, {useState} from "react";
-import {useBackendContext} from "../../contexts/BackendContext";
-import {useSelector} from "react-redux";
+import React, { useState } from "react";
+import { useBackendContext } from "../../contexts/BackendContext";
+import { useSelector } from "react-redux";
 import {
   Box,
   Button,
@@ -10,10 +10,12 @@ import {
   Grid,
   TextField,
   Typography,
-  Paper
+  Paper,
+  Tabs,
+  Tab,
 } from "@mui/material";
-import {formatRelativeTime} from "../../utils/time";
-import {styled} from "@mui/material/styles";
+import { formatRelativeTime } from "../../utils/time";
+import { styled } from "@mui/material/styles";
 
 const StyledDetailGrid = styled(Grid)(({ theme }) => ({
   marginBottom: theme.spacing(2),
@@ -30,10 +32,23 @@ const StyledValue = styled(Typography)(({ theme }) => ({
 
 const ActionSection = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
-  marginBottom: theme.spacing(2),
+  marginTop: theme.spacing(2),
 }));
 
+const TabPanel = ({ children, value, index, ...other }) => (
+  <div
+    role="tabpanel"
+    hidden={value !== index}
+    id={`action-tabpanel-${index}`}
+    aria-labelledby={`action-tab-${index}`}
+    {...other}
+  >
+    {value === index && <Box sx={{ pt: 2 }}>{children}</Box>}
+  </div>
+);
+
 const PaymentDialog = ({ payment, onClose, onAction }) => {
+  const [activeTab, setActiveTab] = useState(0);
   const [objectionReason, setObjectionReason] = useState("");
   const [changeAmount, setChangeAmount] = useState("");
   const [changeAmountReason, setChangeAmountReason] = useState("");
@@ -44,6 +59,11 @@ const PaymentDialog = ({ payment, onClose, onAction }) => {
 
   const sender = all_friends.find(f => f.id === payment.sender.toText());
   const receiver = all_friends.find(f => f.id === payment.receiver.toText());
+  const isReleased = Object.keys(payment.status)[0] === "Released";
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
 
   const handleObjection = async () => {
     if (!objectionReason.trim()) return;
@@ -160,6 +180,112 @@ const PaymentDialog = ({ payment, onClose, onAction }) => {
     </Box>
   );
 
+  const renderActionTabs = () => {
+    if (isReleased) return null;
+
+    return (
+      <>
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          variant="fullWidth"
+          sx={{ borderBottom: 1, borderColor: 'divider' }}
+        >
+          <Tab label="Object" />
+          <Tab label="Change Amount" />
+          <Tab label="Release" />
+        </Tabs>
+
+        <TabPanel value={activeTab} index={0}>
+          <ActionSection elevation={0} variant="outlined">
+            <Typography variant="h6" gutterBottom>
+              Object to Payment
+            </Typography>
+            <TextField
+              fullWidth
+              label="Objection Reason"
+              multiline
+              rows={2}
+              value={objectionReason}
+              onChange={(e) => setObjectionReason(e.target.value)}
+              disabled={isLoading}
+              sx={{ mb: 2 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleObjection}
+              disabled={isLoading || !objectionReason.trim()}
+            >
+              {isLoading ? 'Processing...' : 'Submit Objection'}
+            </Button>
+          </ActionSection>
+        </TabPanel>
+
+        <TabPanel value={activeTab} index={1}>
+          <ActionSection elevation={0} variant="outlined">
+            <Typography variant="h6" gutterBottom>
+              Request Amount Change
+            </Typography>
+            <TextField
+              fullWidth
+              label="New Amount"
+              type="number"
+              value={changeAmount}
+              onChange={(e) => setChangeAmount(e.target.value)}
+              disabled={isLoading}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Reason for Change"
+              multiline
+              rows={2}
+              value={changeAmountReason}
+              onChange={(e) => setChangeAmountReason(e.target.value)}
+              disabled={isLoading}
+              sx={{ mb: 2 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleChangeAmount}
+              disabled={isLoading || !changeAmount.trim() || !changeAmountReason.trim()}
+            >
+              {isLoading ? 'Processing...' : 'Submit Amount Change'}
+            </Button>
+          </ActionSection>
+        </TabPanel>
+
+        <TabPanel value={activeTab} index={2}>
+          <ActionSection elevation={0} variant="outlined">
+            <Typography variant="h6" gutterBottom>
+              Request Release
+            </Typography>
+            <TextField
+              fullWidth
+              label="Release Reason"
+              multiline
+              rows={2}
+              value={releaseReason}
+              onChange={(e) => setReleaseReason(e.target.value)}
+              disabled={isLoading}
+              sx={{ mb: 2 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleRelease}
+              disabled={isLoading || !releaseReason.trim()}
+            >
+              {isLoading ? 'Processing...' : 'Submit Release Request'}
+            </Button>
+          </ActionSection>
+        </TabPanel>
+      </>
+    );
+  };
+
   return (
     <Dialog
       open
@@ -173,87 +299,7 @@ const PaymentDialog = ({ payment, onClose, onAction }) => {
       <DialogTitle>Payment Details</DialogTitle>
       <DialogContent>
         {renderPaymentDetails()}
-
-        <ActionSection elevation={0} variant="outlined">
-          <Typography variant="h6" gutterBottom>
-            Object to Payment
-          </Typography>
-          <TextField
-            fullWidth
-            label="Objection Reason"
-            multiline
-            rows={2}
-            value={objectionReason}
-            onChange={(e) => setObjectionReason(e.target.value)}
-            disabled={isLoading}
-            sx={{ mb: 2 }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleObjection}
-            disabled={isLoading || !objectionReason.trim()}
-          >
-            {isLoading ? 'Processing...' : 'Submit Objection'}
-          </Button>
-        </ActionSection>
-
-        <ActionSection elevation={0} variant="outlined">
-          <Typography variant="h6" gutterBottom>
-            Request Amount Change
-          </Typography>
-          <TextField
-            fullWidth
-            label="New Amount"
-            type="number"
-            value={changeAmount}
-            onChange={(e) => setChangeAmount(e.target.value)}
-            disabled={isLoading}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            fullWidth
-            label="Reason for Change"
-            multiline
-            rows={2}
-            value={changeAmountReason}
-            onChange={(e) => setChangeAmountReason(e.target.value)}
-            disabled={isLoading}
-            sx={{ mb: 2 }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleChangeAmount}
-            disabled={isLoading || !changeAmount.trim() || !changeAmountReason.trim()}
-          >
-            {isLoading ? 'Processing...' : 'Submit Amount Change'}
-          </Button>
-        </ActionSection>
-
-        <ActionSection elevation={0} variant="outlined">
-          <Typography variant="h6" gutterBottom>
-            Request Release
-          </Typography>
-          <TextField
-            fullWidth
-            label="Release Reason"
-            multiline
-            rows={2}
-            value={releaseReason}
-            onChange={(e) => setReleaseReason(e.target.value)}
-            disabled={isLoading}
-            sx={{ mb: 2 }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleRelease}
-            disabled={isLoading || !releaseReason.trim()}
-          >
-            {isLoading ? 'Processing...' : 'Submit Release Request'}
-          </Button>
-        </ActionSection>
+        {renderActionTabs()}
       </DialogContent>
     </Dialog>
   );

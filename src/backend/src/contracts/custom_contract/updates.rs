@@ -6,6 +6,7 @@ use crate::user_history::UserHistory;
 use crate::websocket::{NoteContent, Notification, PaymentAction};
 use crate::CustomContract;
 use crate::{CPayment, PaymentStatus, Wallet};
+use crate::contracts::custom_contract::utils::notify_about_promise;
 
 // #[update]
 // fn release_c_payment(c_payment: CPayment) -> Result<(), String> {
@@ -31,13 +32,14 @@ fn confirmed_c_payment(promise: CPayment) -> Result<(), String> {
                     && payment.status == PaymentStatus::None
                 {
                     payment.status = PaymentStatus::Confirmed;
+                    notify_about_promise(payment.clone(), PaymentAction::Accepted);
                     // update not
-                    let mut not = Notification::get(payment.id.clone()).unwrap();
-                    if let NoteContent::CPaymentContract(_, payment_action) = not.content {
-                        not.content =
-                            NoteContent::CPaymentContract(payment.clone(), payment_action);
-                        not.save();
-                    };
+                    // let mut not = Notification::get(payment.sender.to_string(), payment.id.clone()).unwrap();
+                    // if let NoteContent::CPaymentContract(_, payment_action) = not.content {
+                    //     not.content =
+                    //         NoteContent::CPaymentContract(payment.clone(), payment_action);
+                    //     not.save();
+                    // };
                     // let wallet = Wallet::get(promise.sender);
                     // wallet.add_dept(payment.amount.clone(), payment.id.clone());
                     let mut user_history = UserHistory::get(promise.sender);
@@ -76,15 +78,16 @@ fn confirmed_cancellation(c_payment: CPayment) -> Result<(), String> {
                 if payment.id == c_payment.id
                     && payment.receiver == caller()
                     && (payment.status != PaymentStatus::Released
-                        || payment.status != PaymentStatus::ConfirmedCancellation)
+                    || payment.status != PaymentStatus::ConfirmedCancellation)
                 {
                     payment.status = PaymentStatus::ConfirmedCancellation;
-                    let mut not = Notification::get(payment.id.clone()).unwrap();
-                    if let NoteContent::CPaymentContract(_, payment_action) = not.content {
-                        not.content =
-                            NoteContent::CPaymentContract(payment.clone(), payment_action);
-                        not.save();
-                    };
+                    notify_about_promise(payment.clone(), PaymentAction::Cancelled);
+                    // let mut not = Notification::get(payment.id.clone()).unwrap();
+                    // if let NoteContent::CPaymentContract(_, payment_action) = not.content {
+                    //     not.content =
+                    //         NoteContent::CPaymentContract(payment.clone(), payment_action);
+                    //     not.save();
+                    // };
                     let wallet = Wallet::get(c_payment.sender);
                     wallet.remove_dept(payment.id.clone());
 
@@ -117,12 +120,13 @@ fn approve_high_promise(c_payment: CPayment) -> Result<(), String> {
                     && payment.status == PaymentStatus::HighPromise
                 {
                     payment.status = PaymentStatus::ApproveHighPromise;
-                    let mut not = Notification::get(payment.id.clone()).unwrap();
-                    if let NoteContent::CPaymentContract(_, payment_action) = not.content {
-                        not.content =
-                            NoteContent::CPaymentContract(payment.clone(), payment_action);
-                        not.save();
-                    };
+                    notify_about_promise(payment.clone(), PaymentAction::Accepted);
+                    // let mut not = Notification::get(payment.id.clone()).unwrap();
+                    // if let NoteContent::CPaymentContract(_, payment_action) = not.content {
+                    //     not.content =
+                    //         NoteContent::CPaymentContract(payment.clone(), payment_action);
+                    //     not.save();
+                    // };
                     let wallet = Wallet::get(c_payment.sender);
                     wallet.add_dept(payment.amount.clone(), payment.id.clone());
                     // wallet.remove_dept(payment.id.clone());
@@ -151,12 +155,13 @@ fn object_on_cancel(c_payment: CPayment, reason: String) -> Result<(), String> {
             .map(|payment| {
                 if payment.id == c_payment.id && payment.receiver == caller() {
                     payment.status = PaymentStatus::Objected(reason.clone());
-                    let mut not = Notification::get(payment.id.clone()).unwrap();
-                    if let NoteContent::CPaymentContract(_, payment_action) = not.content {
-                        not.content =
-                            NoteContent::CPaymentContract(payment.clone(), payment_action);
-                        not.save();
-                    };
+                    notify_about_promise(payment.clone(), PaymentAction::Objected);
+                    // let mut not = Notification::get(payment.id.clone()).unwrap();
+                    // if let NoteContent::CPaymentContract(_, payment_action) = not.content {
+                    //     not.content =
+                    //         NoteContent::CPaymentContract(payment.clone(), payment_action);
+                    //     not.save();
+                    // };
                     // let wallet = Wallet::get(c_payment.sender);
                     // wallet.add_dept(payment.amount.clone(), payment.id.clone());
 
