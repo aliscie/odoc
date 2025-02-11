@@ -164,19 +164,23 @@ impl ShareFile {
     }
 
     pub fn get_file(share_id: &String) -> Result<(FileNode, ContentTree), String> {
-        let shared_file: ShareFile = FILES_SHARE_STORE
+        // First get the ShareFile
+        let shared_file = FILES_SHARE_STORE
             .with(|files_share_store| {
                 let files_share_store = files_share_store.borrow();
                 files_share_store.get(share_id)
             })
             .ok_or("No such share id.")?;
 
+
+        // Then try to find the file in USER_FILES
         let file = USER_FILES.with(|files_store| {
             let user_files_vec = files_store.borrow();
-            // Assuming user_files_vec is a HashMap<Principal, Vec<FileNode>>
             let user_files_vec = user_files_vec
-                .get(&shared_file.owner.to_string())
+                .get(&shared_file.owner.to_string())  // Using owner's ID
                 .ok_or("Owner not found.")?;
+
+            // Looking for file with ID matching shared_file.id
             user_files_vec
                 .files
                 .iter()
@@ -185,7 +189,9 @@ impl ShareFile {
                 .ok_or("No such file.")
         })?;
 
+
         let can_view = file.check_permission(ShareFilePermission::CanView);
+
         if !can_view {
             return Err("No permission to view this file.".to_string());
         }

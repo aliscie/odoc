@@ -21,7 +21,7 @@ pub fn send_welcome_message() {
         sender: sender.clone(),
         date: ic_cdk::api::time(),
         seen_by: vec![],
-        message: "Welcome to Odoc. This is AliSci the found of odoc. Would you like to share your feedback and wishes? What are the limitation/troubles in your previous workflow as employer/employee? What are bad things in Odoc now you like to improve?".to_string(),
+        message: "Welcome to Odoc. This is AliSci the founder of odoc. Would you like to share your feedback and wishes? What are the limitation/troubles in your previous workflow as employer/employee? What are bad things in Odoc now you like to improve?".to_string(),
     };
     let mut chat = Chat {
         id: chat_id.clone(),

@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useState} from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "lodash";
 import {
@@ -11,64 +11,69 @@ import {
   IconButton,
   Collapse,
   alpha,
+  Typography,
 } from "@mui/material";
-import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewListIcon from "@mui/icons-material/ViewList";
 import { handleRedux } from "../../redux/store/handleRedux";
 import EditorComponent from "../../components/EditorComponent";
 import NestedTabMenu from "./contentTab";
+import { Link } from "react-router-dom";
 
 const ExpandingInput = styled(Input)(({ theme }) => ({
-  '& input': {
-    width: '100%',
-    fontSize: '1.5rem',
+  "& input": {
+    width: "100%",
+    fontSize: "1.5rem",
     minWidth: 0,
-    padding: '4px 8px',
-    transition: 'all 0.2s ease',
+    padding: "4px 8px",
+    transition: "all 0.2s ease",
 
-    '&:hover, &:focus': {
+    "&:hover, &:focus": {
       background: alpha(theme.palette.common.black, 0.02),
     },
   },
 }));
 
 const TopBar = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  width: '100%',
+  display: "flex",
+  alignItems: "center",
+  width: "100%",
   marginBottom: theme.spacing(2),
   gap: theme.spacing(1),
 }));
 
 const AnimatedIconButton = styled(IconButton)(({ theme }) => ({
-  transition: 'all 0.2s ease',
-  '&:hover': {
-    transform: 'scale(1.1)',
+  transition: "all 0.2s ease",
+  "&:hover": {
+    transform: "scale(1.1)",
   },
-  '&.active': {
+  "&.active": {
     color: theme.palette.primary.main,
     background: alpha(theme.palette.primary.main, 0.1),
   },
 }));
 
 const ToggleWrapper = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  transition: 'opacity 0.3s ease, transform 0.3s ease',
-  '&.hidden': {
+  display: "flex",
+  alignItems: "center",
+  transition: "opacity 0.3s ease, transform 0.3s ease",
+  "&.hidden": {
     opacity: 0,
-    transform: 'translateX(-20px)',
+    transform: "translateX(-20px)",
   },
 }));
 
 const StyledSwitch = styled(Switch)(({ theme }) => ({
   padding: 8,
-  '& .MuiSwitch-track': {
+  "& .MuiSwitch-track": {
     borderRadius: 22 / 2,
-    backgroundColor: theme.palette.mode === 'dark' ? alpha(theme.palette.common.white, 0.08) : alpha(theme.palette.common.black, 0.05),
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? alpha(theme.palette.common.white, 0.08)
+        : alpha(theme.palette.common.black, 0.05),
     opacity: 1,
   },
-  '& .MuiSwitch-thumb': {
-    boxShadow: 'none',
+  "& .MuiSwitch-thumb": {
+    boxShadow: "none",
     width: 16,
     height: 16,
     margin: 2,
@@ -81,12 +86,20 @@ function FileContentPage() {
   let fileId = window.location.pathname.split("/")[1];
   const dispatch = useDispatch();
 
-  const { inited, files_content, profile, files } = useSelector(
-    (state: any) => state.filesState
+  const { inited, files_content, profile, files, current_file } = useSelector(
+    (state: any) => state.filesState,
   );
 
-  const current_file = files.find((file: any) => file.id === fileId);
-  const editorKey = (current_file && current_file.id) || "";
+  const currentFile = files.find((file: any) => file.id === fileId);
+  useEffect(() => {
+    if (!current_file) {
+      dispatch({
+        type: "CURRENT_FILE",
+        file: currentFile,
+      });
+    }
+  }, [currentFile]);
+  const editorKey = (currentFile && currentFile.id) || "";
 
   const handleContentTabsToggle = () => {
     setShowContentTabs(!showContentTabs);
@@ -94,13 +107,13 @@ function FileContentPage() {
 
   const handleDispatchChange = useCallback(
     debounce((title: string) => {
-      if (title !== current_file?.name) {
+      if (title !== currentFile?.name) {
         dispatch(
-          handleRedux("UPDATE_FILE_TITLE", { id: current_file.id, title })
+          handleRedux("UPDATE_FILE_TITLE", { id: currentFile.id, title }),
         );
       }
     }, 250),
-    [dispatch, current_file]
+    [dispatch, currentFile],
   );
 
   const handleInputChange = (title: string) => {
@@ -108,17 +121,17 @@ function FileContentPage() {
   };
 
   const onChange = debounce((changes: any) => {
-    if (!current_file) return;
+    if (!currentFile) return;
 
-    const prevContent = JSON.stringify(files_content[current_file.id]);
+    const prevContent = JSON.stringify(files_content[currentFile.id]);
     const newContent = JSON.stringify(changes);
 
     if (prevContent !== newContent) {
       dispatch(
         handleRedux("UPDATE_CONTENT", {
-          id: current_file.id,
+          id: currentFile.id,
           content: changes,
-        })
+        }),
       );
     }
   }, 250);
@@ -129,28 +142,28 @@ function FileContentPage() {
   if (files.length === 0 && isLoggedIn) {
     return <CircularProgress />;
   }
-  if (!current_file) {
+  if (!currentFile) {
     return <span>404 Not Found</span>;
   }
 
   const editable =
-    current_file.author === profile.id ||
-    Object.keys(current_file.permission)[0] === "CanUpdate" ||
-    current_file.users_permissions.some(
-      ([userId, permissions]) => userId === profile.id && permissions.CanUpdate
+    currentFile.author === profile.id ||
+    Object.keys(currentFile.permission)[0] === "CanUpdate" ||
+    currentFile.users_permissions.some(
+      ([userId, permissions]) => userId === profile.id && permissions.CanUpdate,
     );
 
-  const isAuthor = current_file.author === profile.id;
+  const isAuthor = currentFile.author === profile.id;
 
   return (
     <div style={{ marginTop: "3px", marginLeft: "10%", marginRight: "10%" }}>
       <TopBar>
         <Collapse in={!showContentTabs} timeout={300}>
-          <ToggleWrapper className={showContentTabs ? 'hidden' : ''}>
+          <ToggleWrapper className={showContentTabs ? "hidden" : ""}>
             <Tooltip title="Toggle Content Tabs" arrow>
               <AnimatedIconButton
                 onClick={handleContentTabsToggle}
-                className={showContentTabs ? 'active' : ''}
+                className={showContentTabs ? "active" : ""}
                 size="small"
               >
                 <ViewListIcon />
@@ -158,8 +171,9 @@ function FileContentPage() {
             </Tooltip>
           </ToggleWrapper>
         </Collapse>
+
         <ExpandingInput
-          key={current_file.id}
+          key={currentFile.id}
           fullWidth
           multiline
           rows={1}
@@ -176,7 +190,7 @@ function FileContentPage() {
             },
           }}
           disabled={!isAuthor}
-          defaultValue={current_file.name}
+          defaultValue={currentFile.name}
           placeholder="Untitled"
           onChange={(e) => handleInputChange(e.target.value)}
         />
@@ -187,16 +201,27 @@ function FileContentPage() {
           setShowContentTabs(false);
         }}
         open={showContentTabs}
-        content={files_content[current_file.id]}
+        content={files_content[currentFile.id]}
       />
+
+      {!isAuthor && (
+        <Typography
+          to={`/user?id=${currentFile?.author}`}
+          component={Link}
+          variant="body4"
+          color={"primary"}
+        >
+          See the author
+        </Typography>
+      )}
 
       <EditorComponent
         readOnly={!isAuthor}
-        id={current_file.id}
+        id={currentFile.id}
         contentEditable={editable}
         onChange={onChange}
         editorKey={editorKey}
-        content={files_content[current_file.id]}
+        content={files_content[currentFile.id]}
       />
     </div>
   );

@@ -158,6 +158,7 @@ export function filesReducer(
       };
 
     case "CURRENT_FILE":
+      console.log({ action });
       // localStorage.setItem("current_file", JSON.stringify({ ...action.file }));
       return {
         ...state,

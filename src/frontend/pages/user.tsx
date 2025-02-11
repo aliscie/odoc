@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import { Principal } from "@dfinity/principal";
 import FriendshipButton from "../components/FriendshipButton";
 import { useSelector } from "react-redux";
+import { Typography } from "@mui/material";
 
 function UserProfile() {
   const [searchParams] = useSearchParams();
@@ -14,9 +15,7 @@ function UserProfile() {
   const [profileHistory, setProfileHistory] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { profile, profile_history, wallet, friends } = useSelector(
-    (state: any) => state.filesState,
-  );
+  const { profile, friends } = useSelector((state: any) => state.filesState);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -45,19 +44,27 @@ function UserProfile() {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  if (!user || !profile) {
-    return <></>;
+  if (!user) {
+    return <Typography variant="h4">User not found...</Typography>;
   }
+  // if (!profile) {
+  //   return <Typography variant="h4">You need to login...</Typography>;
+  // }
   return (
     <div>
+      test
       <ProfilePage
         friendButton={
           profile &&
           user.id != profile?.id && (
-            <FriendshipButton profile={profile} user={user} friends={friends} />
+            <FriendshipButton
+              profile={profile}
+              user={user}
+              friends={friends || []}
+            />
           )
         }
-        friends={friends}
+        friends={[]}
         profile={user}
         history={profileHistory}
       />

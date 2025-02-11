@@ -28,10 +28,12 @@ const ChangeWorkSpace = (props: any) => {
 
   const defaultValue =
     theFile &&
-    theFile.workspaces.map((workspaceId) => {
-      const W = workspaces.find((w) => w.id == workspaceId);
-      return { title: W.name, id: W.id };
-    });
+    theFile.workspaces
+      .filter((w) => w !== "default")
+      .map((workspaceId) => {
+        const W = workspaces.find((w) => w.id == workspaceId);
+        return { title: W.name, id: W.id };
+      });
 
   return (
     <Autocomplete

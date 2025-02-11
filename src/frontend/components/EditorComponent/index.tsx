@@ -54,7 +54,7 @@ function EditorComponent(props: Props) {
       default:
         return null;
     }
-  }, [dispatch, profile.id]);
+  }, [dispatch, profile?.id]);
 
   const handleInputChange = React.useCallback((changes: any) => {
     props.onChange?.(changes);

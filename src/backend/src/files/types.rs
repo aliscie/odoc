@@ -91,18 +91,23 @@ impl FileNode {
         file
     }
 
-    pub fn check_permission(&self, permission: ShareFilePermission) -> bool {
-        if self.permission.check(permission.clone()) {
+    pub fn check_permission(&self, required_permission: ShareFilePermission) -> bool {
+        let caller = caller();
+
+        // Owner always has full permissions
+        if caller.to_string() == self.author.to_string() {
             return true;
         }
 
-        // check if caller has permissions
-        if let Some(user_permission) = self.users_permissions.get(&caller()) {
-            return user_permission.check(permission);
+        // Check user-specific permissions first
+        if let Some(user_permission) = self.users_permissions.get(&caller) {
+            return user_permission.check(required_permission);
         }
 
-        false
+        // Fall back to default file permission
+        self.permission.check(required_permission)
     }
+
     pub fn rearrange_child(
         parent_id: FileId,
         child_id: FileId,

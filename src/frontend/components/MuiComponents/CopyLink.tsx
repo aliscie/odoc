@@ -1,203 +1,232 @@
-import * as React from "react";
-import { useEffect, useState } from "react";
-import { Button, ListItemButton, ListItemText, TextField } from "@mui/material";
-import { useSelector } from "react-redux";
-import DialogOver from "./DialogOver";
-import MultiAutoComplete from "./MultiAutocompelte";
-import List from "@mui/material/List";
-import CheckIcon from "@mui/icons-material/Check";
+import React, { useState } from "react";
 import {
-  ShareFile,
-  ShareFileInput,
-  ShareFilePermission,
-  User,
-} from "../../../declarations/backend/backend.did";
+  Button,
+  Menu,
+  MenuItem,
+  TextField,
+  Autocomplete,
+  CircularProgress,
+  Box,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import ShareIcon from "@mui/icons-material/Share";
-// import {actor} from "../../App";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { useDispatch, useSelector } from "react-redux";
 import { Principal } from "@dfinity/principal";
-import Autocomplete from "@mui/material/Autocomplete";
-import useGetUser from "../../utils/get_user_by_principal";
-import { useSnackbar } from "notistack";
 import { useBackendContext } from "../../contexts/BackendContext";
+import { useSnackbar } from "notistack";
+import { Check, Copy } from "lucide-react";
 
-type PermissionValue = "CanComment" | "None" | "CanView" | "CanUpdate";
-type MultiOptions = Array<{ title: string; id: string }>;
-let Dialog = (props: any) => {
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+const CopyButton = ({ onClick }) => {
+  const [showCheck, setShowCheck] = useState(false);
 
-  let { getUser, getUserByName } = useGetUser();
-  const { current_file, profile } = useSelector(
-    (state: any) => state.filesState,
-  );
-  // let file_share_id = current_file.share_id[0];
-  let url = window.location.host;
-  let share_link = `${url}/share?id=${current_file.id}`;
-  let [saving, setSaving] = useState(false);
-  let [is_copy, setCopy] = useState(false);
-  // useEffect(() => {
-  //
-  //
-  // }, [])
-
-  let options = ["None", "CanView", "CanUpdate", "CanComment"];
-
-  const copyLink = async () => {
-    navigator.clipboard.writeText(share_link);
-    setCopy(true);
+  const handleClick = async () => {
+    await onClick();
+    setShowCheck(true);
     setTimeout(() => {
-      setCopy(false);
-    }, 2000);
+      setShowCheck(false);
+    }, 3000);
   };
-  const { all_friends } = useSelector((state: any) => state.filesState);
-  const [multi_options_value, setMultiOptionsValue] = useState<
-    Array<{ title: string; id: string; permission: ShareFilePermission }>
-  >([]);
-
-  let multi_options: MultiOptions = [];
-  all_friends.map((f: User) => {
-    let new_options: MultiOptions = [
-      { title: f.name + " Can View", id: f.id, permission: { CanView: null } },
-      {
-        title: f.name + " Can Update",
-        id: f.id,
-        permission: { CanUpdate: null },
-      },
-      {
-        title: f.name + " Can Comment",
-        id: f.id,
-        permission: { CanComment: null },
-      },
-    ];
-    multi_options = [...multi_options, ...new_options];
-  });
-
-  let new_share_file: ShareFileInput = {
-    id: current_file.id, // TODO Note this is a security issue in which hackers may get the share file id from the browser
-    permission: current_file.permission,
-    owner: Principal.fromText(profile.id),
-    users_permissions: current_file.users_permissions || [],
-  };
-  let [share_file, setShareFile] = useState(new_share_file);
-
-  useEffect(() => {
-    (async () => {
-      let res: undefined | { Ok: ShareFile } | { Err: string } =
-        await backendActor.get_share_file(current_file.id);
-      if ("Ok" in res) {
-        setShareFile((pre) => {
-          return { ...pre, ...res.Ok };
-        });
-
-        setMultiOptionsValue(
-          res.Ok.users_permissions.map(
-            (user_permission: [Principal, ShareFilePermission]) => {
-              let user: any = getUser(user_permission[0].toText());
-              let name = user ? user.name : "";
-              let id = user ? user.id : "";
-              let perm = " " + Object.keys(user_permission[1])[0];
-              return { title: name + perm, id, permission: user_permission[1] };
-            },
-          ),
-        );
-      }
-    })();
-  }, [current_file]);
-  const { backendActor } = useBackendContext();
 
   return (
-    <List>
-      <ListItemButton onClick={copyLink}>
-        {saving && <ListItemText className={"loader"}></ListItemText>}
-        <ListItemText>{share_link}</ListItemText>
-        {is_copy ? <CheckIcon size={"small"} color={"success"} /> : null}
-      </ListItemButton>
-
-      <ListItemText
-        // primaryTypographyProps={{style: {color: "var(--color)"}}}
-        // secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
-        // primary={"Anyone with the link can "}
-        // secondary={<MultiAutoComplete defaultValue={{title: "View"}} options={options} multiple={true}/>}
-        secondary={
-          <Autocomplete
-            onChange={(event, value: PermissionValue) => {
-              if (value) {
-                let permission: any = {};
-                permission[value] = null;
-                setShareFile({ ...share_file, permission });
-              }
-            }}
-            value={Object.keys(share_file.permission || {})[0]}
-            disablePortal
-            id="combo-box-demo"
-            options={options}
-            sx={{ width: 300 }}
-            renderInput={(params) => (
-              <TextField {...params} label="Permission" />
-            )}
-          />
-        }
-      />
-
-      <ListItemText
-        // primaryTypographyProps={{style: {color: "var(--color)"}}}
-        // secondaryTypographyProps={{style: props.canceled ? canceled_style : normal_style}}
-        primary={"Who can view/update/comment"}
-        secondary={
-          <MultiAutoComplete
-            onChange={(event, users: MultiOptions) => {
-              let options = [];
-              users.map((user: any) => {
-                options = options.filter(
-                  (option: any) => option.id !== user.id,
-                );
-                options.push(user);
-              });
-              setMultiOptionsValue(options);
-              setShareFile((pre) => {
-                let file = { ...pre };
-                file.users_permissions = options.map((user: any) => {
-                  return [Principal.fromText(user.id), user.permission];
-                });
-                return file;
-              });
-            }}
-            value={multi_options_value}
-            options={multi_options}
-            multiple={true}
-          />
-        }
-      />
-      <Button
-        onClick={async () => {
-          setSaving(true);
-          let res: undefined | { Ok: ShareFile } | { Err: string } =
-            await backendActor.share_file(share_file);
-          if ("Err" in res) {
-            enqueueSnackbar(res.Err, { variant: "error" });
-          }
-          setSaving(false);
-        }}
-      >
-        Save
-      </Button>
-    </List>
+    <IconButton
+      onClick={handleClick}
+      size="small"
+      className="hover:bg-gray-100 transition-colors duration-200"
+    >
+      {showCheck ? (
+        <Check className="h-4 w-4 text-green-500" />
+      ) : (
+        <Copy className="h-4 w-4" />
+      )}
+    </IconButton>
   );
 };
 
+type ShareFilePermission =
+  | { CanComment: null }
+  | { None: null }
+  | { CanView: null }
+  | { CanUpdate: null };
+
+interface ShareOption {
+  label: string;
+  value: ShareFilePermission;
+  principalId?: string;
+}
+
 const ShareFileButton = () => {
-  const { files } = useSelector((state: any) => state.filesState);
-  let currentPath = window.location.pathname.split("/").pop();
-  if (!files.find((file: any) => file && file.id === currentPath)) {
+  const { contracts, profile, all_friends, current_file } = useSelector(
+    (state: any) => state.filesState,
+  );
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedPermission, setSelectedPermission] =
+    useState<ShareOption | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [userPermissions, setUserPermissions] = useState<
+    [Principal, ShareFilePermission][]
+  >([]);
+
+  const { backendActor } = useBackendContext();
+
+  const generateShareOptions = (): ShareOption[] => {
+    const baseOptions = [
+      {
+        label: "Everyone can view",
+        value: { CanView: null } as ShareFilePermission,
+      },
+      {
+        label: "Everyone can update",
+        value: { CanUpdate: null } as ShareFilePermission,
+      },
+    ];
+
+    const friendOptions =
+      all_friends
+        ?.map((friend) => [
+          {
+            label: `${friend.name} can view`,
+            value: { CanView: null } as ShareFilePermission,
+            principalId: Principal.fromText(friend.id),
+          },
+          {
+            label: `${friend.name} can update`,
+            value: { CanUpdate: null } as ShareFilePermission,
+            principalId: Principal.fromText(friend.id),
+          },
+        ])
+        .flat() || [];
+
+    return [...baseOptions, ...friendOptions];
+  };
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/share/?id=${current_file?.share_id[0]}`,
+      );
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  const handlePermissionChange = (event: any, newValue: ShareOption | null) => {
+    setSelectedPermission(newValue);
+    if (newValue?.principalId) {
+      // Convert the string principal ID to a Principal type
+      const principalId = Principal.fromText(newValue.principalId);
+
+      // Remove any existing permission for this principal
+      const filteredPermissions = userPermissions.filter(
+        ([principal]) => principal.toString() !== principalId.toString(),
+      );
+
+      // Add the new permission
+      setUserPermissions([
+        ...filteredPermissions,
+        [principalId, newValue.value],
+      ]);
+    }
+    setHasChanges(true);
+  };
+
+  const handleSave = async () => {
+    if (!current_file || !profile?.id) return;
+
+    setIsLoading(true);
+    try {
+      const shareFileInput = {
+        id: current_file.id,
+        owner: Principal.fromText(profile.id),
+        permission: selectedPermission?.value || { CanView: null },
+        users_permissions: userPermissions,
+      };
+
+      let res = await backendActor.share_file(shareFileInput);
+      if (res.Err) {
+        enqueueSnackbar(
+          res.Err + " Click on the save button first then try again.",
+          { variant: "error" },
+        );
+        return;
+      }
+      dispatch({
+        type: "CURRENT_FILE",
+        file: { ...current_file, share_id: [res.Ok.id] },
+      });
+      setHasChanges(false);
+      handleClose();
+    } catch (error) {
+      console.error("Error sharing file:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!current_file) {
     return null;
   }
+  console.log({
+    current_file,
+    x: `${window.location.origin}/share/?id=${current_file?.share_id[0]}`,
+  });
   return (
-    <>
-      {
-        <DialogOver variant="text" DialogContent={Dialog}>
-          <ShareIcon />
-        </DialogOver>
-      }
-    </>
+    <div>
+      <IconButton
+        variant="contained"
+        color="primary"
+        onClick={handleClick}
+        disabled={!current_file}
+      >
+        <ShareIcon />
+      </IconButton>
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+        <Box sx={{ p: 2, minWidth: 300 }}>
+          <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
+            <Typography fullWidth size="small">
+              {`${window.location.origin}/share/?id=${current_file?.share_id[0]}`}
+            </Typography>
+            <CopyButton onClick={handleCopyLink} />
+          </Box>
+          {current_file?.author === profile?.id && (
+            <Box sx={{ mb: 2 }}>
+              <Autocomplete
+                options={generateShareOptions()}
+                value={selectedPermission}
+                onChange={handlePermissionChange}
+                renderInput={(params) => (
+                  <TextField {...params} label="Set permissions" size="small" />
+                )}
+              />
+            </Box>
+          )}
+
+          {hasChanges && (
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              onClick={handleSave}
+              disabled={isLoading}
+            >
+              {isLoading ? <CircularProgress size={24} /> : "Save Changes"}
+            </Button>
+          )}
+        </Box>
+      </Menu>
+    </div>
   );
 };
 

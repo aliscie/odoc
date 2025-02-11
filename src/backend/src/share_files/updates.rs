@@ -2,7 +2,7 @@ use ic_cdk::caller;
 use ic_cdk_macros::update;
 use std::collections::HashMap;
 
-use crate::files::FileNode;
+use crate::files::{FileNode, FileNodeVector};
 use crate::storage_schema::{ContentTree, FileId};
 use crate::{ShareFile, ShareFilePermission, SHARED_USER_FILES};
 use candid::{CandidType, Deserialize, Principal};
@@ -32,18 +32,30 @@ fn share_file(new_share_file: ShareFileInput) -> Result<ShareFile, String> {
         permission,
         users_permissions,
     } = new_share_file.clone();
-    let mut file = FileNode::get(&new_share_file.id).ok_or("No such file with this id.")?;
-    file.permission = permission.clone();
-    file.users_permissions = users_permissions.clone();
-    file.save();
 
-    let shared_file: ShareFile = {
-        ShareFile {
-            id: id.clone(),
-            // file: id,
-            owner,
-        }
+    // Get and update the original file
+    let mut file = FileNode::get(&id).ok_or("No such file with this id.")?;
+    file.share_id = Some(id.clone());
+
+    // Set the default permission for the file
+    file.permission = ShareFilePermission::CanView;  // Set default to CanView
+
+    // Add the specific permissions for users
+    file.users_permissions = users_permissions;
+
+    // If the caller is not the owner, add them to users_permissions
+    let caller = caller();
+    if caller != owner {
+        file.users_permissions.insert(caller, permission.clone());
+    }
+
+    file.save()?;
+
+    let shared_file = ShareFile {
+        id: id.clone(),
+        owner,
     };
 
     shared_file.save()
 }
+

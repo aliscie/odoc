@@ -39,6 +39,8 @@ import { useSnackbar } from "notistack";
 import { handleRedux } from "../../redux/store/handleRedux";
 import { useDispatch, useSelector } from "react-redux";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
+import { logger } from "../../DevUtils/logData";
+import { getAvailableStatusOptions } from "./statusOptions";
 export const PAYMENT_STATUSES = {
   None: null,
   RequestCancellation: null,
@@ -147,6 +149,9 @@ const CustomContractViewer = ({ contractId, onContractChange }) => {
     (state: any) => state.filesState,
   );
   const currentContract = contracts[contractId];
+  if (!currentContract) {
+    return <Typography>Contract not found</Typography>;
+  }
 
   const [selectedDataType, setSelectedDataType] = useState(() => {
     const saved = localStorage.getItem(`contract-${contractId}-dataType`);
@@ -201,9 +206,9 @@ const CustomContractViewer = ({ contractId, onContractChange }) => {
       filter: true,
       editable: isPromise,
       cellEditor: "agSelectCellEditor",
-      cellEditorParams: {
-        values: Object.keys(PAYMENT_STATUSES),
-      },
+      cellEditorParams: (params) => ({
+        values: getAvailableStatusOptions(params.data, profile.id),
+      }),
       valueSetter: (params) => {
         const newValue = params.newValue;
         if (newValue === "Objected") {
@@ -237,7 +242,7 @@ const CustomContractViewer = ({ contractId, onContractChange }) => {
       field: "sender",
       headerName: "Sender",
       valueFormatter: (params) => {
-        console.log({ valueFormatterSender: params });
+        // console.log({ valueFormatterSender: params });
         return (
           params.context.users?.find((u) => u.id == params.value.toString())
             ?.name || "None"

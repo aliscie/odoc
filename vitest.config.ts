@@ -24,7 +24,7 @@ export default defineConfig({
       "@testing-library/jest-dom/extend-expect",
       "./src/frontend/tests/React/testSetup.ts",
     ],
-    include: ["**/*.{test,spec}.{js,jsx,ts,tsx}"],
+    include: ["**/*.{md,test,spec}.{js,jsx,ts,tsx}"],
     exclude: [
       "node_modules",
       "dist",

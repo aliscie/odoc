@@ -53,6 +53,7 @@ import { Z_INDEX_TOP_NAVBAR } from "../../../constants/zIndex";
 import { RootState } from "../../../redux/reducers";
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import WorkspaceManager from "../Workspaces";
+import ShareButton from "../../MuiComponents/CopyLink";
 
 interface File {
   id: string;
@@ -260,9 +261,13 @@ export default function TopNavBar() {
   };
 
   const imageLink = profile ? convertToBlobLink(profile.photo) : "";
-  const isOwnerCurrentFile =
-    current_file &&
-    files.find((file: File) => file && file.id === current_file.id);
+  // const [isOwnerCurrentFile, setIsOwnerCurrentFile] = useState(false);
+  // useEffect(() => {
+  //   setIsOwnerCurrentFile(
+  //     current_file &&
+  //       files.find((file: File) => file && file.id === current_file.id),
+  //   );
+  // }, [current_file, files]);
 
   const mobileMenuOptions = [
     { content: "Profile", to: "/profile", icon: <Person2Icon /> },
@@ -424,8 +429,8 @@ export default function TopNavBar() {
           transformOrigin={{ vertical: "bottom", horizontal: "center" }}
         >
           <NotificationsButton
-            // onClose={() => handleMobileNotificationToggle(null)}
-            // isMobile={true}
+          // onClose={() => handleMobileNotificationToggle(null)}
+          // isMobile={true}
           />
         </Menu>
       </Paper>
@@ -452,7 +457,11 @@ export default function TopNavBar() {
         <Routes>
           <Route path="*" element={<BreadPage />} />
         </Routes>
-        {isOwnerCurrentFile && <ShareFileButton />}
+        <ShareButton
+          fileId={current_file?.id}
+          currentFile={current_file}
+        />
+
       </Box>
 
       <Box sx={{ flexGrow: 1, mx: 2 }}>

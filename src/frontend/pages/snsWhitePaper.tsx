@@ -1,374 +1,215 @@
 import React from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import {
+  Typography,
+  Link,
   Box,
-  Card,
-  CardContent,
-  Container,
-  Divider,
-  Grid,
+  useTheme,
+  Paper,
   List,
   ListItem,
-  ListItemText,
-  Paper,
-  Typography,
-  useTheme,
-  alpha,
+  Divider,
+  Tabs,
+  Tab,
+  AppBar,
 } from "@mui/material";
-import {
-  TimelineItem,
-  Timeline,
-  TimelineSeparator,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
-} from "@mui/lab";
-import { Link } from "react-router-dom";
+import whitepaperText from "./whitepaper.md";
 
-interface TokenDistribution {
-  category: string;
-  percentage: number;
-  description: string;
+function TabPanel({ children, value, index, ...other }) {
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`markdown-tabpanel-${index}`}
+      aria-labelledby={`markdown-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
 }
 
-interface RoadmapPhase {
-  title: string;
-  status: "completed" | "in-progress" | "future";
-  items: string[];
-}
-
-interface Feature {
-  title: string;
-  description: string;
-}
-
-const SNSWhitepaper: React.FC = () => {
+const MarkdownRenderer = () => {
   const theme = useTheme();
+  const [markdownContent, setMarkdownContent] = React.useState("");
+  const [currentTab, setCurrentTab] = React.useState(0);
 
-  const tokenDistribution: TokenDistribution[] = [
-    {
-      category: "Community Rewards",
-      percentage: 40,
-      description: "Distributed through platform engagement and task completion"
-    },
-    {
-      category: "Development Fund",
-      percentage: 30,
-      description: "Reserved for platform development and technical improvements"
-    },
-    {
-      category: "Team and Advisors",
-      percentage: 20,
-      description: "Vested over 3 years with 6-month cliff"
-    },
-    {
-      category: "Marketing and Partnerships",
-      percentage: 10,
-      description: "Allocated for growth initiatives and strategic partnerships"
-    }
-  ];
+  React.useEffect(() => {
+    fetch(whitepaperText)
+      .then((response) => response.text())
+      .then((text) => {
+        setMarkdownContent(text);
+      });
+  }, []);
 
-  const tokenMechanics = [
-    "Dynamic Burning: Token burn rate increases proportionally with transaction value in refunds and disputes",
-    "Stake-to-Participate: Token staking required for creating non-refundable escrow agreements",
-    "Trust Multiplier: Higher trust scores reduce required burn amounts",
-    "Governance Power: Staked tokens grant voting rights on platform proposals",
-    "Reward Distribution: Earn tokens through successful contract completion and positive ratings"
-  ];
+  const sections = React.useMemo(() => {
+    return markdownContent
+      .split(/(?=^# )/gm)
+      .filter((section) => section.trim());
+  }, [markdownContent]);
 
-  const features: Feature[] = [
-    {
-      title: "Smart Contract Escrow",
-      description: "Automated token burning mechanism for dispute resolution and refunds, with burn amount proportional to transaction value.",
-    },
-    {
-      title: "Trust-Based Governance",
-      description: "Decentralized decision-making powered by token staking and reputation scores.",
-    },
-    {
-      title: "Cross-Chain Integration",
-      description: "Support for ckUSDC, USDT, and major cryptocurrencies with transparent fee structure.",
-    },
-    {
-      title: "Reputation System",
-      description: "Dynamic trust scoring affecting token burn rates and platform privileges.",
-    }
-  ];
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
 
-  const roadmap: RoadmapPhase[] = [
-    {
-      title: "Foundation Phase",
-      status: "completed",
-      items: [
-        "Token smart contract deployment",
-        "Basic escrow functionality",
-        "ckUSDC integration"
-      ],
+  const components = {
+    h1: ({ children }) => (
+      <Typography variant="h1" gutterBottom>
+        {children}
+      </Typography>
+    ),
+    h2: ({ children }) => (
+      <Typography variant="h2" gutterBottom>
+        {children}
+      </Typography>
+    ),
+    h3: ({ children }) => (
+      <Typography variant="h3" gutterBottom>
+        {children}
+      </Typography>
+    ),
+    h4: ({ children }) => (
+      <Typography variant="h4" gutterBottom>
+        {children}
+      </Typography>
+    ),
+    h5: ({ children }) => (
+      <Typography variant="h5" gutterBottom>
+        {children}
+      </Typography>
+    ),
+    h6: ({ children }) => (
+      <Typography variant="h6" gutterBottom>
+        {children}
+      </Typography>
+    ),
+    p: ({ children }) => (
+      <Typography variant="body1" paragraph>
+        {children}
+      </Typography>
+    ),
+    a: ({ href, children }) => (
+      <Link
+        href={href}
+        color="primary"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {children}
+      </Link>
+    ),
+    ul: ({ children }) => <List>{children}</List>,
+    ol: ({ children }) => <List>{children}</List>,
+    li: ({ children }) => (
+      <ListItem>
+        <Typography variant="body1">{children}</Typography>
+      </ListItem>
+    ),
+    blockquote: ({ children }) => (
+      <Box
+        sx={{
+          borderLeft: `4px solid ${theme.palette.primary.main}`,
+          pl: 2,
+          my: 2,
+          bgcolor: theme.palette.background.paper,
+        }}
+      >
+        <Typography variant="body1" sx={{ fontStyle: "italic" }}>
+          {children}
+        </Typography>
+      </Box>
+    ),
+    code: ({ node, inline, className, children, ...props }) => {
+      const match = /language-(\w+)/.exec(className || "");
+      return !inline && match ? (
+        <Paper elevation={2} sx={{ my: 2 }}>
+          <SyntaxHighlighter
+            style={tomorrow}
+            language={match[1]}
+            PreTag="div"
+            {...props}
+          >
+            {String(children).replace(/\n$/, "")}
+          </SyntaxHighlighter>
+        </Paper>
+      ) : (
+        <Typography
+          component="code"
+          sx={{
+            backgroundColor: theme.palette.grey[100],
+            padding: "2px 4px",
+            borderRadius: 1,
+            fontFamily: "monospace",
+          }}
+          {...props}
+        >
+          {children}
+        </Typography>
+      );
     },
-    {
-      title: "Token Economy Phase",
-      status: "in-progress",
-      items: [
-        "Dynamic burn rate implementation",
-        "Governance system activation",
-        "Staking mechanism deployment"
-      ],
-    },
-    {
-      title: "Ecosystem Growth",
-      status: "future",
-      items: [
-        "Cross-chain expansion",
-        "Advanced dispute resolution",
-        "DAO transition"
-      ],
-    }
-  ];
+    hr: () => <Divider sx={{ my: 2 }} />,
+  };
+
+  const getSectionTitle = (section) => {
+    const match = section.match(/^#\s+(.+)$/m);
+    return match ? match[1] : "Untitled Section";
+  };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Box
-        sx={{
-          pt: 10,
-          pb: 6,
-          background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${alpha(theme.palette.primary.light, 0.9)} 90%)`,
-          color: theme.palette.primary.contrastText,
-        }}
+    <Box
+      sx={{
+        width: "90wh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        minHeight: "100vh",
+      }}
+    >
+      <AppBar
+        position="static"
+        color="default"
+        sx={{ width: "100%", maxWidth: "900px" }}
       >
-        <Container maxWidth="lg">
-          <Typography variant="h2" component="h1" gutterBottom>
-            Odoc SNS Whitepaper
-          </Typography>
-          <Typography variant="h5" gutterBottom>
-            Decentralized Collaboration Platform with Dynamic Token Economics
-          </Typography>
-          <Typography variant="subtitle1">
-            Version 2.0 | February 2025
-          </Typography>
-        </Container>
-      </Box>
-
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Paper
-          elevation={3}
-          sx={{
-            p: 3,
-            mb: 4,
-            bgcolor: theme.palette.background.paper,
-            color: theme.palette.text.primary,
-          }}
+        <Tabs
+          value={currentTab}
+          onChange={handleTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="scrollable"
+          scrollButtons="auto"
+          aria-label="markdown sections"
         >
-          <Typography variant="h4" gutterBottom>
-            Abstract
-          </Typography>
-          <Typography variant="body1" paragraph>
-            Odoc introduces a revolutionary token-burning mechanism on the Internet Computer (ICP) blockchain,
-            where the amount of tokens burned scales dynamically with transaction values during refunds and disputes.
-            This innovative approach, combined with our trust-based governance system, creates a self-regulating
-            ecosystem that incentivizes honest collaboration and efficient dispute resolution.
-          </Typography>
-        </Paper>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 6, mb: 3 }}>
-          Key Features
-        </Typography>
-        <Grid container spacing={3}>
-          {features.map((feature, index) => (
-            <Grid item xs={12} md={6} key={index}>
-              <Card
-                sx={{
-                  height: '100%',
-                  bgcolor: theme.palette.background.paper,
-                  "&:hover": {
-                    bgcolor: alpha(theme.palette.primary.main, 0.04),
-                  },
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h6" gutterBottom color="primary">
-                    {feature.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {feature.description}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+          {sections.map((section, index) => (
+            <Tab
+              key={index}
+              label={getSectionTitle(section)}
+              id={`markdown-tab-${index}`}
+              aria-controls={`markdown-tabpanel-${index}`}
+            />
           ))}
-        </Grid>
+        </Tabs>
+      </AppBar>
 
-        <Typography variant="h4" gutterBottom sx={{ mt: 6, mb: 3 }}>
-          Token Economics
-        </Typography>
-        <Paper
-          elevation={3}
-          sx={{
-            p: 3,
-            bgcolor: theme.palette.background.paper,
-            color: theme.palette.text.primary,
-          }}
-        >
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6" gutterBottom color="primary">
-                Token Distribution
-              </Typography>
-              <List>
-                {tokenDistribution.map((item, index) => (
-                  <ListItem key={index}>
-                    <ListItemText
-                      primary={`${item.category} (${item.percentage}%)`}
-                      secondary={item.description}
-                      primaryTypographyProps={{ color: "text.primary" }}
-                      secondaryTypographyProps={{ color: "text.secondary" }}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6" gutterBottom color="primary">
-                Token Mechanics
-              </Typography>
-              <List>
-                {tokenMechanics.map((item, index) => (
-                  <ListItem key={index}>
-                    <ListItemText
-                      primary={item}
-                      primaryTypographyProps={{
-                        color: "text.primary",
-                        variant: "body2",
-                      }}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </Grid>
-          </Grid>
-        </Paper>
-
-        <Typography variant="h4" gutterBottom sx={{ mt: 6, mb: 3 }}>
-          Development Roadmap
-        </Typography>
-        <Timeline position="alternate">
-          {roadmap.map((phase, index) => (
-            <TimelineItem key={index}>
-              <TimelineSeparator>
-                <TimelineDot
-                  sx={{
-                    bgcolor:
-                      phase.status === "completed"
-                        ? theme.palette.success.main
-                        : phase.status === "in-progress"
-                        ? theme.palette.primary.main
-                        : theme.palette.grey[500],
-                  }}
-                />
-                {index < roadmap.length - 1 && (
-                  <TimelineConnector sx={{ bgcolor: theme.palette.divider }} />
-                )}
-              </TimelineSeparator>
-              <TimelineContent>
-                <Paper
-                  elevation={3}
-                  sx={{
-                    p: 2,
-                    bgcolor: theme.palette.background.paper,
-                    color: theme.palette.text.primary,
-                  }}
-                >
-                  <Typography variant="h6" component="h1" color="primary">
-                    {phase.title}
-                  </Typography>
-                  <List dense>
-                    {phase.items.map((item, itemIndex) => (
-                      <ListItem key={itemIndex}>
-                        <ListItemText
-                          primary={item}
-                          primaryTypographyProps={{ color: "text.primary" }}
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Paper>
-              </TimelineContent>
-            </TimelineItem>
-          ))}
-        </Timeline>
-      </Container>
-
-      <Box
-        sx={{
-          bgcolor: theme.palette.primary.main,
-          color: theme.palette.primary.contrastText,
-          py: 4,
-          mt: 6,
-        }}
-      >
-        <Container maxWidth="lg">
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={4}>
-              <Typography variant="h6" gutterBottom>
-                Contact
-              </Typography>
-              <Typography variant="body2">Website: odoc.app</Typography>
-              <Typography variant="body2">Email: contact@odoc.app</Typography>
-              <Typography variant="body2">Twitter: @ODOC_IC</Typography>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Typography variant="h6" gutterBottom>
-                Resources
-              </Typography>
-              <Typography
-                component={Link}
-                to="https://github.com/aliscie/odoc"
-                sx={{
-                  color: "inherit",
-                  textDecoration: "none",
-                  "&:hover": {
-                    textDecoration: "underline",
-                  },
-                }}
-                variant="body2"
-              >
-                GitHub
-              </Typography>
-              <Typography
-                component={Link}
-                to="https://discord.gg/uxMJHBk8"
-                sx={{
-                  color: "inherit",
-                  textDecoration: "none",
-                  "&:hover": {
-                    textDecoration: "underline",
-                  },
-                }}
-                variant="body2"
-              >
-                Community
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Typography variant="h6" gutterBottom>
-                Legal
-              </Typography>
-              <Typography variant="body2">Terms of Service</Typography>
-              <Typography variant="body2">Privacy Policy</Typography>
-              <Typography variant="body2">Disclaimer</Typography>
-            </Grid>
-          </Grid>
-          <Divider
+      {sections.map((section, index) => (
+        <TabPanel key={index} value={currentTab} index={index}>
+          <Box
             sx={{
-              my: 3,
-              bgcolor: alpha(theme.palette.primary.contrastText, 0.2),
+              maxWidth: "800px",
+              margin: "0 auto",
+              padding: theme.spacing(3),
             }}
-          />
-          <Typography variant="body2" align="center">
-            © 2025 Odoc. All rights reserved.
-          </Typography>
-        </Container>
-      </Box>
+          >
+            <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+              {section}
+            </ReactMarkdown>
+          </Box>
+        </TabPanel>
+      ))}
     </Box>
   );
 };
 
-export default SNSWhitepaper;
+export default MarkdownRenderer;

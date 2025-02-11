@@ -46,11 +46,7 @@ const RegistrationForm: React.FC = () => {
     email: "",
   });
 
-  const [showForm, setShowForm] = useState(isLoggedIn && !isRegistered);
 
-  useEffect(() => {
-    setShowForm(isLoggedIn && !isRegistered);
-  }, [isLoggedIn, isRegistered]);
 
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoByte, setPhotoByte] = useState<Uint8Array | number[] | undefined>(
@@ -125,7 +121,6 @@ const RegistrationForm: React.FC = () => {
     }
   };
 
-  if (!showForm) return null;
 
   return (
     <Container
@@ -270,14 +265,6 @@ const RegistrationForm: React.FC = () => {
           />
 
           <Stack direction="row" spacing={2} sx={{ mt: 4 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => setShowForm(false)}
-              sx={{ py: 1.5 }}
-            >
-              Cancel
-            </Button>
             <Button
               fullWidth
               variant="contained"

@@ -21,6 +21,7 @@ import AffiliateRedirect from "./affiliateRedirect";
 import { handleRedux } from "../redux/store/handleRedux";
 import FileContentPage from "./fileContentPage";
 import RegistrationForm from "../components/MainComponents/RegistrationForm";
+import ContractPage from "./profile/ContractPage";
 
 function Pages() {
   const { profile, profile_history, wallet, friends } = useSelector(
@@ -31,10 +32,11 @@ function Pages() {
     (state: any) => state.uiState,
   );
 
+  if (isLoggedIn && !isRegistered) {
+    return <RegistrationForm />;
+  }
+
   const MainPage = () => {
-    if (isLoggedIn && !isRegistered) {
-      return <RegistrationForm />;
-    }
     if (isLoggedIn) {
       return <ProductManagerDashboard />;
     }
@@ -64,6 +66,8 @@ function Pages() {
       <Route path="/share/*" element={<ShareFilePage />} />
       <Route path="/user/*" element={<UserProfile />} />
       {/*<Route path="/chats/*" element={<ChatsPage />} />*/}
+
+      <Route path="/contract*" element={<ContractPage />} />
       <Route path="/contracts/*" element={<ContractsHistory />} />
       <Route
         path="/offer"

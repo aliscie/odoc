@@ -27,40 +27,30 @@ fn confirmed_c_payment(promise: CPayment) -> Result<(), String> {
             .promises
             .iter_mut()
             .map(|mut payment| {
-                if payment.id == promise.id
-                    && payment.receiver == caller()
-                    && payment.status == PaymentStatus::None
-                {
+                if payment.id == promise.id {
+                    if payment.status == PaymentStatus::Confirmed {
+                        return Err("Already confirmed".to_string());
+                    }
+                    if payment.receiver != caller() {
+                        return Err("Promise not found".to_string());
+                    }
+                    if payment.status != PaymentStatus::None {
+                        return Err("Promise not found".to_string());
+                    }
+
                     payment.status = PaymentStatus::Confirmed;
                     notify_about_promise(payment.clone(), PaymentAction::Accepted);
-                    // update not
-                    // let mut not = Notification::get(payment.sender.to_string(), payment.id.clone()).unwrap();
-                    // if let NoteContent::CPaymentContract(_, payment_action) = not.content {
-                    //     not.content =
-                    //         NoteContent::CPaymentContract(payment.clone(), payment_action);
-                    //     not.save();
-                    // };
-                    // let wallet = Wallet::get(promise.sender);
-                    // wallet.add_dept(payment.amount.clone(), payment.id.clone());
+
                     let mut user_history = UserHistory::get(promise.sender);
                     user_history.payment_action(payment.clone());
                     user_history.save();
                 }
-                payment.clone()
+                Ok(payment.clone())
             })
-            .collect::<Vec<_>>();
+            .collect::<Result<Vec<_>, String>>()?;
 
-        // Check if any promise with matching ID and status was updated
-        if contract
-            .promises
-            .iter()
-            .any(|payment| payment.id == promise.id && payment.status == PaymentStatus::Confirmed)
-        {
-            contract.pure_save()?;
-            Ok(())
-        } else {
-            Err("Promise not found or conditions not met".to_string())
-        }
+        contract.pure_save()?;
+        Ok(())
     } else {
         Err("Contract not found".to_string())
     }

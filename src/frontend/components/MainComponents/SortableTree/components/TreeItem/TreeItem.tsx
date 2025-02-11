@@ -10,8 +10,9 @@ import ContextMenu from "../../../../MuiComponents/ContextMenu";
 import DeleteFile from "../../../../Actions/DeleteFile";
 import ChangeWorkSpace from "../../../../Actions/ChangeWorkSpaceFile";
 import { handleRedux } from "../../../../../redux/store/handleRedux";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { RootState } from "../../../../../redux/reducers";
 export interface Props extends HTMLAttributes<HTMLLIElement> {
   childCount?: number;
   clone?: boolean;
@@ -52,11 +53,15 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
     },
     ref,
   ) => {
+    const { profile, profile_history, current_file, files } = useSelector(
+      (state: RootState) => state.filesState,
+    );
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const handleItemClick = () => {
       navigate(id);
-      dispatch(handleRedux("CURRENT_FILE", { file: { id, name: value } }));
+      let file = files.find((file) => file.id === id);
+      dispatch(handleRedux("CURRENT_FILE", { file}));
     };
 
     return (

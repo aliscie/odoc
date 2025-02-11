@@ -165,7 +165,7 @@ export default function SortableTree({
           <SortableTreeItem
             key={id}
             id={id}
-            value={files.find((f) => f.id == id)?.name || "Untitled"}
+            value={files.find((f) => f?.id == id)?.name || "Untitled"}
             depth={id === activeId && projected ? projected.depth : depth}
             indentationWidth={indentationWidth}
             indicator={indicator}

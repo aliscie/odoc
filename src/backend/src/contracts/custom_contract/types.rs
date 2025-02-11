@@ -369,19 +369,15 @@ impl CustomContract {
                 .stored_contracts
                 .clone();
 
-            // Convert Vec<StoredContract> to HashMap<ContractId, StoredContract>
-            let mut contract_map = HashMap::new();
-            for (index, contract) in stored_contract_vec.into_iter().enumerate() {
-                contract_map.insert(index.to_string(), contract);
-            }
-
-            let contract = contract_map.get(&id)?;
-            match contract {
-                StoredContract::CustomContract(contract) => Some(contract.clone()),
-                _ => None,
-            }
+            // Directly find the contract in the vector
+            stored_contract_vec.into_iter()
+                .find_map(|contract| match contract {
+                    StoredContract::CustomContract(c) if c.id == id => Some(c),
+                    _ => None
+                })
         })
     }
+
 
     pub fn delete(mut self) -> Result<(), String> {
         if caller().to_string() != self.creator {
@@ -467,7 +463,7 @@ impl CustomContract {
             self.date_created = old_contract.date_created.clone();
             self.date_updated = ic_cdk::api::time() as f64;
             self.creator = old_contract.creator.clone(); // no need for this cuz Self::get() already check for this
-                                                         // self.payments = old_contract.clone().update_payments(self.payments.clone());
+            // self.payments = old_contract.clone().update_payments(self.payments.clone());
             self.payments = old_contract.payments.clone();
 
             let contracts: Vec<CContract> = self
@@ -706,13 +702,13 @@ impl CustomContract {
         }
         // if status's request cancellation notify the receiver
         if promise.status == PaymentStatus::RequestCancellation {
-            let not = Notification::get(promise.receiver.to_string(),promise.id.clone());
+            let not = Notification::get(promise.receiver.to_string(), promise.id.clone());
             if not.is_none()
                 || not.unwrap().content
-                    != NoteContent::CPaymentContract(
-                        promise.clone(),
-                        PaymentAction::RequestCancellation(promise.clone()),
-                    )
+                != NoteContent::CPaymentContract(
+                promise.clone(),
+                PaymentAction::RequestCancellation(promise.clone()),
+            )
             {
                 notify_about_promise(
                     promise.clone(),

@@ -11,21 +11,44 @@ use crate::websocket::{FriendRequestNotification, NoteContent, Notification};
 use crate::COUNTER;
 use crate::{websocket, FRIENDS_STORE};
 
+
 #[update]
 pub fn send_friend_request(user_principal: String) -> Result<User, String> {
-    let id = caller().to_string() + &user_principal.clone();
-    if Friend::get(&id).is_some() {
+    // First check if the principals are the same
+    if caller().to_string() == user_principal {
+        return Err("Cannot send friend request to yourself".to_string());
+    }
+
+    // Check both possible ID combinations
+    let id1 = caller().to_string() + &user_principal;
+    let id2 = user_principal.clone() + &caller().to_string();
+
+    // Check if friendship exists in either direction
+    if Friend::get(&id1).is_some() || Friend::get(&id2).is_some() {
         return Err("Friend request already sent or user is already a friend.".to_string());
-    };
-    let new_friend: Friend = Friend {
-        id,
-        sender: User::get_user_from_text_principal(&caller().to_string()).unwrap(),
-        receiver: User::get_user_from_text_principal(&user_principal).unwrap(),
-        confirmed: false,
-    };
-    new_friend.pure_save();
-    websocket::notify_friend_request(new_friend.clone());
-    Ok(User::get_user_from_text_principal(&user_principal).unwrap())
+    }
+
+    // Create new friend request with proper locking
+    FRIENDS_STORE.with(|friends_store| {
+        let mut store = friends_store.borrow_mut();
+        let new_friend = Friend {
+            id: id1.clone(),
+            sender: User::get_user_from_text_principal(&caller().to_string())
+                .ok_or("Sender user not found".to_string())?,
+            receiver: User::get_user_from_text_principal(&user_principal)
+                .ok_or("Receiver user not found".to_string())?,
+            confirmed: false,
+        };
+
+        // Atomic insert
+        store.insert(id1, new_friend.clone());
+
+        // Notify after successful save
+        websocket::notify_friend_request(new_friend);
+
+        Ok(User::get_user_from_text_principal(&user_principal)
+            .ok_or("User not found after save".to_string())?)
+    })
 }
 
 // id sender_left + receiver_right

@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/reducers";
 import { RowClassRules } from "ag-grid-community";
 import { Box, Divider, Typography, useTheme } from "@mui/material";
+import {getAvailableStatusOptions} from "./statusOptions";
 
 function NotificationPromises() {
   const theme = useTheme();
@@ -52,9 +53,9 @@ function NotificationPromises() {
           filter: true,
           editable: isPromise,
           cellEditor: "agSelectCellEditor",
-          cellEditorParams: {
-            values: Object.keys(PAYMENT_STATUSES),
-          },
+          cellEditorParams: (params)=>({
+            values: getAvailableStatusOptions(params.data, profile.id),
+          }),
           cellStyle: (params) => ({
             color: theme.palette.text.primary,
             backgroundColor: theme.palette.background.paper,

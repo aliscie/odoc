@@ -108,7 +108,6 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
   //   setFormValues((prev) => ({ ...prev, [name]: value }));
   // };
 
-
   // Handle completely missing props with default empty objects
   const safeProfile = profile || {};
   const safeHistory = history || {};
@@ -274,7 +273,7 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
               <Box>
                 {isEditing ? (
                   <EditProfile
-                      setIsEditing={setIsEditing}
+                    setIsEditing={setIsEditing}
                     profile={safeProfile}
                     onCancel={() => setIsEditing(false)}
                   />
@@ -396,14 +395,16 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
       </Card>
 
       {/* Friends Section */}
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Friends
-          </Typography>
-          <Friends currentUser={profile} friends={friends} />
-        </CardContent>
-      </Card>
+      {friends.length > 0 && (
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Friends
+            </Typography>
+            <Friends currentUser={profile} friends={friends} />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Recent Ratings */}
       <Card sx={{ mt: 4 }}>

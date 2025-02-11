@@ -36,7 +36,7 @@ function ResultFile(props: Props) {
       onMouseDown={() => {
         dispatch(
           handleRedux("CURRENT_FILE", {
-            file: { id: props.file_id, name: title },
+            file: file,
           }),
         );
       }}

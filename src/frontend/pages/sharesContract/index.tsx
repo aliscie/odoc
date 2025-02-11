@@ -155,7 +155,6 @@ export const Shares: React.FC<SharesProps> = ({
       </Box>
     );
   }
-  console.log({ paymentDialog });
 
   return (
     <Box sx={{ width: "100%" }}>

@@ -10,7 +10,11 @@ import {
 } from "../DataProcessing/deserlize/deserializeContents";
 import EditorComponent from "../components/EditorComponent";
 import { useBackendContext } from "../contexts/BackendContext";
-import {CircularProgress, Input} from "@mui/material";
+import { CircularProgress, Input, Typography } from "@mui/material";
+import UserAvatarMenu from "../components/MainComponents/UserAvatarMenu";
+import { Link } from "react-router-dom";
+import { Link as MuiLink } from "@mui/material";
+
 export type FileQuery =
   | undefined
   | { Ok: [FileNode, Array<[string, ContentNode]>] }
@@ -43,7 +47,7 @@ function ShareFilePage(props: any) {
           </span>,
         );
 
-        let res: FileQuery = await backendActor?.get_shared_file(id);
+        let res: FileQuery = await backendActor.get_shared_file(id);
 
         closeSnackbar(loading);
 
@@ -61,7 +65,7 @@ function ShareFilePage(props: any) {
               content: normalized_tree,
             }),
           );
-          dispatch(handleRedux("ADD_FILE", { data: file }));
+          // dispatch(handleRedux("ADD_FILE", { data: file }));
         } else {
           enqueueSnackbar(`Error: ${res.Err}`, { variant: "error" });
         }
@@ -71,7 +75,7 @@ function ShareFilePage(props: any) {
 
   if (!state) {
     <CircularProgress />;
-  };
+  }
 
   return (
     <>
@@ -90,6 +94,16 @@ function ShareFilePage(props: any) {
           placeholder="Untitled"
           disabled={true}
         />
+        {file && (
+          <Typography
+            to={`/user?id=${file?.author}`}
+            component={Link}
+            variant="body4"
+            color={'primary'}
+          >
+            See the author
+          </Typography>
+        )}
         <EditorComponent
           key={state}
           id={"share-file-content"}

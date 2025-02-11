@@ -74,6 +74,8 @@ const canisterDefinitions = Object.entries(canisters).reduce(
 );
 
 export default defineConfig({
+  assetsInclude: ["**/*.md"], // Add this line to handle markdown files
+
   build: {
     outDir: "build",
     include: ["src/frontend/.well-known"],

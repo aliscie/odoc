@@ -144,16 +144,17 @@ thread_local! {
         )
     );
 
-    static FILE_CONTENTS: RefCell<StableBTreeMap<String, ContentNodeVec, Memory>> = RefCell::new(
-        StableBTreeMap::init(
-            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(5))),
-        )
-    );
 
+
+    // static FRIENDS_STORE: RefCell<StableBTreeMap<String, Friend, Memory>> = RefCell::new(
+    //     StableBTreeMap::init(
+    //         MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(5))),
+    //     )
+    // );
 
     static FRIENDS_STORE: RefCell<StableBTreeMap<String, Friend, Memory>> = RefCell::new(
         StableBTreeMap::init(
-            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(5))),
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(15))),
         )
     );
 
@@ -161,6 +162,12 @@ thread_local! {
     static CONTRACTS_STORE: RefCell<StableBTreeMap<String, StoredContractVec, Memory>> = RefCell::new(
         StableBTreeMap::init(
             MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(6))),
+        )
+    );
+
+    static FILE_CONTENTS: RefCell<StableBTreeMap<String, ContentNodeVec, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(7))),
         )
     );
 
@@ -195,64 +202,23 @@ thread_local! {
         )
     );
 
-    static WORK_SPACES: RefCell<StableBTreeMap<String, WorkSpaceVec, Memory>> = RefCell::new(
-        StableBTreeMap::init(
-            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(13))),
-        )
-    );
+
 
     static AFFILIATE: RefCell<StableBTreeMap<String, Affiliate, Memory>> = RefCell::new(
         StableBTreeMap::init(
             MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(13))),
         )
     );
+
+    static WORK_SPACES: RefCell<StableBTreeMap<String, WorkSpaceVec, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(14))),
+        )
+    );
 }
 
 pub static COUNTER: AtomicU64 = AtomicU64::new(0);
 
-
-// fn print_file_contents() {
-//     FILE_CONTENTS.with(|file_contents| {
-//         let file_contents = file_contents.borrow();
-//         // Iterate over all keys and values in the StableBTreeMap
-//         for (key, value) in file_contents.iter() {
-//             println!("Key: {}", key);
-//             match serde_cbor::to_vec(&value) {
-//                 Ok(serialized) => {
-//                     println!("Value (serialized): {:?}", serialized);
-//                 }
-//                 Err(e) => {
-//                     println!("Failed to serialize value for key {}: {:?}", key, e);
-//                 }
-//             }
-//         }
-//     });
-// }
-
-// fn reset_all_stable_storage() {
-//     MEMORY_MANAGER.with(|m| {
-//         let mm = m.borrow();
-//
-//         FILE_CONTENTS.with(|store| {
-//             *store.borrow_mut() = StableBTreeMap::init(mm.get(MemoryId::new(5)));
-//         });
-//
-//         PROFILE_STORE.with(|store| {
-//             *store.borrow_mut() = StableBTreeMap::init(mm.get(MemoryId::new(0)));
-//         });
-//
-//         // Repeat for other stores...
-//         // Make sure to use the correct MemoryId for each store
-//     });
-// }
-
-
-// #[ic_cdk_macros::update]
-// fn simulate_corruption_and_reset() -> String {
-//     reset_all_stable_storage();
-//
-//     String::from("FILE_CONTENTS has been reset.")
-// }
 
 
 #[cfg(test)]
