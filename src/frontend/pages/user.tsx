@@ -52,7 +52,6 @@ function UserProfile() {
   // }
   return (
     <div>
-      test
       <ProfilePage
         friendButton={
           profile &&

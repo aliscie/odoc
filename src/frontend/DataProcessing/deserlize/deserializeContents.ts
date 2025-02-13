@@ -1,5 +1,8 @@
 import { ContentNode } from "../../../declarations/backend/backend.did";
-import { convertStyleArrayToObject } from "../serialize/serializeFileContents";
+import {
+  convertStyleArrayToObject,
+  URLKEYLEAFE,
+} from "../serialize/serializeFileContents";
 
 export interface SlateNode {
   id: String;
@@ -35,6 +38,13 @@ function nesting(
     ...formats,
   };
 
+  const url = content_node.formats
+    .find((item) => item.includes(URLKEYLEAFE))
+    ?.replace(URLKEYLEAFE, "");
+
+  if (url) {
+    item["url"] = url;
+  }
   if (indent) {
     item["indent"] = indent;
   }

@@ -149,6 +149,10 @@ impl ShareFile {
             })
             .ok_or("No such share id.")?;
 
+        if caller().to_string() == share_file.owner.to_string() {
+            return Ok(());
+        }
+
         SHARED_USER_FILES.with(|shared_user_files| {
             let mut shared_user_files = shared_user_files.borrow_mut();
             let mut share_files = vec![];

@@ -27,38 +27,48 @@ function EditorComponent(props: Props) {
     (state: any) => state.filesState,
   );
 
-  const extraPlugins = React.useMemo(() => [
-    { plugin: createContractPlugin, key: CONTRACT_KEY, icon: TableChartIcon },
-  ], []);
-
-  const mentions: MyMentionItem[] = React.useMemo(() =>
-    all_friends.map((i: any) => ({
-      key: i.id,
-      text: i.name
-    })),
-    [all_friends]
+  const extraPlugins = React.useMemo(
+    () => [
+      { plugin: createContractPlugin, key: CONTRACT_KEY, icon: TableChartIcon },
+    ],
+    [],
   );
 
-  const handleOnInsertComponent = React.useCallback((component: any, component_id: string) => {
-    switch (component.key) {
-      case "custom_contract":
-        const newContract = {
-          ...custom_contract,
-          id: component_id,
-          creator: profile.id,
-          date_created: Date.now() * 1e6
-        };
-        dispatch(handleRedux("ADD_CONTRACT", { contract: newContract }));
-        return null;
-      case "data_grid":
-      default:
-        return null;
-    }
-  }, [dispatch, profile?.id]);
+  const mentions: MyMentionItem[] = React.useMemo(
+    () =>
+      all_friends.map((i: any) => ({
+        key: i.id,
+        text: i.name,
+      })),
+    [all_friends],
+  );
 
-  const handleInputChange = React.useCallback((changes: any) => {
-    props.onChange?.(changes);
-  }, [props.onChange]);
+  const handleOnInsertComponent = React.useCallback(
+    (component: any, component_id: string) => {
+      switch (component.key) {
+        case "custom_contract":
+          const newContract = {
+            ...custom_contract,
+            id: component_id,
+            creator: profile.id,
+            date_created: Date.now() * 1e6,
+          };
+          dispatch(handleRedux("ADD_CONTRACT", { contract: newContract }));
+          return null;
+        case "data_grid":
+        default:
+          return null;
+      }
+    },
+    [dispatch, profile?.id],
+  );
+
+  const handleInputChange = React.useCallback(
+    (changes: any) => {
+      props.onChange?.(changes);
+    },
+    [props.onChange],
+  );
 
   return (
     <OdocEditor

@@ -5,7 +5,7 @@ import {
 } from "../../../declarations/backend/backend.did";
 
 const stylesToCheck = ["bold", "italic", "underline", "strikethrough", "code"];
-
+export const URLKEYLEAFE = "URLKEYLEAFE";
 function getFormats(item) {
   const itemKeys = Object.keys(item);
 
@@ -32,7 +32,7 @@ function de_nesting(nested: any[]) {
     while (queue.length > 0) {
       let item = queue.pop();
       let formats = getFormats(item);
-
+      item.url && formats.push(URLKEYLEAFE + item.url);
       let id = item.id || randomString();
       let children: ContentNode[] = item.children
         ? item.children.map((child) => {
