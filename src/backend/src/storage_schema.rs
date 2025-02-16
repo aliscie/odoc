@@ -75,6 +75,7 @@ pub type ContractId = String;
 pub type ShareContractId = String;
 pub type ShareRequestId = String;
 pub type ShareId = String;
+pub type UserId = String;
 
 // Stores types
 // pub type IdStore = BTreeMap<String, Principal>;

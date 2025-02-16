@@ -4,6 +4,7 @@ import { filesReducer } from "../reducers/filesReducer";
 import { chatsReducer } from "../reducers/chatsReducer";
 import { notificationReducer } from "../reducers/notificationReducer";
 import {RootState} from "../reducers";
+import {calendarReducer} from "../reducers/calendarReducer";
 // import { RootState } from "../../tests/React/testsWrapper";
 
 // const store = configureStore({
@@ -25,6 +26,7 @@ export function setupStore(preloadedState?: Partial<RootState>) {
       filesState: filesReducer,
       chatsState: chatsReducer,
       notificationState: notificationReducer,
+      calendarState: calendarReducer,
     },
     preloadedState,
     // middleware: (getDefaultMiddleware) =>

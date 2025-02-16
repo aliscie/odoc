@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
-use candid::types::principal::PrincipalError;
-use candid::{CandidType, Deserialize, Principal};
+use candid::{CandidType, Deserialize};
 use ic_cdk::caller;
 use ic_cdk_macros::query;
 
@@ -9,7 +8,7 @@ use crate::contracts::Contract;
 use crate::files::FileNode;
 use crate::files_content::ContentNode;
 use crate::friends::Friend;
-use crate::storage_schema::{ContentId, ContentTree, ContractId, FileId};
+use crate::storage_schema::{ ContentTree, ContractId, FileId};
 use crate::user::User;
 use crate::{StoredContract, Wallet, PROFILE_STORE};
 use crate::user_history::UserHistory;

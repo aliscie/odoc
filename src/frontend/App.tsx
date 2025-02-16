@@ -18,6 +18,7 @@ import BetaWarning from "./betWarning";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import GetStartedBanner from "./pages/LandingPage/getStartedBanner";
+import askClaude from "./pages/dashBoardPage/AI_Input/anthroboticAi";
 
 // Create a styled component for the main content
 const MainContent = styled(Box)(({ theme }) => ({
@@ -62,6 +63,9 @@ const App: React.FC = () => {
   useEffect(() => {
     if (backendActor && ckUSDCActor && profile?.id) {
       (async () => {
+        console.log("Checking CKUSDT balance...");
+        let res = await askClaude("test");
+        console.log({ res });
         try {
           const balance = await ckUSDCActor.icrc1_balance_of({
             owner: Principal.fromText(profile.id),
@@ -92,7 +96,6 @@ const App: React.FC = () => {
         } catch (error) {
           console.error("Error checking/depositing CKUSDT:", error);
         }
-
       })();
     }
   }, [backendActor, ckUSDCActor, profile, theme.palette.primary.contrastText]);

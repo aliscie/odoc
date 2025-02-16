@@ -1,7 +1,6 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::atomic::AtomicU64;
-
 use candid::{decode_one, encode_one, Principal};
 use evm_rpc_canister_types::{
     BlockTag, EthMainnetService, EthSepoliaService, EvmRpcCanister, GetTransactionCountArgs,
@@ -62,6 +61,9 @@ mod user_history;
 mod websocket;
 mod workspaces;
 mod affiliate;
+mod calendar;
+
+use calendar::*;
 
 use affiliate::*;
 use crate::ckusdc_index_types::*;
@@ -152,11 +154,7 @@ thread_local! {
     //     )
     // );
 
-    static FRIENDS_STORE: RefCell<StableBTreeMap<String, Friend, Memory>> = RefCell::new(
-        StableBTreeMap::init(
-            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(15))),
-        )
-    );
+
 
 
     static CONTRACTS_STORE: RefCell<StableBTreeMap<String, StoredContractVec, Memory>> = RefCell::new(
@@ -215,10 +213,21 @@ thread_local! {
             MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(14))),
         )
     );
+
+    static FRIENDS_STORE: RefCell<StableBTreeMap<String, Friend, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(15))),
+        )
+    );
+
+    static CALENDAR_STORE: RefCell<StableBTreeMap<UserId, Calendar, Memory>> = RefCell::new(
+        StableBTreeMap::init(
+            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(16))),
+        )
+    );
 }
 
 pub static COUNTER: AtomicU64 = AtomicU64::new(0);
-
 
 
 #[cfg(test)]
