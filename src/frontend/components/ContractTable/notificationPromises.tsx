@@ -1,11 +1,6 @@
-import { Divider, Typography, useTheme } from "@mui/material";
 import AgGridDataGrid from "../MuiComponents/dataGridSheet";
 import React, { useMemo } from "react";
 import {
-  contractContextMenu,
-  handleAmountChange,
-  handleReceiverChange,
-  handleStatusChange,
   NotificationPromiesContextMenu,
   transformPromisesDataAndColumns,
 } from "./utils";
@@ -15,7 +10,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/reducers";
 import { RowClassRules } from "ag-grid-community";
 import { Box, Divider, Typography, useTheme } from "@mui/material";
-import {getAvailableStatusOptions} from "./statusOptions";
+import { getAvailableStatusOptions } from "./statusOptions";
 
 function NotificationPromises() {
   const theme = useTheme();
@@ -53,7 +48,7 @@ function NotificationPromises() {
           filter: true,
           editable: isPromise,
           cellEditor: "agSelectCellEditor",
-          cellEditorParams: (params)=>({
+          cellEditorParams: (params) => ({
             values: getAvailableStatusOptions(params.data, profile.id),
           }),
           cellStyle: (params) => ({

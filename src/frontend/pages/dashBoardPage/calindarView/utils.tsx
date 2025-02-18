@@ -1,10 +1,33 @@
 /**
- * Checks if two events overlap in time
+ * Gets the date portion of a microsecond timestamp (midnight UTC of that day)
+ * @param {number} microsecondTimestamp - Timestamp in microseconds
+ * @returns {number} - Midnight UTC timestamp in microseconds for the date
+ */
+const getDatePortion = (microsecondTimestamp) => {
+  const date = new Date(microsecondTimestamp / 1e6);
+  return Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    0, 0, 0, 0
+  ) * 1e6;
+};
+
+/**
+ * Checks if two events overlap in time and are on the same date
  * @param {Event} event1 - First event to compare
  * @param {Event} event2 - Second event to compare
  * @returns {boolean} - True if events overlap, false otherwise
  */
 const doEventsOverlap = (event1, event2) => {
+  // First check if events are on the same date
+  const date1 = event1.date;
+  const date2 = event2.date;
+
+  if (date1 !== date2) {
+    return false;
+  }
+
   // Convert microsecond timestamps to milliseconds for easier comparison
   const event1Start = event1.start_time / 1000;
   const event1End = event1.end_time / 1000;

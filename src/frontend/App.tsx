@@ -63,9 +63,9 @@ const App: React.FC = () => {
   useEffect(() => {
     if (backendActor && ckUSDCActor && profile?.id) {
       (async () => {
-        console.log("Checking CKUSDT balance...");
+        // console.log("Checking CKUSDT balance...");
         let res = await askClaude("test");
-        console.log({ res });
+        // console.log({ res });
         try {
           const balance = await ckUSDCActor.icrc1_balance_of({
             owner: Principal.fromText(profile.id),

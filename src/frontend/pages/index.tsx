@@ -22,6 +22,7 @@ import { handleRedux } from "../redux/store/handleRedux";
 import FileContentPage from "./fileContentPage";
 import RegistrationForm from "../components/MainComponents/RegistrationForm";
 import ContractPage from "./profile/ContractPage";
+import Scheduler from "./dashBoardPage/calindarView";
 
 function Pages() {
   const { profile, profile_history, wallet, friends } = useSelector(
@@ -81,6 +82,7 @@ function Pages() {
       <Route path="/affiliate" element={<AffiliateDashboard />} />
       <Route path="/f" element={<AffiliateRedirect />} />
       <Route path="/*" element={<FileContentPage />} />
+        <Route path="/calendar" element={<Scheduler />} />
     </Routes>
   );
 }

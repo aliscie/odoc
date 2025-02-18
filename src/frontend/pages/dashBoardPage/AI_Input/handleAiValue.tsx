@@ -8,22 +8,24 @@ export const handelAIValue = async (
   currentMessages,
   setMessages,
   enqueueSnackbar,
+  dispatch,
+  profile,
 ) => {
   try {
-    console.log({ currentMessages });
+    // console.log({ currentMessages });
+    let myname = "";
+    if (profile) {
+      myname = `${profile.name} this is my name make sure to add it to the attendances when I create events`;
+    }
 
     const calendarRes = await processCalendarText(
-      JSON.stringify(currentMessages) + JSON.stringify(input),
+      JSON.stringify(currentMessages) + JSON.stringify(input) + myname,
       currentCalendar,
+      dispatch,
     );
-    // const calendarRes = await processCalendarText(
-    //   JSON.stringify(currentMessages) + JSON.stringify(input),
-    //   currentCalendar,
-    // );
 
     const addEvents = [];
     const otherActions = [];
-    console.log({ calendarRes });
     calendarRes.forEach((action) => {
       if (action.type === "ADD_EVENT") {
         addEvents.push(action.event);

@@ -8,7 +8,6 @@ export const conversationState = {
 // Action types
 export const ActionTypes = {
   ADD_EVENT: 'ADD_EVENT',
-  ADD_EVENTS: 'ADD_EVENTS',
   UPDATE_EVENT: 'UPDATE_EVENT',
   DELETE_EVENT: 'DELETE_EVENT',
   ADD_AVAILABILITY: 'ADD_AVAILABILITY',

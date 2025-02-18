@@ -6,10 +6,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import ChatDialog from "./chtDilog";
 import { handelAIValue } from "./handleAiValue";
+import ThemedFineTuneComponent from "./fineTuneCompnent";
+import AnimatedFloatingFineTune from "./floatingButtonFineTune";
 
 const ConversationInput = ({ calendar }) => {
   const { profile } = useSelector((state: any) => state.filesState);
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
   const theme = useTheme();
   const [messages, setMessages] = useState([]);
@@ -34,8 +36,10 @@ const ConversationInput = ({ calendar }) => {
           messages,
           setMessages,
           enqueueSnackbar,
+          dispatch,
+          profile,
         );
-        // console.log({ actions });
+        console.log({ calendar, actions });
         actions?.forEach((action) => {
           dispatch(action);
         });
@@ -44,7 +48,7 @@ const ConversationInput = ({ calendar }) => {
         resetTranscript();
       }
     },
-    [resetTranscript, calendar, messages],
+    [resetTranscript, calendar, messages, dispatch],
   );
 
   // const toggleRecording = useCallback(() => {
@@ -73,6 +77,7 @@ const ConversationInput = ({ calendar }) => {
       //   borderTop: `1px solid ${theme.palette.divider}`,
       // }}
     >
+      <AnimatedFloatingFineTune />
       <ChatDialog
         initialMessages={messages}
         isThinking={isThinking}

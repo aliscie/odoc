@@ -1,140 +1,229 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Calendar } from "../../../../declarations/backend/backend.did";
-import { logger } from "../../../DevUtils/logData";
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+// Types
+type TimeSlot = {
+  start_time: number;
+  end_time: number;
+};
 
-// Helper function to convert microsecond timestamp to formatted time
-function formatTime(timestamp: number): string {
-  const date = new Date(timestamp / 1e6);
-  return date.toLocaleTimeString('en-US', {
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
+type Availability = {
+  id: string;
+  title?: string;
+  schedule_type: string;
+  time_slots: TimeSlot[];
+  is_blocked: boolean;
+};
 
-// Helper function to convert microsecond timestamp to formatted date
-function formatDate(timestamp: number): string {
-  const date = new Date(timestamp / 1e6);
-  return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
-}
+type CalendarAction = {
+  type: string;
+  event?: any;
+  availability?: any;
+};
 
-// Helper function to parse time string to Date
-function parseTime(timeStr: string, dateObj: Date = new Date()): number {
-  const [hours, minutes] = timeStr.split(':').map(Number);
-  dateObj.setHours(hours, minutes, 0, 0);
-  return dateObj.getTime() * 1e6;
-}
+// Constants
+const VALID_ACTION_TYPES = new Set([
+  "ADD_EVENT",
+  "UPDATE_EVENT",
+  "DELETE_EVENT",
+  "ADD_AVAILABILITY",
+  "UPDATE_AVAILABILITY",
+  "DELETE_AVAILABILITY",
+]);
 
-// Helper function to parse date string to timestamp
-function parseDate(dateStr: string): number {
-  const [day, month, year] = dateStr.split('-').map(Number);
-  return new Date(year, month - 1, day).getTime() * 1e6;
-}
+// Time formatting utilities
+class TimeFormatter {
+  private static MICROSECONDS_MULTIPLIER = 1e6;
 
-// Format calendar data for the prompt
-function formatCalendarForPrompt(calendar: Calendar): string {
-  let formattedData = '';
-
-  if (calendar.events?.length) {
-    formattedData += '\nEvents:\n';
-    calendar.events.forEach(event => {
-      formattedData += `- "${event.title}" on ${formatDate(event.start_time)} at ${formatTime(event.start_time)} to ${formatTime(event.end_time)}
-        ID: ${event.id}
-        Description: ${event.description?.[0] || 'None'}
-        Attendees: ${event.attendees?.length ? event.attendees.join(', ') : 'None'}\n`;
-    });
+  static toUTCTime(timestamp: number): string {
+    const date = new Date(timestamp / this.MICROSECONDS_MULTIPLIER);
+    return date.toISOString().slice(11, 16); // Returns HH:mm in UTC
   }
 
-  if (calendar.availabilities?.length) {
-    formattedData += '\nAvailabilities:\n';
-    calendar.availabilities.forEach(avail => {
-      const timeSlots = avail.time_slots.map(slot =>
-        `${formatTime(Number(slot.start_time))} to ${formatTime(Number(slot.end_time))}`
-      ).join(', ');
-      formattedData += `- ${avail.title?.[0] || 'Available'} (ID: ${avail.id})
-        Schedule: ${timeSlots}\n`;
-    });
+  static toUTCDate(timestamp: number): string {
+    const date = new Date(timestamp / this.MICROSECONDS_MULTIPLIER);
+    const day = date.getUTCDate().toString().padStart(2, "0");
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+    const year = date.getUTCFullYear();
+    return `${day}-${month}-${year}`;
   }
 
-  if (calendar.blocked_times?.length) {
-    formattedData += '\nBlocked Times:\n';
-    calendar.blocked_times.forEach(block => {
-      if ('SingleBlock' in block.block_type) {
-        formattedData += `- Blocked on ${formatDate(block.block_type.SingleBlock.start_time)} from ${formatTime(block.block_type.SingleBlock.start_time)} to ${formatTime(block.block_type.SingleBlock.end_time)}
-          ID: ${block.id}
-          Reason: ${block.reason?.[0] || 'None'}\n`;
-      } else if ('FullDayBlock' in block.block_type) {
-        formattedData += `- Blocked full day on ${formatDate(block.block_type.FullDayBlock.date)}
-          ID: ${block.id}
-          Reason: ${block.reason?.[0] || 'None'}\n`;
+  static parseTimeToMicroseconds(
+    timeStr: string,
+    dateTimestamp: number,
+  ): number {
+    try {
+      const [hours, minutes] = timeStr.split(":").map(Number);
+      if (
+        isNaN(hours) ||
+        isNaN(minutes) ||
+        hours < 0 ||
+        hours > 23 ||
+        minutes < 0 ||
+        minutes > 59
+      ) {
+        throw new Error("Invalid time format");
       }
-    });
+
+      // Use the provided date timestamp to get the base date
+      const baseDate = new Date(dateTimestamp / this.MICROSECONDS_MULTIPLIER);
+
+      // Create new date with the same day but specified time
+      const dateWithTime = new Date(
+        Date.UTC(
+          baseDate.getUTCFullYear(),
+          baseDate.getUTCMonth(),
+          baseDate.getUTCDate(),
+          hours,
+          minutes,
+          0,
+          0,
+        ),
+      );
+
+      return dateWithTime.getTime() * this.MICROSECONDS_MULTIPLIER;
+    } catch (error) {
+      throw new Error(`Invalid time format: ${timeStr}`);
+    }
   }
 
-  return formattedData;
+  static parseDateToMicroseconds(dateStr: string): number {
+    try {
+      const [day, month, year] = dateStr.split("-").map(Number);
+      // Set time to midnight UTC for the specified date
+      const date = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+      if (isNaN(date.getTime())) {
+        throw new Error("Invalid date");
+      }
+      return date.getTime() * this.MICROSECONDS_MULTIPLIER;
+    } catch (error) {
+      throw new Error(`Invalid date format: ${dateStr}`);
+    }
+  }
+}
+// Calendar formatter
+class CalendarFormatter {
+  static formatForPrompt(calendar: Calendar): string {
+    const sections: string[] = [];
+
+    if (calendar.events?.length) {
+      sections.push(this.formatEvents(calendar.events));
+    }
+
+    if (calendar.availabilities?.length) {
+      sections.push(this.formatAvailabilities(calendar.availabilities));
+    }
+
+    return sections.join("\n\n");
+  }
+
+  private static formatEvents(events: any[]): string {
+    return (
+      "Events:\n" +
+      events
+        .map(
+          (event) =>
+            `- "${event.title}" on ${TimeFormatter.toUTCDate(event.date)} at ${TimeFormatter.toUTCTime(event.start_time)} to ${TimeFormatter.toUTCTime(event.end_time)}
+        ID: ${event.id}
+        Description: ${event.description || "None"}
+        recurrence: ${event.recurrence ? event.recurrence.join(", ") : "None"}
+        Attendees: ${event.attendees?.length ? event.attendees.join(", ") : "None"}`,
+        )
+        .join("\n")
+    );
+  }
+
+  private static formatAvailabilities(availabilities: any[]): string {
+    return (
+      "Availabilities:\n" +
+      availabilities
+        .map((avail) => {
+          const timeSlots = avail.time_slots
+            .map(
+              (slot: TimeSlot) =>
+                `${TimeFormatter.toUTCTime(Number(slot.start_time))} to ${TimeFormatter.toUTCTime(Number(slot.end_time))}`,
+            )
+            .join(", ");
+          const status = avail.is_blocked ? "Blocked" : "Available";
+          return `- ${avail.title?.[0] || status} (ID: ${avail.id})
+        Schedule: ${timeSlots}
+        Status: ${status}`;
+        })
+        .join("\n")
+    );
+  }
 }
 
+// Main processor
 export async function processCalendarText(
   text: string,
   oldCalendar: Calendar,
+  dispatch: any,
 ): Promise<CalendarAction[]> {
   try {
+    const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+    if (!import.meta.env.VITE_GEMINI_API_KEY) {
+      throw new Error("Gemini API key is missing");
+    }
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
     const now = Date.now() * 1e6;
 
     const prompt = `
-      Current time: ${formatTime(now)} ${formatDate(now)}
+      Current UTC time: ${TimeFormatter.toUTCTime(now)} ${TimeFormatter.toUTCDate(now)}
       
-      Current Calendar: ${formatCalendarForPrompt(oldCalendar)}
+      Current Calendar: ${CalendarFormatter.formatForPrompt(oldCalendar)}
       
       User input: ${text}
       
-      Generate a JSON array response. Events MUST use these formats:
-      - Dates: "DD-MM-YYYY" (e.g. "01-01-2025")
-      - Times: "HH:mm" in 24-hour format (e.g. "09:00", "14:30")
-      
-      Response must be a JSON array with actions. Each action must have a "type":
-      - For events: "ADD_EVENT", "UPDATE_EVENT", "DELETE_EVENT"
-      - For availability: "ADD_AVAILABILITY", "UPDATE_AVAILABILITY", "DELETE_AVAILABILITY"
-      - For blocked times: "ADD_BLOCKED_TIME", "UPDATE_BLOCKED_TIME", "DELETE_BLOCKED_TIME"
-      
-      Example response:
-      [
-        {
-          "type": "ADD_EVENT",
-          "event": {
-            "id": "evt_${Date.now()}",
-            "title": "Team Meeting",
-            "date": "17-02-2025",
-            "start_time": "09:00",
-            "end_time": "10:00",
-            "description": "Weekly sync",
-            "attendees": ["John", "Sarah"]
-          }
-        },
-        {
-          "type": "ADD_BLOCKED_TIME",
-          "blocked_time": {
-            "id": "block_${Date.now()}",
-            "date": "17-02-2025",
-            "start_time": "14:00",
-            "end_time": "15:00",
-            "reason": "Focus time"
-          }
+      Generate a JSON array response. All times should be in UTC.
+      For availability, use this format:
+      {
+        "type": "ADD_AVAILABILITY",
+        "availability": {
+          "id": "avail_${Date.now()}",
+          "title": "Regular Availability",
+          "schedule_type": "weekly",
+          "is_blocked": false,
+          "slots": [
+            {
+              "start_time": "09:00",
+              "end_time": "13:00"
+            }
+          ]
         }
-      ]
+      }
+
+      Times must be in "HH:mm" 24-hour format UTC (e.g. "09:00", "14:30")
+      Dates must be in "DD-MM-YYYY" format
+      
+      Response must be a JSON array with ONLY these action types:
+      - For single events: "ADD_EVENT", "UPDATE_EVENT", "DELETE_EVENT"
+      - For availability: "ADD_AVAILABILITY", "UPDATE_AVAILABILITY", "DELETE_AVAILABILITY"
+      
+      Note: Use is_blocked: true to indicate blocked time slots
     `;
 
-    const result = await model.generateContent(prompt);
+    let result;
+    try {
+      result = await model.generateContent(prompt);
+      if (!result || !result.response) {
+        throw new Error("No response from Gemini API");
+      }
+    } catch (error) {
+      throw new Error(`Gemini API error: ${error.message}`);
+    }
+
     const responseText = result.response.text();
     const cleanedText = responseText.replace(/```json\n|\n```|```/g, "").trim();
 
     let parsed: any[];
     try {
       parsed = JSON.parse(cleanedText);
-      logger("Parsed response:", parsed);
+      dispatch({
+        type: "SET_TRAINING_DATA",
+        training_data: { input: prompt, output: parsed },
+      });
     } catch (error) {
       throw new Error(`Invalid JSON response: ${error.message}`);
     }
@@ -143,53 +232,69 @@ export async function processCalendarText(
       throw new Error("Response must be an array");
     }
 
-    // Convert the parsed actions to proper format with timestamps
-    return parsed.map(action => {
-      const newAction: any = { type: action.type };
-
-      if (action.event) {
-        const dateTimestamp = parseDate(action.event.date);
-        newAction.event = {
-          id: action.event.id,
-          title: action.event.title,
-          start_time: parseTime(action.event.start_time, new Date(dateTimestamp / 1e6)),
-          end_time: parseTime(action.event.end_time, new Date(dateTimestamp / 1e6)),
-          description: action.event.description ? [action.event.description] : [],
-          attendees: action.event.attendees || [],
-          created_by: ""
-        };
-      }
-
-      if (action.blocked_time) {
-        const dateTimestamp = parseDate(action.blocked_time.date);
-        newAction.blocked_time = {
-          id: action.blocked_time.id,
-          block_type: {
-            SingleBlock: {
-              start_time: parseTime(action.blocked_time.start_time, new Date(dateTimestamp / 1e6)),
-              end_time: parseTime(action.blocked_time.end_time, new Date(dateTimestamp / 1e6))
-            }
-          },
-          reason: action.blocked_time.reason ? [action.blocked_time.reason] : []
-        };
-      }
-
-      if (action.availability) {
-        newAction.availability = {
-          id: action.availability.id,
-          title: action.availability.title ? [action.availability.title] : [],
-          schedule_type: action.availability.schedule_type,
-          time_slots: action.availability.slots.map((slot: any) => ({
-            start_time: parseTime(slot.start_time),
-            end_time: parseTime(slot.end_time)
-          }))
-        };
-      }
-
-      return newAction;
-    });
+    return parsed.map((action) => ActionProcessor.processAction(action));
   } catch (error) {
-    logger("Error processing calendar text:", error);
+    console.error("Error processing calendar text:", error);
     throw error;
+  }
+}
+
+// Updated Action Processor
+class ActionProcessor {
+  static processAction(action: any): CalendarAction {
+    if (!VALID_ACTION_TYPES.has(action.type)) {
+      throw new Error(`Invalid action type: ${action.type}`);
+    }
+
+    const processedAction: CalendarAction = { type: action.type };
+
+    if (action.event) {
+      processedAction.event = this.processEvent(action.event);
+    }
+
+    if (action.availability) {
+      processedAction.availability = this.processAvailability(
+        action.availability,
+      );
+    }
+
+    return processedAction;
+  }
+
+  private static processEvent(event: any) {
+    // First process the date to get the base timestamp for the day
+    const dateTimestamp = TimeFormatter.parseDateToMicroseconds(event.date);
+
+    return {
+      id: event.id,
+      title: event.title,
+      date: dateTimestamp, // Add the date field
+      start_time: TimeFormatter.parseTimeToMicroseconds(
+        event.start_time,
+        dateTimestamp,
+      ),
+      end_time: TimeFormatter.parseTimeToMicroseconds(
+        event.end_time,
+        dateTimestamp,
+      ),
+      recurrence: event.recurrence || [],
+      description: event.description || "",
+      attendees: event.attendees || [],
+      created_by: "",
+      owner: "", // Added owner field as per the Rust struct
+    };
+  }
+
+  private static processAvailability(availability: any) {
+    return {
+      id: availability.id,
+      title: availability.title ? [availability.title] : [],
+      schedule_type: availability.schedule_type || "weekly",
+      is_blocked: availability.is_blocked || false,
+      time_slots: availability.slots.map((slot: any) => ({
+        start_time: TimeFormatter.parseTimeToMicroseconds(slot.start_time),
+        end_time: TimeFormatter.parseTimeToMicroseconds(slot.end_time),
+      })),
+    };
   }
 }

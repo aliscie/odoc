@@ -94,7 +94,7 @@ export function filesReducer(
         files: [...state.files, ...action.files],
       };
     case "ADD_POSTS":
-      console.log({ action });
+      // console.log({ action });
       return {
         ...state,
         posts: [...state.posts, ...action.posts],
@@ -158,7 +158,7 @@ export function filesReducer(
       };
 
     case "CURRENT_FILE":
-      console.log({ action });
+      // console.log({ action });
       // localStorage.setItem("current_file", JSON.stringify({ ...action.file }));
       return {
         ...state,

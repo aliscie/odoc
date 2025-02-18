@@ -52,9 +52,6 @@ const TimeZoneSelector: React.FC<TimeZoneSelectorProps> = ({
       <Typography variant="subtitle1" gutterBottom>
         Current Time: {currentTime}
       </Typography>
-      <Typography variant="subtitle2" gutterBottom>
-        Selected Zone: {current_timezone}
-      </Typography>
       <Autocomplete
         value={current_timezone}
         onChange={(_, newValue) => handleChange(newValue)}

@@ -15,27 +15,10 @@ const generationConfig = {
   responseMimeType: "text/plain",
 };
 
-async function fineTuneGemeni() {
+async function fineTuneGemeni(data) {
   const parts = [
     {
-      text: 'input: Convert this text into a calendar JSON object: "Postpone the Meeting with David to 1 PM"\n\nNote: my original calendar shows the meeting with David is currently 30 minutes long.',
-    },
-    {
-      text: 'output: { "events": [{ "id": "evt_3", "title": "Meeting with David", "description": "Discuss something", "start_time": "17-02-2025T13:00", "end_time": "17-02-2025T13:30", "created_by": "", "attendees": ["David"], "recurrence": null }] }',
-    },
-    // Example 2: Postpone meeting with Klover
-    {
-      text: 'input: Convert this text into a calendar JSON object: "Postpone the Meeting with Klover to 10 PM"\n\nNote: my original calendar shows the meeting with Klover is currently 30 minutes long.',
-    },
-    {
-      text: 'output: { "events": [{ "id": "evt_3", "title": "Meeting with Klover", "description": null, "start_time": "17-02-2025T22:00", "end_time": "17-02-2025T22:30", "created_by": "", "attendees": ["Klover"], "recurrence": null }] }',
-    },
-    // Example 3: Another variation
-    {
-      text: 'input: Convert this text into a calendar JSON object: "Postpone the Meeting with Alex to 3 PM"\n\nNote: my original calendar shows the meeting with Alex is currently 30 minutes long.',
-    },
-    {
-      text: 'output: { "events": [{ "id": "evt_1", "title": "Meeting with Alex", "description": "Discuss oDoc", "start_time": "17-02-2025T15:00", "end_time": "17-02-2025T15:30", "created_by": "", "attendees": ["Alex"], "recurrence": null }] }',
+      text: JSON.stringify(data),
     },
   ];
 

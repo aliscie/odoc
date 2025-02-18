@@ -44,23 +44,9 @@ type Approve = record {
 type Availability = record {
   id : text;
   title : opt text;
+  is_blocked : bool;
   schedule_type : ScheduleType;
   time_slots : vec TimeSlot;
-};
-type BlockType = variant {
-  SingleBlock : record { end_time : float64; start_time : float64 };
-  FullDayBlock : record { date : float64 };
-  WeeklyBlock : record {
-    day : nat32;
-    end_time : nat64;
-    start_time : nat64;
-    valid_until : opt float64;
-  };
-};
-type BlockedTime = record {
-  id : text;
-  block_type : BlockType;
-  reason : opt text;
 };
 type Burn = record {
   from : Index_Account;
@@ -106,7 +92,12 @@ type Calendar = record {
   owner : text;
   events : vec Event;
   availabilities : vec Availability;
-  blocked_times : vec BlockedTime;
+};
+type CalendarActions = record {
+  delete_availabilities : vec text;
+  delete_events : vec text;
+  events : vec Event;
+  availabilities : vec Availability;
 };
 type CanisterOutputCertifiedMessages = record {
   messages : vec CanisterOutputMessage;
@@ -199,7 +190,9 @@ type Error = variant {
 type Event = record {
   id : text;
   title : text;
-  description : opt text;
+  owner : text;
+  date : float64;
+  description : text;
   created_by : text;
   end_time : float64;
   recurrence : opt RecurrenceRule;
@@ -387,26 +380,26 @@ type RegisterUser = record {
 };
 type RemoveSwapArgs = record { token0 : principal; token1 : principal };
 type Result = variant { Ok : User; Err : text };
-type Result_1 = variant { Ok : Calendar; Err : text };
-type Result_10 = variant { Ok : InitialData; Err : text };
-type Result_11 = variant { Ok : Post; Err : text };
-type Result_12 = variant { Ok : ShareFile; Err : text };
-type Result_13 = variant {
+type Result_1 = variant { Ok; Err : Error };
+type Result_10 = variant { Ok : Post; Err : text };
+type Result_11 = variant { Ok : ShareFile; Err : text };
+type Result_12 = variant {
   Ok : record { FileNode; vec ContentNode };
   Err : text;
 };
-type Result_14 = variant { Ok : SNSStatus; Err : text };
-type Result_15 = variant { Ok : UserProfile; Err : text };
-type Result_16 = variant { Ok; Err };
+type Result_13 = variant { Ok : SNSStatus; Err : text };
+type Result_14 = variant { Ok : UserProfile; Err : text };
+type Result_15 = variant { Ok; Err };
+type Result_16 = variant { Ok : Calendar; Err : text };
 type Result_17 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
-type Result_2 = variant { Ok; Err : Error };
-type Result_3 = variant { Ok; Err : text };
-type Result_4 = variant { Ok : GetTransactions; Err : Error };
-type Result_5 = variant { Ok : text; Err : text };
-type Result_6 = variant { Ok : WorkSpace; Err : text };
-type Result_7 = variant { Ok : Wallet; Err : Error };
-type Result_8 = variant { Ok : Affiliate; Err : text };
-type Result_9 = variant { Ok : StoredContract; Err : text };
+type Result_2 = variant { Ok; Err : text };
+type Result_3 = variant { Ok : GetTransactions; Err : Error };
+type Result_4 = variant { Ok : text; Err : text };
+type Result_5 = variant { Ok : WorkSpace; Err : text };
+type Result_6 = variant { Ok : Wallet; Err : Error };
+type Result_7 = variant { Ok : Affiliate; Err : text };
+type Result_8 = variant { Ok : StoredContract; Err : text };
+type Result_9 = variant { Ok : InitialData; Err : text };
 type Row = record {
   id : text;
   contract : opt Contract;
@@ -498,32 +491,32 @@ type WorkSpace = record {
 };
 service : () -> {
   accept_friend_request : (text) -> (Result);
-  add_event_calendar : (text, vec Event) -> (Result_1);
-  add_owner : (AddOwnerArgs) -> (Result_2);
-  add_swap : (AddSwapArgs) -> (Result_2);
-  approve_high_promise : (CPayment) -> (Result_3);
+  add_owner : (AddOwnerArgs) -> (Result_1);
+  add_swap : (AddSwapArgs) -> (Result_1);
+  approve_high_promise : (CPayment) -> (Result_2);
   cancel_friend_request : (text) -> (Result);
-  check_external_transactions : (nat) -> (Result_4);
-  confirmed_c_payment : (CPayment) -> (Result_3);
-  confirmed_cancellation : (CPayment) -> (Result_3);
+  check_external_transactions : (nat) -> (Result_3);
+  confirmed_c_payment : (CPayment) -> (Result_2);
+  confirmed_cancellation : (CPayment) -> (Result_2);
   counter : () -> (nat64) query;
   create_new_file : (text, opt text) -> (FileNode);
-  delete_chat : (text) -> (Result_5);
-  delete_custom_contract : (text) -> (Result_3);
+  delete_chat : (text) -> (Result_4);
+  delete_custom_contract : (text) -> (Result_2);
   delete_file : (text) -> (opt FileNode);
-  delete_post : (text) -> (Result_3);
-  delete_work_space : (WorkSpace) -> (Result_6);
-  deposit_ckusdt : () -> (Result_7);
-  get_affiliate_data : (text) -> (Result_8);
+  delete_post : (text) -> (Result_2);
+  delete_work_space : (WorkSpace) -> (Result_5);
+  deposit_ckusdt : () -> (Result_6);
+  get_affiliate_data : (text) -> (Result_7);
   get_all_files : () -> (vec FileNode) query;
   get_all_files_content : () -> (vec record { text; vec ContentNode }) query;
+  get_calendar : (text) -> (opt Calendar) query;
   get_chats_notifications : () -> (vec Message) query;
-  get_contract : (text, text) -> (Result_9) query;
+  get_contract : (text, text) -> (Result_8) query;
   get_file : (text) -> (opt FileNode) query;
   get_file_content : (text) -> (opt vec ContentNode) query;
   get_filtered_posts : (opt vec text, opt text) -> (vec PostUser) query;
   get_friends : () -> (vec Friend) query;
-  get_initial_data : () -> (Result_10) query;
+  get_initial_data : () -> (Result_9) query;
   get_logs : (GetErrorLogsArgs) -> (vec Log) query;
   get_more_files : (float32) -> (
       vec FileNode,
@@ -532,51 +525,52 @@ service : () -> {
   get_my_calendar : () -> (Calendar) query;
   get_my_chats : () -> (vec FEChat) query;
   get_owners : () -> (vec principal) query;
-  get_post : (text) -> (Result_11) query;
+  get_post : (text) -> (Result_10) query;
   get_posts : (nat64, nat64) -> (vec PostUser) query;
-  get_share_file : (text) -> (Result_12) query;
-  get_shared_file : (text) -> (Result_13);
-  get_sns_status : () -> (Result_14) query;
+  get_share_file : (text) -> (Result_11) query;
+  get_shared_file : (text) -> (Result_12);
+  get_sns_status : () -> (Result_13) query;
   get_swaps : () -> (vec record { principal; principal }) query;
   get_user : (text) -> (Result) query;
   get_user_notifications : () -> (vec Notification) query;
-  get_user_profile : (principal) -> (Result_15) query;
+  get_user_profile : (principal) -> (Result_14) query;
   get_users : () -> (float64) query;
   get_work_spaces : () -> (vec WorkSpace) query;
-  internal_transaction : (float64, text, ExchangeType) -> (Result_3);
-  make_new_chat_room : (Chat) -> (Result_5);
-  message_is_seen : (Message) -> (Result_3);
-  move_file : (text, opt text) -> (Result_16);
+  internal_transaction : (float64, text, ExchangeType) -> (Result_2);
+  load_more_events : (int32) -> (vec Event) query;
+  make_new_chat_room : (Chat) -> (Result_4);
+  message_is_seen : (Message) -> (Result_2);
+  move_file : (text, opt text) -> (Result_15);
   multi_updates : (
       vec FileNode,
       vec vec record { text; vec ContentNode },
       vec StoredContract,
       vec FileIndexing,
-    ) -> (Result_5);
-  object_on_cancel : (CPayment, text) -> (Result_3);
-  pay : (PayArgs) -> (Result_2);
-  rate_user : (principal, Rating) -> (Result_3);
+    ) -> (Result_4);
+  object_on_cancel : (CPayment, text) -> (Result_2);
+  pay : (PayArgs) -> (Result_1);
+  rate_user : (principal, Rating) -> (Result_2);
   register : (text, RegisterUser) -> (Result);
   reject_friend_request : (text) -> (Result);
-  remove_owner : (AddOwnerArgs) -> (Result_2);
-  remove_swap : (RemoveSwapArgs) -> (Result_2);
-  save_calendar : (Calendar) -> (Result_1);
-  save_post : (Post) -> (Result_3);
-  save_work_space : (WorkSpace) -> (Result_6);
+  remove_owner : (AddOwnerArgs) -> (Result_1);
+  remove_swap : (RemoveSwapArgs) -> (Result_1);
+  save_post : (Post) -> (Result_2);
+  save_work_space : (WorkSpace) -> (Result_5);
   search_posts : (text) -> (vec PostUser) query;
-  see_notifications : (vec text) -> (Result_5);
+  see_notifications : (vec text) -> (Result_4);
   send_friend_request : (text) -> (Result);
-  send_message : (opt principal, Message) -> (Result_5);
-  share_file : (ShareFileInput) -> (Result_12);
+  send_message : (opt principal, Message) -> (Result_4);
+  share_file : (ShareFileInput) -> (Result_11);
   unfriend : (text) -> (Result);
-  unvote : (text) -> (Result_11);
-  update_chat : (Chat) -> (Result_5);
+  unvote : (text) -> (Result_10);
+  update_calendar : (CalendarActions) -> (Result_16);
+  update_chat : (Chat) -> (Result_4);
   update_user_profile : (RegisterUser) -> (Result);
-  vote_down : (text) -> (Result_11);
-  vote_up : (text) -> (Result_11);
-  withdraw_ckusdt : (nat64, text) -> (Result_7);
-  ws_close : (CanisterWsCloseArguments) -> (Result_3);
+  vote_down : (text) -> (Result_10);
+  vote_up : (text) -> (Result_10);
+  withdraw_ckusdt : (nat64, text) -> (Result_6);
+  ws_close : (CanisterWsCloseArguments) -> (Result_2);
   ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_17) query;
-  ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_3);
-  ws_open : (CanisterWsOpenArguments) -> (Result_3);
+  ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_2);
+  ws_open : (CanisterWsOpenArguments) -> (Result_2);
 }

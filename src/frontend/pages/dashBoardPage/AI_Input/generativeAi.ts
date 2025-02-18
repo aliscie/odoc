@@ -332,6 +332,7 @@ Note: my original calendar is ${JSON.stringify(formattedCalendar)}`;
       );
 
       if (newEvents.length > 1) {
+        // TODO Do not ADD_EVENTS instead make a list of ADD_EVENT
         actions.push({
           type: "ADD_EVENTS",
           events: newEvents,
