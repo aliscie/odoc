@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Avatar,
   Box,
-  Button,
   CircularProgress,
   Container,
   IconButton,
@@ -17,8 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import { convertToBytes } from "../../DataProcessing/imageToVec";
 import { useBackendContext } from "../../contexts/BackendContext";
-import { RegisterUser, User } from "../../../declarations/backend/backend.did";
-import { handleRedux } from "../../redux/store/handleRedux";
+import { RegisterUser } from "../../../declarations/backend/backend.did";
+import LoaderButton from "../MuiComponents/LoaderButton";
 
 interface FormValues {
   username: string;
@@ -45,8 +44,6 @@ const RegistrationForm: React.FC = () => {
     last_name: "",
     email: "",
   });
-
-
 
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoByte, setPhotoByte] = useState<Uint8Array | number[] | undefined>(
@@ -119,8 +116,8 @@ const RegistrationForm: React.FC = () => {
       console.error("There was an issue with registration: ", error);
       enqueueSnackbar(error.message, { variant: "error" });
     }
+    return { Ok: "" };
   };
-
 
   return (
     <Container
@@ -265,14 +262,14 @@ const RegistrationForm: React.FC = () => {
           />
 
           <Stack direction="row" spacing={2} sx={{ mt: 4 }}>
-            <Button
+            <LoaderButton
               fullWidth
               variant="contained"
               onClick={handleRegister}
               sx={{ py: 1.5 }}
             >
               Complete Registration
-            </Button>
+            </LoaderButton>
           </Stack>
         </Stack>
       </Paper>

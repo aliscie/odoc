@@ -5,7 +5,7 @@ import { useSpeechRecognition } from "./useSpeechRecognition";
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import ChatDialog from "./chtDilog";
-import { handelAIValue } from "./handleAiValue";
+import handleAIValue from "./handleAiValue";
 import ThemedFineTuneComponent from "./fineTuneCompnent";
 import AnimatedFloatingFineTune from "./floatingButtonFineTune";
 
@@ -30,7 +30,7 @@ const ConversationInput = ({ calendar }) => {
       // e.preventDefault();
       if (value.trim()) {
         setIsThinking(true);
-        let actions = await handelAIValue(
+        let actions = await handleAIValue(
           value.trim(),
           calendar,
           messages,

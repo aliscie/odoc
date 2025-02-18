@@ -1,8 +1,9 @@
+// handleAIValue.js
 import { processCalendarText } from "./gemeniAi";
-import checkEventsOverlap from "../calindarView/utils";
 import generateCalendarData from "./generativeAi";
+import validateEventAgainstCalendar from "../calindarView/utils";
 
-export const handelAIValue = async (
+const handleAIValue = async (
   input,
   currentCalendar,
   currentMessages,
@@ -12,11 +13,9 @@ export const handelAIValue = async (
   profile,
 ) => {
   try {
-    // console.log({ currentMessages });
-    let myname = "";
-    if (profile) {
-      myname = `${profile.name} this is my name make sure to add it to the attendances when I create events`;
-    }
+    let myname = profile
+      ? `${profile.name} this is my name make sure to add it to the attendances when I create events`
+      : "";
 
     const calendarRes = await processCalendarText(
       JSON.stringify(currentMessages) + JSON.stringify(input) + myname,
@@ -24,71 +23,77 @@ export const handelAIValue = async (
       dispatch,
     );
 
-    const addEvents = [];
-    const otherActions = [];
-    calendarRes.forEach((action) => {
-      if (action.type === "ADD_EVENT") {
-        addEvents.push(action.event);
-      } else if (action.type === "ADD_EVENTS") {
-        addEvents.push(...action.events);
-      } else if (action.type === "UPDATE_EVENT") {
-        const updatedEventOverlap = checkEventsOverlap(currentCalendar.events, [
-          action.event,
-        ]);
+    const validActions = [];
 
-        if (updatedEventOverlap.hasOverlap) {
+    for (const action of calendarRes) {
+      if (action.type === "ADD_EVENT" || action.type === "UPDATE_EVENT") {
+        const event = action.type === "ADD_EVENT" ? action.event : action.event;
+        const excludeEventId = action.type === "UPDATE_EVENT" ? event.id : null;
+
+        const validation = validateEventAgainstCalendar(
+          currentCalendar,
+          event,
+          excludeEventId,
+        );
+
+        if (!validation.isValid) {
           setMessages((prev) => [
             ...prev,
             {
               sender: "AI",
-              badEvent: action.event,
-              content: "This event conflicts with an existing one",
+              badEvent: event,
+              content: validation.reason,
             },
           ]);
-          return;
+          continue;
         }
-        otherActions.push(action);
+      }
+
+      if (action.type === "ADD_EVENTS") {
+        const validEvents = [];
+
+        for (const event of action.events) {
+          const validation = validateEventAgainstCalendar(
+            currentCalendar,
+            event,
+          );
+
+          if (!validation.isValid) {
+            setMessages((prev) => [
+              ...prev,
+              {
+                sender: "AI",
+                badEvent: event,
+                content: validation.reason,
+              },
+            ]);
+          } else {
+            validEvents.push(event);
+          }
+        }
+
+        if (validEvents.length > 0) {
+          validActions.push({
+            type: "ADD_EVENTS",
+            events: validEvents,
+          });
+        }
       } else {
-        otherActions.push(action);
-      }
-    });
-
-    if (addEvents.length > 0) {
-      const overlapping = checkEventsOverlap(currentCalendar.events, addEvents);
-
-      if (overlapping.hasOverlap) {
-        overlapping.overlappingPairs.forEach((overlap) => {
-          setMessages((prev) => [
-            ...prev,
-            {
-              sender: "AI",
-              badEvent: overlap.newEvent,
-              content: "This event conflicts with an existing one",
-            },
-          ]);
-        });
-        return;
-      }
-
-      if (addEvents.length > 0) {
-        otherActions.push({
-          type: "ADD_EVENTS",
-          events: addEvents,
-        });
+        validActions.push(action);
       }
     }
 
-    if (otherActions.length > 0) {
+    if (validActions.length > 0) {
       setMessages([]);
     }
-    return otherActions;
+
+    return validActions;
   } catch (error) {
     console.error("Calendar operation error:", error);
     enqueueSnackbar(
       "Sorry, I couldn't process that request. Please try again.",
-      {
-        variant: "error",
-      },
+      { variant: "error" },
     );
   }
 };
+export default handleAIValue;

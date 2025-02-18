@@ -18,7 +18,7 @@ import { logger } from "../../../DevUtils/logData";
 
 import React from "react";
 
-const CalendarExample = () => {
+export const CalendarExample = () => {
   const sampleCalendar = {
     id: "cal_123",
     owner: "user_456",
@@ -164,7 +164,12 @@ const CalendarExample = () => {
   };
 
   return (
-    <div className="bg-gray-900 text-white p-6 rounded-lg font-mono text-sm overflow-auto max-h-screen">
+    <div
+      style={{
+        overflow: "auto",
+      }}
+      className="bg-gray-900 text-white p-6 rounded-lg font-mono text-sm overflow-auto max-h-screen"
+    >
       <div className="whitespace-pre">{renderValue(sampleCalendar)}</div>
     </div>
   );
@@ -285,6 +290,7 @@ const JsonEditorContainer: React.FC<JsonEditorProps> = () => {
 
   return (
     <Container maxWidth="lg">
+      {/*<CalendarExample />*/}
       <Paper
         elevation={3}
         sx={{
@@ -293,11 +299,10 @@ const JsonEditorContainer: React.FC<JsonEditorProps> = () => {
           backgroundColor: theme.palette.background.paper,
         }}
       >
-
-
         <Typography variant="h5" gutterBottom>
           Edit Training Data Output
         </Typography>
+
         <JsonEditor />
       </Paper>
     </Container>
