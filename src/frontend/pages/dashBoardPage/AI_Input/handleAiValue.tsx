@@ -1,6 +1,5 @@
 // handleAIValue.js
 import { processCalendarText } from "./gemeniAi";
-import generateCalendarData from "./generativeAi";
 import validateEventAgainstCalendar from "../calindarView/utils";
 
 const handleAIValue = async (
@@ -17,7 +16,7 @@ const handleAIValue = async (
       ? `${profile.name} this is my name make sure to add it to the attendances when I create events`
       : "";
 
-    const calendarRes = await processCalendarText(
+    const AI_AGENT_RES = await processCalendarText(
       JSON.stringify(currentMessages) + JSON.stringify(input) + myname,
       currentCalendar,
       dispatch,
@@ -25,7 +24,7 @@ const handleAIValue = async (
 
     const validActions = [];
 
-    for (const action of calendarRes) {
+    for (const action of AI_AGENT_RES) {
       if (action.type === "ADD_EVENT" || action.type === "UPDATE_EVENT") {
         const event = action.type === "ADD_EVENT" ? action.event : action.event;
         const excludeEventId = action.type === "UPDATE_EVENT" ? event.id : null;

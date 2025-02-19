@@ -1,24 +1,21 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, {useEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import "./App.css";
 import Pages from "./pages";
-import { BrowserRouter } from "react-router-dom";
+import {BrowserRouter} from "react-router-dom";
 import useInitialData from "./redux/initialData/useInitialData";
-import { useSnackbar } from "notistack";
+import {useSnackbar} from "notistack";
 import NavBar from "./components/MainComponents/NavBar";
 import TopNavBar from "./components/MainComponents/topNavBar";
-import RegistrationForm from "./components/MainComponents/RegistrationForm";
 import SearchPopper from "./components/SearchComponent";
 import useSocket from "./websocket/use_socket";
-import { useBackendContext } from "./contexts/BackendContext";
-import { Box, CircularProgress, useTheme, styled } from "@mui/material";
-import { Principal } from "@dfinity/principal";
+import {useBackendContext} from "./contexts/BackendContext";
+import {Box, CircularProgress, styled, useTheme} from "@mui/material";
+import {Principal} from "@dfinity/principal";
 import PromoNotification from "./components/limitedOffer";
 import BetaWarning from "./betWarning";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { DndProvider } from "react-dnd";
-import GetStartedBanner from "./pages/LandingPage/getStartedBanner";
-import askClaude from "./pages/dashBoardPage/AI_Input/anthroboticAi";
+import {HTML5Backend} from "react-dnd-html5-backend";
+import {DndProvider} from "react-dnd";
 
 // Create a styled component for the main content
 const MainContent = styled(Box)(({ theme }) => ({
@@ -64,7 +61,6 @@ const App: React.FC = () => {
     if (backendActor && ckUSDCActor && profile?.id) {
       (async () => {
         // console.log("Checking CKUSDT balance...");
-        let res = await askClaude("test");
         // console.log({ res });
         try {
           const balance = await ckUSDCActor.icrc1_balance_of({

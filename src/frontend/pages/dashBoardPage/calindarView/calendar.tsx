@@ -10,6 +10,14 @@ import {
   TextField,
   DialogActions,
   Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Stack,
+  Tooltip,
+  ButtonGroup,
+  Typography,
 } from "@mui/material";
 import format from "date-fns/format";
 import parse from "date-fns/parse";
@@ -17,209 +25,360 @@ import startOfWeek from "date-fns/startOfWeek";
 import getDay from "date-fns/getDay";
 import enUS from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import CalendarManagement from "./AvailabilityComonent";
 
-const macOSStyle = (isDark) => ({
+const useCalendarStyles = (isDark) => ({
   ".rbc-calendar": {
     fontFamily:
       '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-    backgroundColor: isDark ? "#1c1c1e" : "#ffffff",
     border: "none",
+    backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
   },
   ".rbc-header": {
-    padding: "12px 4px",
+    padding: "8px 4px",
     fontWeight: "500",
     fontSize: "0.9rem",
-    backgroundColor: "transparent",
-    color: isDark ? "#ffffff" : "#1d1d1f",
-    borderBottom: `1px solid ${isDark ? "#3d3d3d" : "#e5e5e5"}`,
+    backgroundColor: isDark ? "#2d2d2d" : "#f8f9fa",
+    color: isDark ? "#ffffff" : "#1a1a1a",
+    borderBottom: isDark
+      ? "1px solid rgba(255, 255, 255, 0.08)"
+      : "1px solid rgba(0, 0, 0, 0.08)",
+    height: "36px",
+    "& span": {
+      display: "block",
+      textAlign: "center",
+    },
   },
-  ".rbc-month-view": {
-    border: "none",
-    backgroundColor: isDark ? "#1c1c1e" : "#ffffff",
+  ".rbc-header + .rbc-header": {
+    borderLeft: isDark
+      ? "1px solid rgba(255, 255, 255, 0.08)"
+      : "1px solid rgba(0, 0, 0, 0.08)",
   },
   ".rbc-time-view": {
-    backgroundColor: isDark ? "#1c1c1e" : "#ffffff",
-    border: "none",
-    borderRadius: "8px",
+    border: isDark
+      ? "1px solid rgba(255, 255, 255, 0.08)"
+      : "1px solid rgba(0, 0, 0, 0.08)",
+    borderRadius: "12px",
     overflow: "hidden",
+    backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
   },
   ".rbc-time-header": {
-    backgroundColor: isDark ? "#2c2c2e" : "#ffffff",
-    border: "none",
-  },
-  ".rbc-time-header-content": {
-    border: "none",
-    borderLeft: `1px solid ${isDark ? "#3d3d3d" : "#e5e5e5"}`,
+    backgroundColor: isDark ? "#2d2d2d" : "#f8f9fa",
+    borderBottom: isDark
+      ? "2px solid rgba(255, 255, 255, 0.12)"
+      : "2px solid rgba(0, 0, 0, 0.12)",
   },
   ".rbc-time-content": {
     border: "none",
-    borderTop: `1px solid ${isDark ? "#3d3d3d" : "#e5e5e5"}`,
+    "& > * + * > *": {
+      borderLeft: isDark
+        ? "1px solid rgba(255, 255, 255, 0.08)"
+        : "1px solid rgba(0, 0, 0, 0.08)",
+    },
   },
   ".rbc-timeslot-group": {
-    borderBottom: `1px solid ${isDark ? "#2c2c2e" : "#f5f5f7"}`,
+    borderBottom: "none",
+    minHeight: "80px",
+  },
+  ".rbc-time-content > * + * > *": {
+    borderLeft: isDark
+      ? "1px solid rgba(255, 255, 255, 0.04)"
+      : "1px solid rgba(0, 0, 0, 0.08)",
+  },
+  ".rbc-time-gutter": {
+    color: isDark ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)",
+    fontSize: "0.85rem",
+    fontWeight: "500",
+    padding: "0 12px",
+  },
+  ".rbc-time-slot": {
+    color: isDark ? "rgba(255, 255, 255, 0.5)" : "rgba(0, 0, 0, 0.5)",
+  },
+  ".rbc-event": {
+    padding: "6px 8px",
+    fontSize: "0.9rem",
+    fontWeight: "500",
+    border: "none",
+    borderRadius: "6px",
+    backgroundColor: isDark ? "#5856D6" : "#4845d6",
+    boxShadow: isDark
+      ? "0 2px 4px rgba(0, 0, 0, 0.2)"
+      : "0 2px 4px rgba(0, 0, 0, 0.1)",
+    transition: "all 0.2s ease",
+    "&:hover": {
+      transform: "translateY(-1px)",
+      boxShadow: isDark
+        ? "0 4px 8px rgba(0, 0, 0, 0.3)"
+        : "0 4px 8px rgba(0, 0, 0, 0.15)",
+    },
+  },
+  ".rbc-today": {
+    backgroundColor: isDark ? "#2C1F2D" : "#FFE5E5",
+  },
+  ".rbc-time-header-cell.rbc-today": {
+    backgroundColor: isDark ? "#3D2B3D" : "#FFD6D6",
   },
   ".rbc-current-time-indicator": {
     backgroundColor: isDark ? "#FF2D55" : "#FF3B30",
     height: "2px",
-    zIndex: 3,
-    position: "absolute",
-    right: 0,
-    left: 0,
     "&::before": {
       content: '""',
       position: "absolute",
-      left: "-6px",
-      top: "-4px",
-      width: "10px",
-      height: "10px",
-      backgroundColor: "inherit",
+      left: "-5px",
+      top: "-3px",
+      width: "8px",
+      height: "8px",
       borderRadius: "50%",
+      backgroundColor: "inherit",
     },
-  },
-  ".rbc-time-slot": {
-    color: isDark ? "#8e8e93" : "#86868b",
-    border: "none",
-  },
-  ".rbc-time-gutter": {
-    backgroundColor: isDark ? "#1c1c1e" : "#ffffff",
-  },
-  ".rbc-time-content > * + * > *": {
-    borderLeft: `1px solid ${isDark ? "#3d3d3d" : "#e5e5e5"}`,
-  },
-  ".rbc-day-bg": {
-    transition: "background-color 0.2s ease",
-    "&:hover": {
-      backgroundColor: isDark ? "#2c2c2e" : "#f5f5f7",
-    },
-  },
-  ".rbc-today": {
-    backgroundColor: isDark ? "#2c2c2e" : "#f5f5f7",
-  },
-  ".rbc-event": {
-    padding: "2px 4px",
-    fontSize: "0.85rem",
-    fontWeight: "500",
-    border: "none",
-    borderRadius: "4px",
-    "&:hover": {
-      transform: "scale(1.02)",
-      transition: "transform 0.2s ease",
-    },
-  },
-  ".rbc-event.rbc-selected": {
-    backgroundColor: "inherit",
-    outline: `2px solid ${isDark ? "#ffffff" : "#000000"}`,
   },
   ".rbc-toolbar": {
-    marginBottom: "20px",
-    padding: "10px",
-    backgroundColor: isDark ? "#2c2c2e" : "#f5f5f7",
-    borderRadius: "10px",
-    border: "none",
+    marginBottom: "24px",
+    padding: "12px",
+    borderRadius: "12px",
+    backgroundColor: isDark ? "#2d2d2d" : "#f8f9fa",
   },
   ".rbc-toolbar button": {
-    color: isDark ? "#ffffff" : "#1d1d1f",
-    border: "none",
-    backgroundColor: "transparent",
-    padding: "8px 12px",
+    padding: "8px 16px",
     borderRadius: "6px",
     fontWeight: "500",
+    transition: "all 0.2s ease",
+    color: isDark ? "#fff" : "#000",
     "&:hover": {
-      backgroundColor: isDark ? "#3d3d3d" : "#e5e5e5",
+      backgroundColor: isDark
+        ? "rgba(255, 255, 255, 0.1)"
+        : "rgba(0, 0, 0, 0.1)",
     },
-    "&.rbc-active": {
-      backgroundColor: isDark ? "#3d3d3d" : "#e5e5e5",
-      boxShadow: "none",
+    "&:active, &.rbc-active": {
+      backgroundColor: isDark ? "#9f006a" : "#ff0bae",
+      color: "#fff",
+      "&:hover": {
+        backgroundColor: isDark ? "#0fa259" : "#18ff00",
+      },
     },
   },
-  ".rbc-time-header .rbc-header.rbc-today": {
-    backgroundColor: isDark ? "#2c2c2e" : "#f5f5f7",
-    color: isDark ? "#FF2D55" : "#FF3B30",
-    fontWeight: "bold",
-  },
-  ".rbc-time-content .rbc-today": {
-    backgroundColor: isDark ? "#2c2c2e" : "#f5f5f7",
-  },
-  ".rbc-time-column": {
-    backgroundColor: isDark ? "#1c1c1e" : "#ffffff",
-  },
-  ".rbc-day-slot .rbc-time-slot": {
-    borderTop: `1px solid ${isDark ? "#2c2c2e" : "#f5f5f7"}`,
-  },
+  // Out of range dates styling
   ".rbc-off-range-bg": {
-    backgroundColor: isDark ? "#161618" : "#fafafa",
+    backgroundColor: isDark
+      ? "rgba(255, 255, 255, 0.02)"
+      : "rgba(0, 0, 0, 0.02)",
   },
   ".rbc-off-range": {
-    color: isDark ? "#666668" : "#bfbfbf",
-  },
-  ".rbc-date-cell": {
-    padding: "8px",
-    fontSize: "0.9rem",
-    fontWeight: "400",
-    color: isDark ? "#8e8e93" : "#86868b",
-  },
-  ".rbc-month-row": {
-    borderTop: `1px solid ${isDark ? "#3d3d3d" : "#e5e5e5"}`,
-  },
-  ".rbc-day-bg + .rbc-day-bg": {
-    borderLeft: `1px solid ${isDark ? "#3d3d3d" : "#e5e5e5"}`,
+    color: isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)",
   },
 });
-const TimeIndicator = () => {
-  const [time, setTime] = useState(new Date());
+const CustomToolbar = (toolbar) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+  const navigate = (action) => {
+    toolbar.onNavigate(action);
+  };
 
-  const minutesSinceMidnight = time.getHours() * 60 + time.getMinutes();
-  const percentageOfDay = (minutesSinceMidnight / 1440) * 100;
+  const viewNames = toolbar.views;
+  const view = toolbar.view;
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        left: "-5px",
-        top: `calc(${percentageOfDay}% - 12px)`,
-        width: "65px",
-        height: "24px",
-        backgroundColor: isDark ? "#FF2D55" : "#FF3B30",
-        borderRadius: "12px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        color: "white",
-        fontSize: "11px",
-        fontWeight: "bold",
-        zIndex: 1000,
-        boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      }}
+    <Stack
+      direction={{ xs: "column", sm: "row" }}
+      spacing={2}
+      alignItems="center"
+      justifyContent="space-between"
+      sx={{ mb: 3, px: 2 }}
     >
-      {format(time, "HH:mm:ss")}
-    </div>
+      {/* Navigation Buttons */}
+      <ButtonGroup variant="contained" size="small">
+        <CalendarManagement />
+        <Button onClick={() => navigate("TODAY")}>Today</Button>
+        <Button onClick={() => navigate("PREV")}>Back</Button>
+        <Button onClick={() => navigate("NEXT")}>Next</Button>
+      </ButtonGroup>
+
+      {/* Current Date Display */}
+      <Typography variant="h6" sx={{ fontWeight: 500 }}>
+        {toolbar.label}
+      </Typography>
+
+      {/* View Selection Buttons */}
+      <ButtonGroup variant="contained" size="small">
+        {viewNames.map((name) => (
+          <Button
+            key={name}
+            onClick={() => toolbar.onView(name)}
+            variant={view === name ? "contained" : "outlined"}
+            sx={{
+              bgcolor: view === name ? "primary.main" : "transparent",
+              "&:hover": {
+                bgcolor: view === name ? "primary.dark" : "action.hover",
+              },
+            }}
+          >
+            {name}
+          </Button>
+        ))}
+      </ButtonGroup>
+    </Stack>
   );
 };
+
+const EventDialog = ({ open, onClose, slotInfo, onSubmit }) => {
+  const [eventData, setEventData] = useState({
+    title: "",
+    description: "",
+    recurrence: {
+      frequency: "Weekly",
+      interval: 1,
+      count: null,
+      until: null,
+    },
+    attendees: [],
+  });
+
+  const [showRecurrence, setShowRecurrence] = useState(false);
+
+  const handleChange = (field) => (event) => {
+    setEventData((prev) => ({
+      ...prev,
+      [field]: event.target.value,
+    }));
+  };
+
+  const handleRecurrenceChange = (field) => (event) => {
+    setEventData((prev) => ({
+      ...prev,
+      recurrence: {
+        ...prev.recurrence,
+        [field]: event.target.value,
+      },
+    }));
+  };
+
+  const handleSubmit = () => {
+    const newEvent = {
+      id: Math.random().toString(),
+      title: eventData.title,
+      description: eventData.description,
+      start_time: slotInfo.start.getTime() * 1e6, // Convert to nanoseconds
+      end_time: slotInfo.end.getTime() * 1e6, // Convert to nanoseconds
+      date: new Date().getTime(),
+      attendees: eventData.attendees,
+      recurrence: showRecurrence ? [eventData.recurrence] : [],
+      owner: "current_user",
+      created_by: "current_user",
+    };
+
+    onSubmit(newEvent);
+    setEventData({
+      title: "",
+      description: "",
+      recurrence: {
+        frequency: "Weekly",
+        interval: 1,
+        count: null,
+        until: null,
+      },
+      attendees: [],
+    });
+    onClose();
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>Create New Event</DialogTitle>
+      <DialogContent>
+        <Stack spacing={2} sx={{ mt: 1 }}>
+          <TextField
+            autoFocus
+            label="Event Title"
+            fullWidth
+            value={eventData.title}
+            onChange={handleChange("title")}
+          />
+
+          <TextField
+            label="Description"
+            fullWidth
+            multiline
+            rows={4}
+            value={eventData.description}
+            onChange={handleChange("description")}
+          />
+
+          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+            <TextField
+              label="Start Time"
+              type="datetime-local"
+              value={format(
+                slotInfo?.start || new Date(),
+                "yyyy-MM-dd'T'HH:mm",
+              )}
+              InputProps={{ readOnly: true }}
+              fullWidth
+            />
+
+            <TextField
+              label="End Time"
+              type="datetime-local"
+              value={format(slotInfo?.end || new Date(), "yyyy-MM-dd'T'HH:mm")}
+              InputProps={{ readOnly: true }}
+              fullWidth
+            />
+          </Box>
+
+          {showRecurrence && (
+            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+              <FormControl fullWidth>
+                <InputLabel>Frequency</InputLabel>
+                <Select
+                  value={eventData.recurrence.frequency}
+                  onChange={handleRecurrenceChange("frequency")}
+                  label="Frequency"
+                >
+                  <MenuItem value="Daily">Daily</MenuItem>
+                  <MenuItem value="Weekly">Weekly</MenuItem>
+                  <MenuItem value="Monthly">Monthly</MenuItem>
+                  <MenuItem value="Yearly">Yearly</MenuItem>
+                </Select>
+              </FormControl>
+
+              <TextField
+                label="Interval"
+                type="number"
+                value={eventData.recurrence.interval}
+                onChange={handleRecurrenceChange("interval")}
+                fullWidth
+                InputProps={{ inputProps: { min: 1 } }}
+              />
+            </Box>
+          )}
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={() => setShowRecurrence(!showRecurrence)}
+          color="primary"
+        >
+          {showRecurrence ? "Hide Recurrence" : "Add Recurrence"}
+        </Button>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={handleSubmit} color="primary" variant="contained">
+          Create Event
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const CalendarView = ({ calendar }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showEventDialog, setShowEventDialog] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const [blockedTimes, setBlockedTimes] = useState([]);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
-  const locales = {
-    "en-US": enUS,
-  };
-
+  const locales = { "en-US": enUS };
   const localizer = dateFnsLocalizer({
     format,
     parse,
@@ -228,60 +387,8 @@ const CalendarView = ({ calendar }) => {
     locales,
   });
 
-  const EventDialog = ({ open, onClose, slotInfo }) => {
-    const [eventTitle, setEventTitle] = useState("");
-    const [eventDescription, setEventDescription] = useState("");
-
-    const handleSubmit = () => {
-      const newEvent = {
-        title: eventTitle,
-        description: eventDescription,
-        start: slotInfo.start,
-        end: slotInfo.end,
-        color: "#FF2D55",
-      };
-
-      handleAddEvent(newEvent);
-      onClose();
-      setEventTitle("");
-      setEventDescription("");
-    };
-
-    return (
-      <Dialog open={open} onClose={onClose}>
-        <DialogTitle>Create New Event</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Event Title"
-            fullWidth
-            value={eventTitle}
-            onChange={(e) => setEventTitle(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            label="Description"
-            fullWidth
-            multiline
-            rows={4}
-            value={eventDescription}
-            onChange={(e) => setEventDescription(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSubmit} color="primary">
-            Create Event
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  };
-
   const events = useMemo(() => {
     if (!calendar?.events) return [];
-
     const colors = [
       "#FF2D55",
       "#5856D6",
@@ -291,73 +398,34 @@ const CalendarView = ({ calendar }) => {
       "#FF9500",
     ];
 
-    return calendar.events.map((event, index) => ({
-      ...event,
-      color: colors[index % colors.length],
-    }));
+    return calendar.events.map((event, index) => {
+      // Convert nanoseconds to milliseconds (divide by 1e6)
+      const startMs = Number(event.start_time) / 1e6;
+      const endMs = Number(event.end_time) / 1e6;
+
+      // Create Date objects (these will be in local timezone)
+      const start = new Date(startMs);
+      const end = new Date(endMs);
+
+      return {
+        ...event,
+        start,
+        end,
+        color: colors[index % colors.length],
+      };
+    });
   }, [calendar]);
-
-  const isTimeBlocked = useCallback(
-    (start, end) => {
-      return blockedTimes.some(
-        (blockedTime) =>
-          (start >= blockedTime.start && start < blockedTime.end) ||
-          (end > blockedTime.start && end <= blockedTime.end),
-      );
-    },
-    [blockedTimes],
-  );
-
-  const isTimeAvailable = useCallback(
-    (start, end) => {
-      return !events.some(
-        (event) =>
-          (start >= new Date(event.start) && start < new Date(event.end)) ||
-          (end > new Date(event.start) && end <= new Date(event.end)),
-      );
-    },
-    [events],
-  );
-
-  const slotPropGetter = useCallback(
-    (date) => {
-      const start = new Date(date);
-      const end = new Date(date);
-      end.setHours(end.getHours() + 1);
-
-      if (isTimeBlocked(start, end)) {
-        return {
-          style: {
-            backgroundColor: isDark
-              ? "rgba(255, 45, 85, 0.2)"
-              : "rgba(255, 59, 48, 0.1)",
-          },
-        };
-      }
-
-      if (isTimeAvailable(start, end)) {
-        return {
-          style: {
-            // backgroundColor: isDark
-            //   ? "rgba(76, 217, 100, 0.2)"
-            //   : "rgba(52, 199, 89, 0.1)",
-          },
-        };
-      }
-
-      return {};
-    },
-    [isTimeBlocked, isTimeAvailable, isDark],
-  );
 
   const handleSelectSlot = useCallback(
     (slotInfo) => {
-      if (!isTimeBlocked(slotInfo.start, slotInfo.end)) {
-        setSelectedSlot(slotInfo);
-        setShowEventDialog(true);
+      if (slotInfo.action === "click" && calendar?.view === "month") {
+        setCurrentDate(slotInfo.start);
+        return;
       }
+      setSelectedSlot(slotInfo);
+      setShowEventDialog(true);
     },
-    [isTimeBlocked],
+    [calendar?.view],
   );
 
   const handleAddEvent = useCallback(
@@ -372,34 +440,25 @@ const CalendarView = ({ calendar }) => {
   const eventStyleGetter = useCallback(
     (event) => ({
       style: {
-        backgroundColor: event.color,
+        // backgroundColor: event.color,
         opacity: 0.9,
       },
     }),
     [],
   );
 
-  const components = {
-    timeGutterHeader: () => (
-      <div style={{ position: "relative", height: "100%" }}>
-        <TimeIndicator />
-      </div>
-    ),
-  };
+  const views = isMobile ? ["month", "week"] : ["month", "week"];
 
-  const defaultView = isMobile ? "day" : "month";
-  const views = isMobile
-    ? ["day", "agenda"]
-    : isTablet
-      ? ["month", "week", "day"]
-      : ["month", "week", "day", "agenda"];
+  const components = {
+    toolbar: CustomToolbar,
+  };
 
   return (
     <Box
       sx={{
         height: isMobile ? "500px" : "700px",
         p: isMobile ? 1 : 2,
-        ...macOSStyle(isDark),
+        ...useCalendarStyles(isDark),
       }}
     >
       <Calendar
@@ -411,12 +470,11 @@ const CalendarView = ({ calendar }) => {
         onNavigate={setCurrentDate}
         date={currentDate}
         eventPropGetter={eventStyleGetter}
-        slotPropGetter={slotPropGetter}
         components={components}
         selectable
-        popup
+        popup={false}
         views={views}
-        defaultView={defaultView}
+        defaultView="month"
         toolbar={true}
         step={30}
         timeslots={2}
@@ -433,6 +491,7 @@ const CalendarView = ({ calendar }) => {
           setSelectedSlot(null);
         }}
         slotInfo={selectedSlot}
+        onSubmit={handleAddEvent}
       />
     </Box>
   );

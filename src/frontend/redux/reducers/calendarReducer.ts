@@ -44,9 +44,10 @@ export function calendarReducer(state = initialState, action: any): any {
       };
 
     case "SET_CALENDAR":
-      if (JSON.stringify(state.calendar) === JSON.stringify(action.calendar)) {
-        return state;
-      }
+      // if (JSON.stringify(state.calendar) === JSON.stringify(action.calendar)) {
+      //   return state;
+      // }
+      console.log({ action });
       return {
         ...state,
         calendarChanged: false,

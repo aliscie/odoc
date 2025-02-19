@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Box, Grid, useTheme } from "@mui/material";
 import TimeZoneSelector from "./timezone";
-import CalendarDisplay from "./showCalendarInCards";
 import { useDispatch, useSelector } from "react-redux";
 import CopyButton from "../../../components/MuiComponents/copyButton";
 import { useBackendContext } from "../../../contexts/BackendContext";
@@ -100,7 +99,7 @@ const Scheduler = React.memo(() => {
       enqueueSnackbar("Calendar saved successfully", { variant: "success" });
       return { Ok: "" };
     } catch (err) {
-      console.log({ err })
+      console.log({ err });
       // const errorMessage =
       //   err instanceof Error ? err.message : "Failed to save calendar";
       // enqueueSnackbar(errorMessage, { variant: "error" });
@@ -182,11 +181,7 @@ const Scheduler = React.memo(() => {
         </Grid>
 
         <Box sx={{ mb: 4 }}>
-          {/*<CalendarView*/}
-          {/*    {...calendar}*/}
-          {/*/>*/}
-
-          <CalendarDisplay />
+          <CalendarView calendar={calendar} />
         </Box>
       </Box>
 
