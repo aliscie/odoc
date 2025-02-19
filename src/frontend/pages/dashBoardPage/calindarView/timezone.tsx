@@ -47,21 +47,21 @@ const TimeZoneSelector: React.FC<TimeZoneSelectorProps> = ({
     }
   };
 
-  return (
-    <Paper sx={{ p: 2 }}>
-      <Typography variant="subtitle1" gutterBottom>
-        Current Time: {currentTime}
-      </Typography>
-      <Autocomplete
-        value={current_timezone}
-        onChange={(_, newValue) => handleChange(newValue)}
-        options={timeZones}
-        renderInput={(params) => (
-          <TextField {...params} label="Select Time Zone" />
-        )}
-      />
-    </Paper>
-  );
+  // return (
+  //   <Autocomplete
+  //     sx={{
+  //       width: "350px",
+  //     }}
+  //     disabled={true}
+  //     value={currentTime +" "+ current_timezone}
+  //     onChange={(_, newValue) => handleChange(newValue)}
+  //     options={timeZones}
+  //     renderInput={(params) => (
+  //       <TextField {...params} label="Select Time Zone" />
+  //     )}
+  //   />
+  // );
+  return <> {currentTime + " " + current_timezone}</>;
 };
 
 export default TimeZoneSelector;

@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Box, Grid, useTheme } from "@mui/material";
-import TimeZoneSelector from "./timezone";
+// import TimeZoneSelector from "./timezone";
 import { useDispatch, useSelector } from "react-redux";
-import CopyButton from "../../../components/MuiComponents/copyButton";
 import { useBackendContext } from "../../../contexts/BackendContext";
 import { useSnackbar } from "notistack";
 import LoaderButton from "../../../components/MuiComponents/LoaderButton";
@@ -28,7 +27,6 @@ const Scheduler = React.memo(() => {
   const fetchAttempted = useRef(false);
 
   // State
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Hooks
@@ -47,7 +45,6 @@ const Scheduler = React.memo(() => {
       return;
 
     try {
-      setIsLoading(true);
       setError(null);
       fetchAttempted.current = true;
       if (isCalendarPage) {
@@ -75,46 +72,9 @@ const Scheduler = React.memo(() => {
       }
     } finally {
       if (isMounted.current) {
-        setIsLoading(false);
       }
     }
   }, [backendActor, profile, dispatch, enqueueSnackbar]);
-
-  const handleSave = useCallback(async () => {
-    if (!backendActor || !calendar) return;
-
-    try {
-      setIsLoading(true);
-      // console.log({ calendar });
-      const res = await backendActor.update_calendar(calendar_actions);
-      dispatch({
-        type: "SET_CALENDAR_CHANGED",
-        calendarChanged: false,
-      });
-
-      if (res?.Err) {
-        enqueueSnackbar(res.Err, { variant: "error" });
-      }
-
-      enqueueSnackbar("Calendar saved successfully", { variant: "success" });
-      return { Ok: "" };
-    } catch (err) {
-      console.log({ err });
-      // const errorMessage =
-      //   err instanceof Error ? err.message : "Failed to save calendar";
-      // enqueueSnackbar(errorMessage, { variant: "error" });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [backendActor, calendar, enqueueSnackbar]);
-
-  const handleReset = useCallback(async () => {
-    const res = await backendActor.get_my_calendar();
-    dispatch({
-      type: "SET_CALENDAR",
-      calendar: res,
-    });
-  }, [handleFetchCalendar]);
 
   // Effects
   useEffect(() => {
@@ -129,18 +89,15 @@ const Scheduler = React.memo(() => {
   }, []);
 
   // Memoized values
-  const copyLink = React.useMemo(() => {
-    return `${window.location.href}calendar?id=${calendar?.id}`;
-  }, [calendar?.id]);
 
-  if (error) {
-    return (
-      <Box sx={{ p: 3, color: "error.main" }}>
-        Error: {error}
-        <LoaderButton onClick={handleReset}>Retry</LoaderButton>
-      </Box>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <Box sx={{ p: 3, color: "error.main" }}>
+  //       Error: {error}
+  //       <LoaderButton onClick={handleReset}>Retry</LoaderButton>
+  //     </Box>
+  //   );
+  // }
 
   return (
     <Box
@@ -151,34 +108,11 @@ const Scheduler = React.memo(() => {
       }}
     >
       <Box sx={{ p: theme.spacing(3) }}>
-        <Grid container spacing={2} sx={{ mb: 4 }}>
-          <Grid item>
-            <TimeZoneSelector />
-          </Grid>
-          <Grid item>
-            {!isCalendarPage && (
-              <CopyButton title="Your calendar link" value={copyLink} />
-            )}
-          </Grid>
-          <Grid item>
-            <LoaderButton
-              disabled={!calendarChanged}
-              onClick={handleReset}
-              loading={isLoading}
-            >
-              Reset
-            </LoaderButton>
-          </Grid>
-          <Grid item>
-            <LoaderButton
-              disabled={!calendarChanged}
-              onClick={handleSave}
-              loading={isLoading}
-            >
-              Save
-            </LoaderButton>
-          </Grid>
-        </Grid>
+        {/*<Grid container spacing={2} sx={{ mb: 4 }}>*/}
+        {/*  <Grid item>*/}
+        {/*    <TimeZoneSelector />*/}
+        {/*  </Grid>*/}
+        {/*</Grid>*/}
 
         <Box sx={{ mb: 4 }}>
           <CalendarView calendar={calendar} />

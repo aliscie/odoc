@@ -18,9 +18,14 @@ import {
   Box,
   useTheme,
   useMediaQuery,
+  Divider,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
+import AddIcon from "@mui/icons-material/Add";
+import { formatTime, parseTime } from "./serializers";
 
 // Types based on Candid definition
 interface TimeSlot {
@@ -52,48 +57,58 @@ interface RootState {
 }
 
 // Utility functions
-const formatTime = (time: bigint): string => {
-  const date = new Date(Number(time) / 1000); // Convert microseconds to milliseconds
-  return date.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-};
-
-const parseTime = (timeStr: string): bigint => {
-  const [hours, minutes] = timeStr.split(":").map(Number);
-  const date = new Date();
-  date.setHours(hours, minutes, 0, 0);
-  return BigInt(date.getTime() * 1000); // Convert to microseconds
-};
-
 const formatDays = (days: number[] | Uint32Array) => {
   const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  // Convert Uint32Array to regular array and ensure numbers are 0-based for array indexing
   const daysArray = Array.from(days).map((day) => dayNames[day - 1]);
   return daysArray.join(", ");
 };
+
+const createEmptyAvailability = (): Availability => ({
+  id: Math.random().toString(),
+  title: [""],
+  is_blocked: false,
+  schedule_type: {
+    WeeklyRecurring: {
+      days: [1], // Monday by default
+      valid_until: [],
+    },
+  },
+  time_slots: [
+    {
+      start_time: BigInt(9 * 60 * 60 * 1000000000), // 9 AM
+      end_time: BigInt(17 * 60 * 60 * 1000000000), // 5 PM
+    },
+  ],
+});
 
 // Custom hooks
 const useAvailabilityDialog = () => {
   const [open, setOpen] = useState(false);
   const [selectedAvailability, setSelectedAvailability] =
     useState<Availability | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
 
-  const handleOpen = (availability: Availability) => {
-    setSelectedAvailability(availability);
+  const handleOpen = (availability?: Availability) => {
+    if (availability) {
+      setSelectedAvailability(availability);
+      setIsCreating(false);
+    } else {
+      setSelectedAvailability(createEmptyAvailability());
+      setIsCreating(true);
+    }
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
     setSelectedAvailability(null);
+    setIsCreating(false);
   };
 
   return {
     open,
     selectedAvailability,
+    isCreating,
     handleOpen,
     handleClose,
   };
@@ -121,10 +136,11 @@ const useAvailabilityMenu = () => {
 const AvailabilityDialog: React.FC<{
   open: boolean;
   availability: Availability | null;
+  isCreating: boolean;
   onClose: () => void;
   onUpdate: (availability: Availability) => void;
   onDelete: (id: string) => void;
-}> = ({ open, availability, onClose, onUpdate, onDelete }) => {
+}> = ({ open, availability, isCreating, onClose, onUpdate, onDelete }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [formData, setFormData] = useState<Availability | null>(availability);
@@ -134,7 +150,7 @@ const AvailabilityDialog: React.FC<{
     setFormData(availability);
   }, [availability]);
 
-  const handleUpdate = () => {
+  const handleSubmit = () => {
     if (formData) {
       onUpdate(formData);
       onClose();
@@ -176,7 +192,9 @@ const AvailabilityDialog: React.FC<{
         </>
       ) : (
         <>
-          <DialogTitle>Edit Availability</DialogTitle>
+          <DialogTitle>
+            {isCreating ? "Create Availability" : "Edit Availability"}
+          </DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 2 }}>
               <TextField
@@ -190,6 +208,22 @@ const AvailabilityDialog: React.FC<{
                 }
                 fullWidth
               />
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.is_blocked}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        is_blocked: e.target.checked,
+                      })
+                    }
+                  />
+                }
+                label="Block this time slot"
+              />
+
               {formData.schedule_type.WeeklyRecurring && (
                 <>
                   <FormControl fullWidth>
@@ -212,22 +246,12 @@ const AvailabilityDialog: React.FC<{
                         });
                       }}
                       renderValue={(selected) => (
-                        <Box
-                          sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
-                        >
+                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                           {(selected as number[]).map((day) => (
                             <Chip
                               key={day}
                               label={
-                                [
-                                  "Mon",
-                                  "Tue",
-                                  "Wed",
-                                  "Thu",
-                                  "Fri",
-                                  "Sat",
-                                  "Sun",
-                                ][day - 1]
+                                ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][day - 1]
                               }
                             />
                           ))}
@@ -237,15 +261,7 @@ const AvailabilityDialog: React.FC<{
                       {[1, 2, 3, 4, 5, 6, 7].map((day) => (
                         <MenuItem key={day} value={day}>
                           {
-                            [
-                              "Monday",
-                              "Tuesday",
-                              "Wednesday",
-                              "Thursday",
-                              "Friday",
-                              "Saturday",
-                              "Sunday",
-                            ][day - 1]
+                            ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"][day - 1]
                           }
                         </MenuItem>
                       ))}
@@ -288,13 +304,15 @@ const AvailabilityDialog: React.FC<{
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setShowDeleteConfirm(true)} color="error">
-              Delete
-            </Button>
+            {!isCreating && (
+              <Button onClick={() => setShowDeleteConfirm(true)} color="error">
+                Delete
+              </Button>
+            )}
             <Box sx={{ flex: 1 }} />
             <Button onClick={onClose}>Cancel</Button>
-            <Button onClick={handleUpdate} variant="contained">
-              Save
+            <Button onClick={handleSubmit} variant="contained">
+              {isCreating ? "Create" : "Save"}
             </Button>
           </DialogActions>
         </>
@@ -308,10 +326,11 @@ const CalendarManagement: React.FC = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { calendar } = useSelector((state: RootState) => state.calendarState);
-  console.log({ calendar });
+
   const {
     open: dialogOpen,
     selectedAvailability,
+    isCreating,
     handleOpen: handleDialogOpen,
     handleClose: handleDialogClose,
   } = useAvailabilityDialog();
@@ -324,7 +343,7 @@ const CalendarManagement: React.FC = () => {
 
   const handleUpdateAvailability = (updatedAvailability: Availability) => {
     dispatch({
-      type: "UPDATE_AVAILABILITY",
+      type: isCreating ? "ADD_AVAILABILITY" : "UPDATE_AVAILABILITY",
       availability: updatedAvailability,
     });
   };
@@ -340,7 +359,7 @@ const CalendarManagement: React.FC = () => {
     return slots
       .map(
         (slot) =>
-          `${formatTime(slot.start_time)} - ${formatTime(slot.end_time)}`,
+          `${formatTime(slot.start_time, true)} - ${formatTime(slot.end_time, true)}`,
       )
       .join(", ");
   };
@@ -375,6 +394,21 @@ const CalendarManagement: React.FC = () => {
           horizontal: "left",
         }}
       >
+        <MenuItem
+          onClick={() => {
+            handleDialogOpen();
+            handleMenuClose();
+          }}
+          sx={{
+            minWidth: 250,
+            color: theme.palette.primary.main,
+          }}
+        >
+          <AddIcon sx={{ mr: 1 }} /> Add New Availability
+        </MenuItem>
+
+        <Divider />
+
         {calendar.availabilities.map((availability) => (
           <MenuItem
             key={availability.id}
@@ -399,10 +433,8 @@ const CalendarManagement: React.FC = () => {
                     {formatTimeSlots(availability.time_slots)}
                   </Typography>
                 )}
+                {availability.is_blocked && <DoNotDisturbIcon color="error" />}
               </Typography>
-              {availability.is_blocked && (
-                <DoNotDisturbIcon color="error" fontSize="small" />
-              )}
             </Stack>
           </MenuItem>
         ))}
@@ -411,6 +443,7 @@ const CalendarManagement: React.FC = () => {
       <AvailabilityDialog
         open={dialogOpen}
         availability={selectedAvailability}
+        isCreating={isCreating}
         onClose={handleDialogClose}
         onUpdate={handleUpdateAvailability}
         onDelete={handleDeleteAvailability}
