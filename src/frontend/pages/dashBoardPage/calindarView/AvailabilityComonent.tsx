@@ -26,6 +26,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import AddIcon from "@mui/icons-material/Add";
 import { formatTime, parseTime } from "./serializers";
+import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
+import EnhancedTimePicker from "./timePicker";
 
 // Types based on Candid definition
 interface TimeSlot {
@@ -140,7 +142,16 @@ const AvailabilityDialog: React.FC<{
   onClose: () => void;
   onUpdate: (availability: Availability) => void;
   onDelete: (id: string) => void;
-}> = ({ open, availability, isCreating, onClose, onUpdate, onDelete }) => {
+  readOnly?: boolean;
+}> = ({
+  open,
+  availability,
+  isCreating,
+  onClose,
+  onUpdate,
+  onDelete,
+  readOnly = false,
+}) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [formData, setFormData] = useState<Availability | null>(availability);
@@ -198,6 +209,7 @@ const AvailabilityDialog: React.FC<{
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 2 }}>
               <TextField
+                disabled={readOnly}
                 label="Title"
                 value={formData.title[0] || ""}
                 onChange={(e) =>
@@ -221,6 +233,7 @@ const AvailabilityDialog: React.FC<{
                     }
                   />
                 }
+                disabled={readOnly}
                 label="Block this time slot"
               />
 
@@ -229,6 +242,7 @@ const AvailabilityDialog: React.FC<{
                   <FormControl fullWidth>
                     <InputLabel>Days</InputLabel>
                     <Select
+                      disabled={readOnly}
                       multiple
                       value={Array.from(
                         formData.schedule_type.WeeklyRecurring.days,
@@ -246,12 +260,22 @@ const AvailabilityDialog: React.FC<{
                         });
                       }}
                       renderValue={(selected) => (
-                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        <Box
+                          sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                        >
                           {(selected as number[]).map((day) => (
                             <Chip
                               key={day}
                               label={
-                                ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][day - 1]
+                                [
+                                  "Mon",
+                                  "Tue",
+                                  "Wed",
+                                  "Thu",
+                                  "Fri",
+                                  "Sat",
+                                  "Sun",
+                                ][day - 1]
                               }
                             />
                           ))}
@@ -261,7 +285,15 @@ const AvailabilityDialog: React.FC<{
                       {[1, 2, 3, 4, 5, 6, 7].map((day) => (
                         <MenuItem key={day} value={day}>
                           {
-                            ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"][day - 1]
+                            [
+                              "Monday",
+                              "Tuesday",
+                              "Wednesday",
+                              "Thursday",
+                              "Friday",
+                              "Saturday",
+                              "Sunday",
+                            ][day - 1]
                           }
                         </MenuItem>
                       ))}
@@ -269,33 +301,39 @@ const AvailabilityDialog: React.FC<{
                   </FormControl>
                   {formData.time_slots.map((slot, index) => (
                     <Stack key={index} direction="row" spacing={2}>
-                      <TextField
+                      <EnhancedTimePicker
+                        disabled={readOnly}
                         label="Start Time"
-                        type="time"
-                        value={formatTime(slot.start_time)}
-                        onChange={(e) => {
+                        defaultValue={Number(slot.start_time)}
+                        onChange={(value) => {
                           const newSlots = [...formData.time_slots];
                           newSlots[index] = {
                             ...slot,
-                            start_time: parseTime(e.target.value),
+                            start_time: BigInt(value || 0),
                           };
-                          setFormData({ ...formData, time_slots: newSlots });
+                          setFormData({
+                            ...formData,
+                            time_slots: newSlots,
+                          });
                         }}
-                        InputLabelProps={{ shrink: true }}
+                        sx={{ width: 150 }}
                       />
-                      <TextField
+                      <EnhancedTimePicker
+                        disabled={readOnly}
                         label="End Time"
-                        type="time"
-                        value={formatTime(slot.end_time)}
-                        onChange={(e) => {
+                        defaultValue={Number(slot.end_time)}
+                        onChange={(value) => {
                           const newSlots = [...formData.time_slots];
                           newSlots[index] = {
                             ...slot,
-                            end_time: parseTime(e.target.value),
+                            end_time: BigInt(value || 0),
                           };
-                          setFormData({ ...formData, time_slots: newSlots });
+                          setFormData({
+                            ...formData,
+                            time_slots: newSlots,
+                          });
                         }}
-                        InputLabelProps={{ shrink: true }}
+                        sx={{ width: 150 }}
                       />
                     </Stack>
                   ))}
@@ -304,16 +342,18 @@ const AvailabilityDialog: React.FC<{
             </Stack>
           </DialogContent>
           <DialogActions>
-            {!isCreating && (
+            {!isCreating && !readOnly && (
               <Button onClick={() => setShowDeleteConfirm(true)} color="error">
                 Delete
               </Button>
             )}
             <Box sx={{ flex: 1 }} />
-            <Button onClick={onClose}>Cancel</Button>
-            <Button onClick={handleSubmit} variant="contained">
-              {isCreating ? "Create" : "Save"}
-            </Button>
+            <Button onClick={onClose}>Close</Button>
+            {!readOnly && (
+              <Button onClick={handleSubmit} variant="contained">
+                {isCreating ? "Create" : "Save"}
+              </Button>
+            )}
           </DialogActions>
         </>
       )}
@@ -323,9 +363,13 @@ const AvailabilityDialog: React.FC<{
 
 // Main component
 const CalendarManagement: React.FC = () => {
+  const { profile } = useSelector((state: any) => state.filesState);
+
   const theme = useTheme();
   const dispatch = useDispatch();
   const { calendar } = useSelector((state: RootState) => state.calendarState);
+
+  const isOwner = calendar?.owner === profile?.id;
 
   const {
     open: dialogOpen,
@@ -342,6 +386,7 @@ const CalendarManagement: React.FC = () => {
   } = useAvailabilityMenu();
 
   const handleUpdateAvailability = (updatedAvailability: Availability) => {
+    console.log({ updatedAvailability });
     dispatch({
       type: isCreating ? "ADD_AVAILABILITY" : "UPDATE_AVAILABILITY",
       availability: updatedAvailability,
@@ -394,18 +439,23 @@ const CalendarManagement: React.FC = () => {
           horizontal: "left",
         }}
       >
-        <MenuItem
-          onClick={() => {
-            handleDialogOpen();
-            handleMenuClose();
-          }}
-          sx={{
-            minWidth: 250,
-            color: theme.palette.primary.main,
-          }}
-        >
-          <AddIcon sx={{ mr: 1 }} /> Add New Availability
-        </MenuItem>
+        {isOwner && (
+          <>
+            <MenuItem
+              onClick={() => {
+                handleDialogOpen();
+                handleMenuClose();
+              }}
+              sx={{
+                minWidth: 250,
+                color: theme.palette.primary.main,
+              }}
+            >
+              <AddIcon sx={{ mr: 1 }} /> Add New Availability
+            </MenuItem>
+            <Divider />
+          </>
+        )}
 
         <Divider />
 
@@ -447,6 +497,7 @@ const CalendarManagement: React.FC = () => {
         onClose={handleDialogClose}
         onUpdate={handleUpdateAvailability}
         onDelete={handleDeleteAvailability}
+        readOnly={!isOwner}
       />
     </>
   );

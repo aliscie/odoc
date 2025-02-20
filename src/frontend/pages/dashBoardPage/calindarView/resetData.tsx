@@ -4,6 +4,7 @@ import { Grid, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useBackendContext } from "../../../contexts/BackendContext";
 import {RootState} from "../../../redux/reducers";
+import {AvailabilityTimezone, EventTimezone} from "./serializers";
 
 function ResetCalendarData() {
   const { calendarChanged, calendar, calendar_actions } = useSelector(
@@ -15,7 +16,9 @@ function ResetCalendarData() {
   const { backendActor } = useBackendContext();
 
   const handleReset = useCallback(async () => {
-    const res = await backendActor.get_my_calendar();
+    let res = await backendActor.get_calendar(calendar?.id);
+    res.events = res.events.map((event) => EventTimezone(event));
+    res.availabilities = res.availabilities.map((event) => AvailabilityTimezone(event));
     dispatch({
       type: "SET_CALENDAR",
       calendar: res,

@@ -35,11 +35,9 @@ pub struct Event {
     pub description: String,
     pub start_time: f64,
     pub end_time: f64,
-    pub date: f64,
     pub created_by: String,
     pub attendees: Vec<String>,
     pub recurrence: Option<RecurrenceRule>,
-    pub owner: String,
 }
 
 #[derive(Clone, Debug, Serialize, CandidType, Deserialize)]
@@ -138,12 +136,56 @@ impl Calendar {
         calendar
     }
 
+    pub fn apply_privacy_filter(&self, viewer: String) -> Calendar {
+        if self.owner == viewer {
+            return self.clone();
+        }
+
+        let mut filtered_calendar = self.clone();
+        filtered_calendar.events = filtered_calendar.events
+            .into_iter()
+            .map(|mut event| {
+                if event.created_by != viewer || !event.attendees.contains(&viewer) {
+                    event.title = String::new();
+                    event.description = String::new();
+                    event.attendees = Vec::new();
+                }
+                event
+            })
+            .collect();
+
+        filtered_calendar
+    }
+
+
+    pub fn filter_past_events(&self, viewer: String) -> Calendar {
+        if self.owner == viewer {
+            return self.clone();
+        }
+
+        let current_time = ic_cdk::api::time() as f64;
+        let start_of_today = Self::start_of_day(current_time);
+
+        let mut filtered_calendar = self.clone();
+        filtered_calendar.events = filtered_calendar.events
+            .into_iter()
+            .filter(|event| event.start_time >= start_of_today)
+            .collect();
+
+        filtered_calendar
+    }
+
     pub fn get_calendar(calendar_id: &str) -> Option<Self> {
+        let viewer = caller().to_text();
         CALENDAR_STORE.with(|store| {
             let store = store.borrow();
             store.iter()
                 .filter(|(_, calendar)| calendar.id == calendar_id)
-                .map(|(_, calendar)| calendar.clone())
+                .map(|(_, calendar)| {
+                    calendar
+                        .filter_past_events(viewer.clone())
+                        .apply_privacy_filter(viewer.clone())
+                })
                 .next()
         })
     }
@@ -196,66 +238,10 @@ impl Calendar {
         self.get_events_by_week(0)
     }
 
-    pub fn is_available(&self, start_time: f64, end_time: f64) -> bool {
-        if !self.has_availability(start_time, end_time) {
-            return false;
-        }
-
-        !self.has_event_conflict(start_time, end_time)
-    }
 
     pub fn has_event_conflict(&self, start_time: f64, end_time: f64) -> bool {
         self.events.iter().any(|event| {
             start_time < event.end_time && end_time > event.start_time
         })
-    }
-
-    fn has_availability(&self, start_time: f64, end_time: f64) -> bool {
-        self.availabilities.iter()
-            .filter(|availability| !availability.is_blocked)
-            .any(|availability| {
-                match &availability.schedule_type {
-                    ScheduleType::DateRange { start_date, end_date } => {
-                        if start_time >= *start_date && end_time <= *end_date {
-                            let time_of_day = Self::get_time_of_day(start_time);
-                            availability.time_slots.iter().any(|slot| {
-                                time_of_day >= slot.start_time && time_of_day <= slot.end_time
-                            })
-                        } else {
-                            false
-                        }
-                    }
-                    ScheduleType::WeeklyRecurring { days, valid_until } => {
-                        let day = Self::get_day_of_week(start_time);
-                        if days.contains(&day) {
-                            if let Some(until) = valid_until {
-                                if start_time > *until {
-                                    return false;
-                                }
-                            }
-                            let time_of_day = Self::get_time_of_day(start_time);
-                            availability.time_slots.iter().any(|slot| {
-                                time_of_day >= slot.start_time && time_of_day <= slot.end_time
-                            })
-                        } else {
-                            false
-                        }
-                    }
-                    ScheduleType::SpecificDates(dates) => {
-                        dates.iter().any(|date| {
-                            let day_start = Self::start_of_day(*date);
-                            let day_end = day_start + Self::NANOS_PER_DAY;
-                            if start_time >= day_start && end_time <= day_end {
-                                let time_of_day = Self::get_time_of_day(start_time);
-                                availability.time_slots.iter().any(|slot| {
-                                    time_of_day >= slot.start_time && time_of_day <= slot.end_time
-                                })
-                            } else {
-                                false
-                            }
-                        })
-                    }
-                }
-            })
     }
 }

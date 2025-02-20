@@ -3,7 +3,7 @@ use ic_cdk_macros::update;
 use crate::calendar::{Availability, Calendar, Event, ScheduleType};
 use ic_cdk::caller;
 use serde::{Serialize};
-use candid::{CandidType, Decode, Encode, Deserialize};
+use candid::{CandidType, Decode, Encode, Deserialize, Principal};
 
 #[derive(Clone, Debug, Serialize, CandidType, Deserialize)]
 pub struct CalendarActions {
@@ -12,6 +12,7 @@ pub struct CalendarActions {
     pub delete_events: Vec<String>,
     pub delete_availabilities: Vec<String>,
 }
+
 
 impl Calendar {
     fn check_availability_permissions(&self, caller_id: &str, actions: &CalendarActions) -> Result<(), String> {
@@ -75,23 +76,76 @@ impl Calendar {
         }
     }
 
-    fn update_events(&mut self, mut events: Vec<Event>, caller_id: &str) -> Result<(), String> {
-        for mut new_event in events {
-            self.check_event_update_permission(caller_id, &new_event.id)?;
-            self.check_event_conflicts(&new_event)?;
-            self.check_blocked_time_overlap(&new_event)?;
+    fn check_event_permissions_and_availability(&self, new_event: &Event, caller_id: &str) -> Result<(), String> {
+        // Permission check
+        if caller_id != self.owner {
+            if !new_event.id.is_empty() {
+                // For existing events, check if caller is creator
+                if let Some(existing) = self.events.iter().find(|e| e.id == new_event.id) {
+                    if caller_id != existing.created_by {
+                        return Err("No permission to update this event".to_string());
+                    }
+                }
+            }
+        }
 
-            // Auto-set owner for new events
-            if new_event.owner.is_empty() {
-                new_event.owner = caller_id.to_string();
+        // Conflict check
+        if self.events.iter()
+            .filter(|e| e.id != new_event.id)
+            .any(|e| new_event.start_time < e.end_time && new_event.end_time > e.start_time) {
+            return Err("Event conflicts with existing events".to_string());
+        }
+
+        // Availability check
+        let mut has_valid_slot = false;
+        for avail in &self.availabilities {
+            let overlaps = match &avail.schedule_type {
+                ScheduleType::DateRange { start_date, end_date } => {
+                    new_event.start_time < *end_date && new_event.end_time > *start_date
+                }
+                ScheduleType::WeeklyRecurring { days, valid_until } => {
+                    let event_day = Self::get_day_of_week(new_event.start_time);
+                    days.contains(&event_day) &&
+                        valid_until.map_or(true, |until| new_event.start_time <= until)
+                }
+                ScheduleType::SpecificDates(dates) => {
+                    dates.iter().any(|date| {
+                        let day_start = Self::start_of_day(*date);
+                        let day_end = day_start + Self::NANOS_PER_DAY;
+                        new_event.start_time < day_end && new_event.end_time > day_start
+                    })
+                }
+            };
+
+            if overlaps {
+                if avail.is_blocked {
+                    return Err("Event overlaps with blocked time".to_string());
+                }
+                has_valid_slot = true;
+            }
+        }
+
+        if !self.availabilities.is_empty() && !has_valid_slot {
+            return Err("Event must be within available time slots".to_string());
+        }
+
+        Ok(())
+    }
+
+
+    fn update_events(&mut self, events: Vec<Event>, caller_id: &str) -> Result<(), String> {
+        for mut event in events {
+            self.check_event_permissions_and_availability(&event, caller_id)?;
+
+            if event.created_by.is_empty() {
+                event.created_by = caller_id.to_string();
             }
 
-            if let Some(index) = self.events.iter().position(|e| e.id == new_event.id) {
-                self.events[index] = new_event;
+            if let Some(idx) = self.events.iter().position(|e| e.id == event.id) {
+                self.events[idx] = event;
             } else {
-                // For new events, always set owner to caller
-                new_event.owner = caller_id.to_string();
-                self.events.push(new_event);
+                event.created_by = caller_id.to_string();
+                self.events.push(event);
             }
         }
         Ok(())
@@ -118,12 +172,24 @@ impl Calendar {
 }
 
 #[update]
-fn update_calendar(actions: CalendarActions) -> Result<Calendar, String> {
+fn update_calendar(calendar_id: String, actions: CalendarActions) -> Result<Calendar, String> {
+    // Owner has full permissions
+    // Non-owners can only update events they created
+    // Events can't overlap with other events
+    // Events can't overlap with blocked availability periods
+    // Events must fall within available time slots if any exist
+
+    // if user is anonymous return error
+    if caller() == Principal::anonymous() {
+        return Err("Unauthorized".to_string());
+    }
+
     let caller_id = caller().to_text();
-    let mut calendar = match Calendar::get(&caller_id) {
+    let mut calendar = match Calendar::get_calendar(&calendar_id) {
         Some(cal) => cal,
-        None => Calendar::new(&caller_id),
+        None => return Err("Calendar not found".to_string()),
     };
+
 
     // Check permissions for availability management
     calendar.check_availability_permissions(&caller_id, &actions)?;

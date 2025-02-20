@@ -26,6 +26,7 @@ const initialState: any = {
 };
 
 export function calendarReducer(state = initialState, action: any): any {
+  console.log({ action });
   switch (action.type) {
     case "SET_TRAINING_DATA":
       return {
@@ -37,21 +38,20 @@ export function calendarReducer(state = initialState, action: any): any {
       };
 
     case "SET_TIMEZONE":
-      console.log({ action });
       return {
         ...state,
         current_timezone: action.current_timezone,
       };
 
     case "SET_CALENDAR":
-      // if (JSON.stringify(state.calendar) === JSON.stringify(action.calendar)) {
-      //   return state;
-      // }
-      console.log({ action });
       return {
         ...state,
         calendarChanged: false,
-        calendar_actions: calendar_actions,
+        calendar_actions: {
+          ...state.calendar_actions,
+          // Only reset if calendarChanged is false
+          ...(state.calendarChanged ? {} : calendar_actions),
+        },
         calendar: action.calendar,
       };
 
@@ -75,7 +75,6 @@ export function calendarReducer(state = initialState, action: any): any {
             ...action.events.map((e: any) => ({
               ...e,
               id: e.id || Math.random().toString(),
-              owner: state.calendar.owner,
               created_by: state.calendar.owner,
             })),
           ],
@@ -87,7 +86,6 @@ export function calendarReducer(state = initialState, action: any): any {
             ...action.events.map((e: any) => ({
               ...e,
               id: e.id || Math.random().toString(),
-              owner: state.calendar.owner,
               created_by: state.calendar.owner,
             })),
           ],
@@ -98,7 +96,6 @@ export function calendarReducer(state = initialState, action: any): any {
       const newEvent = {
         ...action.event,
         id: action.event.id || Math.random().toString(),
-        owner: state.calendar.owner,
         created_by: state.calendar.owner,
       };
       return {
@@ -117,7 +114,6 @@ export function calendarReducer(state = initialState, action: any): any {
     case "UPDATE_EVENT":
       const updatedEvent = {
         ...action.event,
-        owner: state.calendar.owner,
         created_by: action.event.created_by || state.calendar.owner,
       };
       return {
@@ -143,15 +139,12 @@ export function calendarReducer(state = initialState, action: any): any {
         calendarChanged: true,
         calendar_actions: {
           ...state.calendar_actions,
-          delete_events: [
-            ...state.calendar_actions.delete_events,
-            action.eventId,
-          ],
+          delete_events: [...state.calendar_actions.delete_events, action.id],
         },
         calendar: {
           ...state.calendar,
           events: state.calendar.events.filter(
-            (event: Event) => event.id !== action.eventId,
+            (event: Event) => event.id !== action.id,
           ),
         },
       };
@@ -196,18 +189,31 @@ export function calendarReducer(state = initialState, action: any): any {
         },
       };
 
-    case "UPDATE_AVAILABILITY":
+    case "UPDATE_AVAILABILITY": {
+      const existingAvailabilityIndex =
+        state.calendar_actions.availabilities.findIndex(
+          (availability: Availability) =>
+            availability.id === action.availability.id,
+        );
+
+      const updatedAvailabilities =
+        existingAvailabilityIndex === -1
+          ? [...state.calendar_actions.availabilities, action.availability] // Add new
+          : state.calendar_actions.availabilities.map(
+              (
+                availability: Availability, // Update existing
+              ) =>
+                availability.id === action.availability.id
+                  ? action.availability
+                  : availability,
+            );
+
       return {
         ...state,
         calendarChanged: true,
         calendar_actions: {
           ...state.calendar_actions,
-          availabilities: state.calendar_actions.availabilities.map(
-            (availability: Availability) =>
-              availability.id === action.availability.id
-                ? action.availability
-                : availability,
-          ),
+          availabilities: updatedAvailabilities,
         },
         calendar: {
           ...state.calendar,
@@ -219,6 +225,7 @@ export function calendarReducer(state = initialState, action: any): any {
           ),
         },
       };
+    }
 
     case "DELETE_AVAILABILITY":
       return {

@@ -5,6 +5,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useBackendContext } from "../../../contexts/BackendContext";
 import { RootState } from "../../../redux/reducers";
 import { useSnackbar } from "notistack";
+import { CalendarActions } from "../../../../declarations/backend/backend.did";
+import { AvailabilityTimezone, EventTimezone } from "./serializers";
+import { logger } from "../../../DevUtils/logData";
 
 // Define keyframes for the shake and scale animation
 const shakeAndScaleAnimation = keyframes`
@@ -22,7 +25,7 @@ const shakeAndScaleAnimation = keyframes`
 `;
 
 // Styled component for the animated button wrapper
-const AnimatedButtonWrapper = styled('div')`
+const AnimatedButtonWrapper = styled("div")`
   display: inline-block;
   &.shake {
     animation: ${shakeAndScaleAnimation} 1.2s cubic-bezier(0.36, 0, 0.66, -0.56);
@@ -46,27 +49,42 @@ function SaveCalendarData() {
       if (calendarChanged) {
         // Show browser's default confirmation dialog
         e.preventDefault();
-        e.returnValue = "You have unsaved changes. Are you sure you want to leave?";
+        e.returnValue =
+          "You have unsaved changes. Are you sure you want to leave?";
 
         // Trigger shake and scale animation on the save button
-        const buttonWrapper = document.querySelector('.save-button-wrapper');
+        const buttonWrapper = document.querySelector(".save-button-wrapper");
         if (buttonWrapper) {
-          buttonWrapper.classList.remove('shake');
+          buttonWrapper.classList.remove("shake");
           void buttonWrapper.offsetWidth; // Trigger reflow
-          buttonWrapper.classList.add('shake');
+          buttonWrapper.classList.add("shake");
         }
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [calendarChanged]);
-
+  console.log({ before: calendar_actions, calendar });
   const handleSave = useCallback(async () => {
     if (!backendActor || !calendar) return;
 
     try {
-      const res = await backendActor.update_calendar(calendar_actions);
+      logger({ calendar_actions });
+      let serializedCalendar: CalendarActions = {
+        ...calendar_actions,
+        events: calendar_actions.events.map((event) =>
+          EventTimezone(event, true),
+        ),
+        availabilities: calendar_actions.availabilities.map((availability) =>
+          AvailabilityTimezone(availability, true),
+        ),
+      };
+      logger({ serializedCalendar });
+      const res = await backendActor.update_calendar(
+        calendar.id,
+        serializedCalendar,
+      );
       dispatch({
         type: "SET_CALENDAR_CHANGED",
         calendarChanged: false,
@@ -80,7 +98,8 @@ function SaveCalendarData() {
       return { Ok: "" };
     } catch (err) {
       console.log({ err });
-      const errorMessage = err instanceof Error ? err.message : "Failed to save calendar";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to save calendar";
       enqueueSnackbar(errorMessage, { variant: "error" });
     }
     return { Ok: "" };
@@ -92,9 +111,9 @@ function SaveCalendarData() {
         disabled={!calendarChanged}
         onClick={handleSave}
         sx={{
-          transition: 'transform 0.3s ease-in-out',
-          '&:not(:disabled):hover': {
-            transform: 'scale(1.05)',
+          transition: "transform 0.3s ease-in-out",
+          "&:not(:disabled):hover": {
+            transform: "scale(1.05)",
           },
         }}
       >

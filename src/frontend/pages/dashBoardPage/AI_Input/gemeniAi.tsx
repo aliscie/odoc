@@ -9,7 +9,6 @@ type CalendarActionType =
   | "ADD_AVAILABILITY"
   | "UPDATE_AVAILABILITY"
   | "DELETE_AVAILABILITY"
-  | "ADD_BLOCKED_TIME"
   | "UPDATE_BLOCKED_TIME"
   | "DELETE_BLOCKED_TIME";
 
@@ -18,7 +17,7 @@ interface CalendarAction {
   event?: any;
   availability?: any;
   blocked_time?: any;
-  eventId?: string;
+  id?: string;
   id?: string;
 }
 
@@ -193,7 +192,7 @@ class ActionProcessor {
       // Process event actions
       if (action.type.includes("EVENT")) {
         if (action.type === "DELETE_EVENT") {
-          newAction.eventId = action.eventId;
+          newAction.id = action.id;
           return newAction;
         }
 
@@ -205,6 +204,7 @@ class ActionProcessor {
 
         const dateTimestamp = TimeFormatter.parseDate(action.event.date);
         newAction.event = {
+          recurrence: action.event.recurrence || [],
           id: action.event.id || `evt_${Date.now()}`,
           title: action.event.title || "",
           start_time: TimeFormatter.parseTime(
@@ -215,9 +215,7 @@ class ActionProcessor {
             action.event.end_time,
             new Date(dateTimestamp / 1e6),
           ),
-          description: action.event.description
-            ? [action.event.description]
-            : [],
+          description: String(action.event.description),
           attendees: action.event.attendees || [],
           created_by: "",
         };
@@ -317,7 +315,7 @@ export async function processCalendarText(
       Response must be a JSON array with single actions. Each action must have a "type":
       - For events: "ADD_EVENT", "UPDATE_EVENT", "DELETE_EVENT"
       - For availability: "ADD_AVAILABILITY", "UPDATE_AVAILABILITY", "DELETE_AVAILABILITY"
-      - For blocked times: "ADD_BLOCKED_TIME", "UPDATE_BLOCKED_TIME", "DELETE_BLOCKED_TIME"
+      - For blocked times: "UPDATE_BLOCKED_TIME", "DELETE_BLOCKED_TIME"
       
       For availability actions, use this format:
       {
@@ -325,7 +323,7 @@ export async function processCalendarText(
         "availability": {
           "id": "avail_timestamp",
           "title": "Working Hours",
-          "is_blocked": false,           // <- if user is no available make this true
+          "is_blocked": false,           // <- if I say ai am not available add "is_blocked": false, instead 
           "schedule_type": {
               "WeeklyRecurring": {
                 "days": [1, 2, 3, 4],  // Monday=1, Tuesday=2, Wednesday=3, Thursday=4
@@ -350,9 +348,21 @@ export async function processCalendarText(
           "date": "17-02-2025",
           "start_time": "09:00",
           "end_time": "10:00",
-          "description": "Weekly sync",
-          "attendees": ["John", "Sarah"]
+          "description": "Weekly sync", // or just ""
+          "attendees": ["3qisy-ems35-y4kfh-kkiyq-yx6w6-fiuzv-k5qoc-v4efn-ka7er-4ojgh-zae" ], // id of the user
+          "recurrence": [{frequency: {Daily:null}}] // or [{interval:2}] or [{until:34343}] or [{count:3}] most times just keep []
         }
+      }
+      
+      For delete/cancel/remove event 
+      {
+      "type": "DELETE_EVENT",
+      "id": "0.7326486663335694"
+      }
+      For delete/cancel/remove availability
+      {
+        "type": "DELETE_AVAILABILITY",
+        "id": "0.7326486663335694"
       }
     `;
 

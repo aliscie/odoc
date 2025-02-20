@@ -198,8 +198,6 @@ export type Error = { 'OwnerAlreadyExists' : null } |
 export interface Event {
   'id' : string,
   'title' : string,
-  'owner' : string,
-  'date' : number,
   'description' : string,
   'created_by' : string,
   'end_time' : number,
@@ -628,7 +626,7 @@ export interface _SERVICE {
   'share_file' : ActorMethod<[ShareFileInput], Result_11>,
   'unfriend' : ActorMethod<[string], Result>,
   'unvote' : ActorMethod<[string], Result_10>,
-  'update_calendar' : ActorMethod<[CalendarActions], Result_16>,
+  'update_calendar' : ActorMethod<[string, CalendarActions], Result_16>,
   'update_chat' : ActorMethod<[Chat], Result_4>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
   'vote_down' : ActorMethod<[string], Result_10>,

@@ -190,8 +190,6 @@ type Error = variant {
 type Event = record {
   id : text;
   title : text;
-  owner : text;
-  date : float64;
   description : text;
   created_by : text;
   end_time : float64;
@@ -563,7 +561,7 @@ service : () -> {
   share_file : (ShareFileInput) -> (Result_11);
   unfriend : (text) -> (Result);
   unvote : (text) -> (Result_10);
-  update_calendar : (CalendarActions) -> (Result_16);
+  update_calendar : (text, CalendarActions) -> (Result_16);
   update_chat : (Chat) -> (Result_4);
   update_user_profile : (RegisterUser) -> (Result);
   vote_down : (text) -> (Result_10);

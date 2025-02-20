@@ -261,8 +261,6 @@ export const idlFactory = ({ IDL }) => {
   const Event = IDL.Record({
     'id' : IDL.Text,
     'title' : IDL.Text,
-    'owner' : IDL.Text,
-    'date' : IDL.Float64,
     'description' : IDL.Text,
     'created_by' : IDL.Text,
     'end_time' : IDL.Float64,
@@ -686,7 +684,7 @@ export const idlFactory = ({ IDL }) => {
     'share_file' : IDL.Func([ShareFileInput], [Result_11], []),
     'unfriend' : IDL.Func([IDL.Text], [Result], []),
     'unvote' : IDL.Func([IDL.Text], [Result_10], []),
-    'update_calendar' : IDL.Func([CalendarActions], [Result_16], []),
+    'update_calendar' : IDL.Func([IDL.Text, CalendarActions], [Result_16], []),
     'update_chat' : IDL.Func([Chat], [Result_4], []),
     'update_user_profile' : IDL.Func([RegisterUser], [Result], []),
     'vote_down' : IDL.Func([IDL.Text], [Result_10], []),

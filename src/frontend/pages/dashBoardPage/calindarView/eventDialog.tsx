@@ -1,20 +1,34 @@
-import React, {useEffect, useState} from "react";
-import {useDispatch} from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  Box, Button,
-  Dialog, DialogActions,
-  DialogContent, DialogContentText,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
   DialogTitle,
   FormControl,
-  InputLabel, MenuItem,
+  InputLabel,
+  MenuItem,
   Select,
   Stack,
-  TextField
+  TextField,
 } from "@mui/material";
 import format from "date-fns/format";
+import { RootState } from "../../../redux/reducers";
 
 const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
+  const { profile } = useSelector((state: any) => state.filesState);
+  const { calendar } = useSelector((state: RootState) => state.calendarState);
+  const calendarOwnerId = calendar?.owner;
+
   const isEditMode = Boolean(selectedEvent);
+
+  const canEdit = !isEditMode ||
+    calendarOwnerId === profile?.id ||
+    (selectedEvent && selectedEvent.created_by === profile?.id);
+
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [eventData, setEventData] = useState({
     title: "",
@@ -34,7 +48,8 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
       setEventData({
         title: selectedEvent.title,
         description: selectedEvent.description,
-        recurrence: selectedEvent.recurrence[0] || {
+        recurrence: (selectedEvent?.recurrence &&
+          selectedEvent?.recurrence[0]) || {
           frequency: "Weekly",
           interval: 1,
           count: null,
@@ -85,10 +100,8 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
       description: eventData.description,
       start_time: slotInfo.start.getTime() * 1e6,
       end_time: slotInfo.end.getTime() * 1e6,
-      date: new Date().getTime(),
       attendees: eventData.attendees,
       recurrence: showRecurrence ? [eventData.recurrence] : [],
-      owner: "current_user",
       created_by: "current_user",
     };
 
@@ -102,7 +115,7 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
   };
 
   const handleDelete = () => {
-    dispatch({ type: "DELETE_EVENT", eventId: selectedEvent.id });
+    dispatch({ type: "DELETE_EVENT", id: selectedEvent.id });
     handleClose();
   };
 
@@ -154,6 +167,7 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
             fullWidth
             value={eventData.title}
             onChange={handleChange("title")}
+            disabled={!canEdit}
           />
 
           <TextField
@@ -163,6 +177,7 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
             rows={4}
             value={eventData.description}
             onChange={handleChange("description")}
+            disabled={!canEdit}
           />
 
           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
@@ -171,10 +186,11 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
               type="datetime-local"
               value={format(
                 slotInfo?.start || new Date(),
-                "yyyy-MM-dd'T'HH:mm"
+                "yyyy-MM-dd'T'HH:mm",
               )}
               InputProps={{ readOnly: true }}
               fullWidth
+              disabled={!canEdit}
             />
 
             <TextField
@@ -183,6 +199,7 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
               value={format(slotInfo?.end || new Date(), "yyyy-MM-dd'T'HH:mm")}
               InputProps={{ readOnly: true }}
               fullWidth
+              disabled={!canEdit}
             />
           </Box>
 
@@ -194,6 +211,7 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
                   value={eventData.recurrence.frequency}
                   onChange={handleRecurrenceChange("frequency")}
                   label="Frequency"
+                  disabled={!canEdit}
                 >
                   <MenuItem value="Daily">Daily</MenuItem>
                   <MenuItem value="Weekly">Weekly</MenuItem>
@@ -209,11 +227,13 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
                 onChange={handleRecurrenceChange("interval")}
                 fullWidth
                 InputProps={{ inputProps: { min: 1 } }}
+                disabled={!canEdit}
               />
             </Box>
           )}
 
           <TextField
+            disabled={!canEdit}
             label="Attendees"
             placeholder="Enter email addresses separated by commas"
             fullWidth
@@ -232,24 +252,25 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={() => setShowRecurrence(!showRecurrence)}
-          color="primary"
-        >
-          {showRecurrence ? "Hide Recurrence" : "Add Recurrence"}
-        </Button>
-        {isEditMode && (
+        {canEdit && (
           <Button
-            onClick={() => setShowDeleteConfirm(true)}
-            color="error"
+            onClick={() => setShowRecurrence(!showRecurrence)}
+            color="primary"
           >
+            {showRecurrence ? "Hide Recurrence" : "Add Recurrence"}
+          </Button>
+        )}
+        {isEditMode && canEdit && (
+          <Button onClick={() => setShowDeleteConfirm(true)} color="error">
             Delete
           </Button>
         )}
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleSubmit} color="primary" variant="contained">
-          {isEditMode ? "Update" : "Create"}
-        </Button>
+        <Button onClick={handleClose}>Close</Button>
+        {canEdit && (
+          <Button onClick={handleSubmit} color="primary" variant="contained">
+            {isEditMode ? "Update" : "Create"}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );
