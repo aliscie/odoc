@@ -104,7 +104,7 @@ impl Calendar {
     pub fn save(&self) -> Result<(), String> {
         CALENDAR_STORE.with(|store| {
             let mut store = store.borrow_mut();
-            store.insert(self.id.clone(), self.clone());
+            store.insert(self.owner.clone(), self.clone());
             Ok(())
         })
     }
@@ -175,9 +175,9 @@ impl Calendar {
         filtered_calendar
     }
 
-    pub fn get_calendar(calendar_id: &str) -> Option<Self> {
+    pub fn get_calendar(calendar_id: &str) -> Result<Self, String> {
         let viewer = caller().to_text();
-        CALENDAR_STORE.with(|store| {
+        let calendar = CALENDAR_STORE.with(|store| {
             let store = store.borrow();
             store.iter()
                 .filter(|(_, calendar)| calendar.id == calendar_id)
@@ -187,9 +187,22 @@ impl Calendar {
                         .apply_privacy_filter(viewer.clone())
                 })
                 .next()
-        })
-    }
+        });
 
+        match calendar {
+            Some(cal) => Ok(cal),
+            None => {
+                let new_calendar = Calendar {
+                    id: ic_cdk::api::time().to_string(),
+                    owner: caller().to_text(),
+                    availabilities: Vec::new(),
+                    events: Vec::new(),
+                };
+                new_calendar.save()?;
+                Ok(new_calendar)
+            }
+        }
+    }
     pub fn cleanup_old_events(&mut self) -> Calendar {
         let current_time = ic_cdk::api::time() as f64;
         self.events.retain(|event| {

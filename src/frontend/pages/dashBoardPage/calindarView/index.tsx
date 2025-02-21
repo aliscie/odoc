@@ -49,7 +49,7 @@ const Scheduler = React.memo(() => {
       fetchAttempted.current = true;
       if (isCalendarPage) {
         let fetchedCalendar = await backendActor.get_calendar(calendarID);
-        logger({ fetchedCalendar });
+        // logger({ fetchedCalendar });
         fetchedCalendar = fetchedCalendar[0];
         if (!fetchedCalendar) {
           enqueueSnackbar("Calendar not found", { variant: "error" });
@@ -116,7 +116,15 @@ const Scheduler = React.memo(() => {
   //     </Box>
   //   );
   // }
-
+  if (!profile) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <LoaderButton onClick={handleFetchCalendar}>
+          Loading... make sure login.
+        </LoaderButton>
+      </Box>
+    );
+  }
   return (
     <Box
       sx={{
@@ -149,7 +157,7 @@ const Scheduler = React.memo(() => {
           boxShadow: 3,
         }}
       >
-        <ConversationInput calendar={calendar} />
+        <ConversationInput />
       </Box>
     </Box>
   );

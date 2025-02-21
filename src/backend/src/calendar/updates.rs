@@ -185,10 +185,7 @@ fn update_calendar(calendar_id: String, actions: CalendarActions) -> Result<Cale
     }
 
     let caller_id = caller().to_text();
-    let mut calendar = match Calendar::get_calendar(&calendar_id) {
-        Some(cal) => cal,
-        None => return Err("Calendar not found".to_string()),
-    };
+    let mut calendar = Calendar::get_calendar(&calendar_id)?;
 
 
     // Check permissions for availability management

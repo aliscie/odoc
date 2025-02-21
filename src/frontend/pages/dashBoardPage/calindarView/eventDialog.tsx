@@ -14,10 +14,12 @@ import {
   Select,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import format from "date-fns/format";
 import { RootState } from "../../../redux/reducers";
-
+import GoogleCalendarButton from "./addEventToGoogleCalenar";
+import { Link } from "react-router-dom";
 const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
   const { profile } = useSelector((state: any) => state.filesState);
   const { calendar } = useSelector((state: RootState) => state.calendarState);
@@ -25,7 +27,8 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
 
   const isEditMode = Boolean(selectedEvent);
 
-  const canEdit = !isEditMode ||
+  const canEdit =
+    !isEditMode ||
     calendarOwnerId === profile?.id ||
     (selectedEvent && selectedEvent.created_by === profile?.id);
 
@@ -102,7 +105,7 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
       end_time: slotInfo.end.getTime() * 1e6,
       attendees: eventData.attendees,
       recurrence: showRecurrence ? [eventData.recurrence] : [],
-      created_by: "current_user",
+      created_by: profile?.id,
     };
 
     if (isEditMode) {
@@ -252,6 +255,35 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
         </Stack>
       </DialogContent>
       <DialogActions>
+        {selectedEvent && selectedEvent.created_by !== profile?.id && (
+          <Box sx={{ mt: 2, textAlign: "right" }}>
+            <Typography
+              sx={{
+                opacity: 1,
+                textDecoration: "none",
+                "&:hover": {
+                  textDecoration: "underline",
+                },
+              }}
+              color="primary"
+              component={Link}
+              to={`/user/?id=${selectedEvent.created_by}`}
+            >
+              See their profile
+            </Typography>
+          </Box>
+        )}
+        {canEdit && (
+          <GoogleCalendarButton
+            event={{
+              title: eventData.title,
+              description: eventData?.description,
+              start_time: slotInfo?.start.getTime() * 1e6,
+              end_time: slotInfo?.end.getTime() * 1e6,
+            }}
+          />
+        )}
+
         {canEdit && (
           <Button
             onClick={() => setShowRecurrence(!showRecurrence)}

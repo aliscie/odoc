@@ -6,7 +6,8 @@ import ChatDialog from "./chtDilog";
 import handleAIValue from "./handleAiValue";
 import AnimatedFloatingFineTune from "./floatingButtonFineTune";
 
-const ConversationInput = ({ calendar }) => {
+const ConversationInput = () => {
+  const { calendar } = useSelector((state: any) => state.calendarState);
   const { profile } = useSelector((state: any) => state.filesState);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -22,16 +23,18 @@ const ConversationInput = ({ calendar }) => {
       // e.preventDefault();
       if (value.trim()) {
         setIsThinking(true);
-        let actions = await handleAIValue(
-          value.trim(),
-          calendar,
-          messages,
+        console.log({ handleAIValue: calendar });
+        let actions = await handleAIValue({
+          input: value.trim(),
+          currentCalendar: calendar,
+          currentMessages: messages,
           setMessages,
           enqueueSnackbar,
           dispatch,
           profile,
-        );
-        console.log({ calendar, actions });
+        });
+
+        console.log({ actions });
         actions?.forEach((action) => {
           dispatch(action);
         });
@@ -41,6 +44,8 @@ const ConversationInput = ({ calendar }) => {
     },
     [calendar, messages, dispatch],
   );
+
+  //<AnimatedFloatingFineTune />
 
   return (
     <div elevation={3}>

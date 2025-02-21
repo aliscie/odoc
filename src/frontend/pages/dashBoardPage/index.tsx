@@ -81,7 +81,6 @@ const ProjectDashboard = () => {
         px: { xs: 1, sm: 2, md: 3 },
       }}
     >
-      <DemoBanner />
       <Box
         sx={{
           borderBottom: 1,

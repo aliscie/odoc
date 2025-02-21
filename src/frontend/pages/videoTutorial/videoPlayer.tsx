@@ -8,31 +8,33 @@ const VideoPlayer = ({ video }: { video: Tutorial }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLIFrameElement>(null);
   const isInViewport = useIsInViewport(containerRef, 0.5);
-  // const videoSrc = `${video.videoUrl}${autoplay ? "?autoplay=1&mute=1" : ""}`;
-  const videoSrc = `${video.videoUrl}?autoplay=1&mute=1`;
+
+  // Construct URL with all required parameters
+  const baseUrl = video.videoUrl;
+  const separator = baseUrl.includes("?") ? "&" : "?";
+  const videoSrc = `${baseUrl}${separator}autoplay=1&mute=0&enablejsapi=1&volume=100`;
+
   useEffect(() => {
     const iframe = videoRef.current;
     if (!iframe) return;
-
-    const postMessageToPlayer = (action: string) => {
+    const postMessageToPlayer = (action: string, params?: any) => {
       iframe.contentWindow?.postMessage(
         JSON.stringify({
           event: "command",
           func: action,
+          args: params,
         }),
         "*",
       );
     };
 
-    if (!video.videoUrl.includes("enablejsapi=1")) {
-      const separator = video.videoUrl.includes("?") ? "&" : "?";
-      iframe.src = `${video.videoUrl}${separator}enablejsapi=1`;
-    }
-
-    if (!isInViewport) {
+    if (isInViewport) {
+      postMessageToPlayer("playVideo");
+      postMessageToPlayer("setVolume", [100]);
+    } else {
       postMessageToPlayer("pauseVideo");
     }
-  }, [isInViewport, video.videoUrl]);
+  }, [isInViewport]);
 
   return (
     <Box

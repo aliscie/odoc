@@ -94,12 +94,12 @@ class TimeFormatter {
 // Calendar formatter for AI prompt
 class CalendarFormatter {
   static formatCalendarForPrompt(calendar: Calendar): string {
-    const sections: string[] = [];
 
-    if (calendar.events?.length) {
+    const sections: string[] = [];
+    if (calendar?.events?.length) {
       sections.push(
         "Events:\n" +
-          calendar.events
+          calendar?.events
             .map(
               (event) =>
                 `- "${event.title}" on ${TimeFormatter.formatDate(event.start_time)} at ${TimeFormatter.formatTime(event.start_time)} to ${TimeFormatter.formatTime(event.end_time)}
@@ -111,10 +111,10 @@ class CalendarFormatter {
       );
     }
 
-    if (calendar.availabilities?.length) {
+    if (calendar?.availabilities?.length) {
       sections.push(
         "Availabilities:\n" +
-          calendar.availabilities
+          calendar?.availabilities
             .map((avail) => {
               const timeSlots = avail.time_slots
                 .map(

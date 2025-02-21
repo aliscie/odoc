@@ -1,47 +1,38 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import React, {memo, useCallback, useEffect, useRef, useState} from "react";
 import {
   AppBar,
   Box,
+  Button,
   CircularProgress,
+  Dialog,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   TextField,
   Toolbar,
   Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  Button,
-  Autocomplete,
-  Chip,
-  Dialog,
 } from "@mui/material";
-import { MembersSelect, AdminsSelect, WorkspaceSelect } from "./index";
+import {AdminsSelect, MembersSelect, WorkspaceSelect} from "./index";
 import {
+  ArrowBack as ArrowBackIcon,
+  Check,
   DragIndicator as DragHandle,
   OpenInFull as OpenInFullIcon,
   Send as SendIcon,
   Settings as SettingsIcon,
-  ArrowBack as ArrowBackIcon,
-  Delete as DeleteIcon,
-  Check,
 } from "@mui/icons-material";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 import CloseIcon from "@mui/icons-material/Close";
-import { useBackendContext } from "../../contexts/BackendContext";
-import { useDispatch, useSelector } from "react-redux";
-import { Principal } from "@dfinity/principal";
-import { randomString } from "../../DataProcessing/dataSamples";
+import {useBackendContext} from "../../contexts/BackendContext";
+import {useDispatch, useSelector} from "react-redux";
+import {Principal} from "@dfinity/principal";
 import formatTimestamp from "../../utils/time";
-import { isConstantNode } from "mathjs";
-import { Link } from "react-router-dom";
-import { Chat } from "../../../declarations/backend/backend.did";
-import { handleRedux } from "../../redux/store/handleRedux";
+import {Link} from "react-router-dom";
+import {Chat} from "../../../declarations/backend/backend.did";
+import {handleRedux} from "../../redux/store/handleRedux";
 
 const ChatWindow = memo(
   ({

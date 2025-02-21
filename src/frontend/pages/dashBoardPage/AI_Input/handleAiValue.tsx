@@ -23,17 +23,20 @@ const handleAIValue = async ({
   dispatch,
   profile,
 }) => {
+  console.log({ currentCalendar });
   try {
     const contextData = {
       messages: currentMessages,
       input,
-      profile: profile ? { ...profile, note: 'Add ID to attendances for created events' } : null
+      profile: profile
+        ? { ...profile, note: "Add ID to attendances for created events" }
+        : null,
     };
 
     const aiResponse = await processCalendarText(
       JSON.stringify(contextData),
       currentCalendar,
-      dispatch
+      dispatch,
     );
 
     return processAIActions(aiResponse, {
@@ -42,9 +45,29 @@ const handleAIValue = async ({
     });
   } catch (error) {
     console.error("Calendar operation error:", error);
-    enqueueSnackbar("Sorry, I couldn't process that request. Please try again.", {
-      variant: "error"
+
+    // Extract the relevant error message
+    let userMessage =
+      "Sorry, I couldn't process that request. Please try again.";
+
+    if (error?.message?.includes("model is overloaded")) {
+      userMessage =
+        "The AI service is currently busy. Please wait a moment and try again.";
+    } else if (error?.message?.includes("Error fetching")) {
+      userMessage =
+        "Network connection issue. Please check your connection and try again.";
+    }
+
+    // Show error notification
+    enqueueSnackbar(userMessage, {
+      variant: "error",
+      autoHideDuration: 5000,
+      anchorOrigin: {
+        vertical: "top",
+        horizontal: "center",
+      },
     });
+
     return [];
   }
 };
@@ -71,7 +94,7 @@ const processAIActions = (actions, { currentCalendar, setMessages }) => {
   }
 
   if (messages.length > 0) {
-    setMessages(prevMessages => [...prevMessages, ...messages]);
+    setMessages((prevMessages) => [...prevMessages, ...messages]);
   } else if (validActions.length > 0) {
     setMessages([]);
   }
@@ -95,7 +118,7 @@ const processAction = (action, { currentCalendar, messages }) => {
       const validation = validateEventAgainstCalendar(
         currentCalendar,
         event,
-        excludeEventId
+        excludeEventId,
       );
 
       if (!validation.isValid) {
@@ -111,7 +134,7 @@ const processAction = (action, { currentCalendar, messages }) => {
     }
 
     case "ADD_EVENTS": {
-      const validEvents = action.events.filter(event => {
+      const validEvents = action.events.filter((event) => {
         const validation = validateEventAgainstCalendar(currentCalendar, event);
 
         if (!validation.isValid) {
@@ -126,7 +149,9 @@ const processAction = (action, { currentCalendar, messages }) => {
         return true;
       });
 
-      return validEvents.length > 0 ? { type: "ADD_EVENTS", events: validEvents } : null;
+      return validEvents.length > 0
+        ? { type: "ADD_EVENTS", events: validEvents }
+        : null;
     }
 
     default:
@@ -153,10 +178,10 @@ const TimeUtils = {
         event.start_time,
         event.end_time,
         availability.start_time,
-        availability.end_time
+        availability.end_time,
       )
     );
-  }
+  },
 };
 
 /**
@@ -166,49 +191,56 @@ const TimeUtils = {
  * @param {string|null} excludeEventId - ID of event to exclude from overlap check
  * @returns {Object} Validation result
  */
-export const validateEventAgainstCalendar = (calendar, newEvent, excludeEventId = null) => {
+export const validateEventAgainstCalendar = (
+  calendar,
+  newEvent,
+  excludeEventId = null,
+) => {
   // Check event overlap
-  const hasEventOverlap = calendar.events.some(
-    existingEvent =>
+  const hasEventOverlap = calendar?.events.some(
+    (existingEvent) =>
       existingEvent.id !== excludeEventId &&
       existingEvent.date === newEvent.date &&
       TimeUtils.doTimeRangesOverlap(
         newEvent.start_time,
         newEvent.end_time,
         existingEvent.start_time,
-        existingEvent.end_time
-      )
+        existingEvent.end_time,
+      ),
   );
 
   if (hasEventOverlap) {
     return {
       isValid: false,
-      reason: "Event overlaps with an existing event"
+      reason: "Event overlaps with an existing event",
     };
   }
 
   // Check blocked availabilities
-  const overlapsBlockedTime = calendar.availabilities
-    .filter(a => a.is_blocked)
-    .some(blockedAvail => TimeUtils.checkAvailabilityOverlap(newEvent, blockedAvail));
+  const overlapsBlockedTime = calendar?.availabilities
+    .filter((a) => a.is_blocked)
+    .some((blockedAvail) =>
+      TimeUtils.checkAvailabilityOverlap(newEvent, blockedAvail),
+    );
 
   if (overlapsBlockedTime) {
     return {
       isValid: false,
-      reason: "Event overlaps with blocked time"
+      reason: "Event overlaps with blocked time",
     };
   }
 
   // Check available time slots
-  const hasValidAvailability = calendar.availabilities.length === 0 ||
-    calendar.availabilities
-      .filter(a => !a.is_blocked)
-      .some(avail => TimeUtils.checkAvailabilityOverlap(newEvent, avail));
+  const hasValidAvailability =
+    calendar?.availabilities.length === 0 ||
+    calendar?.availabilities
+      .filter((a) => !a.is_blocked)
+      .some((avail) => TimeUtils.checkAvailabilityOverlap(newEvent, avail));
 
   if (!hasValidAvailability) {
     return {
       isValid: false,
-      reason: "Event does not fall within any available time slot"
+      reason: "Event does not fall within any available time slot",
     };
   }
 

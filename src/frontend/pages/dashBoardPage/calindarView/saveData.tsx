@@ -65,7 +65,6 @@ function SaveCalendarData() {
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [calendarChanged]);
-  console.log({ before: calendar_actions, calendar });
   const handleSave = useCallback(async () => {
     if (!backendActor || !calendar) return;
 

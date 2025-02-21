@@ -26,7 +26,6 @@ const initialState: any = {
 };
 
 export function calendarReducer(state = initialState, action: any): any {
-  console.log({ action });
   switch (action.type) {
     case "SET_TRAINING_DATA":
       return {
@@ -75,7 +74,6 @@ export function calendarReducer(state = initialState, action: any): any {
             ...action.events.map((e: any) => ({
               ...e,
               id: e.id || Math.random().toString(),
-              created_by: state.calendar.owner,
             })),
           ],
         },
@@ -86,7 +84,6 @@ export function calendarReducer(state = initialState, action: any): any {
             ...action.events.map((e: any) => ({
               ...e,
               id: e.id || Math.random().toString(),
-              created_by: state.calendar.owner,
             })),
           ],
         },
@@ -96,7 +93,6 @@ export function calendarReducer(state = initialState, action: any): any {
       const newEvent = {
         ...action.event,
         id: action.event.id || Math.random().toString(),
-        created_by: state.calendar.owner,
       };
       return {
         ...state,

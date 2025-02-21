@@ -19,6 +19,7 @@ import SaveCalendarData from "./saveData";
 import ResetCalendarData from "./resetData";
 import { MoreVert, NavigateBefore, NavigateNext } from "@mui/icons-material";
 import CircleIcon from "@mui/icons-material/Circle";
+import TimeZoneSelector from "./timezone";
 
 const CustomToolbar = (toolbar) => {
   const { calendarChanged, calendar, calendar_actions } = useSelector(
@@ -69,6 +70,7 @@ const CustomToolbar = (toolbar) => {
       open={Boolean(actionMenuAnchor)}
       onClose={handleActionMenuClose}
     >
+      <TimeZoneSelector />
       {!isCalendarPage && (
         <MenuItem>
           <CopyButton title="Share" value={copyLink} />
@@ -205,7 +207,8 @@ const CustomToolbar = (toolbar) => {
             flex: 1,
           }}
         >
-          {toolbar.label}
+          {toolbar.label} :
+          <TimeZoneSelector />
         </Typography>
       </Stack>
 
