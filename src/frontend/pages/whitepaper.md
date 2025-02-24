@@ -217,6 +217,18 @@ The token model is engineered to balance supply and demand, encouraging active p
 - **Chief Technology Officer (CTO):** Leads technical development, ensuring the seamless integration of ICP technologies and the platform’s scalability and reliability.  
 - **Community Lead:** Manages user engagement, oversees governance processes, and integrates community feedback into the platform’s evolution.  
 
+
+
+# security 🔐
+
+ODoc ensures data integrity and protection against cyber threats for SMEs through its robust, decentralized architecture. Below are the key security features:
+- **Tamper-proof Records**: Immutable blockchain records maintain an unalterable audit trail.
+- **Decentralized Architecture**: Eliminates single points of failure, reducing attack vectors.
+- **Verified Access**: Digital identities (Internet Ident) prevent unauthorized entry.
+- **Fraud Prevention**: Cryptographic blockchain transactions and smart contracts secure payments.
+- **Secure Communication**: Encrypted messaging and secret key protection ensure confidential collaboration.
+- **Real-time Monitoring**: Immediate detection of suspicious activities minimizes risks.
+- **AI Assistance**: Optimizes management and reduces human error.
 ---
 
 # Conclusion  

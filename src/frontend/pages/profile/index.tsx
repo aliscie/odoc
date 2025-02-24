@@ -25,7 +25,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { formatRelativeTime } from "../../utils/time";
 import EditProfile from "./editeProfile";
 import CopyButton from "../../components/MuiComponents/copyButton";
-
+import EmailComposer from "./sendEmail";
+import GoogleSignInButton from "./addGmail";
 
 const ProfilePage = ({ profile, history, friends, friendButton }) => {
   const { isDarkMode } = useSelector((state: any) => state.uiState);
@@ -200,9 +201,12 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
       return "";
     }
   };
-
+  let founderOfOdoc =
+    "tgwpc-6xuon-k3a6y-ey7lt-xksjs-qx22h-ikhbt-4yp3a-6stco-rymbe-pqe";
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      {currentUser?.id == founderOfOdoc && <EmailComposer />}
+      {/*<GoogleSignInButton />*/}
       {/* User Header */}
       <Card sx={{ mb: 4 }}>
         <CardContent>
@@ -248,6 +252,7 @@ const ProfilePage = ({ profile, history, friends, friendButton }) => {
                 )}
               </Box>
             </Box>
+
             {canEdit && !isEditing && (
               <Button
                 startIcon={<Edit />}

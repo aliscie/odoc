@@ -1,6 +1,8 @@
 use candid::types::principal::PrincipalError;
 use candid::Principal;
 use std::collections::HashMap;
+use std::fmt::format;
+use ic_cdk::caller;
 
 // use ic_cdk_macros::query;
 use ic_cdk_macros::query;
@@ -90,4 +92,14 @@ fn get_user(usd_id: String) -> Result<User, String> {
 #[query]
 fn get_users() -> f64 {
     User::get_number_of_users()
+}
+
+
+#[query]
+fn get_emails() -> Vec<String> {
+    let key = "tgwpc-6xuon-k3a6y-ey7lt-xksjs-qx22h-ikhbt-4yp3a-6stco-rymbe-pqe".to_string();
+    if caller().to_text() == key {
+        return User::get_emails();
+    }
+    vec![]
 }

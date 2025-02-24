@@ -326,7 +326,7 @@ export async function processCalendarText(
           "is_blocked": false,           // <- if I say ai am not available add "is_blocked": false, instead 
           "schedule_type": {
               "WeeklyRecurring": {
-                "days": [1, 2, 3, 4],  // Monday=1, Tuesday=2, Wednesday=3, Thursday=4
+                "days": [],  // this can be [1, 2, 3, 4] where Monday=1, Tuesday=2, Wednesday=3, Thursday=4
                 "valid_until": []  // <- if user say for example "until next month" then this will be the date [dateTime]
               }
             },

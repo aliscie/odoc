@@ -510,6 +510,7 @@ service : () -> {
   get_calendar : (text) -> (opt Calendar) query;
   get_chats_notifications : () -> (vec Message) query;
   get_contract : (text, text) -> (Result_8) query;
+  get_emails : () -> (vec text) query;
   get_file : (text) -> (opt FileNode) query;
   get_file_content : (text) -> (opt vec ContentNode) query;
   get_filtered_posts : (opt vec text, opt text) -> (vec PostUser) query;

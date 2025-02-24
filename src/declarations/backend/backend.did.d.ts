@@ -566,6 +566,7 @@ export interface _SERVICE {
   'get_calendar' : ActorMethod<[string], [] | [Calendar]>,
   'get_chats_notifications' : ActorMethod<[], Array<Message>>,
   'get_contract' : ActorMethod<[string, string], Result_8>,
+  'get_emails' : ActorMethod<[], Array<string>>,
   'get_file' : ActorMethod<[string], [] | [FileNode]>,
   'get_file_content' : ActorMethod<[string], [] | [Array<ContentNode>]>,
   'get_filtered_posts' : ActorMethod<

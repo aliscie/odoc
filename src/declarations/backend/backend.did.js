@@ -604,6 +604,7 @@ export const idlFactory = ({ IDL }) => {
     'get_calendar' : IDL.Func([IDL.Text], [IDL.Opt(Calendar)], ['query']),
     'get_chats_notifications' : IDL.Func([], [IDL.Vec(Message)], ['query']),
     'get_contract' : IDL.Func([IDL.Text, IDL.Text], [Result_8], ['query']),
+    'get_emails' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
     'get_file' : IDL.Func([IDL.Text], [IDL.Opt(FileNode)], ['query']),
     'get_file_content' : IDL.Func(
         [IDL.Text],

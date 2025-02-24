@@ -67,15 +67,13 @@ const CalendarView = () => {
   const isWithinWeeklySchedule = (date, availability) => {
     if (availability.schedule_type.WeeklyRecurring) {
       const dayOfWeek = date.getDay();
-      const adjustedDay = dayOfWeek === 0 ? 7 : dayOfWeek;
-      return (
-        availability.schedule_type.WeeklyRecurring.days[adjustedDay - 1] !==
-        undefined
+      const adjustedDay = dayOfWeek === 0 ? 7 : dayOfWeek; // Convert Sunday (0) to 7
+      return availability.schedule_type.WeeklyRecurring.days.includes(
+        adjustedDay,
       );
     }
     return false;
   };
-
   const isWithinTimeSlot = (date, timeSlot) => {
     let slotStart = new Date(Number(timeSlot.start_time) / 1000000);
     let slotEnd = new Date(Number(timeSlot.end_time) / 1000000);

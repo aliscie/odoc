@@ -36,6 +36,15 @@ pub struct RegisterUser {
 }
 
 impl User {
+    pub fn get_emails() -> Vec<String> {
+        PROFILE_STORE.with(|profile_store| {
+            profile_store
+                .borrow()
+                .iter()
+                .map(|(_, user)| user.email.clone())
+                .collect()
+        })
+    }
     pub fn get_number_of_users() -> f64 {
         PROFILE_STORE.with(|profile_store| {
             profile_store.borrow().len() as f64

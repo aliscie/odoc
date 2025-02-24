@@ -20,9 +20,9 @@ const featuresData = {
     tooltip: "Simplify your workflow: With Odoc, one person can manage everything. No need for a full HR team, no middlemen, and no commissions.",
     isClickable: false
   },
-  FREEDOM: {
+  SECURITY: {
     icon: LockOpenIcon,
-    tooltip: "Enjoy true freedom: No more 403 errors or sudden privacy changes. At Odoc, you help shape the platform by voting for new features.",
+    tooltip: "cybersecurity with blockchain, encryption, and AI-driven protection for SMEs, Enjoy true freedom: No more 403 errors or sudden privacy changes. At Odoc, you help shape the platform by voting for new features.",
     isClickable: false
   },
   DECENTRALIZED: {

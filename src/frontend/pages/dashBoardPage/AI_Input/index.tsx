@@ -44,11 +44,11 @@ const ConversationInput = () => {
     },
     [calendar, messages, dispatch],
   );
-
-  //<AnimatedFloatingFineTune />
+  const { profile_history } = useSelector((state: any) => state.filesState);
 
   return (
     <div elevation={3}>
+      {/*{profile_history.actions_rate > 2 && <AnimatedFloatingFineTune />}*/}
       <AnimatedFloatingFineTune />
       <ChatDialog
         initialMessages={messages}
