@@ -1,14 +1,14 @@
 import { Route, Routes } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import LandingPage from "./LandingPage";
-import Index from "./fileContentPage";
+import FileContentPage from "./fileContentPage";
 import ShareFilePage from "./ShareFilePage";
 import ProfilePage from "./profile";
 import Discover from "./discover/index";
 import UserProfile from "./User";
 import ContractsHistory from "./Profile/ContractsHistory";
 import Web3WalletUI from "../components/MuiComponents/walletUi";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useBackendContext } from "../contexts/BackendContext";
 import OfferPage from "./OfferPage";
 import SubscriptionPlans from "./subscrptions";
@@ -18,8 +18,6 @@ import ProductManagerDashboard from "./dashBoardPage";
 import DummyShares from "./sharesContract";
 import AffiliateDashboard from "./affiliate";
 import AffiliateRedirect from "./affiliateRedirect";
-import { handleRedux } from "../redux/store/handleRedux";
-import FileContentPage from "./fileContentPage";
 import RegistrationForm from "../components/MainComponents/RegistrationForm";
 import ContractPage from "./profile/ContractPage";
 import Scheduler from "./dashBoardPage/calindarView";
@@ -82,7 +80,7 @@ function Pages() {
       <Route path="/affiliate" element={<AffiliateDashboard />} />
       <Route path="/f" element={<AffiliateRedirect />} />
       <Route path="/*" element={<FileContentPage />} />
-        <Route path="/calendar" element={<Scheduler />} />
+      <Route path="/calendar" element={<Scheduler />} />
     </Routes>
   );
 }

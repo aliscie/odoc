@@ -1,5 +1,5 @@
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useIsInViewport from "./useViewPort";
 
 const VideoPlayer = ({ video }: { video: Tutorial }) => {
@@ -8,15 +8,17 @@ const VideoPlayer = ({ video }: { video: Tutorial }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLIFrameElement>(null);
   const isInViewport = useIsInViewport(containerRef, 0.5);
+  const [isIframeLoaded, setIsIframeLoaded] = useState(false);
 
-  // Construct URL with all required parameters
+  // Construct URL without autoplay
   const baseUrl = video.videoUrl;
   const separator = baseUrl.includes("?") ? "&" : "?";
-  const videoSrc = `${baseUrl}${separator}autoplay=1&mute=0&enablejsapi=1&volume=100`;
+  const videoSrc = `${baseUrl}${separator}autoplay=0&mute=0&enablejsapi=1`;
 
   useEffect(() => {
     const iframe = videoRef.current;
-    if (!iframe) return;
+    if (!iframe || !isIframeLoaded) return;
+
     const postMessageToPlayer = (action: string, params?: any) => {
       iframe.contentWindow?.postMessage(
         JSON.stringify({
@@ -27,14 +29,24 @@ const VideoPlayer = ({ video }: { video: Tutorial }) => {
         "*",
       );
     };
+    const playVideo = () => {
+      if (isInViewport) {
+        postMessageToPlayer("playVideo");
+        postMessageToPlayer("setVolume", [100]); // Unmute if needed
+      } else {
+        postMessageToPlayer("pauseVideo");
+      }
+    };
+    playVideo();
+    setTimeout(() => {
+      playVideo();
+    }, 1500);
 
-    if (isInViewport) {
-      postMessageToPlayer("playVideo");
-      postMessageToPlayer("setVolume", [100]);
-    } else {
+    return () => {
+      // Pause when component unmounts
       postMessageToPlayer("pauseVideo");
-    }
-  }, [isInViewport]);
+    };
+  }, [videoRef.current, isInViewport, isIframeLoaded, video]);
 
   return (
     <Box
@@ -45,7 +57,7 @@ const VideoPlayer = ({ video }: { video: Tutorial }) => {
         sx={{
           position: "relative",
           width: "100%",
-          paddingTop: isMobile ? "42.25%" : "40%",
+          paddingTop: isMobile ? "65%" : "40%", // Increased from 42.25% to 65% for mobile
           mb: 2,
         }}
       >
@@ -53,6 +65,7 @@ const VideoPlayer = ({ video }: { video: Tutorial }) => {
           component="iframe"
           ref={videoRef}
           src={videoSrc}
+          onLoad={() => setIsIframeLoaded(true)}
           title={video.title}
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

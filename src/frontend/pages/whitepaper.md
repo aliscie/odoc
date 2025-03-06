@@ -66,6 +66,77 @@ The token model is engineered to balance supply and demand, encouraging active p
 
 ---
 
+# Reputation  
+ODoc’s trust framework combines quantitative metrics and community validation to ensure fairness, accountability, and growth. Below is a hybrid structure for clarity:  
+
+---
+
+## Quick Reference Table  
+
+| **Trust Score Increases**                          | **Trust Score Decreases**                          |  
+|----------------------------------------------------|----------------------------------------------------|  
+| High-value transactions (↑ with amount)            | Payment cancellations or disputes (↓ severity-based)|  
+| Collaborating with >5 unique users                 | Limited network diversity (≤5 partners)            |  
+| Partnering with users scoring ≥3.5/5               | Frequent score volatility (triggers **Risk Flag**) |  
+| Receiving ratings from users with ≥4.0/5 (2x weight)| Low Karma Score (unresolved objections)            |  
+| Earning badges (e.g., Trust Ambassador)            | Negative social interactions (flagged content)     |  
+| Consistent dispute-free behavior                  | New accounts (initial 0 score)                     |  
+
+---
+
+### **Trust Score Growth**  
+1. **Transaction Value**  
+   - Trust gains scale with payment size (e.g., $1,000 payments accelerate growth 10x faster than $100).  
+2. **Network Diversity**  
+   - Collaborating with ≤5 users yields minimal gains.  
+   - Exponential growth unlocks at >5 unique partners.  
+3. **Quality Partnerships**  
+   - Interacting with users scoring ≥3.5/5 adds a 15% trust multiplier.  
+4. **Weighted Feedback**  
+   - Ratings from users with ≥4.0/5 scores have 2x impact.  
+5. **Badges**  
+   - **Trust Ambassador**: Awarded at 25+ interactions.  
+   - **Dual Trust Ambassador**: Granted when partnering with ≥3.5/5 users.  
+
+### **Trust Score Decay**  
+1. **Disputes & Cancellations**  
+   - Penalties scale with unresolved issues (e.g., a $1,000 cancellation deducts 2x more than $100).  
+2. **Network Stagnation**  
+   - No growth if collaborating with ≤5 partners for 30+ days.  
+3. **Volatility**  
+   - Frequent fluctuations (≥3 significant changes/week) trigger a **Risk Flag** for manual review.  
+4. **Low Karma**  
+   - Unresolved objections or poor community ratings reduce scores.  
+5. **New Users**  
+   - Start at 0; rebuild trust through consistent positive actions.  
+
+---
+
+### **Dual-Rating Framework**  
+- **Karma Score**: Objective metric based on:  
+  - Transaction volume/value.  
+  - Dispute resolution rate.  
+  - Network diversity.  
+- **Community Rating**: Subjective feedback from peers.  
+  - Users must have a Karma Score ≥3.0/5 to leave comments.  
+  - Comments from users with ≥4.0/5 scores are highlighted as "Trusted Feedback."  
+
+---
+
+### Design Philosophy  
+- **Growth**: Rewards scale, diversity, and consistency.  
+- **Decay**: Penalizes instability, fraud, and low engagement.  
+- **Balance**: Combines immutable metrics (Karma) and community-driven validation.  
+
+---
+
+**Key Notes**  
+- **Rehabilitation**: Users with low scores regain trust through dispute-free transactions.  
+- **Risk Flags**: Manual reviews ensure fairness in volatile cases.  
+- **Badges**: Gamify ethical behavior and signal reliability.  
+
+---
+
 # Governance  
 **Model:** Decentralized Autonomous Organization (DAO)  
 **Mechanism:** Token holders have proportional voting rights, enabling them to influence key decisions such as protocol upgrades, feature development, and content moderation policies. This democratic governance model guarantees that the platform evolves according to community needs.  

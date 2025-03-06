@@ -15,6 +15,12 @@ import {
   Tabs,
   Tab,
   AppBar,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from "@mui/material";
 import whitepaperText from "./whitepaper.md";
 
@@ -151,6 +157,28 @@ const MarkdownRenderer = () => {
       );
     },
     hr: () => <Divider sx={{ my: 2 }} />,
+
+    // Table components - these were missing in your original code
+    table: ({ children }) => (
+      <TableContainer component={Paper} sx={{ my: 3, overflow: 'auto' }}>
+        <Table sx={{ minWidth: 650 }}>{children}</Table>
+      </TableContainer>
+    ),
+    thead: ({ children }) => <TableHead>{children}</TableHead>,
+    tbody: ({ children }) => <TableBody>{children}</TableBody>,
+    tr: ({ children }) => <TableRow>{children}</TableRow>,
+    th: ({ children }) => (
+      <TableCell
+        sx={{
+          fontWeight: 'bold',
+          backgroundColor: theme.palette.primary.light,
+          color: theme.palette.primary.contrastText
+        }}
+      >
+        {children}
+      </TableCell>
+    ),
+    td: ({ children }) => <TableCell>{children}</TableCell>,
   };
 
   const getSectionTitle = (section) => {

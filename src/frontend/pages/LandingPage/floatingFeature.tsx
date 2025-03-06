@@ -38,7 +38,7 @@ const featuresData = {
   }
 };
 
-const Feature = ({ text, index }) => {
+const Feature = ({ text, index }: { text: string; index: number }) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const [isHovered, setIsHovered] = useState(false);

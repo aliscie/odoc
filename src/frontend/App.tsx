@@ -1,21 +1,21 @@
-import React, {useEffect} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "./App.css";
 import Pages from "./pages";
-import {BrowserRouter} from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import useInitialData from "./redux/initialData/useInitialData";
-import {useSnackbar} from "notistack";
+import { useSnackbar } from "notistack";
 import NavBar from "./components/MainComponents/NavBar";
 import TopNavBar from "./components/MainComponents/topNavBar";
 import SearchPopper from "./components/SearchComponent";
 import useSocket from "./websocket/use_socket";
-import {useBackendContext} from "./contexts/BackendContext";
-import {Box, CircularProgress, styled, useTheme} from "@mui/material";
-import {Principal} from "@dfinity/principal";
+import { useBackendContext } from "./contexts/BackendContext";
+import { Box, CircularProgress, styled, useTheme } from "@mui/material";
+import { Principal } from "@dfinity/principal";
 import PromoNotification from "./components/limitedOffer";
 import BetaWarning from "./betWarning";
-import {HTML5Backend} from "react-dnd-html5-backend";
-import {DndProvider} from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd";
 
 // Create a styled component for the main content
 const MainContent = styled(Box)(({ theme }) => ({
@@ -48,6 +48,34 @@ const LoadingContainer = styled(Box)(({ theme }) => ({
 }));
 
 const App: React.FC = () => {
+  // Add Sentry error handling
+  // useEffect(() => {
+  //   // Handle the specific Sentry error related to disguiseToken
+  //   const originalGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+  //
+  //   Object.getOwnPropertyDescriptor = function (obj, prop) {
+  //     console.log({ obj, prop,  });
+  //     try {
+  //       // If the property being accessed is 'disguiseToken' and obj is undefined,
+  //       // return undefined instead of throwing an error
+  //       if (prop === "disguiseToken" && obj === undefined) {
+  //         console.warn(
+  //           "Prevented error: Cannot read properties of undefined (reading 'disguiseToken')",
+  //         );
+  //         return undefined;
+  //       }
+  //       return originalGetOwnPropertyDescriptor(obj, prop);
+  //     } catch (error) {
+  //       console.warn("Error in getOwnPropertyDescriptor:", error);
+  //       return undefined;
+  //     }
+  //   };
+  //
+  //   return () => {
+  //     // Restore original function when component unmounts
+  //     Object.getOwnPropertyDescriptor = originalGetOwnPropertyDescriptor;
+  //   };
+  // }, []);
   const dispatch = useDispatch();
   const { profile } = useSelector((state: any) => state.filesState);
   const { backendActor, ckUSDCActor } = useBackendContext();

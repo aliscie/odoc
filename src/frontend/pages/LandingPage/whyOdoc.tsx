@@ -126,7 +126,7 @@ const WhyOdoc: React.FC = () => {
       icon: Clock,
       title: "Save Time & Resources",
       description:
-        "Replace three jobs with one platform - handle tasks, payments, and contracts without commissions or middlemen. Streamline your workflow and cut costs instantly.",
+        "In addition to Zero transaction fees Odoc Replace three jobs with one platform - handle tasks, payments, and contracts without commissions or middlemen. Streamline your workflow and cut costs instantly.",
     },
     {
       icon: Users,

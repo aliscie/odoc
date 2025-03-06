@@ -4,7 +4,7 @@ import Link from "@mui/material/Link";
 import GetStartedButton from "./getStartedButton";
 import React from "react";
 import { useSelector } from "react-redux";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import FloatingFeatures from "./floatingFeature";
 
 const MotionBox = motion(Box);
@@ -14,6 +14,15 @@ export default function Intro() {
   const { profile, profile_history, wallet, friends } = useSelector(
     (state: any) => state.filesState,
   );
+
+  // Create a ref for the container element
+  const ref = React.useRef(null);
+
+  // Check if the element is in view
+  const isInView = useInView(ref, {
+    once: false, // Set to false to trigger animation every time it enters viewport
+    amount: 0.2, // How much of the element should be in view
+  });
 
   // Animation variants
   const containerVariants = {
@@ -41,8 +50,9 @@ export default function Intro() {
 
   return (
     <MotionBox
+      ref={ref} // Add ref to the container
       initial="hidden"
-      animate="visible"
+      animate={isInView ? "visible" : "hidden"} // Animation controlled by isInView
       variants={containerVariants}
       sx={{
         maxWidth: { xs: "100%", sm: "600px", md: "800px" },
@@ -62,9 +72,14 @@ export default function Intro() {
         <motion.img
           src={logo}
           alt="ODOC Logo"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5 }}
+          variants={{
+            hidden: { scale: 0.8, opacity: 0 },
+            visible: {
+              scale: 1,
+              opacity: 1,
+              transition: { duration: 0.5 }
+            }
+          }}
           style={{
             width: "70px",
             borderRadius: "12px",
@@ -106,7 +121,7 @@ export default function Intro() {
           variants={itemVariants}
           sx={{ color: "text.secondary", mb: 4 }}
         >
-          Designed for project management, freelancers, remote teams, and small
+          Designed for startups and SMEs as wel as project management, freelancers, remote teams, and small
           businesses. Built on the{" "}
           <Link
             href="https://internetcomputer.org/"
@@ -123,14 +138,11 @@ export default function Intro() {
           enterprise-level security—all from anywhere in the world.
         </MotionBox>
       </Box>
-      <motion.div
+      <MotionBox
         variants={itemVariants}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.2 }}
       >
         <GetStartedButton key={profile?.id} />
-      </motion.div>
+      </MotionBox>
     </MotionBox>
   );
 }

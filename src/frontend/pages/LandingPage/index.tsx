@@ -6,21 +6,17 @@ import {
   CardContent,
   Container,
   Grid,
-  Step,
-  StepContent,
-  StepLabel,
-  Stepper,
   Typography,
 } from "@mui/material";
 import CheckCircle from "@mui/icons-material/CheckCircle";
 import Schedule from "@mui/icons-material/Schedule";
-import { features, roadMap, steps } from "./data";
-import { useSelector } from "react-redux";
+import { features, roadMap } from "./data";
 import SocialButton from "./socialButton";
 import WhyOdoc from "./whyOdoc";
 import Section from "./section";
 import Intro from "./intro";
 import GettingStarted from "../videoTutorial";
+import SecuritySection from "./securitySection";
 
 export default function LandingPage(props) {
   return (
@@ -28,6 +24,9 @@ export default function LandingPage(props) {
       {/* Hero Section */}
       <Section id="intro">
         <Intro />
+      </Section>
+      <Section id="security">
+        <SecuritySection />
       </Section>
       <Section id="start">
         {/* Getting Started Steps */}
