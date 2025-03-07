@@ -1,8 +1,9 @@
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import useIsInViewport from "./useViewPort";
-
-const VideoPlayer = ({ video }: { video: Tutorial }) => {
+let isStareted = false;
+const VideoPlayer = (props: { video: Tutorial; startTime?: number }) => {
+  let { video, startTime } = props;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,8 +32,12 @@ const VideoPlayer = ({ video }: { video: Tutorial }) => {
     };
     const playVideo = () => {
       if (isInViewport) {
+        if (typeof startTime === "number" && !isStareted) {
+          postMessageToPlayer("seekTo", [startTime, true]);
+          isStareted = true;
+        }
         postMessageToPlayer("playVideo");
-        postMessageToPlayer("setVolume", [100]); // Unmute if needed
+        postMessageToPlayer("setVolume", [100]);
       } else {
         postMessageToPlayer("pauseVideo");
       }
@@ -43,10 +48,9 @@ const VideoPlayer = ({ video }: { video: Tutorial }) => {
     }, 1500);
 
     return () => {
-      // Pause when component unmounts
       postMessageToPlayer("pauseVideo");
     };
-  }, [videoRef.current, isInViewport, isIframeLoaded, video]);
+  }, [videoRef.current, isInViewport, isIframeLoaded, video, startTime]); // Added startTime to deps
 
   return (
     <Box

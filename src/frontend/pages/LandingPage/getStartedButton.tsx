@@ -67,9 +67,7 @@ function GetStartedButton() {
   const { login } = useBackendContext();
   const { isLoggedIn } = useSelector((state: any) => state.uiState);
   const [showTooltip, setShowTooltip] = useState(false);
-  useEffect(()=>{
-    setTimeout(() => setShowTooltip(true), 1500);
-  },[profile])
+
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));

@@ -17,11 +17,23 @@ interface Tutorial {
   videoUrl: string;
   description: string;
   checkCondition?: (state: any) => boolean;
+  startTime?: number;
 }
 
 const tutorials: Tutorial[] = [
   {
-    title: "What is odoc",
+    title: "What is odoc?",
+    videoUrl: "https://www.youtube.com/embed/3UYPuOPWa9A",
+    description:
+      "Contracting and project management, Open Source Blockchain Platform Automates Your freelance workflow",
+    checkCondition: (state: any) => {
+      const { wallet } = state.filesState;
+      return wallet?.exchanges?.length > 0;
+    },
+    startTime: 15,
+  },
+  {
+    title: "Why odoc?",
     videoUrl: "https://www.youtube.com/embed/Sf1YE-2rYvo",
     description:
       "Unlock the Power of Freedom: Save Time, Resources, and Gain Control with Odoc",
@@ -65,14 +77,13 @@ const tutorials: Tutorial[] = [
   {
     title: "How trust and tokens work",
     videoUrl: "https://www.youtube.com/embed/aKCaXRvxYWo",
-    description: "Revolutionizes trust in transactions using sender tokens, receiver tokens, and social tokens. Learn how these tokens create accountability, reward reliability, and foster community-driven fairness",
+    description:
+      "Revolutionizes trust in transactions using sender tokens, receiver tokens, and social tokens. Learn how these tokens create accountability, reward reliability, and foster community-driven fairness",
     checkCondition: (state: any) => {
       const { wallet } = state.filesState;
       return wallet?.exchanges?.length > 0;
     },
   },
-
-
 ];
 
 const GettingStarted = () => {
@@ -114,7 +125,7 @@ const GettingStarted = () => {
                   />
                 </Box>
                 <Box>
-                  <VideoPlayer video={tutorials[selectedVideoIndex]} />
+                  <VideoPlayer startTime={tutorials[selectedVideoIndex].startTime} video={tutorials[selectedVideoIndex]} />
                 </Box>
               </Box>
             ) : (

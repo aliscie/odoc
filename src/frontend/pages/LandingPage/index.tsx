@@ -25,12 +25,12 @@ export default function LandingPage(props) {
       <Section id="intro">
         <Intro />
       </Section>
-      <Section id="security">
-        <SecuritySection />
-      </Section>
       <Section id="start">
         {/* Getting Started Steps */}
         <GettingStarted />
+      </Section>
+      <Section id="security">
+        <SecuritySection />
       </Section>
 
       <Section id="social">
