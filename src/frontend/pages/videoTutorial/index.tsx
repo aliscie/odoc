@@ -138,7 +138,7 @@ const GettingStarted = () => {
                   />
                 </Grid>
                 <Grid item xs={12} md={8}>
-                  <VideoPlayer video={tutorials[selectedVideoIndex]} />
+                  <VideoPlayer startTime={tutorials[selectedVideoIndex].startTime} video={tutorials[selectedVideoIndex]} />
                 </Grid>
               </Grid>
             )}
