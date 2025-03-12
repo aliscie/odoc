@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./App.css";
 import Pages from "./pages";
@@ -16,6 +16,8 @@ import PromoNotification from "./components/limitedOffer";
 import BetaWarning from "./betWarning";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
+import { canisterId } from "../declarations/backend";
+import getckUsdcBalance from "./utils/getBalance";
 
 // Create a styled component for the main content
 const MainContent = styled(Box)(({ theme }) => ({
@@ -47,82 +49,173 @@ const LoadingContainer = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
 }));
 
+// Helper function to wait (for retries)
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const App: React.FC = () => {
-  // Add Sentry error handling
-  // useEffect(() => {
-  //   // Handle the specific Sentry error related to disguiseToken
-  //   const originalGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-  //
-  //   Object.getOwnPropertyDescriptor = function (obj, prop) {
-  //     console.log({ obj, prop,  });
-  //     try {
-  //       // If the property being accessed is 'disguiseToken' and obj is undefined,
-  //       // return undefined instead of throwing an error
-  //       if (prop === "disguiseToken" && obj === undefined) {
-  //         console.warn(
-  //           "Prevented error: Cannot read properties of undefined (reading 'disguiseToken')",
-  //         );
-  //         return undefined;
-  //       }
-  //       return originalGetOwnPropertyDescriptor(obj, prop);
-  //     } catch (error) {
-  //       console.warn("Error in getOwnPropertyDescriptor:", error);
-  //       return undefined;
-  //     }
-  //   };
-  //
-  //   return () => {
-  //     // Restore original function when component unmounts
-  //     Object.getOwnPropertyDescriptor = originalGetOwnPropertyDescriptor;
-  //   };
-  // }, []);
   const dispatch = useDispatch();
   const { profile } = useSelector((state: any) => state.filesState);
   const { backendActor, ckUSDCActor } = useBackendContext();
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const theme = useTheme();
 
   useInitialData();
   useSocket();
 
+  // Get user token balance
+
+
+  // Approve tokens
+  const approveTokens = useCallback(
+    async (amount) => {
+      try {
+        console.log("Approving tokens:", {
+          amount: amount.toString(),
+          spender: canisterId,
+        });
+
+        const approveResult = await ckUSDCActor.icrc2_approve({
+          from_subaccount: [],
+          spender: {
+            owner: Principal.fromText(canisterId),
+            subaccount: [],
+          },
+          amount: amount,
+          expected_allowance: [],
+          expires_at: [],
+          fee: [],
+          memo: [],
+          created_at_time: [],
+        });
+
+        console.log("Approve result:", approveResult);
+        return approveResult;
+      } catch (error) {
+        console.error("Error approving tokens:", error);
+        throw error;
+      }
+    },
+    [ckUSDCActor],
+  );
+
+  // Deposit tokens
+  const depositTokens = useCallback(async () => {
+    try {
+      console.log("Calling deposit_ckusdt...");
+      const result = await backendActor.deposit_ckusdt();
+      console.log("Deposit result:", result);
+      return result;
+    } catch (error) {
+      console.error("Error depositing tokens:", error);
+      throw error;
+    }
+  }, [backendActor]);
+
+  // Main deposit flow
   useEffect(() => {
     if (backendActor && ckUSDCActor && profile?.id) {
       (async () => {
-        // console.log("Checking CKUSDT balance...");
-        // console.log({ res });
         try {
-          const balance = await ckUSDCActor.icrc1_balance_of({
-            owner: Principal.fromText(profile.id),
-            subaccount: [],
-          });
+          // 1. Get user balance
+          const userBalance = await getckUsdcBalance(backendActor, profile.id);
+          console.log("User balance:", userBalance);
+          // 2. Check if user has balance
+          if (Number(userBalance) <= 0) {
+            console.log("User has no balance to deposit");
+            return;
+          }
+          if (Number(userBalance) / 1_000_000 < 1) {
+            // snackbar
+            enqueueSnackbar(
+              `You need at least 1 CKUSDT to deposit, otherwise your deposit will be lost in gas fees.`,
+              { variant: "error" },
+            );
+            return;
+          }
 
-          if (Number(balance) > 0) {
-            enqueueSnackbar(`Depositing ${Number(balance)} CKUSDT...`, {
+          // if (Number(userBalance) <= 0) {
+          //   console.log("User has no balance to deposit");
+          //   return;
+          // }
+
+          // 3. Get canister balance for comparison
+          // const canisterBalanceBefore = await getckUsdcBalance(ckUSDCActor, canisterId)
+
+          // Show notification
+          const notificationKey = enqueueSnackbar(
+            `Processing deposit of ${Number(userBalance) / 1_000_000} CKUSDT...`,
+            {
               variant: "info",
               persist: true,
-              action: (key) => (
+              action: () => (
                 <CircularProgress
                   size={24}
                   sx={{ color: theme.palette.primary.contrastText }}
                 />
               ),
+            },
+          );
+
+          try {
+            // 4. Approve tokens
+            await approveTokens(userBalance);
+
+            enqueueSnackbar(`Tokens approved successfully`, {
+              variant: "info",
             });
 
-            const result = await backendActor.deposit_ckusdt();
-            if (result?.Ok) {
-              dispatch({ type: "SET_WALLET", wallet: result.Ok });
+            // 5. Deposit tokens
+            const depositResult = await depositTokens();
+
+            // 6. Get canister balance after to verify deposit
+            // const canisterBalanceAfter = await getCanisterBalance();
+
+            // console.log("Balance comparison:", {
+            //   before: Number(canisterBalanceBefore),
+            //   after: Number(canisterBalanceAfter),
+            //   difference:
+            //     Number(canisterBalanceAfter) - Number(canisterBalanceBefore),
+            // });
+
+            // 7. Update UI based on result
+            if (depositResult?.Ok) {
+              dispatch({ type: "SET_WALLET", wallet: depositResult.Ok });
+              closeSnackbar(notificationKey);
               enqueueSnackbar(
-                `Successfully deposited ${Number(balance)} CKUSDT`,
+                `Successfully deposited ${Number(userBalance) / 1_000_000} CKUSDT`,
                 { variant: "success" },
               );
+            } else {
+              closeSnackbar(notificationKey);
+              enqueueSnackbar(
+                `Deposit failed: ${JSON.stringify(depositResult)}`,
+                { variant: "error" },
+              );
             }
+          } catch (operationError) {
+            closeSnackbar(notificationKey);
+            enqueueSnackbar(`Operation failed: ${operationError.toString()}`, {
+              variant: "error",
+            });
           }
         } catch (error) {
-          console.error("Error checking/depositing CKUSDT:", error);
+          console.error("Error in deposit flow:", error);
+          enqueueSnackbar(`Error: ${error.toString()}`, { variant: "error" });
         }
       })();
     }
-  }, [backendActor, ckUSDCActor, profile, theme.palette.primary.contrastText]);
+  }, [
+    backendActor,
+    ckUSDCActor,
+    profile,
+    theme.palette.primary.contrastText,
+    dispatch,
+    enqueueSnackbar,
+    closeSnackbar,
+    getckUsdcBalance,
+    approveTokens,
+    depositTokens,
+  ]);
 
   if (!backendActor) {
     return (
@@ -135,15 +228,10 @@ const App: React.FC = () => {
     );
   }
 
-  // document.querySelector("body")?.classList.add("dark");
-  // const isDarkMode = localStorage.getItem("isDarkMode") === "true";
-  // !isDarkMode && document.querySelector("body")?.classList.remove("dark");
-
   return (
     <BrowserRouter>
       <MainContent>
         <BetaWarning />
-
         <SearchPopper />
         <PromoNotification />
         <TopNavBar />

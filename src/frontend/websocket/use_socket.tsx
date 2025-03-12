@@ -60,7 +60,7 @@ function useSocket() {
   useEffect(() => {
     if (!ws) return;
 
-    ws.onopen = () => console.log("Connected to the canister");
+    ws.onopen = () => console.log("WS Connected to the canister");
 
     ws.onmessage = async (event) => {
       try {

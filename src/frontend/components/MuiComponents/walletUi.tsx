@@ -317,6 +317,10 @@ const WalletPage = ({ wallet = defaultWallet }) => {
               automatically.
             </Typography>
           </Box>
+          <Typography color={"error"}>
+              Gas fees of Ethirum is 1$, if you send 1$ only it will be lost and
+              your balance will stay 0$
+            </Typography>
         </DialogContent>
       </Dialog>
 
@@ -352,6 +356,12 @@ const WalletPage = ({ wallet = defaultWallet }) => {
               fullWidth
             />
           </Stack>
+
+          <Typography color={"error"}>
+            Gas fees of Ethirum is 1$, if you send 1$ only it will be lost and
+            your external wallet will get 0$
+          </Typography>
+
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} disabled={isProcessing}>
@@ -395,11 +405,13 @@ const WalletPage = ({ wallet = defaultWallet }) => {
               <MenuItem value="" disabled>
                 Select recipient
               </MenuItem>
-              {all_friends.filter(f=> f.id!==profile.id).map((friend) => (
-                <MenuItem key={friend.id} value={friend.id}>
-                  {friend.name} ({friend.id.slice(0, 8)}...)
-                </MenuItem>
-              ))}
+              {all_friends
+                .filter((f) => f.id !== profile.id)
+                .map((friend) => (
+                  <MenuItem key={friend.id} value={friend.id}>
+                    {friend.name} ({friend.id.slice(0, 8)}...)
+                  </MenuItem>
+                ))}
             </Select>
             <TextField
               label="Amount"

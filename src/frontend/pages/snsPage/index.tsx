@@ -34,8 +34,11 @@ import {
   Warning as WarningIcon,
   Close as CloseIcon,
 } from "@mui/icons-material";
-import { Z_INDEX_BANNER } from "../constants/zIndex";
-import { useBackendContext } from "../contexts/BackendContext";
+import { Z_INDEX_BANNER } from "../../constants/zIndex";
+import { useBackendContext } from "../../contexts/BackendContext";
+import { canisterId } from "../../../declarations/backend";
+import getckUsdcBalance from "../../utils/getBalance";
+import StatsDisplay from "./StatsDisplay";
 
 interface Proposal {
   id: string;
@@ -298,7 +301,7 @@ const ProposalCard = ({ proposal }: { proposal: Proposal }) => {
 
 const SNSVoting: React.FC = () => {
   const theme = useTheme();
-  const { backendActor } = useBackendContext();
+  const { backendActor, ckUSDCActor } = useBackendContext();
   const [tabValue, setTabValue] = useState(0);
   const [openNewProposal, setOpenNewProposal] = useState(false);
   const [proposalType, setProposalType] = useState("feature");
@@ -308,10 +311,16 @@ const SNSVoting: React.FC = () => {
     number_users: number;
     active_users: number;
   } | null>(null);
-
+  const [odocBalance, setBalance] = useState(0);
   useEffect(() => {
     const fetchSNSStatus = async () => {
       try {
+        if (backendActor) {
+          const odocBalance = await getckUsdcBalance(ckUSDCActor, canisterId);
+          console.log({ odocBalance });
+          setBalance(Number(odocBalance) / 1000000);
+        }
+
         const res = await backendActor.get_sns_status();
         if ("Ok" in res) {
           setSnsStatus(res.Ok);
@@ -323,7 +332,6 @@ const SNSVoting: React.FC = () => {
 
     fetchSNSStatus();
   }, [backendActor]);
-
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       {showBanner && (
@@ -347,12 +355,11 @@ const SNSVoting: React.FC = () => {
         >
           <Box>
             <Typography variant="h4">SNS Voting</Typography>
-            {snsStatus && (
-              <Typography variant="body2" color="text.secondary">
-                Total Users: {snsStatus.number_users} | Active Users:{" "}
-                {snsStatus.active_users}
-              </Typography>
-            )}
+            <Box>
+              {snsStatus && (
+                <StatsDisplay snsStatus={snsStatus} odocBalance={odocBalance} />
+              )}
+            </Box>
           </Box>
           <Button
             variant="contained"

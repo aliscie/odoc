@@ -13,7 +13,7 @@ import { useBackendContext } from "../contexts/BackendContext";
 import OfferPage from "./OfferPage";
 import SubscriptionPlans from "./subscrptions";
 import SNSWhitepaper from "./snsWhitePaper";
-import SNSVoting from "./votePage";
+import SNSVoting from "./snsPage";
 import ProductManagerDashboard from "./dashBoardPage";
 import DummyShares from "./sharesContract";
 import AffiliateDashboard from "./affiliate";

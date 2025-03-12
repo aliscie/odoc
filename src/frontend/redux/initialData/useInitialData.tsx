@@ -23,6 +23,7 @@ const useInitialData = () => {
           dispatch(handleRedux("IS_REGISTERED", { isRegistered: false }));
         } else {
           dispatch(handleRedux("IS_REGISTERED", { isRegistered: true }));
+          // console.log("why sometimes this call 3 times ");
           const getProfileRes = await backendActor.get_user_profile(
             Principal.fromText(res.Ok.Profile.id),
           );

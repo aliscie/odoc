@@ -4,16 +4,6 @@
     "capabilities": ["nodejs"]
   },
   "canisters": {
-    "internet_identity": {
-      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
-      "remote": {
-        "id": {
-          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
-        }
-      },
-      "type": "custom",
-      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
-    },
     "cketh_ledger": {
       "type": "custom",
       "candid": "https://raw.githubusercontent.com/dfinity/ic/3d0b3f10417fc6708e8b5d844a0bac5e86f3e17d/rs/rosetta-api/icrc1/ledger/ledger.did",
@@ -33,16 +23,6 @@
           "ic": "xevnm-gaaaa-aaaar-qafnq-cai"
         }
       }
-    },
-    "internet_identity": {
-      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
-      "remote": {
-        "id": {
-          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
-        }
-      },
-      "type": "custom",
-      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
     },
     "backend": {
       "candid": "src/backend/backend.did",

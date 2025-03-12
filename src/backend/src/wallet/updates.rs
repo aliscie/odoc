@@ -19,6 +19,7 @@ use ic_cdk::caller;
 use ic_cdk_macros::update;
 use icrc_ledger_types::icrc1::account::Account;
 use icrc_ledger_types::icrc1::transfer::BlockIndex;
+use icrc_ledger_types::icrc2::approve::{ApproveArgs, ApproveError};
 use icrc_ledger_types::icrc2::transfer_from::{TransferFromArgs, TransferFromError};
 use num::Num;
 use serde_json::{self};
@@ -177,7 +178,7 @@ async fn deposit_ckusdt() -> Result<Wallet, Error> {
         return Ok(wallet.clone());
     }
     Err(Error::IcCdkError {
-        message: format!("{:?}", "falied to deposit".to_string())
+        message: format!("{:?}", "Minimum deposit should be 0.1 USD".to_string())
     })
 }
 
