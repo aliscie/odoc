@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./App.css";
 import Pages from "./pages";
 import { BrowserRouter } from "react-router-dom";
-import useInitialData from "./redux/initialData/useInitialData";
+
 import { useSnackbar } from "notistack";
 import NavBar from "./components/MainComponents/NavBar";
 import TopNavBar from "./components/MainComponents/topNavBar";
@@ -49,21 +49,64 @@ const LoadingContainer = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
 }));
 
-// Helper function to wait (for retries)
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const { profile } = useSelector((state: any) => state.filesState);
   const { backendActor, ckUSDCActor } = useBackendContext();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const theme = useTheme();
+  
+  // Extract isLoggedIn directly to ensure we get the primitive value
+  const isLoggedIn = useSelector((state: any) => state.uiState.isLoggedIn);
+  
+  // Track previous login state to detect changes
 
-  useInitialData();
+
+  useEffect(() => {
+
+    const fetchInitialData = async () => {
+
+      if (!isLoggedIn || !backendActor) {
+        return;
+      }
+      console.log("before")
+      
+      try {
+        
+        dispatch({type:"IS_FETCHING", isFetching: true });
+  
+        const res = await backendActor.get_initial_data();
+        console.log({res})
+  
+        const workspaces = await backendActor.get_work_spaces();
+        if ("Err" in res && res.Err == "Anonymous user.") {
+          dispatch( { isRegistered: false, type:"IS_REGISTERED" });
+        } else {
+          dispatch( { isRegistered: true, type:"IS_REGISTERED" });
+  
+          const getProfileRes = await backendActor.get_user_profile(
+            Principal.fromText(res.Ok.Profile.id),
+          );
+          dispatch({
+            type:"INIT_FILES_STATE",
+            data: { ...res.Ok, ProfileHistory: getProfileRes.Ok, workspaces },
+          })
+        }
+      } catch (error) {
+        console.log("Issue fetching initial data from backend: ", error);
+      }
+      dispatch({
+        type:"IS_FETCHING",
+        isFetching: false
+      });
+    };
+  
+    fetchInitialData();
+
+  }, [isLoggedIn,backendActor]);
+
+  
   useSocket();
-
-  // Get user token balance
-
 
   // Approve tokens
   const approveTokens = useCallback(
@@ -133,14 +176,6 @@ const App: React.FC = () => {
             return;
           }
 
-          // if (Number(userBalance) <= 0) {
-          //   console.log("User has no balance to deposit");
-          //   return;
-          // }
-
-          // 3. Get canister balance for comparison
-          // const canisterBalanceBefore = await getckUsdcBalance(ckUSDCActor, canisterId)
-
           // Show notification
           const notificationKey = enqueueSnackbar(
             `Processing deposit of ${Number(userBalance) / 1_000_000} CKUSDT...`,
@@ -166,16 +201,6 @@ const App: React.FC = () => {
 
             // 5. Deposit tokens
             const depositResult = await depositTokens();
-
-            // 6. Get canister balance after to verify deposit
-            // const canisterBalanceAfter = await getCanisterBalance();
-
-            // console.log("Balance comparison:", {
-            //   before: Number(canisterBalanceBefore),
-            //   after: Number(canisterBalanceAfter),
-            //   difference:
-            //     Number(canisterBalanceAfter) - Number(canisterBalanceBefore),
-            // });
 
             // 7. Update UI based on result
             if (depositResult?.Ok) {
@@ -212,7 +237,6 @@ const App: React.FC = () => {
     dispatch,
     enqueueSnackbar,
     closeSnackbar,
-    getckUsdcBalance,
     approveTokens,
     depositTokens,
   ]);

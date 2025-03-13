@@ -6,7 +6,6 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   Box,
-  Button,
   IconButton,
   LinearProgress,
   ListItemIcon,
@@ -14,7 +13,6 @@ import {
   Menu,
   MenuItem,
   Paper,
-  Theme,
   Toolbar,
   Tooltip,
   useMediaQuery,
@@ -30,147 +28,29 @@ import {
   Logout as LogoutIcon,
   Menu as MenuIcon,
   MenuOpen as MenuOpenIcon,
-  Notifications as NotificationsIcon,
   Person2 as Person2Icon,
   Search as SearchIcon,
-  Settings as SettingsIcon,
+  Handshake as HandshakeIcon,
 } from "@mui/icons-material";
 
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
-import BasicMenu from "../../MuiComponents/BasicMenu";
 import BreadPage from "../../MuiComponents/Breadcrumbs";
-import ShareFileButton from "../../MuiComponents/CopyLink";
-import MultiSaveButton from "../../Actions/MultiSave";
+import BasicMenu from "../../MuiComponents/BasicMenu";
+import ShareButton from "../../MuiComponents/CopyLink";
 import NotificationsButton from "../../NotifcationList";
+import MultiSaveButton from "../../Actions/MultiSave";
 import ChatsComponent from "../../Chat";
+import WorkspaceManager from "../Workspaces";
 import UserAvatar from "../UserAvatar";
+import LoginButton from "./loginButton";
 
 import { handleRedux } from "../../../redux/store/handleRedux";
 import { useBackendContext } from "../../../contexts/BackendContext";
 import { convertToBlobLink } from "../../../DataProcessing/imageToVec";
 import { Z_INDEX_TOP_NAVBAR } from "../../../constants/zIndex";
 import { RootState } from "../../../redux/reducers";
-import HandshakeIcon from "@mui/icons-material/Handshake";
-import WorkspaceManager from "../Workspaces";
-import ShareButton from "../../MuiComponents/CopyLink";
-
-interface File {
-  id: string;
-  [key: string]: any;
-}
-
-const getStyles = (theme: Theme) => ({
-  appBar: {
-    zIndex: Z_INDEX_TOP_NAVBAR,
-    backgroundColor: theme.palette.background.paper,
-    borderBottom: `1px solid ${theme.palette.divider}`,
-    transition: theme.transitions.create(
-      ["background-color", "border-bottom", "box-shadow"],
-      {
-        duration: theme.transitions.duration.standard,
-      },
-    ),
-  },
-  toolbar: {
-    minHeight: "44px !important",
-    height: "44px",
-    padding: "0 12px",
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  toolbarShift: {
-    marginLeft: "250px",
-    width: `calc(100% - 250px)`,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  iconButton: {
-    padding: 4,
-    width: "28px",
-    height: "28px",
-    color: theme.palette.text.primary,
-    "&:hover": {
-      backgroundColor: alpha(theme.palette.primary.main, 0.08),
-    },
-    "& .MuiSvgIcon-root": {
-      fontSize: "1.2rem",
-    },
-  },
-  mobileNavigation: {
-    height: "64px", // Standard MUI Bottom Navigation height
-    backgroundColor: theme.palette.background.paper,
-    borderTop: `1px solid ${theme.palette.divider}`,
-    "& .MuiBottomNavigationAction-root": {
-      minWidth: 80,
-      maxWidth: 168,
-      padding: "8px 12px 6px",
-      color: theme.palette.text.secondary,
-      "&.Mui-selected": {
-        color: theme.palette.primary.main,
-        "& .MuiBottomNavigationAction-label": {
-          fontSize: "0.875rem",
-        },
-      },
-      "& .MuiSvgIcon-root": {
-        fontSize: "1.5rem",
-        marginBottom: "4px",
-      },
-      "& .MuiBottomNavigationAction-label": {
-        fontSize: "0.75rem",
-        transition: theme.transitions.create(["font-size"], {
-          duration: theme.transitions.duration.shorter,
-        }),
-      },
-    },
-  },
-  menuPaper: {
-    marginTop: theme.spacing(-5),
-    maxHeight: "80vh",
-    width: "200px",
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[4],
-    "& .MuiMenuItem-root": {
-      padding: theme.spacing(1.5),
-      color: theme.palette.text.primary,
-      "&:hover": {
-        backgroundColor: alpha(theme.palette.primary.main, 0.08),
-      },
-      "& .MuiSvgIcon-root": {
-        fontSize: "1.5rem", // Increased icon size for mobile menu
-      },
-    },
-  },
-  loginButton: {
-    padding: theme.spacing(0.25, 1),
-    minHeight: "28px",
-    height: "28px",
-    fontSize: "14px",
-    color: theme.palette.primary.main,
-    borderColor: theme.palette.primary.main,
-    "&:hover": {
-      backgroundColor: alpha(theme.palette.primary.main, 0.08),
-    },
-  },
-  mobileAvatar: {
-    width: "40px !important", // Further increased avatar size for mobile
-    height: "40px !important",
-  },
-  progressBar: {
-    position: "absolute",
-    width: "100%",
-    top: 0,
-    left: 0,
-    zIndex: Z_INDEX_TOP_NAVBAR + 2,
-    "& .MuiLinearProgress-bar": {
-      backgroundColor: theme.palette.primary.main,
-    },
-  },
-});
+import getStyles from "./styles";
 
 export default function TopNavBar() {
   const dispatch = useDispatch();
@@ -199,7 +79,7 @@ export default function TopNavBar() {
     },
   };
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const { login, logout, backendActor } = useBackendContext();
+  const { logout, backendActor } = useBackendContext();
 
   const [mobileMenuAnchor, setMobileMenuAnchor] = useState<null | HTMLElement>(
     null,
@@ -210,7 +90,7 @@ export default function TopNavBar() {
   const { isNavOpen, isDarkMode, isFetching, isLoggedIn, searchTool } =
     useSelector((state: RootState) => state.uiState);
 
-  const { profile, profile_history, current_file, files } = useSelector(
+  const { profile, profile_history, current_file } = useSelector(
     (state: RootState) => state.filesState,
   );
 
@@ -238,16 +118,6 @@ export default function TopNavBar() {
     fetchData();
   }, [isLoggedIn, backendActor, dispatch]);
 
-  const handleLogin = async () => {
-    await login();
-  };
-
-  const handleLogout = async () => {
-    logout();
-    dispatch(handleRedux("LOGOUT"));
-    navigate("/");
-  };
-
   const handleMobileMenuToggle = (
     event: React.MouseEvent<HTMLElement> | null,
   ) => {
@@ -261,38 +131,54 @@ export default function TopNavBar() {
   };
 
   const imageLink = profile ? convertToBlobLink(profile.photo) : "";
-  // const [isOwnerCurrentFile, setIsOwnerCurrentFile] = useState(false);
-  // useEffect(() => {
-  //   setIsOwnerCurrentFile(
-  //     current_file &&
-  //       files.find((file: File) => file && file.id === current_file.id),
-  //   );
-  // }, [current_file, files]);
 
-  const mobileMenuOptions = [
+  const handleLogout = async () => {
+    logout();
+    dispatch(handleRedux("LOGOUT"));
+    navigate("/");
+  };
+  
+  const menuOptions = [
     { content: "Profile", to: "/profile", icon: <Person2Icon /> },
     { content: "Contracts", to: "/contracts", icon: <GavelIcon /> },
     { content: "Wallet", to: "/wallet", icon: <AccountBalanceWalletIcon /> },
-    // { content: "Settings", to: "/settings", icon: <SettingsIcon /> },
     { content: "Affiliate", to: "/affiliate", icon: <HandshakeIcon /> },
     { content: "Logout", to: "/", icon: <LogoutIcon />, onClick: handleLogout },
   ];
 
-  const renderAuthContent = () => {
-    if (isFetching) {
-      return <LinearProgress sx={styles.progressBar} />;
-    }
+  // Render action buttons when user is logged in
+  const renderActionButtons = () => {
+    if (!isLoggedIn) return null;
 
-    if (!isLoggedIn) {
+    if (isMobile) {
       return (
-        <Button
-          variant="outlined"
-          className="login"
-          onClick={handleLogin}
-          sx={styles.loginButton}
-        >
-          Login
-        </Button>
+        <>
+          <BottomNavigationAction
+            label="Notifications"
+            icon={<NotificationsButton isMobile={true} />}
+          />
+          <BottomNavigationAction
+            label="Chat"
+            icon={
+              <ChatsComponent key={chats.length} chats={chats} isMobile={true} />
+            }
+          />
+          <BottomNavigationAction
+            label="Profile"
+            icon={
+              <UserAvatar
+                actions_rate={profile_history?.actions_rate ?? 0}
+                photo={imageLink}
+                style={{ width: 24, height: 24 }}
+              />
+            }
+            onClick={handleMobileMenuToggle}
+          />
+          <BottomNavigationAction
+            label="Save"
+            icon={<MultiSaveButton isMobile={true} />}
+          />
+        </>
       );
     }
 
@@ -301,7 +187,7 @@ export default function TopNavBar() {
         <NotificationsButton />
         <ChatsComponent key={chats.length} chats={chats} />
         <WorkspaceManager />
-        <BasicMenu options={mobileMenuOptions}>
+        <BasicMenu options={menuOptions}>
           <UserAvatar
             actions_rate={profile_history?.actions_rate ?? 0}
             photo={imageLink}
@@ -309,53 +195,6 @@ export default function TopNavBar() {
           />
         </BasicMenu>
         <MultiSaveButton />
-      </>
-    );
-  };
-
-  const renderMobileAuthContent = () => {
-    if (isFetching) {
-      return <LinearProgress sx={styles.progressBar} />;
-    }
-
-    if (!isLoggedIn) {
-      return (
-        <BottomNavigationAction
-          label="Login"
-          icon={<Person2Icon />}
-          onClick={handleLogin}
-        />
-      );
-    }
-
-    return (
-      <>
-        <BottomNavigationAction
-          label="Notifications"
-          icon={<NotificationsIcon />}
-          onClick={(e) => handleMobileNotificationToggle(e)}
-        />
-        <BottomNavigationAction
-          label="Chat"
-          icon={
-            <ChatsComponent key={chats.length} chats={chats} isMobile={true} />
-          }
-        />
-        <BottomNavigationAction
-          label="Profile"
-          icon={
-            <UserAvatar
-              actions_rate={profile_history?.actions_rate ?? 0}
-              photo={imageLink}
-              style={styles.mobileAvatar}
-            />
-          }
-          onClick={(e) => handleMobileMenuToggle(e)}
-        />
-        <BottomNavigationAction
-          label="Save"
-          icon={<MultiSaveButton isMobile={true} />}
-        />
       </>
     );
   };
@@ -389,7 +228,8 @@ export default function TopNavBar() {
             icon={isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
             onClick={() => dispatch(handleRedux("TOGGLE_DARK"))}
           />
-          {renderMobileAuthContent()}
+          
+          {isLoggedIn ? renderActionButtons() : <LoginButton isMobile={true} />}
         </BottomNavigation>
 
         <Menu
@@ -400,7 +240,7 @@ export default function TopNavBar() {
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
           transformOrigin={{ vertical: "bottom", horizontal: "center" }}
         >
-          {mobileMenuOptions.map((option, index) => (
+          {menuOptions.map((option, index) => (
             <MenuItem
               key={index}
               onClick={() => {
@@ -428,10 +268,7 @@ export default function TopNavBar() {
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
           transformOrigin={{ vertical: "bottom", horizontal: "center" }}
         >
-          <NotificationsButton
-          // onClose={() => handleMobileNotificationToggle(null)}
-          // isMobile={true}
-          />
+          <NotificationsButton />
         </Menu>
       </Paper>
     </Box>
@@ -457,11 +294,7 @@ export default function TopNavBar() {
         <Routes>
           <Route path="*" element={<BreadPage />} />
         </Routes>
-        <ShareButton
-          fileId={current_file?.id}
-          currentFile={current_file}
-        />
-
+        <ShareButton fileId={current_file?.id} currentFile={current_file} />
       </Box>
 
       <Box sx={{ flexGrow: 1, mx: 2 }}>
@@ -484,7 +317,8 @@ export default function TopNavBar() {
         >
           {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
         </IconButton>
-        {renderAuthContent()}
+        
+        {isLoggedIn ? renderActionButtons() : <LoginButton sx={styles.loginButton} />}
       </Box>
     </Toolbar>
   );
@@ -499,6 +333,7 @@ export default function TopNavBar() {
           display: isMobile ? "none" : "block",
         }}
       >
+        {isFetching && <LinearProgress />}
         {renderDesktopContent()}
       </AppBar>
       {isMobile && renderMobileContent()}

@@ -266,7 +266,7 @@ const CalendarView = () => {
     },
     [availabilities],
   );
-  console.log({ earliestStart });
+  // console.log({ earliestStart });
   let timeSpans = {};
   if (profile?.id === calendar?.owner) {
     const today = new Date();

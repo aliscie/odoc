@@ -117,7 +117,9 @@ const MultiSaveButton: React.FC<MultiSaveButtonProps> = () => {
 
   const tipForSaved = "Your changes saved to the blockchain.";
   const tipForChanged = <span>You need to save</span>;
-
+  if (isFilesSaved){
+    return null
+  }
   return (
     <>
       <Dialog
