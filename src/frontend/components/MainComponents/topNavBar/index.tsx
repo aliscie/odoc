@@ -176,7 +176,7 @@ export default function TopNavBar() {
           />
           <BottomNavigationAction
             label="Save"
-            icon={<MultiSaveButton isMobile={true} />}
+            icon={<MultiSaveButton />}
           />
         </>
       );

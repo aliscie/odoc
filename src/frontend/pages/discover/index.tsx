@@ -15,6 +15,8 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import CreatePost from "./createPost";
 import ViewPostComponent from "./viewPost";
@@ -23,6 +25,9 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import { RootState } from "../../redux/reducers";
 import LoadMorePosts from "./LoadMorePosts";
+import Posts from "./posts";
+import Jobs from "./jobs";
+import Talents from "./talents";
 
 const SidebarCard = ({ title, children }) => (
   <Card sx={{ mb: 2, borderRadius: 1 }}>
@@ -64,12 +69,16 @@ const MainContainer = styled("div")(({ theme }) => ({
 
 const SocialFeed = () => {
   const { posts } = useSelector((state: RootState) => state.filesState);
-
   const { isLoggedIn, isDarkMode, searchValue, isNavOpen } = useSelector(
     (state) => state.uiState,
   );
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [activeTab, setActiveTab] = useState(0);
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
 
   const customTheme = createTheme({
     palette: {
@@ -243,22 +252,17 @@ const SocialFeed = () => {
       <FeedWrapper isNavOpen={isNavOpen}>
         {!isNavOpen && <Sidebar items={sidebarContent.left} position="left" />}
         <MainContainer>
-          {isLoggedIn && <CreatePost />}
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }} />
+          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+            <Tabs value={activeTab} onChange={handleTabChange} aria-label="discover tabs">
+              <Tab label="Posts" />
+              <Tab label="Jobs" />
+              <Tab label="Talents" />
+            </Tabs>
           </Box>
-          {filterPosts
-            .filter((post) => !post.is_comment)
-            .map((post) => (
-              <ViewPostComponent
-                // setPosts={setPosts}
-                posts={posts}
-                // handleDeletePost={handleDeletePost}
-                key={post.id}
-                post={post}
-              />
-            ))}
-          <LoadMorePosts />
+          
+          {activeTab === 0 && <Posts posts={posts} isLoggedIn={isLoggedIn} searchValue={searchValue} />}
+          {activeTab === 1 && <Jobs />}
+          {activeTab === 2 && <Talents />}
         </MainContainer>
         <Sidebar items={sidebarContent.right} position="right" />
       </FeedWrapper>

@@ -5,6 +5,7 @@
   "types": "dist/index.d.ts",
   "typings": "dist",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
     "@babel/core": "7.26.9",
     "@dfinity/agent": "2.3.0",
     "@dfinity/auth-client": "2.3.0",

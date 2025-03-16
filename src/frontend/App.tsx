@@ -160,7 +160,7 @@ const App: React.FC = () => {
       (async () => {
         try {
           // 1. Get user balance
-          const userBalance = await getckUsdcBalance(backendActor, profile.id);
+          const userBalance = await getckUsdcBalance(ckUSDCActor, profile.id);
           console.log("User balance:", userBalance);
           // 2. Check if user has balance
           if (Number(userBalance) <= 0) {

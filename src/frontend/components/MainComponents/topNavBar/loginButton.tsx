@@ -6,7 +6,8 @@ import {
   BottomNavigationAction,
   Menu,
   MenuItem,
-  ListItemText
+  ListItemText,
+  ListItemIcon
 } from "@mui/material";
 import { 
   Person2 as Person2Icon,
@@ -43,6 +44,11 @@ const LoginButton: React.FC<LoginButtonProps> = ({
     progressBar: {
       width: isMobile ? "100%" : 70,
       borderRadius: 2,
+    },
+    menuIcon: {
+      width: 24,
+      height: 24,
+      marginRight: 1
     }
   };
 
@@ -88,9 +94,23 @@ const LoginButton: React.FC<LoginButtonProps> = ({
           onClose={handleClose}
         >
           <MenuItem onClick={handleInternetIdentityLogin}>
+            <ListItemIcon>
+              <img 
+                src="https://identitysupport.dfinity.org/hc/theming_assets/01HZPAQP10D0TDE2HSZH52B5EF" 
+                alt="Internet Identity" 
+                style={styles.menuIcon} 
+              />
+            </ListItemIcon>
             <ListItemText>Internet Identity</ListItemText>
           </MenuItem>
           <MenuItem onClick={handleMetaMaskLogin}>
+            <ListItemIcon>
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/1200px-MetaMask_Fox.svg.png" 
+                alt="MetaMask" 
+                style={styles.menuIcon} 
+              />
+            </ListItemIcon>
             <ListItemText>MetaMask</ListItemText>
           </MenuItem>
         </Menu>
@@ -115,9 +135,23 @@ const LoginButton: React.FC<LoginButtonProps> = ({
         onClose={handleClose}
       >
         <MenuItem onClick={handleInternetIdentityLogin}>
+          <ListItemIcon>
+            <img 
+              src="https://identitysupport.dfinity.org/hc/theming_assets/01HZPAQP10D0TDE2HSZH52B5EF" 
+              alt="Internet Identity" 
+              style={styles.menuIcon} 
+            />
+          </ListItemIcon>
           <ListItemText>Internet Identity</ListItemText>
         </MenuItem>
         <MenuItem onClick={handleMetaMaskLogin}>
+          <ListItemIcon>
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/1200px-MetaMask_Fox.svg.png" 
+              alt="MetaMask" 
+              style={styles.menuIcon} 
+            />
+          </ListItemIcon>
           <ListItemText>MetaMask</ListItemText>
         </MenuItem>
       </Menu>

@@ -5,10 +5,10 @@ import { useSelector } from "react-redux";
 
 interface Props {
   photo: string;
-  onAvatarClick: () => void;
+  onAvatarClick?: () => void;
   style: React.CSSProperties;
   actions_rate: number;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 function UserAvatar(props: Props) {
