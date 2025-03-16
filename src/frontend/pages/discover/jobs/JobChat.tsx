@@ -1,6 +1,22 @@
-import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, Paper, List, ListItem, ListItemText, CircularProgress, Alert } from '@mui/material';
+import React, { useState, useRef, useEffect } from 'react';
+import { 
+  Box, 
+  Typography, 
+  TextField, 
+  Button, 
+  Paper, 
+  List, 
+  ListItem, 
+  ListItemText, 
+  CircularProgress, 
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
+import { AnthropicAgent } from './AnthropicAgent';
 
 interface Message {
   id: string;
@@ -10,13 +26,38 @@ interface Message {
   isCV?: boolean;
 }
 
+interface CVFeedback {
+  feedback: string[];
+}
+
 const JobChat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [cvAnalysisResult, setCvAnalysisResult] = useState<any>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [agent] = useState(() => new AnthropicAgent());
+  const [openCVDialog, setOpenCVDialog] = useState(false);
+  const [cvText, setCvText] = useState('');
 
-  const handleSendMessage = (content: string, isCV = false) => {
+  useEffect(() => {
+    // Scroll to bottom whenever messages change
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Initial welcome message
+  useEffect(() => {
+    if (messages.length === 0) {
+      const welcomeMessage: Message = {
+        id: uuidv4(),
+        content: "I'm your job assistant. I can help you with job applications and resume analysis. Share your resume details or ask me questions about job searching.",
+        sender: 'assistant',
+        timestamp: new Date()
+      };
+      setMessages([welcomeMessage]);
+    }
+  }, [messages]);
+
+  const handleSendMessage = async (content: string, isCV = false) => {
     if (!content.trim()) return;
     
     const newMessage: Message = {
@@ -31,54 +72,96 @@ const JobChat: React.FC = () => {
     setInputMessage('');
     
     if (!isCV) {
-      // Simulate AI response for text messages
+      // Use AnthropicAgent for real chat responses
       setLoading(true);
-      setTimeout(() => {
+      try {
+        const response = await agent.sendMessage(content);
+        
         const responseMessage: Message = {
           id: uuidv4(),
-          content: "I'm your job assistant. I can help you with job applications and resume analysis. Upload your CV or ask me questions about job searching.",
+          content: response,
           sender: 'assistant',
           timestamp: new Date()
         };
+        
         setMessages(prev => [...prev, responseMessage]);
-        setLoading(false);
-      }, 1000);
-    }
-  };
-
-  const handleCVUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Here you would normally process the CV file
-      // For now, we'll just simulate a CV upload message
-      handleSendMessage(`Uploaded CV: ${file.name}`, true);
-      
-      // Simulate CV analysis
-      setLoading(true);
-      setTimeout(() => {
-        const result = {
-          isComplete: Math.random() > 0.5,
-          questions: ['Add more details about your skills', 'Include your education history']
+      } catch (error) {
+        console.error('Error getting response from Anthropic:', error);
+        
+        const errorMessage: Message = {
+          id: uuidv4(),
+          content: "I'm sorry, I encountered an error processing your request. Please try again.",
+          sender: 'assistant',
+          timestamp: new Date()
         };
         
-        handleCVAnalysis(result);
-      }, 1500);
+        setMessages(prev => [...prev, errorMessage]);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  const handleCVAnalysis = (result: any) => {
-    setCvAnalysisResult(result);
-    
-    let responseContent = '';
-    
-    if (result.isComplete) {
-      responseContent = "Your CV looks complete! It contains all the necessary sections and information for a strong application.";
-    } else if (result.questions && result.questions.length > 0) {
-      responseContent = "I've analyzed your CV and found some areas that could be improved:\n\n" + 
-        result.questions.map((q: string, i: number) => `${i+1}. ${q}`).join('\n\n');
-    } else if (result.error) {
-      responseContent = `There was an error analyzing your CV: ${result.error}`;
+  const handleCVSubmit = async () => {
+    if (!cvText.trim()) {
+      return;
     }
+    
+    setOpenCVDialog(false);
+    
+    // Send the CV text as a message
+    handleSendMessage(`My Resume/CV:\n\n${cvText}`, true);
+    
+    // Use AnthropicAgent to analyze the CV
+    setLoading(true);
+    
+    try {
+      const cvAnalysisPrompt = `I've shared my resume/CV details below. Please analyze it and provide:
+1. A score out of 100%
+2. Whether it's complete or not
+3. Specific feedback for improvement or additional information needed for job searching
+
+Here's my resume/CV:
+${cvText}
+
+Format your response as a structured analysis.`;
+
+      const response = await agent.sendMessage(cvAnalysisPrompt);
+      
+      // Extract feedback points
+      const feedbackRegex = /\d+\.\s+(.*?)(?=\d+\.|$)/gs;
+      const feedbackMatches = [...response.matchAll(feedbackRegex)];
+      const feedback = feedbackMatches.map(match => match[1].trim());
+      
+      if (feedback.length === 0) {
+        // If no feedback points were extracted, create some based on the response
+        const sentences = response.split(/\.\s+/);
+        for (let i = 0; i < sentences.length && feedback.length < 3; i++) {
+          if (sentences[i].length > 20) {
+            feedback.push(sentences[i]);
+          }
+        }
+      }
+      
+      const result = {
+        feedback: feedback.length > 0 ? feedback : ["Consider adding more details to your resume"]
+      };
+      
+      handleCVAnalysis(result);
+    } catch (error) {
+      console.error('Error analyzing CV:', error);
+      
+      const errorResult = {
+        feedback: ["Error analyzing resume. Please try again."]
+      };
+      
+      handleCVAnalysis(errorResult);
+    }
+  };
+
+  const handleCVAnalysis = (result: CVFeedback) => {
+    let responseContent = 'Here are some suggestions to improve your resume:\n\n' + 
+      result.feedback.map((q: string, i: number) => `${i+1}. ${q}`).join('\n\n');
     
     const responseMessage: Message = {
       id: uuidv4(),
@@ -100,7 +183,7 @@ const JobChat: React.FC = () => {
           severity="info" 
           sx={{ mb: 2 }}
         >
-          Upload your CV for analysis or ask questions about job applications and career advice.
+          Share your resume details for analysis or ask questions about job applications and career advice.
         </Alert>
       )}
       
@@ -139,21 +222,16 @@ const JobChat: React.FC = () => {
             </Box>
           )}
         </List>
+        <div ref={messagesEndRef} />
       </Box>
       
       <Box sx={{ display: 'flex', gap: 1 }}>
         <Button
           variant="outlined"
-          component="label"
+          onClick={() => setOpenCVDialog(true)}
           disabled={loading}
         >
-          Upload CV
-          <input
-            type="file"
-            hidden
-            accept=".pdf"
-            onChange={handleCVUpload}
-          />
+          Share Resume
         </Button>
         
         <TextField
@@ -179,6 +257,42 @@ const JobChat: React.FC = () => {
           Send
         </Button>
       </Box>
+
+      {/* Resume Input Dialog */}
+      <Dialog 
+        open={openCVDialog} 
+        onClose={() => setOpenCVDialog(false)}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle>Share Your Resume Details</DialogTitle>
+        <DialogContent>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Please enter your resume or CV details below. Include your experience, skills, education, and any other relevant information.
+          </Alert>
+          <TextField
+            autoFocus
+            multiline
+            rows={15}
+            fullWidth
+            variant="outlined"
+            placeholder="Enter your resume/CV details here..."
+            value={cvText}
+            onChange={(e) => setCvText(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenCVDialog(false)}>Cancel</Button>
+          <Button 
+            onClick={handleCVSubmit}
+            variant="contained" 
+            color="primary"
+            disabled={!cvText.trim()}
+          >
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };
