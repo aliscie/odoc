@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-
-
-import { AnthropicAgent } from '../AnthropicAgent';
+// Change import from AnthropicAgent to DeepSeekAgent
+import { DeepSeekAgent } from '../DeepSeekAgent';
 import { Message } from '@solana/web3.js';
 import AiChat from '@/components/AiChat';
 import { useResume } from '../ResumeContext';
 import { processResponseJobs } from '../utils/processResponseJobs';
 
-
-
 const JobChat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
-  const [agent] = useState(() => new AnthropicAgent());
+  // Initialize DeepSeekAgent instead of AnthropicAgent
+  const [agent] = useState(() => new DeepSeekAgent());
   const { 
     addSkill, 
     addEducation, 
@@ -55,7 +53,6 @@ const JobChat: React.FC = () => {
     try {
       // Add special instructions for the AI to extract resume data
       const promptWithInstructions = `
-
       Current Resume Data:
 \`\`\`json
 ${resumeContext}
@@ -133,7 +130,8 @@ If no relevant data is found, return an empty array for extractedData.
       
       setMessages(prev => [...prev, responseMessage]);
     } catch (error) {
-      console.error('Error getting response from Anthropic:', error);
+      // Update error message to reference DeepSeek instead of Anthropic
+      console.error('Error getting response from DeepSeek:', error);
       
       const errorMessage: Message = {
         id: uuidv4(),
