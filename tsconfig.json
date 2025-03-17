@@ -15,6 +15,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/frontend/*"]
+    },
     "types": [
       "jest",
       "node",

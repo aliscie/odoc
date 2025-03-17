@@ -1,14 +1,22 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { Anthropic } from '@anthropic-ai/sdk';
 
-export interface Message {
+interface AnthropicMessage {
   role: 'user' | 'assistant';
-  content: string;
+  content: string | Array<{
+    type: string;
+    text?: string;
+    source?: {
+      type: string;
+      media_type: string;
+      data: string;
+    };
+  }>;
 }
 
 export class AnthropicAgent {
   private anthropic: Anthropic;
   private model: string;
-  private conversationHistory: Message[];
+  private conversationHistory: AnthropicMessage[];
 
   constructor() {
     this.anthropic = new Anthropic({
@@ -19,12 +27,23 @@ export class AnthropicAgent {
     this.conversationHistory = [];
   }
 
-  async sendMessage(message: string): Promise<string> {
+  async sendMessage(message: string, files: any[] = []): Promise<string> {
     try {
+      // Prepare the message content
+      let content: any[] = [];
+      
+      // Add text message if present
+      if (message.trim()) {
+        content.push({
+          type: 'text',
+          text: message
+        });
+      }
+      
       // Add user message to conversation history
       this.conversationHistory.push({
         role: 'user',
-        content: message
+        content
       });
       
       // Use Anthropic SDK for the API request
@@ -32,11 +51,16 @@ export class AnthropicAgent {
         model: this.model,
         messages: this.conversationHistory,
         max_tokens: 4096,
-        temperature: 0.6
+        temperature: 0.7
       });
 
-      // Extract the assistant's response
-      const assistantMessage = response.content[0].text;
+      // Extract the assistant's response - handle multiple content blocks
+      let assistantMessage = '';
+      for (const contentBlock of response.content) {
+        if (contentBlock.type === 'text') {
+          assistantMessage += contentBlock.text;
+        }
+      }
       
       // Add assistant response to conversation history
       this.conversationHistory.push({

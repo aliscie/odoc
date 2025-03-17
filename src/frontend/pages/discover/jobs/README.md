@@ -1,6 +1,6 @@
 # Jobs Feature Documentation
 
-This document provides an overview of the Jobs feature, which includes CV evaluation and job matching functionality.
+This document provides an overview of the Jobs feature, which includes CV evaluation, resume building, and job matching functionality.
 
 ## 1. CV Evaluation System
 
@@ -18,7 +18,28 @@ This document provides an overview of the Jobs feature, which includes CV evalua
 - Feedback, score, and links are saved in the app
 - Data stays after page refresh (uses localStorage)
 
-## 2. Job Search System
+## 2. Resume Builder
+
+### Resume Data Structure
+- Skills (name, years of experience, strength percentage)
+- Education (degree, institution, start/end dates)
+- Experience (position, company, start/end dates, description)
+- Certifications (title, issuer, date)
+- Job Titles (desired positions)
+- Proficiency Level (Junior, Mid-level, Senior, Expert)
+
+### AI-Assisted Resume Building
+- Chat interface helps users build their resume incrementally
+- AI extracts resume data from user messages
+- Automatically adds extracted information to the resume
+- Prevents duplicate entries
+
+### Resume View
+- Users can view their complete resume in a modal dialog
+- Resume data is organized by sections (Skills, Experience, Education, etc.)
+- Data persists between sessions using localStorage
+
+## 3. Job Search System
 
 ### Job Matching
 - "Find Jobs" button appears after CV evaluation
@@ -32,26 +53,11 @@ This document provides an overview of the Jobs feature, which includes CV evalua
   * Match score
   * "Apply" button (links to job URL) OR job source (e.g., "LinkedIn")
 
-## 3. Optimizations
+## 4. Optimizations
 - AI only asks for missing CV info (never repeats the CV)
 - Job results never repeat the same company twice
+- Resume data is deduplicated to prevent redundant entries
 
-## File Structure
-
-```
-/jobs
-├── JobsAgent.ts              # Core agent for CV analysis and chat functionality
-├── jobSearchAgent.ts         # Agent for job search and matching
-├── index.tsx                 # Main component that renders the jobs feature
-├── types.ts                  # Type definitions
-├── components/
-│   ├── ChatUIComponents.tsx  # UI components for the chat interface
-│   ├── FileUpload.tsx        # Component for uploading PDF files
-│   ├── JobOpportunities.tsx  # Component for displaying job cards
-│   └── MessageItem.tsx       # Component for displaying chat messages
-└── hooks/
-    └── useChatLogic.ts       # Custom hook for chat functionality
-```
 
 ## Key Components
 

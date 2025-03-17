@@ -319,7 +319,7 @@ const ChatWindow = memo(
                 onSubmit={handleSendMessage}
                 style={{ display: "flex", gap: 8 }}
               >
-                <TextField
+                {/* <TextField
                   size="small"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
@@ -327,7 +327,7 @@ const ChatWindow = memo(
                   fullWidth
                   variant="outlined"
                   disabled={isSending}
-                />
+                /> */}
                 <IconButton
                   type="submit"
                   color="primary"
