@@ -87,7 +87,7 @@ For proficiencyLevel, use one of: "Junior", "Mid-level", "Senior", "Expert"
 
 IMPORTANT: If you need to extract multiple items (like multiple skills or experiences), include them all in a single extractedData array rather than creating multiple extractedData objects.
 IMPORTANT: Return only feedback and JSON do not mention anything else.
-IMPORTANT: In the feedback act like hiring expert and give score of how good is the CV and what to improve. Search for confilcat and mistakes in the CV
+IMPORTANT: In the feedback act like hiring expert and give score of how good is the CV and what to improve. Search for conflict and mistakes in the CV
 
 If no relevant data is found, return an empty array for extractedData.
 `;
