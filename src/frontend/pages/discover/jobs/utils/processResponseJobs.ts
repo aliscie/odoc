@@ -11,8 +11,14 @@ export const processResponseJobs = (response: string) => {
       // Extract just the display part (remove the JSON block)
       displayResponse = response.replace(/```json\s*[\s\S]*?\s*```/, '').trim();
       
-      // Fix the JSON by converting multiple extractedData objects into an array
+      // If displayResponse is empty, check if there's feedback in the JSON
       let jsonText = jsonMatch[1];
+      const parsedJson = JSON.parse(jsonText);
+      
+      if (displayResponse === '' && parsedJson.feedback) {
+        // Use the feedback as the display response if no other text is present
+        displayResponse = parsedJson.feedback;
+      }
       
       // Check if we have multiple "extractedData" keys (invalid JSON)
       const extractedDataCount = (jsonText.match(/"extractedData"\s*:/g) || []).length;

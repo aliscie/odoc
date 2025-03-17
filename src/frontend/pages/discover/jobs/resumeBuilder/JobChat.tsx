@@ -87,17 +87,20 @@ For proficiencyLevel, use one of: "Junior", "Mid-level", "Senior", "Expert"
 
 IMPORTANT: If you need to extract multiple items (like multiple skills or experiences), include them all in a single extractedData array rather than creating multiple extractedData objects.
 IMPORTANT: Return only feedback and JSON do not mention anything else.
+IMPORTANT: In the feedback act like hiring expert and give score of how good is the CV and what to improve. Search for confilcat and mistakes in the CV
 
 If no relevant data is found, return an empty array for extractedData.
 `;
 
       const response = await agent.sendMessage(promptWithInstructions);
-      
-      console.log({response})
-      
       // Process the response using the utility function
       const { extractedData, displayResponse } = processResponseJobs(response);
       console.log('Processed extracted data:', extractedData);
+      
+      // Store feedback in localStorage if available
+      if (extractedData && extractedData.feedback) {
+        localStorage.setItem('resume_feedback', extractedData.feedback);
+      }
       
       // Add detailed logging for debugging
       if (extractedData && extractedData.extractedData) {
@@ -146,6 +149,7 @@ If no relevant data is found, return an empty array for extractedData.
   };
 
   const processExtractedData = (data: any) => {
+    console.log({ data });
     if (!data || !data.type || !data.field) {
       console.log('Invalid data format:', data);
       return false;
@@ -156,125 +160,120 @@ If no relevant data is found, return an empty array for extractedData.
     // Log the extracted data to debug
     console.log('Processing extracted data:', { type, field, value });
     
+    // Generic function to handle updating or adding items
+    const processItems = (items, findMatch, createItem) => {
+      // Convert to array if it's a single item
+      const itemsArray = Array.isArray(items) ? items : [items];
+      
+      itemsArray.forEach(item => {
+        if (!item) return;
+        
+        const existingItems = resume?.[field] || [];
+        const existingIndex = existingItems.findIndex(findMatch(item));
+        
+        if (existingIndex !== -1) {
+          console.log(`Updating existing ${field} item`);
+          const updatedItem = createItem(item, existingItems[existingIndex]);
+          
+          // Call the appropriate add function based on field
+          switch (field) {
+            case 'skills': addSkill(updatedItem); break;
+            case 'education': addEducation(updatedItem); break;
+            case 'experience': addExperience(updatedItem); break;
+            case 'certifications': addCertification(updatedItem); break;
+          }
+        } else {
+          console.log(`Adding new ${field} item`);
+          const newItem = createItem(item);
+          
+          // Call the appropriate add function based on field
+          switch (field) {
+            case 'skills': addSkill(newItem); break;
+            case 'education': addEducation(newItem); break;
+            case 'experience': addExperience(newItem); break;
+            case 'certifications': addCertification(newItem); break;
+          }
+        }
+      });
+    };
+
     if (type === 'update' || type === 'add') {
+      console.log(`Processing ${type} operation for field: ${field}`);
+      
       switch (field) {
         case 'skills':
-          if (Array.isArray(value)) {
-            // Handle array of skills
-            value.forEach(skillItem => {
-              if (skillItem && skillItem.skill) {
-                addSkill({
-                  skill: skillItem.skill,
-                  years: skillItem.years || 0,
-                  strength: skillItem.strength || 50
-                });
-              }
-            });
-          } else if (value && value.skill) {
-            // Handle single skill object
-            addSkill({
-              skill: value.skill,
-              years: value.years || 0,
-              strength: value.strength || 50
-            });
-          }
+          processItems(
+            value,
+            item => existingItem => existingItem.skill.toLowerCase() === item.skill.toLowerCase(),
+            (item, existingItem = {}) => ({
+              skill: item.skill,
+              years: item.years !== undefined ? item.years : (existingItem.years || 0),
+              strength: item.strength !== undefined ? item.strength : (existingItem.strength || 50)
+            })
+          );
           break;
+          
         case 'education':
-          if (Array.isArray(value)) {
-            // Handle array of education items
-            console.log('Processing education array with', value.length, 'items');
-            value.forEach((eduItem, index) => {
-              if (eduItem && eduItem.degree) {
-                console.log(`Adding education item ${index + 1}:`, eduItem);
-                addEducation({
-                  degree: eduItem.degree || 'Degree',
-                  institution: eduItem.institution || '',
-                  startDate: eduItem.startDate || '',
-                  endDate: eduItem.endDate || ''
-                });
-              } else {
-                console.log(`Skipping invalid education item ${index + 1}:`, eduItem);
-              }
-            });
-          } else if (value && value.degree) {
-            // Handle single education object
-            console.log('Adding single education item:', value);
-            addEducation({
-              degree: value.degree || 'Degree',
-              institution: value.institution || '',
-              startDate: value.startDate || '',
-              endDate: value.endDate || ''
-            });
-          } else {
-            console.log('Invalid education value:', value);
-          }
+          processItems(
+            value,
+            item => existingItem => 
+              existingItem.degree.toLowerCase() === item.degree.toLowerCase() && 
+              existingItem.institution.toLowerCase() === (item.institution || '').toLowerCase(),
+            (item, existingItem = {}) => ({
+              degree: item.degree || 'Degree',
+              institution: item.institution || '',
+              startDate: item.startDate || existingItem.startDate || '',
+              endDate: item.endDate || existingItem.endDate || ''
+            })
+          );
           break;
+          
         case 'experience':
-          if (Array.isArray(value)) {
-            // Handle array of experience items
-            value.forEach(expItem => {
-              if (expItem && expItem.company && expItem.position) {
-                // Convert null dates to empty strings
-                const startDate = expItem.startDate === null ? '' : expItem.startDate;
-                const endDate = expItem.endDate === null ? '' : expItem.endDate;
-                
-                addExperience({
-                  position: expItem.position,
-                  company: expItem.company,
-                  startDate: startDate,
-                  endDate: endDate,
-                  description: expItem.description || ''
-                });
-              }
-            });
-          } else if (value && value.company && value.position) {
-            // Handle single experience object
-            const startDate = value.startDate === null ? '' : value.startDate;
-            const endDate = value.endDate === null ? '' : value.endDate;
-            
-            addExperience({
-              position: value.position,
-              company: value.company,
-              startDate: startDate,
-              endDate: endDate,
-              description: value.description || ''
-            });
-          }
+          processItems(
+            value,
+            item => existingItem => 
+              existingItem.position.toLowerCase() === item.position.toLowerCase() && 
+              existingItem.company.toLowerCase() === item.company.toLowerCase(),
+            (item, existingItem = {}) => {
+              const startDate = item.startDate === null ? '' : item.startDate;
+              const endDate = item.endDate === null ? '' : item.endDate;
+              return {
+                position: item.position,
+                company: item.company,
+                startDate: startDate || existingItem.startDate || '',
+                endDate: endDate || existingItem.endDate || '',
+                description: item.description || existingItem.description || ''
+              };
+            }
+          );
           break;
+          
         case 'certifications':
-          if (Array.isArray(value)) {
-            // Handle array of certification items
-            value.forEach(certItem => {
-              if (certItem && certItem.title) {
-                addCertification({
-                  title: certItem.title,
-                  issuer: certItem.issuer || '',
-                  date: certItem.date || ''
-                });
-              }
-            });
-          } else if (value && value.title) {
-            // Handle single certification object
-            addCertification({
-              title: value.title,
-              issuer: value.issuer || '',
-              date: value.date || ''
-            });
-          }
+          processItems(
+            value,
+            item => existingItem => 
+              existingItem.title.toLowerCase() === item.title.toLowerCase() && 
+              existingItem.issuer.toLowerCase() === (item.issuer || '').toLowerCase(),
+            (item, existingItem = {}) => ({
+              title: item.title,
+              issuer: item.issuer || '',
+              date: item.date || existingItem.date || ''
+            })
+          );
           break;
+          
         case 'jobTitles':
           if (Array.isArray(value)) {
-            // Handle array of job titles
             value.forEach(title => {
               if (typeof title === 'string') {
                 addJobTitle(title);
               }
             });
           } else if (typeof value === 'string') {
-            // Handle single job title
             addJobTitle(value);
           }
           break;
+          
         case 'proficiencyLevel':
           if (typeof value === 'string' && 
               ['Junior', 'Mid-level', 'Senior', 'Expert'].includes(value)) {
@@ -283,7 +282,7 @@ If no relevant data is found, return an empty array for extractedData.
           break;
       }
     }
-    // You can add update and remove functionality later if needed
+    return true;
   };
 
   return (
