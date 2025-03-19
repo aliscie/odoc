@@ -15,6 +15,7 @@ import {
 } from "@mui/icons-material";
 import { RootState } from "../../../redux/reducers";
 import { useBackendContext } from "../../../contexts/BackendContext";
+import DfnIcon from "@/assets/dfn.svg";
 
 interface LoginButtonProps {
   isMobile?: boolean;
@@ -96,7 +97,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({
           <MenuItem onClick={handleInternetIdentityLogin}>
             <ListItemIcon>
               <img 
-                src="https://identitysupport.dfinity.org/hc/theming_assets/01HZPAQP10D0TDE2HSZH52B5EF" 
+                src={DfnIcon} 
                 alt="Internet Identity" 
                 style={styles.menuIcon} 
               />
@@ -137,7 +138,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({
         <MenuItem onClick={handleInternetIdentityLogin}>
           <ListItemIcon>
             <img 
-              src="https://identitysupport.dfinity.org/hc/theming_assets/01HZPAQP10D0TDE2HSZH52B5EF" 
+              src={DfnIcon} 
               alt="Internet Identity" 
               style={styles.menuIcon} 
             />

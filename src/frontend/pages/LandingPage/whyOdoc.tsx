@@ -32,10 +32,7 @@ const FeatureCard = ({
       onMouseLeave={() => setHover(false)}
       sx={{
         height: "100%",
-        background:
-          theme.palette.mode === "dark"
-            ? alpha(theme.palette.background.paper, 0.9)
-            : alpha(theme.palette.background.paper, 0.9),
+        backgroundColor: "transparent",
         p: 4,
         borderRadius: 2,
         transition: "transform 500ms cubic-bezier(0.4, 0, 0.2, 1)",
@@ -147,13 +144,9 @@ const WhyOdoc: React.FC = () => {
     <Box
       sx={{
         py: 8,
-        background:
-          theme.palette.mode === "dark"
-            ? alpha(theme.palette.background.paper, 0.5)
-            : alpha(theme.palette.background.paper, 0.5),
       }}
     >
-      <Container maxWidth="lg">
+
         <Box sx={{ textAlign: "center", mb: 6 }}>
           <Typography
             variant="h3"
@@ -197,7 +190,7 @@ const WhyOdoc: React.FC = () => {
             />
           ))}
         </Box>
-      </Container>
+
     </Box>
   );
 };

@@ -6,13 +6,15 @@ interface SectionProps {
   children: React.ReactNode;
   containerWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   sx?: object;
+  transparent?: boolean; // Add a new prop to control transparency
 }
 
 const Section: React.FC<SectionProps> = ({
   id,
   children,
   containerWidth = 'lg',
-  sx = {}
+  sx = {},
+  transparent = false // Default to false for backward compatibility
 }) => {
   const theme = useTheme();
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -61,7 +63,8 @@ const Section: React.FC<SectionProps> = ({
         justifyContent: 'center',
         scrollSnapAlign: 'start',
         transition: 'opacity 0.5s ease, transform 0.5s ease',
-        bgcolor: theme.palette.background.default,
+        // Only apply background color if not transparent
+        bgcolor: transparent ? 'transparent' : theme.palette.background.default,
         color: theme.palette.text.primary,
         px: { xs: 2, sm: 3, md: 4 },
         py: { xs: 4, sm: 6, md: 8 },

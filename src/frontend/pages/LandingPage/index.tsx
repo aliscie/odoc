@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import {
   Box,
   Button,
@@ -17,27 +17,106 @@ import Section from "./section";
 import Intro from "./intro";
 import GettingStarted from "../videoTutorial";
 import SecuritySection from "./securitySection";
+import { useScroll } from "framer-motion";
+// Import the video
+import handshakeVideo from "@/assets/handshake.mp4";
+import { isblEditorDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { useSelector } from "react-redux";
 
 export default function LandingPage(props) {
+  // Add video reference and scroll progress
+  const videoRef = useRef(null);
+  const { scrollYProgress } = useScroll();
+
+  // Control video playback based on scroll
+  useEffect(() => {
+    let lastScrollY = 0;
+    const video = videoRef.current;
+    
+    if (!video) return;
+    
+    // Calculate total video duration in seconds
+    const videoDuration = video.duration || 10; // Fallback to 10 seconds if duration not available
+    
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Calculate desired video position based on scroll progress
+      const scrollProgress = scrollYProgress.get();
+      // Speed multiplier for faster playback
+      const speedMultiplier = 5;
+      const targetTime = scrollProgress * videoDuration * speedMultiplier;
+      
+      // Ensure we don't exceed the video duration
+      const clampedTargetTime = Math.min(targetTime, videoDuration - 0.1);
+      
+      // Seek to the appropriate position in the video
+      if (video.readyState >= 2) {
+        video.currentTime = clampedTargetTime;
+      }
+      
+      lastScrollY = currentScrollY;
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [scrollYProgress]);
+
+  const { isDarkMode } = useSelector((state: any) => state.uiState);
   return (
-    <Box sx={{ minHeight: "100vh" }}>
+    <Box sx={{ minHeight: "100vh", position: "relative" }}>
+      {/* Background Video */}
+      <Box
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          zIndex: 0,
+          pointerEvents: "none", // Allows clicking through the video
+        }}
+      >
+        <video 
+          ref={videoRef}
+          src={handshakeVideo}
+          muted
+          playsInline
+          preload="auto"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: 0.6,
+            // Different blend modes for dark and light themes
+            mixBlendMode: isDarkMode ? 'lighten' : 'multiply',
+            filter: isDarkMode 
+              ? 'contrast(1.3) brightness(1.1)' 
+              : 'contrast(1.2) brightness(0.9)',
+          }}
+        />
+        
+
+      </Box>
+
       {/* Hero Section */}
-      <Section id="intro">
+      <Section id="intro" sx={{ position: "relative", zIndex: 1 }} transparent={true}>
         <Intro />
       </Section>
-      <Section id="start">
-        {/* Getting Started Steps */}
+      <Section id="why"  sx={{ position: "relative", zIndex: 1 }} transparent={true} >
+        <WhyOdoc />
+      </Section>
+      <Section id="start" sx={{ position: "relative", zIndex: 1 }} transparent={true}>
         <GettingStarted />
       </Section>
-      <Section id="security">
+    
+      
+      <Section id="security" transparent={true}>
         <SecuritySection />
       </Section>
 
-      <Section id="social">
+      <Section id="social" transparent={true}>
         <SocialButton />
-      </Section>
-      <Section id="why">
-        <WhyOdoc />
       </Section>
       {/* Features Grid */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
@@ -84,6 +163,7 @@ export default function LandingPage(props) {
         </Grid>
       </Container>
 
+      {/* Rest of the component remains unchanged */}
       {/* Current Progress */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Typography

@@ -23,7 +23,7 @@ export class AnthropicAgent {
       apiKey: import.meta.env.VITE_ANTHROPIC_API_KEY || '',
       dangerouslyAllowBrowser: true
     });
-    this.model = 'claude-3-opus-20240229';
+    this.model = 'claude-3-7-sonnet-20250219';
     this.conversationHistory = [];
   }
 

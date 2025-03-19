@@ -12,18 +12,17 @@ const JobsPage: React.FC = () => {
 
   return (
     <ResumeProvider>
-      <Box className="jobs-page-container" sx={{ padding: 3, maxWidth: '1200px', margin: '0 auto' }}>
+      somming soon
+      {/* <Box className="jobs-page-container" sx={{ padding: 3, maxWidth: '1200px', margin: '0 auto' }}>
         <Typography variant="h4">Jobs & Career Assistant</Typography>
         
         <Box sx={{ marginTop: 3 }}>
           <JobChat />
         </Box>
-        
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 4 }}>
-          <JobSearch />
-          <ResumeView />
-        </Box>
-        
+        <ResumeView />
+        <JobSearch modelProvider="anthropic" />
+          
+          
         {showJobSearch && (
           <Box sx={{ mt: 4, p: 3, bgcolor: '#f5f5f5', borderRadius: 2, textAlign: 'center' }}>
             <Typography variant="h5" gutterBottom>
@@ -35,7 +34,7 @@ const JobsPage: React.FC = () => {
             </Typography>
           </Box>
         )}
-      </Box>
+      </Box> */}
     </ResumeProvider>
   );
 };

@@ -16,7 +16,7 @@ const SecuritySection = () => {
   ];
 
   return (
-    <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', overflow: 'hidden', bgcolor: 'background.paper' }}>
+    <Box sx={{ py: { xs: 6, md: 10 }, position: 'relative', overflow: 'hidden', bgcolor: 'transparent' }}>
       <Container maxWidth="lg">
         <LockHeader />
 
