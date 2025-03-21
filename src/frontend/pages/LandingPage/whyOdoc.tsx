@@ -32,7 +32,7 @@ const FeatureCard = ({
       onMouseLeave={() => setHover(false)}
       sx={{
         height: "100%",
-        backgroundColor: "transparent",
+
         p: 4,
         borderRadius: 2,
         transition: "transform 500ms cubic-bezier(0.4, 0, 0.2, 1)",

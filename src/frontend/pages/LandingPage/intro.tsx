@@ -111,7 +111,7 @@ export default function Intro() {
           </MotionTypography>
         </MotionBox>
 
-        <Box sx={{ color: "text.primary", mb: 4 }}>
+        <Box sx={{ color: isDarkMode ? "#ffffff" : "#000000", mb: 4 }}>
           <MotionTypography
             variant="h3"
             variants={itemVariants}
@@ -120,11 +120,19 @@ export default function Intro() {
               fontWeight: "bold",
               mb: 1.5,
               textAlign: { xs: "center", sm: "left" },
+              position: "relative",
+              zIndex: 1,
+              color: isDarkMode ? "#ffffff" : "#000000",
+              textShadow: isDarkMode 
+                ? "0px 2px 4px rgba(0, 0, 0, 0.5)" 
+                : "0px 1px 2px rgba(255, 255, 255, 0.5)",
             }}
           >
             Effortless Teams & Payments Management
           </MotionTypography>
-          <FloatingFeatures />
+          <Box sx={{ position: "relative", zIndex: 10 }}>
+            <FloatingFeatures />
+          </Box>
           <MotionTypography
             variant="subtitle1"
             variants={itemVariants}
@@ -132,14 +140,23 @@ export default function Intro() {
               fontSize: { xs: "1.1rem", sm: "1.2rem" },
               mb: 3,
               textAlign: { xs: "center", sm: "left" },
-              color: "text.secondary",
+              color: isDarkMode ? "#ffffff" : "#000000",
+              textShadow: isDarkMode 
+                ? "0px 1px 3px rgba(0, 0, 0, 0.4)" 
+                : "0px 1px 2px rgba(255, 255, 255, 0.4)",
             }}
           >
            Odoc where freelancers & clients connect and effortlessly manage contracts, payments and tasks with the power of AI and blockchain.
           </MotionTypography>
           <MotionBox
             variants={itemVariants}
-            sx={{ color: "text.secondary", mb: 4 }}
+            sx={{ 
+              color: isDarkMode ? "#ffffff" : "#000000", 
+              mb: 4,
+              textShadow: isDarkMode 
+                ? "0px 1px 3px rgba(0, 0, 0, 0.4)" 
+                : "0px 1px 2px rgba(255, 255, 255, 0.4)",
+            }}
           >
             Built on the{" "}
             <Link
@@ -147,7 +164,9 @@ export default function Intro() {
               target="_blank"
               rel="noopener noreferrer"
               sx={{
-                "&:hover": { color: "primary.dark" },
+                color: isDarkMode ? "#90caf9" : "#1976d2",
+                textShadow: "none",
+                "&:hover": { color: isDarkMode ? "#64b5f6" : "#0d47a1" },
               }}
             >
               Internet Computer

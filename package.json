@@ -26,6 +26,7 @@
     "@mui/material": "^6.4.3",
     "@mui/system": "^5.16.7",
     "@mui/x-date-pickers": "7.27.3",
+    "@rainbow-me/rainbowkit": "^2.2.4",
     "@reduxjs/toolkit": "2.6.0",
     "@types/react-dom": "^18.3.0",
     "@types/react-swipeable-views": "0.13.6",
@@ -37,6 +38,7 @@
     "date-fns": "^4.1.0",
     "flowbite-react": "^0.10.1",
     "framer-motion": "12.4.10",
+    "ic-use-siwe-identity": "^0.1.2",
     "ic-websocket-js": "^0.4.1",
     "immer": "^10.1.1",
     "mathjs": "^13.0.3",
@@ -60,7 +62,8 @@
     "typescript": "5.8.2",
     "uuid": "^10.0.0",
     "vite": "^5.4.0",
-    "vitest-mock-extended": "^2.0.2"
+    "vitest-mock-extended": "^2.0.2",
+    "wagmi": "^2.14.15"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"

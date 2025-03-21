@@ -4,7 +4,6 @@ import { Actor, ActorMethod, ActorSubclass, HttpAgent, Identity } from "@dfinity
 import { canisterId, idlFactory } from "../../declarations/backend";
 import { _SERVICE } from "../../declarations/backend/backend.did";
 import { useDispatch, useSelector } from "react-redux";
-import { handleRedux } from "../redux/store/handleRedux";
 import getLedgerActor from "./ckudc_ledger_actor";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { MsqClient } from "@fort-major/msq-client";

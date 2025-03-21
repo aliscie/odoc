@@ -136,6 +136,7 @@ const Feature = ({ text, index }: { text: string; index: number }) => {
         anchorEl={anchorEl}
         placement="top"
         transition
+        sx={{ zIndex: 1500 }} // Add this line to ensure tooltips appear on top
       >
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={200}>

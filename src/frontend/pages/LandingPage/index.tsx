@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import {
   Box,
   Button,
@@ -20,47 +20,17 @@ import SecuritySection from "./securitySection";
 import { useScroll } from "framer-motion";
 // Import the video
 import handshakeVideo from "@/assets/handshake.mp4";
-import { isblEditorDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { useSelector } from "react-redux";
+// Import our custom hook
+import useScrollingEffect from "../../hooks/useScrollingEffect";
 
 export default function LandingPage(props) {
   // Add video reference and scroll progress
   const videoRef = useRef(null);
   const { scrollYProgress } = useScroll();
-
-  // Control video playback based on scroll
-  useEffect(() => {
-    let lastScrollY = 0;
-    const video = videoRef.current;
-    
-    if (!video) return;
-    
-    // Calculate total video duration in seconds
-    const videoDuration = video.duration || 10; // Fallback to 10 seconds if duration not available
-    
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // Calculate desired video position based on scroll progress
-      const scrollProgress = scrollYProgress.get();
-      // Speed multiplier for faster playback
-      const speedMultiplier = 5;
-      const targetTime = scrollProgress * videoDuration * speedMultiplier;
-      
-      // Ensure we don't exceed the video duration
-      const clampedTargetTime = Math.min(targetTime, videoDuration - 0.1);
-      
-      // Seek to the appropriate position in the video
-      if (video.readyState >= 2) {
-        video.currentTime = clampedTargetTime;
-      }
-      
-      lastScrollY = currentScrollY;
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [scrollYProgress]);
+  
+  // Use our custom hook for video scrolling effect
+  useScrollingEffect(videoRef, scrollYProgress, { speedMultiplier: 5 });
 
   const { isDarkMode } = useSelector((state: any) => state.uiState);
   return (
@@ -95,8 +65,6 @@ export default function LandingPage(props) {
               : 'contrast(1.2) brightness(0.9)',
           }}
         />
-        
-
       </Box>
 
       {/* Hero Section */}
@@ -110,7 +78,6 @@ export default function LandingPage(props) {
         <GettingStarted />
       </Section>
     
-      
       <Section id="security" transparent={true}>
         <SecuritySection />
       </Section>
@@ -118,6 +85,7 @@ export default function LandingPage(props) {
       <Section id="social" transparent={true}>
         <SocialButton />
       </Section>
+      
       {/* Features Grid */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Typography
@@ -163,7 +131,6 @@ export default function LandingPage(props) {
         </Grid>
       </Container>
 
-      {/* Rest of the component remains unchanged */}
       {/* Current Progress */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Typography
