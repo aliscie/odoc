@@ -13,7 +13,7 @@ const JobsPage: React.FC = () => {
   return (
     <ResumeProvider>
       somming soon
-      {/* <Box className="jobs-page-container" sx={{ padding: 3, maxWidth: '1200px', margin: '0 auto' }}>
+      <Box className="jobs-page-container" sx={{ padding: 3, maxWidth: '1200px', margin: '0 auto' }}>
         <Typography variant="h4">Jobs & Career Assistant</Typography>
         
         <Box sx={{ marginTop: 3 }}>
@@ -34,7 +34,7 @@ const JobsPage: React.FC = () => {
             </Typography>
           </Box>
         )}
-      </Box> */}
+      </Box>
     </ResumeProvider>
   );
 };

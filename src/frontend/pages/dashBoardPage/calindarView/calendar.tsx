@@ -239,10 +239,14 @@ const CalendarView = () => {
         return foundStatus;
       };
 
+      if (!children || !React.isValidElement(children)) {
+        return children;
+      }
+
       const child = React.Children.only(children);
       const status = getSlotStatus();
 
-      let className = child.props.className;
+      let className = child.props?.className || '';
       let title = "";
 
       switch (status) {
@@ -265,8 +269,7 @@ const CalendarView = () => {
       });
     },
     [availabilities],
-  );
-  // console.log({ earliestStart });
+  );  // console.log({ earliestStart });
   let timeSpans = {};
   if (profile?.id === calendar?.owner) {
     const today = new Date();

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Box, Grid, useTheme } from "@mui/material";
+import { Box, Grid, useTheme, Tabs, Tab } from "@mui/material";
 // import TimeZoneSelector from "./timezone";
 import { useDispatch, useSelector } from "react-redux";
 import { useBackendContext } from "../../../contexts/BackendContext";
@@ -8,6 +8,7 @@ import LoaderButton from "../../../components/MuiComponents/LoaderButton";
 import ConversationInput from "../AI_Input";
 import { Calendar } from "../../../../declarations/backend/backend.did";
 import CalendarView from "./calendar";
+import GoogleCalendarIntegration from "./googleAccounts";
 import { AvailabilityTimezone, EventTimezone } from "./serializers";
 import { logger } from "../../../DevUtils/logData";
 
@@ -94,6 +95,12 @@ const Scheduler = React.memo(() => {
     }
   }, [backendActor, profile, dispatch, enqueueSnackbar]);
 
+  // Remove the tab state and handler
+  // const [selectedTab, setSelectedTab] = useState<number>(0);
+  // const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  //   setSelectedTab(newValue);
+  // };
+
   // Effects
   useEffect(() => {
     handleFetchCalendar();
@@ -134,14 +141,12 @@ const Scheduler = React.memo(() => {
       }}
     >
       <Box sx={{ p: theme.spacing(3) }}>
-        {/*<Grid container spacing={2} sx={{ mb: 4 }}>*/}
-        {/*  <Grid item>*/}
-        {/*    <TimeZoneSelector />*/}
-        {/*  </Grid>*/}
-        {/*</Grid>*/}
-
+        {/* Remove the Tabs component */}
         <Box sx={{ mb: 4 }}>
           <CalendarView />
+        </Box>
+        <Box sx={{ mb: 4 }}>
+          <GoogleCalendarIntegration onConnect={() => console.log('Google Calendar connected')} />
         </Box>
       </Box>
 

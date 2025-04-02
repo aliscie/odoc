@@ -83,7 +83,15 @@ const processAIActions = (actions, { currentCalendar, setMessages }) => {
   const messages = [];
 
   for (const action of actions) {
-    const processedAction = processAction(action, {
+    // Add the feedback message from AI to the messages array
+    if (action.feedback) {
+      messages.push({
+        sender: "AI",
+        content: action.feedback,
+      });
+    }
+
+    const processedAction = processAction(action.data, {
       currentCalendar,
       messages,
     });

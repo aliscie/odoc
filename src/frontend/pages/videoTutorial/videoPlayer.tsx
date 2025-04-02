@@ -36,7 +36,7 @@ const VideoPlayer = ({ video, startTime }: { video: Tutorial; startTime?: number
         sx={{
           position: "relative",
           width: "100%",
-          paddingTop: isMobile ? "65%" : "40%",
+          paddingTop: isMobile ? "65%" : "56%",
           mb: 2,
         }}
       >

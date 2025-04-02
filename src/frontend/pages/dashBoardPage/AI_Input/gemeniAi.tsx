@@ -294,11 +294,11 @@ export async function processCalendarText(
   text: string,
   oldCalendar: Calendar,
   dispatch: (action: any) => void,
-): Promise<CalendarAction[]> {
+): Promise<{feedback: string, data: CalendarAction}[]> {
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-thinking-exp-1219" });
     const now = Date.now() * 1e6;
 
     const prompt = `
@@ -308,61 +308,69 @@ export async function processCalendarText(
       
       User input: ${text}
       
-      Generate a JSON array response. Events MUST use these formats:
+      Generate a JSON array response. Each item in the array should have a "feedback" field with a user-friendly message and a "data" field containing the action.
+      
+      Events MUST use these formats:
       - Dates: "DD-MM-YYYY" (e.g. "01-01-2025")
       - Times: "HH:mm" in 24-hour format (e.g. "09:00", "14:30")
       
-      Response must be a JSON array with single actions. Each action must have a "type":
+      Each data object must have a "type":
       - For events: "ADD_EVENT", "UPDATE_EVENT", "DELETE_EVENT"
       - For availability: "ADD_AVAILABILITY", "UPDATE_AVAILABILITY", "DELETE_AVAILABILITY"
       - For blocked times: "UPDATE_BLOCKED_TIME", "DELETE_BLOCKED_TIME"
       
+      Example response format:
+      [
+        {
+          "feedback": "I've added your team meeting on February 17th from 9:00 to 10:00.",
+          "data": {
+            "type": "ADD_EVENT",
+            "event": {
+              "id": "evt_timestamp",
+              "title": "Team Meeting",
+              "date": "17-02-2025",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "description": "Weekly sync",
+              "attendees": [],
+              "recurrence": []
+            }
+          }
+        }
+      ]
+      
       For availability actions, use this format:
       {
-        "type": "ADD_AVAILABILITY",
-        "availability": {
-          "id": "avail_timestamp",
-          "title": "Working Hours",
-          "is_blocked": false,           // <- if I say ai am not available add "is_blocked": false, instead 
-          "schedule_type": {
-              "WeeklyRecurring": {
-                "days": [],  // this can be [1, 2, 3, 4] where Monday=1, Tuesday=2, Wednesday=3, Thursday=4
-                "valid_until": []  // <- if user say for example "until next month" then this will be the date [dateTime]
+        "feedback": "I've set your working hours from 9:00 to 17:00.",
+        "data": {
+          "type": "ADD_AVAILABILITY",
+          "availability": {
+            "id": "avail_timestamp",
+            "title": "Working Hours",
+            "is_blocked": false,
+            "schedule_type": {
+                "WeeklyRecurring": {
+                  "days": [],  "days": [],  // this can be [1, 2, 3, 4] where Monday=1, Tuesday=2, Wednesday=3, Thursday=4
+                  "valid_until": []   // <- if user say for example "until next month" then this will be the date [dateTime]
+                }
+              },
+            "slots": [
+              {
+                "start_time": "09:00",
+                "end_time": "17:00"
               }
-            },
-          "slots": [
-            {
-              "start_time": "09:00",
-              "end_time": "17:00"
-            }
-          ]
+            ]
+          }
         }
       }
       
-      For event actions, use this format:
+      For delete/cancel/remove actions:
       {
-        "type": "ADD_EVENT",
-        "event": {
-          "id": "evt_timestamp",
-          "title": "Team Meeting",
-          "date": "17-02-2025",
-          "start_time": "09:00",
-          "end_time": "10:00",
-          "description": "Weekly sync", // or just ""
-          "attendees": ["3qisy-ems35-y4kfh-kkiyq-yx6w6-fiuzv-k5qoc-v4efn-ka7er-4ojgh-zae" ], // id of the user
-          "recurrence": [{frequency: {Daily:null}}] // or [{interval:2}] or [{until:34343}] or [{count:3}] most times just keep []
+        "feedback": "I've removed the event as requested.",
+        "data": {
+          "type": "DELETE_EVENT",
+          "id": "0.7326486663335694"
         }
-      }
-      
-      For delete/cancel/remove event 
-      {
-      "type": "DELETE_EVENT",
-      "id": "0.7326486663335694"
-      }
-      For delete/cancel/remove availability
-      {
-        "type": "DELETE_AVAILABILITY",
-        "id": "0.7326486663335694"
       }
     `;
 
@@ -398,7 +406,8 @@ export async function processCalendarText(
     }
 
     // Process each action and validate
-    return parsed.map((action) => {
+    return parsed.map((item) => {
+      const action = item.data;
       if (!action.type || typeof action.type !== "string") {
         throw new Error(`Invalid action type: ${JSON.stringify(action)}`);
       }
@@ -408,7 +417,10 @@ export async function processCalendarText(
         throw new Error("ADD_EVENTS action type is not supported");
       }
 
-      return ActionProcessor.processAction(action);
+      return {
+        feedback: item.feedback || "Action processed successfully.",
+        data: ActionProcessor.processAction(action)
+      };
     });
   } catch (error) {
     console.error("Error processing calendar text:", error);

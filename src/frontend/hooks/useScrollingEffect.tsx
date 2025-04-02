@@ -3,6 +3,8 @@ import { MotionValue } from 'framer-motion';
 
 interface ScrollingEffectOptions {
   speedMultiplier?: number;
+  zoomEffect?: boolean;
+  maxZoom?: number;
 }
 
 /**
@@ -16,9 +18,10 @@ export const useScrollingEffect = (
   scrollYProgress: MotionValue<number>,
   options: ScrollingEffectOptions = {}
 ) => {
-  const { speedMultiplier = 5 } = options;
+  const { speedMultiplier = 5, zoomEffect = false, maxZoom = 1.3 } = options;
   const currentTimeRef = useRef(0);
   const targetTimeRef = useRef(0);
+  const zoomRef = useRef(1);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -66,6 +69,30 @@ export const useScrollingEffect = (
       
       // Ensure we don't exceed the video duration
       targetTimeRef.current = Math.min(targetTimeRef.current, videoDuration - 0.1);
+      
+      // Apply zoom effect if enabled
+      if (zoomEffect && video.parentElement) {
+        // Calculate zoom based on scroll progress (1 at start, maxZoom at end)
+        const targetZoom = 1 + (scrollProgress * (maxZoom - 1));
+        
+        // Determine dynamic smoothing factor based on how fast the user is scrolling
+        // The larger the difference between target and current zoom, the faster we'll adjust
+        const zoomDifference = Math.abs(targetZoom - zoomRef.current);
+        let smoothingFactor = 0.09; // Default smoothing
+        
+        if (zoomDifference > 0.5) {
+          smoothingFactor = 0.15; // Faster adjustment for rapid scrolling
+        } else if (zoomDifference > 0.2) {
+          smoothingFactor = 0.12; // Medium adjustment
+        }
+        
+        // Smooth transition for zoom with adaptive smoothing
+        zoomRef.current += (targetZoom - zoomRef.current) * smoothingFactor;
+        
+        // Apply the zoom transform with transform-origin set to bottom left
+        video.style.transformOrigin = 'left bottom';
+        video.style.transform = `scale(${zoomRef.current})`;
+      }
       
       // Calculate distance to target time
       const distance = Math.abs(targetTimeRef.current - currentTimeRef.current);
@@ -116,7 +143,7 @@ export const useScrollingEffect = (
       }
       video.removeEventListener('loadedmetadata', handleVideoMetadata);
     };
-  }, [scrollYProgress, speedMultiplier, videoRef]);
+  }, [scrollYProgress, speedMultiplier, videoRef, zoomEffect, maxZoom]);
 };
 
 export default useScrollingEffect;

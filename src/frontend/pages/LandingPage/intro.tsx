@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import { motion, useInView } from "framer-motion";
 import FloatingFeatures from "./floatingFeature";
 // Removed image imports and added video import
-import handshakeVideo from "@/assets/handshake.mp4";
+
 
 const MotionBox = motion(Box);
 const MotionTypography = motion(Typography);

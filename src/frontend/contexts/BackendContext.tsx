@@ -9,6 +9,7 @@ import { useTheme, useMediaQuery } from "@mui/material";
 import { MsqClient } from "@fort-major/msq-client";
 
 // Types and Interfaces
+// Update the State interface to track login method
 interface State {
   principal: string | null;
   identity: Identity | null;
@@ -16,6 +17,7 @@ interface State {
   agent: HttpAgent | null;
   isAuthenticating?: boolean;
   ckUSDCActor?: any;
+  loginMethod?: 'internet-identity' | 'metamask'; // Add this line
 }
 
 interface BackendContextProps extends State {
@@ -252,6 +254,7 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
   }
 
   // MetaMask login
+  // Update the loginWithMetaMask function
   const loginWithMetaMask = useCallback(async () => {
     try {
       setState(prevState => ({
@@ -259,8 +262,7 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
         isAuthenticating: true,
       }));
   
-      // Check if MetaMask is available first
-      if (!window.ethereum) {
+      if (!window.ethereum?.isMetaMask) {
         alert('MetaMask is required for this login method. Please install MetaMask first.');
         setState(prevState => ({
           ...prevState,
@@ -268,64 +270,38 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
         }));
         return;
       }
-
-      
-      // Save the current URL to session storage
-      // sessionStorage.setItem('msqRedirectUrl', window.location.href);
-      
-      // Get the result of the login attempt
-      const result = await MsqClient.createAndLogin();
-      
-      if ("Ok" in result) {
-        const { msq, identity } = result.Ok;
-        const host = getHost();
-        const agent = await createMsqAgent(identity, host);
-        const actor = createBackendActor(agent);
-        const principal = identity.getPrincipal().toString();
-        
-
-        
-        // Try to get user's pseudonym and avatar
-        try {
-          const pseudonym = await identity.getPseudonym?.();
-          const avatarSrc = await identity.getAvatarSrc?.();
-
-          console.log('User avatar:', avatarSrc);
-        } catch (err) {
-          console.log('Could not get user pseudonym or avatar', err);
-        }
-        
-        setState(prevState => ({
-          ...prevState,
-          isAuthenticating: false,
-          principal,
-          identity,
-          backendActor: actor,
-          agent,
-        }));
-        
-        dispatch({type:"LOGIN"});
-      } else {
-        // Handle specific MSQ errors
-        console.error('MSQ connection error:', result.Err);
-        
-        if (result.Err === 'MSQConnectionRejected') {
-          alert('MSQ connection was rejected. Please try again and approve the connection.');
-          window.location.reload();
-        } else {
-          // reload the page
-          alert(`Failed to connect with MSQ: ${result.Err}`);
-          window.location.reload();
-        }
-        
-        setState(prevState => ({
-          ...prevState,
-          isAuthenticating: false,
-        }));
+  
+      // Request accounts from MetaMask
+      const accounts = await window.ethereum.request({
+        method: 'eth_requestAccounts'
+      });
+  
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No accounts found in MetaMask');
       }
+  
+      // Create auth client and get identity
+      const client = await createAuthClient();
+      const identity = await client.getIdentity();
+      const principal = identity.getPrincipal().toString();
+      const host = getHost();
+      const agent = await createMsqAgent(identity, host);
+      const actor = createBackendActor(agent);
+  
+      setState(prevState => ({
+        ...prevState,
+        isAuthenticating: false,
+        principal,
+        identity,
+        backendActor: actor,
+        agent,
+        loginMethod: 'metamask'
+      }));
+  
+      dispatch({type: "LOGIN"});
     } catch (error) {
-      console.error('Error connecting with MSQ:', error);
-      alert('An error occurred when connecting to MSQ. Please try again.');
+      console.error('Error connecting with MetaMask:', error);
+      alert(`An error occurred when connecting with MetaMask: ${error.message}`);
       setState(prevState => ({
         ...prevState,
         isAuthenticating: false,
@@ -333,7 +309,7 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
     }
   }, [dispatch]);
 
-  // Logout function
+  // Update the logout function to handle MetaMask
   const logout = useCallback(() => {
     // Check if MSQ is available and attempt to disconnect
     if (window.ic?.msq) {
@@ -344,7 +320,8 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
         .catch(err => {
           console.error('Error during MSQ logout:', err);
         });
-    } 
+    }
+    
     // Standard logout for Internet Identity
     dispatch({type:"LOGOUT"});
     authClient?.logout({ returnTo: "/" });
@@ -355,6 +332,7 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
       identity: null,
       backendActor: null,
       agent: null,
+      loginMethod: undefined // Reset login method
     });
   }, [dispatch, authClient]);
 

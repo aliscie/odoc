@@ -18,21 +18,31 @@ import Intro from "./intro";
 import GettingStarted from "../videoTutorial";
 import SecuritySection from "./securitySection";
 import { useScroll } from "framer-motion";
-// Import the video
-import handshakeVideo from "@/assets/handshake.mp4";
+// Import the videos
+import handshakeVideo from "@/assets/handShakeDark.mp4";
+// Removed light video import
 import { useSelector } from "react-redux";
 // Import our custom hook
 import useScrollingEffect from "../../hooks/useScrollingEffect";
+import PlatformProgress from "./platformProgress";
 
 export default function LandingPage(props) {
   // Add video reference and scroll progress
   const videoRef = useRef(null);
   const { scrollYProgress } = useScroll();
   
-  // Use our custom hook for video scrolling effect
-  useScrollingEffect(videoRef, scrollYProgress, { speedMultiplier: 5 });
+  // Use our custom hook for video scrolling effect with zoom
+  useScrollingEffect(videoRef, scrollYProgress, { 
+    speedMultiplier: 5,
+    zoomEffect: true,
+    maxZoom: 1.3 // Adjust this value to control maximum zoom level
+  });
 
   const { isDarkMode } = useSelector((state: any) => state.uiState);
+  
+  // Always use dark video, but adjust opacity for light mode
+  const videoOpacity = isDarkMode ? 0.8 : 0.6;
+  
   return (
     <Box sx={{ minHeight: "100vh", position: "relative" }}>
       {/* Background Video */}
@@ -43,7 +53,7 @@ export default function LandingPage(props) {
           left: 0,
           width: "100vw",
           height: "100vh",
-          zIndex: 0,
+          zIndex: 0, // Changed from 0 to -1 to ensure it stays behind all content
           pointerEvents: "none", // Allows clicking through the video
         }}
       >
@@ -57,12 +67,7 @@ export default function LandingPage(props) {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            opacity: 0.6,
-            // Different blend modes for dark and light themes
-            mixBlendMode: isDarkMode ? 'lighten' : 'multiply',
-            filter: isDarkMode 
-              ? 'contrast(1.3) brightness(1.1)' 
-              : 'contrast(1.2) brightness(0.9)',
+            opacity: videoOpacity,
           }}
         />
       </Box>
@@ -71,20 +76,23 @@ export default function LandingPage(props) {
       <Section id="intro" sx={{ position: "relative", zIndex: 1 }} transparent={true}>
         <Intro />
       </Section>
+      <Section id="social" transparent={true}>
+        <SocialButton />
+      </Section>
+      <Section id="social" transparent={true}>
+      <GettingStarted/>
+      </Section>
+      
+      
       <Section id="why"  sx={{ position: "relative", zIndex: 1 }} transparent={true} >
         <WhyOdoc />
-      </Section>
-      <Section id="start" sx={{ position: "relative", zIndex: 1 }} transparent={true}>
-        <GettingStarted />
       </Section>
     
       <Section id="security" transparent={true}>
         <SecuritySection />
       </Section>
 
-      <Section id="social" transparent={true}>
-        <SocialButton />
-      </Section>
+      
       
       {/* Features Grid */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
@@ -132,67 +140,7 @@ export default function LandingPage(props) {
       </Container>
 
       {/* Current Progress */}
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Typography
-          variant="h3"
-          sx={{ textAlign: "center", fontWeight: "bold", mb: 6 }}
-        >
-          Platform Progress
-        </Typography>
-        <Box sx={{ maxWidth: "800px", mx: "auto" }}>
-          {/* Completed Features */}
-          <Typography variant="h6" sx={{ mb: 3 }}>
-            Completed Features
-          </Typography>
-          <Box sx={{ mb: 4 }}>
-            {roadMap
-              .filter((item) => item.is_done)
-              .map((item, index) => (
-                <Box key={index} sx={{ mb: 2 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                    <CheckCircle sx={{ color: "#2563eb", mr: 2 }} />
-                    <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                      {item.title}
-                    </Typography>
-                  </Box>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ ml: 6 }}
-                  >
-                    {item.content}
-                  </Typography>
-                </Box>
-              ))}
-          </Box>
-
-          {/* Upcoming Features */}
-          <Typography variant="h6" sx={{ mb: 3 }}>
-            Coming Soon
-          </Typography>
-          <Box>
-            {roadMap
-              .filter((item) => !item.is_done)
-              .map((item, index) => (
-                <Box key={index} sx={{ mb: 2 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                    <Schedule sx={{ color: "#64748b", mr: 2 }} />
-                    <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                      {item.title}
-                    </Typography>
-                  </Box>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ ml: 6 }}
-                  >
-                    {item.content}
-                  </Typography>
-                </Box>
-              ))}
-          </Box>
-        </Box>
-      </Container>
+      <PlatformProgress/>
 
       {/* Call to Action */}
       {!props.isLoggedIn && (
