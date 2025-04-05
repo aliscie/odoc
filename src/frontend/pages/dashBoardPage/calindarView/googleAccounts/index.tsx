@@ -1,98 +1,126 @@
-import React, { useState } from 'react';
-import { Box, Button, Typography, CircularProgress } from '@mui/material';
-import { useGoogleAuth } from './hooks/useGoogleAuth';
-import { AccountsMenu } from './components/AccountsMenu';
-import { useBackendContext } from '../../../../contexts/BackendContext';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from './types';
+import React, { useEffect } from 'react';
 
-const GoogleCalendarIntegration: React.FC = () => {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const {
-    isSignedIn,
-    isLoading,
-    isGapiLoaded,
-    accounts,
-    handleAuthClick,
-    setAccounts
-  } = useGoogleAuth();
+const GoogleCalendarButton = () => {
+  const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+  const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events';
+  const [isConnected, setIsConnected] = React.useState(false);
 
-  const profile = useSelector((state: RootState) => state.filesState.profile);
-  const { backendActor } = useBackendContext();
-  const dispatch = useDispatch();
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
 
-  const handleAddAccount = () => {
-    window.gapi.auth2.getAuthInstance().grantOfflineAccess({
-      prompt: 'select_account'
-    }).then(() => {
-      const authInstance = window.gapi.auth2.getAuthInstance();
-      const currentUser = authInstance.currentUser.get();
-      const email = currentUser.getBasicProfile().getEmail();
-      
-      setAccounts(prev => [...prev, {email, isCurrent: true}]);
-      setAnchorEl(null);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const handleAuthClick = () => {
+    if (!window.google) return;
+    
+    const tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: (tokenResponse) => {
+        if (tokenResponse && tokenResponse.access_token) {
+          setIsConnected(true);
+          listUpcomingEvents(tokenResponse.access_token);
+        }
+      },
+      error_callback: (error) => {
+        console.log('Error signing in', error);
+      }
+    });
+    
+    tokenClient.requestAccessToken();
+  };
+
+  const listUpcomingEvents = (accessToken: string) => {
+    fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Accept': 'application/json'
+      },
+      params: {
+        timeMin: new Date().toISOString(),
+        showDeleted: false,
+        singleEvents: true,
+        maxResults: 10,
+        orderBy: 'startTime'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Calendar events:', data.items);
     });
   };
 
-  const handleDisconnectAccount = (email: string) => {
-    const authInstance = window.gapi.auth2.getAuthInstance();
-    authInstance.disconnect().then(() => {
-      setAccounts(prev => prev.filter(acc => acc.email !== email));
+  const createCalendarEvent = () => {
+    if (!window.gapi) return;
+  
+    const event = {
+      'summary': 'Weekend Hiking Trip',
+      'location': 'Mount Tamalpais State Park, Mill Valley, CA 94941',
+      'description': 'Join us for a 5-mile hike through the redwoods! Bring water and snacks.\n\nTrail details: https://example.com/hikes/mt-tam',
+      'start': {
+        'dateTime': '2023-11-18T09:00:00-08:00',
+        'timeZone': 'America/Los_Angeles'
+      },
+      'end': {
+        'dateTime': '2023-11-18T14:00:00-08:00',
+        'timeZone': 'America/Los_Angeles'
+      },
+      'recurrence': [
+        'RRULE:FREQ=WEEKLY;COUNT=5' // Repeat weekly for 5 weeks
+      ],
+      'attendees': [
+        {'email': 'hiking-buddy1@example.com'},
+        {'email': 'hiking-buddy2@example.com'}
+      ],
+      'reminders': {
+        'useDefault': false,
+        'overrides': [
+          {'method': 'email', 'minutes': 24 * 60}, // 1 day before
+          {'method': 'popup', 'minutes': 60} // 1 hour before
+        ]
+      },
+      'colorId': '5', // Green color for outdoor activities
+      'guestsCanInviteOthers': false,
+      'guestsCanModify': false,
+      'guestsCanSeeOtherGuests': true
+    };
+  
+    window.gapi.client.calendar.events.insert({
+      'calendarId': 'primary',
+      'resource': event,
+      'sendUpdates': 'all' // Send notifications to all attendees
+    }).then((response) => {
+      console.log('Event created:', response.result);
+      console.log('Event link:', response.result.htmlLink);
+      console.log('Google Meet link:', response.result.hangoutLink);
+      listUpcomingEvents();
+    }).catch(err => {
+      console.log('Error creating event', err);
     });
   };
-
-  if (!profile) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <Typography>Please log in to use Google Calendar integration</Typography>
-      </Box>
-    );
-  }
 
   return (
-    <Box sx={{ p: 3 }}>
-      {!isSignedIn ? (
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={handleAuthClick}
-          sx={{ mb: 3 }}
-          disabled={isLoading}
-        >
-          {isLoading ? <CircularProgress size={24} /> : 'Connect Google Calendar'}
-        </Button>
-      ) : (
-        <>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h5">Google Calendar Integration</Typography>
-            <IconButton 
-              onClick={(e) => setAnchorEl(e.currentTarget)}
-              sx={{ ml: 2 }}
-            >
-              <Avatar sx={{ width: 32, height: 32 }} />
-            </IconButton>
-          </Box>
-
-          <AccountsMenu
-            anchorEl={anchorEl}
-            accounts={accounts}
-            onClose={() => setAnchorEl(null)}
-            onAddAccount={handleAddAccount}
-            onDisconnectAccount={handleDisconnectAccount}
-          />
-
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            onClick={handleAuthClick}
-            sx={{ mb: 3 }}
-          >
-            Sign Out of Google Calendar
-          </Button>
-        </>
-      )}
-    </Box>
+    <div>
+      <button onClick={handleAuthClick}>
+        {isConnected ? 'Calendar Connected' : 'Connect Google Calendar'}
+      </button>
+      <button 
+        onClick={createCalendarEvent} 
+        style={{ marginLeft: '10px' }}
+        disabled={!isConnected}
+      >
+        Create Hiking Event
+      </button>
+    </div>
   );
 };
 
-export default GoogleCalendarIntegration;
+export default GoogleCalendarButton;

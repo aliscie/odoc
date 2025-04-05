@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Gift } from "lucide-react";
+// Remove the Gift import
 import {
   Box,
   Button,
@@ -14,6 +14,8 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useBackendContext } from "../contexts/BackendContext";
+// Add import for the ODOCTOKEN image
+import ODOCTokenImage from "@/assets/ODOCTOKEN.png";
 
 // Styled Components
 const GradientPaper = styled(Paper)(({ theme }) => ({
@@ -171,6 +173,10 @@ const PromoNotification: React.FC = () => {
   const [startCounter, setStartCounter] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(100);
   const [isHovering, setIsHovering] = useState<boolean>(false);
+  const [snsStatus, setSnsStatus] = useState<{
+    number_users: number;
+    active_users: number;
+  } | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
   const remainingTimeRef = useRef<number>(15000);
@@ -182,19 +188,27 @@ const PromoNotification: React.FC = () => {
   const { backendActor } = useBackendContext();
 
   useEffect(() => {
-    const fetchUserCount = async () => {
+    const fetchData = async () => {
       if (backendActor) {
         try {
+          // Fetch user count
           const users = await backendActor?.get_users();
           setUserCount(Number(users));
+          
+          // Fetch SNS status
+          const res = await backendActor.get_sns_status();
+          if ("Ok" in res) {
+            setSnsStatus(res.Ok);
+          }
+          
           setStartCounter(true);
         } catch (error) {
-          console.error("Error fetching users:", error);
+          console.error("Error fetching data:", error);
         }
       }
     };
 
-    fetchUserCount();
+    fetchData();
   }, [backendActor]);
 
   useEffect(() => {
@@ -254,7 +268,9 @@ const PromoNotification: React.FC = () => {
     setIsVisible(false);
   };
 
-  if (!isVisible || isLoggedIn) return null;
+  // Temporarily force visibility for debugging
+  // if (!isVisible || isLoggedIn) return null;
+  if (false) return null; // Force show for debugging
 
   return (
     <ErrorBoundary>
@@ -283,25 +299,20 @@ const PromoNotification: React.FC = () => {
             sx={{ position: 'relative' }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconWrapper>
-                <Gift color="#fff" size={24} />
-              </IconWrapper>
+              <img src={ODOCTokenImage} alt="ODOC Token" width={88} />
               <Box>
                 <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 0.5 }}>
-                  🎉 Limited Time Offer!{" "}
+                    Earn tokens for your activity at odoc
                   <Typography component="span" sx={{ fontWeight: "bold", display: "inline-block" }}>
-                    {startCounter ? <CountUp endValue={userCount} /> : "0"} seats already taken
+                    {startCounter ? 
+                      <CountUp endValue={snsStatus?.active_users || 0} /> : 
+                      "0"} current active users
                   </Typography>
                 </Typography>
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  Only 100 seats available. Book your seat now for{" "}
-                  <Box component="span" sx={{ fontWeight: "bold" }}>
-                    FREE lifetime access
-                  </Box>{" "}
-                  to oDoc Premium
+                 
                   {!isOfferPage && (
                     <>
-                      {" - "}
                       <Button
                         sx={{
                           color: "white",
@@ -316,7 +327,7 @@ const PromoNotification: React.FC = () => {
                         }}
                         onClick={handleClick}
                       >
-                        click here
+                        Claim your reward
                       </Button>
                     </>
                   )}

@@ -51,7 +51,7 @@ import { convertToBlobLink } from "../../../DataProcessing/imageToVec";
 import { Z_INDEX_TOP_NAVBAR } from "../../../constants/zIndex";
 import { RootState } from "../../../redux/reducers";
 import getStyles from "./styles";
-
+import EnhancedUserAvatar from './EnhancedUserAvatar';
 export default function TopNavBar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -166,7 +166,7 @@ export default function TopNavBar() {
           <BottomNavigationAction
             label="Profile"
             icon={
-              <UserAvatar
+              <EnhancedUserAvatar
                 actions_rate={profile_history?.actions_rate ?? 0}
                 photo={imageLink}
                 style={{ width: 24, height: 24 }}
@@ -188,7 +188,7 @@ export default function TopNavBar() {
         <ChatsComponent key={chats.length} chats={chats} />
         <WorkspaceManager />
         <BasicMenu options={menuOptions}>
-          <UserAvatar
+          <EnhancedUserAvatar
             actions_rate={profile_history?.actions_rate ?? 0}
             photo={imageLink}
             style={{ width: 24, height: 24 }}

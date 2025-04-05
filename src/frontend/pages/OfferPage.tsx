@@ -70,14 +70,6 @@ const StyledWrapper = styled("div")({
   padding: "1rem",
   position: "relative",
   overflow: "hidden",
-  // background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #000000 100%)',
-  // '&::before': {
-  //   content: '""',
-  //   position: 'absolute',
-  //   inset: 0,
-  //   background: 'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%)',
-  //   animation: `${glowPulse} 4s ease-in-out infinite`,
-  // },
 });
 
 const BackgroundEffect = styled("div")({
@@ -227,41 +219,6 @@ const GradientHeading = styled("h1")({
   animation: `${shine} 3s linear infinite`,
 });
 
-// Feature data
-const features = [
-  {
-    icon: <Wallet />,
-    title: "Zero Transaction Fees",
-    description: "Never pay transaction fees on any of your operations",
-  },
-  {
-    icon: <Crown />,
-    title: "Premium Features",
-    description: "Access all premium features completely free forever",
-  },
-  {
-    icon: <Infinity />,
-    title: "Lifetime Access",
-    description: "Your premium benefits never expire",
-  },
-  {
-    icon: <Shield />,
-    title: "Early Adopter Status",
-    description: "Special benefits for our first 100 users",
-  },
-];
-
-const FloatingText = styled("div")({
-  animation: `${float} 3s ease-in-out infinite`,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "0.5rem",
-  "& svg": {
-    animation: `${glowPulse} 2s ease-in-out infinite`,
-  },
-});
-
 // Button animations
 const buttonShine = keyframes`
   0% { background-position: 200% center; }
@@ -274,7 +231,6 @@ const sparkleAnimation = keyframes`
   100% { transform: scale(0) rotate(360deg); opacity: 0; }
 `;
 
-// Golden Button Component
 const GoldenButton = styled(Button)(({ theme }) => ({
   position: "relative",
   background: "linear-gradient(90deg, #FFD700, #FFA500, #FFD700)",
@@ -307,7 +263,6 @@ const GoldenButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-// Sparkle Element
 const ButtonSparkle = styled("div")({
   position: "absolute",
   width: "4px",
@@ -317,6 +272,41 @@ const ButtonSparkle = styled("div")({
   pointerEvents: "none",
   animation: `${sparkleAnimation} 1.5s infinite`,
 });
+
+const FloatingText = styled("div")({
+  animation: `${float} 3s ease-in-out infinite`,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "0.5rem",
+  "& svg": {
+    animation: `${glowPulse} 2s ease-in-out infinite`,
+  },
+});
+
+const features = [
+  {
+    icon: <Wallet />,
+    title: "Token Rewards",
+    description: "Earn ODOC tokens based on your trust score",
+  },
+  {
+    icon: <Crown />,
+    title: "Premium Features",
+    description: "Access all premium features completely free forever",
+  },
+  {
+    icon: <Shield />,
+    title: "Trust Score Benefits",
+    description: "Higher trust score = higher token rewards",
+  },
+  {
+    icon: <Rocket />,
+    title: "Early Adopter Bonus",
+    description: "Special rewards for our first 100 users",
+  },
+];
+
 const LandingPage = ({ login }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -335,10 +325,10 @@ const LandingPage = ({ login }) => {
             <Box sx={{ textAlign: "center", mb: 6 }}>
               <FloatingBadge>
                 <Timer size={20} />
-                <span>Limited Time Offer</span>
+                <span>Token Reward Program</span>
               </FloatingBadge>
 
-              <GradientHeading>Join ODoc's Exclusive Launch</GradientHeading>
+              <GradientHeading>Join ODoc's Token Reward Program</GradientHeading>
 
               <Box
                 sx={{
@@ -348,7 +338,7 @@ const LandingPage = ({ login }) => {
                   margin: "0 auto",
                 }}
               >
-                Be among the first 100 users and unlock lifetime premium access
+                First 100 active users receive ODOC tokens based on trust score
               </Box>
             </Box>
 
@@ -381,62 +371,122 @@ const LandingPage = ({ login }) => {
             </Box>
 
             <Box sx={{ textAlign: "center" }}>
-              <GlassCard sx={{ mb: 3, display: "block" }}>
+              <GlassCard sx={{ 
+                mb: 3, 
+                display: "block",
+                background: "linear-gradient(135deg, rgba(76, 29, 149, 0.2), rgba(49, 46, 129, 0.3))",
+                border: "1px solid rgba(139, 92, 246, 0.3)",
+                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)"
+              }}>
                 <Box
                   sx={{
                     color: "#F3E8FF",
-                    fontSize: "1.125rem",
+                    fontSize: "1.25rem",
                     fontWeight: 600,
                     mb: 2,
+                    textAlign: "center",
+                    textTransform: "uppercase",
+                    letterSpacing: "1px",
+                    background: "linear-gradient(to right, #E9D5FF, #A5B4FC)",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
                   }}
                 >
-                  To activate premium features:
+                  Token Reward Tiers
                 </Box>
                 <Box
-                  component="ol"
                   sx={{
-                    color: "#E9D5FF",
-                    listStylePosition: "inside",
-                    "& > li": { mb: 1 },
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                    gap: 2,
+                    pl: 0,
                   }}
                 >
-                  <li>Deposit 100 CKUSDC</li>
-                  <li>Make at least one transaction</li>
-                  <li>
-                    Your lifetime premium access will be automatically activated
-                  </li>
+                  {[
+                    { score: "3+", reward: "0.05% ODOC tokens" },
+                    { score: "3.5+", reward: "0.1% ODOC tokens" },
+                    { score: "4+", reward: "0.15% ODOC tokens" },
+                    { score: "4.5+", reward: "0.2% ODOC tokens" },
+                  ].map((tier, index) => (
+                    <Box
+                      key={index}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        p: 1.5,
+                        borderRadius: "0.5rem",
+                        background: "rgba(109, 40, 217, 0.15)",
+                        border: "1px solid rgba(139, 92, 246, 0.2)",
+                        transition: "all 0.3s ease",
+                        "&:hover": {
+                          transform: "translateY(-2px)",
+                          boxShadow: "0 4px 12px rgba(139, 92, 246, 0.3)",
+                          background: "rgba(109, 40, 217, 0.25)",
+                        }
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          minWidth: "3rem",
+                          height: "3rem",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderRadius: "50%",
+                          background: "linear-gradient(135deg, rgba(109, 40, 217, 0.4), rgba(79, 70, 229, 0.4))",
+                          color: "#E9D5FF",
+                          fontWeight: "bold",
+                          fontSize: "1.1rem",
+                          mr: 1.5,
+                          border: "1px solid rgba(139, 92, 246, 0.3)"
+                        }}
+                      >
+                        {tier.score}
+                      </Box>
+                      <Box
+                        sx={{
+                          color: "#E9D5FF",
+                          fontSize: "0.95rem",
+                          fontWeight: 500
+                        }}
+                      >
+                        {tier.reward}
+                      </Box>
+                    </Box>
+                  ))}
                 </Box>
               </GlassCard>
-
-              <GoldenButton
-                variant="contained"
-                size="large"
-                onClick={async () => await login()}
-                sx={{
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  bgcolor: "white",
-                  color: "#1e1e1e",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  "&:hover": {
-                    bgcolor: "#f8fafc",
-                  },
-                }}
-              >
-                <Rocket size={20} />
-                Join ODOC Today
-              </GoldenButton>
-
-              <FloatingText
-                sx={{ mt: 3, color: "#A78BFA", fontSize: "0.875rem" }}
-              >
-                <Sparkles size={16} />
-                <span>Limited to first 100 users only</span>
-              </FloatingText>
             </Box>
+
+            <GoldenButton
+              variant="contained"
+              size="large"
+              onClick={async () => await login()}
+              sx={{
+                px: 4,
+                py: 2,
+                fontSize: "1.1rem",
+                bgcolor: "white",
+                color: "#1e1e1e",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                "&:hover": {
+                  bgcolor: "#f8fafc",
+                },
+              }}
+            >
+              <Rocket size={20} />
+              Join ODOC Today
+            </GoldenButton>
+
+            <FloatingText
+              sx={{ mt: 3, color: "#A78BFA", fontSize: "0.875rem" }}
+            >
+              <Sparkles size={16} />
+              <span>Limited to first 100 users only</span>
+            </FloatingText>
           </CardContent>
         </MainCard>
       </StyledWrapper>
