@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { useGoogleCalendar } from '../../../../hooks/useGoogleCalendar';
+import { useGoogleCalendar } from './useGoogleCalendar';
 // Add to imports
 
 import { googleToODOC } from './eventConverter';
@@ -33,21 +33,27 @@ const GoogleCalendarButton = () => {
   useEffect(() => {
     const initialize = async () => {
       if (isConnected) {
-        let res = await allowViewBusy();
+        // let res = await allowViewBusy();
+        // console.log({allowViewBusy:res})
         
         let events = await getEvents();
         const futureEvents = filterFutureEvents(events);
+        console.log({events,futureEvents})
         dispatch({
           type: "SET_GOOGLE_CALENDAR",
           events: futureEvents.map(event=>googleToODOC(event))
         });
+        
+// const busy = await getBusyEventsForUser("weplutus@gmila.com");
+//         console.log({busy })
+//         dispatch({
+//           type: "SET_GOOGLE_CALENDAR",
+//           events: busy
+//         });
+
+        
       } else {
-        const busy = await getBusyEventsForUser("weplutus@gmila.com");
-        console.log({busy })
-        dispatch({
-          type: "SET_GOOGLE_CALENDAR",
-          events: busy
-        });
+        
       }
     };
     initialize();

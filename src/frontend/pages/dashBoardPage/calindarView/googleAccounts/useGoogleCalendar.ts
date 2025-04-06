@@ -1,10 +1,11 @@
+import { a } from 'framer-motion/dist/types.d-6pKw1mTI';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-
+let accessToken = ""
 export const useGoogleCalendar = () => {
   const { profile } = useSelector((state: any) => state.filesState);
   const [isConnected, setIsConnected] = useState(false);
-  const [accessToken, setAccessToken] = useState('');
+
   const [isApiReady, setIsApiReady] = useState(false);
 
   const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -13,7 +14,8 @@ export const useGoogleCalendar = () => {
   useEffect(() => {
     const storedToken = localStorage.getItem('googleCalendarToken');
     if (storedToken) {
-      setAccessToken(storedToken);
+      accessToken = storedToken
+
       setIsConnected(true);
     }
 
@@ -50,7 +52,7 @@ export const useGoogleCalendar = () => {
       callback: async (tokenResponse) => {
         if (tokenResponse?.access_token) {
           localStorage.setItem('googleCalendarToken', tokenResponse.access_token);
-          setAccessToken(tokenResponse.access_token);
+          accessToken = tokenResponse.access_token;
           setIsConnected(true);
           await initializeGoogleApi();
         }
@@ -66,7 +68,7 @@ export const useGoogleCalendar = () => {
 
   const disConnectCalendar = () => {
     localStorage.removeItem('googleCalendarToken');
-    setAccessToken('');
+    accessToken = ''
     setIsConnected(false);
     setIsApiReady(false);
   };
@@ -91,18 +93,16 @@ export const useGoogleCalendar = () => {
       const data = await response.json();
       return data.items || [];
     } catch (err) {
-      console.error('Error fetching events', err);
+      console.log('Error fetching events', err);
       disConnectCalendar();
       return [];
     }
   };
 
   const getBusyEventsForUser = async (email: string) => {
-    if (!accessToken) return [];
-    
     const now = new Date().toISOString();
     const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-    
+    console.log({accessToken});
     try {
       const response = await fetch('https://www.googleapis.com/calendar/v3/freeBusy', {
         method: 'POST',
@@ -117,11 +117,17 @@ export const useGoogleCalendar = () => {
           items: [{ id: email }]
         })
       });
-      
+
       const data = await response.json();
+      console.log({data})
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'Failed to fetch busy events');
+      }
+
+
       return data.calendars?.[email]?.busy || [];
     } catch (error) {
-      console.error("Error fetching busy events for user:", error);
+      console.log("Error fetching busy events for user:", error);
       return [];
     }
   };
@@ -130,23 +136,30 @@ export const useGoogleCalendar = () => {
     if (!accessToken) return false;
   
     try {
-      // Check if freeBusyReader rule already exists
+      // First check if freeBusyReader rule already exists
       const aclListResponse = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/acl', {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Accept': 'application/json'
         }
       });
+
+      
+      if (!aclListResponse.ok) {
+        throw new Error('Failed to fetch ACL list');
+      }
+
       const aclList = await aclListResponse.json();
-  
+
       const hasFreeBusyReader = aclList.items?.some(
         rule => rule.role === "freeBusyReader" && rule.scope?.type === "default"
       );
-  
+
+      
       if (hasFreeBusyReader) {
         return true;
       }
-  
+
       // Insert or update the ACL
       const aclResponse = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/acl', {
         method: 'POST',
@@ -159,17 +172,20 @@ export const useGoogleCalendar = () => {
           scope: { type: "default" }
         })
       });
-  
+
+
       if (!aclResponse.ok) {
         throw new Error('Failed to update ACL');
       }
-  
+
+      console.log("Calendar ACL updated successfully");
       return true;
     } catch (error) {
       console.log("Error setting free/busy view:", error);
       return false;
     }
   };
+
 
   const createEvents = async (event: any) => {
     if (!accessToken) return null;
@@ -186,7 +202,7 @@ export const useGoogleCalendar = () => {
       const data = await response.json();
       return data;
     } catch (err) {
-      console.error('Error creating event', err);
+      console.log('Error creating event', err);
       disConnectCalendar();
       return null;
     }
