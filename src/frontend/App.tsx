@@ -69,14 +69,14 @@ const App: React.FC = () => {
       if (!isLoggedIn || !backendActor) {
         return;
       }
-      console.log("before")
+
       
       try {
         
         dispatch({type:"IS_FETCHING", isFetching: true });
   
         const res = await backendActor.get_initial_data();
-        console.log({res})
+        // console.log({res})
   
         const workspaces = await backendActor.get_work_spaces();
         if ("Err" in res && res.Err == "Anonymous user.") {
@@ -161,10 +161,10 @@ const App: React.FC = () => {
         try {
           // 1. Get user balance
           const userBalance = await getckUsdcBalance(ckUSDCActor, profile.id);
-          console.log("User balance:", userBalance);
+          // console.log("User balance:", userBalance);
           // 2. Check if user has balance
           if (Number(userBalance) <= 0) {
-            console.log("User has no balance to deposit");
+            // console.log("User has no balance to deposit");
             return;
           }
           if (Number(userBalance) / 1_000_000 < 1) {

@@ -13,9 +13,9 @@ fn get_my_calendar() -> Calendar {
 
 #[query]
 fn get_calendar(calendar_id: String) -> Option<Calendar> {
-    if caller() == Principal::anonymous() {
-        return None;
-    }
+    // if caller() == Principal::anonymous() {
+    //     return None;
+    // }
     match Calendar::get_calendar(&calendar_id) {
         Ok(calendar) => Some(calendar),
         Err(_) => None

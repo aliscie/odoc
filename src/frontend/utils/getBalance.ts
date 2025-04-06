@@ -8,10 +8,10 @@ const getckUsdcBalance = async (ckUSDCActor, userPrincipal) => {
       subaccount: [],
     });
 
-    console.log("User token balance:", {
-      rawBalance: balanceResult.toString(),
-      balance: Number(balanceResult) / 1000000,
-    });
+    // console.log("User token balance:", {
+    //   rawBalance: balanceResult.toString(),
+    //   balance: Number(balanceResult) / 1000000,
+    // });
 
     return balanceResult;
   } catch (error) {

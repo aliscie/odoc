@@ -1,90 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useGoogleCalendar } from '../../../../hooks/useGoogleCalendar';
 
 const GoogleCalendarButton = () => {
-  const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-  const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events';
-  const [isConnected, setIsConnected] = useState(false);
-  const [accessToken, setAccessToken] = useState('');
+  const { profile } = useSelector((state: any) => state.filesState);
+  const {
+    createEvents,
+    connectCalendar,
+    disConnectCalendar,
+    isConnected,
+    getEvents,
+    getBusyEventsForUser,
+    allowViewBusy
+  } = useGoogleCalendar();
 
+  // Example usage in useEffect
   useEffect(() => {
-    const storedToken = localStorage.getItem('googleCalendarToken');
-    if (storedToken) {
-      setAccessToken(storedToken);
-      setIsConnected(true);
-    }
+    const initialize = async () => {
+      const busySlots = await getBusyEventsForUser('weplutus@gmail.com');
+      console.log({busySlots})
 
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
 
-    return () => {
-      document.body.removeChild(script);
+      
+      if (isConnected) {
+        let res  = await allowViewBusy();
+        let events = await getEvents();
+      console.log({res,events})
+      }
     };
-  }, []);
+    initialize();
+  }, [isConnected]);
 
-  useEffect(() => {
-    if (isConnected && accessToken) {
-      listUpcomingEvents(accessToken);
-    }
-  }, [isConnected, accessToken]);
-
-  const handleAuthClick = () => {
-    if (!window.google) return;
-    
-    const tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CLIENT_ID,
-      scope: SCOPES,
-      callback: (tokenResponse) => {
-        if (tokenResponse?.access_token) {
-          localStorage.setItem('googleCalendarToken', tokenResponse.access_token);
-          setAccessToken(tokenResponse.access_token);
-          setIsConnected(true);
-        }
-      },
-      error_callback: (error) => {
-        console.error('Error signing in', error);
-        handleDisconnect();
-      }
-    });
-    
-    tokenClient.requestAccessToken();
-  };
-
-  const handleDisconnect = () => {
-    localStorage.removeItem('googleCalendarToken');
-    setAccessToken('');
-    setIsConnected(false);
-  };
-
-  const listUpcomingEvents = (token: string) => {
-    fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json'
-      },
-      params: {
-        timeMin: new Date().toISOString(),
-        showDeleted: false,
-        singleEvents: true,
-        maxResults: 10,
-        orderBy: 'startTime'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Calendar events:', data.items);
-    })
-    .catch(err => {
-      console.error('Error fetching events', err);
-      handleDisconnect();
-    });
-  };
-
-  const createCalendarEvent = () => {
-    if (!accessToken) return;
-
+  const createCalendarEvent = async () => {
     const event = {
       'summary': 'Weekend Hiking Trip',
       'location': 'Mount Tamalpais State Park, Mill Valley, CA 94941',
@@ -116,29 +63,17 @@ const GoogleCalendarButton = () => {
       'guestsCanModify': false,
       'guestsCanSeeOtherGuests': true
     };
-  
-    fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(event)
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Event created:', data);
-      listUpcomingEvents(accessToken);
-    })
-    .catch(err => {
-      console.error('Error creating event', err);
-      handleDisconnect();
-    });
+
+    const createdEvent = await createEvents(event);
+    if (createdEvent) {
+      console.log('Event created:', createdEvent);
+      
+    }
   };
 
   return (
     <div>
-      <button onClick={isConnected ? handleDisconnect : handleAuthClick}>
+      <button onClick={isConnected ? disConnectCalendar : connectCalendar}>
         {isConnected ? 'Disconnect Calendar' : 'Connect Google Calendar'}
       </button>
       <button 

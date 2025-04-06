@@ -70,7 +70,7 @@ const Scheduler = React.memo(() => {
         });
       } else if (profile) {
         let res = await backendActor.get_my_calendar();
-        console.log({ res });
+        // console.log({ res });
         res.events = res.events.map((event) => EventTimezone(event));
         res.availabilities = res.availabilities.map((event) =>
           AvailabilityTimezone(event),
@@ -123,15 +123,15 @@ const Scheduler = React.memo(() => {
   //     </Box>
   //   );
   // }
-  if (!profile) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <LoaderButton onClick={handleFetchCalendar}>
-          Loading... make sure login.
-        </LoaderButton>
-      </Box>
-    );
-  }
+  // if (!profile) {
+  //   return (
+  //     <Box sx={{ p: 3 }}>
+  //       <LoaderButton onClick={handleFetchCalendar}>
+  //         Loading... make sure login.
+  //       </LoaderButton>
+  //     </Box>
+  //   );
+  // }
   return (
     <Box
       sx={{
