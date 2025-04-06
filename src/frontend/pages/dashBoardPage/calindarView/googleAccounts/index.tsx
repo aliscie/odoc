@@ -1,12 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const GoogleCalendarButton = () => {
   const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-  const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
   const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events';
-  const [isConnected, setIsConnected] = React.useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [accessToken, setAccessToken] = useState('');
 
   useEffect(() => {
+    const storedToken = localStorage.getItem('googleCalendarToken');
+    if (storedToken) {
+      setAccessToken(storedToken);
+      setIsConnected(true);
+    }
+
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
     script.async = true;
@@ -18,6 +24,12 @@ const GoogleCalendarButton = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (isConnected && accessToken) {
+      listUpcomingEvents(accessToken);
+    }
+  }, [isConnected, accessToken]);
+
   const handleAuthClick = () => {
     if (!window.google) return;
     
@@ -25,23 +37,31 @@ const GoogleCalendarButton = () => {
       client_id: CLIENT_ID,
       scope: SCOPES,
       callback: (tokenResponse) => {
-        if (tokenResponse && tokenResponse.access_token) {
+        if (tokenResponse?.access_token) {
+          localStorage.setItem('googleCalendarToken', tokenResponse.access_token);
+          setAccessToken(tokenResponse.access_token);
           setIsConnected(true);
-          listUpcomingEvents(tokenResponse.access_token);
         }
       },
       error_callback: (error) => {
-        console.log('Error signing in', error);
+        console.error('Error signing in', error);
+        handleDisconnect();
       }
     });
     
     tokenClient.requestAccessToken();
   };
 
-  const listUpcomingEvents = (accessToken: string) => {
+  const handleDisconnect = () => {
+    localStorage.removeItem('googleCalendarToken');
+    setAccessToken('');
+    setIsConnected(false);
+  };
+
+  const listUpcomingEvents = (token: string) => {
     fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
+        'Authorization': `Bearer ${token}`,
         'Accept': 'application/json'
       },
       params: {
@@ -55,62 +75,71 @@ const GoogleCalendarButton = () => {
     .then(response => response.json())
     .then(data => {
       console.log('Calendar events:', data.items);
+    })
+    .catch(err => {
+      console.error('Error fetching events', err);
+      handleDisconnect();
     });
   };
 
   const createCalendarEvent = () => {
-    if (!window.gapi) return;
-  
+    if (!accessToken) return;
+
     const event = {
       'summary': 'Weekend Hiking Trip',
       'location': 'Mount Tamalpais State Park, Mill Valley, CA 94941',
       'description': 'Join us for a 5-mile hike through the redwoods! Bring water and snacks.\n\nTrail details: https://example.com/hikes/mt-tam',
       'start': {
-        'dateTime': '2023-11-18T09:00:00-08:00',
-        'timeZone': 'America/Los_Angeles'
+        'dateTime': '2025-04-06T13:45:00+03:00',
+        'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone
       },
       'end': {
-        'dateTime': '2023-11-18T14:00:00-08:00',
-        'timeZone': 'America/Los_Angeles'
+        'dateTime': '2025-04-06T14:15:00+03:00',
+        'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone
       },
       'recurrence': [
-        'RRULE:FREQ=WEEKLY;COUNT=5' // Repeat weekly for 5 weeks
+        'RRULE:FREQ=WEEKLY;COUNT=5'
       ],
       'attendees': [
-        {'email': 'hiking-buddy1@example.com'},
-        {'email': 'hiking-buddy2@example.com'}
+        {'email': 'weplutus.1@gmail.com'},
+        {'email': 'weplutus@gmail.com'}
       ],
       'reminders': {
         'useDefault': false,
         'overrides': [
-          {'method': 'email', 'minutes': 24 * 60}, // 1 day before
-          {'method': 'popup', 'minutes': 60} // 1 hour before
+          {'method': 'email', 'minutes': 24 * 60},
+          {'method': 'popup', 'minutes': 60}
         ]
       },
-      'colorId': '5', // Green color for outdoor activities
+      'colorId': '5',
       'guestsCanInviteOthers': false,
       'guestsCanModify': false,
       'guestsCanSeeOtherGuests': true
     };
   
-    window.gapi.client.calendar.events.insert({
-      'calendarId': 'primary',
-      'resource': event,
-      'sendUpdates': 'all' // Send notifications to all attendees
-    }).then((response) => {
-      console.log('Event created:', response.result);
-      console.log('Event link:', response.result.htmlLink);
-      console.log('Google Meet link:', response.result.hangoutLink);
-      listUpcomingEvents();
-    }).catch(err => {
-      console.log('Error creating event', err);
+    fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(event)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Event created:', data);
+      listUpcomingEvents(accessToken);
+    })
+    .catch(err => {
+      console.error('Error creating event', err);
+      handleDisconnect();
     });
   };
 
   return (
     <div>
-      <button onClick={handleAuthClick}>
-        {isConnected ? 'Calendar Connected' : 'Connect Google Calendar'}
+      <button onClick={isConnected ? handleDisconnect : handleAuthClick}>
+        {isConnected ? 'Disconnect Calendar' : 'Connect Google Calendar'}
       </button>
       <button 
         onClick={createCalendarEvent} 
