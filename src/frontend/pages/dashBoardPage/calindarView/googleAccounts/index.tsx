@@ -1,8 +1,14 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+
 import { useGoogleCalendar } from '../../../../hooks/useGoogleCalendar';
+// Add to imports
+
+import { googleToODOC } from './eventConverter';
+import { useDispatch, useSelector } from "react-redux";
 
 const GoogleCalendarButton = () => {
+  // Add this line with other hooks
+  const dispatch = useDispatch();
   const { profile } = useSelector((state: any) => state.filesState);
   const {
     createEvents,
@@ -14,22 +20,38 @@ const GoogleCalendarButton = () => {
     allowViewBusy
   } = useGoogleCalendar();
 
+  const filterFutureEvents = (events: any[]) => {
+    const now = new Date();
+    return events.filter(event => {
+      
+      const eventStart = new Date(event.start.dateTime || event.start.date);
+      return eventStart >= now;
+    });
+  };
+
   // Example usage in useEffect
   useEffect(() => {
     const initialize = async () => {
-      const busySlots = await getBusyEventsForUser('weplutus@gmail.com');
-      console.log({busySlots})
-
-
-      
       if (isConnected) {
-        let res  = await allowViewBusy();
+        let res = await allowViewBusy();
+        
         let events = await getEvents();
-      console.log({res,events})
+        const futureEvents = filterFutureEvents(events);
+        dispatch({
+          type: "SET_GOOGLE_CALENDAR",
+          events: futureEvents.map(event=>googleToODOC(event))
+        });
+      } else {
+        const busy = await getBusyEventsForUser("weplutus@gmila.com");
+        console.log({busy })
+        dispatch({
+          type: "SET_GOOGLE_CALENDAR",
+          events: busy
+        });
       }
     };
     initialize();
-  }, [isConnected]);
+  }, [isConnected]); // Add dispatch to dependencies
 
   const createCalendarEvent = async () => {
     const event = {

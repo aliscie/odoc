@@ -15,7 +15,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/reducers";
 
 const CalendarView = () => {
-  const { calendar } = useSelector((state: RootState) => state.calendarState);
+  const { calendar, google_events } = useSelector((state: RootState) => state.calendarState);
+
   const availabilities = calendar?.availabilities || [];
 
   const { profile } = useSelector((state: any) => state.filesState);
@@ -46,7 +47,11 @@ const CalendarView = () => {
   });
 
   const events = useMemo(() => {
-    if (!calendar?.events) return [];
+    const allEvents = [
+      ...(calendar?.events || []),
+      ...(google_events || [])
+    ];
+    
     const colors = [
       "#FF2D55",
       "#5856D6",
@@ -56,13 +61,13 @@ const CalendarView = () => {
       "#FF9500",
     ];
 
-    return calendar.events.map((event, index) => ({
+    return allEvents.map((event, index) => ({
       ...event,
       start: microsecondsToDate(event.start_time),
       end: microsecondsToDate(event.end_time),
-      color: colors[index % colors.length],
+      color: event.isGoogleEvent ? "#4285F4" : colors[index % colors.length], // Google blue for Google events
     }));
-  }, [calendar]);
+  }, [calendar, google_events]);
 
   const isWithinWeeklySchedule = (date, availability) => {
     if (availability.schedule_type.WeeklyRecurring) {

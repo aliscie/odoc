@@ -84,6 +84,7 @@ export default defineConfig({
     
     alias: {
        '@': path.resolve(__dirname, 'src/frontend'),
+       '$': path.resolve(__dirname, 'src'),
       // Here we tell Vite the "fake" modules that we want to define
       ...aliases,
     },

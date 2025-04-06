@@ -17,7 +17,8 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/frontend/*"]
+      "@/*": ["src/frontend/*"],
+      "$/*": ["src/*"]
     },
     "types": [
       "jest",

@@ -3,7 +3,7 @@ import {
   Calendar,
   CalendarActions,
   Event,
-} from "../../../declarations/backend/backend.did";
+} from "$/declarations/backend/backend.did";
 
 const calendar_actions: CalendarActions = {
   delete_availabilities: [],
@@ -23,6 +23,7 @@ const initialState: any = {
   calendar_actions,
   calendar,
   current_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  google_events: [], // Add this line to initialize google_events
 };
 
 export function calendarReducer(state = initialState, action: any): any {
@@ -240,6 +241,16 @@ export function calendarReducer(state = initialState, action: any): any {
             (availability: Availability) => availability.id !== action.id,
           ),
         },
+      };
+
+    case "SET_GOOGLE_CALENDAR":
+      return {
+        ...state,
+        google_events: action.events.map(event => ({
+          ...event,
+          id: `google-${event.id}`, // Add prefix to avoid ID conflicts
+          isGoogleEvent: true // Add flag to identify Google events
+        })),
       };
 
     default:

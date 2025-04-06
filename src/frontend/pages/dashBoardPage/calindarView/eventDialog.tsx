@@ -60,7 +60,7 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
         },
         attendees: selectedEvent.attendees,
       });
-      setShowRecurrence(selectedEvent.recurrence.length > 0);
+      setShowRecurrence(selectedEvent.recurrence?.length > 0);
     } else {
       setEventData({
         title: "",

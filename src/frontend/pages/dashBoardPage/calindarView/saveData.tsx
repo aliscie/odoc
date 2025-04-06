@@ -69,7 +69,7 @@ function SaveCalendarData() {
     if (!backendActor || !calendar) return;
 
     try {
-      logger({ calendar_actions });
+      // logger({ calendar_actions });
       let serializedCalendar: CalendarActions = {
         ...calendar_actions,
         events: calendar_actions.events.map((event) =>
