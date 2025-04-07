@@ -1,6 +1,8 @@
 import { a } from 'framer-motion/dist/types.d-6pKw1mTI';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { Event as ODOCEvent } from "$/declarations/backend/backend.did.d.js";
+import { odocToGoogle } from "./eventConverter";
 let accessToken = ""
 export const useGoogleCalendar = () => {
   const { profile } = useSelector((state: any) => state.filesState);
@@ -203,17 +205,18 @@ export const useGoogleCalendar = () => {
   };
 
 
-  const createEvents = async (event: any) => {
+  const createEvents = async (event: ODOCEvent) => {
     if (!accessToken) return null;
 
     try {
+      const googleEvent = odocToGoogle(event);
       const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(event)
+        body: JSON.stringify(googleEvent)
       });
       const data = await response.json();
       return data;
@@ -224,17 +227,19 @@ export const useGoogleCalendar = () => {
     }
   };
 
-  const updateEvent = async (eventId: string, event: any) => {
+  const updateEvent = async ( event: ODOCEvent) => {
+    const eventId = event.id;
     if (!accessToken) return null;
 
     try {
+      const googleEvent = odocToGoogle(event);
       const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(event)
+        body: JSON.stringify(googleEvent)
       });
       const data = await response.json();
       return data;
@@ -284,16 +289,39 @@ export const useGoogleCalendar = () => {
     };
   }, []);
 
+  const executeGoogleAction = async (action) => {
+    console.log({isConnected, action});
+      if (!isConnected) return false;
+      
+      try {
+        switch(action.type) {
+          case "ADD_EVENT":
+
+            return await createEvents(action.event);
+          
+          case "UPDATE_EVENT":
+            return await updateEvent(action.event);
+            
+          case "DELETE_EVENT":
+            return await deleteEvent(action.id);
+            
+          default:
+            console.error(`Unsupported action type: ${action.type}`);
+            return false;
+        }
+      } catch (error) {
+        console.error('Error executing Google action:', error);
+        return false;
+      }
+    }
   return {
+    executeGoogleAction,
     connectCalendar,
     disConnectCalendar,
     isConnected,
     getEvents,
     getBusyEventsForUser,
     allowViewBusy,
-    createEvents,
-    updateEvent,
-    deleteEvent,
     isApiReady,
     calendarId: localStorage.getItem('googleCalendarId')
   };

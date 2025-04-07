@@ -20,7 +20,11 @@ import format from "date-fns/format";
 import { RootState } from "../../../redux/reducers";
 import GoogleCalendarButton from "./addEventToGoogleCalenar";
 import { Link } from "react-router-dom";
+import { useGoogleCalendar } from "./googleAccounts/useGoogleCalendar";
 const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
+
+  
+  
   const { profile } = useSelector((state: any) => state.filesState);
   const { calendar } = useSelector((state: RootState) => state.calendarState);
   const calendarOwnerId = calendar?.owner;
@@ -96,7 +100,9 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
 
   const dispatch = useDispatch();
 
-  const handleSubmit = () => {
+  const { executeGoogleAction, isConnected } = useGoogleCalendar();
+
+  const handleSubmit = async () => {
     const eventPayload = {
       id: selectedEvent?.id || Math.random().toString(),
       title: eventData.title,
@@ -109,15 +115,18 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
     };
 
     if (isEditMode) {
+      if (isConnected) await executeGoogleAction({ type: "UPDATE_EVENT", event: eventPayload });
       dispatch({ type: "UPDATE_EVENT", event: eventPayload });
     } else {
+      if (isConnected) await executeGoogleAction({ type: "ADD_EVENT", event: eventPayload });
       dispatch({ type: "ADD_EVENT", event: eventPayload });
     }
 
     handleClose();
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    if (isConnected) await executeGoogleAction({ type: "DELETE_EVENT", id: selectedEvent.id });
     dispatch({ type: "DELETE_EVENT", id: selectedEvent.id });
     handleClose();
   };

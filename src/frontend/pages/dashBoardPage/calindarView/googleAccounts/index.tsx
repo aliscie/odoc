@@ -20,7 +20,6 @@ const GoogleCalendarButton = () => {
   const dispatch = useDispatch();
   const { profile } = useSelector((state: any) => state.filesState);
   const {
-    createEvents,
     connectCalendar,
     disConnectCalendar,
     isConnected,
@@ -47,13 +46,14 @@ const GoogleCalendarButton = () => {
       
         let res = await allowViewBusy();
         let all_events = []
-        let events = await getEvents();
         
+        let events = await getEvents();
+        console.log({events})
         const futureEvents = filterFutureEvents(events);
         all_events = futureEvents.map(event=>({...googleToODOC(event), created_by:calendar.owner}))
         const isMyCal = profile.id == calendar.owner;
         
-        if (!isMyCal){          
+        if (!isMyCal&&calendar.googleIds){          
           const busy = await getBusyEventsForUser(calendar.googleIds[0]);
           const serlizedBusy = busy.map(event => ({
             ...googleToODOC(event),

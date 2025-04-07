@@ -35,6 +35,7 @@ export function googleToODOC(googleEvent: GoogleEvent | {start: string, end: str
   const isBusyEvent = !('summary' in googleEvent);
   
   return {
+    id:googleEvent.id || "",
     title: isBusyEvent ? 'Busy' : googleEvent.summary,
     description: isBusyEvent ? 'Busy time slot' : (googleEvent.description || ''),
     start_time: new Date(isBusyEvent ? googleEvent.start : googleEvent.start.dateTime).getTime() * 1000000,

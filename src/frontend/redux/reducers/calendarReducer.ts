@@ -24,9 +24,12 @@ const initialState: any = {
   calendar,
   current_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   google_events: [], // Add this line to initialize google_events
+  is_google_connected: false,
+  calendarChanged: false,
 };
 
 export function calendarReducer(state = initialState, action: any): any {
+
   switch (action.type) {
     case "SET_TRAINING_DATA":
       return {
@@ -65,86 +68,145 @@ export function calendarReducer(state = initialState, action: any): any {
       };
 
     case "ADD_EVENTS":
-      return {
-        ...state,
-        calendarChanged: true,
-        calendar_actions: {
-          ...state.calendar_actions,
-          events: [
-            ...state.calendar_actions.events,
-            ...action.events.map((e: any) => ({
-              ...e,
-              id: e.id || Math.random().toString(),
-            })),
-          ],
-        },
-        calendar: {
-          ...state.calendar,
-          events: [
-            ...state.calendar.events,
-            ...action.events.map((e: any) => ({
-              ...e,
-              id: e.id || Math.random().toString(),
-            })),
-          ],
-        },
-      };
+      return state.is_google_connected
+        ? {
+            ...state,
+            google_events: [
+              ...state.google_events,
+              ...action.events.map((e: any) => ({
+                ...e,
+                id: e.id || Math.random().toString(),
+                isGoogleEvent: true,
+              })),
+            ],
+          }
+        : {
+            ...state,
+            calendarChanged: true, // Already set
+            calendar_actions: {
+              ...state.calendar_actions,
+              events: [
+                ...state.calendar_actions.events,
+                ...action.events.map((e: any) => ({
+                  ...e,
+                  id: e.id || Math.random().toString(),
+                })),
+              ],
+            },
+            calendar: {
+              ...state.calendar,
+              events: [
+                ...state.calendar.events,
+                ...action.events.map((e: any) => ({
+                  ...e,
+                  id: e.id || Math.random().toString(),
+                })),
+              ],
+            },
+          };
 
     case "ADD_EVENT":
       const newEvent = {
         ...action.event,
         id: action.event.id || Math.random().toString(),
       };
-      return {
-        ...state,
-        calendarChanged: true,
-        calendar_actions: {
-          ...state.calendar_actions,
-          events: [...state.calendar_actions.events, newEvent],
-        },
-        calendar: {
-          ...state.calendar,
-          events: [...state.calendar.events, newEvent],
-        },
-      };
+      return state.is_google_connected
+        ? {
+            ...state,
+            google_events: [...state.google_events, { ...newEvent, isGoogleEvent: true }],
+          }
+        : {
+            ...state,
+            calendarChanged: true, // Already set
+            calendar_actions: {
+              ...state.calendar_actions,
+              events: [...state.calendar_actions.events, newEvent],
+            },
+            calendar: {
+              ...state.calendar,
+              events: [...state.calendar.events, newEvent],
+            },
+          };
 
     case "UPDATE_EVENT":
       const updatedEvent = {
         ...action.event,
         created_by: action.event.created_by || state.calendar.owner,
       };
-      return {
-        ...state,
-        calendarChanged: true,
-        calendar_actions: {
-          ...state.calendar_actions,
-          events: state.calendar_actions.events.map((event: Event) =>
-            event.id === updatedEvent.id ? updatedEvent : event,
-          ),
-        },
-        calendar: {
-          ...state.calendar,
-          events: state.calendar.events.map((event: Event) =>
-            event.id === updatedEvent.id ? updatedEvent : event,
-          ),
-        },
-      };
+      if (state.is_google_connected) {
+        const isInGoogleEvents = state.google_events.some(e => e.id === updatedEvent.id);
+        return {
+          ...state,
+          calendarChanged: state.calendar.events.some(e => e.id === updatedEvent.id), // Set if in calendar
+          google_events: isInGoogleEvents
+            ? state.google_events.map(e => e.id === updatedEvent.id ? { ...updatedEvent, isGoogleEvent: true } : e)
+            : state.google_events,
+          calendar: {
+            ...state.calendar,
+            events: state.calendar.events.some(e => e.id === updatedEvent.id)
+              ? state.calendar.events.map(e => e.id === updatedEvent.id ? updatedEvent : e)
+              : state.calendar.events,
+          },
+          calendar_actions: state.calendar.events.some(e => e.id === updatedEvent.id)
+            ? {
+                ...state.calendar_actions,
+                events: state.calendar_actions.events.map(e => e.id === updatedEvent.id ? updatedEvent : e),
+              }
+            : state.calendar_actions,
+        };
+      } else {
+        return {
+          ...state,
+          calendarChanged: true, // Already set
+          calendar_actions: {
+            ...state.calendar_actions,
+            events: state.calendar_actions.events.map(e => e.id === updatedEvent.id ? updatedEvent : e),
+          },
+          calendar: {
+            ...state.calendar,
+            events: state.calendar.events.map(e => e.id === updatedEvent.id ? updatedEvent : e),
+          },
+        };
+      }
 
     case "DELETE_EVENT":
-      return {
-        ...state,
-        calendarChanged: true,
-        calendar_actions: {
-          ...state.calendar_actions,
-          delete_events: [...state.calendar_actions.delete_events, action.id],
-        },
-        calendar: {
-          ...state.calendar,
-          events: state.calendar.events.filter(
-            (event: Event) => event.id !== action.id,
-          ),
-        },
-      };
+      if (state.is_google_connected) {
+        const isInGoogleEvents = state.google_events.some(e => e.id === action.id);
+        const isInCalendarEvents = state.calendar.events.some(e => e.id === action.id);
+        
+        return {
+          ...state,
+          calendarChanged: isInCalendarEvents, // Set if in calendar
+          google_events: isInGoogleEvents
+            ? state.google_events.filter(e => e.id !== action.id)
+            : state.google_events,
+          calendar: {
+            ...state.calendar,
+            events: isInCalendarEvents
+              ? state.calendar.events.filter(e => e.id !== action.id)
+              : state.calendar.events,
+          },
+          calendar_actions: isInCalendarEvents
+            ? {
+                ...state.calendar_actions,
+                delete_events: [...state.calendar_actions.delete_events, action.id],
+              }
+            : state.calendar_actions,
+        };
+      } else {
+        return {
+          ...state,
+          calendarChanged: true, // Already set
+          calendar_actions: {
+            ...state.calendar_actions,
+            delete_events: [...state.calendar_actions.delete_events, action.id],
+          },
+          calendar: {
+            ...state.calendar,
+            events: state.calendar.events.filter(e => e.id !== action.id),
+          },
+        };
+      }
 
     case "ADD_AVAILABILITIES":
       return {
@@ -246,9 +308,10 @@ export function calendarReducer(state = initialState, action: any): any {
     case "SET_GOOGLE_CALENDAR":
       return {
         ...state,
+        is_google_connected:true,
         google_events: action.events.map(event => ({
           ...event,
-          id: `google-${event.id}`, // Add prefix to avoid ID conflicts
+          id: `${event.id}`, // Add prefix to avoid ID conflicts
           isGoogleEvent: true // Add flag to identify Google events
         })),
       };

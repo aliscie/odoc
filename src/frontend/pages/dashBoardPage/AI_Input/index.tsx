@@ -34,7 +34,7 @@ const ConversationInput = () => {
           profile,
         });
 
-        console.log({ actions });
+
         actions?.forEach((action) => {
           dispatch(action);
         });
