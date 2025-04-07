@@ -212,3 +212,32 @@ fn update_calendar(calendar_id: String, actions: CalendarActions) -> Result<Cale
         Err(e) => Err(format!("Failed to save calendar: {}", e)),
     }
 }
+
+
+
+#[update]
+fn add_google_calendar_id(calendar_id: String, ids: Vec<String>) -> Result<String, String> {
+    if caller() == Principal::anonymous() {
+        return Err("Unauthorized".to_string());
+    }
+
+    let caller_id = caller().to_text();
+    let mut calendar = Calendar::get_calendar(&calendar_id)?;
+
+    // Only calendar owner can add google calendar IDs
+    if caller_id != calendar.owner {
+        return Err("Permission denied: Only calendar owner can add Google calendar IDs".to_string());
+    }
+
+    // Add new IDs, skipping duplicates
+    for id in ids {
+        if calendar.googleIds.contains(&id) {
+            continue;
+        }
+        calendar.googleIds.push(id);
+    }
+
+    calendar.save()?;
+    Ok("Google calendar IDs added successfully".to_string())
+}
+

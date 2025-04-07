@@ -8,6 +8,7 @@ use crate::CALENDAR_STORE;
 #[derive(Clone, Debug, Serialize, CandidType, Deserialize)]
 pub struct Calendar {
     pub id: String,
+    pub googleIds: Vec<String>,
     pub owner: String,
     pub availabilities: Vec<Availability>,
     pub events: Vec<Event>,
@@ -15,14 +16,31 @@ pub struct Calendar {
 
 impl Storable for Calendar {
     fn to_bytes(&self) -> Cow<[u8]> {
-        if let Ok(bytes) = Encode!(self) {
-            return Cow::Owned(bytes);
-        }
-        Cow::Borrowed(&[])
+        Cow::Owned(Encode!(self).unwrap())
     }
 
     fn from_bytes(bytes: Cow<[u8]>) -> Self {
-        Decode!(bytes.as_ref(), Self).unwrap()
+        Decode!(bytes.as_ref(), Self).unwrap_or_else(|_| {
+            // Try to decode with old format (without googleIds)
+            #[derive(Clone, Debug, Serialize, CandidType, Deserialize)]
+            struct OldCalendar {
+                id: String,
+                owner: String,
+                availabilities: Vec<Availability>,
+                events: Vec<Event>,
+            }
+
+            match Decode!(bytes.as_ref(), OldCalendar) {
+                Ok(old_calendar) => Calendar {
+                    id: old_calendar.id,
+                    googleIds: Vec::new(), // Default empty vector for new field
+                    owner: old_calendar.owner,
+                    availabilities: old_calendar.availabilities,
+                    events: old_calendar.events,
+                },
+                Err(_) => Calendar::default() // Use default if both formats fail
+            }
+        })
     }
 
     const BOUND: Bound = Bound::Unbounded;
@@ -112,6 +130,7 @@ impl Calendar {
     pub fn default() -> Self {
         Calendar {
             id: ic_cdk::api::time().to_string(),
+            googleIds: Vec::new(), // Added missing field
             owner: caller().to_text(),
             availabilities: Vec::new(),
             events: Vec::new(),
@@ -128,6 +147,7 @@ impl Calendar {
     pub fn new(calendar_id: &String) -> Self {
         let calendar = Calendar {
             id: calendar_id.clone(),
+            googleIds: Vec::new(), // Added missing field
             owner: caller().to_text(),
             availabilities: Vec::new(),
             events: Vec::new(),
@@ -194,6 +214,7 @@ impl Calendar {
             None => {
                 let new_calendar = Calendar {
                     id: ic_cdk::api::time().to_string(),
+                    googleIds: Vec::new(), // Already present here
                     owner: caller().to_text(),
                     availabilities: Vec::new(),
                     events: Vec::new(),

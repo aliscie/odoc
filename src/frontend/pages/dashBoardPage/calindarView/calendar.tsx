@@ -32,7 +32,7 @@ const CalendarView = () => {
   const [showEventDialog, setShowEventDialog] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
-
+  
   useEffect(() => {
     localStorage.setItem("calendarView", currentView);
   }, [currentView]);
@@ -170,8 +170,7 @@ const CalendarView = () => {
 
   const eventStyleGetter = useCallback(
     (event) => {
-      const isCreator =
-        calendar?.owner === profile?.id || profile?.id === event?.created_by;
+      const isCreator = profile?.id === event?.created_by
 
       return {
         style: {

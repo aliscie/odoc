@@ -31,14 +31,16 @@ interface GoogleEvent {
   guestsCanSeeOtherGuests?: boolean;
 }
 
-export function googleToODOC(googleEvent: GoogleEvent): ODOCEvent {
+export function googleToODOC(googleEvent: GoogleEvent | {start: string, end: string}): ODOCEvent {
+  const isBusyEvent = !('summary' in googleEvent);
+  
   return {
-    title: googleEvent.summary,
-    description: googleEvent.description || '',
-    start_time: new Date(googleEvent.start.dateTime).getTime() * 1000000,
-    end_time: new Date(googleEvent.end.dateTime).getTime() * 1000000,
-    attendees: googleEvent.attendees?.map(attendee => attendee.email) || [],
-    // location: googleEvent.location
+    title: isBusyEvent ? 'Busy' : googleEvent.summary,
+    description: isBusyEvent ? 'Busy time slot' : (googleEvent.description || ''),
+    start_time: new Date(isBusyEvent ? googleEvent.start : googleEvent.start.dateTime).getTime() * 1000000,
+    end_time: new Date(isBusyEvent ? googleEvent.end : googleEvent.end.dateTime).getTime() * 1000000,
+    attendees: ('attendees' in googleEvent) ? googleEvent.attendees?.map(attendee => attendee.email) || [] : [],
+    created_by: ('created_by' in googleEvent) ? googleEvent.created_by : ""
   };
 }
 

@@ -5,8 +5,9 @@ let accessToken = ""
 export const useGoogleCalendar = () => {
   const { profile } = useSelector((state: any) => state.filesState);
   const [isConnected, setIsConnected] = useState(false);
-
   const [isApiReady, setIsApiReady] = useState(false);
+
+  // Remove: const [calendarId, setCalendarId] = useState('primary');
 
   const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events';
@@ -55,6 +56,22 @@ export const useGoogleCalendar = () => {
           accessToken = tokenResponse.access_token;
           setIsConnected(true);
           await initializeGoogleApi();
+          
+          try {
+            const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary', {
+              headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Accept': 'application/json'
+              }
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              localStorage.setItem('googleCalendarId', data.id); // Store directly in localStorage
+            }
+          } catch (error) {
+            console.log('Error fetching calendar ID:', error);
+          }
         }
       },
       error_callback: (error) => {
@@ -68,7 +85,8 @@ export const useGoogleCalendar = () => {
 
   const disConnectCalendar = () => {
     localStorage.removeItem('googleCalendarToken');
-    accessToken = ''
+    localStorage.removeItem('googleCalendarId');
+    accessToken = '';
     setIsConnected(false);
     setIsApiReady(false);
   };
@@ -102,7 +120,6 @@ export const useGoogleCalendar = () => {
   const getBusyEventsForUser = async (email: string) => {
     const now = new Date().toISOString();
     const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-    console.log({accessToken});
     try {
       const response = await fetch('https://www.googleapis.com/calendar/v3/freeBusy', {
         method: 'POST',
@@ -119,7 +136,6 @@ export const useGoogleCalendar = () => {
       });
 
       const data = await response.json();
-      console.log({data})
       if (!response.ok) {
         throw new Error(data.error?.message || 'Failed to fetch busy events');
       }
@@ -137,28 +153,28 @@ export const useGoogleCalendar = () => {
   
     try {
       // First check if freeBusyReader rule already exists
-      const aclListResponse = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/acl', {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Accept': 'application/json'
-        }
-      });
+      // const aclListResponse = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/acl', {
+      //   headers: {
+      //     'Authorization': `Bearer ${accessToken}`,
+      //     'Accept': 'application/json'
+      //   }
+      // });
 
       
-      if (!aclListResponse.ok) {
-        throw new Error('Failed to fetch ACL list');
-      }
+      // if (!aclListResponse.ok) {
+      //   throw new Error('Failed to fetch ACL list');
+      // }
 
-      const aclList = await aclListResponse.json();
+      // const aclList = await aclListResponse.json();
 
-      const hasFreeBusyReader = aclList.items?.some(
-        rule => rule.role === "freeBusyReader" && rule.scope?.type === "default"
-      );
+      // const hasFreeBusyReader = aclList.items?.some(
+      //   rule => rule.role === "freeBusyReader" && rule.scope?.type === "default"
+      // );
 
       
-      if (hasFreeBusyReader) {
-        return true;
-      }
+      // if (hasFreeBusyReader) {
+      //   return true;
+      // }
 
       // Insert or update the ACL
       const aclResponse = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/acl', {
@@ -172,6 +188,7 @@ export const useGoogleCalendar = () => {
           scope: { type: "default" }
         })
       });
+      console.log({aclResponse})
 
 
       if (!aclResponse.ok) {
@@ -208,6 +225,27 @@ export const useGoogleCalendar = () => {
     }
   };
 
+  // Update useEffect to load saved calendar ID
+  useEffect(() => {
+    const storedToken = localStorage.getItem('googleCalendarToken');
+    
+    if (storedToken) {
+      accessToken = storedToken;
+      setIsConnected(true);
+    }
+    
+
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   return {
     connectCalendar,
     disConnectCalendar,
@@ -216,6 +254,7 @@ export const useGoogleCalendar = () => {
     getBusyEventsForUser,
     allowViewBusy,
     createEvents,
-    isApiReady
+    isApiReady,
+    calendarId: localStorage.getItem('googleCalendarId')
   };
 };

@@ -23,7 +23,6 @@ import SubmissionsView from "./submitionsView";
 import ProjectsView from "./projectsView";
 import TeamsView from "./teamsView";
 import MetricsView from "./metrices";
-import DemoBanner from "./banner";
 
 const STORAGE_KEY = "dashboardActiveTab";
 

@@ -94,6 +94,7 @@ export interface CRow { 'id' : string, 'cells' : Array<CCell> }
 export interface Calendar {
   'id' : string,
   'owner' : string,
+  'googleIds' : Array<string>,
   'events' : Array<Event>,
   'availabilities' : Array<Availability>,
 }
@@ -406,8 +407,8 @@ export interface RegisterUser {
 export interface RemoveSwapArgs { 'token0' : Principal, 'token1' : Principal }
 export type Result = { 'Ok' : User } |
   { 'Err' : string };
-export type Result_1 = { 'Ok' : null } |
-  { 'Err' : Error };
+export type Result_1 = { 'Ok' : string } |
+  { 'Err' : string };
 export type Result_10 = { 'Ok' : Post } |
   { 'Err' : string };
 export type Result_11 = { 'Ok' : ShareFile } |
@@ -425,11 +426,11 @@ export type Result_16 = { 'Ok' : Calendar } |
 export type Result_17 = { 'Ok' : CanisterOutputCertifiedMessages } |
   { 'Err' : string };
 export type Result_2 = { 'Ok' : null } |
-  { 'Err' : string };
-export type Result_3 = { 'Ok' : GetTransactions } |
   { 'Err' : Error };
-export type Result_4 = { 'Ok' : string } |
+export type Result_3 = { 'Ok' : null } |
   { 'Err' : string };
+export type Result_4 = { 'Ok' : GetTransactions } |
+  { 'Err' : Error };
 export type Result_5 = { 'Ok' : WorkSpace } |
   { 'Err' : string };
 export type Result_6 = { 'Ok' : Wallet } |
@@ -542,19 +543,20 @@ export interface WorkSpace {
 }
 export interface _SERVICE {
   'accept_friend_request' : ActorMethod<[string], Result>,
-  'add_owner' : ActorMethod<[AddOwnerArgs], Result_1>,
-  'add_swap' : ActorMethod<[AddSwapArgs], Result_1>,
-  'approve_high_promise' : ActorMethod<[CPayment], Result_2>,
+  'add_google_calendar_id' : ActorMethod<[string, Array<string>], Result_1>,
+  'add_owner' : ActorMethod<[AddOwnerArgs], Result_2>,
+  'add_swap' : ActorMethod<[AddSwapArgs], Result_2>,
+  'approve_high_promise' : ActorMethod<[CPayment], Result_3>,
   'cancel_friend_request' : ActorMethod<[string], Result>,
-  'check_external_transactions' : ActorMethod<[bigint], Result_3>,
-  'confirmed_c_payment' : ActorMethod<[CPayment], Result_2>,
-  'confirmed_cancellation' : ActorMethod<[CPayment], Result_2>,
+  'check_external_transactions' : ActorMethod<[bigint], Result_4>,
+  'confirmed_c_payment' : ActorMethod<[CPayment], Result_3>,
+  'confirmed_cancellation' : ActorMethod<[CPayment], Result_3>,
   'counter' : ActorMethod<[], bigint>,
   'create_new_file' : ActorMethod<[string, [] | [string]], FileNode>,
-  'delete_chat' : ActorMethod<[string], Result_4>,
-  'delete_custom_contract' : ActorMethod<[string], Result_2>,
+  'delete_chat' : ActorMethod<[string], Result_1>,
+  'delete_custom_contract' : ActorMethod<[string], Result_3>,
   'delete_file' : ActorMethod<[string], [] | [FileNode]>,
-  'delete_post' : ActorMethod<[string], Result_2>,
+  'delete_post' : ActorMethod<[string], Result_3>,
   'delete_work_space' : ActorMethod<[WorkSpace], Result_5>,
   'deposit_ckusdt' : ActorMethod<[], Result_6>,
   'get_affiliate_data' : ActorMethod<[string], Result_7>,
@@ -596,11 +598,11 @@ export interface _SERVICE {
   'get_work_spaces' : ActorMethod<[], Array<WorkSpace>>,
   'internal_transaction' : ActorMethod<
     [number, string, ExchangeType],
-    Result_2
+    Result_3
   >,
   'load_more_events' : ActorMethod<[number], Array<Event>>,
-  'make_new_chat_room' : ActorMethod<[Chat], Result_4>,
-  'message_is_seen' : ActorMethod<[Message], Result_2>,
+  'make_new_chat_room' : ActorMethod<[Chat], Result_1>,
+  'message_is_seen' : ActorMethod<[Message], Result_3>,
   'move_file' : ActorMethod<[string, [] | [string]], Result_15>,
   'multi_updates' : ActorMethod<
     [
@@ -609,37 +611,37 @@ export interface _SERVICE {
       Array<StoredContract>,
       Array<FileIndexing>,
     ],
-    Result_4
+    Result_1
   >,
-  'object_on_cancel' : ActorMethod<[CPayment, string], Result_2>,
-  'pay' : ActorMethod<[PayArgs], Result_1>,
-  'rate_user' : ActorMethod<[Principal, Rating], Result_2>,
+  'object_on_cancel' : ActorMethod<[CPayment, string], Result_3>,
+  'pay' : ActorMethod<[PayArgs], Result_2>,
+  'rate_user' : ActorMethod<[Principal, Rating], Result_3>,
   'register' : ActorMethod<[string, RegisterUser], Result>,
   'reject_friend_request' : ActorMethod<[string], Result>,
-  'remove_owner' : ActorMethod<[AddOwnerArgs], Result_1>,
-  'remove_swap' : ActorMethod<[RemoveSwapArgs], Result_1>,
-  'save_post' : ActorMethod<[Post], Result_2>,
+  'remove_owner' : ActorMethod<[AddOwnerArgs], Result_2>,
+  'remove_swap' : ActorMethod<[RemoveSwapArgs], Result_2>,
+  'save_post' : ActorMethod<[Post], Result_3>,
   'save_work_space' : ActorMethod<[WorkSpace], Result_5>,
   'search_posts' : ActorMethod<[string], Array<PostUser>>,
-  'see_notifications' : ActorMethod<[Array<string>], Result_4>,
+  'see_notifications' : ActorMethod<[Array<string>], Result_1>,
   'send_friend_request' : ActorMethod<[string], Result>,
-  'send_message' : ActorMethod<[[] | [Principal], Message], Result_4>,
+  'send_message' : ActorMethod<[[] | [Principal], Message], Result_1>,
   'share_file' : ActorMethod<[ShareFileInput], Result_11>,
   'unfriend' : ActorMethod<[string], Result>,
   'unvote' : ActorMethod<[string], Result_10>,
   'update_calendar' : ActorMethod<[string, CalendarActions], Result_16>,
-  'update_chat' : ActorMethod<[Chat], Result_4>,
+  'update_chat' : ActorMethod<[Chat], Result_1>,
   'update_user_profile' : ActorMethod<[RegisterUser], Result>,
   'vote_down' : ActorMethod<[string], Result_10>,
   'vote_up' : ActorMethod<[string], Result_10>,
   'withdraw_ckusdt' : ActorMethod<[bigint, string], Result_6>,
-  'ws_close' : ActorMethod<[CanisterWsCloseArguments], Result_2>,
+  'ws_close' : ActorMethod<[CanisterWsCloseArguments], Result_3>,
   'ws_get_messages' : ActorMethod<[CanisterWsGetMessagesArguments], Result_17>,
   'ws_message' : ActorMethod<
     [CanisterWsMessageArguments, [] | [AppMessage]],
-    Result_2
+    Result_3
   >,
-  'ws_open' : ActorMethod<[CanisterWsOpenArguments], Result_2>,
+  'ws_open' : ActorMethod<[CanisterWsOpenArguments], Result_3>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];

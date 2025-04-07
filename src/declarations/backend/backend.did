@@ -90,6 +90,7 @@ type CRow = record { id : text; cells : vec CCell };
 type Calendar = record {
   id : text;
   owner : text;
+  googleIds : vec text;
   events : vec Event;
   availabilities : vec Availability;
 };
@@ -378,7 +379,7 @@ type RegisterUser = record {
 };
 type RemoveSwapArgs = record { token0 : principal; token1 : principal };
 type Result = variant { Ok : User; Err : text };
-type Result_1 = variant { Ok; Err : Error };
+type Result_1 = variant { Ok : text; Err : text };
 type Result_10 = variant { Ok : Post; Err : text };
 type Result_11 = variant { Ok : ShareFile; Err : text };
 type Result_12 = variant {
@@ -390,9 +391,9 @@ type Result_14 = variant { Ok : UserProfile; Err : text };
 type Result_15 = variant { Ok; Err };
 type Result_16 = variant { Ok : Calendar; Err : text };
 type Result_17 = variant { Ok : CanisterOutputCertifiedMessages; Err : text };
-type Result_2 = variant { Ok; Err : text };
-type Result_3 = variant { Ok : GetTransactions; Err : Error };
-type Result_4 = variant { Ok : text; Err : text };
+type Result_2 = variant { Ok; Err : Error };
+type Result_3 = variant { Ok; Err : text };
+type Result_4 = variant { Ok : GetTransactions; Err : Error };
 type Result_5 = variant { Ok : WorkSpace; Err : text };
 type Result_6 = variant { Ok : Wallet; Err : Error };
 type Result_7 = variant { Ok : Affiliate; Err : text };
@@ -489,19 +490,20 @@ type WorkSpace = record {
 };
 service : () -> {
   accept_friend_request : (text) -> (Result);
-  add_owner : (AddOwnerArgs) -> (Result_1);
-  add_swap : (AddSwapArgs) -> (Result_1);
-  approve_high_promise : (CPayment) -> (Result_2);
+  add_google_calendar_id : (text, vec text) -> (Result_1);
+  add_owner : (AddOwnerArgs) -> (Result_2);
+  add_swap : (AddSwapArgs) -> (Result_2);
+  approve_high_promise : (CPayment) -> (Result_3);
   cancel_friend_request : (text) -> (Result);
-  check_external_transactions : (nat) -> (Result_3);
-  confirmed_c_payment : (CPayment) -> (Result_2);
-  confirmed_cancellation : (CPayment) -> (Result_2);
+  check_external_transactions : (nat) -> (Result_4);
+  confirmed_c_payment : (CPayment) -> (Result_3);
+  confirmed_cancellation : (CPayment) -> (Result_3);
   counter : () -> (nat64) query;
   create_new_file : (text, opt text) -> (FileNode);
-  delete_chat : (text) -> (Result_4);
-  delete_custom_contract : (text) -> (Result_2);
+  delete_chat : (text) -> (Result_1);
+  delete_custom_contract : (text) -> (Result_3);
   delete_file : (text) -> (opt FileNode);
-  delete_post : (text) -> (Result_2);
+  delete_post : (text) -> (Result_3);
   delete_work_space : (WorkSpace) -> (Result_5);
   deposit_ckusdt : () -> (Result_6);
   get_affiliate_data : (text) -> (Result_7);
@@ -535,41 +537,41 @@ service : () -> {
   get_user_profile : (principal) -> (Result_14) query;
   get_users : () -> (float64) query;
   get_work_spaces : () -> (vec WorkSpace) query;
-  internal_transaction : (float64, text, ExchangeType) -> (Result_2);
+  internal_transaction : (float64, text, ExchangeType) -> (Result_3);
   load_more_events : (int32) -> (vec Event) query;
-  make_new_chat_room : (Chat) -> (Result_4);
-  message_is_seen : (Message) -> (Result_2);
+  make_new_chat_room : (Chat) -> (Result_1);
+  message_is_seen : (Message) -> (Result_3);
   move_file : (text, opt text) -> (Result_15);
   multi_updates : (
       vec FileNode,
       vec vec record { text; vec ContentNode },
       vec StoredContract,
       vec FileIndexing,
-    ) -> (Result_4);
-  object_on_cancel : (CPayment, text) -> (Result_2);
-  pay : (PayArgs) -> (Result_1);
-  rate_user : (principal, Rating) -> (Result_2);
+    ) -> (Result_1);
+  object_on_cancel : (CPayment, text) -> (Result_3);
+  pay : (PayArgs) -> (Result_2);
+  rate_user : (principal, Rating) -> (Result_3);
   register : (text, RegisterUser) -> (Result);
   reject_friend_request : (text) -> (Result);
-  remove_owner : (AddOwnerArgs) -> (Result_1);
-  remove_swap : (RemoveSwapArgs) -> (Result_1);
-  save_post : (Post) -> (Result_2);
+  remove_owner : (AddOwnerArgs) -> (Result_2);
+  remove_swap : (RemoveSwapArgs) -> (Result_2);
+  save_post : (Post) -> (Result_3);
   save_work_space : (WorkSpace) -> (Result_5);
   search_posts : (text) -> (vec PostUser) query;
-  see_notifications : (vec text) -> (Result_4);
+  see_notifications : (vec text) -> (Result_1);
   send_friend_request : (text) -> (Result);
-  send_message : (opt principal, Message) -> (Result_4);
+  send_message : (opt principal, Message) -> (Result_1);
   share_file : (ShareFileInput) -> (Result_11);
   unfriend : (text) -> (Result);
   unvote : (text) -> (Result_10);
   update_calendar : (text, CalendarActions) -> (Result_16);
-  update_chat : (Chat) -> (Result_4);
+  update_chat : (Chat) -> (Result_1);
   update_user_profile : (RegisterUser) -> (Result);
   vote_down : (text) -> (Result_10);
   vote_up : (text) -> (Result_10);
   withdraw_ckusdt : (nat64, text) -> (Result_6);
-  ws_close : (CanisterWsCloseArguments) -> (Result_2);
+  ws_close : (CanisterWsCloseArguments) -> (Result_3);
   ws_get_messages : (CanisterWsGetMessagesArguments) -> (Result_17) query;
-  ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_2);
-  ws_open : (CanisterWsOpenArguments) -> (Result_2);
+  ws_message : (CanisterWsMessageArguments, opt AppMessage) -> (Result_3);
+  ws_open : (CanisterWsOpenArguments) -> (Result_3);
 }

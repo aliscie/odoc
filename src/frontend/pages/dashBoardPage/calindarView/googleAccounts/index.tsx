@@ -5,8 +5,14 @@ import { useGoogleCalendar } from './useGoogleCalendar';
 
 import { googleToODOC } from './eventConverter';
 import { useDispatch, useSelector } from "react-redux";
+import { all } from 'mathjs';
+import { useBackendContext } from '@/contexts/BackendContext';
 
 const GoogleCalendarButton = () => {
+
+  const { backendActor } = useBackendContext();
+  
+  const { calendar } = useSelector((state: RootState) => state.calendarState);
   // Add this line with other hooks
   const dispatch = useDispatch();
   const { profile } = useSelector((state: any) => state.filesState);
@@ -17,7 +23,8 @@ const GoogleCalendarButton = () => {
     isConnected,
     getEvents,
     getBusyEventsForUser,
-    allowViewBusy
+    allowViewBusy,
+    calendarId
   } = useGoogleCalendar();
 
   const filterFutureEvents = (events: any[]) => {
@@ -32,32 +39,53 @@ const GoogleCalendarButton = () => {
   // Example usage in useEffect
   useEffect(() => {
     const initialize = async () => {
+      // console.log({calendar})
+      // console.log({calendar})
+        // console.log({calendar,calendarId})
+        // let email = "weplutus@gmail.com";
+        // console.log({profile})
       if (isConnected) {
-        // let res = await allowViewBusy();
-        // console.log({allowViewBusy:res})
-        
+        let res = await allowViewBusy();
+        let all_events = []
         let events = await getEvents();
+        
         const futureEvents = filterFutureEvents(events);
-        console.log({events,futureEvents})
+        all_events = futureEvents.map(event=>googleToODOC(event))
+
+        if (calendar.googleIds && !calendar.googleIds.includes(calendarId) && (!profile||profile.id !== calendar.owner)){
+
+          const busy = await getBusyEventsForUser(calendar.googleIds[0]);
+          const serlizedBusy = busy.map(event => ({
+            ...googleToODOC(event),
+            created_by: calendar.owner
+          }));
+
+          all_events = all_events.concat(serlizedBusy)
+        }
+        
         dispatch({
           type: "SET_GOOGLE_CALENDAR",
-          events: futureEvents.map(event=>googleToODOC(event))
+          events: all_events
         });
-        
-// const busy = await getBusyEventsForUser("weplutus@gmila.com");
-//         console.log({busy })
-//         dispatch({
-//           type: "SET_GOOGLE_CALENDAR",
-//           events: busy
-//         });
 
+        if (calendar.googleIds&&!calendar.googleIds.includes(calendarId) && profile.id == calendar.owner){
+          let res = await backendActor.add_google_calendar_id(calendar.id, [calendarId])
+          console.log({res,calendarId})
+          if (res.Err){
+            console.log({error_add_google_calendar_id: res.Err})
+          }
+        }
         
       } else {
         
+        // console.log({calendar})
+        // console.log({calendarId})
+        // let email = "weplutus@gmail.com";
+        // console.log({profile})
       }
     };
     initialize();
-  }, [isConnected]); // Add dispatch to dependencies
+  }, [isConnected,calendar]); // Add dispatch to dependencies
 
   const createCalendarEvent = async () => {
     const event = {
