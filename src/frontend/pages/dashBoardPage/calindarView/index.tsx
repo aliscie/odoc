@@ -145,9 +145,6 @@ const Scheduler = React.memo(() => {
         <Box sx={{ mb: 4 }}>
           <CalendarView />
         </Box>
-        <Box sx={{ mb: 4 }}>
-          <GoogleCalendarIntegration onConnect={() => console.log('Google Calendar connected')} />
-        </Box>
       </Box>
 
       {/* Fixed position conversation input */}

@@ -2,6 +2,9 @@ import React, { useEffect } from 'react';
 
 import { useGoogleCalendar } from './useGoogleCalendar';
 // Add to imports
+import { Button, Badge, Avatar } from '@mui/material';
+import GoogleCalendarLogo from '@mui/icons-material/Event';
+import Tooltip from '@mui/material/Tooltip';
 
 import { googleToODOC } from './eventConverter';
 import { useDispatch, useSelector } from "react-redux";
@@ -38,22 +41,19 @@ const GoogleCalendarButton = () => {
 
   // Example usage in useEffect
   useEffect(() => {
+
     const initialize = async () => {
-      // console.log({calendar})
-      // console.log({calendar})
-        // console.log({calendar,calendarId})
-        // let email = "weplutus@gmail.com";
-        // console.log({profile})
-      if (isConnected) {
+
+      
         let res = await allowViewBusy();
         let all_events = []
         let events = await getEvents();
         
         const futureEvents = filterFutureEvents(events);
-        all_events = futureEvents.map(event=>googleToODOC(event))
-
-        if (calendar.googleIds && !calendar.googleIds.includes(calendarId) && (!profile||profile.id !== calendar.owner)){
-
+        all_events = futureEvents.map(event=>({...googleToODOC(event), created_by:calendar.owner}))
+        const isMyCal = profile.id == calendar.owner;
+        
+        if (!isMyCal){          
           const busy = await getBusyEventsForUser(calendar.googleIds[0]);
           const serlizedBusy = busy.map(event => ({
             ...googleToODOC(event),
@@ -68,77 +68,101 @@ const GoogleCalendarButton = () => {
           events: all_events
         });
 
-        if (calendar.googleIds&&!calendar.googleIds.includes(calendarId) && profile.id == calendar.owner){
+        if (isMyCal&& !calendar.googleIds.includes(calendarId)){
           let res = await backendActor.add_google_calendar_id(calendar.id, [calendarId])
-          console.log({res,calendarId})
           if (res.Err){
             console.log({error_add_google_calendar_id: res.Err})
           }
         }
         
-      } else {
-        
-        // console.log({calendar})
-        // console.log({calendarId})
-        // let email = "weplutus@gmail.com";
-        // console.log({profile})
-      }
-    };
-    initialize();
-  }, [isConnected,calendar]); // Add dispatch to dependencies
 
-  const createCalendarEvent = async () => {
-    const event = {
-      'summary': 'Weekend Hiking Trip',
-      'location': 'Mount Tamalpais State Park, Mill Valley, CA 94941',
-      'description': 'Join us for a 5-mile hike through the redwoods! Bring water and snacks.\n\nTrail details: https://example.com/hikes/mt-tam',
-      'start': {
-        'dateTime': '2025-04-06T13:45:00+03:00',
-        'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone
-      },
-      'end': {
-        'dateTime': '2025-04-06T14:15:00+03:00',
-        'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone
-      },
-      'recurrence': [
-        'RRULE:FREQ=WEEKLY;COUNT=5'
-      ],
-      'attendees': [
-        {'email': 'weplutus.1@gmail.com'},
-        {'email': 'weplutus@gmail.com'}
-      ],
-      'reminders': {
-        'useDefault': false,
-        'overrides': [
-          {'method': 'email', 'minutes': 24 * 60},
-          {'method': 'popup', 'minutes': 60}
-        ]
-      },
-      'colorId': '5',
-      'guestsCanInviteOthers': false,
-      'guestsCanModify': false,
-      'guestsCanSeeOtherGuests': true
     };
 
-    const createdEvent = await createEvents(event);
-    if (createdEvent) {
-      console.log('Event created:', createdEvent);
-      
+    if (isConnected) {
+      initialize();
     }
-  };
+    
+  }, [isConnected,calendar.owner,dispatch]); // Add dispatch to dependencies
+
+  // const createCalendarEvent = async () => {
+   
+  //   const event = {
+  //     'summary': 'Weekend Hiking Trip',
+  //     'location': 'Mount Tamalpais State Park, Mill Valley, CA 94941',
+  //     'description': 'Join us for a 5-mile hike through the redwoods! Bring water and snacks.\n\nTrail details: https://example.com/hikes/mt-tam',
+  //     'start': {
+  //       'dateTime': '2025-04-06T13:45:00+03:00',
+  //       'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone
+  //     },
+  //     'end': {
+  //       'dateTime': '2025-04-06T14:15:00+03:00',
+  //       'timeZone': Intl.DateTimeFormat().resolvedOptions().timeZone
+  //     },
+  //     'recurrence': [
+  //       'RRULE:FREQ=WEEKLY;COUNT=5'
+  //     ],
+  //     'attendees': [
+  //       {'email': 'weplutus.1@gmail.com'},
+  //       {'email': 'weplutus@gmail.com'}
+  //     ],
+  //     'reminders': {
+  //       'useDefault': false,
+  //       'overrides': [
+  //         {'method': 'email', 'minutes': 24 * 60},
+  //         {'method': 'popup', 'minutes': 60}
+  //       ]
+  //     },
+  //     'colorId': '5',
+  //     'guestsCanInviteOthers': false,
+  //     'guestsCanModify': false,
+  //     'guestsCanSeeOtherGuests': true
+  //   };
+
+  //   const createdEvent = await createEvents(event);
+  //   if (createdEvent) {
+  //     console.log('Event created:', createdEvent);
+      
+  //   }
+  // };
 
   return (
     <div>
-      <button onClick={isConnected ? disConnectCalendar : connectCalendar}>
-        {isConnected ? 'Disconnect Calendar' : 'Connect Google Calendar'}
-      </button>
-      <button 
-        onClick={createCalendarEvent} 
-        style={{ marginLeft: '10px' }}
-        disabled={!isConnected}
+      <Badge
+        overlap="circular"
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        variant="dot"
+        color={isConnected ? 'success' : 'error'}
+        sx={{
+          '& .MuiBadge-dot': {
+            height: 12,
+            width: 12,
+            borderRadius: '50%',
+            animation: isConnected ? 'pulse 2s infinite' : 'none',
+          },
+          '@keyframes pulse': {
+            '0%': { transform: 'scale(0.95)', opacity: 1 },
+            '50%': { transform: 'scale(1.1)', opacity: 0.8 },
+            '100%': { transform: 'scale(0.95)', opacity: 1 },
+          }
+        }}
       >
-        Create Hiking Event
-      </button>
+        <Tooltip title={isConnected ? "Disconnect Google Calendar" : "Connect Google Calendar"}>
+          <Button
+            variant="contained"
+            onClick={isConnected ? disConnectCalendar : connectCalendar}
+            sx={{
+              backgroundColor: isConnected ? '#4285F4' : '#DB4437',
+              '&:hover': {
+                backgroundColor: isConnected ? '#3367D6' : '#C1351D',
+              },
+              minWidth: '40px',
+              padding: '8px'
+            }}
+          >
+            <GoogleCalendarLogo sx={{ color: 'white', fontSize: '24px' }} />
+          </Button>
+        </Tooltip>
+      </Badge>
     </div>
   );
 };

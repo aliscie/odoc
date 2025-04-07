@@ -171,7 +171,6 @@ const CalendarView = () => {
   const eventStyleGetter = useCallback(
     (event) => {
       const isCreator = profile?.id === event?.created_by
-
       return {
         style: {
           backgroundColor: isCreator ? event.color : "#9e9e9e",

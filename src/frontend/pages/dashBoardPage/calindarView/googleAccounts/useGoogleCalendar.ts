@@ -188,7 +188,6 @@ export const useGoogleCalendar = () => {
           scope: { type: "default" }
         })
       });
-      console.log({aclResponse})
 
 
       if (!aclResponse.ok) {
@@ -225,6 +224,45 @@ export const useGoogleCalendar = () => {
     }
   };
 
+  const updateEvent = async (eventId: string, event: any) => {
+    if (!accessToken) return null;
+
+    try {
+      const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(event)
+      });
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      console.log('Error updating event', err);
+      disConnectCalendar();
+      return null;
+    }
+  };
+
+  const deleteEvent = async (eventId: string) => {
+    if (!accessToken) return false;
+
+    try {
+      const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+      return response.ok;
+    } catch (err) {
+      console.log('Error deleting event', err);
+      disConnectCalendar();
+      return false;
+    }
+  };
+
   // Update useEffect to load saved calendar ID
   useEffect(() => {
     const storedToken = localStorage.getItem('googleCalendarToken');
@@ -254,6 +292,8 @@ export const useGoogleCalendar = () => {
     getBusyEventsForUser,
     allowViewBusy,
     createEvents,
+    updateEvent,
+    deleteEvent,
     isApiReady,
     calendarId: localStorage.getItem('googleCalendarId')
   };

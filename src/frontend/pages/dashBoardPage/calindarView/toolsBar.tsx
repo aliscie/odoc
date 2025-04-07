@@ -20,6 +20,7 @@ import ResetCalendarData from "./resetData";
 import { MoreVert, NavigateBefore, NavigateNext } from "@mui/icons-material";
 import CircleIcon from "@mui/icons-material/Circle";
 import TimeZoneSelector from "./timezone";
+import GoogleCalendarIntegration from "./googleAccounts";  // Add this import
 
 const CustomToolbar = (toolbar) => {
   const { calendarChanged, calendar, calendar_actions } = useSelector(
@@ -82,9 +83,9 @@ const CustomToolbar = (toolbar) => {
       <MenuItem>
         <ResetCalendarData />
       </MenuItem>
-      {/*<MenuItem onClick={() => navigate("TODAY")}>*/}
-      {/*  Today <TimeZoneSelector />*/}
-      {/*</MenuItem>*/}
+      <MenuItem>
+        <GoogleCalendarIntegration />  {/* Add to mobile menu */}
+      </MenuItem>
     </Menu>
   );
 
@@ -135,9 +136,7 @@ const CustomToolbar = (toolbar) => {
               <CalendarManagement />
               <SaveCalendarData />
               <ResetCalendarData />
-              {/*<Button onClick={() => navigate("TODAY")}>*/}
-              {/*  Today <TimeZoneSelector />*/}
-              {/*</Button>*/}
+              <GoogleCalendarIntegration />  {/* Add to desktop toolbar */}
             </ButtonGroup>
           )}
 
