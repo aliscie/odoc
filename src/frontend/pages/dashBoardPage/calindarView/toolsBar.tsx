@@ -21,6 +21,7 @@ import { MoreVert, NavigateBefore, NavigateNext } from "@mui/icons-material";
 import CircleIcon from "@mui/icons-material/Circle";
 import TimeZoneSelector from "./timezone";
 import GoogleCalendarIntegration from "./googleAccounts";  // Add this import
+import GmailConnection from "./GmailConnection";
 
 const CustomToolbar = (toolbar) => {
   const { calendarChanged, calendar, calendar_actions } = useSelector(
@@ -137,6 +138,7 @@ const CustomToolbar = (toolbar) => {
               <SaveCalendarData />
               <ResetCalendarData />
               <GoogleCalendarIntegration />  {/* Add to desktop toolbar */}
+              <GmailConnection/>
             </ButtonGroup>
           )}
 

@@ -50,6 +50,7 @@ export function odocToGoogle(odocEvent: ODOCEvent): GoogleEvent {
   const endDate = new Date(odocEvent.end_time / 1000000);
   
   return {
+    attendees: odocEvent.attendees.map(attendee => ({email: attendee})),
     summary: odocEvent.title,
     description: odocEvent.description,
     // location: odocEvent.location,

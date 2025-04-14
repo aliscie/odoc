@@ -70,6 +70,20 @@ pub enum PaymentStatus {
     Objected(String),
     None,
 }
+// pub struct Promise {
+//     pub contract_id: ContractId,
+//     pub id: String,
+//     pub amount: f64,
+//     pub condition: "Test",
+//     pub sender: Principal, 
+//     pub receiver: Principal,
+//     pub date_created: f64,
+//     pub date_released: f64,
+//     pub status: PaymentStatus,
+//     pub cells: Vec<CCell>,
+//     pub wdithnesses: {id:, conformed: {sender:true, reciver: true, widtness: true }}
+// }
+
 
 #[derive(PartialOrd, PartialEq, Clone, Debug, CandidType, Deserialize, Serialize)]
 pub struct CPayment {

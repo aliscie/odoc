@@ -7,7 +7,8 @@ import {
   Menu,
   MenuItem,
   ListItemText,
-  ListItemIcon
+  ListItemIcon,
+  Tooltip
 } from "@mui/material";
 import { 
   Person2 as Person2Icon,
@@ -16,6 +17,7 @@ import {
 import { RootState } from "../../../redux/reducers";
 import { useBackendContext } from "../../../contexts/BackendContext";
 import DfnIcon from "@/assets/dfn.svg";
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 
 interface LoginButtonProps {
   isMobile?: boolean;
@@ -29,6 +31,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({
   const dispatch = useDispatch();
   const { login, loginWithMetaMask } = useBackendContext();
   const { isFetching, isLoggedIn } = useSelector((state: RootState) => state.uiState);
+  const { openConnectModal } = useConnectModal();
   
   // For dropdown menu
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -63,18 +66,17 @@ const LoginButton: React.FC<LoginButtonProps> = ({
 
   const handleInternetIdentityLogin = async () => {
     await login();
-    // dispatch({ type: "LOGIN" });
-    // handleClose();
+    handleClose();
   };
 
   const handleMetaMaskLogin = async () => {
-    try {
-      await loginWithMetaMask();
-      dispatch({ type: "LOGIN" });
-      handleClose();
-    } catch (error) {
-      console.error("MetaMask login failed:", error);
-    }
+    await loginWithMetaMask();
+    // handleClose();
+    // if (openConnectModal) {
+    //   openConnectModal();
+    // } else {
+    //   await loginWithMetaMask();
+    // }
   };
 
   if (isFetching) {
@@ -104,21 +106,24 @@ const LoginButton: React.FC<LoginButtonProps> = ({
             </ListItemIcon>
             <ListItemText>Internet Identity</ListItemText>
           </MenuItem>
-          <MenuItem onClick={handleMetaMaskLogin}>
-            <ListItemIcon>
-              <img 
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/1200px-MetaMask_Fox.svg.png" 
-                alt="MetaMask" 
-                style={styles.menuIcon} 
-              />
-            </ListItemIcon>
-            <ListItemText>MetaMask</ListItemText>
-          </MenuItem>
+          <Tooltip title="MetaMask login coming soon" placement="right">
+            <MenuItem onClick={handleMetaMaskLogin} disabled>
+              <ListItemIcon>
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/1200px-MetaMask_Fox.svg.png" 
+                  alt="MetaMask" 
+                  style={styles.menuIcon} 
+                />
+              </ListItemIcon>
+              <ListItemText>MetaMask</ListItemText>
+            </MenuItem>
+          </Tooltip>
         </Menu>
       </>
     );
   }
 
+  // Update the MenuItem for MetaMask to be enabled
   return (
     <>
       <Button

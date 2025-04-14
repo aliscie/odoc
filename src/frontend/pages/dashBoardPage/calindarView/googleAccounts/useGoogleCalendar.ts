@@ -1,11 +1,8 @@
-import { a } from 'framer-motion/dist/types.d-6pKw1mTI';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { Event as ODOCEvent } from "$/declarations/backend/backend.did.d.js";
 import { odocToGoogle } from "./eventConverter";
 let accessToken = ""
 export const useGoogleCalendar = () => {
-  const { profile } = useSelector((state: any) => state.filesState);
   const [isConnected, setIsConnected] = useState(false);
   const [isApiReady, setIsApiReady] = useState(false);
 
@@ -93,6 +90,17 @@ export const useGoogleCalendar = () => {
     setIsApiReady(false);
   };
 
+
+  const filterFutureEvents = (events: any[]) => {
+    const now = new Date();
+    return events.filter(event => {
+      
+      const eventStart = new Date(event.start.dateTime || event.start.date);
+      return eventStart >= now;
+    });
+  };
+
+
   const getEvents = async () => {
     if (!accessToken) return [];
     
@@ -111,7 +119,7 @@ export const useGoogleCalendar = () => {
         }
       });
       const data = await response.json();
-      return data.items || [];
+      return filterFutureEvents(data.items) || [];
     } catch (err) {
       console.log('Error fetching events', err);
       disConnectCalendar();

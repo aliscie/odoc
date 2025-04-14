@@ -6,10 +6,10 @@ import { _SERVICE } from "../../declarations/backend/backend.did";
 import { useDispatch, useSelector } from "react-redux";
 import getLedgerActor from "./ckudc_ledger_actor";
 import { useTheme, useMediaQuery } from "@mui/material";
-import { MsqClient } from "@fort-major/msq-client";
+import { useSiweIdentity } from "ic-use-siwe-identity";
+import { useAccount, useDisconnect } from "wagmi";
+import { useSession } from 'next-auth/react';
 
-// Types and Interfaces
-// Update the State interface to track login method
 interface State {
   principal: string | null;
   identity: Identity | null;
@@ -17,7 +17,7 @@ interface State {
   agent: HttpAgent | null;
   isAuthenticating?: boolean;
   ckUSDCActor?: any;
-  loginMethod?: 'internet-identity' | 'metamask'; // Add this line
+  loginMethod?: 'internet-identity' | 'metamask';
 }
 
 interface BackendContextProps extends State {
@@ -27,10 +27,8 @@ interface BackendContextProps extends State {
   logout: () => void;
 }
 
-// Context
 const BackendContext = createContext<BackendContextProps | undefined>(undefined);
 
-// Custom Hooks
 export const useBackendContext = (): BackendContextProps => {
   const context = useContext(BackendContext);
   if (!context) {
@@ -39,12 +37,11 @@ export const useBackendContext = (): BackendContextProps => {
   return context;
 };
 
-// Helper Functions
 const createAuthClient = async (): Promise<AuthClient> => {
   return await AuthClient.create();
 };
 
-const createMsqAgent = async (identity: Identity, host: string): Promise<HttpAgent> => {
+const createHttpAgent = async (identity: Identity, host: string): Promise<HttpAgent> => {
   const agent = new HttpAgent({
     identity,
     host,
@@ -79,48 +76,26 @@ const getHost = (): string => {
     : "https://ic0.app";
 };
 
-async function handleAgent(client: AuthClient) {
+async function handleAgent(client: AuthClient, siweIdentity?: Identity) {
   const host = getHost();
-
-  // Check if the user is connected to MSQ first
   let identity: Identity;
   let principal: string;
-  
-  if (window.ic?.msq) {
-    try {
-      const isConnected = await window.ic.msq.isConnected();
-      if (isConnected) {
-        // Use MSQ identity if connected
-        identity = await window.ic.msq.connect({
-          whitelist: [canisterId],
-          host: host
-        });
-        principal = identity.getPrincipal().toString();
-        console.log('Using MSQ identity:', principal);
-      } else {
-        // Fall back to Internet Identity if not connected to MSQ
-        identity = await client.getIdentity();
-        principal = identity.getPrincipal().toString();
-      }
-    } catch (error) {
-      // Fall back to Internet Identity if MSQ check fails
-      console.error('Error checking MSQ connection:', error);
-      identity = await client.getIdentity();
-      principal = identity.getPrincipal().toString();
-    }
+  const identityComputer = await client.getIdentity();
+  console.log({identityComputer,siweIdentity});
+  if (siweIdentity) {
+    identity = siweIdentity;
+    principal = identity.getPrincipal().toString();
   } else {
-    // MSQ not available, use Internet Identity
-    identity = await client.getIdentity();
+    identity = identityComputer;
     principal = identity.getPrincipal().toString();
   }
 
-  const agent = await createMsqAgent(identity, host);
+  const agent = await createHttpAgent(identity, host);
   const actor = createBackendActor(agent);
   
   return { actor, agent, principal, identity, client };
 }
 
-// Main Provider Component
 interface BackendProviderProps {
   children: ReactNode;
 }
@@ -130,6 +105,12 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const port = import.meta.env.VITE_DFX_PORT;
+  const { disconnect } = useDisconnect();
+  const { isConnected: isWagmiConnected } = useAccount();
+  const { identity: siweIdentity, login: MetaMaskLogin, loginStatus: prepareLoginStatus } = useSiweIdentity();
+  const { data: session } = useSession();
+  
+  console.log({loginStatus: prepareLoginStatus, siweIdentity, session},'siweIdentity');
 
   const [state, setState] = useState<State>({
     principal: null,
@@ -141,94 +122,6 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
   const [authClient, setAuthClient] = useState<AuthClient | null>(null);
   const { isLoggedIn } = useSelector((state: any) => state.uiState);
 
-  // Check for MSQ session
-  useEffect(() => {
-    const checkMsqSession = async () => {
-      try {
-
-        
-        // Check if it's safe to resume the session
-        if (MsqClient.isSafeToResume()) {
-          console.log('MSQ session can be resumed');
-          const result = await MsqClient.createAndLogin();
-          
-          if ("Ok" in result) {
-            const { msq, identity } = result.Ok;
-            const host = getHost();
-            const agent = await createMsqAgent(identity, host);
-            const actor = createBackendActor(agent);
-            const principal = identity.getPrincipal().toString();
-            
-            setState(prevState => ({
-              ...prevState,
-              principal,
-              identity,
-              backendActor: actor,
-              agent,
-              isAuthenticating: false
-            }));
-            
-            dispatch({type:'LOGIN'});
-          }
-        }
-      } catch (error) {
-        console.error('Error checking MSQ session:', error);
-      }
-    };
-    
-    // Only check when not already authenticated
-    if (!state.principal && !state.isAuthenticating) {
-      checkMsqSession();
-    }
-  }, [state.principal, state.isAuthenticating, dispatch]);
-
-  // Handle MSQ redirect
-  const handleRedirectCallback = useCallback(async () => {
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const msqAuthToken = urlParams.get('msqAuthToken');
-      
-      if (!msqAuthToken) return;
-      
-
-      const result = await MsqClient.processRedirect(msqAuthToken);
-      
-      if ("Ok" in result) {
-        const { msq, identity } = result.Ok;
-        const host = getHost();
-        const agent = await createMsqAgent(identity, host);
-        const actor = createBackendActor(agent);
-        const principal = identity.getPrincipal().toString();
-        
-        setState({
-          principal,
-          identity,
-          backendActor: actor,
-          agent,
-          isAuthenticating: false
-        });
-        
-        dispatch({type:'LOGIN'});
-        
-        // Clean up URL parameters
-        window.history.replaceState({}, document.title, window.location.pathname);
-      } else {
-        console.error('Error processing MSQ redirect:', result.Err);
-      }
-    } catch (error) {
-      console.error('Error processing redirect:', error);
-    }
-  }, [dispatch]);
-  
-  // Check for redirects
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('msqAuthToken')) {
-      handleRedirectCallback();
-    }
-  }, [handleRedirectCallback]);
-
-  // Standard login
   const login = async () => {
     if (!authClient) {
       console.log("Auth client not initialized");
@@ -241,7 +134,6 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
       // dispatch({type:'LOGIN'});
     } else {
       const identityProvider = getIdentityProvider(port);
-
       setState(prevState => ({ ...prevState, isAuthenticating: true }));
       
       await authClient.login({
@@ -253,95 +145,78 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
     }
   }
 
-  // MetaMask login
-  // Update the loginWithMetaMask function
-  const loginWithMetaMask = useCallback(async () => {
+  // Update loginWithMetaMask to handle RainbowKit integration
+  const loginWithMetaMask = async () => {
+    console.log(siweIdentity, 'Attempting to connect with MetaMask...');
+    
+    // First check if wallet is connected
+    if (!isWagmiConnected && !session?.address) {
+      console.error("Wallet not connected. Please connect your wallet first.");
+      return;
+    }
+    
+    setState(prevState => ({
+      ...prevState,
+      isAuthenticating: true,
+      loginMethod: 'metamask'
+    }));
+    
     try {
-      setState(prevState => ({
-        ...prevState,
-        isAuthenticating: true,
-      }));
-  
-      if (!window.ethereum?.isMetaMask) {
-        alert('MetaMask is required for this login method. Please install MetaMask first.');
-        setState(prevState => ({
-          ...prevState,
-          isAuthenticating: false,
-        }));
+      // If we have a session from NextAuth, we're already authenticated
+      if (session?.address) {
+        dispatch({type: "LOGIN"});
         return;
       }
-  
-      // Request accounts from MetaMask
-      const accounts = await window.ethereum.request({
-        method: 'eth_requestAccounts'
-      });
-  
-      if (!accounts || accounts.length === 0) {
-        throw new Error('No accounts found in MetaMask');
+      
+      if (!siweIdentity) {
+        let res = await MetaMaskLogin();
+        console.log(res, 'MetaMaskLogin');
+        
+        if (res) {
+          dispatch({type: "LOGIN"});
+        } else {
+          setState(prevState => ({
+            ...prevState,
+            isAuthenticating: false
+          }));
+          console.error("Failed to login with MetaMask");
+        }
       }
-  
-      // Create auth client and get identity
-      const client = await createAuthClient();
-      const identity = await client.getIdentity();
-      const principal = identity.getPrincipal().toString();
-      const host = getHost();
-      const agent = await createMsqAgent(identity, host);
-      const actor = createBackendActor(agent);
-  
-      setState(prevState => ({
-        ...prevState,
-        isAuthenticating: false,
-        principal,
-        identity,
-        backendActor: actor,
-        agent,
-        loginMethod: 'metamask'
-      }));
-  
-      dispatch({type: "LOGIN"});
     } catch (error) {
-      console.error('Error connecting with MetaMask:', error);
-      alert(`An error occurred when connecting with MetaMask: ${error.message}`);
+      console.error("MetaMask login error:", error);
       setState(prevState => ({
         ...prevState,
-        isAuthenticating: false,
+        isAuthenticating: false
       }));
     }
-  }, [dispatch]);
+  }
 
-  // Update the logout function to handle MetaMask
   const logout = useCallback(() => {
-    // Check if MSQ is available and attempt to disconnect
-    if (window.ic?.msq) {
-      window.ic.msq.requestLogout()
-        .then(success => {
-          console.log('MSQ logout ' + (success ? 'successful' : 'rejected'));
-        })
-        .catch(err => {
-          console.error('Error during MSQ logout:', err);
-        });
+    if (siweIdentity) {
+      // siweLogout?.();
     }
     
-    // Standard logout for Internet Identity
-    dispatch({type:"LOGOUT"});
-    authClient?.logout({ returnTo: "/" });
+    if (state.loginMethod === 'metamask' && siweIdentity) {
+      disconnect();
+    } else if (!siweIdentity) {
+      dispatch({type:"LOGOUT"});
+      authClient?.logout({ returnTo: "/" });
+    }
     
-    // Reset state
     setState({
       principal: null,
       identity: null,
       backendActor: null,
       agent: null,
-      loginMethod: undefined // Reset login method
+      loginMethod: undefined
     });
-  }, [dispatch, authClient]);
+  }, [dispatch, authClient, state.loginMethod, siweIdentity, disconnect]);
 
-  // Initialize the authentication client
   useEffect(() => {
     const initializeAuthClient = async () => {
       const client = await createAuthClient();
       setAuthClient(client);
-      const { actor, agent, principal, identity } = await handleAgent(client);
+      const { actor, agent, principal, identity } = await handleAgent(client, siweIdentity);
       const ckUSDCActor = await getLedgerActor(agent);
       
       setState(prevState => ({
@@ -351,6 +226,7 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
         agent,
         principal,
         identity,
+        loginMethod: siweIdentity ? 'metamask' : undefined
       }));
 
       const alreadyAuthenticated = await client.isAuthenticated();
@@ -362,9 +238,23 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
     initializeAuthClient().catch((error) => {
       console.log("Failed to initialize auth client:", error);
     });
-  }, [isLoggedIn, dispatch]);
+  }, [isLoggedIn, dispatch, siweIdentity]);
 
-  // Context value with all the necessary props
+  // Auto-login effect for MetaMask when conditions are met
+  // useEffect(() => {
+  //   if (isWagmiConnected && prepareLoginStatus === 'success' && !siweIdentity) {
+  //     loginWithMetaMask();
+  //   }
+  // }, [isWagmiConnected, prepareLoginStatus, siweIdentity]);
+
+  // Add effect to handle session changes
+  useEffect(() => {
+    if (session?.address) {
+      console.log("User authenticated via SIWE:", session.address);
+      dispatch({type: "LOGIN"});
+    }
+  }, [session, dispatch]);
+
   const contextValue = {
     ...state,
     authClient,
@@ -380,25 +270,12 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
   );
 };
 
-// TypeScript declarations for window extensions
 declare global {
   interface Window {
     ethereum?: {
       isMetaMask?: boolean;
       request: (request: { method: string; params?: any[] }) => Promise<any>;
       on: (eventName: string, callback: (...args: any[]) => void) => void;
-    };
-    ic?: {
-      msq?: {
-        connect: (options: {
-          whitelist: string[];
-          host?: string;
-        }) => Promise<Identity>;
-        disconnect: () => Promise<void>;
-        requestLogout: () => Promise<boolean>;
-        getPrincipal: () => Promise<string>;
-        isConnected: () => Promise<boolean>;
-      };
     };
   }
 }

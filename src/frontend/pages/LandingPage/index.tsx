@@ -19,7 +19,7 @@ import GettingStarted from "../videoTutorial";
 import SecuritySection from "./securitySection";
 import { useScroll } from "framer-motion";
 // Import the videos
-import handshakeVideo from "@/assets/handShakeDark.mp4";
+// import handshakeVideo from "@/assets/handShakeDark.mp4";
 // Removed light video import
 import { useSelector } from "react-redux";
 // Import our custom hook
@@ -46,7 +46,7 @@ export default function LandingPage(props) {
   return (
     <Box sx={{ minHeight: "100vh", position: "relative" }}>
       {/* Background Video */}
-      <Box
+      {/* <Box
         sx={{
           position: "fixed",
           top: 0,
@@ -70,7 +70,7 @@ export default function LandingPage(props) {
             opacity: videoOpacity,
           }}
         />
-      </Box>
+      </Box> */}
 
       {/* Hero Section */}
       <Section id="intro" sx={{ position: "relative", zIndex: 1 }} transparent={true}>

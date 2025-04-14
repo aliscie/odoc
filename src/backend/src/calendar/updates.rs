@@ -171,15 +171,55 @@ impl Calendar {
     }
 }
 
+fn send_google_calendar_notification(
+    calendar_id: &str,
+    google_id: &str,
+    actions: &CalendarActions,
+    caller_id: &str,
+) -> Result<(), String> {
+    if google_id.is_empty() {
+        return Ok(());
+    }
+
+    let action_type = if !actions.events.is_empty() {
+        "created/updated"
+    } else if !actions.delete_events.is_empty() {
+        "deleted"
+    } else {
+        return Ok(());
+    };
+
+    let html_content = format!(
+        r#"<html>
+        <body>
+            <p>Calendar {calendar_id} has been modified by {caller_id}.</p>
+            <p>Actions performed: {action_type}</p>
+            <a href="https://calendar.google.com/calendar/r" style="
+                background-color: #4285F4;
+                color: white;
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 4px;
+                display: inline-block;
+                margin-top: 10px;
+            ">Add to your Google Calendar</a>
+        </body>
+        </html>"#,
+        calendar_id = calendar_id,
+        caller_id = caller_id,
+        action_type = action_type
+    );
+
+    // Here you would implement actual email sending logic
+    // For example using some email service or SMTP
+    // This is just a placeholder implementation
+    ic_cdk::println!("Would send email to {} with content:\n{}", google_id, html_content);
+    
+    Ok(())
+}
+
 #[update]
 fn update_calendar(calendar_id: String, actions: CalendarActions) -> Result<Calendar, String> {
-    // Owner has full permissions
-    // Non-owners can only update events they created
-    // Events can't overlap with other events
-    // Events can't overlap with blocked availability periods
-    // Events must fall within available time slots if any exist
-
-    // if user is anonymous return error
     if caller() == Principal::anonymous() {
         return Err("Unauthorized".to_string());
     }
@@ -187,17 +227,16 @@ fn update_calendar(calendar_id: String, actions: CalendarActions) -> Result<Cale
     let caller_id = caller().to_text();
     let mut calendar = Calendar::get_calendar(&calendar_id)?;
 
-
     // Check permissions for availability management
-    calendar.check_availability_permissions(&caller_id, &actions)?;
+    calendar.check_availability_permissions(&caller_id, &actions.clone())?;
 
     // Handle events
-    calendar.update_events(actions.events, &caller_id)?;
-    calendar.delete_events(&actions.delete_events, &caller_id)?;
+    calendar.update_events(actions.events.clone(), &caller_id)?;
+    calendar.delete_events(&actions.delete_events.clone(), &caller_id)?;
 
-    // Handle availabilities (only if user is owner, already checked in check_availability_permissions)
+    // Handle availabilities
     if caller_id == calendar.owner {
-        calendar.update_availabilities(actions.availabilities);
+        calendar.update_availabilities(actions.availabilities.clone());
         calendar.availabilities.retain(|availability|
             !actions.delete_availabilities.contains(&availability.id)
         );
@@ -208,7 +247,15 @@ fn update_calendar(calendar_id: String, actions: CalendarActions) -> Result<Cale
 
     // Save changes
     match calendar.save() {
-        Ok(_) => Ok(calendar),
+        Ok(_) => {
+            // Send email notification if there's a Google Calendar ID
+            if let Some(google_id) = calendar.googleIds.first() {
+                if !actions.events.is_empty() || !actions.delete_events.is_empty() {
+                    send_google_calendar_notification(&calendar_id, google_id, &actions, &caller_id)?;
+                }
+            }
+            Ok(calendar)
+        },
         Err(e) => Err(format!("Failed to save calendar: {}", e)),
     }
 }

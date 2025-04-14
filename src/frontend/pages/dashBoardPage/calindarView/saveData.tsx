@@ -69,17 +69,17 @@ function SaveCalendarData() {
     if (!backendActor || !calendar) return;
 
     try {
+      console.log({ calendar_actions });
       // logger({ calendar_actions });
       let serializedCalendar: CalendarActions = {
         ...calendar_actions,
-        events: calendar_actions.events.map((event) =>
+        events: calendar_actions.events?.map((event) =>
           EventTimezone(event, true),
         ),
         availabilities: calendar_actions.availabilities.map((availability) =>
           AvailabilityTimezone(availability, true),
         ),
       };
-      logger({ serializedCalendar });
       const res = await backendActor.update_calendar(
         calendar.id,
         serializedCalendar,

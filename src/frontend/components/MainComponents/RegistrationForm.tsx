@@ -100,6 +100,7 @@ const RegistrationForm: React.FC = () => {
 
       let affiliateId = localStorage.getItem("affiliateId");
       const register = await backendActor.register(String(affiliateId), input);
+      console.log("register", register);
       closeSnackbar(loadingSnackbar);
 
       if (register?.Ok) {

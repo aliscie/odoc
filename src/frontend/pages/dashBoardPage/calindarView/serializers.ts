@@ -57,7 +57,7 @@ export const AvailabilityTimezone = (
       };
       WeeklyRecurring?: {
         days: number[];
-        valid_until: number[];
+        valid_until?: number[] | null; // Make valid_until optional
       };
       SpecificDates?: number[];
     };
@@ -65,34 +65,30 @@ export const AvailabilityTimezone = (
   toUtc = false,
 ) => {
   const converter = toUtc ? localToUtc : utcToLocal;
-
   const convertedScheduleType = { ...availability.schedule_type };
 
   if (convertedScheduleType.DateRange) {
     convertedScheduleType.DateRange = {
-      start_date: Number(
-        converter(BigInt(convertedScheduleType.DateRange.start_date)),
-      ),
-      end_date: Number(
-        converter(BigInt(convertedScheduleType.DateRange.end_date)),
-      ),
+      start_date: Number(converter(BigInt(convertedScheduleType.DateRange.start_date))),
+      end_date: Number(converter(BigInt(convertedScheduleType.DateRange.end_date))),
     };
   }
 
   if (convertedScheduleType.WeeklyRecurring) {
     convertedScheduleType.WeeklyRecurring = {
       ...convertedScheduleType.WeeklyRecurring,
-      valid_until: convertedScheduleType.WeeklyRecurring.valid_until.map(
-        (time) => (time ? Number(converter(BigInt(time))) : null),
-      ),
+      valid_until: convertedScheduleType.WeeklyRecurring.valid_until 
+        ? convertedScheduleType.WeeklyRecurring.valid_until.map(
+            (time) => (time ? Number(converter(BigInt(time))) : null)
+          )
+        : undefined, // Handle undefined/null valid_until
     };
   }
 
   if (convertedScheduleType.SpecificDates) {
-    convertedScheduleType.SpecificDates =
-      convertedScheduleType.SpecificDates.map((date) =>
-        Number(converter(BigInt(date))),
-      );
+    convertedScheduleType.SpecificDates = convertedScheduleType.SpecificDates.map((date) =>
+      Number(converter(BigInt(date)))
+    );
   }
 
   return {

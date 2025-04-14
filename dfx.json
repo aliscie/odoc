@@ -4,6 +4,11 @@
     "capabilities": ["nodejs"]
   },
   "canisters": {
+    "ic_siwe_provider": {
+      "type": "custom",
+      "candid": "https://github.com/kristoferlund/ic-siwe/releases/download/v0.1.1/ic_siwe_provider.did",
+      "wasm": "https://github.com/kristoferlund/ic-siwe/releases/download/v0.1.1/ic_siwe_provider.wasm.gz"
+    },
     "cketh_ledger": {
       "type": "custom",
       "candid": "https://raw.githubusercontent.com/dfinity/ic/3d0b3f10417fc6708e8b5d844a0bac5e86f3e17d/rs/rosetta-api/icrc1/ledger/ledger.did",

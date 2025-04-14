@@ -100,7 +100,7 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
 
   const dispatch = useDispatch();
 
-  const { executeGoogleAction, isConnected } = useGoogleCalendar();
+  const { executeGoogleAction, isConnected, calendarId } = useGoogleCalendar();
 
   const handleSubmit = async () => {
     const eventPayload = {
@@ -118,7 +118,12 @@ const EventDialog = ({ open, onClose, slotInfo, selectedEvent = null }) => {
       if (isConnected) await executeGoogleAction({ type: "UPDATE_EVENT", event: eventPayload });
       dispatch({ type: "UPDATE_EVENT", event: eventPayload });
     } else {
-      if (isConnected) await executeGoogleAction({ type: "ADD_EVENT", event: eventPayload });
+      const attendees = [
+        calendar?.googleIds[0],
+        calendarId
+      ];
+      console.log({attendees})
+      if (isConnected) await executeGoogleAction({ type: "ADD_EVENT", event: {...eventPayload, attendees} });
       dispatch({ type: "ADD_EVENT", event: eventPayload });
     }
 

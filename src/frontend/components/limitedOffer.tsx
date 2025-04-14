@@ -11,6 +11,7 @@ import {
   Slide,
   styled,
   LinearProgress,
+  CircularProgress, // Add this import
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useBackendContext } from "../contexts/BackendContext";
@@ -19,9 +20,9 @@ import ODOCTokenImage from "@/assets/ODOCTOKEN.png";
 
 // Styled Components
 const GradientPaper = styled(Paper)(({ theme }) => ({
-  background: "linear-gradient(90deg, #7c3aed, #3b82f6, #7c3aed)",
+  background: "#1e1f1c", // Changed from #000000
   color: "#fff",
-  padding: theme.spacing(2, 4),
+  padding: 0,
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
@@ -29,8 +30,10 @@ const GradientPaper = styled(Paper)(({ theme }) => ({
   width: "100%",
   margin: theme.spacing(1),
   borderRadius: theme.spacing(2),
-  border: "1px solid rgba(255, 255, 255, 0.2)",
+  border: "3px solid #a0a19c", // Changed from #C0C0C0
+  boxShadow: "0 0 10px rgba(160, 161, 156, 0.5)", // Updated to match new border color
   backdropFilter: "blur(8px)",
+  overflow: 'visible',
 }));
 
 const IconWrapper = styled(Box)(({ theme }) => ({
@@ -177,6 +180,7 @@ const PromoNotification: React.FC = () => {
     number_users: number;
     active_users: number;
   } | null>(null);
+  const [isBackendConnected, setIsBackendConnected] = useState<boolean>(false); // Add this state
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
   const remainingTimeRef = useRef<number>(15000);
@@ -200,11 +204,14 @@ const PromoNotification: React.FC = () => {
           if ("Ok" in res) {
             setSnsStatus(res.Ok);
           }
-          
-          setStartCounter(true);
+          setIsBackendConnected(true); // Set backend connected flag
+          setStartCounter(true); // Only start counter when backend is connected
         } catch (error) {
           console.error("Error fetching data:", error);
+          setIsBackendConnected(false);
         }
+      } else {
+        setIsBackendConnected(false);
       }
     };
 
@@ -255,12 +262,32 @@ const PromoNotification: React.FC = () => {
     setIsHovering(true);
     if (timerRef.current) {
       clearInterval(timerRef.current);
-      remainingTimeRef.current = (progress / 100) * 15000;
+      timerRef.current = null;
+      // Calculate exact remaining time
+      const elapsed = Date.now() - startTimeRef.current;
+      remainingTimeRef.current = Math.max(0, remainingTimeRef.current - elapsed);
     }
   };
 
   const handleMouseLeave = () => {
     setIsHovering(false);
+    if (!timerRef.current && isVisible) {
+      startTimeRef.current = Date.now();
+      timerRef.current = setInterval(() => {
+        const elapsed = Date.now() - startTimeRef.current;
+        const remaining = remainingTimeRef.current - elapsed;
+        const newProgress = (remaining / 15000) * 100;
+
+        if (remaining <= 0) {
+          setIsVisible(false);
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+          }
+        } else {
+          setProgress(Math.max(0, newProgress));
+        }
+      }, 100);
+    }
   };
 
   const handleClick = () => {
@@ -268,9 +295,6 @@ const PromoNotification: React.FC = () => {
     setIsVisible(false);
   };
 
-  // Temporarily force visibility for debugging
-  // if (!isVisible || isLoggedIn) return null;
-  if (false) return null; // Force show for debugging
 
   return (
     <ErrorBoundary>
@@ -283,31 +307,65 @@ const PromoNotification: React.FC = () => {
           zIndex: 9999,
           display: "flex",
           justifyContent: "center",
-          mt: 0,
+          mt: 4, // Increased from 2 to 4 (32px)
+          pt: 2, // Added additional padding-top
         }}
       >
-        <Slide
-          direction="down"
-          in={0 < userCount && userCount <= 100 && isVisible}
-          mountOnEnter
-          unmountOnExit
-        >
+        <Slide direction="down" in={isVisible} mountOnEnter unmountOnExit>
           <GradientPaper
             elevation={4}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            sx={{ position: 'relative' }}
+            onMouseEnter={isBackendConnected ? handleMouseEnter : undefined}
+            onMouseLeave={isBackendConnected ? handleMouseLeave : undefined}
+            sx={{ 
+              position: 'relative',
+              height: '120px', // Increased height
+              maxWidth: '800px', // Decreased from 960px
+            }}
           >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <img src={ODOCTokenImage} alt="ODOC Token" width={88} />
-              <Box>
+            <Box sx={{ 
+              display: "flex", 
+              alignItems: "center", 
+              position: 'relative',
+              width: '100%',
+              height: '100%'
+            }}>
+              <Box sx={{
+                position: 'absolute',
+                left: '-100px', // Extend beyond container edge
+                zIndex: 1,
+                width: '200px',
+                height: '200px',
+                borderRadius: '50%', // Circular clipping
+                overflow: 'hidden', // Hide parts outside circle
+              }}>
+                <img 
+                  src={ODOCTokenImage} 
+                  alt="ODOC Token" 
+                  width="200px"
+                  height="200px"
+                  style={{
+                    display: 'block',
+                    objectFit: 'cover', // Ensure image fills circle
+                    width: '100%',
+                    height: '100%'
+                  }}
+                />
+              </Box>
+              <Box sx={{ 
+                ml: '120px', // Reduced from 300px to account for new positioning
+                width: 'calc(100% - 120px)' // Adjusted to match
+              }}>
                 <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 0.5 }}>
-                    Earn tokens for your activity at odoc
-                  <Typography component="span" sx={{ fontWeight: "bold", display: "inline-block" }}>
-                    {startCounter ? 
-                      <CountUp endValue={snsStatus?.active_users || 0} /> : 
-                      "0"} current active users
-                  </Typography>
+                  Earn tokens for your activity at odoc
+                  {isBackendConnected ? (
+                    <Typography component="span" sx={{ fontWeight: "bold", display: "inline-block" }}>
+                      {startCounter ? 
+                        <CountUp endValue={snsStatus?.active_users || 0} /> : 
+                        <CircularProgress size={16} color="inherit" sx={{ ml: 1 }} />} current active users
+                    </Typography>
+                  ) : (
+                    <CircularProgress size={16} color="inherit" sx={{ ml: 1 }} />
+                  )}
                 </Typography>
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
                  

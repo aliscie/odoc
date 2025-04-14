@@ -4,6 +4,8 @@ import {
   CalendarActions,
   Event,
 } from "$/declarations/backend/backend.did";
+import { boolean } from "mathjs";
+import { bob } from "wagmi/chains";
 
 const calendar_actions: CalendarActions = {
   delete_availabilities: [],
@@ -26,6 +28,7 @@ const initialState: any = {
   google_events: [], // Add this line to initialize google_events
   is_google_connected: false,
   calendarChanged: false,
+  isInitlized:false
 };
 
 export function calendarReducer(state = initialState, action: any): any {
@@ -49,6 +52,7 @@ export function calendarReducer(state = initialState, action: any): any {
     case "SET_CALENDAR":
       return {
         ...state,
+        isInitlized: true,
         calendarChanged: false,
         calendar_actions: {
           ...state.calendar_actions,
@@ -306,6 +310,7 @@ export function calendarReducer(state = initialState, action: any): any {
       };
 
     case "SET_GOOGLE_CALENDAR":
+      console.log({action})
       return {
         ...state,
         is_google_connected:true,

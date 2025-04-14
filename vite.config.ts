@@ -79,6 +79,7 @@ export default defineConfig({
   build: {
     outDir: "build",
     include: ["src/frontend/.well-known"],
+    external: ['@excalidraw/excalidraw'],
   },
   resolve: {
     
