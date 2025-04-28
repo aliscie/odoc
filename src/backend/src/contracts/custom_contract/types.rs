@@ -470,7 +470,9 @@ impl CustomContract {
         });
         Ok(self.clone())
     }
-
+    // TODO for the save if there is error message just return the error
+    //  TODO in the frontend for better user expernce make the  UI handle the persmisions so users don't see many errors and wait for save to return
+    // 
     pub fn save(&mut self) -> Result<Self, Vec<ContractError>> {
         let mut contract_errors: Vec<ContractError> = vec![];
         if let Some(old_contract) = Self::get(&self.id, &self.creator) {
@@ -532,24 +534,24 @@ impl CustomContract {
         }
 
         // ------- handle formulas security ------- \\
-        for formula in self.formulas.clone() {
-            let old_formula: Option<&Formula> = self
-                .formulas
-                .iter()
-                .find(|f| f.column_id == formula.column_id);
-            if let Some(old_formula) = old_formula {
-                if &formula != old_formula {
-                    if let Execute::TransferUsdt(payment) = formula.execute {
-                        if caller() != payment.sender {
-                            let message =
-                                "You can't save a formula for other people as senders".to_string();
-                            contract_errors.push(ContractError { message });
-                            self.formulas.retain(|f| f.column_id != formula.column_id);
-                        }
-                    }
-                }
-            }
-        }
+        // for formula in self.formulas.clone() {
+        //     let old_formula: Option<&Formula> = self
+        //         .formulas
+        //         .iter()
+        //         .find(|f| f.column_id == formula.column_id);
+        //     if let Some(old_formula) = old_formula {
+        //         if &formula != old_formula {
+        //             if let Execute::TransferUsdt(payment) = formula.execute {
+        //                 if caller() != payment.sender {
+        //                     let message =
+        //                         "You can't save a formula for other people as senders".to_string();
+        //                     contract_errors.push(ContractError { message });
+        //                     self.formulas.retain(|f| f.column_id != formula.column_id);
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         //
         // // ---------------- handle promise ----------------\\
         for mut payment in self.promises.clone() {

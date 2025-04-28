@@ -10,6 +10,10 @@ import { useSiweIdentity } from "ic-use-siwe-identity";
 import { useAccount, useDisconnect } from "wagmi";
 import { useSession } from 'next-auth/react';
 
+
+import metaMaskService from "../services/MetaMaskService";
+
+
 interface State {
   principal: string | null;
   identity: Identity | null;
@@ -76,19 +80,14 @@ const getHost = (): string => {
     : "https://ic0.app";
 };
 
-async function handleAgent(client: AuthClient, siweIdentity?: Identity) {
+async function handleAgent(client: AuthClient) {
   const host = getHost();
-  let identity: Identity;
+
   let principal: string;
-  const identityComputer = await client.getIdentity();
-  console.log({identityComputer,siweIdentity});
-  if (siweIdentity) {
-    identity = siweIdentity;
+
+  let identity = await client.getIdentity()
+  console.log({identity})
     principal = identity.getPrincipal().toString();
-  } else {
-    identity = identityComputer;
-    principal = identity.getPrincipal().toString();
-  }
 
   const agent = await createHttpAgent(identity, host);
   const actor = createBackendActor(agent);
@@ -103,14 +102,14 @@ interface BackendProviderProps {
 export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) => {
   const dispatch = useDispatch();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  // const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const port = import.meta.env.VITE_DFX_PORT;
   const { disconnect } = useDisconnect();
-  const { isConnected: isWagmiConnected } = useAccount();
+  // const { isConnected: isWagmiConnected } = useAccount();
   const { identity: siweIdentity, login: MetaMaskLogin, loginStatus: prepareLoginStatus } = useSiweIdentity();
   const { data: session } = useSession();
   
-  console.log({loginStatus: prepareLoginStatus, siweIdentity, session},'siweIdentity');
+  // console.log({loginStatus: prepareLoginStatus, siweIdentity, session},'siweIdentity');
 
   const [state, setState] = useState<State>({
     principal: null,
@@ -146,48 +145,37 @@ export const BackendProvider: React.FC<BackendProviderProps> = ({ children }) =>
   }
 
   // Update loginWithMetaMask to handle RainbowKit integration
+  // Update loginWithMetaMask to use window.ethereum
+  // Update loginWithMetaMask with ethers.js and web3.js integration
+  // OpenChat likely has more robust error handling for different MetaMask scenarios
   const loginWithMetaMask = async () => {
-    console.log(siweIdentity, 'Attempting to connect with MetaMask...');
-    
-    // First check if wallet is connected
-    if (!isWagmiConnected && !session?.address) {
-      console.error("Wallet not connected. Please connect your wallet first.");
-      return;
-    }
-    
-    setState(prevState => ({
-      ...prevState,
-      isAuthenticating: true,
-      loginMethod: 'metamask'
-    }));
-    
     try {
-      // If we have a session from NextAuth, we're already authenticated
-      if (session?.address) {
-        dispatch({type: "LOGIN"});
-        return;
-      }
+      setState(prevState => ({ ...prevState, isAuthenticating: true }));
       
-      if (!siweIdentity) {
-        let res = await MetaMaskLogin();
-        console.log(res, 'MetaMaskLogin');
-        
-        if (res) {
-          dispatch({type: "LOGIN"});
-        } else {
-          setState(prevState => ({
-            ...prevState,
-            isAuthenticating: false
-          }));
-          console.error("Failed to login with MetaMask");
-        }
+      const uniqueMessage = 'Sign this message to log in with your Ethereum wallet';
+      const signature = await metaMaskService.signMessage(uniqueMessage);
+      
+      if (!signature) {
+        throw new Error('Failed to sign with MetaMask.');
       }
-    } catch (error) {
-      console.error("MetaMask login error:", error);
+
+
+      const { actor, agent, principal } = await handleAgent(authClient!);
+      
       setState(prevState => ({
         ...prevState,
+        backendActor: actor,
+        agent,
+        principal,
+        loginMethod: 'metamask',
         isAuthenticating: false
       }));
+
+      dispatch({type: "LOGIN"});
+    } catch (error) {
+      setState(prevState => ({ ...prevState, isAuthenticating: false }));
+      console.error('MetaMask login error:', error);
+      throw error;
     }
   }
 

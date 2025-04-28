@@ -1,6 +1,5 @@
-dfx canister create ic_siwe_provider
 dfx canister create backend
-dfx canister create frontend
+dfx canister create ic_siwe_provider
 
 dfx deploy ic_siwe_provider --argument $'(
     record {
@@ -18,3 +17,7 @@ dfx deploy ic_siwe_provider --argument $'(
         };
     }
 )'
+
+dfx deploy backend
+
+dfx generate

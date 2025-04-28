@@ -122,6 +122,10 @@ export interface DeviceData {
   'credential_id' : [] | [CredentialId],
 }
 export type DeviceKey = PublicKey;
+export interface DeviceKeyWithAnchor {
+  'pubkey' : DeviceKey,
+  'anchor_number' : UserNumber,
+}
 export type DeviceProtection = { 'unprotected' : null } |
   { 'protected' : null };
 export interface DeviceRegistrationInfo {
@@ -171,7 +175,10 @@ export interface IdAliasCredentials {
   'rp_id_alias_credential' : SignedIdAlias,
   'issuer_id_alias_credential' : SignedIdAlias,
 }
-export interface IdRegFinishArg { 'authn_method' : AuthnMethodData }
+export interface IdRegFinishArg {
+  'name' : [] | [string],
+  'authn_method' : AuthnMethodData,
+}
 export type IdRegFinishError = { 'NoRegistrationFlow' : null } |
   { 'UnexpectedCall' : { 'next_step' : RegistrationFlowNextStep } } |
   { 'InvalidAuthnMethod' : string } |
@@ -183,6 +190,7 @@ export type IdRegStartError = { 'InvalidCaller' : null } |
   { 'AlreadyInProgress' : null } |
   { 'RateLimitExceeded' : null };
 export interface IdentityAnchorInfo {
+  'name' : [] | [string],
   'devices' : Array<DeviceWithUsage>,
   'openid_credentials' : [] | [Array<OpenIdCredential>],
   'device_registration' : [] | [DeviceRegistrationInfo],
@@ -213,6 +221,7 @@ export type IdentityNumber = bigint;
 export interface InternetIdentityInit {
   'fetch_root_key' : [] | [boolean],
   'openid_google' : [] | [[] | [OpenIdConfig]],
+  'is_production' : [] | [boolean],
   'enable_dapps_explorer' : [] | [boolean],
   'assigned_user_number_range' : [] | [[bigint, bigint]],
   'archive_config' : [] | [ArchiveConfig],
@@ -253,13 +262,14 @@ export type MetadataMapV2 = Array<
       { 'Bytes' : Uint8Array | number[] },
   ]
 >;
+export interface OpenIDRegFinishArg { 'jwt' : JWT, 'salt' : Salt }
 export interface OpenIdConfig { 'client_id' : string }
 export interface OpenIdCredential {
   'aud' : Aud,
   'iss' : Iss,
   'sub' : Sub,
   'metadata' : MetadataMapV2,
-  'last_usage_timestamp' : Timestamp,
+  'last_usage_timestamp' : [] | [Timestamp],
 }
 export type OpenIdCredentialAddError = {
     'OpenIdCredentialAlreadyRegistered' : null
@@ -447,6 +457,10 @@ export interface _SERVICE {
   >,
   'init_salt' : ActorMethod<[], undefined>,
   'lookup' : ActorMethod<[UserNumber], Array<DeviceData>>,
+  'lookup_device_key' : ActorMethod<
+    [Uint8Array | number[]],
+    [] | [DeviceKeyWithAnchor]
+  >,
   'openid_credential_add' : ActorMethod<
     [IdentityNumber, JWT, Salt],
     { 'Ok' : null } |
@@ -461,6 +475,11 @@ export interface _SERVICE {
     [JWT, Salt, SessionKey, Timestamp],
     { 'Ok' : SignedDelegation } |
       { 'Err' : OpenIdDelegationError }
+  >,
+  'openid_identity_registration_finish' : ActorMethod<
+    [OpenIDRegFinishArg],
+    { 'Ok' : IdRegFinishResult } |
+      { 'Err' : IdRegFinishError }
   >,
   'openid_prepare_delegation' : ActorMethod<
     [JWT, Salt, SessionKey],

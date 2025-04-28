@@ -37,6 +37,7 @@ export const idlFactory = ({ IDL }) => {
   const InternetIdentityInit = IDL.Record({
     'fetch_root_key' : IDL.Opt(IDL.Bool),
     'openid_google' : IDL.Opt(IDL.Opt(OpenIdConfig)),
+    'is_production' : IDL.Opt(IDL.Bool),
     'enable_dapps_explorer' : IDL.Opt(IDL.Bool),
     'assigned_user_number_range' : IDL.Opt(IDL.Tuple(IDL.Nat64, IDL.Nat64)),
     'archive_config' : IDL.Opt(ArchiveConfig),
@@ -219,13 +220,14 @@ export const idlFactory = ({ IDL }) => {
     'iss' : Iss,
     'sub' : Sub,
     'metadata' : MetadataMapV2,
-    'last_usage_timestamp' : Timestamp,
+    'last_usage_timestamp' : IDL.Opt(Timestamp),
   });
   const DeviceRegistrationInfo = IDL.Record({
     'tentative_device' : IDL.Opt(DeviceData),
     'expiration' : Timestamp,
   });
   const IdentityAnchorInfo = IDL.Record({
+    'name' : IDL.Opt(IDL.Text),
     'devices' : IDL.Vec(DeviceWithUsage),
     'openid_credentials' : IDL.Opt(IDL.Vec(OpenIdCredential)),
     'device_registration' : IDL.Opt(DeviceRegistrationInfo),
@@ -322,7 +324,10 @@ export const idlFactory = ({ IDL }) => {
       'space_available' : IDL.Nat64,
     }),
   });
-  const IdRegFinishArg = IDL.Record({ 'authn_method' : AuthnMethodData });
+  const IdRegFinishArg = IDL.Record({
+    'name' : IDL.Opt(IDL.Text),
+    'authn_method' : AuthnMethodData,
+  });
   const IdRegFinishResult = IDL.Record({ 'identity_number' : IDL.Nat64 });
   const IdRegFinishError = IDL.Variant({
     'NoRegistrationFlow' : IDL.Null,
@@ -335,6 +340,10 @@ export const idlFactory = ({ IDL }) => {
     'InvalidCaller' : IDL.Null,
     'AlreadyInProgress' : IDL.Null,
     'RateLimitExceeded' : IDL.Null,
+  });
+  const DeviceKeyWithAnchor = IDL.Record({
+    'pubkey' : DeviceKey,
+    'anchor_number' : UserNumber,
   });
   const JWT = IDL.Text;
   const Salt = IDL.Vec(IDL.Nat8);
@@ -355,6 +364,7 @@ export const idlFactory = ({ IDL }) => {
     'NoSuchAnchor' : IDL.Null,
     'JwtVerificationFailed' : IDL.Null,
   });
+  const OpenIDRegFinishArg = IDL.Record({ 'jwt' : JWT, 'salt' : Salt });
   const UserKey = PublicKey;
   const OpenIdPrepareDelegationResponse = IDL.Record({
     'user_key' : UserKey,
@@ -553,6 +563,11 @@ export const idlFactory = ({ IDL }) => {
       ),
     'init_salt' : IDL.Func([], [], []),
     'lookup' : IDL.Func([UserNumber], [IDL.Vec(DeviceData)], ['query']),
+    'lookup_device_key' : IDL.Func(
+        [IDL.Vec(IDL.Nat8)],
+        [IDL.Opt(DeviceKeyWithAnchor)],
+        ['query'],
+      ),
     'openid_credential_add' : IDL.Func(
         [IdentityNumber, JWT, Salt],
         [IDL.Variant({ 'Ok' : IDL.Null, 'Err' : OpenIdCredentialAddError })],
@@ -572,6 +587,11 @@ export const idlFactory = ({ IDL }) => {
           }),
         ],
         ['query'],
+      ),
+    'openid_identity_registration_finish' : IDL.Func(
+        [OpenIDRegFinishArg],
+        [IDL.Variant({ 'Ok' : IdRegFinishResult, 'Err' : IdRegFinishError })],
+        [],
       ),
     'openid_prepare_delegation' : IDL.Func(
         [JWT, Salt, SessionKey],
@@ -646,6 +666,7 @@ export const init = ({ IDL }) => {
   const InternetIdentityInit = IDL.Record({
     'fetch_root_key' : IDL.Opt(IDL.Bool),
     'openid_google' : IDL.Opt(IDL.Opt(OpenIdConfig)),
+    'is_production' : IDL.Opt(IDL.Bool),
     'enable_dapps_explorer' : IDL.Opt(IDL.Bool),
     'assigned_user_number_range' : IDL.Opt(IDL.Tuple(IDL.Nat64, IDL.Nat64)),
     'archive_config' : IDL.Opt(ArchiveConfig),

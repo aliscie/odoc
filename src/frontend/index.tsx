@@ -29,7 +29,7 @@ const config = getDefaultConfig({
   appName: "ODOC App",
   projectId: "YOUR_PROJECT_ID", // Replace with your actual project ID
   chains: [mainnet],
-  ssr: false, // Set to false for client-side only rendering
+  ssr: true, // Changed from false to true to match tutorial
 });
 
 const queryClient = new QueryClient();

@@ -10,7 +10,7 @@
     "@dfinity/agent": "2.3.0",
     "@dfinity/auth-client": "2.3.0",
     "@dfinity/candid": "2.3.0",
-    "@dfinity/identity": "2.3.0",
+    "@dfinity/identity": "^2.4.1",
     "@dfinity/identity-secp256k1": "2.3.0",
     "@dfinity/principal": "2.3.0",
     "@dnd-kit/core": "^6.1.0",
@@ -69,7 +69,8 @@
     "viem": "^2.26.3",
     "vite": "^5.4.0",
     "vitest-mock-extended": "^2.0.2",
-    "wagmi": "^2.14.16"
+    "wagmi": "^2.14.16",
+    "web3": "^4.16.0"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"

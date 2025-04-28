@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { 
   Button, 
@@ -8,7 +8,7 @@ import {
   MenuItem,
   ListItemText,
   ListItemIcon,
-  Tooltip
+  Box
 } from "@mui/material";
 import { 
   Person2 as Person2Icon,
@@ -18,6 +18,8 @@ import { RootState } from "../../../redux/reducers";
 import { useBackendContext } from "../../../contexts/BackendContext";
 import DfnIcon from "@/assets/dfn.svg";
 import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount } from 'wagmi';
 
 interface LoginButtonProps {
   isMobile?: boolean;
@@ -32,10 +34,13 @@ const LoginButton: React.FC<LoginButtonProps> = ({
   const { login, loginWithMetaMask } = useBackendContext();
   const { isFetching, isLoggedIn } = useSelector((state: RootState) => state.uiState);
   const { openConnectModal } = useConnectModal();
+  const { isConnected } = useAccount();
   
   // For dropdown menu
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [prevConnected, setPrevConnected] = useState(false);
+
 
   const styles = {
     loginButton: {
@@ -70,13 +75,10 @@ const LoginButton: React.FC<LoginButtonProps> = ({
   };
 
   const handleMetaMaskLogin = async () => {
-    await loginWithMetaMask();
-    // handleClose();
-    // if (openConnectModal) {
-    //   openConnectModal();
-    // } else {
-    //   await loginWithMetaMask();
-    // }
+    if (openConnectModal) {
+      await loginWithMetaMask();
+      handleClose();
+    }
   };
 
   if (isFetching) {
@@ -106,18 +108,16 @@ const LoginButton: React.FC<LoginButtonProps> = ({
             </ListItemIcon>
             <ListItemText>Internet Identity</ListItemText>
           </MenuItem>
-          <Tooltip title="MetaMask login coming soon" placement="right">
-            <MenuItem onClick={handleMetaMaskLogin} disabled>
-              <ListItemIcon>
-                <img 
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/1200px-MetaMask_Fox.svg.png" 
-                  alt="MetaMask" 
-                  style={styles.menuIcon} 
-                />
-              </ListItemIcon>
-              <ListItemText>MetaMask</ListItemText>
-            </MenuItem>
-          </Tooltip>
+          <MenuItem onClick={handleMetaMaskLogin}>
+            <ListItemIcon>
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/1200px-MetaMask_Fox.svg.png" 
+                alt="MetaMask" 
+                style={styles.menuIcon} 
+              />
+            </ListItemIcon>
+            <ListItemText>MetaMask</ListItemText>
+          </MenuItem>
         </Menu>
       </>
     );
@@ -164,5 +164,4 @@ const LoginButton: React.FC<LoginButtonProps> = ({
     </>
   );
 };
-
 export default LoginButton;
