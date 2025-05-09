@@ -1,3 +1,4 @@
+# white paper [here](https://github.com/aliscie/odoc/blob/dev/src/frontend/pages/whitepaper.md)
 ## old version of Odoc can be found [here](https://github.com/aliscie/Odoc-old)
 
 ## to get started
