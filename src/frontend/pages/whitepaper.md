@@ -1,5 +1,5 @@
 # ODOC
-- Decentralized & open source Trustless contracts, tasks, and payment Management on ICP
+- A crypto-agreement platform designed to obviate the need for middlemen, spreadsheets, documents, or task managers. Powered by AI & ICP.
 - **Name** the word odoc stand for open documents
 - **Version:** beta | **Date:** 2025-02-07
 - **Duration:** 4 months  
