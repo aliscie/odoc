@@ -1,5 +1,5 @@
 ## white paper [here](https://github.com/aliscie/odoc/blob/dev/src/frontend/pages/whitepaper.md)
-## oDoc Code video tutorial [here](https://www.youtube.com/watch?v=Pcba0_JW2Xc&list=PLZ54FkZk9dwFjC0AyFv6elMA4VGE6N50T)
+## oDoc Code video tutorials [here](https://www.youtube.com/watch?v=Pcba0_JW2Xc&list=PLZ54FkZk9dwFjC0AyFv6elMA4VGE6N50T)
 ## old version of Odoc can be found [here](https://github.com/aliscie/Odoc-old)
 
 ## to get started
